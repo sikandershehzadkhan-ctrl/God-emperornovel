@@ -3,3 +3,4 @@ Trigger deployment 6.1
 Trigger deployment 6.1 - retry
 8.0 deployment trigger
 8.1 deployment trigger
+8.1 fresh deployment
