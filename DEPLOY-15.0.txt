@@ -1,0 +1,2 @@
+Imperial Novel 15.0 deployment trigger
+Version: 15.0.0
