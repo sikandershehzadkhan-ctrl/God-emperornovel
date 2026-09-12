@@ -1,0 +1,21 @@
+Imperial Novel 16.2.8 Deployment Trigger Marker
+
+Release: 16.2.8
+Worker: god-emperornovel
+Production branch: main
+
+Cloudflare Build command:
+unzip -o Imperial-Novel-16.2.8-Admin-Request-Management-Fix.zip
+
+Cloudflare Deploy command:
+npx wrangler deploy
+
+Cloudflare cron trigger:
+0 * * * *
+
+Purpose:
+Trigger and identify the Imperial Novel 16.2.8 deployment.
+
+The actual cron trigger is configured in wrangler.toml:
+[triggers]
+crons = ["0 * * * *"]
