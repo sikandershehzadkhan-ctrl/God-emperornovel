@@ -1,0 +1,20 @@
+Imperial Novel 16.5.0 Edit Repair
+Cloudflare Worker deployment trigger configuration
+
+Version: 16.5.0
+Trigger: GitHub push to main
+Build: Cloudflare Workers Build
+Build command:
+unzip -o Imperial-Novel-16.5.0-Edit-Repair-WITH-TRIGGER.zip
+
+Deploy command:
+npx wrangler deploy
+
+Root directory:
+/
+
+Cloudflare Worker:
+god-emperornovel
+
+Cron:
+0 * * * *
