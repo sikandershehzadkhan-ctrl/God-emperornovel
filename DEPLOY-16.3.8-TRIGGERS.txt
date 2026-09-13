@@ -1,0 +1,26 @@
+Imperial Novel 16.3.8 Deployment Trigger Marker
+
+Release: 16.3.8
+Worker: god-emperornovel
+Production branch: main
+
+Cloudflare Build command:
+unzip -o Imperial-Novel-16.3.8-Publishing-Repair.zip
+
+Cloudflare Deploy command:
+npx wrangler deploy
+
+Cloudflare cron trigger:
+0 * * * *
+
+Purpose:
+Trigger and identify the Imperial Novel 16.3.8 Publishing Repair deployment.
+
+Important:
+The 16.3.8 ZIP is a root-level package.
+Do NOT use cp -R imperial-1637/. .
+Do NOT use cp -R imperial-1638/. .
+
+The actual cron trigger is configured in wrangler.toml:
+[triggers]
+crons = ["0 * * * *"]
