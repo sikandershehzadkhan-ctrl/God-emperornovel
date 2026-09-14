@@ -1,0 +1,21 @@
+Imperial Novel 16.9.0 Reader Account & Library
+Cloudflare Worker deployment trigger configuration
+
+Version: 16.9.0
+Trigger: GitHub push to main
+Build: Cloudflare Workers Build
+
+Build command:
+unzip -o Imperial-Novel-16.9.0-Reader-Account-Library.zip
+
+Deploy command:
+npx wrangler deploy
+
+Root directory:
+/
+
+Cloudflare Worker:
+god-emperornovel
+
+Cron:
+0 * * * *
