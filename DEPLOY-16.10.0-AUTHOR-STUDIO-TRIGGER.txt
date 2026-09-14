@@ -1,0 +1,21 @@
+Imperial Novel 16.10.0 Author Studio
+Cloudflare Worker deployment trigger configuration
+
+Version: 16.10.0
+Trigger: GitHub push to main
+Build: Cloudflare Workers Build
+
+Build command:
+unzip -o Imperial-Novel-16.10.0-Author-Studio.zip
+
+Deploy command:
+npx wrangler deploy
+
+Root directory:
+/
+
+Cloudflare Worker:
+god-emperornovel
+
+Cron:
+0 * * * *
