@@ -1,0 +1,12 @@
+Imperial Novel 16.15.1 ChapterRow Fix Deployment Trigger
+
+Commit this file directly in GitHub to trigger the existing Cloudflare Workers Build.
+
+Cloudflare Build command:
+unzip -o Imperial-Novel-16.15.1-ChapterRow-Fix.zip
+
+Deploy command:
+npx wrangler deploy
+
+This file is only a GitHub commit trigger.
+It does not change Cloudflare's configured build command.
