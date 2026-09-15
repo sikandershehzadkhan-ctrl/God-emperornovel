@@ -1,0 +1,7 @@
+Cloudflare Worker deployment trigger
+
+Build:
+unzip -o Imperial-Novel-16.14.0-Platform-Discovery-Catalog.zip
+
+Deploy:
+npx wrangler deploy
