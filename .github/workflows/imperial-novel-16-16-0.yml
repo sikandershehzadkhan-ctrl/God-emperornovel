@@ -1,0 +1,24 @@
+name: Imperial Novel 16.16.0
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - main
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Extract Imperial Novel 16.16.0
+        run: |
+          unzip -o "Imperial-Novel-16.16.0-OmniPortal-Rights-First.zip"
+
+      - name: Show extracted files
+        run: |
+          echo "Imperial Novel 16.16.0 extracted successfully."
+          ls -la
