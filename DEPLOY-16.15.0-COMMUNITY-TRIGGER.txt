@@ -1,0 +1,2 @@
+Imperial Novel 16.15.0 Community Deployment Trigger
+Cloudflare Workers Build deployment trigger.
