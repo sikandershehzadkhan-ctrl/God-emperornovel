@@ -1,0 +1,111 @@
+IMPERIAL NOVEL 16.21.0
+CORE UX & ROUTE FIX
+GITHUB / CLOUDFLARE DEPLOYMENT TRIGGER
+
+VERSION
+16.21.0-Core-UX-Route-Fix
+
+PACKAGE
+Imperial-Novel-16.21.0-Core-UX-Route-Fix.zip
+
+GITHUB REPOSITORY
+sikandershehzadkhan-ctrl/God-emperornovel
+
+CLOUDFLARE BUILD COMMAND
+
+unzip -o Imperial-Novel-16.21.0-Core-UX-Route-Fix.zip && npm install && npm run build
+
+DEPLOY COMMAND
+
+npx wrangler deploy
+
+IMPORTANT
+- Keep the existing D1 database:
+  god-emperornovel-db
+- Do NOT reset the database.
+- Do NOT recreate the database.
+- Keep all existing environment bindings.
+- Keep OmniPortal configuration.
+- Keep existing authorization/security configuration.
+- Keep existing novel-author admin/author configuration.
+- This is an upgrade, not a fresh installation.
+
+16.21.0 ROUTE/UX TARGETS
+
+/
+ /catalog
+ /trending
+ /for-you
+ /community
+ /leaderboard
+ /tier-list
+ /random
+ /requests
+ /votes
+ /notifications
+ /login
+ /signup
+ /library
+ /reader
+ /author
+ /omniportal
+
+CORE FIXES
+- Tier List rendering
+- Login/Signup route reliability
+- Reader route handling
+- Catalog route
+- Trending route
+- Made For You route
+- Community navigation
+- Leaderboard navigation
+- Random Novel navigation
+- Request/Vote navigation
+- Notifications navigation
+
+PRESERVE
+- Author Studio
+- Automatic AI workflow
+- Manual AI workflow
+- Hybrid AI workflow
+- Local AI mode
+- Chapter Studio
+- Chapter access/ticket system
+- Rights/evidence system
+- OmniPortal
+- Existing authentication
+- Existing D1 data
+- Existing admin privileges
+
+AFTER DEPLOYMENT
+
+Open:
+https://god-emperornovel.sikandershehzadkhan.workers.dev/
+
+Test:
+Home
+Catalog
+Trending
+Made For You
+Community
+Leaderboard
+Tier List
+Random Novel
+Requests
+Votes
+Notifications
+Login
+Signup
+Library
+Reader
+Author Studio
+OmniPortal
+
+DO NOT
+- Run a database reset.
+- Delete existing D1 data.
+- Recreate the D1 database.
+- Remove existing bindings.
+- Replace the existing Wrangler configuration unnecessarily.
+
+If Cloudflare reports an error, copy the complete build/deployment log and provide it for diagnosis.
