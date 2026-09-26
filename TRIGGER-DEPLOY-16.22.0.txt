@@ -1,0 +1,63 @@
+IMPERIAL NOVEL — DEPLOYMENT TRIGGER
+Version: 16.22.0
+Build: Imperial Luxury UX
+
+PROJECT:
+Imperial Novel
+
+SOURCE PACKAGE:
+Imperial-Novel-16.22.0-Imperial-Luxury-UX.zip
+
+BUILD COMMAND:
+unzip -o Imperial-Novel-16.22.0-Imperial-Luxury-UX.zip && npm install && npm run build
+
+DEPLOY COMMAND:
+npx wrangler deploy
+
+WORKER:
+god-emperornovel
+
+DATABASE:
+god-emperornovel-db
+
+ROOT:
+/
+
+RELEASE:
+16.22.0 — Imperial Luxury UX
+
+DESIGN:
+High-End Imperial Luxury
+Cosmic Purple
+Indigo Purple
+Imperial Purple
+Electric Purple
+Gold
+Platinum Silver
+Obsidian
+
+UX:
+Mobile-first
+Complete interaction states
+Responsive navigation
+Reader UX
+Author Studio UX
+Admin/Agent UX
+Accessibility
+Reduced-motion support
+Live cosmic ambient motion
+
+IMPORTANT:
+This is an upgrade to the EXISTING Imperial Novel project.
+Do NOT create a new project.
+Do NOT replace the existing database.
+Do NOT remove existing routes or features.
+Preserve existing accounts, library, novels, chapters, community,
+OmniPortal, Author Studio, Admin, agents, tickets and existing APIs.
+
+DEPLOY TARGET:
+Existing Cloudflare Worker: god-emperornovel
+
+FINAL ACTION:
+Build the uploaded Imperial Novel 16.22.0 package and deploy it
+to the existing Worker.
