@@ -1,0 +1,86 @@
+IMPERIAL NOVEL 16.23.0
+QA REPAIR + UX HARDENING DEPLOYMENT
+
+Project:
+Imperial Novel
+
+Worker:
+god-emperornovel
+
+Repository:
+sikandershehzadkhan-ctrl/God-emperornovel
+
+Version:
+16.23.0
+
+Build:
+unzip -o Imperial-Novel-16.23.0-QA-Repair-UX-Hardening.zip && npm install && npm run build
+
+Deploy:
+npx wrangler deploy
+
+Deployment target:
+Cloudflare Workers
+
+Database:
+D1 database: god-emperornovel-db
+
+IMPORTANT:
+Do not reset, recreate, delete, or migrate the existing D1 database.
+Preserve all existing users, novels, chapters, tickets, libraries, settings, and content.
+
+16.23.0 QA REPAIRS:
+- Repair /author/<name> public author route
+- Repair missing simplePage() fallback
+- Repair /trending edge routing
+- Add /settings route
+- Add route-specific page titles
+- Replace undefined novel status with ongoing
+- Add branded Imperial Novel 404 handling
+- Repair PWA manifest icons
+- Add favicon and Apple touch icon
+- Repair sitemap.xml
+- Repair robots.txt sitemap URL
+- Add homepage loading skeletons
+- Add search empty state
+- Improve catalog story-count grammar
+- Improve mobile touch targets
+- Add reduced-motion handling
+- Add reader/settings preference controls
+- Preserve existing Imperial luxury visual design
+- Preserve existing authentication and D1 architecture
+- Preserve existing OmniPortal and rights-first connector system
+- No paid services
+- No unauthorized third-party content access
+
+POST-DEPLOY QA:
+Test:
+/
+/catalog
+/trending
+/community
+/leaderboard
+/random
+/search
+/settings
+/omniportal
+/author/<name>
+/novel/1
+/read/1
+
+Also verify:
+- Login/signup
+- Library
+- Chapter unlock/tickets
+- Admin authorization
+- Author Studio
+- OmniPortal
+- Mobile layout
+- PWA icons
+- sitemap.xml
+- robots.txt
+- No literal "undefined" status
+- No raw Cloudflare 404 for normal extensionless routes
+
+SUCCESS CONDITION:
+Cloudflare deployment completes successfully and the existing Imperial Novel data remains intact.
