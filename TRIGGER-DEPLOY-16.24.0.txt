@@ -1,0 +1,27 @@
+IMPERIAL NOVEL DEPLOYMENT TRIGGER
+Version: 16.24.0
+Release: HOME-MOBILE-UX-CATALOG-POLISH
+
+Deploy Imperial Novel 16.24.0 from this repository/package.
+
+Build:
+unzip -o Imperial-Novel-16.24.0-HOME-MOBILE-UX-CATALOG-POLISH.zip && npm install && npm run build
+
+Deploy:
+npx wrangler deploy
+
+Deployment requirements:
+- Deploy the complete Imperial Novel 16.24.0 build.
+- Preserve the existing Cloudflare Worker configuration.
+- Preserve the existing D1 database and all existing data.
+- Do NOT reset, recreate, or delete the D1 database.
+- Do NOT remove existing authentication, library, tickets, reader, community, catalog, OmniPortal, Author Studio, or admin functionality.
+- Preserve existing rights-first connector architecture.
+- Preserve the Imperial Novel branding and current imperial luxury visual system.
+- Apply the 16.24.0 home-page mobile UX and catalog polish.
+- Ensure static assets are deployed correctly.
+- Verify the deployment completes successfully.
+- Report the final Cloudflare deployment Version ID after deployment.
+
+Target Worker:
+god-emperornovel
