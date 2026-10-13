@@ -1,0 +1,5 @@
+Imperial Novel 16.54.0 — staged release trigger.
+
+Scope: complete application source packaged at archive root; import the existing Imperial Luxury token layer into global CSS; normalize displayed/package version metadata.
+
+Release marker only. Validate in staging before production. Do not run D1 migrations against production without backup and explicit owner authorization.
