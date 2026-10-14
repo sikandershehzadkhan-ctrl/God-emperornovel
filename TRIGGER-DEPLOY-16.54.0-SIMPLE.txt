@@ -1,0 +1,9 @@
+IMPERIAL NOVEL 16.54.0 — BUILD TRIGGER
+
+Package: Imperial-Novel-16.54.0-SIMPLE-BUILD-UPDATE.zip
+
+Extract the website source and run the Cloudflare production build.
+
+Keep the existing Imperial Novel application and production database. Do not reset the database or run production migrations as part of this build.
+
+Build command is documented in the deployment instructions.
