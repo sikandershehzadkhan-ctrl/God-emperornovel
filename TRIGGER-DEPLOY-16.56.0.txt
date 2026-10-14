@@ -1,0 +1,26 @@
+IMPERIAL NOVEL 16.56.0 DIRECT BUILD UPDATE
+
+Project: Imperial Novel
+Brand tagline: Read • Create • Conquer
+Update: 16.56.0
+Deployment target: Existing Cloudflare Worker
+Production Worker: god-emperornovel
+Production D1: god-emperornovel-db
+
+Purpose:
+Trigger the Cloudflare build for the Imperial Novel 16.56.0 update.
+
+Requirements:
+
+- Use the uploaded Imperial-Novel-16.56.0-DIRECT-BUILD-UPDATE.zip from the repository root.
+- Extract the update into the existing project.
+- Do not create a separate staging database.
+- Do not replace or delete the existing production D1 database.
+- Preserve the existing Imperial Novel branding and working features.
+- Run the Cloudflare readiness check and production build.
+- Stop if dependency installation, lockfile verification, readiness checks, or the build fails.
+- Do not claim deployment success unless the deployment actually completes.
+- Do not run destructive database migrations automatically.
+- Report the exact build result and any remaining blockers.
+
+Read • Create • Conquer
