@@ -1,0 +1,19 @@
+IMPERIAL NOVEL
+Release: 16.60.0
+Product: Imperial Novel
+Tagline: Read • Create • Conquer
+
+Deployment trigger: 16.60.0
+Target: Existing Imperial Novel Cloudflare build workflow
+Build: Cloudflare-compatible production build
+
+Requirements:
+- Preserve the existing Imperial Novel project.
+- Keep the production Worker and D1 database configuration intact.
+- Do not deploy database migrations automatically unless explicitly approved.
+- Do not replace real catalog data with mock data.
+- Preserve existing reader, author, community, tickets, and EasyPaisa functionality.
+- Verify Cloudflare build readiness before production compilation.
+- Report build errors honestly.
+
+This file is a release marker, not a deployment script.
