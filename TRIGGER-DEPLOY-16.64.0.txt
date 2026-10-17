@@ -1,0 +1,23 @@
+IMPERIAL NOVEL 16.64.0 — THREE-LINE MENU DESIGN UPDATE
+
+Product: Imperial Novel
+Tagline: Read • Create • Conquer
+
+Update includes:
+
+- Three-line hamburger menu and navigation drawer
+- Purple, cyan, and black visual theme
+- Mobile-friendly navigation
+- Close button, backdrop, and Escape-key support
+- Reduced-motion styling
+- Imperial Novel design reference image
+
+Production requirements:
+
+- Preserve the existing Cloudflare Worker architecture.
+- Preserve the existing D1 database and production data.
+- Do not create a separate demo website.
+- Do not deploy an incompatible Nitro or Vercel application.
+- Verify the live website after deployment.
+
+This trigger file identifies update 16.64.0. It does not itself implement or deploy the features.
