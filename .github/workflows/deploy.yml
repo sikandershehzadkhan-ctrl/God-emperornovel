@@ -4,7 +4,7 @@ on:
   workflow_dispatch:
     inputs:
       confirm_production_deploy:
-        description: "Type true only after the production build and D1 migration review have passed"
+        description: "Type true only after the read-only production D1 audit and release review have passed"
         required: true
         default: "false"
         type: choice
@@ -23,48 +23,10 @@ jobs:
   deploy:
     if: ${{ inputs.confirm_production_deploy == 'true' }}
     runs-on: ubuntu-latest
+    timeout-minutes: 10
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
-
-      - name: Refuse unverified source
-        shell: bash
-        run: |
-          set -euo pipefail
-          if [ ! -f package.json ]; then
-            echo "::error::Deployment blocked: application source is not present at repository root."
-            exit 1
-          fi
-          if [ ! -f wrangler.jsonc ] && [ ! -f wrangler.toml ] && [ ! -f wrangler.json ]; then
-            echo "::error::Deployment blocked: no root Wrangler configuration was found."
-            exit 1
-          fi
-          if [ ! -f package-lock.json ]; then
-            echo "::error::Deployment blocked: package-lock.json is required for reproducible npm ci installs."
-            exit 1
-          fi
-          if ! node -e "const p=require('./package.json'); process.exit(p.scripts && p.scripts.build ? 0 : 1)"; then
-            echo "::error::Deployment blocked: package.json must define a build script."
-            exit 1
-          fi
-          if [ ! -f src/index.js ] || [ ! -d public ] || [ ! -d migrations ]; then
-            echo "::error::Deployment blocked: expected Worker source, public assets, or migrations directory is missing."
-            exit 1
-          fi
-          node --check src/index.js
-          if [ -f public/app.js ]; then node --check public/app.js; fi
-          python3 - <<'PY'
-          import glob, sqlite3, sys
-          db = sqlite3.connect(':memory:')
-          for path in sorted(glob.glob('migrations/*.sql')):
-              try:
-                  with open(path, encoding='utf-8') as f:
-                      db.executescript(f.read())
-              except Exception as exc:
-                  print(f'::error::D1 migration validation failed in {path}: {exc}')
-                  sys.exit(1)
-          print('All checked SQL migrations apply cleanly to a fresh SQLite database.')
-          PY
 
       - name: Set up Node.js
         uses: actions/setup-node@v4
@@ -72,7 +34,37 @@ jobs:
           node-version: 22
           cache: npm
 
-      - name: Verify Cloudflare credentials before production work
+      - name: Validate source and production configuration
+        run: |
+          set -euo pipefail
+          test -f package.json
+          test -f package-lock.json
+          test -f wrangler.toml
+          test -f src/index.js
+          test -f public/index.html
+          test -f public/app.js
+          test -d migrations
+          npm run check:cloudflare-readiness
+          npm ci
+          npm run build
+          python3 - <<'PY'
+          import glob, sqlite3, sys
+          db = sqlite3.connect(':memory:')
+          paths = sorted(glob.glob('migrations/*.sql'))
+          if not paths:
+              print('::error::No SQL migrations found.')
+              sys.exit(1)
+          for path in paths:
+              try:
+                  with open(path, encoding='utf-8') as f:
+                      db.executescript(f.read())
+              except Exception as exc:
+                  print(f'::error::Fresh-database migration check failed in {path}: {exc}')
+                  sys.exit(1)
+          print(f'Fresh SQLite migration check passed for {len(paths)} files.')
+          PY
+
+      - name: Verify Cloudflare credentials
         shell: bash
         env:
           CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
@@ -80,57 +72,20 @@ jobs:
         run: |
           set -euo pipefail
           if [ -z "${CLOUDFLARE_API_TOKEN:-}" ] || [ -z "${CLOUDFLARE_ACCOUNT_ID:-}" ]; then
-            echo "::error::Deployment blocked: GitHub Actions secrets are empty or unavailable."
+            echo "::error::Deployment blocked: CLOUDFLARE_API_TOKEN or CLOUDFLARE_ACCOUNT_ID is empty or unavailable."
             exit 1
           fi
-          if [[ "$CLOUDFLARE_API_TOKEN" == *
-      - name: Install locked dependencies
-        run: npm ci
-
-      - name: Build application
-        run: npm run build
-
-      - name: Validate Wrangler deployment bundle
-        run: npx wrangler deploy --dry-run
-
-      - name: Deploy verified source to Cloudflare
-        run: npx wrangler deploy
-        env:
-          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
-          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
-\\r'* || "$CLOUDFLARE_API_TOKEN" == *
-      - name: Install locked dependencies
-        run: npm ci
-
-      - name: Build application
-        run: npm run build
-
-      - name: Validate Wrangler deployment bundle
-        run: npx wrangler deploy --dry-run
-
-      - name: Deploy verified source to Cloudflare
-        run: npx wrangler deploy
-        env:
-          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
-          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
-\\n'* || "$CLOUDFLARE_API_TOKEN" == *'Bearer '* || "$CLOUDFLARE_API_TOKEN" == *'Authorization:'* ]]; then
-            echo "::error::CLOUDFLARE_API_TOKEN must be the raw token on one line, with no Bearer prefix or Authorization header."
+          if [[ "$CLOUDFLARE_API_TOKEN" == *$'\n'* || "$CLOUDFLARE_API_TOKEN" == *$'\r'* || "$CLOUDFLARE_API_TOKEN" == *'Bearer '* || "$CLOUDFLARE_API_TOKEN" == *'Authorization:'* ]]; then
+            echo "::error::CLOUDFLARE_API_TOKEN must contain only the raw token on one line."
             exit 1
           fi
-          echo "Checking Cloudflare token via Wrangler identity request..."
           npx --yes wrangler@4 whoami
 
-      - name: Install locked dependencies
-        run: npm ci
+      - name: Validate Cloudflare bundle without deploying
+        run: npx --yes wrangler@4 deploy --dry-run
 
-      - name: Build application
-        run: npm run build
-
-      - name: Validate Wrangler deployment bundle
-        run: npx wrangler deploy --dry-run
-
-      - name: Deploy verified source to Cloudflare
-        run: npx wrangler deploy
+      - name: Deploy Worker and static assets
+        run: npx --yes wrangler@4 deploy
         env:
           CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
