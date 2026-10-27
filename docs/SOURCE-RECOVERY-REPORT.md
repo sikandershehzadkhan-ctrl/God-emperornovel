@@ -10,7 +10,8 @@
 - All eight SQLite/D1 migration files applied cleanly to a fresh in-memory SQLite database.
 - Novel-request refund ledger SQL placeholder count was corrected.
 - First-admin bootstrap no longer promotes an arbitrary oldest user to administrator.
-- Legacy catalog safety: adding the publication-status column to an older database defaults existing novels to published, rather than accidentally hiding the catalog. New novels are explicitly created as drafts.
+- Legacy catalog safety: when the Worker itself adds a missing publication-status column, existing novels default to published, rather than being accidentally hidden. New novels are explicitly created as drafts.
+- **Outstanding production database check:** migration 0004 defines the column with a draft default. If that migration was already applied to production, we must inspect the live D1 values before deployment. We must not bulk-promote draft novels without checking ownership and rights, and must not deploy until this is verified.
 - Release metadata and the browser cache-busting query are aligned to 16.64.0.
 - Production D1 migrations have **not** been run.
 - No production deployment has been performed.
