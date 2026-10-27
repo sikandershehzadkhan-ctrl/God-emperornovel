@@ -63,6 +63,25 @@ jobs:
       - name: Validate Cloudflare Worker bundle without deploying
         run: npx --yes wrangler@4 deploy --dry-run
 
+      - name: Check production safety invariants
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          from pathlib import Path
+          source = Path('src/index.js').read_text(encoding='utf-8')
+          checks = {
+              'legacy novels remain published when the publication column is added': "['publication_status',\"TEXT NOT NULL DEFAULT 'published'\"]" in source,
+              'first-admin bootstrap cannot promote an arbitrary user': "UPDATE users SET role='admin',verified=1 WHERE id=?" not in source,
+              'the schema version matches this release': "core_schema_version','16.64.0" in source,
+              'novel-request refunds use four SQL placeholders': "INSERT INTO ticket_ledger(user_id,delta,reason,reference) VALUES(?,?,?,?)" in source,
+          }
+          for label, ok in checks.items():
+              print(('PASS' if ok else 'FAIL') + ': ' + label)
+          if not all(checks.values()):
+              raise SystemExit(1)
+          PY
+
       - name: Validate D1 migrations against SQLite
         shell: bash
         run: |
