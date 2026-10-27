@@ -16,7 +16,6 @@ concurrency:
 
 jobs:
   restore-source:
-    if: ${{ !hashFiles('package.json') || !hashFiles('src/index.js') || !hashFiles('public/index.html') }}
     runs-on: ubuntu-latest
     steps:
       - name: Checkout main
@@ -25,12 +24,25 @@ jobs:
           ref: main
           token: ${{ secrets.GITHUB_TOKEN }}
 
+      - name: Check whether source recovery is needed
+        id: source-check
+        shell: bash
+        run: |
+          if [ -f package.json ] && [ -f src/index.js ] && [ -f public/index.html ]; then
+            echo "restore=false" >> "$GITHUB_OUTPUT"
+            echo "Application source already exists; no recovery is needed."
+          else
+            echo "restore=true" >> "$GITHUB_OUTPUT"
+          fi
+
       - name: Set up Node.js
+        if: steps.source-check.outputs.restore == 'true'
         uses: actions/setup-node@v4
         with:
           node-version: 22
 
       - name: Verify and extract the latest reviewed release archive
+        if: steps.source-check.outputs.restore == 'true'
         shell: bash
         run: |
           set -euo pipefail
@@ -71,6 +83,7 @@ jobs:
           cd ..
 
       - name: Restore application source to repository root
+        if: steps.source-check.outputs.restore == 'true'
         shell: bash
         run: |
           set -euo pipefail
@@ -97,6 +110,7 @@ jobs:
           git status --short
 
       - name: Commit restored source
+        if: steps.source-check.outputs.restore == 'true'
         shell: bash
         run: |
           set -euo pipefail
