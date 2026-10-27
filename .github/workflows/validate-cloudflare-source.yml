@@ -1,0 +1,56 @@
+name: Imperial Novel Cloudflare Source Validation
+
+on:
+  pull_request:
+    branches: [main]
+  push:
+    branches:
+      - automation/safe-deploy-pipeline
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: imperial-novel-validation-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  validate-source:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Require deployable source at repository root
+        shell: bash
+        run: |
+          set -euo pipefail
+          if [ ! -f package.json ]; then
+            echo "::error::No root package.json found. This repository currently stores the application in a legacy ZIP, so a reproducible source build cannot be verified."
+            echo "Do not deploy the legacy ZIP automatically. Upload the intended Imperial Novel source tree to the repository root, including package.json and the Cloudflare Wrangler configuration, then rerun validation."
+            exit 1
+          fi
+
+          if [ ! -f wrangler.jsonc ] && [ ! -f wrangler.toml ] && [ ! -f wrangler.json ]; then
+            echo "::error::No Wrangler configuration found at the repository root. Refusing to build or deploy an unverified project."
+            exit 1
+          fi
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - name: Install locked dependencies
+        run: npm ci
+
+      - name: Check Cloudflare readiness
+        run: npm run check:cloudflare-readiness
+
+      - name: Build Cloudflare application
+        run: npm run build:cloudflare
+
+      - name: Confirm validation only
+        run: echo "Build validation passed. This workflow does not deploy to production.";
