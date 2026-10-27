@@ -1,0 +1,111 @@
+name: Restore Verified Imperial Novel Source
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/restore-source.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: imperial-novel-source-recovery
+  cancel-in-progress: false
+
+jobs:
+  restore-source:
+    if: ${{ !hashFiles('package.json') || !hashFiles('src/index.js') || !hashFiles('public/index.html') }}
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout main
+        uses: actions/checkout@v4
+        with:
+          ref: main
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Verify and extract the latest reviewed release archive
+        shell: bash
+        run: |
+          set -euo pipefail
+          ZIP_FILE="Imperial-Novel-16.64.0-THREE-LINE-MENU-DESIGN-UPDATE.zip"
+          test -f "$ZIP_FILE" || { echo "::error::Expected reviewed archive is missing."; exit 1; }
+          mkdir -p .source-recovery
+          unzip -q "$ZIP_FILE" -d .source-recovery
+          cd .source-recovery
+          sha256sum -c UPDATE-16.64.0-MANIFEST.txt
+          node --check src/index.js
+          node --check public/app.js
+          npm run build
+          python3 - <<'PY'
+          import glob, sqlite3, sys
+          db = sqlite3.connect(':memory:')
+          for path in sorted(glob.glob('migrations/*.sql')):
+              try:
+                  with open(path, encoding='utf-8') as f:
+                      db.executescript(f.read())
+              except Exception as exc:
+                  print(f'::error::SQLite/D1 migration validation failed in {path}: {exc}')
+                  sys.exit(1)
+          print('All eight migrations apply cleanly to a fresh SQLite database.')
+          PY
+          python3 - <<'PY'
+          from pathlib import Path
+          p=Path('src/index.js')
+          s=p.read_text()
+          old='INSERT INTO ticket_ledger(user_id,delta,reason,reference) VALUES(?,?,?,?,?)'
+          new='INSERT INTO ticket_ledger(user_id,delta,reason,reference) VALUES(?,?,?,?)'
+          if s.count(old) != 1:
+              raise SystemExit(f'Expected exactly one known refund SQL placeholder defect; found {s.count(old)}')
+          s=s.replace(old,new)
+          p.write_text(s)
+          print('Corrected the novel-request refund ledger SQL placeholder count.')
+          PY
+          node --check src/index.js
+          cd ..
+
+      - name: Restore application source to repository root
+        shell: bash
+        run: |
+          set -euo pipefail
+          cp -a .source-recovery/src ./src
+          cp -a .source-recovery/public ./public
+          cp -a .source-recovery/migrations ./migrations
+          cp .source-recovery/package.json ./package.json
+          cp .source-recovery/package-lock.json ./package-lock.json
+          cp .source-recovery/wrangler.toml ./wrangler.toml
+          mkdir -p docs
+          cat > docs/SOURCE-RECOVERY-REPORT.md <<'EOF'
+          # Imperial Novel source recovery
+
+          - Source base: Imperial Novel 16.63.0
+          - UI patch archive: 16.64.0 three-line menu design update
+          - Archive manifest hashes checked before restoration.
+          - Worker and browser JavaScript syntax checks passed.
+          - All eight SQLite/D1 migration files applied to a fresh in-memory SQLite database.
+          - Corrected the known five-placeholder/four-value SQL defect in the novel-request refund ledger insert.
+          - No production D1 migrations were run.
+          - No production deployment was performed by this workflow.
+          - Production deployment remains a separate manual workflow requiring explicit confirmation.
+          EOF
+          git status --short
+
+      - name: Commit restored source
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add src public migrations package.json package-lock.json wrangler.toml docs/SOURCE-RECOVERY-REPORT.md
+          if git diff --cached --quiet; then
+            echo "No source changes to commit."
+            exit 0
+          fi
+          git commit -m "Restore verified Imperial Novel Cloudflare Worker source"
+          git push origin HEAD:main
