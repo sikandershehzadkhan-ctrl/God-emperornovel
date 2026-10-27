@@ -1,68 +1,58 @@
-name: Deploy Imperial Novel 16.4.0
+name: Deploy Imperial Novel to Cloudflare
 
 on:
   push:
-    branches:
-      - main
+    branches: [main]
   workflow_dispatch:
 
 permissions:
   contents: read
 
+concurrency:
+  group: imperial-novel-production-deploy
+  cancel-in-progress: false
+
 jobs:
   deploy:
     runs-on: ubuntu-latest
-
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: Find and extract Imperial Novel ZIP
+      - name: Refuse legacy ZIP deployment
         shell: bash
         run: |
-          set -e
-
-          ZIP_FILE=$(find . -maxdepth 2 -type f -name 'Imperial-Novel-16.4.0-Chapter-Creation-Repair.zip' | head -n 1)
-
-          if [ -z "$ZIP_FILE" ]; then
-            echo "ERROR: Imperial-Novel-16.4.0-Chapter-Creation-Repair.zip not found."
+          set -euo pipefail
+          if [ ! -f package.json ]; then
+            echo "::error::Deployment blocked: application source is not present at repository root. The old workflow deployed a legacy ZIP, which is not verified. Restore the intended Imperial Novel source tree before deploying."
+            exit 1
+          fi
+          if [ ! -f wrangler.jsonc ] && [ ! -f wrangler.toml ] && [ ! -f wrangler.json ]; then
+            echo "::error::Deployment blocked: no root Wrangler configuration was found."
+            exit 1
+          fi
+          if [ ! -f package-lock.json ]; then
+            echo "::error::Deployment blocked: package-lock.json is required for reproducible npm ci installs."
             exit 1
           fi
 
-          mkdir -p .deploy
-          unzip -o "$ZIP_FILE" -d .deploy
-
-          echo "Extracted project:"
-          find .deploy -maxdepth 2 -type f | head -100
-
-      - name: Locate Worker project
-        shell: bash
-        run: |
-          set -e
-
-          WRANGLER=$(find .deploy -name 'wrangler.toml' -o -name 'wrangler.json' -o -name 'wrangler.jsonc' | head -n 1)
-
-          if [ -z "$WRANGLER" ]; then
-            echo "ERROR: No Wrangler configuration found."
-            exit 1
-          fi
-
-          PROJECT_DIR=$(dirname "$WRANGLER")
-          echo "PROJECT_DIR=$PROJECT_DIR" >> "$GITHUB_ENV"
-
-          echo "Worker project: $PROJECT_DIR"
-
-      - name: Setup Node.js
+      - name: Set up Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: 20
+          node-version: 22
+          cache: npm
 
-      - name: Install Wrangler
-        run: npm install -g wrangler
+      - name: Install locked dependencies
+        run: npm ci
 
-      - name: Deploy to Cloudflare
-        working-directory: ${{ env.PROJECT_DIR }}
-        run: wrangler deploy
+      - name: Check Cloudflare readiness
+        run: npm run check:cloudflare-readiness
+
+      - name: Build for Cloudflare
+        run: npm run build:cloudflare
+
+      - name: Deploy verified source to Cloudflare
+        run: npx wrangler deploy
         env:
           CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
