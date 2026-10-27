@@ -177,7 +177,7 @@ async function ensureCoreSchema(env){
   // hundreds of CREATE/INSERT/INDEX statements on every new Worker isolate.
   try{
    const marker=await env.DB.prepare("SELECT value FROM app_settings WHERE key='core_schema_version' LIMIT 1").first();
-   if(marker?.value){return;}
+   if(marker?.value === '16.64.0'){return;}
   }catch(e){/* First installation or pre-marker database, continue bootstrap. */}
   const qs=[
 `CREATE TABLE IF NOT EXISTS users (id INTEGER PRIMARY KEY AUTOINCREMENT,username TEXT NOT NULL UNIQUE,email TEXT NOT NULL UNIQUE,password_hash TEXT NOT NULL,role TEXT NOT NULL DEFAULT 'user',tickets REAL NOT NULL DEFAULT 0,verified INTEGER NOT NULL DEFAULT 0,banned INTEGER NOT NULL DEFAULT 0,created_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP)`,
@@ -213,23 +213,10 @@ async function ensureCoreSchema(env){
   await ensureCommunityTaxonomySchema(env);
   await ensureAgents(env);
   await ensureAuthorAISchema(env);
-  // First-install owner bootstrap: promote the oldest existing account exactly once
-  // when no administrator exists. The marker permanently disables this path after the first run.
-  try{
-   const done=await env.DB.prepare("SELECT value FROM app_settings WHERE key='first_admin_bootstrap_done'").first();
-   if(!done){
-    const adminRow=await env.DB.prepare("SELECT id FROM users WHERE role='admin' LIMIT 1").first();
-    if(!adminRow){
-     const oldest=await env.DB.prepare("SELECT id FROM users ORDER BY id ASC LIMIT 1").first();
-     if(oldest){
-      await env.DB.prepare("UPDATE users SET role='admin',verified=1 WHERE id=?").bind(oldest.id).run();
-      try{await env.DB.prepare("INSERT INTO audit_logs(user_id,action,details) VALUES(?,?,?)").bind(oldest.id,'first_admin_bootstrap','Oldest existing account promoted because no administrator existed.').run()}catch{}
-     }
-    }
-    await env.DB.prepare("INSERT OR REPLACE INTO app_settings(key,value) VALUES('first_admin_bootstrap_done','1')").run();
-   }
-  }catch(e){console.error('first admin bootstrap',e)}
-  try{await env.DB.prepare("INSERT OR REPLACE INTO app_settings(key,value) VALUES('core_schema_version','16.18.0')").run()}catch(e){console.error('schema marker',e)}
+  // Never grant administrator privileges to an arbitrary first/oldest account.
+  // Provision an administrator through a deliberate, authenticated owner-only process.
+  try{await env.DB.prepare("INSERT OR REPLACE INTO app_settings(key,value) VALUES('first_admin_bootstrap_done','disabled-securely')").run()}catch(e){console.error('admin bootstrap guard',e)}
+  try{await env.DB.prepare("INSERT OR REPLACE INTO app_settings(key,value) VALUES('core_schema_version','16.64.0')").run()}catch(e){console.error('schema marker',e)}
 
  })();
  return coreSchemaReady;
