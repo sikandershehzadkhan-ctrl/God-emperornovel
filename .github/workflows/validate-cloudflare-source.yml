@@ -73,7 +73,7 @@ jobs:
           checks = {
               'legacy novels remain published when the publication column is added': "['publication_status',\"TEXT NOT NULL DEFAULT 'published'\"]" in source,
               'first-admin bootstrap cannot promote an arbitrary user': "UPDATE users SET role='admin',verified=1 WHERE id=?" not in source,
-              'the schema version matches this release': "core_schema_version','16.64.0" in source,
+              'the schema version matches this release': "core_schema_version','16.65.0" in source,
               'novel-request refunds use four SQL placeholders': "INSERT INTO ticket_ledger(user_id,delta,reason,reference) VALUES(?,?,?,?)" in source,
           }
           for label, ok in checks.items():
