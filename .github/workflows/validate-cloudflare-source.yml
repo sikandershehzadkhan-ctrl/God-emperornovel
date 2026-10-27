@@ -60,6 +60,9 @@ jobs:
       - name: Build application
         run: npm run build
 
+      - name: Validate Cloudflare Worker bundle without deploying
+        run: npx --yes wrangler@4 deploy --dry-run
+
       - name: Validate D1 migrations against SQLite
         shell: bash
         run: |
