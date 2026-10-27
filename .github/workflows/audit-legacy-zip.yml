@@ -1,0 +1,75 @@
+name: Imperial Novel Legacy ZIP Audit
+
+on:
+  push:
+    branches: [automation/safe-deploy-pipeline]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: imperial-novel-zip-audit
+  cancel-in-progress: true
+
+jobs:
+  inspect-legacy-zip:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Inspect the currently referenced legacy ZIP
+        shell: bash
+        run: |
+          set -euo pipefail
+          ZIP_FILE=$(find . -maxdepth 2 -type f -name 'Imperial-Novel-16.4.0-Chapter-Creation-Repair.zip' -print -quit)
+          REPORT="$RUNNER_TEMP/imperial-novel-zip-audit.txt"
+          if [ -z "$ZIP_FILE" ]; then
+            echo "FAIL: legacy ZIP is missing from repository." | tee "$REPORT"
+            mkdir -p audit-report
+            cp "$REPORT" audit-report/report.txt
+            exit 1
+          fi
+
+          {
+            echo "Imperial Novel legacy ZIP audit"
+            echo "Archive: $ZIP_FILE"
+            echo
+            echo "Archive metadata:"
+            ls -lh "$ZIP_FILE"
+            echo
+            echo "Top-level archive entries:"
+            unzip -Z1 "$ZIP_FILE" | awk -F/ 'NF {print $1}' | sort -u | head -80
+            echo
+            echo "Project manifests and Wrangler configs:"
+            unzip -Z1 "$ZIP_FILE" | grep -E '(^|/)(package\.json|package-lock\.json|wrangler\.toml|wrangler\.json|wrangler\.jsonc)$' || true
+          } | tee "$REPORT"
+
+          mkdir -p .audit-extract
+          unzip -q "$ZIP_FILE" -d .audit-extract
+          {
+            echo
+            echo "Package versions and scripts:"
+            find .audit-extract -name package.json -type f -print0 | while IFS= read -r -d '' f; do
+              echo "--- $f"
+              node -e 'const p=require(process.argv[1]); console.log(JSON.stringify({name:p.name,version:p.version,scripts:p.scripts},null,2))' "$PWD/$f" || true
+            done
+            echo
+            echo "Wrangler configurations (first 250 lines each):"
+            find .audit-extract -type f \( -name wrangler.toml -o -name wrangler.json -o -name wrangler.jsonc \) -print0 | while IFS= read -r -d '' f; do
+              echo "--- $f"
+              sed -n '1,250p' "$f"
+            done
+          } | tee -a "$REPORT"
+
+          mkdir -p audit-report
+          cp "$REPORT" audit-report/report.txt
+
+      - name: Upload audit report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: imperial-novel-legacy-zip-audit
+          path: audit-report/report.txt
+          if-no-files-found: warn
