@@ -1,9 +1,16 @@
 name: Deploy Imperial Novel to Cloudflare
 
 on:
-  push:
-    branches: [main]
   workflow_dispatch:
+    inputs:
+      confirm_production_deploy:
+        description: "Type true only after the production build and D1 migration review have passed"
+        required: true
+        default: "false"
+        type: choice
+        options:
+          - "false"
+          - "true"
 
 permissions:
   contents: read
@@ -14,17 +21,18 @@ concurrency:
 
 jobs:
   deploy:
+    if: ${{ inputs.confirm_production_deploy == 'true' }}
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: Refuse legacy ZIP deployment
+      - name: Refuse unverified source
         shell: bash
         run: |
           set -euo pipefail
           if [ ! -f package.json ]; then
-            echo "::error::Deployment blocked: application source is not present at repository root. The old workflow deployed a legacy ZIP, which is not verified. Restore the intended Imperial Novel source tree before deploying."
+            echo "::error::Deployment blocked: application source is not present at repository root."
             exit 1
           fi
           if [ ! -f wrangler.jsonc ] && [ ! -f wrangler.toml ] && [ ! -f wrangler.json ]; then
@@ -33,6 +41,10 @@ jobs:
           fi
           if [ ! -f package-lock.json ]; then
             echo "::error::Deployment blocked: package-lock.json is required for reproducible npm ci installs."
+            exit 1
+          fi
+          if ! node -e "const p=require('./package.json'); process.exit(p.scripts && p.scripts['check:cloudflare-readiness'] && p.scripts['build:cloudflare'] ? 0 : 1)"; then
+            echo "::error::Deployment blocked: required Cloudflare readiness/build scripts are missing."
             exit 1
           fi
 
