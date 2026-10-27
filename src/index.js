@@ -12,7 +12,7 @@ let coreSchemaReady=null;
 async function ensurePublishingSchema(env){
  const novelCols=[
   ['owner_user_id','INTEGER'],
-  ['publication_status',"TEXT NOT NULL DEFAULT 'draft'"],
+  ['publication_status',"TEXT NOT NULL DEFAULT 'published'"],
   ['rights_evidence',"TEXT DEFAULT ''"],
   ['rights_notes',"TEXT DEFAULT ''"],
   ['rights_verified_by','INTEGER'],
