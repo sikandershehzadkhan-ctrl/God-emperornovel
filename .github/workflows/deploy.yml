@@ -43,10 +43,28 @@ jobs:
             echo "::error::Deployment blocked: package-lock.json is required for reproducible npm ci installs."
             exit 1
           fi
-          if ! node -e "const p=require('./package.json'); process.exit(p.scripts && p.scripts['check:cloudflare-readiness'] && p.scripts['build:cloudflare'] ? 0 : 1)"; then
-            echo "::error::Deployment blocked: required Cloudflare readiness/build scripts are missing."
+          if ! node -e "const p=require('./package.json'); process.exit(p.scripts && p.scripts.build ? 0 : 1)"; then
+            echo "::error::Deployment blocked: package.json must define a build script."
             exit 1
           fi
+          if [ ! -f src/index.js ] || [ ! -d public ] || [ ! -d migrations ]; then
+            echo "::error::Deployment blocked: expected Worker source, public assets, or migrations directory is missing."
+            exit 1
+          fi
+          node --check src/index.js
+          if [ -f public/app.js ]; then node --check public/app.js; fi
+          python3 - <<'PY'
+          import glob, sqlite3, sys
+          db = sqlite3.connect(':memory:')
+          for path in sorted(glob.glob('migrations/*.sql')):
+              try:
+                  with open(path, encoding='utf-8') as f:
+                      db.executescript(f.read())
+              except Exception as exc:
+                  print(f'::error::D1 migration validation failed in {path}: {exc}')
+                  sys.exit(1)
+          print('All checked SQL migrations apply cleanly to a fresh SQLite database.')
+          PY
 
       - name: Set up Node.js
         uses: actions/setup-node@v4
@@ -58,10 +76,10 @@ jobs:
         run: npm ci
 
       - name: Check Cloudflare readiness
-        run: npm run check:cloudflare-readiness
+        run: npm run build
 
       - name: Build for Cloudflare
-        run: npm run build:cloudflare
+        run: npx wrangler deploy
 
       - name: Deploy verified source to Cloudflare
         run: npx wrangler deploy
