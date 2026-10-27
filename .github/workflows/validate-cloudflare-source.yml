@@ -4,8 +4,15 @@ on:
   pull_request:
     branches: [main]
   push:
-    branches:
-      - automation/safe-deploy-pipeline
+    branches: [main]
+    paths:
+      - 'src/**'
+      - 'public/**'
+      - 'migrations/**'
+      - 'package.json'
+      - 'package-lock.json'
+      - 'wrangler.toml'
+      - '.github/workflows/validate-cloudflare-source.yml'
   workflow_dispatch:
 
 permissions:
@@ -22,20 +29,19 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: Require deployable source at repository root
+      - name: Require Cloudflare Worker source
         shell: bash
         run: |
           set -euo pipefail
-          if [ ! -f package.json ]; then
-            echo "::error::No root package.json found. This repository currently stores the application in a legacy ZIP, so a reproducible source build cannot be verified."
-            echo "Do not deploy the legacy ZIP automatically. Upload the intended Imperial Novel source tree to the repository root, including package.json and the Cloudflare Wrangler configuration, then rerun validation."
-            exit 1
-          fi
-
-          if [ ! -f wrangler.jsonc ] && [ ! -f wrangler.toml ] && [ ! -f wrangler.json ]; then
-            echo "::error::No Wrangler configuration found at the repository root. Refusing to build or deploy an unverified project."
-            exit 1
-          fi
+          test -f package.json
+          test -f package-lock.json
+          test -f wrangler.toml
+          test -f src/index.js
+          test -f public/index.html
+          test -f public/app.js
+          test -d migrations
+          node -e "const p=require('./package.json'); if(!p.scripts?.build) process.exit(1)"
+          echo "Required Worker source, assets, migrations, and build script are present."
 
       - name: Set up Node.js
         uses: actions/setup-node@v4
@@ -46,11 +52,35 @@ jobs:
       - name: Install locked dependencies
         run: npm ci
 
-      - name: Check Cloudflare readiness
-        run: npm run check:cloudflare-readiness
+      - name: Check Worker and browser JavaScript syntax
+        run: |
+          node --check src/index.js
+          node --check public/app.js
 
-      - name: Build Cloudflare application
-        run: npm run build:cloudflare
+      - name: Build application
+        run: npm run build
+
+      - name: Validate D1 migrations against SQLite
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          import glob, sqlite3, sys
+          db = sqlite3.connect(':memory:')
+          paths = sorted(glob.glob('migrations/*.sql'))
+          if not paths:
+              print('::error::No SQL migrations found.')
+              sys.exit(1)
+          for path in paths:
+              try:
+                  with open(path, encoding='utf-8') as f:
+                      db.executescript(f.read())
+                  print(f'PASS {path}')
+              except Exception as exc:
+                  print(f'::error::Migration failed: {path}: {exc}')
+                  sys.exit(1)
+          print(f'PASS: {len(paths)} migrations applied to fresh SQLite.')
+          PY
 
       - name: Confirm validation only
-        run: echo "Build validation passed. This workflow does not deploy to production.";
+        run: echo "Validation passed. This workflow does not deploy or modify production D1.";
