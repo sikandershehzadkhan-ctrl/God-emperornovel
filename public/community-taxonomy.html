@@ -1,0 +1,20 @@
+<!doctype html><html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Community Taxonomy | Imperial Novel</title><link rel="stylesheet" href="/style.css"></head><body><main class="container" style="padding:24px;max-width:760px;margin:auto"><h1>Community Genres & Tags</h1><p>Suggest a genre or tag. Every submission is moderated before becoming part of Imperial Novel's shared taxonomy.</p><form id="f"><p><select id="type"><option value="genre">Genre</option><option value="tag">Tag</option></select></p><p><input id="name" maxlength="80" placeholder="Name" required style="width:100%"></p><p><textarea id="description" maxlength="500" placeholder="Optional description" style="width:100%;min-height:100px"></textarea></p><p><input id="creator_name" maxlength="80" placeholder="Creator name (optional)" style="width:100%"></p><button>Submit for review</button></form><pre id="out"></pre><p><a href="/genres">Genres</a> · <a href="/tags">Tags</a> · <a href="/">Home</a></p></main><script>
+const form=document.getElementById('f');
+const typeEl=document.getElementById('type');
+const nameEl=document.getElementById('name');
+const descriptionEl=document.getElementById('description');
+const creatorEl=document.getElementById('creator_name');
+const outEl=document.getElementById('out');
+form.addEventListener('submit',async e=>{
+ e.preventDefault();
+ const name=nameEl.value.trim().replace(/\s+/g,' ');
+ if(name.length<2||name.length>80){outEl.textContent='Please enter a name between 2 and 80 characters.';nameEl.focus();return;}
+ outEl.textContent='Submitting...';
+ try{
+  const r=await fetch('/api/taxonomy',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({type:typeEl.value,name,description:descriptionEl.value.trim(),creator_name:creatorEl.value.trim()})});
+  const data=await r.json();
+  outEl.textContent=JSON.stringify(data,null,2);
+  if(r.ok) form.reset();
+ }catch(err){outEl.textContent='Could not submit right now. Please try again.';}
+});
+</script></body></html>

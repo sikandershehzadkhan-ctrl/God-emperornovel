@@ -1,0 +1,21 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128" role="img" aria-labelledby="title desc">
+<title id="title">Imperial Novel crest</title><desc id="desc">A crown above an empty imperial throne framed by a violet black sun and turquoise celestial arcs.</desc>
+<defs>
+ <linearGradient id="metal" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#f5f1ff"/><stop offset=".48" stop-color="#a99bdf"/><stop offset="1" stop-color="#42c8ce"/></linearGradient>
+ <linearGradient id="violet" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#a78bfa"/><stop offset="1" stop-color="#4f46e5"/></linearGradient>
+</defs>
+<circle cx="64" cy="64" r="57" fill="#070b18" stroke="#42c8ce" stroke-opacity=".62" stroke-width="1.6"/>
+<circle cx="64" cy="64" r="48" fill="none" stroke="#8b5cf6" stroke-opacity=".72" stroke-width="1.4" stroke-dasharray="2 5"/>
+<circle cx="64" cy="51" r="27" fill="#20133b" stroke="url(#violet)" stroke-width="1.5"/>
+<circle cx="64" cy="51" r="20" fill="#090b17"/>
+<path d="M29 34l9 8M99 34l-9 8M25 61h10M93 61h10M39 17l5 11M89 17l-5 11" stroke="#42c8ce" stroke-width="1.8" stroke-linecap="round" opacity=".9"/>
+<path d="M39 51l5-18 13 11 7-22 7 22 13-11 5 18z" fill="url(#metal)" stroke="#070b18" stroke-width="2" stroke-linejoin="round"/>
+<circle cx="64" cy="22" r="3.2" fill="#42c8ce"/>
+<path d="M43 58h42v24H43z" fill="#15162b" stroke="url(#metal)" stroke-width="2"/>
+<path d="M37 83V61q0-5 6-5h5v34h-5q-6 0-6-7zM91 83V61q0-5-6-5h-5v34h5q6 0 6-7z" fill="#272044" stroke="#a99bdf" stroke-width="2"/>
+<path d="M47 64h34v15H47z" fill="#0a0d1b" stroke="#42c8ce" stroke-opacity=".8" stroke-width="1.4"/>
+<path d="M42 91h44l8 8H34z" fill="url(#metal)"/>
+<path d="M48 99h32l5 8H43z" fill="#20133b" stroke="#8b5cf6" stroke-width="1.4"/>
+<path d="M24 108h80" stroke="#42c8ce" stroke-width="2" stroke-linecap="round"/>
+<circle cx="64" cy="92" r="3" fill="#42c8ce"/>
+</svg>

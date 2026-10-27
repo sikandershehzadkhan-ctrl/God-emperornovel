@@ -1,0 +1,23 @@
+{
+  "name": "Imperial Novel",
+  "short_name": "Imperial Novel",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#fbfcff",
+  "theme_color": "#7651d8",
+  "description": "Imperial Novel: novels, fanfiction and connected worlds.",
+  "icons": [
+    {
+      "src": "/imperial-crown-icon.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/imperial-crown-icon.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ]
+}

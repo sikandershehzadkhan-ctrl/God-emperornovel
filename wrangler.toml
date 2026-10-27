@@ -1,5 +1,26 @@
 name = "god-emperornovel"
-compatibility_date = "2026-09-07"
+main = "src/index.js"
+compatibility_date = "2026-09-08"
 
 [assets]
-directory = "./"
+directory = "./public"
+binding = "ASSETS"
+run_worker_first = ["/api/*", "/novel/*", "/read/*", "/fandom/*"]
+
+[[d1_databases]]
+binding = "DB"
+database_name = "god-emperornovel-db"
+database_id = "78493557-1142-45e6-96aa-2ba9f67e3be0"
+migrations_dir = "migrations"
+
+[vars]
+SITE_NAME = "Imperial Novel"
+APP_VERSION = "16.63.0"
+OPENAI_MODEL = "gpt-5-mini"
+OPENAI_BASE_URL = "https://api.openai.com/v1/responses"
+EASYPaisa_NUMBER = "03154329984"
+CONNECTOR_HOST_ALLOWLIST = ""
+PAYMENT_WEBHOOK_SECRET = ""
+
+[triggers]
+crons = ["*/15 * * * *", "0 * * * *", "0 3 * * *"]
