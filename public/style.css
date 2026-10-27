@@ -422,3 +422,63 @@ html[data-theme="dark"] .cyanAccent{color:var(--cyan)}
 .menuDrawer.is-open{transform:translateX(0);visibility:visible}.menuDrawerHead{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:7px 3px 22px;border-bottom:1px solid rgba(34,211,238,.22)}.menuDrawerBrand{display:flex;align-items:center;gap:10px;text-decoration:none!important;color:var(--imperial-purple)!important;font-size:25px}.menuDrawerBrand span{font-size:14px;letter-spacing:.13em;color:#fff}.menuDrawerBrand small{display:block;margin-top:5px;font-size:9px;letter-spacing:.2em;color:var(--imperial-cyan)}.menuClose{width:38px;height:38px;border:1px solid rgba(34,211,238,.5);border-radius:11px;background:#090b12;color:var(--imperial-cyan);font-size:26px;cursor:pointer}.menuDrawerLabel{padding:22px 9px 9px;color:var(--imperial-cyan);font-size:10px;letter-spacing:.2em}.menuDrawer>a:not(.menuDrawerBrand){display:flex;align-items:center;gap:14px;padding:13px 12px;margin:3px 0;border:1px solid transparent;border-radius:11px;color:#e9e4f5;text-decoration:none;font-size:14px}.menuDrawer>a:not(.menuDrawerBrand):hover,.menuDrawer>a:not(.menuDrawerBrand):focus-visible{outline:none;border-color:rgba(168,85,247,.4);background:linear-gradient(90deg,rgba(168,85,247,.18),rgba(34,211,238,.07));color:var(--imperial-cyan)}.menuDrawer>a:not(.menuDrawerBrand)::first-letter{color:var(--imperial-purple)}.menuDrawerFoot{margin:24px 8px 0;padding:17px 6px 4px;border-top:1px solid rgba(168,85,247,.25);color:#9c8bb8;font-size:11px;letter-spacing:.17em;text-align:center}.menu-open{overflow:hidden}
 @media(max-width:760px){.menuToggle{width:39px;height:39px}.nav{gap:7px}.navright{gap:5px}.navright .iconbtn{padding:8px}.navright .iconImageBtn{width:38px;height:38px}.navlinks{display:none!important}.brandText small{font-size:9px}}
 @media(prefers-reduced-motion:reduce){.menuToggle span,.menuDrawer{transition:none!important}}
+
+
+/* Imperial Novel 16.65.0: Modern Smart Imperial visual system */
+:root{
+ --bg:#080b16;--bg2:#0d1222;--panel:#11182a;--panel2:#151d32;--panel3:#1b2340;
+ --text:#f3f5ff;--muted:#a4aec8;--line:#29334d;--silver:#46516e;--silver2:#252f49;
+ --violet:#9276ff;--violet2:#b4a4ff;--violet3:#211d42;--violet4:#c5b7ff;
+ --good:#4ad5b0;--danger:#ff718a;--shadow:0 22px 70px rgba(0,0,0,.28);--shadowSoft:0 8px 28px rgba(0,0,0,.18);
+}
+html{color-scheme:dark;scroll-padding-top:90px}
+body{background:radial-gradient(900px 480px at 5% -15%,rgba(115,78,255,.20),transparent 65%),radial-gradient(750px 460px at 100% 0,rgba(35,105,205,.13),transparent 62%),linear-gradient(180deg,#080b16,#0c1120 55%,#090d18);color:var(--text)}
+body:before{background-image:linear-gradient(rgba(153,133,255,.035) 1px,transparent 1px),linear-gradient(90deg,rgba(153,133,255,.035) 1px,transparent 1px);opacity:.42}
+.top{background:rgba(8,11,22,.88);border-bottom-color:rgba(69,82,116,.55)}
+.brand .mark{background:linear-gradient(145deg,#222444,#10172b);border-color:#4d4d82;color:#d8d0ff;box-shadow:0 7px 25px rgba(114,86,255,.15)}
+.brand b{color:#f4f3ff}.brand small{color:#8f9bb8}
+.navlinks a{color:#a7b0c8}.navlinks a:hover,.navlinks a.active{background:#211d42;color:#d2c7ff}
+.iconbtn,.ghost,.search{background:#11182a;border-color:#2d3854;color:#d3daee;box-shadow:none}
+.iconbtn:hover,.ghost:hover{background:#1b2140;border-color:#7770c4;color:#fff}
+.search input{color:#f3f5ff}.search input::placeholder{color:#7f8aa7}
+.pill{background:#121a2d;border-color:#34405e;color:#bdc7df}.pill.gold,.pill.purple{background:#211d42;border-color:#51458b;color:#d5caff}
+.page{color:var(--text)}
+.hero{border-color:#39405e;background-color:#11182a;background-image:linear-gradient(90deg,rgba(8,11,22,.98) 0%,rgba(8,11,22,.88) 38%,rgba(8,11,22,.48) 67%,rgba(8,11,22,.16) 100%),url('/imperial-hero.png');box-shadow:0 24px 80px rgba(0,0,0,.28)}
+.hero:after{background:linear-gradient(transparent,rgba(8,11,22,.48))}
+.hero h1,.sectionHead h2,.title h1,.unlockBanner h2,.novelInfo h1,.readerBox h1,.panel h2,.side h3{color:#f2f0ff}
+.hero p,.sectionHead p,.sub{color:#b3bdd4}.eyebrow{color:#b8a8ff}
+.primary{border-color:#8875ff;background:linear-gradient(135deg,#8c72ff,#4d63d8);color:#fff;box-shadow:0 12px 30px rgba(86,78,219,.25)}
+.primary:hover{filter:brightness(1.12)}.secondary{background:#151d32;border-color:#3b4664;color:#e2e8fa}.secondary:hover{background:#202642;border-color:#8c7de0;color:#fff}
+.quickCard,.card,.unlockBanner,.novelHero,.side,.chapter,.readerBox,.accountMenu,.panel,.stat{background:linear-gradient(145deg,rgba(20,28,48,.97),rgba(13,19,34,.98));border-color:#2a3550;box-shadow:var(--shadowSoft)}
+.quickCard>span{background:#242044;color:#c9bdff}.quickCard b,.cardTitle,.stat b,.metric b{color:#f0f2ff}.quickCard small,.muted,.meta,.statline{color:#a3aec8}
+.quickCard:hover,.card:hover,.chapter:hover{border-color:#655bb4;background:#191e37;box-shadow:0 18px 38px rgba(0,0,0,.26)}
+.unlockBanner{background:linear-gradient(115deg,rgba(31,26,64,.92),rgba(15,25,45,.98));border-color:#49427b}
+.sectionHead{align-items:end}.grid{gap:15px}
+.cover{background:#11182a}.cover img{background:#11182a}
+.side a,.accountMenu a{color:#a9b4cd}.side a:hover,.side a.active,.accountMenu a.active,.accountMenu a:hover{background:#242044;color:#d3c7ff}
+.toolbar select,.field input,.field textarea,.field select{background:#0e1526;color:#edf1ff;border-color:#34405c}
+.toolbar select:focus,.field input:focus,.field textarea:focus,.field select:focus{border-color:#8b7bff;box-shadow:0 0 0 3px rgba(139,123,255,.14)}
+.novelHero{background:radial-gradient(500px 250px at 0 0,rgba(104,80,210,.15),transparent 70%),linear-gradient(135deg,#141b30,#0d1425)}
+.novelCover{border-color:#3a4563}.stats .stat{background:#11182a;border-color:#303b57}
+.tabs{border-color:#2b3550}.tabs a{color:#9aa6c1}.tabs a.active{color:#d0c4ff;border-color:#9a83ff}
+.chapterNo{color:#c6b8ff}.lock{color:#a8b3ca}
+.readerBox{background:#111827}.readerContent{color:#e0e6f5}
+.metric{background:#11182a;border-color:#2d3854}.metric b{color:#f2f3ff}
+.field label{color:#bac4da}
+.notice{background:#17253a;border-color:#31556a;color:#aee8df}
+.empty{border-color:#3a4561;color:#a4afc8;background:rgba(15,22,39,.7)}
+.footer{border-color:#2b3550;color:#9ba6c0}
+.adminLink{color:#d4c8ff!important;background:#242044!important}
+.mobileNav{background:rgba(8,11,22,.94);border-color:#29334d;box-shadow:0 -8px 25px rgba(0,0,0,.24)}
+.mobileNav a{color:#a0abc5}.mobileNav a.active{color:#d6ccff;background:#211d42}
+input,textarea,select{accent-color:#9276ff}
+::selection{background:#51419a;color:white}
+@media(max-width:760px){
+ .hero{background-image:linear-gradient(180deg,rgba(8,11,22,.22) 0%,rgba(8,11,22,.70) 42%,rgba(8,11,22,.99) 76%),url('/imperial-hero.png');background-position:70% 0%;border-color:#343d5c}
+ .hero:after{background:linear-gradient(transparent,rgba(8,11,22,.72))}
+ .heroInner{padding-top:165px}
+ .quickCard{background:linear-gradient(145deg,#151d32,#101728)}
+ .card{background:#11182a}
+ .wrap{width:min(var(--max),calc(100% - 22px))}
+}
+@media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}*,*:before,*:after{animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important}}
