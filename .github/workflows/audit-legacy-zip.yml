@@ -96,3 +96,20 @@ jobs:
           name: imperial-novel-archive-audit
           path: audit-report/report.txt
           if-no-files-found: warn
+
+      - name: Upload candidate application source for independent review
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: imperial-novel-candidate-source
+          path: |
+            .audit-extract/src/**
+            .audit-extract/public/**
+            .audit-extract/migrations/**
+            .audit-extract/package.json
+            .audit-extract/package-lock.json
+            .audit-extract/wrangler.toml
+            .audit-extract/README.md
+            .audit-extract/UPDATE-16.64.0-MANIFEST.txt
+          if-no-files-found: warn
+          compression-level: 6
