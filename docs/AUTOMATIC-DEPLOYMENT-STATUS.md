@@ -1,24 +1,25 @@
 # Imperial Novel automatic deployment: current state
 
 ## Safety rule
-Do not deploy the legacy ZIP to the production Worker until its contents and database bindings have been verified. The production Worker is `god-emperornovel`; production D1 is `god-emperornovel-db`.
+Do not deploy an unverified legacy ZIP to the production Worker. Production identifiers are Worker `god-emperornovel` and D1 database `god-emperornovel-db`.
 
-## What is in this branch
-- `.github/workflows/validate-cloudflare-source.yml`: validation-only workflow. It requires a root-level application source tree and then runs the Cloudflare readiness check and build. It never deploys.
-- `.github/workflows/audit-legacy-zip.yml`: non-deploying inspection of the old `Imperial-Novel-16.4.0-Chapter-Creation-Repair.zip`, reporting package manifests and Wrangler configuration.
-- Existing `.github/workflows/deploy.yml` on `main` still unpacks the old 16.4.0 ZIP and deploys whatever Wrangler project it finds. This is not a safe source-of-truth workflow and should be replaced only after the intended source has been confirmed.
+## Confirmed repository findings
+- The repository contains multiple historical release ZIPs, including `Imperial-Novel-16.60.0-IMPERIAL-ASSETS-AND-CATALOG-UPDATE-1.zip` and `Imperial-Novel-16.64.0-THREE-LINE-MENU-DESIGN-UPDATE.zip`.
+- The repository root does **not** contain the actual application `package.json` or `package-lock.json`. Its root `index.html` is an older placeholder page, and `wrangler.toml` points static assets at the repository root. That is not sufficient proof of the intended current application source.
+- No GitHub Releases were found in the repository at the time of this audit.
+- Several old workflows extracted historical ZIPs and ran Wrangler without a source-validation or build gate. Those seven obsolete workflows have been removed from `main`: the 16.5.0, 16.16.0, 16.16.1, 16.16.2, 16.16.3, 16.17.0 and 16.18.0 workflows.
+- The remaining production workflow `.github/workflows/deploy.yml` fails closed unless a root application manifest, lockfile and Wrangler configuration exist, then runs the Cloudflare readiness check and build before it can deploy.
+- A main-branch push triggered some legacy workflows before their removal took effect. The observed 16.17.0 and 16.18.0 deploy steps failed; the 16.16.1 build failed at dependency installation. No successful legacy Cloudflare deploy was observed in those runs. Continue checking run history after workflow cleanup.
 
-## Verification result so far
-The source-validation workflow ran and failed at its intentional guard because there is no root-level `package.json`. Dependency installation and build were skipped. This is a successful safety catch, not a successful application build.
+## Verification result
+The source-validation workflow intentionally stopped because the root `package.json` is missing. This is a safety guard, not a successful application build.
 
-## Required next steps
-1. Retrieve the audit artifact from the GitHub Actions run for `Imperial Novel Legacy ZIP Audit` and inspect its contents.
-2. Identify the intended, current Imperial Novel release source. Do not assume a recent local ZIP exists in this repository.
-3. Ensure the source tree has `package.json`, a lockfile, Cloudflare build scripts, Wrangler config, and D1 migrations consistent with SQLite/D1.
-4. Configure an isolated staging Worker (suggested name: `imperial-novel-staging`) and a separate staging D1 database. Do not bind production D1 to staging.
-5. Add GitHub Actions secrets for a narrowly scoped Cloudflare API token and account ID. Never put credentials in repository files.
-6. Build and deploy to staging, run smoke tests, and confirm the staging site is healthy.
-7. Only after manual review, configure production deployment with explicit environment separation and post-deploy health checks.
+## Next engineering steps (handled by the maintainer)
+1. Recover and inspect the intended current source tree from the latest release archive.
+2. Confirm the archive's framework, entrypoint, build scripts, Wrangler config and assets layout.
+3. Verify all migrations are D1/SQLite-compatible and do not silently target production.
+4. Build and smoke-test from the real source before any production deployment. Prefer a separate staging Worker and staging D1 database if credentials and account access permit.
+5. Verify the public site after deployment. Never claim visual changes are live based solely on a successful ZIP extraction.
 
 ## Current status
-No staging or production deployment is performed by the new workflows. Automatic production deployment is not yet enabled.
+The legacy automatic deployment paths have been removed and the remaining deploy path has a source/build gate. The correct application source still needs to be restored to the repository root. No verified visual website update has been deployed by this work, and no production D1 migration has been run.
