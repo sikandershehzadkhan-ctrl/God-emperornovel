@@ -63,6 +63,8 @@ jobs:
             echo "===== $label (read-only) ====="
             npx --yes wrangler@4 d1 execute god-emperornovel-db --remote --command "$sql"
           }
+          echo "Checking Cloudflare token identity before running read-only queries..."
+          npx --yes wrangler@4 whoami
           run_query "Migration history table presence" "SELECT name FROM sqlite_master WHERE type='table' AND name IN ('d1_migrations','app_settings','users','novels','chapters','donations','ticket_ledger','content_rights') ORDER BY name;"
           run_query "Publication status counts" "SELECT COALESCE(publication_status,'<NULL>') AS publication_status, COUNT(*) AS novel_count FROM novels GROUP BY publication_status ORDER BY publication_status;"
           run_query "Chapter publication status counts" "SELECT COALESCE(publication_status,'<NULL>') AS publication_status, COUNT(*) AS chapter_count FROM chapters GROUP BY publication_status ORDER BY publication_status;"
