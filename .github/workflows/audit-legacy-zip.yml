@@ -69,8 +69,21 @@ jobs:
             echo "Database migration file list:"
             find .audit-extract -type f \( -path '*/migrations/*' -o -path '*/migrations/d1/*' \) -print | sort | head -300
             echo
-            echo "Likely application entrypoints:"
-            find .audit-extract -maxdepth 5 -type f \( -name 'vite.config.*' -o -name 'server.ts' -o -name 'entry.server.*' -o -name 'worker.*' -o -name 'index.html' \) -print | sort | head -200
+            echo "Source file inventory (first 250 paths):"
+            find .audit-extract -maxdepth 5 -type f | sort | head -250
+            echo
+            echo "Worker/API route and security markers:"
+            grep -nE 'fetch\(|/api/|/novel/|/read/|/fandom/|TODO|FIXME|EASYPaisa|payment|admin|auth|CORS|Access-Control|verify|rights' .audit-extract/src/index.js .audit-extract/public/app.js | head -250 || true
+            echo
+            echo "Migration SQL headers:"
+            for f in $(find .audit-extract/migrations -type f -name '*.sql' | sort); do
+              echo "--- $f"
+              sed -n '1,35p' "$f"
+            done
+            echo
+            echo "Build validation:"
+            (cd .audit-extract && npm run build)
+            echo "PASS: package build script completed."
           } | tee -a "$REPORT"
 
           mkdir -p audit-report
