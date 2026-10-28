@@ -84,7 +84,7 @@ jobs:
           health_json="$(curl --fail --silent --show-error --max-time 20 "$site/api/health")"
           printf '%s\\n' "$health_json"
           live_version="$(printf '%s' "$health_json" | node -e "let s='';process.stdin.on('data',d=>s+=d).on('end',()=>{try{console.log(JSON.parse(s).version||'unknown')}catch{console.log('unknown')}})")"
-          repo_version="$(sed -n 's/^[[:space:]]*APP_VERSION = "\\([^"]*\\)".*/\\1/p' wrangler.toml | head -n 1)"
+          repo_version="$(grep -E '^[[:space:]]*APP_VERSION[[:space:]]*=' wrangler.toml | head -n 1 | cut -d '"' -f 2)"
           echo "Live Worker version: $live_version"
           echo "Repository target version: ${repo_version:-unknown}"
           if [ -n "$repo_version" ] && [ "$live_version" != "$repo_version" ]; then
