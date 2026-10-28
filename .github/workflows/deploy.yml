@@ -125,6 +125,6 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          response="$(curl --fail --silent --show-error --max-time 25 https://god-emperornovel.sikandershehzadkhan.workers.dev/api/health)"
+          response="$(curl --fail --silent --show-error --max-time 25 -H "Cache-Control: no-cache" "https://god-emperornovel.sikandershehzadkhan.workers.dev/api/health?verify=$(date +%s)")"
           printf '%s\n' "$response"
-          printf '%s' "$response" | node -e 'let s="";process.stdin.on("data",d=>s+=d).on("end",()=>{let d;try{d=JSON.parse(s)}catch{console.error("Health endpoint did not return JSON");process.exit(1)};if(d.ok===false||d.database===false){console.error("Live health check reported an unhealthy Worker/database");process.exit(1)};console.log("Live health endpoint returned valid JSON.")})'
+          printf '%s' "$response" | node -e 'let s="";process.stdin.on("data",d=>s+=d).on("end",()=>{let d;try{d=JSON.parse(s)}catch{console.error("Health endpoint did not return JSON");process.exit(1)};if(d.ok!==true||d.database!==true||d.version!=="17.10.0"){console.error("Live Worker version/database mismatch: "+JSON.stringify({version:d.version,database:d.database}));process.exit(1)};console.log("Live Worker release 17.10.0 and database health verified.")})'
