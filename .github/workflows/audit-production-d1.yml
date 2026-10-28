@@ -87,6 +87,7 @@ jobs:
             echo "===== $label (read-only) ====="
             npx --yes wrangler@4 d1 execute god-emperornovel-db --remote --command "$sql"
           }
+          run_query "Complete production table inventory" "SELECT name FROM sqlite_master WHERE type='table' AND name NOT LIKE 'sqlite_%' ORDER BY name;"
           run_query "Migration history table presence" "SELECT name FROM sqlite_master WHERE type='table' AND name IN ('d1_migrations','app_settings','users','novels','chapters','donations','ticket_ledger','content_rights') ORDER BY name;"
           migration_table_check="$(npx --yes wrangler@4 d1 execute god-emperornovel-db --remote --command "SELECT CASE WHEN EXISTS (SELECT 1 FROM sqlite_master WHERE type='table' AND name='d1_migrations') THEN 'present' ELSE 'absent' END AS migration_history_table;" 2>&1)"
           printf '%s\n' "$migration_table_check"
@@ -99,6 +100,9 @@ jobs:
           run_query "Chapter publication status counts" "SELECT COALESCE(publication_status,'<NULL>') AS publication_status, COUNT(*) AS chapter_count FROM chapters GROUP BY publication_status ORDER BY publication_status;"
           run_query "Safe aggregate inventory" "SELECT (SELECT COUNT(*) FROM users) AS users_total, (SELECT COUNT(*) FROM users WHERE role='admin' AND banned=0) AS active_admins, (SELECT COUNT(*) FROM novels) AS novels_total, (SELECT COUNT(*) FROM chapters) AS chapters_total, (SELECT COUNT(*) FROM donations WHERE status='pending') AS pending_donations, (SELECT COUNT(*) FROM novel_requests WHERE status='pending') AS pending_novel_requests;"
           run_query "Schema version marker" "SELECT key,value FROM app_settings WHERE key IN ('core_schema_version','first_admin_bootstrap_done') ORDER BY key;"
+          run_query "User account schema (columns only)" "PRAGMA table_info(users);"
+          run_query "Chapter schema (columns only)" "PRAGMA table_info(chapters);"
+          run_query "Application settings schema (columns only)" "PRAGMA table_info(app_settings);"
           run_query "Publication and rights columns" "PRAGMA table_info(novels);"
           run_query "Published catalog rights readiness (aggregate only)" "SELECT COUNT(*) AS published_novels, SUM(CASE WHEN COALESCE(rights_status,'') NOT IN ('original','licensed','authorized','public_domain','cc') THEN 1 ELSE 0 END) AS unusual_rights_status, SUM(CASE WHEN COALESCE(rights_evidence,'')='' THEN 1 ELSE 0 END) AS missing_rights_evidence, SUM(CASE WHEN owner_user_id IS NULL THEN 1 ELSE 0 END) AS missing_owner FROM novels WHERE publication_status='published';"
           run_query "Published chapter integrity (aggregate only)" "SELECT COUNT(*) AS published_chapters, SUM(CASE WHEN n.id IS NULL THEN 1 ELSE 0 END) AS chapters_without_novel FROM chapters c LEFT JOIN novels n ON n.id=c.novel_id WHERE COALESCE(c.publication_status,'published')='published';"
