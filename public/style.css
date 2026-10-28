@@ -655,3 +655,43 @@ html[data-theme="dark"] body.adminDashboardPage .adminNav button{background:#151
 html[data-theme="dark"] body.adminDashboardPage .adminTable th{color:#b8b4ce!important}html[data-theme="dark"] body.adminDashboardPage .adminTable td{color:#e4e0f3!important}
 @media(max-width:700px){html{scroll-behavior:auto}body:before{display:none}.top{backdrop-filter:none;-webkit-backdrop-filter:none;background:var(--panel)}.menuDrawer{backdrop-filter:none;-webkit-backdrop-filter:none}.hero{min-height:0}.heroInner{padding:34px 24px}.hero h1{font-size:clamp(38px,11vw,58px)}.quickGrid{grid-template-columns:repeat(2,minmax(0,1fr));gap:9px}.quickCard{padding:11px}.grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}.wrap{width:min(var(--max),calc(100% - 24px))}.unlockBanner{align-items:flex-start;flex-direction:column}}
 @media(prefers-reduced-motion:reduce){*,*::before,*::after{scroll-behavior:auto!important;animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important}}
+
+/* Imperial Novel 17.1.0: reader themes and personal reading controls */
+.readerPage{min-height:100vh;background:#f5f3fb;color:#262238;transition:background-color .15s ease,color .15s ease}
+.readerPage .readerArticle{background:#fff;color:#39354a;border-color:#e4def2}
+.readerPage .readerArticle h1{color:#28223e}
+.readerPage .readerContent{color:inherit}
+.readerPage .readerBar{background:rgba(255,255,255,.96);border-color:#e4def2}
+.readerPage .readerBook b{color:#302c48}
+.readerPage[data-reader-theme="dark"]{background:#080a14;color:#f1effb}
+.readerPage[data-reader-theme="dark"] .readerBar{background:rgba(10,11,23,.97);border-color:rgba(173,158,232,.2)}
+.readerPage[data-reader-theme="dark"] .readerArticle,.readerPage[data-reader-theme="dark"] .readerFooterCard{background:#111426;color:#e4e0f3;border-color:rgba(173,158,232,.2);box-shadow:none}
+.readerPage[data-reader-theme="dark"] .readerArticle h1,.readerPage[data-reader-theme="dark"] .readerFooterCard h3,.readerPage[data-reader-theme="dark"] .readerBook b{color:#f4f0ff}
+.readerPage[data-reader-theme="dark"] .readerBook span,.readerPage[data-reader-theme="dark"] .readerProgressText{color:#aaa7c1}
+.readerPage[data-reader-theme="dark"] .readerTool{background:#15182c;color:#e7e1fa;border-color:#383451}
+.readerPage[data-reader-theme="midnight"]{background:#050914;color:#dbe7f7}
+.readerPage[data-reader-theme="midnight"] .readerBar{background:#070d1a;border-color:#1d304a}
+.readerPage[data-reader-theme="midnight"] .readerArticle,.readerPage[data-reader-theme="midnight"] .readerFooterCard{background:#0b1220;color:#cddcf0;border-color:#20334e;box-shadow:none}
+.readerPage[data-reader-theme="midnight"] .readerArticle h1,.readerPage[data-reader-theme="midnight"] .readerFooterCard h3,.readerPage[data-reader-theme="midnight"] .readerBook b{color:#eff6ff}
+.readerPage[data-reader-theme="sepia"]{background:#efe3cc;color:#51412e}
+.readerPage[data-reader-theme="sepia"] .readerBar{background:rgba(248,239,221,.97);border-color:#d9c6a4}
+.readerPage[data-reader-theme="sepia"] .readerArticle,.readerPage[data-reader-theme="sepia"] .readerFooterCard{background:#fbf3e4;color:#51412e;border-color:#e0cfaf;box-shadow:none}
+.readerPage[data-reader-theme="sepia"] .readerArticle h1,.readerPage[data-reader-theme="sepia"] .readerFooterCard h3,.readerPage[data-reader-theme="sepia"] .readerBook b{color:#392a1b}
+.readerPage[data-reader-theme="imperial"]{background:#eee9fb;color:#35274e}
+.readerPage[data-reader-theme="imperial"] .readerBar{background:rgba(247,243,255,.97);border-color:#d6c9f2}
+.readerPage[data-reader-theme="imperial"] .readerArticle,.readerPage[data-reader-theme="imperial"] .readerFooterCard{background:#fff;color:#35274e;border-color:#d6c9f2;box-shadow:0 16px 45px rgba(63,40,112,.08)}
+.readerPage[data-reader-theme="imperial"] .readerArticle h1,.readerPage[data-reader-theme="imperial"] .readerFooterCard h3,.readerPage[data-reader-theme="imperial"] .readerBook b{color:#281c43}
+.readerPage[data-reader-theme="cosmic"]{background:#090a1d;color:#e5e4ff}
+.readerPage[data-reader-theme="cosmic"] .readerBar{background:rgba(12,13,33,.97);border-color:rgba(91,211,220,.2)}
+.readerPage[data-reader-theme="cosmic"] .readerArticle,.readerPage[data-reader-theme="cosmic"] .readerFooterCard{background:linear-gradient(145deg,#17122f,#101a30);color:#d8d9f6;border-color:rgba(91,211,220,.22);box-shadow:none}
+.readerPage[data-reader-theme="cosmic"] .readerArticle h1,.readerPage[data-reader-theme="cosmic"] .readerFooterCard h3,.readerPage[data-reader-theme="cosmic"] .readerBook b{color:#f6f1ff}
+.readerPage[data-reader-theme="midnight"] .readerTool,.readerPage[data-reader-theme="cosmic"] .readerTool{background:#101a2b;color:#dff7ff;border-color:#29465a}
+.readerPrefs{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;padding:14px;border-bottom:1px solid var(--line)}
+.readerPrefs label{display:flex;flex-direction:column;gap:6px;font-size:11px;font-weight:800;color:var(--muted)}
+.readerPrefs select{width:100%;min-width:0;border:1px solid var(--line);border-radius:9px;padding:9px;background:var(--panel);color:var(--text)}
+.chapterDrawer{background:var(--panel);color:var(--text);border-bottom:1px solid var(--line)}
+.readerChapterItem{color:var(--text)}
+.readerChapterItem.current{background:var(--violet3);border-color:var(--violet2)}
+.readerPage[data-reader-theme="dark"] .readerPrefs select,.readerPage[data-reader-theme="midnight"] .readerPrefs select,.readerPage[data-reader-theme="cosmic"] .readerPrefs select{background:#0c1020;color:#e7eaff;border-color:#343451}
+@media(max-width:520px){.readerPrefs{grid-template-columns:1fr;gap:8px}.readerPrefs label{display:grid;grid-template-columns:100px minmax(0,1fr);align-items:center}.readerTools{gap:3px}.readerTool{min-width:31px;padding:0 6px}}
+@media(prefers-reduced-motion:reduce){.readerPage{transition:none}}
