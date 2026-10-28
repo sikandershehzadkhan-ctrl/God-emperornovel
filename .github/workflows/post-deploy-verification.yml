@@ -19,9 +19,26 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          response="$(curl --fail --silent --show-error --max-time 20 --retry 10 --retry-delay 3 "https://god-emperornovel.sikandershehzadkhan.workers.dev/api/health?verify=$(date +%s)")"
-          printf '%s\n' "$response"
-          printf '%s' "$response" | node -e 'let s="";process.stdin.on("data",d=>s+=d).on("end",()=>{const h=JSON.parse(s);if(h.ok!==true||h.database!==true||h.version!=="17.7.0"){console.error("::error::Unexpected live health payload or version");process.exit(1)}console.log("Live Worker health and version verified.")})'
+          base="https://god-emperornovel.sikandershehzadkhan.workers.dev/api/health"
+          stamp="$(date +%s)"
+          verified=false
+          response=""
+          for attempt in $(seq 1 24); do
+            response="$(curl --fail --silent --show-error --max-time 20 "$base?verify=$stamp-$attempt" 2>/dev/null || true)"
+            if [ -n "$response" ] && printf '%s' "$response" | node -e 'let s="";process.stdin.on("data",d=>s+=d).on("end",()=>{try{const h=JSON.parse(s);process.exit(h.ok===true&&h.database===true&&h.version==="17.7.0"?0:1)}catch{process.exit(1)}})' 2>/dev/null; then
+              printf '%s\n' "$response"
+              echo "Live Worker health and version verified on attempt $attempt."
+              verified=true
+              break
+            fi
+            echo "Waiting for Cloudflare edge to serve release 17.7.0 (attempt $attempt/24)."
+            sleep 5
+          done
+          if [ "$verified" != true ]; then
+            echo "::error::The Worker did not serve healthy release 17.7.0 within 120 seconds."
+            printf '%s\n' "$response"
+            exit 1
+          fi
 
       - name: Verify live homepage and versioned frontend assets
         shell: bash
