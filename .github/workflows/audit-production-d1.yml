@@ -73,6 +73,17 @@ jobs:
           echo "Checking token validity and account access with Wrangler (post-secret-update verification)..."
           npx --yes wrangler@4 whoami
 
+      - name: Check public production Worker health
+        shell: bash
+        run: |
+          set -euo pipefail
+          site="https://god-emperornovel.sikandershehzadkhan.workers.dev"
+          echo "===== Public home response ====="
+          curl --fail --silent --show-error --max-time 20 -o /dev/null -w "HTTP %{http_code}; content-type %{content_type}; total %{time_total}s\\n" "$site/"
+          echo "===== Public API health response ====="
+          curl --fail --silent --show-error --max-time 20 "$site/api/health"
+          echo
+
       - name: Read-only database inventory
         shell: bash
         env:
