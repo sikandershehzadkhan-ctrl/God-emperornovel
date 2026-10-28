@@ -30,13 +30,13 @@ jobs:
           base="https://god-emperornovel.sikandershehzadkhan.workers.dev"
           stamp="$(date +%s)"
           html="$(curl --fail --silent --show-error --max-time 20 -H "Cache-Control: no-cache" "$base/?verify=$stamp")"
-          printf '%s' "$html" | grep -Fq '/app.js?v=16.68.0'
-          printf '%s' "$html" | grep -Fq '/style.css?v=16.68.0'
+          printf '%s' "$html" | grep -F '/app.js?v=16.68.0' >/dev/null
+          printf '%s' "$html" | grep -F '/style.css?v=16.68.0' >/dev/null
           js="$(curl --fail --silent --show-error --max-time 20 "$base/app.js?v=16.68.0&verify=$stamp")"
           css="$(curl --fail --silent --show-error --max-time 20 "$base/style.css?v=16.68.0&verify=$stamp")"
-          printf '%s' "$js" | grep -Fq 'Worlds beyond'
-          printf '%s' "$js" | grep -Fq 'Trend Factory'
-          printf '%s' "$css" | grep -Fq 'Trend Factory editorial intelligence workspace'
+          printf '%s' "$js" | grep -F 'Worlds beyond' >/dev/null
+          printf '%s' "$js" | grep -F 'Trend Factory' >/dev/null
+          printf '%s' "$css" | grep -F 'Trend Factory editorial intelligence workspace' >/dev/null
           echo "Live homepage references the expected assets; redesigned homepage JS and Trend Factory CSS are present."
 
       - name: Verify production schema marker after first live request
