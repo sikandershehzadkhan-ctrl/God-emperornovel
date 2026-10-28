@@ -1,0 +1,12 @@
+
+/* 16.15 Community */
+.communityGrid{display:grid;grid-template-columns:minmax(220px,.8fr) minmax(280px,1.4fr);gap:14px}
+.ratingStars{display:flex;gap:5px;margin:10px 0}.ratingStar{border:0;background:transparent;font-size:32px;line-height:1;cursor:pointer;color:var(--muted,#777);padding:2px}.ratingStar.selected,.ratingStar:hover{color:var(--gold2,#d8aa55)}
+.commentItem{padding:14px;border:1px solid rgba(255,255,255,.08);border-radius:14px;background:rgba(255,255,255,.025);margin:9px 0}.commentReply{margin-left:28px}.commentHead{display:flex;gap:10px;align-items:center;flex-wrap:wrap}.commentItem p{white-space:pre-wrap;overflow-wrap:anywhere}.commentActions{display:flex;gap:7px;flex-wrap:wrap}.commentActions .ghost{padding:6px 9px;font-size:12px}
+@media(max-width:700px){.communityGrid{grid-template-columns:1fr}.commentReply{margin-left:12px}.ratingStar{font-size:29px}}
+
+
+/* 16.63.0 brand palette enforcement */
+:root{--brand-purple:#7c3aed;--brand-cyan:#22d3ee;--brand-black:#050507}
+.themeToggle{accent-color:var(--brand-purple)}
+.themeToggle:hover{border-color:var(--brand-cyan);box-shadow:0 0 0 1px rgba(34,211,238,.22)}

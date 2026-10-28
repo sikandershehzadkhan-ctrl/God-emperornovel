@@ -19,9 +19,9 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          response="$(curl --fail --silent --show-error --max-time 20 --retry 5 --retry-delay 2 "https://god-emperornovel.sikandershehzadkhan.workers.dev/api/health?verify=$(date +%s)")"
+          response="$(curl --fail --silent --show-error --max-time 20 --retry 10 --retry-delay 3 "https://god-emperornovel.sikandershehzadkhan.workers.dev/api/health?verify=$(date +%s)")"
           printf '%s\n' "$response"
-          printf '%s' "$response" | node -e 'let s="";process.stdin.on("data",d=>s+=d).on("end",()=>{const h=JSON.parse(s);if(h.ok!==true||h.database!==true||h.version!=="17.6.0"){console.error("::error::Unexpected live health payload or version");process.exit(1)}console.log("Live Worker health and version verified.")})'
+          printf '%s' "$response" | node -e 'let s="";process.stdin.on("data",d=>s+=d).on("end",()=>{const h=JSON.parse(s);if(h.ok!==true||h.database!==true||h.version!=="17.7.0"){console.error("::error::Unexpected live health payload or version");process.exit(1)}console.log("Live Worker health and version verified.")})'
 
       - name: Verify live homepage and versioned frontend assets
         shell: bash
@@ -30,15 +30,17 @@ jobs:
           base="https://god-emperornovel.sikandershehzadkhan.workers.dev"
           stamp="$(date +%s)"
           html="$(curl --fail --silent --show-error --max-time 20 -H "Cache-Control: no-cache" "$base/?verify=$stamp")"
-          printf '%s' "$html" | grep -F '/app-17.6.0.js' >/dev/null
-          printf '%s' "$html" | grep -F '/style-17.6.0.css' >/dev/null
-          js="$(curl --fail --silent --show-error --max-time 20 "$base/app-17.6.0.js?verify=$stamp")"
-          css="$(curl --fail --silent --show-error --max-time 20 "$base/style-17.6.0.css?verify=$stamp")"
-          printf '%s' "$js" | grep -F 'Worlds beyond' >/dev/null
+          printf '%s' "$html" | grep -F '/app-17.7.0.js' >/dev/null
+          printf '%s' "$html" | grep -F '/style-17.7.0.css' >/dev/null
+          js="$(curl --fail --silent --show-error --max-time 20 "$base/app-17.7.0.js?verify=$stamp")"
+          css="$(curl --fail --silent --show-error --max-time 20 "$base/style-17.7.0.css?verify=$stamp")"
+          printf '%s' "$js" | grep -F 'Your next' >/dev/null
           printf '%s' "$js" | grep -F 'Trend Factory' >/dev/null
+          printf '%s' "$js" | grep -F 'STORYVERSE' >/dev/null
           printf '%s' "$js" | grep -F 'activeFilters' >/dev/null
           printf '%s' "$css" | grep -F 'Trend Factory editorial intelligence workspace' >/dev/null
           printf '%s' "$css" | grep -F 'activeFilters' >/dev/null
+          printf '%s' "$css" | grep -F 'nextHero' >/dev/null
           printf '%s' "$css" | grep -F 'genreGrid' >/dev/null
           printf '%s' "$css" | grep -F 'body.authorStudioPage button:disabled' >/dev/null
           echo "Live homepage references immutable release assets; redesigned homepage JS and CSS are present."
@@ -49,14 +51,14 @@ jobs:
           for route in /catalog /community /trend-factory /read/1/1; do
             page="$(curl --fail --silent --show-error --max-time 20 -H "Cache-Control: no-cache" "$base$route?verify=$stamp")"
             echo "Checking route shell: $route"
-            printf '%s' "$page" | grep -F '/app-17.6.0.js' >/dev/null || { echo "::error::Missing versioned JavaScript on $route"; exit 1; }
-            printf '%s' "$page" | grep -F '/style-17.6.0.css' >/dev/null || { echo "::error::Missing versioned stylesheet on $route"; exit 1; }
+            printf '%s' "$page" | grep -F '/app-17.7.0.js' >/dev/null || { echo "::error::Missing versioned JavaScript on $route"; exit 1; }
+            printf '%s' "$page" | grep -F '/style-17.7.0.css' >/dev/null || { echo "::error::Missing versioned stylesheet on $route"; exit 1; }
             echo "Shell assets verified: $route"
           done
           for entry in "/author:authorStudioPage" "/admin:adminDashboardPage"; do
             route="${entry%%:*}"; expected_class="${entry##*:}"
             page="$(curl --fail --silent --show-error --max-time 20 -H "Cache-Control: no-cache" "$base$route?verify=$stamp")"
-            printf '%s' "$page" | grep -F '/style-17.6.0.css' >/dev/null
+            printf '%s' "$page" | grep -F '/style-17.7.0.css' >/dev/null
             printf '%s' "$page" | grep -F "class=\"$expected_class\"" >/dev/null
             echo "Workspace verified: $route"
             if [ "$route" = "/author" ]; then
@@ -67,7 +69,7 @@ jobs:
           echo "Route smoke tests passed for catalog, community, Trend Factory, reader, Author Studio and Command Center."
           for route in /privacy /terms /copyright /community-taxonomy; do
             page="$(curl --fail --silent --show-error --max-time 20 -H "Cache-Control: no-cache" "$base$route?verify=$stamp")"
-            printf '%s' "$page" | grep -F '/style-17.6.0.css' >/dev/null
+            printf '%s' "$page" | grep -F '/style-17.7.0.css' >/dev/null
             echo "Legal/support shell verified: $route"
           done
           printf '%s' "$(curl --fail --silent --show-error --max-time 20 "$base/privacy?verify=$stamp")" | grep -F 'Privacy at Imperial Novel' >/dev/null
@@ -76,7 +78,7 @@ jobs:
           echo "Terms content verified."
           printf '%s' "$(curl --fail --silent --show-error --max-time 20 "$base/copyright?verify=$stamp")" | grep -F 'Rights & Copyright' >/dev/null
           echo "Copyright content verified."
-          echo "Core product and legal routes are serving the immutable 17.6.0 stylesheet."
+          echo "Core product and legal routes are serving the immutable 17.7.0 stylesheet."
 
       - name: Verify production schema marker after first live request
         if: always()
