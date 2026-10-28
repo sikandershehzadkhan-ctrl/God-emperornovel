@@ -19,11 +19,12 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          response="$(curl --fail --silent --show-error --max-time 20 --retry 5 --retry-delay 2 https://god-emperornovel.sikandershehzadkhan.workers.dev/api/health)"
+          response="$(curl --fail --silent --show-error --max-time 20 --retry 5 --retry-delay 2 "https://god-emperornovel.sikandershehzadkhan.workers.dev/api/health?verify=$(date +%s)")"
           printf '%s\n' "$response"
           printf '%s' "$response" | node -e 'let s="";process.stdin.on("data",d=>s+=d).on("end",()=>{const h=JSON.parse(s);if(h.ok!==true||h.database!==true||h.version!=="16.65.0"){console.error("::error::Unexpected live health payload or version");process.exit(1)}console.log("Live Worker health and version verified.")})'
 
       - name: Verify production schema marker after first live request
+        if: always()
         shell: bash
         env:
           CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
