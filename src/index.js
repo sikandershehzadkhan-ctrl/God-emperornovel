@@ -111,8 +111,8 @@ async function ensureAuthorAISchema(env){
    `CREATE INDEX IF NOT EXISTS idx_ai_jobs_project ON ai_chapter_jobs(project_id,status,chapter_number)`,
    `CREATE INDEX IF NOT EXISTS idx_ai_runs_project ON ai_generation_runs(project_id,created_at)`
   ];
-  for(const q of qs)try{await env.DB.prepare(q).run()}catch(e){console.error('author ai schema',e)}
- }catch(e){console.error('author ai schema',e)}
+  for(const q of qs){try{await env.DB.prepare(q).run()}catch(e){console.error('author AI schema statement failed; aborting bootstrap',e);throw e}}
+ }catch(e){console.error('author AI schema failed; schema version must not advance',e);throw e}
 }
 function aiSafeText(s,max=12000){return String(s||'').replace(/\u0000/g,'').trim().slice(0,max)}
 function aiJson(v){try{return JSON.parse(String(v||'{}'))}catch{return {}}}
@@ -249,7 +249,7 @@ const AGENT_SEED=[
 async function ensureAgents(env){
  try{
   await env.DB.batch(AGENT_SEED.map(a=>env.DB.prepare(`INSERT OR IGNORE INTO agents(slug,name,role,icon,mode) VALUES(?,?,?,?,?)`).bind(...a)));
- }catch(e){console.error('agent seed',e)}
+ }catch(e){console.error('agent seed failed; schema version must not advance',e);throw e}
 }
 const AI_AGENT_PROMPTS={
  'novel-finder':'Act as a novel discovery assistant. Confirm the provider is available and describe, in one concise sentence, how you would search only the Imperial Novel catalog and authorized provider indexes.',
