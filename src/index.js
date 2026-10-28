@@ -24,16 +24,16 @@ async function ensurePublishingSchema(env){
  try{
   const info=(await env.DB.prepare('PRAGMA table_info(novels)').all()).results||[];
   const have=new Set(info.map(x=>String(x.name)));
-  for(const [name,type] of novelCols) if(!have.has(name)){try{await env.DB.prepare(`ALTER TABLE novels ADD COLUMN ${name} ${type}`).run()}catch(e){console.error('publishing schema column',name,e)}}
-  try{await env.DB.prepare("UPDATE novels SET publication_status='draft' WHERE publication_status IS NULL OR publication_status=''").run()}catch{}
-  try{await env.DB.prepare('CREATE INDEX IF NOT EXISTS idx_novels_publication ON novels(publication_status,updated_at)').run()}catch{}
+  for(const [name,type] of novelCols) if(!have.has(name)){await env.DB.prepare(`ALTER TABLE novels ADD COLUMN ${name} ${type}`).run()}
+  await env.DB.prepare("UPDATE novels SET publication_status='draft' WHERE publication_status IS NULL OR publication_status=''").run()
+  await env.DB.prepare('CREATE INDEX IF NOT EXISTS idx_novels_publication ON novels(publication_status,updated_at)').run()
   const ci=(await env.DB.prepare('PRAGMA table_info(chapters)').all()).results||[];
   const chHave=new Set(ci.map(x=>String(x.name)));
-  if(!chHave.has('publication_status')){try{await env.DB.prepare("ALTER TABLE chapters ADD COLUMN publication_status TEXT NOT NULL DEFAULT 'published'").run()}catch(e){console.error('chapter publication column',e)}}
-  try{await env.DB.prepare("UPDATE chapters SET publication_status='published' WHERE publication_status IS NULL OR publication_status=''").run()}catch{}
-  try{await env.DB.prepare('CREATE INDEX IF NOT EXISTS idx_chapters_publication ON chapters(novel_id,publication_status,chapter_number)').run()}catch{}
+  if(!chHave.has('publication_status')){await env.DB.prepare("ALTER TABLE chapters ADD COLUMN publication_status TEXT NOT NULL DEFAULT 'published'").run()}
+  await env.DB.prepare("UPDATE chapters SET publication_status='published' WHERE publication_status IS NULL OR publication_status=''").run()
+  await env.DB.prepare('CREATE INDEX IF NOT EXISTS idx_chapters_publication ON chapters(novel_id,publication_status,chapter_number)').run()
   await env.DB.prepare(`CREATE TABLE IF NOT EXISTS chapter_views (chapter_id INTEGER PRIMARY KEY, views INTEGER NOT NULL DEFAULT 0, updated_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP, FOREIGN KEY(chapter_id) REFERENCES chapters(id) ON DELETE CASCADE)`).run();
- }catch(e){console.error('publishing schema',e)}
+ }catch(e){console.error('publishing schema failed; schema version must not advance',e);throw e}
 }
 async function notifyAdmins(env,title,message){
  try{const admins=(await env.DB.prepare("SELECT id FROM users WHERE role='admin' AND banned=0").all()).results||[];for(const a of admins)await env.DB.prepare('INSERT INTO notifications(user_id,title,body) VALUES(?,?,?)').bind(a.id,title,message).run()}catch(e){console.error('admin notification',e)}}
@@ -206,7 +206,7 @@ async function ensureCoreSchema(env){
 `CREATE TABLE IF NOT EXISTS agent_runs (id INTEGER PRIMARY KEY AUTOINCREMENT,agent_id INTEGER NOT NULL,trigger TEXT NOT NULL,result TEXT DEFAULT '',status TEXT NOT NULL DEFAULT 'ok',created_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP)`,
 `CREATE INDEX IF NOT EXISTS idx_agent_runs_agent ON agent_runs(agent_id,created_at)`,`CREATE TABLE IF NOT EXISTS app_settings (key TEXT PRIMARY KEY,value TEXT NOT NULL)`,
 `CREATE INDEX IF NOT EXISTS idx_novels_updated ON novels(updated_at)`,`CREATE INDEX IF NOT EXISTS idx_unlocks_time ON unlocks(unlocked_at)`,`CREATE INDEX IF NOT EXISTS idx_history_user ON history(user_id,updated_at)`,`CREATE INDEX IF NOT EXISTS idx_notifications_user ON notifications(user_id,created_at)`];
-  for(const q of qs)try{await env.DB.prepare(q).run()}catch(e){/* ALTER TABLE may already exist */}
+  for(const q of qs){try{await env.DB.prepare(q).run()}catch(e){console.error('core schema statement failed; aborting bootstrap',e);throw e}}
   await ensurePublishingSchema(env);
   try{await env.DB.prepare(`INSERT OR IGNORE INTO app_settings(key,value) VALUES('ticket_packs','[]')`).run()}catch{}
   await seedTaxonomy(env);
