@@ -62,11 +62,11 @@ jobs:
             echo "Legal/support shell verified: $route"
           done
           printf '%s' "$(curl --fail --silent --show-error --max-time 20 "$base/privacy?verify=$stamp")" | grep -F 'Privacy at Imperial Novel' >/dev/null
-echo "Privacy content verified."
+          echo "Privacy content verified."
           printf '%s' "$(curl --fail --silent --show-error --max-time 20 "$base/terms?verify=$stamp")" | grep -F 'Use the realm responsibly' >/dev/null
-echo "Terms content verified."
+          echo "Terms content verified."
           printf '%s' "$(curl --fail --silent --show-error --max-time 20 "$base/copyright?verify=$stamp")" | grep -F 'Rights & Copyright' >/dev/null
-echo "Copyright content verified."
+          echo "Copyright content verified."
           echo "Core product and legal routes are serving the immutable 17.4.0 stylesheet."
 
       - name: Verify production schema marker after first live request
