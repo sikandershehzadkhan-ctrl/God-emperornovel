@@ -1080,3 +1080,17 @@ button:disabled{opacity:.5;cursor:not-allowed}
 @keyframes bootSpin{to{transform:rotate(360deg)}}
 @media(prefers-reduced-motion:reduce){.bootSpinner{animation:none}.appBootRoot{scroll-behavior:auto}}
 @media(max-width:700px){.appBootRoot{min-height:60vh;padding:28px 14px}.bootFallback{border-radius:22px;box-shadow:none}}
+
+/* 17.11.0: resilient first paint and low-motion mobile loading */
+.appBootRoot{min-height:68vh;display:grid;place-items:center;padding:clamp(24px,7vw,72px) 18px}
+.bootFallback{width:min(100%,560px);margin:auto;text-align:center;padding:clamp(28px,7vw,58px) 24px;border:1px solid rgba(167,139,250,.24);border-radius:28px;background:linear-gradient(145deg,rgba(20,24,48,.96),rgba(9,12,27,.98));color:#f6f4ff;box-shadow:0 24px 80px rgba(0,0,0,.24)}
+.bootCrest{width:62px;height:62px;margin:0 auto 18px;border-radius:20px;display:grid;place-items:center;background:linear-gradient(145deg,#8b5cf6,#312e81);color:#fff;font-weight:900;letter-spacing:-.08em;font-size:23px;box-shadow:0 0 0 1px rgba(94,234,212,.25),0 12px 36px rgba(99,102,241,.2)}
+.bootEyebrow{font-size:11px;letter-spacing:.2em;font-weight:800;color:#67e8d3}
+.bootFallback h1{font-size:clamp(27px,6vw,42px);line-height:1.08;letter-spacing:-.045em;margin:12px 0}
+.bootFallback>p:not(.bootEyebrow):not(.bootHelp){color:#b9bfd5}
+.bootSpinner{display:block;width:24px;height:24px;border:2px solid #454064;border-top-color:#67e8d3;border-radius:50%;margin:22px auto 0;animation:bootSpin .9s linear infinite}
+.bootFailure .bootSpinner{display:none}
+.bootHelp{font-size:12px;color:#9ca3b8;margin-top:18px}
+@keyframes bootSpin{to{transform:rotate(360deg)}}
+@media(prefers-reduced-motion:reduce){.bootSpinner{animation:none}.appBootRoot{scroll-behavior:auto}}
+@media(max-width:700px){.appBootRoot{min-height:60vh;padding:28px 14px}.bootFallback{border-radius:22px;box-shadow:none}}

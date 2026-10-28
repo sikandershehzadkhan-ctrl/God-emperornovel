@@ -25,17 +25,17 @@ jobs:
           response=""
           for attempt in $(seq 1 24); do
             response="$(curl --fail --silent --show-error --max-time 20 "$base?verify=$stamp-$attempt" 2>/dev/null || true)"
-            if [ -n "$response" ] && printf '%s' "$response" | node -e 'let s="";process.stdin.on("data",d=>s+=d).on("end",()=>{try{const h=JSON.parse(s);process.exit(h.ok===true&&h.database===true&&h.version==="17.10.0"?0:1)}catch{process.exit(1)}})' 2>/dev/null; then
+            if [ -n "$response" ] && printf '%s' "$response" | node -e 'let s="";process.stdin.on("data",d=>s+=d).on("end",()=>{try{const h=JSON.parse(s);process.exit(h.ok===true&&h.database===true&&h.version==="17.11.0"?0:1)}catch{process.exit(1)}})' 2>/dev/null; then
               printf '%s\n' "$response"
               echo "Live Worker health and version verified on attempt $attempt."
               verified=true
               break
             fi
-            echo "Waiting for Cloudflare edge to serve release 17.10.0 (attempt $attempt/24)."
+            echo "Waiting for Cloudflare edge to serve release 17.11.0 (attempt $attempt/24)."
             sleep 5
           done
           if [ "$verified" != true ]; then
-            echo "::error::The Worker did not serve healthy release 17.10.0 within 120 seconds."
+            echo "::error::The Worker did not serve healthy release 17.11.0 within 120 seconds."
             printf '%s\n' "$response"
             exit 1
           fi
@@ -47,10 +47,10 @@ jobs:
           base="https://god-emperornovel.sikandershehzadkhan.workers.dev"
           stamp="$(date +%s)"
           html="$(curl --fail --silent --show-error --max-time 20 -H "Cache-Control: no-cache" "$base/?verify=$stamp")"
-          printf '%s' "$html" | grep -F '/app-17.10.0.js' >/dev/null
-          printf '%s' "$html" | grep -F '/style-17.10.0.css' >/dev/null
-          js="$(curl --fail --silent --show-error --max-time 20 "$base/app-17.10.0.js?verify=$stamp")"
-          css="$(curl --fail --silent --show-error --max-time 20 "$base/style-17.10.0.css?verify=$stamp")"
+          printf '%s' "$html" | grep -F '/app-17.11.0.js' >/dev/null
+          printf '%s' "$html" | grep -F '/style-17.11.0.css' >/dev/null
+          js="$(curl --fail --silent --show-error --max-time 20 "$base/app-17.11.0.js?verify=$stamp")"
+          css="$(curl --fail --silent --show-error --max-time 20 "$base/style-17.11.0.css?verify=$stamp")"
           printf '%s' "$js" | grep -F 'Your next' >/dev/null
           printf '%s' "$js" | grep -F 'Trend Factory' >/dev/null
           printf '%s' "$js" | grep -F 'STORYVERSE' >/dev/null
@@ -71,14 +71,14 @@ jobs:
           for route in /catalog /community /trend-factory /read/1/1; do
             page="$(curl --fail --silent --show-error --max-time 20 -H "Cache-Control: no-cache" "$base$route?verify=$stamp")"
             echo "Checking route shell: $route"
-            printf '%s' "$page" | grep -F '/app-17.10.0.js' >/dev/null || { echo "::error::Missing versioned JavaScript on $route"; exit 1; }
-            printf '%s' "$page" | grep -F '/style-17.10.0.css' >/dev/null || { echo "::error::Missing versioned stylesheet on $route"; exit 1; }
+            printf '%s' "$page" | grep -F '/app-17.11.0.js' >/dev/null || { echo "::error::Missing versioned JavaScript on $route"; exit 1; }
+            printf '%s' "$page" | grep -F '/style-17.11.0.css' >/dev/null || { echo "::error::Missing versioned stylesheet on $route"; exit 1; }
             echo "Shell assets verified: $route"
           done
           for entry in "/author:authorStudioPage" "/admin:adminDashboardPage"; do
             route="${entry%%:*}"; expected_class="${entry##*:}"
             page="$(curl --fail --silent --show-error --max-time 20 -H "Cache-Control: no-cache" "$base$route?verify=$stamp")"
-            printf '%s' "$page" | grep -F '/style-17.10.0.css' >/dev/null
+            printf '%s' "$page" | grep -F '/style-17.11.0.css' >/dev/null
             printf '%s' "$page" | grep -F "class=\"$expected_class\"" >/dev/null
             echo "Workspace verified: $route"
             if [ "$route" = "/author" ]; then
@@ -89,7 +89,7 @@ jobs:
           echo "Route smoke tests passed for catalog, community, Trend Factory, reader, Author Studio and Command Center."
           for route in /privacy /terms /copyright /community-taxonomy; do
             page="$(curl --fail --silent --show-error --max-time 20 -H "Cache-Control: no-cache" "$base$route?verify=$stamp")"
-            printf '%s' "$page" | grep -F '/style-17.10.0.css' >/dev/null
+            printf '%s' "$page" | grep -F '/style-17.11.0.css' >/dev/null
             echo "Legal/support shell verified: $route"
           done
           printf '%s' "$(curl --fail --silent --show-error --max-time 20 "$base/privacy?verify=$stamp")" | grep -F 'Privacy at Imperial Novel' >/dev/null
@@ -98,7 +98,7 @@ jobs:
           echo "Terms content verified."
           printf '%s' "$(curl --fail --silent --show-error --max-time 20 "$base/copyright?verify=$stamp")" | grep -F 'Rights & Copyright' >/dev/null
           echo "Copyright content verified."
-          echo "Core product and legal routes are serving the immutable 17.10.0 stylesheet."
+          echo "Core product and legal routes are serving the immutable 17.11.0 stylesheet."
 
       - name: Verify production schema marker after first live request
         if: always()
