@@ -120,3 +120,11 @@ jobs:
         env:
           CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+
+      - name: Verify live Worker health after deployment
+        shell: bash
+        run: |
+          set -euo pipefail
+          response="$(curl --fail --silent --show-error --max-time 25 https://god-emperornovel.sikandershehzadkhan.workers.dev/api/health)"
+          printf '%s\n' "$response"
+          printf '%s' "$response" | node -e 'let s="";process.stdin.on("data",d=>s+=d).on("end",()=>{let d;try{d=JSON.parse(s)}catch{console.error("Health endpoint did not return JSON");process.exit(1)};if(d.ok===false||d.database===false){console.error("Live health check reported an unhealthy Worker/database");process.exit(1)};console.log("Live health endpoint returned valid JSON.")})'
