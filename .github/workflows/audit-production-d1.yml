@@ -140,6 +140,14 @@ jobs:
           run_query "Chapter schema (columns only)" "PRAGMA table_info(chapters);"
           run_query "Application settings schema (columns only)" "PRAGMA table_info(app_settings);"
           run_query "Publication and rights columns" "PRAGMA table_info(novels);"
+          run_query "Session schema (columns only)" "PRAGMA table_info(sessions);"
+          run_query "Ticket ledger schema (columns only)" "PRAGMA table_info(ticket_ledger);"
+          run_query "Donation schema (columns only)" "PRAGMA table_info(donations);"
+          run_query "Novel request schema (columns only)" "PRAGMA table_info(novel_requests);"
+          run_query "Connector schema (columns only)" "PRAGMA table_info(connectors);"
+          run_query "Comment schema (columns only)" "PRAGMA table_info(comments);"
+          run_query "Notification schema (columns only)" "PRAGMA table_info(notifications);"
+          run_query "Agent schema (columns only)" "PRAGMA table_info(agents);"
           critical_columns_sql="$(cat <<'SQL'
           WITH expected(table_name,column_name) AS (
             VALUES
