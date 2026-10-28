@@ -70,7 +70,7 @@ jobs:
             echo "::error::Token must be the raw API token only, not a header."
             exit 1
           fi
-          echo "Checking token validity and account access with Wrangler..."
+          echo "Checking token validity and account access with Wrangler (post-secret-update verification)..."
           npx --yes wrangler@4 whoami
 
       - name: Read-only database inventory
