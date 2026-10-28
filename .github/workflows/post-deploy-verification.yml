@@ -44,8 +44,9 @@ jobs:
           echo "Decorative hero image is absent from CSS."
           for route in /catalog /community /trend-factory /read/1/1; do
             page="$(curl --fail --silent --show-error --max-time 20 -H "Cache-Control: no-cache" "$base$route?verify=$stamp")"
-            printf '%s' "$page" | grep -F '/app-17.4.0.js' >/dev/null
-            printf '%s' "$page" | grep -F '/style-17.4.0.css' >/dev/null
+            echo "Checking route shell: $route"
+            printf '%s' "$page" | grep -F '/app-17.4.0.js' >/dev/null || { echo "::error::Missing versioned JavaScript on $route"; exit 1; }
+            printf '%s' "$page" | grep -F '/style-17.4.0.css' >/dev/null || { echo "::error::Missing versioned stylesheet on $route"; exit 1; }
             echo "Shell assets verified: $route"
           done
           for entry in "/author:authorStudioPage" "/admin:adminDashboardPage"; do
