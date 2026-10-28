@@ -507,3 +507,11 @@ html[data-theme="dark"] .eyebrow{color:#b8a8ff}
 html[data-theme="dark"] a:hover,html[data-theme="dark"] .quickCard:hover{border-color:#8175d8}
 @media(max-width:760px){.ecosystemGrid{grid-template-columns:1fr;gap:10px;margin-top:15px}.ecosystemCard{min-height:185px;padding:19px}.ecosystemCard>b{font-size:27px}.ecosystemCopy{max-width:300px}}
 @media(min-width:761px) and (max-width:1050px){.ecosystemGrid{grid-template-columns:repeat(2,minmax(0,1fr))}.ecosystemCard:last-child{grid-column:1/-1}}
+
+/* Lucide-derived inline navigation icon treatment. Keep controls legible and compact on mobile. */
+.imperialIcon{display:inline-block;flex:0 0 18px;width:18px;height:18px;vertical-align:middle;stroke:currentColor}
+.menuDrawer .imperialIcon{margin-right:10px;color:var(--violet2)}
+.mobileNav .imperialIcon{width:19px;height:19px;flex-basis:19px}
+.iconbtn .imperialIcon{display:block;margin:auto}
+.menuDrawer a{display:flex;align-items:center;gap:0}
+@media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}*,*::before,*::after{animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important;scroll-behavior:auto!important}}
