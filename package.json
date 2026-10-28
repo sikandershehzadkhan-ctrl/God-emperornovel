@@ -1,6 +1,6 @@
 {
   "name": "imperial-novel",
-  "version": "16.68.0",
+  "version": "16.69.0",
   "private": true,
   "scripts": {
     "build": "node --check src/index.js && node --check public/app.js",
