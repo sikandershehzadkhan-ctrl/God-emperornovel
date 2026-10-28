@@ -656,7 +656,7 @@ html[data-theme="dark"] body.adminDashboardPage .adminTable th{color:#b8b4ce!imp
 @media(max-width:700px){html{scroll-behavior:auto}body:before{display:none}.top{backdrop-filter:none;-webkit-backdrop-filter:none;background:var(--panel)}.menuDrawer{backdrop-filter:none;-webkit-backdrop-filter:none}.hero{min-height:0}.heroInner{padding:34px 24px}.hero h1{font-size:clamp(38px,11vw,58px)}.quickGrid{grid-template-columns:repeat(2,minmax(0,1fr));gap:9px}.quickCard{padding:11px}.grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}.wrap{width:min(var(--max),calc(100% - 24px))}.unlockBanner{align-items:flex-start;flex-direction:column}}
 @media(prefers-reduced-motion:reduce){*,*::before,*::after{scroll-behavior:auto!important;animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important}}
 
-/* Imperial Novel 17.1.0: reader themes and personal reading controls */
+/* Imperial Novel 17.2.0: reader themes and personal reading controls */
 .readerPage{min-height:100vh;background:#f5f3fb;color:#262238;transition:background-color .15s ease,color .15s ease}
 .readerPage .readerArticle{background:#fff;color:#39354a;border-color:#e4def2}
 .readerPage .readerArticle h1{color:#28223e}
@@ -695,3 +695,12 @@ html[data-theme="dark"] body.adminDashboardPage .adminTable th{color:#b8b4ce!imp
 .readerPage[data-reader-theme="dark"] .readerPrefs select,.readerPage[data-reader-theme="midnight"] .readerPrefs select,.readerPage[data-reader-theme="cosmic"] .readerPrefs select{background:#0c1020;color:#e7eaff;border-color:#343451}
 @media(max-width:520px){.readerPrefs{grid-template-columns:1fr;gap:8px}.readerPrefs label{display:grid;grid-template-columns:100px minmax(0,1fr);align-items:center}.readerTools{gap:3px}.readerTool{min-width:31px;padding:0 6px}}
 @media(prefers-reduced-motion:reduce){.readerPage{transition:none}}
+
+/* Imperial Novel 17.2.0: accessible focus and comfortable reading controls */
+:focus-visible{outline:3px solid rgba(147,119,239,.82);outline-offset:3px}
+.readerPage .readerTool:focus-visible,.readerPrefs select:focus-visible{outline-color:#9a82f2;outline-offset:2px}
+.readerPage[data-reader-theme="sepia"] ::selection{background:#d9bd8d;color:#302313}
+.readerPage[data-reader-theme="midnight"] ::selection,.readerPage[data-reader-theme="cosmic"] ::selection{background:#2c6178;color:#fff}
+.readerPage[data-reader-theme="imperial"] ::selection{background:#d6c6ff;color:#26183f}
+.readerPage[data-reader-theme="dark"] ::selection{background:#59468b;color:#fff}
+@media(max-width:360px){.readerBack{max-width:52px;overflow:hidden}.readerTools .readerTool{min-width:28px;height:30px;padding:0 4px}.readerBook b{max-width:92px}}
