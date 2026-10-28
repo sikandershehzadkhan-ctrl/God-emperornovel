@@ -39,26 +39,34 @@ jobs:
           printf '%s' "$css" | grep -F 'Trend Factory editorial intelligence workspace' >/dev/null
           echo "Live homepage references immutable release assets; redesigned homepage JS and CSS are present."
           printf '%s' "$css" | grep -F 'readerPage[data-reader-theme="cosmic"]' >/dev/null
+          echo "Reader theme CSS marker verified."
           if printf '%s' "$css" | grep -F 'imperial-hero.png' >/dev/null; then echo "::error::The oversized decorative hero image is still referenced by CSS."; exit 1; fi
+          echo "Decorative hero image is absent from CSS."
           for route in /catalog /community /trend-factory /read/1/1; do
             page="$(curl --fail --silent --show-error --max-time 20 -H "Cache-Control: no-cache" "$base$route?verify=$stamp")"
             printf '%s' "$page" | grep -F '/app-17.4.0.js' >/dev/null
             printf '%s' "$page" | grep -F '/style-17.4.0.css' >/dev/null
+            echo "Shell assets verified: $route"
           done
           for entry in "/author:authorStudioPage" "/admin:adminDashboardPage"; do
             route="${entry%%:*}"; expected_class="${entry##*:}"
             page="$(curl --fail --silent --show-error --max-time 20 -H "Cache-Control: no-cache" "$base$route?verify=$stamp")"
             printf '%s' "$page" | grep -F '/style-17.4.0.css' >/dev/null
             printf '%s' "$page" | grep -F "class=\"$expected_class\"" >/dev/null
+            echo "Workspace verified: $route"
           done
           echo "Route smoke tests passed for catalog, community, Trend Factory, reader, Author Studio and Command Center."
           for route in /privacy /terms /copyright /community-taxonomy; do
             page="$(curl --fail --silent --show-error --max-time 20 -H "Cache-Control: no-cache" "$base$route?verify=$stamp")"
             printf '%s' "$page" | grep -F '/style-17.4.0.css' >/dev/null
+            echo "Legal/support shell verified: $route"
           done
           printf '%s' "$(curl --fail --silent --show-error --max-time 20 "$base/privacy?verify=$stamp")" | grep -F 'Privacy at Imperial Novel' >/dev/null
+echo "Privacy content verified."
           printf '%s' "$(curl --fail --silent --show-error --max-time 20 "$base/terms?verify=$stamp")" | grep -F 'Use the realm responsibly' >/dev/null
+echo "Terms content verified."
           printf '%s' "$(curl --fail --silent --show-error --max-time 20 "$base/copyright?verify=$stamp")" | grep -F 'Rights & Copyright' >/dev/null
+echo "Copyright content verified."
           echo "Core product and legal routes are serving the immutable 17.4.0 stylesheet."
 
       - name: Verify production schema marker after first live request
