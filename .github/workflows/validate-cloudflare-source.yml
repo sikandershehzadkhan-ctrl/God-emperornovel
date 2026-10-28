@@ -73,8 +73,8 @@ jobs:
           import re
           source = Path('src/index.js').read_text(encoding='utf-8')
           audit = Path('.github/workflows/audit-production-d1.yml').read_text(encoding='utf-8')
-          runtime_tables = set(re.findall(r'CREATE TABLE IF NOT EXISTS\\s+([A-Za-z_][A-Za-z0-9_]*)', source))
-          audited_tables = set(re.findall(r"\\('([a-z_]+)'\\)", audit))
+          runtime_tables = set(re.findall(r'CREATE TABLE IF NOT EXISTS\s+([A-Za-z_][A-Za-z0-9_]*)', source))
+          audited_tables = set(re.findall(r"\('([a-z_]+)'\)", audit))
           missing_audit_tables = sorted(runtime_tables - audited_tables)
           checks = {
               'read-only audit inventory covers every literal runtime table': not missing_audit_tables,
