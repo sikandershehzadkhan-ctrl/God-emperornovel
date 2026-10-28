@@ -21,7 +21,7 @@ jobs:
           set -euo pipefail
           response="$(curl --fail --silent --show-error --max-time 20 --retry 5 --retry-delay 2 "https://god-emperornovel.sikandershehzadkhan.workers.dev/api/health?verify=$(date +%s)")"
           printf '%s\n' "$response"
-          printf '%s' "$response" | node -e 'let s="";process.stdin.on("data",d=>s+=d).on("end",()=>{const h=JSON.parse(s);if(h.ok!==true||h.database!==true||h.version!=="16.70.0"){console.error("::error::Unexpected live health payload or version");process.exit(1)}console.log("Live Worker health and version verified.")})'
+          printf '%s' "$response" | node -e 'let s="";process.stdin.on("data",d=>s+=d).on("end",()=>{const h=JSON.parse(s);if(h.ok!==true||h.database!==true||h.version!=="16.71.0"){console.error("::error::Unexpected live health payload or version");process.exit(1)}console.log("Live Worker health and version verified.")})'
 
       - name: Verify live homepage and versioned frontend assets
         shell: bash
@@ -30,10 +30,10 @@ jobs:
           base="https://god-emperornovel.sikandershehzadkhan.workers.dev"
           stamp="$(date +%s)"
           html="$(curl --fail --silent --show-error --max-time 20 -H "Cache-Control: no-cache" "$base/?verify=$stamp")"
-          printf '%s' "$html" | grep -F '/app.js?v=16.70.0' >/dev/null
-          printf '%s' "$html" | grep -F '/style.css?v=16.70.0' >/dev/null
-          js="$(curl --fail --silent --show-error --max-time 20 "$base/app.js?v=16.70.0&verify=$stamp")"
-          css="$(curl --fail --silent --show-error --max-time 20 "$base/style.css?v=16.70.0&verify=$stamp")"
+          printf '%s' "$html" | grep -F '/app.js?v=16.71.0' >/dev/null
+          printf '%s' "$html" | grep -F '/style.css?v=16.71.0' >/dev/null
+          js="$(curl --fail --silent --show-error --max-time 20 "$base/app.js?v=16.71.0&verify=$stamp")"
+          css="$(curl --fail --silent --show-error --max-time 20 "$base/style.css?v=16.71.0&verify=$stamp")"
           printf '%s' "$js" | grep -F 'Worlds beyond' >/dev/null
           printf '%s' "$js" | grep -F 'Trend Factory' >/dev/null
           printf '%s' "$css" | grep -F 'Trend Factory editorial intelligence workspace' >/dev/null
