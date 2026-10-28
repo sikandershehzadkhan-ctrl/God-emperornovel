@@ -76,7 +76,7 @@ jobs:
               'first-admin bootstrap cannot promote an arbitrary user': "UPDATE users SET role='admin',verified=1 WHERE id=?" not in source,
               'the schema marker remains compatible with the existing runtime migration': "core_schema_version','16.64.0" in source,
               'production deployment workflow includes a schema drift gate': "Block deployment on unreviewed production schema drift" in Path('.github/workflows/deploy.yml').read_text(encoding='utf-8'),
-              'production deployment gate fails closed on unknown schema marker': "if [ "$marker" != "16.64.0" ]" in Path('.github/workflows/deploy.yml').read_text(encoding='utf-8'),
+              'production deployment gate fails closed on unknown schema marker': 'if [ "$marker" != "16.64.0" ]' in Path('.github/workflows/deploy.yml').read_text(encoding='utf-8'),
               'novel-request refunds use four SQL placeholders': "INSERT INTO ticket_ledger(user_id,delta,reason,reference) VALUES(?,?,?,?)" in source,
           }
           for label, ok in checks.items():
