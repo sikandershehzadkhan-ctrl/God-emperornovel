@@ -208,15 +208,15 @@ async function ensureCoreSchema(env){
 `CREATE INDEX IF NOT EXISTS idx_novels_updated ON novels(updated_at)`,`CREATE INDEX IF NOT EXISTS idx_unlocks_time ON unlocks(unlocked_at)`,`CREATE INDEX IF NOT EXISTS idx_history_user ON history(user_id,updated_at)`,`CREATE INDEX IF NOT EXISTS idx_notifications_user ON notifications(user_id,created_at)`];
   for(const q of qs){try{await env.DB.prepare(q).run()}catch(e){console.error('core schema statement failed; aborting bootstrap',e);throw e}}
   await ensurePublishingSchema(env);
-  try{await env.DB.prepare(`INSERT OR IGNORE INTO app_settings(key,value) VALUES('ticket_packs','[]')`).run()}catch{}
+  await env.DB.prepare(`INSERT OR IGNORE INTO app_settings(key,value) VALUES('ticket_packs','[]')`).run()
   await seedTaxonomy(env);
   await ensureCommunityTaxonomySchema(env);
   await ensureAgents(env);
   await ensureAuthorAISchema(env);
   // Never grant administrator privileges to an arbitrary first/oldest account.
   // Provision an administrator through a deliberate, authenticated owner-only process.
-  try{await env.DB.prepare("INSERT OR REPLACE INTO app_settings(key,value) VALUES('first_admin_bootstrap_done','disabled-securely')").run()}catch(e){console.error('admin bootstrap guard',e)}
-  try{await env.DB.prepare("INSERT OR REPLACE INTO app_settings(key,value) VALUES('core_schema_version','16.64.0')").run()}catch(e){console.error('schema marker',e)}
+  await env.DB.prepare("INSERT OR REPLACE INTO app_settings(key,value) VALUES('first_admin_bootstrap_done','disabled-securely')").run()
+  await env.DB.prepare("INSERT OR REPLACE INTO app_settings(key,value) VALUES('core_schema_version','16.64.0')").run()
 
  })();
  return coreSchemaReady;
@@ -325,7 +325,7 @@ async function seedTaxonomy(env){
  try{
   await env.DB.batch(genres.map(x=>env.DB.prepare("INSERT OR IGNORE INTO genres(name,slug) VALUES(?,?)").bind(x,slug(x))));
   await env.DB.batch(tags.map(x=>env.DB.prepare("INSERT OR IGNORE INTO tags(name,slug) VALUES(?,?)").bind(x,slug(x))));
- }catch(e){console.error('taxonomy seed',e)}
+ }catch(e){console.error('taxonomy seed failed; schema version must not advance',e);throw e}
 }
 async function ensureCommunityTaxonomySchema(env){
  await env.DB.prepare(`CREATE TABLE IF NOT EXISTS taxonomy_submissions(
