@@ -624,3 +624,34 @@ html[data-theme="dark"] .homePage .featureTile:after{border-color:rgba(151,128,2
 html[data-theme="dark"] .homePage .unlockBanner{background:linear-gradient(125deg,#17112a,#0e1725);border-color:rgba(170,151,238,.26);box-shadow:none}
 html[data-theme="dark"] .homePage .unlockBanner h2{color:#f3efff}
 html[data-theme="dark"] .homePage .unlockBanner p{color:#b9b2cb}
+
+/* Imperial Novel 17.0.0: unified cross-platform product design system */
+:root{color-scheme:light;--imperial-ink:#171426;--imperial-muted:#77748e;--imperial-line:#e4def2;--imperial-violet:#8061df;--imperial-cyan:#55d7d0;--imperial-navy:#090b18}
+html[data-theme="dark"]{color-scheme:dark;--bg:#080a14;--bg2:#0d1020;--panel:#111426;--panel2:#15182c;--panel3:#1a1d34;--text:#f1effb;--muted:#a5a3bd;--line:rgba(173,158,232,.19);--silver:#34334d;--silver2:#24263d;--violet:#a58aff;--violet2:#8a6be5;--violet3:#241c3e;--violet4:#c2afff;--good:#55d7a0;--danger:#ff8296;--shadow:0 22px 70px rgba(0,0,0,.28);--shadowSoft:0 10px 32px rgba(0,0,0,.18)}
+html[data-theme="dark"] body{background:radial-gradient(900px 520px at 8% -15%,rgba(115,75,205,.16),transparent 62%),radial-gradient(700px 420px at 95% 0,rgba(49,156,171,.09),transparent 65%),linear-gradient(180deg,#090b17,#080a13 56%,#0b0c17);color:var(--text)}
+html[data-theme="dark"] body:before{opacity:.2;background-image:linear-gradient(rgba(157,135,230,.035) 1px,transparent 1px),linear-gradient(90deg,rgba(157,135,230,.035) 1px,transparent 1px)}
+html[data-theme="dark"] .top{background:rgba(10,11,23,.94);border-color:rgba(173,158,232,.15);backdrop-filter:blur(12px)}
+html[data-theme="dark"] .brand b,html[data-theme="dark"] .sectionHead h2,html[data-theme="dark"] .title h1,html[data-theme="dark"] .hero h1{color:#f4f0ff}
+html[data-theme="dark"] .brand small,html[data-theme="dark"] .navlinks a,html[data-theme="dark"] .muted,html[data-theme="dark"] .sectionHead p,html[data-theme="dark"] .sub{color:#aaa7c1}
+html[data-theme="dark"] .hero{background:radial-gradient(ellipse at 82% 15%,rgba(87,67,157,.24),transparent 48%),linear-gradient(115deg,#111327 0%,#101225 54%,#111c2b 100%);border-color:rgba(173,158,232,.22);box-shadow:0 26px 70px rgba(0,0,0,.28)}
+html[data-theme="dark"] .hero:after{background:linear-gradient(transparent,rgba(8,10,20,.45))}
+html[data-theme="dark"] .hero p{color:#c0bdd4}
+html[data-theme="dark"] .hero h1 span{color:#b4a0ff}
+html[data-theme="dark"] .quickCard,html[data-theme="dark"] .card,html[data-theme="dark"] .catalogCard,html[data-theme="dark"] .panel,html[data-theme="dark"] .sectionCard{background:linear-gradient(145deg,#141629,#101221);border-color:rgba(173,158,232,.18);box-shadow:none}
+html[data-theme="dark"] .quickCard b,html[data-theme="dark"] .cardTitle,html[data-theme="dark"] .catalogTitle{color:#f1edff}
+html[data-theme="dark"] .quickCard small{color:#aaa7c1}
+html[data-theme="dark"] .search,html[data-theme="dark"] .search input,html[data-theme="dark"] .iconbtn,html[data-theme="dark"] .ghost,html[data-theme="dark"] .secondary,html[data-theme="dark"] input,html[data-theme="dark"] select,html[data-theme="dark"] textarea{background:#111426;color:#f1effb;border-color:rgba(173,158,232,.23)}
+html[data-theme="dark"] .pill{background:#19172b;border-color:rgba(173,158,232,.24);color:#c9c0e7}
+html[data-theme="dark"] .unlockBanner{background:linear-gradient(120deg,#17112a,#101a28);border-color:rgba(173,158,232,.24);box-shadow:none}
+html[data-theme="dark"] .unlockBanner h2{color:#f4f0ff}html[data-theme="dark"] .unlockBanner p{color:#b7b3cb}
+html[data-theme="dark"] body.authorStudioPage,html[data-theme="dark"] body.adminDashboardPage{background:#080a14;color:#f1effb}
+html[data-theme="dark"] body.authorStudioPage .card,html[data-theme="dark"] body.authorStudioPage .novel,html[data-theme="dark"] body.authorStudioPage .airow,html[data-theme="dark"] body.authorStudioPage .ai-bible{background:#111426!important;color:#f1effb!important;border-color:rgba(173,158,232,.2)!important;box-shadow:none!important}
+html[data-theme="dark"] body.authorStudioPage .sub,html[data-theme="dark"] body.authorStudioPage .msg,html[data-theme="dark"] body.authorStudioPage label{color:#b8b4ce}
+html[data-theme="dark"] body.authorStudioPage input,html[data-theme="dark"] body.authorStudioPage select,html[data-theme="dark"] body.authorStudioPage textarea{background:#0c0f1e!important;color:#f1effb!important;border-color:#383451!important}
+html[data-theme="dark"] body.adminDashboardPage .adminHero{background:linear-gradient(135deg,#19132b,#101426 62%,#10202b)!important;border-color:rgba(173,158,232,.22)!important;box-shadow:none!important}
+html[data-theme="dark"] body.adminDashboardPage .adminCard,html[data-theme="dark"] body.adminDashboardPage .adminTable{background:#111426!important;color:#f1effb!important;border-color:rgba(173,158,232,.18)!important}
+html[data-theme="dark"] body.adminDashboardPage .adminCard b.big{color:#f1effb!important}html[data-theme="dark"] body.adminDashboardPage .adminCard small,html[data-theme="dark"] body.adminDashboardPage .adminHero p{color:#b8b4ce!important}
+html[data-theme="dark"] body.adminDashboardPage .adminNav button{background:#15182c!important;color:#c5c0db!important;border-color:#34304c!important}html[data-theme="dark"] body.adminDashboardPage .adminNav button.active{background:#34255a!important;color:#fff!important;border-color:#7c61c7!important}
+html[data-theme="dark"] body.adminDashboardPage .adminTable th{color:#b8b4ce!important}html[data-theme="dark"] body.adminDashboardPage .adminTable td{color:#e4e0f3!important}
+@media(max-width:700px){html{scroll-behavior:auto}body:before{display:none}.top{backdrop-filter:none;-webkit-backdrop-filter:none;background:var(--panel)}.menuDrawer{backdrop-filter:none;-webkit-backdrop-filter:none}.hero{min-height:0}.heroInner{padding:34px 24px}.hero h1{font-size:clamp(38px,11vw,58px)}.quickGrid{grid-template-columns:repeat(2,minmax(0,1fr));gap:9px}.quickCard{padding:11px}.grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}.wrap{width:min(var(--max),calc(100% - 24px))}.unlockBanner{align-items:flex-start;flex-direction:column}}
+@media(prefers-reduced-motion:reduce){*,*::before,*::after{scroll-behavior:auto!important;animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important}}
