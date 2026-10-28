@@ -109,7 +109,6 @@ jobs:
             npx --yes wrangler@4 d1 execute god-emperornovel-db --remote --command "$sql"
           }
           run_query "Complete production table inventory" "SELECT name FROM sqlite_master WHERE type='table' AND name NOT LIKE 'sqlite_%' ORDER BY name;"
-          run_query "Complete production column inventory (read-only)" "SELECT m.name AS table_name,p.name AS column_name FROM sqlite_master m,pragma_table_info(m.name) p WHERE m.type='table' AND m.name NOT LIKE 'sqlite_%' ORDER BY m.name,p.cid;"
           core_tables_sql="$(cat <<'SQL'
           WITH required(name) AS (
             VALUES ('users'),('sessions'),('novels'),('chapters'),('genres'),('tags'),('novel_genres'),('novel_tags'),
