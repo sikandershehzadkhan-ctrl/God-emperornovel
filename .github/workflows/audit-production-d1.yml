@@ -45,6 +45,34 @@ jobs:
           grep -q 'database_id = "78493557-1142-45e6-96aa-2ba9f67e3be0"' wrangler.toml
           echo "Confirmed target database identity from repository configuration."
 
+      - name: Diagnose credentials without exposing secrets
+        shell: bash
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+        run: |
+          set -euo pipefail
+          if [ -z "${CLOUDFLARE_API_TOKEN:-}" ]; then
+            echo "::error::CLOUDFLARE_API_TOKEN is empty or unavailable."
+            exit 1
+          fi
+          if [ -z "${CLOUDFLARE_ACCOUNT_ID:-}" ]; then
+            echo "::error::CLOUDFLARE_ACCOUNT_ID is empty or unavailable."
+            exit 1
+          fi
+          token_length=${#CLOUDFLARE_API_TOKEN}
+          echo "Cloudflare token secret is present; character count: $token_length (token value is never printed)."
+          if [[ "$CLOUDFLARE_API_TOKEN" =~ [[:space:]] ]]; then
+            echo "::error::Token contains whitespace. Store only the raw API token, with no spaces, line breaks, 'Bearer ' prefix, or Authorization header."
+            exit 1
+          fi
+          if [[ "$CLOUDFLARE_API_TOKEN" == *'Bearer '* || "$CLOUDFLARE_API_TOKEN" == *'Authorization:'* ]]; then
+            echo "::error::Token must be the raw API token only, not a header."
+            exit 1
+          fi
+          echo "Checking token validity and account access with Wrangler..."
+          npx --yes wrangler@4 whoami
+
       - name: Read-only database inventory
         shell: bash
         env:
@@ -52,10 +80,6 @@ jobs:
           CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
         run: |
           set -euo pipefail
-          if [ -z "${CLOUDFLARE_API_TOKEN:-}" ] || [ -z "${CLOUDFLARE_ACCOUNT_ID:-}" ]; then
-            echo "::error::Cloudflare GitHub Actions secrets are not configured. No database query was run."
-            exit 1
-          fi
           run_query() {
             local label="$1"
             local sql="$2"
@@ -63,8 +87,6 @@ jobs:
             echo "===== $label (read-only) ====="
             npx --yes wrangler@4 d1 execute god-emperornovel-db --remote --command "$sql"
           }
-          echo "Checking Cloudflare token identity before running read-only queries..."
-          npx --yes wrangler@4 whoami
           run_query "Migration history table presence" "SELECT name FROM sqlite_master WHERE type='table' AND name IN ('d1_migrations','app_settings','users','novels','chapters','donations','ticket_ledger','content_rights') ORDER BY name;"
           run_query "Publication status counts" "SELECT COALESCE(publication_status,'<NULL>') AS publication_status, COUNT(*) AS novel_count FROM novels GROUP BY publication_status ORDER BY publication_status;"
           run_query "Chapter publication status counts" "SELECT COALESCE(publication_status,'<NULL>') AS publication_status, COUNT(*) AS chapter_count FROM chapters GROUP BY publication_status ORDER BY publication_status;"
