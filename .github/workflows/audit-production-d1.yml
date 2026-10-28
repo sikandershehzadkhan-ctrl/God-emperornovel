@@ -81,7 +81,17 @@ jobs:
           echo "===== Public home response ====="
           curl --fail --silent --show-error --max-time 20 -o /dev/null -w "HTTP %{http_code}; content-type %{content_type}; total %{time_total}s\\n" "$site/"
           echo "===== Public API health response ====="
-          curl --fail --silent --show-error --max-time 20 "$site/api/health"
+          health_json="$(curl --fail --silent --show-error --max-time 20 "$site/api/health")"
+          printf '%s\\n' "$health_json"
+          live_version="$(printf '%s' "$health_json" | node -e "let s='';process.stdin.on('data',d=>s+=d).on('end',()=>{try{console.log(JSON.parse(s).version||'unknown')}catch{console.log('unknown')}})")"
+          repo_version="$(sed -n 's/^[[:space:]]*APP_VERSION = "\\([^"]*\\)".*/\\1/p' wrangler.toml | head -n 1)"
+          echo "Live Worker version: $live_version"
+          echo "Repository target version: ${repo_version:-unknown}"
+          if [ -n "$repo_version" ] && [ "$live_version" != "$repo_version" ]; then
+            echo "::notice::Production version drift detected. A successful GitHub commit does not itself deploy the Worker."
+          else
+            echo "Live Worker version matches the repository target."
+          fi
           echo
 
       - name: Read-only database inventory
