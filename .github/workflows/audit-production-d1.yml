@@ -88,8 +88,25 @@ jobs:
             npx --yes wrangler@4 d1 execute god-emperornovel-db --remote --command "$sql"
           }
           run_query "Complete production table inventory" "SELECT name FROM sqlite_master WHERE type='table' AND name NOT LIKE 'sqlite_%' ORDER BY name;"
-          run_query "Complete production table inventory" "SELECT name FROM sqlite_master WHERE type='table' AND name NOT LIKE 'sqlite_%' ORDER BY name;"
-          run_query "Core runtime table presence" "SELECT required.name AS required_table, CASE WHEN actual.name IS NULL THEN 'MISSING' ELSE 'present' END AS status FROM (SELECT 'users' AS name UNION ALL SELECT 'sessions' UNION ALL SELECT 'novels' UNION ALL SELECT 'chapters' UNION ALL SELECT 'genres' UNION ALL SELECT 'tags' UNION ALL SELECT 'novel_genres' UNION ALL SELECT 'novel_tags' UNION ALL SELECT 'unlocks' UNION ALL SELECT 'unlock_batches' UNION ALL SELECT 'bookmarks' UNION ALL SELECT 'history' UNION ALL SELECT 'donations' UNION ALL SELECT 'connectors' UNION ALL SELECT 'comments' UNION ALL SELECT 'novel_requests' UNION ALL SELECT 'audit_logs' UNION ALL SELECT 'ticket_ledger' UNION ALL SELECT 'follows' UNION ALL SELECT 'user_library' UNION ALL SELECT 'ratings' UNION ALL SELECT 'reports' UNION ALL SELECT 'notifications' UNION ALL SELECT 'agents' UNION ALL SELECT 'agent_runs' UNION ALL SELECT 'app_settings' UNION ALL SELECT 'chapter_views' UNION ALL SELECT 'ai_author_projects' UNION ALL SELECT 'ai_chapter_jobs' UNION ALL SELECT 'ai_generation_runs' UNION ALL SELECT 'ai_provider_benchmarks' UNION ALL SELECT 'ai_publish_policies') required LEFT JOIN sqlite_master actual ON actual.type='table' AND actual.name=required.name ORDER BY required.name;
+          core_tables_sql="$(cat <<'SQL'
+          SELECT required.name AS required_table,
+                 CASE WHEN actual.name IS NULL THEN 'MISSING' ELSE 'present' END AS status
+          FROM (
+            SELECT 'users' AS name UNION ALL SELECT 'sessions' UNION ALL SELECT 'novels' UNION ALL SELECT 'chapters'
+            UNION ALL SELECT 'genres' UNION ALL SELECT 'tags' UNION ALL SELECT 'novel_genres' UNION ALL SELECT 'novel_tags'
+            UNION ALL SELECT 'unlocks' UNION ALL SELECT 'unlock_batches' UNION ALL SELECT 'bookmarks' UNION ALL SELECT 'history'
+            UNION ALL SELECT 'donations' UNION ALL SELECT 'connectors' UNION ALL SELECT 'comments' UNION ALL SELECT 'novel_requests'
+            UNION ALL SELECT 'audit_logs' UNION ALL SELECT 'ticket_ledger' UNION ALL SELECT 'follows' UNION ALL SELECT 'user_library'
+            UNION ALL SELECT 'ratings' UNION ALL SELECT 'reports' UNION ALL SELECT 'notifications' UNION ALL SELECT 'agents'
+            UNION ALL SELECT 'agent_runs' UNION ALL SELECT 'app_settings' UNION ALL SELECT 'chapter_views'
+            UNION ALL SELECT 'ai_author_projects' UNION ALL SELECT 'ai_chapter_jobs' UNION ALL SELECT 'ai_generation_runs'
+            UNION ALL SELECT 'ai_provider_benchmarks' UNION ALL SELECT 'ai_publish_policies'
+          ) required
+          LEFT JOIN sqlite_master actual ON actual.type='table' AND actual.name=required.name
+          ORDER BY required.name;
+          SQL
+          )"
+          run_query "Core runtime table presence" "$core_tables_sql"
           migration_table_check="$(npx --yes wrangler@4 d1 execute god-emperornovel-db --remote --command "SELECT CASE WHEN EXISTS (SELECT 1 FROM sqlite_master WHERE type='table' AND name='d1_migrations') THEN 'present' ELSE 'absent' END AS migration_history_table;" 2>&1)"
           printf '%s\n' "$migration_table_check"
           if printf '%s' "$migration_table_check" | grep -q '"present"'; then
