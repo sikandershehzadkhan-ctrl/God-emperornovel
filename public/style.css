@@ -747,3 +747,11 @@ html[data-theme="dark"] body.adminDashboardPage .adminTable th{color:#b8b4ce!imp
 @media(max-width:900px){.genreGrid{grid-template-columns:repeat(3,minmax(0,1fr))}.tagGrid{grid-template-columns:repeat(2,minmax(0,1fr))}}
 @media(max-width:650px){.genreGrid{grid-template-columns:repeat(2,minmax(0,1fr));gap:9px}.genreCard{min-height:126px;padding:13px}.genreCard h3{font-size:16px}.tagGrid{grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}.tagTile{padding:11px;font-size:12px}.activeFilters{gap:6px}.activeFilter{padding:6px 8px}}
 @media(max-width:360px){.genreGrid,.tagGrid{grid-template-columns:1fr}}
+
+/* Imperial Novel 17.6.0: honest provider state and rights-safe Author Studio */
+body.authorStudioPage button:disabled{opacity:.42;cursor:not-allowed;filter:grayscale(.22);box-shadow:none}
+body.authorStudioPage .aiUnavailable{background:#2a1b2b!important;color:#ffc3cf!important;border-color:#7e4559!important}
+body.authorStudioPage #aiProviderDescription{max-width:720px;line-height:1.6}
+body.authorStudioPage #aiProviderBadge{white-space:normal}
+body.authorStudioPage .check input:disabled{accent-color:#8b82a3}
+@media(max-width:650px){body.authorStudioPage .top{align-items:flex-start}body.authorStudioPage .novelHead{align-items:flex-start}}
