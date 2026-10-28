@@ -70,8 +70,14 @@ jobs:
           set -euo pipefail
           python3 - <<'PY'
           from pathlib import Path
+          import re
           source = Path('src/index.js').read_text(encoding='utf-8')
+          audit = Path('.github/workflows/audit-production-d1.yml').read_text(encoding='utf-8')
+          runtime_tables = set(re.findall(r'CREATE TABLE IF NOT EXISTS\\s+([A-Za-z_][A-Za-z0-9_]*)', source))
+          audited_tables = set(re.findall(r"\\('([a-z_]+)'\\)", audit))
+          missing_audit_tables = sorted(runtime_tables - audited_tables)
           checks = {
+              'read-only audit inventory covers every literal runtime table': not missing_audit_tables,
               'legacy novels remain published when the publication column is added': "['publication_status',\"TEXT NOT NULL DEFAULT 'published'\"]" in source,
               'first-admin bootstrap cannot promote an arbitrary user': "UPDATE users SET role='admin',verified=1 WHERE id=?" not in source,
               'the schema marker remains compatible with the existing runtime migration': "core_schema_version','16.64.0" in source,
