@@ -515,3 +515,42 @@ html[data-theme="dark"] a:hover,html[data-theme="dark"] .quickCard:hover{border-
 .iconbtn .imperialIcon{display:block;margin:auto}
 .menuDrawer a{display:flex;align-items:center;gap:0}
 @media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}*,*::before,*::after{animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important;scroll-behavior:auto!important}}
+
+
+/* Imperial Novel 16.66: cinematic hero and mobile-first performance polish */
+.imperialHero{isolation:isolate;min-height:clamp(500px,52vw,650px);display:flex;align-items:center;border:1px solid rgba(160,139,225,.32);border-radius:26px;background:linear-gradient(90deg,rgba(7,9,24,.98) 0%,rgba(10,11,31,.94) 35%,rgba(13,13,37,.68) 60%,rgba(9,11,26,.24) 100%),linear-gradient(0deg,rgba(7,9,22,.6),transparent 45%),url('/imperial-hero.png') 70% 38%/cover no-repeat;box-shadow:0 26px 75px rgba(17,12,49,.24);color:#f8f7ff}
+.imperialHero:before{content:"";position:absolute;inset:0;z-index:0;pointer-events:none;background:linear-gradient(120deg,transparent 35%,rgba(112,83,211,.12) 60%,rgba(38,173,188,.07));}
+.imperialHero:after{height:1px;background:linear-gradient(90deg,transparent,rgba(174,155,255,.8),rgba(80,211,219,.5),transparent);z-index:3}
+.imperialHero .heroInner{z-index:2;padding:clamp(34px,5.2vw,76px);max-width:760px}
+.heroOverline{display:flex;align-items:center;gap:10px;color:#c7b9ff;font-size:10px;letter-spacing:.23em;font-weight:800}
+.heroLiveDot{width:7px;height:7px;border-radius:50%;background:#59d7c9;box-shadow:0 0 0 4px rgba(89,215,201,.12)}
+.heroOverlineRule{height:1px;width:34px;background:rgba(195,180,255,.55)}
+.imperialHero h1{font-family:Georgia,'Times New Roman',serif;font-size:clamp(52px,7.1vw,94px);font-weight:500;letter-spacing:-.055em;line-height:.94;margin:28px 0 22px;color:#fff;text-wrap:balance}
+.imperialHero h1 span{color:#b9a5ff;text-shadow:0 0 34px rgba(141,112,239,.2)}
+.imperialHero .heroLead{max-width:520px;font-size:clamp(14px,1.35vw,17px);line-height:1.8;color:rgba(239,237,255,.78)}
+.heroActions{margin-top:30px;gap:12px}
+.heroPrimary{display:inline-flex;align-items:center;gap:22px;background:linear-gradient(120deg,#8d72e8,#6449bd);border-color:rgba(213,201,255,.38);border-radius:10px;padding:14px 19px;box-shadow:0 12px 34px rgba(93,66,181,.3)}
+.heroPrimary span{font-size:18px}
+.heroSecondary{display:inline-flex;align-items:center;gap:9px;background:rgba(15,16,39,.48);border-color:rgba(205,197,244,.28);color:#f2efff;padding:14px 17px;border-radius:10px}
+.heroSecondary:hover{background:rgba(65,51,116,.6);color:white}
+.heroFoot{display:flex;align-items:center;gap:13px;margin-top:44px;color:rgba(220,215,245,.66);font-size:9px;letter-spacing:.14em;flex-wrap:wrap}
+.heroFoot>span:first-child{color:#e1d8ff;font-weight:800}
+.heroFoot b{color:#5bd2c9;padding:0 3px}
+.heroFootDivider{width:28px;height:1px;background:rgba(204,190,255,.38)}
+.heroAtmosphere{position:absolute;inset:0;overflow:hidden;pointer-events:none;z-index:1}
+.heroSigil{position:absolute;right:10%;top:50%;transform:translateY(-50%);font-size:clamp(150px,24vw,310px);line-height:1;color:rgba(200,184,255,.11);text-shadow:0 0 70px rgba(132,102,224,.16);font-family:Georgia,serif}
+.heroOrbit{position:absolute;right:6%;top:50%;width:min(40vw,460px);aspect-ratio:1;border:1px solid rgba(192,177,255,.16);border-radius:50%;transform:translateY(-50%) rotate(-22deg)}
+.orbitTwo{width:min(32vw,370px);right:9%;border-color:rgba(85,206,211,.13);transform:translateY(-50%) rotate(32deg)}
+.heroCornerMark{position:absolute;right:24px;bottom:22px;z-index:2;color:rgba(235,230,255,.58);font-size:9px;letter-spacing:.2em}
+.heroCornerMark span{color:#77d9d2;padding:0 6px}
+.homePage .quickGrid{grid-template-columns:repeat(6,minmax(0,1fr));gap:10px;margin-top:14px}
+.homePage .quickCard{min-width:0;padding:12px 10px;background:rgba(255,255,255,.82);border-color:#e5e0f1;border-radius:12px;box-shadow:0 5px 18px rgba(35,25,78,.045)}
+.homePage .quickCard>span{width:30px;height:30px;border-radius:9px;background:#f0ebff;color:#684bc0}
+.homePage .quickCard b{font-size:12px}
+.homePage .quickCard small{font-size:10px}
+.homePage .section{margin-top:34px}
+.homePage .sectionHead h2{font-size:clamp(25px,3vw,34px)}
+.homePage .ecosystemCard{border-radius:16px}
+@media(max-width:900px){.imperialHero{min-height:490px;background-position:62% center}.imperialHero .heroInner{max-width:640px}.heroSigil{right:0;opacity:.75}.heroOrbit{right:-9%;width:50vw}.orbitTwo{right:-3%;width:41vw}.homePage .quickGrid{grid-template-columns:repeat(3,minmax(0,1fr))}}
+@media(max-width:600px){.page.homePage{padding-top:14px}.imperialHero{min-height:570px;border-radius:18px;background:linear-gradient(90deg,rgba(7,9,24,.96),rgba(10,11,31,.78) 68%,rgba(10,11,31,.55)),linear-gradient(0deg,rgba(7,9,22,.65),transparent 60%),url('/imperial-hero.png') 64% center/cover no-repeat}.imperialHero .heroInner{padding:32px 22px 38px}.heroOverline{font-size:8px;letter-spacing:.16em;gap:7px}.heroOverlineRule{width:18px}.imperialHero h1{font-size:clamp(49px,14vw,70px);margin:25px 0 18px}.imperialHero .heroLead{font-size:14px;line-height:1.75;max-width:390px}.heroActions{display:grid;grid-template-columns:1fr;max-width:320px;margin-top:24px}.heroPrimary,.heroSecondary{justify-content:space-between;padding:13px 15px}.heroFoot{margin-top:31px;gap:8px;font-size:8px;letter-spacing:.1em}.heroFootDivider{width:17px}.heroSigil{font-size:180px;right:-12%;top:22%;transform:none;opacity:.55}.heroOrbit{width:68vw;right:-25%;top:30%;transform:none}.orbitTwo{width:54vw;right:-15%;top:35%;transform:none}.heroCornerMark{right:13px;bottom:12px;font-size:8px}.homePage .quickGrid{grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}.homePage .quickCard{padding:10px 9px}.homePage .quickCard small{font-size:9px}.homePage .section{margin-top:28px}}
+@media(prefers-reduced-motion:reduce){.imperialHero *, .homePage .quickCard,.homePage .card{transition:none!important;scroll-behavior:auto!important}}
