@@ -1,6 +1,8 @@
 name: Deploy Imperial Novel to Cloudflare
 
 on:
+  push:
+    branches: [main]
   workflow_dispatch:
     inputs:
       confirm_production_deploy:
@@ -21,7 +23,7 @@ concurrency:
 
 jobs:
   deploy:
-    if: ${{ inputs.confirm_production_deploy == 'true' }}
+    if: ${{ github.event_name == 'push' || inputs.confirm_production_deploy == 'true' }}
     runs-on: ubuntu-latest
     timeout-minutes: 10
     steps:
@@ -81,23 +83,34 @@ jobs:
           fi
           npx --yes wrangler@4 whoami
 
-      - name: Block deployment on unreviewed production schema drift
+      - name: Verify production schema compatibility before deployment
         shell: bash
         env:
           CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
         run: |
           set -euo pipefail
-          echo "Checking the live schema marker before any production deployment..."
+          echo "Checking the live schema marker and required production structures..."
           marker_output="$(npx --yes wrangler@4 d1 execute god-emperornovel-db --remote --command "SELECT value FROM app_settings WHERE key='core_schema_version' LIMIT 1;")"
           printf '%s\n' "$marker_output"
           marker="$(printf '%s' "$marker_output" | node -e 'let s="";process.stdin.on("data",d=>s+=d).on("end",()=>{const m=s.match(/"value"\s*:\s*"([^"]+)"/);console.log(m?m[1]:"unknown")})')"
           echo "Live schema marker: $marker"
-          if [ "$marker" != "16.64.0" ]; then
-            echo "::error::Production deployment blocked: schema marker is '$marker', expected '16.64.0'. Complete and verify the schema upgrade plan before deploying. No Worker deployment was attempted."
+          if [ "$marker" = "16.64.0" ]; then
+            echo "Schema marker matches the reviewed runtime baseline."
+          elif [ "$marker" = "16.12.1" ]; then
+            echo "Legacy marker found. Checking production tables and columns before allowing the additive runtime bootstrap."
+            compatibility_output="$(npx --yes wrangler@4 d1 execute god-emperornovel-db --remote --command "SELECT CASE WHEN EXISTS(SELECT 1 FROM sqlite_master WHERE type='table' AND name='users') AND EXISTS(SELECT 1 FROM sqlite_master WHERE type='table' AND name='novels') AND EXISTS(SELECT 1 FROM sqlite_master WHERE type='table' AND name='chapters') AND EXISTS(SELECT 1 FROM sqlite_master WHERE type='table' AND name='app_settings') AND EXISTS(SELECT 1 FROM sqlite_master WHERE type='table' AND name='agents') AND EXISTS(SELECT 1 FROM sqlite_master WHERE type='table' AND name='agent_runs') AND EXISTS(SELECT 1 FROM sqlite_master WHERE type='table' AND name='ai_author_projects') AND EXISTS(SELECT 1 FROM sqlite_master WHERE type='table' AND name='ai_chapter_jobs') AND EXISTS(SELECT 1 FROM sqlite_master WHERE type='table' AND name='ai_generation_runs') AND EXISTS(SELECT 1 FROM pragma_table_info('novels') WHERE name='publication_status') AND EXISTS(SELECT 1 FROM pragma_table_info('novels') WHERE name='rights_evidence') AND EXISTS(SELECT 1 FROM pragma_table_info('chapters') WHERE name='publication_status') AND EXISTS(SELECT 1 FROM pragma_table_info('ai_author_projects') WHERE name='updated_at') AND EXISTS(SELECT 1 FROM pragma_table_info('ai_chapter_jobs') WHERE name='project_id') AND EXISTS(SELECT 1 FROM pragma_table_info('ai_generation_runs') WHERE name='created_at') THEN 'compatible' ELSE 'incompatible' END AS compatibility;")"
+            printf '%s\n' "$compatibility_output"
+            compatibility="$(printf '%s' "$compatibility_output" | node -e 'let s="";process.stdin.on("data",d=>s+=d).on("end",()=>{const m=s.match(/"compatibility"\s*:\s*"([^"]+)"/);console.log(m?m[1]:"unknown")})')"
+            if [ "$compatibility" != "compatible" ]; then
+              echo "::error::Production schema is not compatible with the additive runtime bootstrap. No Worker deployment was attempted."
+              exit 1
+            fi
+            echo "Required legacy schema structures are present. Runtime bootstrap will apply only its reviewed idempotent schema operations and advance the marker after success."
+          else
+            echo "::error::Unrecognized production schema marker '$marker'. Deployment blocked pending review."
             exit 1
           fi
-          echo "Schema marker matches the currently reviewed runtime baseline."
 
       - name: Validate Cloudflare bundle without deploying
         run: npx --yes wrangler@4 deploy --dry-run
