@@ -994,3 +994,75 @@ button:disabled{opacity:.5;cursor:not-allowed}
 .adminDashboardPage .mobileAdmin{background:var(--surface)!important;border-color:var(--line)!important}
 .adminDashboardPage .status{border-radius:999px!important}
 @media(max-width:700px){.authorStudioPage .wrap{padding:14px 12px 90px!important}.authorStudioPage .wrap>.top{padding:13px!important}.authorStudioPage .card{padding:14px!important}.authorStudioPage .grid{grid-template-columns:1fr!important}.adminDashboardPage .adminWrap{padding:14px 12px 95px!important}.adminDashboardPage .adminHero{padding:18px!important}.adminDashboardPage .adminGrid{grid-template-columns:repeat(2,minmax(0,1fr))!important}.adminDashboardPage .adminCard{padding:12px!important}}
+
+/* 17.9.0 | Discovery, novel overview and reader comfort pass */
+.catalogTop{padding:20px!important;margin-top:20px!important;background:var(--surface)!important;border:1px solid var(--line)!important;border-radius:20px!important;box-shadow:none!important}
+.catalogTop .search{align-items:center;gap:10px;padding:6px 10px;border:1px solid var(--line);border-radius:13px;background:var(--surface-2)}
+.catalogTop .search>span{color:var(--cyan);font-size:20px}
+.catalogTop .search input{border:0!important;background:transparent!important;box-shadow:none!important}
+.filterRow{gap:12px!important;margin-top:16px!important}
+.filterGroup{flex:1;min-width:150px;align-items:stretch!important;gap:7px!important}
+.filterLabel{color:var(--muted-2)!important;font-size:9px!important;letter-spacing:.12em!important}
+.catalogMeta{color:var(--muted)!important;font-size:12px!important}
+.catalogMeta b{color:var(--text)!important}
+.catalogGrid{grid-template-columns:repeat(4,minmax(0,1fr))!important;gap:15px!important}
+.catalogCard{background:var(--surface)!important;color:var(--text)!important;border:1px solid var(--line)!important;border-radius:17px!important;box-shadow:none!important;transition:transform .18s,border-color .18s,background .18s!important}
+.catalogCard:hover{transform:translateY(-3px);background:var(--surface-2)!important;border-color:var(--line-strong)!important;box-shadow:0 18px 44px #0002!important}
+.catalogCover{background:linear-gradient(145deg,#151b34,#080b18)!important}
+.catalogCover img{object-fit:cover}
+.statusBadge{border:1px solid var(--line)!important;background:rgba(8,11,24,.8)!important;color:var(--cyan)!important;backdrop-filter:none!important}
+.catalogBody{padding:14px!important}
+.catalogTitle{color:var(--text)!important;font-size:14px!important;font-weight:850!important;letter-spacing:-.035em!important;line-height:1.35!important}
+.catalogBody .muted{color:var(--muted)!important;font-size:11px!important}
+.catalogStats{display:flex;flex-wrap:wrap;gap:8px;margin:10px 0;color:var(--muted)!important;font-size:10px!important}
+.catalogTags{display:flex;flex-wrap:wrap;gap:5px}
+.catalogTags .pill{padding:4px 7px!important;background:var(--surface-2)!important;color:var(--muted)!important;border:1px solid var(--line)!important;font-size:9px!important}
+.readMini{display:inline-flex;margin-top:13px;color:var(--cyan)!important;font-size:10px!important;font-weight:850!important}
+.catalogEmpty{padding:28px!important;background:var(--surface)!important;border:1px dashed var(--line-strong)!important;border-radius:18px!important;color:var(--text)!important}
+.catalogEmpty h2{color:var(--text)!important;letter-spacing:-.04em}
+.catalogEmpty p{color:var(--muted)!important}
+.activeFilter{background:var(--surface-2)!important;border-color:rgba(167,139,250,.32)!important}
+.clearFilters{color:var(--cyan)!important}
+.pager{display:flex;justify-content:center;gap:10px;margin:24px 0}
+.readerPage{max-width:none!important;background:var(--ink)!important;color:var(--text)!important}
+.readerBar{background:color-mix(in srgb,var(--ink-2) 96%,transparent)!important;border-bottom:1px solid var(--line)!important;backdrop-filter:none!important}
+.readerBarInner{height:66px!important}
+.readerBack{color:var(--cyan)!important;font-size:11px}
+.readerBook b{color:var(--text)!important;font-size:12px}
+.readerBook span,.readerProgressText{color:var(--muted)!important}
+.readerTool{background:var(--surface)!important;color:var(--text)!important;border:1px solid var(--line)!important;border-radius:10px!important}
+.readerTool:hover,.readerTool.saved{border-color:rgba(84,224,220,.4)!important;color:var(--cyan)!important}
+.readerProgress{background:var(--surface-3)!important}
+.readerProgress span{background:linear-gradient(90deg,var(--violet),var(--cyan))!important}
+.readerMain{width:min(920px,calc(100% - 28px))!important;padding:34px 0 60px!important}
+.readerArticle{background:var(--surface)!important;border:1px solid var(--line)!important;border-radius:22px!important;box-shadow:none!important;padding:clamp(22px,5vw,58px)!important}
+.readerArticle h1{font-family:Inter,ui-sans-serif,system-ui,sans-serif!important;font-size:clamp(26px,4vw,40px)!important;font-weight:850!important;letter-spacing:-.055em!important;color:var(--text)!important}
+.readerDivider{background:linear-gradient(90deg,var(--violet),var(--cyan))!important}
+.readerContent{color:var(--text)!important;font-size:18px;line-height:1.9;max-width:680px!important}
+.readerLock{background:var(--surface-2)!important;border-color:var(--line)!important;color:var(--text)!important}
+.readerLock h2,.readerLock p{color:var(--text)!important}
+.readerLock p{color:var(--muted)!important}
+.readerActions{gap:12px}
+.readerFooterCard{background:var(--surface)!important;border:1px solid var(--line)!important;border-radius:18px!important;box-shadow:none!important}
+.readerFooterCard h3{color:var(--text)!important}
+.readerFooterCard p{color:var(--muted)!important}
+.chapterDrawer{background:var(--ink-2)!important;border:1px solid var(--line)!important;box-shadow:0 24px 70px #0007!important}
+.readerChapterItem{border-bottom:1px solid var(--line)!important;color:var(--muted)!important}
+.readerChapterItem.current{background:rgba(167,139,250,.14)!important;color:var(--text)!important}
+.readerPrefs{background:var(--surface)!important;border-bottom:1px solid var(--line)!important}
+.novelHero{background:radial-gradient(ellipse at 0 0,rgba(167,139,250,.13),transparent 48%),var(--surface)!important;border:1px solid var(--line)!important;border-radius:22px!important;box-shadow:none!important}
+.novelCover{border-color:var(--line)!important}
+.novelInfo h1{font-family:Inter,ui-sans-serif,system-ui,sans-serif!important;font-size:clamp(30px,5vw,50px)!important;font-weight:900!important;letter-spacing:-.06em!important;color:var(--text)!important}
+.novelInfo>p{color:var(--muted)!important;line-height:1.8}
+.novelInfo .muted{color:var(--muted)!important}
+.stat{background:var(--surface-2)!important;border-color:var(--line)!important;color:var(--muted)!important}
+.stat b{color:var(--text)!important}
+.tabs{border-color:var(--line)!important}
+.tabs a{color:var(--muted)!important}
+.tabs a.active,.tabs a:hover{color:var(--cyan)!important;border-color:var(--cyan)!important}
+.chapter{background:var(--surface)!important;border:1px solid var(--line)!important;border-radius:13px!important;color:var(--text)!important}
+.chapter:hover{background:var(--surface-2)!important;border-color:var(--line-strong)!important}
+.chapterNo{background:var(--surface-2)!important;color:var(--violet)!important}
+.ratingPanel,.communityGrid>.panel{background:var(--surface)!important;border-color:var(--line)!important}
+@media(max-width:900px){.catalogGrid{grid-template-columns:repeat(3,minmax(0,1fr))!important}}
+@media(max-width:650px){.catalogTop{padding:13px!important}.filterRow{display:grid!important;grid-template-columns:repeat(2,minmax(0,1fr))!important;gap:10px!important}.filterGroup{min-width:0}.catalogGrid{grid-template-columns:repeat(2,minmax(0,1fr))!important;gap:9px!important}.catalogBody{padding:10px!important}.catalogTitle{font-size:12px!important}.catalogStats{gap:6px;font-size:9px!important}.readerBarInner{gap:6px!important;height:60px!important}.readerBack{font-size:10px}.readerTools{gap:4px!important}.readerTool{min-width:31px!important;padding:7px!important}.readerBook{text-align:left}.readerArticle{padding:22px 17px!important;border-radius:16px!important}.readerContent{font-size:17px;line-height:1.85}.readerMeta{align-items:flex-start;flex-direction:column}.novelHero{grid-template-columns:96px minmax(0,1fr)!important;gap:14px!important;padding:14px!important}.novelCover{border-radius:11px!important}.novelInfo h1{font-size:25px!important}.novelInfo .stats{gap:6px}.novelInfo .stat{padding:8px!important;font-size:10px}.novelInfo .actions{gap:7px}.novelInfo .actions>*{font-size:10px;padding:9px!important}}
