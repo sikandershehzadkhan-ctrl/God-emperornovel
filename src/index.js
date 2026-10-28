@@ -219,7 +219,7 @@ async function ensureCoreSchema(env){
   await env.DB.prepare("INSERT OR REPLACE INTO app_settings(key,value) VALUES('core_schema_version','16.64.0')").run()
 
  })();
- return coreSchemaReady;
+ return coreSchemaReady.catch(e=>{coreSchemaReady=null;throw e});
 }
 
 
