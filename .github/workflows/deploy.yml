@@ -90,8 +90,8 @@ jobs:
           set -euo pipefail
           echo "Checking the live schema marker before any production deployment..."
           marker_output="$(npx --yes wrangler@4 d1 execute god-emperornovel-db --remote --command "SELECT value FROM app_settings WHERE key='core_schema_version' LIMIT 1;")"
-          printf '%s\\n' "$marker_output"
-          marker="$(printf '%s' "$marker_output" | node -e "let s='';process.stdin.on('data',d=>s+=d).on('end',()=>{const m=s.match(/\\"value\\"\\s*:\\s*\\"([^\\"]+)\\"/);console.log(m?m[1]:'unknown')})")"
+          printf '%s\n' "$marker_output"
+          marker="$(printf '%s' "$marker_output" | node -e 'let s="";process.stdin.on("data",d=>s+=d).on("end",()=>{const m=s.match(/"value"\s*:\s*"([^"]+)"/);console.log(m?m[1]:"unknown")})')"
           echo "Live schema marker: $marker"
           if [ "$marker" != "16.64.0" ]; then
             echo "::error::Production deployment blocked: schema marker is '$marker', expected '16.64.0'. Complete and verify the schema upgrade plan before deploying. No Worker deployment was attempted."
