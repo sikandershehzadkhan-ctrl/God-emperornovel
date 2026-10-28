@@ -1,0 +1,23 @@
+{
+  "name": "Imperial Novel",
+  "short_name": "Imperial Novel",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#080b16",
+  "theme_color": "#17152f",
+  "description": "Imperial Novel. Read • Create • Conquer. Discover original, licensed and authorized stories.",
+  "icons": [
+    {
+      "src": "/imperial-crown-icon.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/imperial-crown-icon.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ]
+}
