@@ -140,6 +140,25 @@ jobs:
           run_query "Chapter schema (columns only)" "PRAGMA table_info(chapters);"
           run_query "Application settings schema (columns only)" "PRAGMA table_info(app_settings);"
           run_query "Publication and rights columns" "PRAGMA table_info(novels);"
+          critical_columns_sql="$(cat <<'SQL'
+          WITH expected(table_name,column_name) AS (
+            VALUES
+              ('users','id'),('users','username'),('users','email'),('users','password_hash'),('users','role'),('users','tickets'),('users','verified'),('users','banned'),
+              ('sessions','token_hash'),('sessions','user_id'),('sessions','expires_at'),
+              ('novels','id'),('novels','title'),('novels','author'),('novels','description'),('novels','status'),('novels','kind'),('novels','rights_status'),('novels','views'),('novels','rating'),('novels','publication_status'),('novels','owner_user_id'),('novels','rights_evidence'),
+              ('chapters','id'),('chapters','novel_id'),('chapters','chapter_number'),('chapters','title'),('chapters','content'),('chapters','is_locked'),('chapters','ticket_cost'),('chapters','publication_status'),
+              ('app_settings','key'),('app_settings','value'),
+              ('donations','id'),('donations','user_id'),('donations','amount'),('donations','status'),
+              ('novel_requests','id'),('novel_requests','user_id'),('novel_requests','status')
+          )
+          SELECT e.table_name,e.column_name,
+                 CASE WHEN EXISTS (SELECT 1 FROM pragma_table_info(e.table_name) p WHERE p.name=e.column_name)
+                      THEN 'present' ELSE 'MISSING' END AS status
+          FROM expected e
+          ORDER BY e.table_name,e.column_name;
+          SQL
+          )"
+          run_query "Critical runtime column compatibility (read-only)" "$critical_columns_sql"
           run_query "Published catalog rights readiness (aggregate only)" "SELECT COUNT(*) AS published_novels, SUM(CASE WHEN COALESCE(rights_status,'') NOT IN ('original','licensed','authorized','public_domain','cc') THEN 1 ELSE 0 END) AS unusual_rights_status, SUM(CASE WHEN COALESCE(rights_evidence,'')='' THEN 1 ELSE 0 END) AS missing_rights_evidence, SUM(CASE WHEN owner_user_id IS NULL THEN 1 ELSE 0 END) AS missing_owner FROM novels WHERE publication_status='published';"
           run_query "Published chapter integrity (aggregate only)" "SELECT COUNT(*) AS published_chapters, SUM(CASE WHEN n.id IS NULL THEN 1 ELSE 0 END) AS chapters_without_novel FROM chapters c LEFT JOIN novels n ON n.id=c.novel_id WHERE COALESCE(c.publication_status,'published')='published';"
           echo
