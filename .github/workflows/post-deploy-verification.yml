@@ -1,0 +1,40 @@
+name: Imperial Novel Post-Deploy Verification
+
+on:
+  workflow_run:
+    workflows: ["Deploy Imperial Novel to Cloudflare"]
+    types: [completed]
+    branches: [main]
+
+permissions:
+  contents: read
+
+jobs:
+  verify-live:
+    if: ${{ github.event.workflow_run.conclusion == 'success' }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Verify live Worker health and deployed version
+        shell: bash
+        run: |
+          set -euo pipefail
+          response="$(curl --fail --silent --show-error --max-time 20 --retry 5 --retry-delay 2 https://god-emperornovel.sikandershehzadkhan.workers.dev/api/health)"
+          printf '%s\n' "$response"
+          printf '%s' "$response" | node -e 'let s="";process.stdin.on("data",d=>s+=d).on("end",()=>{const h=JSON.parse(s);if(h.ok!==true||h.database!==true||h.version!=="16.65.0"){console.error("::error::Unexpected live health payload or version");process.exit(1)}console.log("Live Worker health and version verified.")})'
+
+      - name: Verify production schema marker after first live request
+        shell: bash
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+        run: |
+          set -euo pipefail
+          result="$(npx --yes wrangler@4 d1 execute god-emperornovel-db --remote --command "SELECT key,value FROM app_settings WHERE key='core_schema_version' LIMIT 1;")"
+          printf '%s\n' "$result"
+          marker="$(printf '%s' "$result" | node -e 'let s="";process.stdin.on("data",d=>s+=d).on("end",()=>{const m=s.match(/"value"\s*:\s*"([^"]+)"/);console.log(m?m[1]:"unknown")})')"
+          if [ "$marker" != "16.64.0" ]; then
+            echo "::error::Live Worker deployed, but schema bootstrap marker is '$marker', expected 16.64.0. Further investigation required."
+            exit 1
+          fi
+          echo "Production schema marker verified at 16.64.0."
