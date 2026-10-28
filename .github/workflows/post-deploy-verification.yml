@@ -21,7 +21,7 @@ jobs:
           set -euo pipefail
           response="$(curl --fail --silent --show-error --max-time 20 --retry 5 --retry-delay 2 "https://god-emperornovel.sikandershehzadkhan.workers.dev/api/health?verify=$(date +%s)")"
           printf '%s\n' "$response"
-          printf '%s' "$response" | node -e 'let s="";process.stdin.on("data",d=>s+=d).on("end",()=>{const h=JSON.parse(s);if(h.ok!==true||h.database!==true||h.version!=="17.3.0"){console.error("::error::Unexpected live health payload or version");process.exit(1)}console.log("Live Worker health and version verified.")})'
+          printf '%s' "$response" | node -e 'let s="";process.stdin.on("data",d=>s+=d).on("end",()=>{const h=JSON.parse(s);if(h.ok!==true||h.database!==true||h.version!=="17.4.0"){console.error("::error::Unexpected live health payload or version");process.exit(1)}console.log("Live Worker health and version verified.")})'
 
       - name: Verify live homepage and versioned frontend assets
         shell: bash
@@ -30,28 +30,36 @@ jobs:
           base="https://god-emperornovel.sikandershehzadkhan.workers.dev"
           stamp="$(date +%s)"
           html="$(curl --fail --silent --show-error --max-time 20 -H "Cache-Control: no-cache" "$base/?verify=$stamp")"
-          printf '%s' "$html" | grep -F '/app.js?v=17.3.0' >/dev/null
-          printf '%s' "$html" | grep -F '/style.css?v=17.3.0' >/dev/null
-          js="$(curl --fail --silent --show-error --max-time 20 "$base/app.js?v=17.3.0&verify=$stamp")"
-          css="$(curl --fail --silent --show-error --max-time 20 "$base/style.css?v=17.3.0&verify=$stamp")"
+          printf '%s' "$html" | grep -F '/app-17.4.0.js' >/dev/null
+          printf '%s' "$html" | grep -F '/style-17.4.0.css' >/dev/null
+          js="$(curl --fail --silent --show-error --max-time 20 "$base/app-17.4.0.js?verify=$stamp")"
+          css="$(curl --fail --silent --show-error --max-time 20 "$base/style-17.4.0.css?verify=$stamp")"
           printf '%s' "$js" | grep -F 'Worlds beyond' >/dev/null
           printf '%s' "$js" | grep -F 'Trend Factory' >/dev/null
           printf '%s' "$css" | grep -F 'Trend Factory editorial intelligence workspace' >/dev/null
-          echo "Live homepage references the expected assets; redesigned homepage JS and Trend Factory CSS are present."
+          echo "Live homepage references immutable release assets; redesigned homepage JS and CSS are present."
           printf '%s' "$css" | grep -F 'readerPage[data-reader-theme="cosmic"]' >/dev/null
           if printf '%s' "$css" | grep -F 'imperial-hero.png' >/dev/null; then echo "::error::The oversized decorative hero image is still referenced by CSS."; exit 1; fi
           for route in /catalog /community /trend-factory /read/1/1; do
             page="$(curl --fail --silent --show-error --max-time 20 -H "Cache-Control: no-cache" "$base$route?verify=$stamp")"
-            printf '%s' "$page" | grep -F '/app.js?v=17.3.0' >/dev/null
-            printf '%s' "$page" | grep -F '/style.css?v=17.3.0' >/dev/null
+            printf '%s' "$page" | grep -F '/app-17.4.0.js' >/dev/null
+            printf '%s' "$page" | grep -F '/style-17.4.0.css' >/dev/null
           done
           for entry in "/author:authorStudioPage" "/admin:adminDashboardPage"; do
             route="${entry%%:*}"; expected_class="${entry##*:}"
             page="$(curl --fail --silent --show-error --max-time 20 -H "Cache-Control: no-cache" "$base$route?verify=$stamp")"
-            printf '%s' "$page" | grep -F '/style.css?v=17.3.0' >/dev/null
+            printf '%s' "$page" | grep -F '/style-17.4.0.css' >/dev/null
             printf '%s' "$page" | grep -F "class=\"$expected_class\"" >/dev/null
           done
           echo "Route smoke tests passed for catalog, community, Trend Factory, reader, Author Studio and Command Center."
+          for route in /privacy /terms /copyright /community-taxonomy; do
+            page="$(curl --fail --silent --show-error --max-time 20 -H "Cache-Control: no-cache" "$base$route?verify=$stamp")"
+            printf '%s' "$page" | grep -F '/style-17.4.0.css' >/dev/null
+          done
+          printf '%s' "$(curl --fail --silent --show-error --max-time 20 "$base/privacy?verify=$stamp")" | grep -F 'Privacy at Imperial Novel' >/dev/null
+          printf '%s' "$(curl --fail --silent --show-error --max-time 20 "$base/terms?verify=$stamp")" | grep -F 'Use the realm responsibly' >/dev/null
+          printf '%s' "$(curl --fail --silent --show-error --max-time 20 "$base/copyright?verify=$stamp")" | grep -F 'Rights & Copyright' >/dev/null
+          echo "Core product and legal routes are serving the immutable 17.4.0 stylesheet."
 
       - name: Verify production schema marker after first live request
         if: always()
