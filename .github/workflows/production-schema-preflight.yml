@@ -1,0 +1,96 @@
+name: Imperial Novel Production Schema Upgrade Preflight
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/production-schema-preflight.yml'
+  workflow_dispatch:
+    inputs:
+      confirm_read_only_preflight:
+        description: "Confirm this workflow must only inspect production and must not write to D1"
+        required: true
+        default: "yes"
+        type: choice
+        options:
+          - "no"
+          - "yes"
+
+permissions:
+  contents: read
+
+concurrency:
+  group: imperial-novel-production-schema-preflight
+  cancel-in-progress: false
+
+jobs:
+  inspect:
+    if: ${{ github.event_name == 'push' || inputs.confirm_read_only_preflight == 'yes' }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    steps:
+      - name: Checkout source
+        uses: actions/checkout@v4
+
+      - name: Verify production target and credentials
+        shell: bash
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+        run: |
+          set -euo pipefail
+          grep -q 'database_name = "god-emperornovel-db"' wrangler.toml
+          grep -q 'database_id = "78493557-1142-45e6-96aa-2ba9f67e3be0"' wrangler.toml
+          test -n "${CLOUDFLARE_API_TOKEN:-}"
+          test -n "${CLOUDFLARE_ACCOUNT_ID:-}"
+          npx --yes wrangler@4 whoami
+          echo "Verified configured production database identity. This workflow contains no D1 write command."
+
+      - name: Record live Worker and database version markers
+        shell: bash
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+        run: |
+          set -euo pipefail
+          echo "===== Public health endpoint ====="
+          curl --fail --silent --show-error --max-time 20 https://god-emperornovel.sikandershehzadkhan.workers.dev/api/health
+          echo
+          echo "===== Database marker (read-only SELECT) ====="
+          npx --yes wrangler@4 d1 execute god-emperornovel-db --remote --command "SELECT key,value FROM app_settings WHERE key IN ('core_schema_version','first_admin_bootstrap_done') ORDER BY key;"
+
+      - name: Capture production schema inventory
+        shell: bash
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+        run: |
+          set -euo pipefail
+          query() {
+            printf '\n===== %s =====\n' "$1"
+            npx --yes wrangler@4 d1 execute god-emperornovel-db --remote --command "$2"
+          }
+          query "All application tables" "SELECT name FROM sqlite_master WHERE type='table' AND name NOT LIKE 'sqlite_%' ORDER BY name;"
+          query "Core identity columns" "PRAGMA table_info(users);"
+          query "Session columns" "PRAGMA table_info(sessions);"
+          query "Novel columns" "PRAGMA table_info(novels);"
+          query "Chapter columns" "PRAGMA table_info(chapters);"
+          query "Application settings columns" "PRAGMA table_info(app_settings);"
+          query "Agent columns" "PRAGMA table_info(agents);"
+          query "Agent run columns" "PRAGMA table_info(agent_runs);"
+          query "Donations columns" "PRAGMA table_info(donations);"
+          query "Ticket ledger columns" "PRAGMA table_info(ticket_ledger);"
+          query "Connector columns" "PRAGMA table_info(connectors);"
+          query "Novel request columns" "PRAGMA table_info(novel_requests);"
+          query "Taxonomy submission columns" "PRAGMA table_info(taxonomy_submissions);"
+          query "AI project columns" "PRAGMA table_info(ai_author_projects);"
+          query "AI chapter job columns" "PRAGMA table_info(ai_chapter_jobs);"
+          query "AI generation run columns" "PRAGMA table_info(ai_generation_runs);"
+          query "AI provider benchmark columns" "PRAGMA table_info(ai_provider_benchmarks);"
+          query "AI publish policy columns" "PRAGMA table_info(ai_publish_policies);"
+          query "Chapter view columns" "PRAGMA table_info(chapter_views);"
+          query "Publication aggregates" "SELECT COALESCE(publication_status,'<NULL>') AS status,COUNT(*) AS count FROM novels GROUP BY publication_status ORDER BY publication_status;"
+          query "Chapter publication aggregates" "SELECT COALESCE(publication_status,'<NULL>') AS status,COUNT(*) AS count FROM chapters GROUP BY publication_status ORDER BY publication_status;"
+          query "Safe record counts" "SELECT (SELECT COUNT(*) FROM users) AS users_total,(SELECT COUNT(*) FROM novels) AS novels_total,(SELECT COUNT(*) FROM chapters) AS chapters_total,(SELECT COUNT(*) FROM donations WHERE status='pending') AS pending_donations,(SELECT COUNT(*) FROM novel_requests WHERE status='pending') AS pending_requests;"
+          echo
+          echo "READ-ONLY PREFLIGHT COMPLETE. No INSERT, UPDATE, DELETE, ALTER, CREATE, or DROP statements were executed."
