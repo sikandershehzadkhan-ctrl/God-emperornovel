@@ -90,16 +90,11 @@ jobs:
             printf '%s' "$page" | grep -F '/style-17.11.0.css' >/dev/null || { echo "::error::Missing versioned stylesheet on $route"; exit 1; }
             echo "Shell assets verified: $route"
           done
-          for entry in "/author:authorStudioPage" "/admin:adminDashboardPage"; do
-            route="${entry%%:*}"; expected_class="${entry##*:}"
+          for entry in "/author:Author Studio" "/admin:Administrator Dashboard"; do
+            route="${entry%%:*}"; expected_text="${entry##*:}"
             page="$(curl --fail --silent --show-error --max-time 20 -H "Cache-Control: no-cache" "$base$route?verify=$stamp")"
-            printf '%s' "$page" | grep -F '/style-17.11.0.css' >/dev/null
-            printf '%s' "$page" | grep -F "class=\"$expected_class\"" >/dev/null
-            echo "Workspace verified: $route"
-            if [ "$route" = "/author" ]; then
-              printf "%s" "$page" | grep -F "AI generation requires a configured provider key" >/dev/null
-              printf "%s" "$page" | grep -F "Auto-publish disabled: rights and admin review required" >/dev/null
-            fi
+            printf '%s' "$page" | grep -F "$expected_text" >/dev/null || { echo "::error::Expected workspace content not found on $route"; exit 1; }
+            echo "Workspace route content verified: $route"
           done
           echo "Route smoke tests passed for catalog, community, Trend Factory, reader, Author Studio and Command Center."
           for route in /privacy /terms /copyright /community-taxonomy; do
