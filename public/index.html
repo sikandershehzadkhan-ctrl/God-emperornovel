@@ -37,6 +37,28 @@
 <span class="bootSpinner" aria-hidden="true"></span>
 </section>
 </main>
+<script>
+(function(){
+  var failed=false;
+  function recover(){
+    if(failed)return;
+    failed=true;
+    var root=document.getElementById('app');
+    if(!root)return;
+    var panel=document.createElement('section');
+    panel.setAttribute('role','alert');
+    panel.style.cssText='max-width:560px;margin:12vh auto;padding:28px 22px;text-align:center;font:16px/1.6 system-ui,sans-serif;color:#0B1215;background:#FFFFFF;border:1px solid rgba(11,18,21,.12);border-top:4px solid #6A0DAD;border-radius:18px';
+    var brand=document.createElement('p');brand.textContent='IMPERIAL NOVEL';brand.style.cssText='color:#6A0DAD;font-weight:800;letter-spacing:.12em;margin:0 0 8px';
+    var title=document.createElement('h1');title.textContent='Your storyverse is taking longer than expected.';title.style.cssText='font-size:clamp(26px,6vw,38px);line-height:1.1;margin:0 0 12px';
+    var message=document.createElement('p');message.textContent='The page could not finish loading. Please retry. Your account and reading data have not been changed.';message.style.color='#39464C';
+    var retry=document.createElement('button');retry.type='button';retry.textContent='Try again';retry.style.cssText='margin-top:12px;padding:12px 20px;border:0;border-radius:10px;background:#6A0DAD;color:#FFFFFF;font-weight:700;font-size:15px';retry.addEventListener('click',function(){window.location.reload()});
+    panel.append(brand,title,message,retry);root.replaceChildren(panel);
+  }
+  window.addEventListener('error',function(e){if(e.target&&e.target.tagName==='SCRIPT')recover()},true);
+  window.addEventListener('unhandledrejection',recover);
+  window.setTimeout(function(){var root=document.getElementById('app');if(root&&root.querySelector('.bootFallback'))recover()},12000);
+})();
+</script>
 <script src="/app-17.17.0.js" defer></script>
 </body>
 </html>
