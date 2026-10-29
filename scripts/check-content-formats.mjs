@@ -12,6 +12,7 @@ assert.ok(formats.every(x => x.label.trim() && x.group.trim()), 'Every format ha
 assert.ok(source.includes('if(p==="/api/formats"&&m==="GET")'), 'Public format registry endpoint exists');
 assert.ok(source.includes('CONTENT_FORMAT_IDS.has(kind)'), 'Publishing validates format IDs');
 assert.ok(source.includes('supported_formats:CONTENT_FORMATS.map'), 'Invalid formats return accepted IDs');
+assert.ok(source.includes('originHint:') && source.includes('experience:'), 'Format registry documents origin traditions and reader experiences');
 const scriptMatch = index.match(/<script src="\/([^"]+\.js)" defer><\/script>/);
 assert.ok(scriptMatch && fs.existsSync('public/' + scriptMatch[1]), 'HTML references an existing application bundle');
 for (const name of new Set(['app.js', scriptMatch[1]])) {
