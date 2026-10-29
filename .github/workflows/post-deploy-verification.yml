@@ -69,7 +69,7 @@ jobs:
           printf '%s' "$html" | grep -F '/imperial-luxury-17.12.0.css' >/dev/null
           printf '%s' "$html" | grep -F '/manifest-17.12.0.webmanifest' >/dev/null
           printf '%s' "$luxury" | grep -F 'Low-end mobile performance' >/dev/null
-          printf '%s' "$luxury" | grep -F 'Imperial Archive direction' >/dev/null
+          printf '%s' "$luxury" | grep -F 'Taste Skill direction' >/dev/null
           printf '%s' "$icon" | grep -F 'Imperial Novel' >/dev/null
           printf '%s' "$manifest" | grep -F '"name": "Imperial Novel"' >/dev/null
           printf '%s' "$js" | grep -F 'zh-TW' >/dev/null
