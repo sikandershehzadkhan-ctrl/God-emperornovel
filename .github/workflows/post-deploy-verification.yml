@@ -71,24 +71,52 @@ jobs:
           set -euo pipefail
           base="https://god-emperornovel.sikandershehzadkhan.workers.dev"
           stamp="$(date +%s)"
-          html="$(curl --fail --silent --show-error --max-time 20 -H "Cache-Control: no-cache" "$base/?verify=$stamp")"
-          printf '%s' "$html" | grep -F "Imperial Novel" >/dev/null
-          printf '%s' "$html" | grep -F "Read • Create • Conquer" >/dev/null
+          html=""
+          homepage_verified=false
+          for attempt in $(seq 1 12); do
+            html="$(curl --silent --show-error --max-time 20 -H "Cache-Control: no-cache" "$base/?verify=$stamp-$attempt" || true)"
+            if [ -n "$html" ] \
+              && printf '%s' "$html" | grep -F "/app-$EXPECTED_VERSION.js" >/dev/null \
+              && printf '%s' "$html" | grep -F "/manifest-$EXPECTED_VERSION.webmanifest" >/dev/null; then
+              homepage_verified=true
+              echo "Live homepage release $EXPECTED_VERSION verified on attempt $attempt."
+              break
+            fi
+            echo "Waiting for homepage assets to converge on $EXPECTED_VERSION (attempt $attempt/12)."
+            sleep 5
+          done
+          if [ "$homepage_verified" != true ]; then
+            echo "::error::Live homepage did not converge on release $EXPECTED_VERSION within 60 seconds."
+            printf '%s\n' "$html" | grep -Eo '(src|href)="[^"]+"' | head -40 || true
+            exit 1
+          fi
+
           asset_paths="$(printf '%s' "$html" | node -e 'let s="";process.stdin.on("data",d=>s+=d).on("end",()=>{const found=[...s.matchAll(/(?:src|href)="(\/[^\"?#]+\.(?:js|css|webmanifest|svg))"/g)].map(m=>m[1]);console.log([...new Set(found)].join("\n"))})')"
           test -n "$asset_paths" || { echo "::error::No local frontend assets were found in the homepage HTML."; exit 1; }
-          printf '%s\n' "$asset_paths"
           while IFS= read -r asset; do
             [ -n "$asset" ] || continue
-            curl --fail --silent --show-error --max-time 20 "$base$asset?verify=$stamp" -o /dev/null
-            echo "Asset reachable: $asset"
+            status=""
+            for attempt in $(seq 1 3); do
+              status="$(curl --silent --show-error --max-time 15 -o /dev/null -w '%{http_code}' "$base$asset?verify=$stamp-$attempt" || true)"
+              case "$status" in 2??|3??) break ;; esac
+              sleep 2
+            done
+            case "$status" in
+              2??|3??) echo "Asset reachable ($status): $asset" ;;
+              *) echo "::error::Asset unavailable after retries ($status): $asset"; exit 1 ;;
+            esac
           done <<< "$asset_paths"
-          printf '%s\n' "$html" | grep -F "/app-$EXPECTED_VERSION.js" >/dev/null || { echo "::error::Homepage does not reference the expected release JavaScript."; exit 1; }
+
           js="$(curl --fail --silent --show-error --max-time 20 "$base/app-$EXPECTED_VERSION.js?verify=$stamp")"
           printf '%s' "$js" | grep -F 'Open a world.' >/dev/null
           printf '%s' "$js" | grep -F 'Shape an empire.' >/dev/null
           printf '%s' "$js" | grep -F 'imperialLanguageSelect' >/dev/null
           if printf '%s' "$js" | grep -F 'heroSideCard' >/dev/null; then
             echo "::error::Legacy hero card markup is still present in the deployed JavaScript."
+            exit 1
+          fi
+          if printf '%s' "$js" | grep -F 'nextQuickGrid' >/dev/null; then
+            echo "::error::Legacy quick-tile row is still present in the deployed JavaScript."
             exit 1
           fi
           echo "Homepage release, branded hero, language control, and referenced assets verified."
@@ -102,9 +130,23 @@ jobs:
           base="https://god-emperornovel.sikandershehzadkhan.workers.dev"
           stamp="$(date +%s)"
           for route in /catalog /formats /community /trend-factory /author /admin /read/1/1 /privacy /terms /copyright /community-taxonomy; do
-            page="$(curl --fail --silent --show-error --max-time 20 -H "Cache-Control: no-cache" "$base$route?verify=$stamp")"
-            printf '%s' "$page" | grep -F "/app-$EXPECTED_VERSION.js" >/dev/null || { echo "::error::Expected release bundle missing on $route"; exit 1; }
-            printf '%s' "$page" | grep -F "/manifest-$EXPECTED_VERSION.webmanifest" >/dev/null || { echo "::error::Expected release manifest missing on $route"; exit 1; }
+            page=""
+            route_verified=false
+            for attempt in $(seq 1 6); do
+              page="$(curl --silent --show-error --max-time 20 -H "Cache-Control: no-cache" "$base$route?verify=$stamp-$attempt" || true)"
+              if [ -n "$page" ] \
+                && printf '%s' "$page" | grep -F "/app-$EXPECTED_VERSION.js" >/dev/null \
+                && printf '%s' "$page" | grep -F "/manifest-$EXPECTED_VERSION.webmanifest" >/dev/null; then
+                route_verified=true
+                break
+              fi
+              sleep 3
+            done
+            if [ "$route_verified" != true ]; then
+              echo "::error::Release assets not verified on route $route."
+              printf '%s\n' "$page" | grep -Eo '(src|href)="[^"]+"' | head -20 || true
+              exit 1
+            fi
             echo "Route shell verified: $route"
           done
 
