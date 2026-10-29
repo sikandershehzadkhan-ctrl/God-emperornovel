@@ -1,0 +1,110 @@
+name: Imperial Novel Pause Stale Cloudflare Build Trigger
+
+on:
+  push:
+    branches:
+      - investigate/cloudflare-builds-connection
+    paths:
+      - '.github/workflows/pause-stale-cloudflare-build-trigger.yml'
+  workflow_dispatch:
+    inputs:
+      confirm_pause:
+        description: "Type yes to pause the stale Cloudflare production trigger while GitHub Actions is the single reviewed publisher"
+        required: true
+        default: "no"
+        type: choice
+        options:
+          - "no"
+          - "yes"
+
+permissions:
+  contents: read
+
+concurrency:
+  group: imperial-novel-pause-stale-cloudflare-build-trigger
+  cancel-in-progress: false
+
+jobs:
+  pause-stale-trigger:
+    if: ${{ github.event_name == 'push' || inputs.confirm_pause == 'yes' }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Verify exact stale trigger, pause its main-branch deployments, and verify
+        shell: bash
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+        run: |
+          set -euo pipefail
+          test -n "${CLOUDFLARE_API_TOKEN:-}" || { echo "::error::CLOUDFLARE_API_TOKEN is missing"; exit 1; }
+          test -n "${CLOUDFLARE_ACCOUNT_ID:-}" || { echo "::error::CLOUDFLARE_ACCOUNT_ID is missing"; exit 1; }
+          headers=(-H "Authorization: Bearer $CLOUDFLARE_API_TOKEN" -H "Content-Type: application/json")
+          base="https://api.cloudflare.com/client/v4/accounts/$CLOUDFLARE_ACCOUNT_ID"
+          trigger_uuid="f53db415-9b21-4ff7-a6b3-5a26935a776f"
+          tmp="$(mktemp -d)"
+          trap 'rm -rf "$tmp"' EXIT
+
+          curl --fail --silent --show-error --max-time 25 "${headers[@]}" "$base/builds/workers/$(node --input-type=module -e 'process.stdout.write("")')/triggers" >/dev/null 2>&1 || true
+          # Fetch by the exact known trigger UUID and validate its identity before changing anything.
+          status="$(curl --silent --show-error --max-time 25 -o "$tmp/current.json" -w '%{http_code}' "${headers[@]}" "$base/builds/triggers/$trigger_uuid" || true)"
+          if [ "$status" != "200" ]; then
+            echo "::error::Cannot read exact Cloudflare trigger (HTTP $status). No change attempted."
+            exit 1
+          fi
+          node --input-type=module - "$tmp/current.json" <<'NODE'
+          import fs from 'node:fs';
+          const d=JSON.parse(fs.readFileSync(process.argv[2],'utf8'));
+          const x=d.result;
+          if(d.success!==true || !x || x.trigger_uuid!=='f53db415-9b21-4ff7-a6b3-5a26935a776f') {
+            console.error('Cloudflare did not return the expected trigger identity. No change attempted.');
+            process.exit(1);
+          }
+          const currentBranch=Array.isArray(x.branch_includes)&&x.branch_includes.includes('main');
+          const stale=typeof x.build_command==='string'&&x.build_command.includes('Imperial-Novel-16.64.0-THREE-LINE-MENU-DESIGN-UPDATE.zip');
+          console.log(JSON.stringify({
+            trigger_uuid:x.trigger_uuid,
+            trigger_name:x.trigger_name,
+            branch_includes:x.branch_includes,
+            build_command:x.build_command,
+            deploy_command:x.deploy_command,
+            stale_main_trigger_detected:currentBranch&&stale
+          },null,2));
+          if(!currentBranch||!stale) {
+            console.error('Trigger does not match the audited stale production configuration. No change attempted.');
+            process.exit(2);
+          }
+          NODE
+
+          # Pause only this trigger by moving its production branch filter to an impossible,
+          # clearly named sentinel. This does not delete the trigger or touch the Worker/D1.
+          payload='{"branch_includes":["__disabled_until_imperial_novel_pipeline_reconciled__"]}'
+          patch_status="$(curl --silent --show-error --max-time 25 -X PATCH -o "$tmp/patch.json" -w '%{http_code}' "${headers[@]}" "$base/builds/triggers/$trigger_uuid" --data "$payload" || true)"
+          echo "Cloudflare trigger update HTTP status: $patch_status"
+          if [ "$patch_status" != "200" ]; then
+            node --input-type=module - "$tmp/patch.json" <<'NODE'
+          import fs from 'node:fs';
+          try {
+            const d=JSON.parse(fs.readFileSync(process.argv[2],'utf8'));
+            console.log(JSON.stringify({success:d.success,errors:Array.isArray(d.errors)?d.errors.map(e=>({code:e.code,message:e.message})):[]},null,2));
+          } catch { console.log('Non-JSON response; body omitted.'); }
+          NODE
+            echo "::error::Cloudflare did not confirm the trigger update. Check the trigger in the dashboard."
+            exit 1
+          fi
+
+          verify_status="$(curl --silent --show-error --max-time 25 -o "$tmp/verify.json" -w '%{http_code}' "${headers[@]}" "$base/builds/triggers/$trigger_uuid" || true)"
+          if [ "$verify_status" != "200" ]; then
+            echo "::error::Could not verify updated trigger state."
+            exit 1
+          fi
+          node --input-type=module - "$tmp/verify.json" <<'NODE'
+          import fs from 'node:fs';
+          const d=JSON.parse(fs.readFileSync(process.argv[2],'utf8'));
+          const x=d.result;
+          const expected='__disabled_until_imperial_novel_pipeline_reconciled__';
+          const ok=d.success===true&&x?.trigger_uuid==='f53db415-9b21-4ff7-a6b3-5a26935a776f'&&Array.isArray(x.branch_includes)&&x.branch_includes.length===1&&x.branch_includes[0]===expected;
+          console.log(JSON.stringify({verified:ok,trigger_uuid:x?.trigger_uuid,branch_includes:x?.branch_includes,build_command:x?.build_command,deploy_command:x?.deploy_command},null,2));
+          if(!ok) process.exit(1);
+          NODE
+          echo "The stale Cloudflare Workers Builds trigger is paused. No Worker code was deployed and no D1 query/write was executed."
