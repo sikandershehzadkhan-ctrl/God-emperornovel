@@ -6,7 +6,10 @@
 @media(max-width:700px){.communityGrid{grid-template-columns:1fr}.commentReply{margin-left:12px}.ratingStar{font-size:29px}}
 
 
-/* 16.63.0 brand palette enforcement */
-:root{--brand-purple:#7c3aed;--brand-cyan:#22d3ee;--brand-black:#050507}
+/* Imperial Novel: shared interaction polish, aligned with the purple / sapphire / white / obsidian system. */
+:root{--brand-purple:var(--in-purple,#8b5cf6);--brand-sapphire:var(--in-sapphire,#4f8cff);--brand-black:var(--in-obsidian,#080a12)}
 .themeToggle{accent-color:var(--brand-purple)}
-.themeToggle:hover{border-color:var(--brand-cyan);box-shadow:0 0 0 1px rgba(34,211,238,.22)}
+.themeToggle:hover{border-color:var(--brand-sapphire);box-shadow:0 0 0 1px rgba(79,140,255,.2)}
+.ratingStar.selected,.ratingStar:hover{color:var(--brand-sapphire,#4f8cff)}
+.ratingStar:focus-visible,.commentActions button:focus-visible{outline:3px solid var(--brand-sapphire,#4f8cff);outline-offset:3px}
+@media(prefers-reduced-motion:reduce){*,*::before,*::after{scroll-behavior:auto!important;animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important}}
