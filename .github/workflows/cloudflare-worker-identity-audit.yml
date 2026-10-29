@@ -1,6 +1,11 @@
 name: Imperial Novel Cloudflare Worker Identity Audit
 
 on:
+  push:
+    branches: [main]
+    paths:
+      - 'docs/DEPLOYMENT-IDENTITY-INVESTIGATION.md'
+      - '.github/workflows/cloudflare-worker-identity-audit.yml'
   workflow_dispatch:
     inputs:
       confirm_read_only_audit:
