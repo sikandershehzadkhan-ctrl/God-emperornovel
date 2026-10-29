@@ -81,6 +81,17 @@ async function home(){
    <a class="quickCard" href="/library"><span class="quickIcon qiLime">▤</span><div><b>Your library</b><small>Pick up where you left off</small></div><strong>↗</strong></a>
    <a class="quickCard" href="/random"><span class="quickIcon qiPink">✧</span><div><b>Wildcard</b><small>Surprise me</small></div><strong>↗</strong></a>
   </section>
+  <section class="homeFormatShelf" aria-labelledby="homeFormatTitle">
+   <div class="homeFormatHeading"><div><div class="eyebrow"><span class="eyebrowDot"></span> ONE LIBRARY · MANY WAYS TO TELL A STORY</div><h2 id="homeFormatTitle">Start with the kind of story <span>you love.</span></h2><p>Novels and fanfiction are at the heart of Imperial Novel. Explore other formats whenever you're ready.</p></div><a class="ghost" href="/formats">All formats <span>↗</span></a></div>
+   <div class="homeFormatGrid">
+    <a class="homeFormatCard homeFormatPrimary" href="/format/original"><span class="homeFormatGlyph" aria-hidden="true">▤</span><span class="homeFormatCopy"><b>Original novels</b><small>Build a world from page one.</small></span><span class="homeFormatArrow" aria-hidden="true">↗</span></a>
+    <a class="homeFormatCard homeFormatPrimary" href="/format/fanfiction"><span class="homeFormatGlyph" aria-hidden="true">✧</span><span class="homeFormatCopy"><b>Fanfiction</b><small>Return to worlds you love.</small></span><span class="homeFormatArrow" aria-hidden="true">↗</span></a>
+    <a class="homeFormatCard" href="/format/light_novel"><span class="homeFormatGlyph" aria-hidden="true">文</span><span class="homeFormatCopy"><b>Light novels</b><small>Illustrated, serialized adventures.</small></span><span class="homeFormatArrow" aria-hidden="true">↗</span></a>
+    <a class="homeFormatCard" href="/format/web_novel"><span class="homeFormatGlyph" aria-hidden="true">⌘</span><span class="homeFormatCopy"><b>Web novels</b><small>Follow the next chapter.</small></span><span class="homeFormatArrow" aria-hidden="true">↗</span></a>
+    <a class="homeFormatCard" href="/format/manga"><span class="homeFormatGlyph" aria-hidden="true">▧</span><span class="homeFormatCopy"><b>Manga & comics</b><small>Stories told in panels.</small></span><span class="homeFormatArrow" aria-hidden="true">↗</span></a>
+    <a class="homeFormatCard" href="/format/manhwa"><span class="homeFormatGlyph" aria-hidden="true">▥</span><span class="homeFormatCopy"><b>Manhwa & webtoons</b><small>Scroll into another world.</small></span><span class="homeFormatArrow" aria-hidden="true">↗</span></a>
+   </div>
+  </section>
   <section class="section nextShelf">
    <div class="sectionHead"><div><div class="eyebrow"><span class="eyebrowDot"></span> THE CURRENT ROTATION</div><h2>Stories with momentum.</h2><p>Real published stories from the Imperial catalog. No made-up counters, no filler.</p></div><a class="ghost" href="/catalog?sort=trending">Explore all <span>↗</span></a></div>
    <div id="trend" class="grid homeStoryGrid"><div class="skeletonCard"></div><div class="skeletonCard"></div><div class="skeletonCard"></div></div>
