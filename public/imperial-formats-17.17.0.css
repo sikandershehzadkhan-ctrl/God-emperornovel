@@ -36,3 +36,22 @@
 .authorStudioLayout{display:grid;grid-template-columns:minmax(0,.8fr) minmax(0,1.2fr);gap:18px;align-items:start}.authorStudioIntro{grid-column:1/-1;background:linear-gradient(135deg,rgba(91,55,180,.15),rgba(42,111,210,.08)),var(--panel-bg,rgba(20,22,34,.7))}.authorStudioIntro h2,.authorCreateForm h2,.authorWorksPanel h2{margin:.35rem 0 .7rem}.authorCreateForm,.authorWorksPanel{min-width:0}.authorCreateForm{display:flex;flex-direction:column;gap:9px}.authorCreateForm input:not([type=checkbox]),.authorCreateForm select,.authorCreateForm textarea,.authorChapterForm input:not([type=checkbox]),.authorChapterForm textarea{box-sizing:border-box;width:100%;min-width:0;border:1px solid var(--border,rgba(150,150,180,.24));border-radius:12px;padding:12px 13px;background:var(--input-bg,rgba(8,10,20,.55));color:inherit;font:inherit}.fieldLabel{display:block;font-size:.88rem;font-weight:650;margin-top:6px}.authorFormGrid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}.authorFormGrid>div{min-width:0}.authorWorksList{display:grid;gap:13px}.authorWork{border:1px solid var(--border,rgba(150,150,180,.22));border-radius:16px;padding:15px;min-width:0;background:rgba(120,120,160,.035)}.authorWorkTop{display:flex;align-items:flex-start;justify-content:space-between;gap:12px}.authorWork h3{margin:.25rem 0;font-size:1.08rem;overflow-wrap:anywhere}.authorWork p{margin:.3rem 0}.authorStatus{display:inline-flex;align-items:center;border:1px solid currentColor;border-radius:999px;padding:5px 9px;font-size:.75rem;white-space:nowrap}.status-published{color:#4caf92}.status-review{color:#86aaf8}.status-rejected{color:#ed9b9b}.authorWorkActions{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px;align-items:center}.authorChapterForm{margin-top:14px;padding-top:14px;border-top:1px solid var(--border,rgba(150,150,180,.22))}.authorChapterForm[hidden]{display:none}.authorChapterForm textarea{resize:vertical}.authorChapterForm .checkRow{display:flex;align-items:center;gap:9px}.authorChapterForm .checkRow input{width:auto}@media(max-width:760px){.authorStudioLayout{grid-template-columns:minmax(0,1fr)}.authorStudioIntro{grid-column:auto}.authorFormGrid{grid-template-columns:minmax(0,1fr)}.authorWorkTop{flex-direction:column}.authorStatus{align-self:flex-start}.authorWorksPanel .sectionHead{align-items:flex-start;gap:8px}}@media(prefers-reduced-motion:reduce){.authorStudioLayout *{scroll-behavior:auto!important;transition:none!important;animation:none!important}}
 
 .authorEditForm{margin-top:14px;padding:14px 0;border-top:1px solid var(--border,rgba(150,150,180,.22))}.authorEditForm input,.authorEditForm select,.authorEditForm textarea{box-sizing:border-box;width:100%;min-width:0;border:1px solid var(--border,rgba(150,150,180,.24));border-radius:12px;padding:12px 13px;background:var(--input-bg,rgba(8,10,20,.55));color:inherit;font:inherit}.authorEditForm[hidden]{display:none}.authorEditForm textarea{resize:vertical}
+
+
+/* Keyboard focus must remain unmistakable on format links, even where component
+   styles previously reset the browser outline. Keep this visible in every theme. */
+.homeFormatCard:focus-visible,
+.formatLink:focus-visible{
+  outline:3px solid #83a9ff!important;
+  outline-offset:3px;
+  border-color:#83a9ff;
+  position:relative;
+  z-index:1;
+}
+@media(forced-colors:active){
+  .homeFormatCard:focus-visible,
+  .formatLink:focus-visible{
+    outline:2px solid Highlight!important;
+    outline-offset:3px;
+  }
+}
