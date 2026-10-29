@@ -51,6 +51,8 @@ for (const path of ['public/app.js', 'public/app-17.17.0.js']) {
  assert.ok(app.includes("$$('.authorCancelEdit',list).forEach"), path + ' binds story edit cancel controls');
  assert.ok(app.includes("$$('.authorEditForm',list).forEach"), path + ' binds editable story forms');
  assert.ok(app.includes("CONTENT_FORMAT_OPTIONS.map"), path + ' populates edit format options from the canonical registry');
+ assert.ok(app.includes("api('/api/formats')"), path + ' fetches canonical formats from the server registry');
+ assert.ok(app.includes("id=\"storyKind\" name=\"kind\" required>'+CONTENT_FORMAT_OPTIONS.map"), path + ' builds the new-story format selector from the registry');
  assert.ok(app.includes('name="alt_titles"'), path + ' supports alternate titles');
 
 }
