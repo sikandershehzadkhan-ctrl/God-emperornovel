@@ -47,7 +47,9 @@ for (const path of ['public/app.js', 'public/app-17.16.0.js']) {
  assert.ok(app.includes("$$('.authorCancelChapter',list).forEach"), path + ' binds all chapter cancel controls as a collection');
  assert.ok(app.includes("$$('.authorChapterForm',list).forEach"), path + ' binds all chapter forms as a collection');
  assert.ok(app.includes("$$('.authorSubmitStory',list).forEach"), path + ' binds all review submission controls as a collection');
- assert.ok(app.includes("$$('.authorEditForm',list).forEach"), path + ' binds editable story forms');
+ assert.ok(app.includes("$('.authorEditToggle',list).forEach"), path + ' binds story edit toggles');
+ assert.ok(app.includes("$('.authorCancelEdit',list).forEach"), path + ' binds story edit cancel controls');
+ assert.ok(app.includes("$('.authorEditForm',list).forEach"), path + ' binds editable story forms');
  assert.ok(app.includes("CONTENT_FORMAT_OPTIONS.map"), path + ' populates edit format options from the canonical registry');
  assert.ok(app.includes('name="alt_titles"'), path + ' supports alternate titles');
 
