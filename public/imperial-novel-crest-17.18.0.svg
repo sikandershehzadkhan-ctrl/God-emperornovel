@@ -1,0 +1,38 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" role="img" aria-label="Imperial Novel eclipse and empty throne crest">
+  <defs>
+    <linearGradient id="rim" x1="0" y1="0" x2="1" y2="1">
+      <stop stop-color="#d9ccff"/>
+      <stop offset=".52" stop-color="#8b5cf6"/>
+      <stop offset="1" stop-color="#4f8cff"/>
+    </linearGradient>
+    <linearGradient id="seat" x1="0" y1="0" x2="0.9" y2="1">
+      <stop stop-color="#fff"/>
+      <stop offset=".48" stop-color="#ddd6fe"/>
+      <stop offset="1" stop-color="#93c5fd"/>
+    </linearGradient>
+    <radialGradient id="void">
+      <stop stop-color="#111328"/>
+      <stop offset=".72" stop-color="#080a13"/>
+      <stop offset="1" stop-color="#03040a"/>
+    </radialGradient>
+  </defs>
+  <rect width="512" height="512" rx="112" fill="#05060b"/>
+  <circle cx="256" cy="256" r="216" fill="#080a13" stroke="url(#rim)" stroke-width="5"/>
+  <circle cx="256" cy="235" r="157" fill="url(#void)" stroke="#8b5cf6" stroke-opacity=".6" stroke-width="2.5"/>
+  <circle cx="256" cy="190" r="89" fill="#020309" stroke="url(#rim)" stroke-width="4"/>
+  <circle cx="256" cy="190" r="73" fill="none" stroke="#4f8cff" stroke-opacity=".65" stroke-width="1.5" stroke-dasharray="2 10"/>
+  <path d="M256 82v18M256 280v18M148 190h18M346 190h18M180 114l12 12M320 254l12 12M332 114l-12 12M192 254l-12 12" stroke="url(#rim)" stroke-width="3" stroke-linecap="round"/>
+  <circle cx="256" cy="190" r="50" fill="#03040a"/>
+  <path d="M218 205v-26l19 13 19-27 19 27 19-13v26" fill="none" stroke="url(#seat)" stroke-width="6" stroke-linecap="round" stroke-linejoin="round"/>
+  <g fill="none" stroke="url(#seat)" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M201 225v83q0 18 18 18h74q18 0 18-18v-83" stroke-width="9"/>
+    <path d="M201 240h-22v72q0 19 19 19h116q19 0 19-19v-72h-22" stroke-width="8"/>
+    <path d="M220 326v47l-24 20M292 326v47l24 20" stroke-width="9"/>
+    <path d="M179 273h-17v27q0 21 21 21h18M333 273h17v27q0 21-21 21h-18" stroke-width="7"/>
+    <path d="M224 351h64" stroke-width="4" stroke-opacity=".8"/>
+  </g>
+  <path d="M142 417h228" stroke="url(#rim)" stroke-width="4" stroke-linecap="round"/>
+  <circle cx="256" cy="417" r="6" fill="#d9ccff"/>
+  <circle cx="101" cy="256" r="3.5" fill="#60a5fa"/>
+  <circle cx="411" cy="256" r="3.5" fill="#8b5cf6"/>
+</svg>
