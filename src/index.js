@@ -676,7 +676,7 @@ async function api(req,env){
   if(!title||!author)return json({error:'Title and author are required'},400);
   const rights=String(b.rights_status||'original').toLowerCase();
   if(!['original','public_domain','licensed','authorized'].includes(rights))return json({error:'Invalid rights status'},400);
-  const kind=String(b.kind||'original').toLowerCase();
+  const kind=String(b.kind||'original').trim().toLowerCase();if(!CONTENT_FORMAT_IDS.has(kind))return json({error:'Unsupported content format. Fetch /api/formats for the supported format registry.',supported_formats:CONTENT_FORMATS.map(x=>x.id)},400);
   const status=['ongoing','completed'].includes(String(b.status||'ongoing'))?String(b.status):'ongoing';
   try{
    const r=await env.DB.prepare(`INSERT INTO novels(title,alt_titles,author,description,status,kind,language,cover_url,source_url,rights_status,owner_user_id,publication_status,rights_evidence,rights_notes) VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,?)`).bind(title,String(b.alt_titles||''),author,description,status,kind,String(b.language||'English'),String(b.cover_url||''),String(b.source_url||''),rights,Number(b.owner_user_id||u.id),'draft',String(b.rights_evidence||''),String(b.rights_notes||'')).run();
