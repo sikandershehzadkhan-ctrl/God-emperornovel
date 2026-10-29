@@ -358,10 +358,13 @@ async function communityTaxonomy(req,env){
  if(method==='GET'){
   const type=String(u.searchParams.get('type')||'').toLowerCase();
   if(!['genre','tag'].includes(type)) return json({error:'type must be genre or tag'},400);
-  const status=String(u.searchParams.get('status')||'pending').toLowerCase();
-  if(!['pending','approved','rejected','all'].includes(status)) return json({error:'status must be pending, approved, rejected, or all'},400);
-  const q=status==='all' ? `SELECT * FROM taxonomy_submissions WHERE type=? ORDER BY name COLLATE NOCASE` : `SELECT * FROM taxonomy_submissions WHERE type=? AND status=? ORDER BY name COLLATE NOCASE`;
-  const r=status==='all' ? await env.DB.prepare(q).bind(type).all() : await env.DB.prepare(q).bind(type,status).all();
+  // Public discovery exposes approved vocabulary only. Pending/rejected proposals and
+  // submitter details belong exclusively to the authenticated moderation endpoint.
+  const status=String(u.searchParams.get('status')||'approved').toLowerCase();
+  if(status!=='approved') return json({error:'Only approved taxonomy entries are public'},403);
+  const r=await env.DB.prepare(
+   'SELECT id,type,name,slug,description,created_at FROM taxonomy_submissions WHERE type=? AND status=? ORDER BY name COLLATE NOCASE LIMIT 500'
+  ).bind(type,'approved').all();
   return json(r.results||[]);
  }
  if(method==='POST'){
