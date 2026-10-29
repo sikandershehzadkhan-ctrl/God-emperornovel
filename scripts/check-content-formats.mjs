@@ -106,5 +106,8 @@ const formatCss = fs.readFileSync('public/imperial-formats-17.17.0.css','utf8');
 assert.ok(formatCss.includes('.homeFormatCard:focus-visible') && formatCss.includes('.formatLink:focus-visible'), 'Homepage and directory format links retain a visible keyboard focus state');
 assert.ok(formatCss.includes('outline:3px solid #83a9ff!important') && formatCss.includes('outline:2px solid Highlight!important'), 'Format navigation focus remains visible in normal and forced-colors modes');
 assert.ok(formatCss.includes('border-color:#83a9ff'), 'Keyboard focus also reinforces the active format link border');
+assert.ok(formatCss.includes('var(--in-sapphire,#4f8cff)') && !formatCss.includes('brand-cyan'), 'Format navigation uses the Imperial sapphire accent rather than legacy cyan');
+const luxuryDesign = fs.readFileSync('public/imperial-luxury-17.17.0.css','utf8');
+assert.ok(luxuryDesign.includes('Final art direction: editorial authority') && luxuryDesign.includes('display:none!important;') && luxuryDesign.includes('background:#0e111c;'), 'Homepage hero uses the restrained editorial art direction without decorative orbit layers');
 
 console.log('Content format checks passed: '+formats.length+' formats, comic viewer modes, versioned assets verified.');
