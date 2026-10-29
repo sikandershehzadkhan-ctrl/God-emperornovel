@@ -1,0 +1,116 @@
+name: Imperial Novel Cloudflare Builds Connection Audit
+
+on:
+  push:
+    branches:
+      - investigate/cloudflare-builds-connection
+    paths:
+      - '.github/workflows/cloudflare-builds-connection-audit.yml'
+  workflow_dispatch:
+    inputs:
+      confirm_read_only_audit:
+        description: "Confirm this workflow is read-only and will not deploy"
+        required: true
+        default: "yes"
+        type: choice
+        options:
+          - "no"
+          - "yes"
+
+permissions:
+  contents: read
+
+concurrency:
+  group: imperial-novel-cloudflare-builds-connection-audit
+  cancel-in-progress: false
+
+jobs:
+  inspect-build-integration:
+    if: ${{ github.event_name == 'push' || inputs.confirm_read_only_audit == 'yes' }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Inspect Cloudflare Workers Builds repository connections (read-only)
+        shell: bash
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+        run: |
+          set -euo pipefail
+          test -n "${CLOUDFLARE_API_TOKEN:-}" || { echo "::error::CLOUDFLARE_API_TOKEN is missing"; exit 1; }
+          test -n "${CLOUDFLARE_ACCOUNT_ID:-}" || { echo "::error::CLOUDFLARE_ACCOUNT_ID is missing"; exit 1; }
+
+          # Workers Builds repository inventory is read-only. Do not print tokens,
+          # account identifiers, full response bodies, or unrelated repository data.
+          url="https://api.cloudflare.com/client/v4/accounts/$CLOUDFLARE_ACCOUNT_ID/builds/repos"
+          tmp="$(mktemp)"
+          trap 'rm -f "$tmp"' EXIT
+          status="$(curl --silent --show-error --max-time 25 -o "$tmp" -w '%{http_code}' \
+            -H "Authorization: Bearer $CLOUDFLARE_API_TOKEN" \
+            -H "Content-Type: application/json" "$url" || true)"
+          echo "Cloudflare Workers Builds repository endpoint HTTP status: $status"
+          if [ "$status" != "200" ]; then
+            echo "The endpoint did not return HTTP 200. This may mean the token lacks read permission, the account has no Builds integration, or the endpoint is unavailable to this account."
+            node --input-type=module - "$tmp" <<'NODE'
+          import fs from 'node:fs';
+          try {
+            const d = JSON.parse(fs.readFileSync(process.argv[2], 'utf8'));
+            console.log(JSON.stringify({
+              success: d.success,
+              errors: Array.isArray(d.errors) ? d.errors.map(e => ({code:e.code, message:e.message})) : [],
+              result_shape: d.result && typeof d.result === 'object' ? Object.keys(d.result) : typeof d.result
+            }, null, 2));
+          } catch { console.log('Response was not JSON. Body intentionally omitted.'); }
+          NODE
+            exit 0
+          fi
+
+          node --input-type=module - "$tmp" <<'NODE'
+          import fs from 'node:fs';
+          const d = JSON.parse(fs.readFileSync(process.argv[2], 'utf8'));
+          if (d.success !== true) {
+            console.log(JSON.stringify({success:d.success, errors:Array.isArray(d.errors)?d.errors.map(e=>({code:e.code,message:e.message})):[]}, null, 2));
+            process.exit(0);
+          }
+          const root = d.result;
+          const items = Array.isArray(root) ? root
+            : Array.isArray(root?.repos) ? root.repos
+            : Array.isArray(root?.items) ? root.items
+            : Array.isArray(root?.builds) ? root.builds : [];
+          const safe = items.map(x => ({
+            id: x.id ?? x.repo_id ?? null,
+            name: x.name ?? x.repo_name ?? x.repository_name ?? null,
+            provider: x.provider ?? x.provider_type ?? null,
+            repository_url: typeof (x.repo_url ?? x.repository_url) === 'string' ? (x.repo_url ?? x.repository_url) : undefined,
+            created_on: x.created_on ?? null,
+            updated_on: x.updated_on ?? null,
+            build_configs: Array.isArray(x.build_configs) ? x.build_configs.map(c => ({
+              id: c.id ?? null,
+              name: c.name ?? c.build_name ?? null,
+              production_branch: c.production_branch ?? c.production_branch_name ?? null,
+              production_deployments_enabled: c.production_deployments_enabled ?? null,
+              preview_deployments_enabled: c.preview_deployments_enabled ?? null
+            })) : undefined
+          }));
+          console.log(JSON.stringify({
+            success: d.success,
+            result_shape: Array.isArray(root) ? 'array' : Object.keys(root ?? {}),
+            repository_connection_count: items.length,
+            connections: safe,
+            target_repo_match: safe.filter(x => JSON.stringify(x).toLowerCase().includes('sikandershehzadkhan-ctrl/god-emperornovel') || JSON.stringify(x).toLowerCase().includes('god-emperornovel'))
+          }, null, 2));
+          NODE
+
+      - name: Confirm production health without changing anything
+        shell: bash
+        run: |
+          set -euo pipefail
+          url="https://god-emperornovel.sikandershehzadkhan.workers.dev/api/health?build-audit=$(date +%s%N)"
+          curl --fail --silent --show-error --max-time 20 -H "Cache-Control: no-cache" "$url" |
+            node --input-type=module -e '
+              let s=""; for await (const c of process.stdin) s+=c;
+              const d=JSON.parse(s);
+              console.log(JSON.stringify({ok:d.ok,service:d.service,version:d.version,database:d.database,time:d.time},null,2));
+              if(d.ok!==true || d.database!==true) process.exitCode=1;
+            '
+          echo "Read-only audit complete. No deploy, settings change, or D1 write was performed."
