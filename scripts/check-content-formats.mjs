@@ -14,6 +14,8 @@ const taxonomyHandler = source.slice(source.indexOf('async function communityTax
 assert.ok(taxonomyHandler.includes("if(status!=='approved') return json({error:'Only approved taxonomy entries are public'},403)"), 'Public taxonomy API blocks pending/all/rejected proposal enumeration');
 assert.ok(taxonomyHandler.includes('SELECT id,type,name,slug,description,created_at FROM taxonomy_submissions'), 'Public taxonomy API returns only non-sensitive approved fields');
 assert.ok(!taxonomyHandler.includes('SELECT * FROM taxonomy_submissions WHERE type=?'), 'Public taxonomy API never returns full submission records');
+assert.ok(!taxonomyHandler.includes("detail:String(e&&e.message"), 'Public taxonomy API never leaks internal database error details');
+assert.ok(taxonomyHandler.includes("console.error('taxonomy submission write failed',e)"), 'Taxonomy write failures remain available to private server logs');
 assert.ok(source.includes('CONTENT_FORMAT_IDS.has(kind)'), 'Publishing validates format IDs');
 assert.ok(source.includes('supported_formats:CONTENT_FORMATS.map'), 'Invalid formats return accepted IDs');
 assert.ok(source.includes('originHint:') && source.includes('experience:'), 'Format registry documents origin traditions and reader experiences');
