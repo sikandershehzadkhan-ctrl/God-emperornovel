@@ -42,7 +42,11 @@ for (const icon of manifest.icons || []) {
 }
 assert.ok(worker.includes('const version=String(env.APP_VERSION||"").trim()'), 'HTML rendering derives versioned asset URLs from the active Worker release');
 assert.ok(worker.includes('env.APP_ICON_PATH'), 'HTML rendering uses the configured same-origin crest path');
-assert.ok(wrangler.includes('APP_ICON_PATH = "/imperial-novel-crest-17.18.0.svg"'), 'Cloudflare config declares the versioned crest asset');
+const iconPathMatch = wrangler.match(/^APP_ICON_PATH = "([^"]+)"$/m);
+assert.ok(iconPathMatch, 'Cloudflare config must declare APP_ICON_PATH');
+const iconPath = iconPathMatch[1];
+assert.ok(iconPath.startsWith('/') && !iconPath.includes('..') && !/^\/\//.test(iconPath), 'APP_ICON_PATH must be a safe same-origin path');
+assert.ok(fs.existsSync(path.join('public', iconPath.replace(/^\/+/, ''))), `Configured crest asset is missing: ${iconPath}`);
 assert.ok(!worker.includes('style-17.11.0.css') && !worker.includes('app-17.13.0.js') && !worker.includes('manifest-17.13.0.webmanifest'), 'HTML rendering has no stale hardcoded frontend release URLs');
 assert.ok(worker.includes('"/author":"index.html"'), 'Author Studio uses the unified branded application shell');
 assert.ok(worker.includes('"/formats":"index.html"') && worker.includes('else if(/^\\/format\\/[^/]+\\/?$/.test(p))file="index.html"'), 'Format directory and shelves are routed through the branded shell');
