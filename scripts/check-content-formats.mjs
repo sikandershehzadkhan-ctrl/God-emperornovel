@@ -31,4 +31,6 @@ for (const name of new Set(appFiles)) {
 }
 assert.ok(index.includes('/imperial-formats-17.15.0.css'), 'HTML references versioned format styles');
 assert.ok(fs.existsSync('public/imperial-formats-17.15.0.css'), 'Versioned format stylesheet exists');
+assert.ok(index.includes('/manifest-17.15.0.webmanifest'), 'HTML references versioned app manifest');
+assert.ok(fs.existsSync('public/manifest-17.15.0.webmanifest'), 'Versioned app manifest exists');
 console.log('Content format checks passed: ' + formats.length + ' canonical formats, ' + new Set(appFiles).size + ' frontend bundles, entry assets verified.');
