@@ -1,7 +1,7 @@
 'use strict';
 
-const fs = require('node:fs');
-const path = require('node:path');
+import fs from 'node:fs';
+import path from 'node:path';
 
 const htmlPath = path.join('public', 'index.html');
 const html = fs.readFileSync(htmlPath, 'utf8');
