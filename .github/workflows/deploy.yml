@@ -3,6 +3,13 @@ name: Deploy Imperial Novel to Cloudflare
 on:
   push:
     branches: [main]
+    # Documentation, agent profiles, and audit-workflow additions must never
+    # trigger a production deployment by themselves. App/source changes still do.
+    paths-ignore:
+      - 'docs/**'
+      - '.claude/**'
+      - '.github/workflows/**'
+      - '*.md'
   workflow_dispatch:
     inputs:
       confirm_production_deploy:
