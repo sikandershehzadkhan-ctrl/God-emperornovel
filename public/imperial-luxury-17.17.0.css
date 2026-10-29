@@ -310,3 +310,26 @@ html[data-theme="dark"] .nextQuickGrid{display:none!important}
  html[data-theme="dark"] .hero.imperialArchiveHero .heroSearch button{grid-column:1/-1;width:100%;min-height:44px}
 }
 @media(prefers-reduced-motion:reduce){html[data-theme="dark"] .hero.imperialArchiveHero:before{animation:none}}
+
+/* International accessibility baseline: visible keyboard focus, motion sensitivity, and readable controls. */
+:where(a,button,input,select,textarea,[role="button"],[tabindex]):focus-visible{
+  outline:3px solid #83a9ff;
+  outline-offset:3px;
+  scroll-margin-block:6rem;
+}
+:where(button,input,select,textarea,[role="button"]){touch-action:manipulation}
+:where(button,a,[role="button"]){-webkit-tap-highlight-color:rgba(131,169,255,.22)}
+@media(prefers-reduced-motion:reduce){
+  html:focus-within{scroll-behavior:auto!important}
+  *,*::before,*::after{
+    animation-duration:.01ms!important;
+    animation-iteration-count:1!important;
+    background-attachment:initial!important;
+    scroll-behavior:auto!important;
+    transition-duration:.01ms!important;
+  }
+}
+@media(forced-colors:active){
+  :where(a,button,input,select,textarea,[role="button"],[tabindex]):focus-visible{outline:2px solid Highlight}
+  :where(button,a,[role="button"]){forced-color-adjust:auto}
+}
