@@ -354,3 +354,35 @@ html[data-theme="dark"] .nextQuickGrid{display:none!important}
   transform:translateY(0);
 }
 #app:focus{outline:none}
+
+
+/* Final art direction: editorial authority, not decorative dashboard chrome.
+   The crest carries the emblem; the hero stays quiet, fast, and readable. */
+html[data-theme="dark"] body{
+  background:#080a12;
+}
+html[data-theme="dark"] .hero.imperialArchiveHero{
+  background:#0e111c;
+  border:1px solid #292d40;
+  border-top:2px solid #8b5cf6;
+  border-radius:20px;
+  box-shadow:none;
+}
+html[data-theme="dark"] .hero.imperialArchiveHero:before,
+html[data-theme="dark"] .hero.imperialArchiveHero:after{
+  display:none!important;
+  content:none!important;
+}
+html[data-theme="dark"] .hero.imperialArchiveHero h1 span{
+  color:#a78bfa;
+  -webkit-text-fill-color:#a78bfa;
+}
+html[data-theme="dark"] .hero.imperialArchiveHero .nextHeroLead{
+  color:#c0c6d8;
+}
+@media(max-width:760px){
+  html[data-theme="dark"] .hero.imperialArchiveHero{
+    border-radius:16px;
+    padding:24px 18px 26px;
+  }
+}
