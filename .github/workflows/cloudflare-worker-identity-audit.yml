@@ -26,7 +26,7 @@ concurrency:
 
 jobs:
   audit:
-    if: ${{ inputs.confirm_read_only_audit == 'yes' }}
+    if: ${{ github.event_name == 'push' || inputs.confirm_read_only_audit == 'yes' }}
     runs-on: ubuntu-latest
     timeout-minutes: 5
     steps:
