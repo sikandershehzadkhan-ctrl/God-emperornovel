@@ -4,6 +4,24 @@ const b64=a=>btoa(String.fromCharCode(...new Uint8Array(a))).replaceAll("+","-")
 const digest=async s=>b64(await crypto.subtle.digest("SHA-256",new TextEncoder().encode(s)));
 const rnd=n=>{const a=new Uint8Array(n);crypto.getRandomValues(a);return b64(a)};
 const slug=s=>String(s||"").toLowerCase().trim().replace(/[^a-z0-9]+/g,"-").replace(/^-|-$/g,"");
+const CONTENT_FORMATS=[
+ {id:"original",label:"Original novels",group:"text"},
+ {id:"fanfiction",label:"Fanfiction",group:"text"},
+ {id:"light_novel",label:"Light novels",group:"text"},
+ {id:"web_novel",label:"Web novels",group:"text"},
+ {id:"manga",label:"Manga",group:"comics"},
+ {id:"manhwa",label:"Manhwa",group:"comics"},
+ {id:"manhua",label:"Manhua",group:"comics"},
+ {id:"webtoon",label:"Webtoons",group:"comics"},
+ {id:"comic",label:"Comics",group:"comics"},
+ {id:"graphic_novel",label:"Graphic novels",group:"comics"},
+ {id:"anime",label:"Anime",group:"screen"},
+ {id:"cartoon",label:"Cartoons",group:"screen"},
+ {id:"audiobook",label:"Audiobooks",group:"audio"},
+ {id:"drama",label:"Drama adaptations",group:"screen"},
+ {id:"game",label:"Games",group:"interactive"}
+];
+const CONTENT_FORMAT_IDS=new Set(CONTENT_FORMATS.map(x=>x.id));
 const cookies=h=>Object.fromEntries((h||"").split(";").map(x=>x.trim()).filter(Boolean).map(x=>{const i=x.indexOf("=");return[i<0?x:x.slice(0,i),decodeURIComponent(i<0?"":x.slice(i+1))]}));
 const body=async r=>await r.json().catch(()=>({}));
 const phash=async(p,s)=>digest(p+":"+s);
@@ -424,6 +442,8 @@ async function api(req,env){
  if(p==="/api/omni/jobs"&&m==="GET"){const e=need(u);if(e)return e;await ensureOmniTables(env);return json((await env.DB.prepare(`SELECT j.*,c.name connector FROM import_jobs j LEFT JOIN connectors c ON c.id=j.connector_id WHERE j.user_id=? ORDER BY j.created_at DESC LIMIT 50`).bind(u.id).all()).results)}
  if(p==="/api/omni/smart-unlock"){const e=need(u);if(e)return e;const novelId=Number(url.searchParams.get('novel_id'));const n=await env.DB.prepare(`SELECT COUNT(*) n FROM chapters WHERE novel_id=? AND publication_status='published' AND is_locked=1 AND id NOT IN(SELECT chapter_id FROM unlocks WHERE user_id=?)`).bind(novelId,u.id).first();const bal=Number(u.tickets);const packs=[10,25,50,100],options=[];for(const psize of packs){const rows=(await env.DB.prepare(`SELECT ticket_cost FROM chapters c WHERE c.novel_id=? AND c.publication_status='published' AND c.is_locked=1 AND c.id NOT IN(SELECT chapter_id FROM unlocks WHERE user_id=?) ORDER BY chapter_number LIMIT ?`).bind(novelId,u.id,psize).all()).results;const cost=rows.reduce((a,x)=>a+Number(x.ticket_cost),0);options.push({count:psize,cost,affordable:bal>=cost,chapters:rows.length})}return json({balance:bal,remaining:Number(n),recommended:options.find(x=>x.affordable&&x.chapters>0)?.count||0,options})}
 
+ if(p==="/api/formats"&&m==="GET")return json({formats:CONTENT_FORMATS,groups:["text","comics","screen","audio","interactive"],version:1});
+
  if(p==="/api/novels"){
   const q=url.searchParams,term=(q.get("q")||"").trim().toLowerCase(),genre=q.get("genre"),tag=q.get("tag"),status=q.get("status"),kind=q.get("kind"),language=q.get("language"),author=(q.get("author")||"").trim(),minRating=Number(q.get("min_rating")||0),sort=q.get("sort")||"updated",page=Math.max(1,Number(q.get("page")||1)),limit=Math.min(50,Math.max(1,Number(q.get("limit")||24))),offset=(page-1)*limit;
   let sql="SELECT n.*,GROUP_CONCAT(DISTINCT g.name) genres,GROUP_CONCAT(DISTINCT t.name) tags,COUNT(DISTINCT c.id) chapter_count,MAX(c.chapter_number) latest_chapter FROM novels n LEFT JOIN novel_genres ng ON ng.novel_id=n.id LEFT JOIN genres g ON g.id=ng.genre_id LEFT JOIN novel_tags nt ON nt.novel_id=n.id LEFT JOIN tags t ON t.id=nt.tag_id LEFT JOIN chapters c ON c.novel_id=n.id AND c.publication_status='published' WHERE n.publication_status='published'",a=[];
@@ -605,9 +625,10 @@ async function api(req,env){
   const e=author(u);if(e)return e;const b=await body(req);
   const title=String(b.title||'').trim(),authorName=String(b.author||u.username||'').trim();
   if(!title||!authorName)return json({error:'Title and author are required'},400);
+  const kind=String(b.kind||'original').trim().toLowerCase();if(!CONTENT_FORMAT_IDS.has(kind))return json({error:'Unsupported content format. Fetch /api/formats for the supported format registry.',supported_formats:CONTENT_FORMATS.map(x=>x.id)},400);
   const rights=String(b.rights_status||'original').toLowerCase();
   if(!['original','public_domain','licensed','authorized'].includes(rights))return json({error:'Invalid rights status'},400);
-  const r=await env.DB.prepare(`INSERT INTO novels(title,alt_titles,author,description,status,kind,language,cover_url,source_url,rights_status,owner_user_id,publication_status,rights_evidence,rights_notes) VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,?)`).bind(title,String(b.alt_titles||''),authorName,String(b.description||''),['ongoing','completed'].includes(String(b.status))?String(b.status):'ongoing',String(b.kind||'original'),String(b.language||'English'),String(b.cover_url||''),String(b.source_url||''),rights,u.id,'draft',String(b.rights_evidence||''),String(b.rights_notes||'')).run();
+  const r=await env.DB.prepare(`INSERT INTO novels(title,alt_titles,author,description,status,kind,language,cover_url,source_url,rights_status,owner_user_id,publication_status,rights_evidence,rights_notes) VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,?)`).bind(title,String(b.alt_titles||''),authorName,String(b.description||''),['ongoing','completed'].includes(String(b.status))?String(b.status):'ongoing',kind,String(b.language||'English'),String(b.cover_url||''),String(b.source_url||''),rights,u.id,'draft',String(b.rights_evidence||''),String(b.rights_notes||'')).run();
   const id=Number(r.meta.last_row_id);await audit(env,u,'author_novel_created',`novel=${id}`);return json({ok:true,id,message:`Novel created as draft. ID: ${id}`},201)
  }
  if(/^\/api\/author\/novels\/\d+\/submit$/.test(p)&&m==="POST"){
