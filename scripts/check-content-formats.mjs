@@ -77,6 +77,15 @@ assert.ok(runtime.includes('imperial-novel-app-icon.svg?v=17.17.0'), 'Applicatio
 assert.ok(!/imperial-novel-app-icon\.svg\?v=17\.(?:13|15|16)\.0/.test(runtime), 'Application shell contains no stale crest cache references');
 assert.ok(sw.includes("const CACHE='imperial-novel-v17.17.0'"), 'Service worker cache key matches the release');
 assert.ok(sw.includes("key!==CACHE") && sw.includes("caches.delete(key)"), 'Activation clears obsolete Imperial Novel caches');
+const coreMatch = sw.match(/const CORE=\[([^\]]+)\]/);
+assert.ok(coreMatch, 'Service worker declares a core asset list');
+const coreAssets = [...coreMatch[1].matchAll(/'([^']+)'/g)].map(([, asset]) => asset);
+for (const asset of coreAssets) {
+  const pathname = asset.split(/[?#]/, 1)[0];
+  const localPath = pathname === '/' ? 'public/index.html' : 'public/' + pathname.replace(/^\/+/, '');
+  assert.ok(fs.existsSync(localPath), 'Service worker precache asset exists: ' + asset);
+}
+
 assert.ok(runtime.includes("navigator.serviceWorker.register('/sw.js',{updateViaCache:'none'})"), 'Application registers the cache worker without stale update checks');
 assert.ok(luxuryCss.includes(':focus-visible') && luxuryCss.includes('prefers-reduced-motion:reduce') && luxuryCss.includes('forced-colors:active'), 'Design system includes keyboard, reduced-motion, and forced-color accessibility safeguards');
 
