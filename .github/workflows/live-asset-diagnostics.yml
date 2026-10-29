@@ -62,4 +62,4 @@ jobs:
             echo "::error::Legacy hero markup exists in the versioned live runtime."
             exit 1
           fi
-          echo "Live release $EXPECTED_VERSION passed the asset and redesigned-hero checks."
+          echo "Live diagnostics revision 2: release $EXPECTED_VERSION passed the asset and redesigned-hero checks."
