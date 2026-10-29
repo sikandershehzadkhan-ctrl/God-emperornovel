@@ -120,6 +120,58 @@ jobs:
           } catch { console.log(JSON.stringify({http_status:status,response:'non-JSON; body omitted'})); }
           NODE
 
+      - name: Match live Worker deployments to Cloudflare Builds records (read-only)
+        shell: bash
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+        run: |
+          set -euo pipefail
+          headers=(-H "Authorization: Bearer $CLOUDFLARE_API_TOKEN" -H "Content-Type: application/json")
+          tmp="$(mktemp -d)"
+          trap 'rm -rf "$tmp"' EXIT
+          curl --fail --silent --show-error --max-time 25 "${headers[@]}" \
+            "https://api.cloudflare.com/client/v4/accounts/$CLOUDFLARE_ACCOUNT_ID/workers/scripts/god-emperornovel/deployments" > "$tmp/deployments.json"
+          node --input-type=module - "$tmp/deployments.json" > "$tmp/version_ids.txt" <<'NODE'
+          import fs from 'node:fs';
+          const d=JSON.parse(fs.readFileSync(process.argv[2],'utf8'));
+          const items=Array.isArray(d.result?.deployments)?d.result.deployments:[];
+          for (const deployment of items.slice(0,8)) {
+            const versions=Array.isArray(deployment.versions)?deployment.versions:[];
+            for (const v of versions) {
+              if(v.version_id) {
+                console.log(JSON.stringify({deployment_id:deployment.id,created_on:deployment.created_on,source:deployment.source,version_id:v.version_id,percentage:v.percentage}));
+                console.log(v.version_id);
+              }
+            }
+          }
+          NODE
+          echo "Deployment-to-build correlation (latest live deployment metadata):"
+          while IFS= read -r version_id; do
+            [ -n "$version_id" ] || continue
+            case "$version_id" in *[!a-fA-F0-9-]*) continue;; esac
+            response="$(curl --silent --show-error --max-time 20 "${headers[@]}" \
+              "https://api.cloudflare.com/client/v4/accounts/$CLOUDFLARE_ACCOUNT_ID/builds/builds?version_ids=$version_id" || true)"
+            printf '%s' "$response" | node --input-type=module - "$version_id" <<'NODE'
+          import fs from 'node:fs';
+          const versionId=process.argv[2];
+          let s=''; for await (const c of process.stdin) s+=c;
+          try {
+            const d=JSON.parse(s);
+            const root=d.result;
+            const items=Array.isArray(root)?root:(Array.isArray(root?.builds)?root.builds:[]);
+            console.log(JSON.stringify({queried_version_id:versionId,success:d.success,errors:Array.isArray(d.errors)?d.errors.map(e=>({code:e.code,message:e.message})):[],builds:items.slice(0,3).map(x=>({
+              build_uuid:x.build_uuid,
+              status:x.status,
+              branch:x.build_trigger_metadata?.branch,
+              commit_hash:x.build_trigger_metadata?.commit_hash,
+              trigger_name:x.trigger?.trigger_name
+            }))}));
+          } catch { console.log(JSON.stringify({queried_version_id:versionId,response:'non-JSON'})); }
+          NODE
+          done < <(awk 'NR % 2 == 0' "$tmp/version_ids.txt" | head -n 8)
+          echo "Read-only correlation complete; no build was started, canceled, or modified."
+
       - name: Compare live Worker health (read-only)
         shell: bash
         run: |
