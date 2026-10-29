@@ -29,7 +29,7 @@ for (const name of new Set(['app.js', scriptMatch[1]])) {
  assert.ok(app.includes('initComicViewer()'), name + ' initializes comic reading modes');
  assert.ok(app.includes('Switch to single-page mode'), name + ' supports single-page comic reading');
 }
-for (const asset of ['imperial-formats-17.17.0.css','imperial-comic-reader-17.17.0.css','manifest-17.17.0.webmanifest']) {
+for (const asset of ['style-17.17.0.css','app-17.17.0.css','imperial-luxury-17.17.0.css','imperial-formats-17.17.0.css','imperial-comic-reader-17.17.0.css','manifest-17.17.0.webmanifest']) {
  assert.ok(index.includes('/'+asset), 'HTML references '+asset);
  assert.ok(fs.existsSync('public/'+asset), asset+' exists');
 }
