@@ -69,6 +69,39 @@ jobs:
             if(!deployments.length) console.log("No deployments were returned for this Worker name.");
           '
 
+      - name: Inspect Worker script and version inventory (read-only)
+        shell: bash
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+        run: |
+          set -euo pipefail
+          headers=(-H "Authorization: Bearer $CLOUDFLARE_API_TOKEN" -H "Content-Type: application/json")
+          scripts_url="https://api.cloudflare.com/client/v4/accounts/$CLOUDFLARE_ACCOUNT_ID/workers/scripts"
+          scripts="$(curl --fail --silent --show-error --max-time 25 "${headers[@]}" "$scripts_url")"
+          printf '%s' "$scripts" | node --input-type=module -e '
+            let s=""; for await (const c of process.stdin) s+=c;
+            const d=JSON.parse(s);
+            if(!d.success){console.error("Cloudflare script inventory API returned success=false");process.exit(1)}
+            const items=Array.isArray(d.result)?d.result:[];
+            const found=items.find(x=>x.id==="god-emperornovel" || x.script_name==="god-emperornovel");
+            console.log(JSON.stringify({script_inventory_count:items.length,target_script_found:!!found,target_script:found?{id:found.id,script_name:found.script_name,created_on:found.created_on,modified_on:found.modified_on,etag:found.etag}:null},null,2));
+          '
+          versions_url="https://api.cloudflare.com/client/v4/accounts/$CLOUDFLARE_ACCOUNT_ID/workers/scripts/god-emperornovel/versions"
+          versions="$(curl --fail --silent --show-error --max-time 25 "${headers[@]}" "$versions_url")"
+          printf '%s' "$versions" | node --input-type=module -e '
+            let s=""; for await (const c of process.stdin) s+=c;
+            const d=JSON.parse(s);
+            if(!d.success){console.error("Cloudflare Worker versions API returned success=false");process.exit(1)}
+            const items=Array.isArray(d.result)?d.result:[];
+            console.log("Worker version inventory (safe fields only):");
+            for(const x of items.slice(0,12)){
+              const m=x.metadata||{};
+              console.log(JSON.stringify({id:x.id,number:x.number,created_on:m.created_on,modified_on:m.modified_on,source:m.source,compatibility_date:m.compatibility_date}));
+            }
+            if(!items.length) console.log("No versions were returned for this Worker name.");
+          '
+
       - name: Compare public health endpoint
         shell: bash
         run: |
