@@ -9,6 +9,7 @@ on:
       - 'docs/**'
       - '.claude/**'
       - '.github/workflows/**'
+      - 'scripts/**'
       - '*.md'
   workflow_dispatch:
     inputs:
