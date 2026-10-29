@@ -55,7 +55,8 @@ jobs:
             let s=""; for await (const c of process.stdin) s+=c;
             const d=JSON.parse(s);
             if(!d.success){console.error("Cloudflare API returned success=false");process.exit(1)}
-            const deployments=Array.isArray(d.result)?d.result:[];
+            const deployments=Array.isArray(d.result)?d.result:(Array.isArray(d.result?.deployments)?d.result.deployments:(Array.isArray(d.result?.items)?d.result.items:[]));
+            console.log(JSON.stringify({deployment_result_shape:Array.isArray(d.result)?"array":Object.keys(d.result||{}),deployment_count_reported:d.result?.count??null}));
             console.log("Worker deployment metadata (safe fields only):");
             for(const x of deployments.slice(0,10)){
               console.log(JSON.stringify({
@@ -83,7 +84,8 @@ jobs:
             let s=""; for await (const c of process.stdin) s+=c;
             const d=JSON.parse(s);
             if(!d.success){console.error("Cloudflare script inventory API returned success=false");process.exit(1)}
-            const items=Array.isArray(d.result)?d.result:[];
+            const items=Array.isArray(d.result)?d.result:(Array.isArray(d.result?.items)?d.result.items:(Array.isArray(d.result?.versions)?d.result.versions:[]));
+            console.log(JSON.stringify({version_result_shape:Array.isArray(d.result)?"array":Object.keys(d.result||{}),version_count_reported:d.result?.count??d.result?.total??null}));
             const found=items.find(x=>x.id==="god-emperornovel" || x.script_name==="god-emperornovel");
             console.log(JSON.stringify({script_inventory_count:items.length,target_script_found:!!found,target_script:found?{id:found.id,script_name:found.script_name,created_on:found.created_on,modified_on:found.modified_on,etag:found.etag}:null},null,2));
           '
