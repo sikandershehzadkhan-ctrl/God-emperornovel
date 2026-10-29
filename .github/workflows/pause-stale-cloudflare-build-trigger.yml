@@ -45,19 +45,28 @@ jobs:
           tmp="$(mktemp -d)"
           trap 'rm -rf "$tmp"' EXIT
 
-          curl --fail --silent --show-error --max-time 25 "${headers[@]}" "$base/builds/workers/$(node --input-type=module -e 'process.stdout.write("")')/triggers" >/dev/null 2>&1 || true
-          # Fetch by the exact known trigger UUID and validate its identity before changing anything.
-          status="$(curl --silent --show-error --max-time 25 -o "$tmp/current.json" -w '%{http_code}' "${headers[@]}" "$base/builds/triggers/$trigger_uuid" || true)"
-          if [ "$status" != "200" ]; then
-            echo "::error::Cannot read exact Cloudflare trigger (HTTP $status). No change attempted."
+          curl --fail --silent --show-error --max-time 25 "${headers[@]}" "$base/workers/scripts" > "$tmp/scripts.json"
+          tag="$(node --input-type=module - "$tmp/scripts.json" <<'NODE'
+          import fs from 'node:fs';
+          const d=JSON.parse(fs.readFileSync(process.argv[2],'utf8'));
+          const x=(Array.isArray(d.result)?d.result:[]).find(v=>v.id==='god-emperornovel');
+          if(x?.tag) process.stdout.write(x.tag);
+          NODE
+          )"
+          if [ -z "$tag" ]; then
+            echo "::error::Could not resolve the Worker tag. No change attempted."
             exit 1
           fi
+          echo "Resolved target Worker; tag intentionally withheld."
+
+          curl --fail --silent --show-error --max-time 25 "${headers[@]}" "$base/builds/workers/$tag/triggers" > "$tmp/current.json"
           node --input-type=module - "$tmp/current.json" <<'NODE'
           import fs from 'node:fs';
           const d=JSON.parse(fs.readFileSync(process.argv[2],'utf8'));
-          const x=d.result;
-          if(d.success!==true || !x || x.trigger_uuid!=='f53db415-9b21-4ff7-a6b3-5a26935a776f') {
-            console.error('Cloudflare did not return the expected trigger identity. No change attempted.');
+          const list=Array.isArray(d.result)?d.result:(Array.isArray(d.result?.triggers)?d.result.triggers:[]);
+          const x=list.find(v=>v.trigger_uuid==='f53db415-9b21-4ff7-a6b3-5a26935a776f');
+          if(d.success!==true || !x) {
+            console.error('Expected Cloudflare trigger was not found. No change attempted.');
             process.exit(1);
           }
           const currentBranch=Array.isArray(x.branch_includes)&&x.branch_includes.includes('main');
@@ -89,21 +98,18 @@ jobs:
             console.log(JSON.stringify({success:d.success,errors:Array.isArray(d.errors)?d.errors.map(e=>({code:e.code,message:e.message})):[]},null,2));
           } catch { console.log('Non-JSON response; body omitted.'); }
           NODE
-            echo "::error::Cloudflare did not confirm the trigger update. Check the trigger in the dashboard."
+            echo "::error::Cloudflare did not confirm the trigger update. No Worker code was deployed and no D1 change was made."
             exit 1
           fi
 
-          verify_status="$(curl --silent --show-error --max-time 25 -o "$tmp/verify.json" -w '%{http_code}' "${headers[@]}" "$base/builds/triggers/$trigger_uuid" || true)"
-          if [ "$verify_status" != "200" ]; then
-            echo "::error::Could not verify updated trigger state."
-            exit 1
-          fi
+          curl --fail --silent --show-error --max-time 25 "${headers[@]}" "$base/builds/workers/$tag/triggers" > "$tmp/verify.json"
           node --input-type=module - "$tmp/verify.json" <<'NODE'
           import fs from 'node:fs';
           const d=JSON.parse(fs.readFileSync(process.argv[2],'utf8'));
-          const x=d.result;
+          const list=Array.isArray(d.result)?d.result:(Array.isArray(d.result?.triggers)?d.result.triggers:[]);
+          const x=list.find(v=>v.trigger_uuid==='f53db415-9b21-4ff7-a6b3-5a26935a776f');
           const expected='__disabled_until_imperial_novel_pipeline_reconciled__';
-          const ok=d.success===true&&x?.trigger_uuid==='f53db415-9b21-4ff7-a6b3-5a26935a776f'&&Array.isArray(x.branch_includes)&&x.branch_includes.length===1&&x.branch_includes[0]===expected;
+          const ok=d.success===true&&Array.isArray(x?.branch_includes)&&x.branch_includes.length===1&&x.branch_includes[0]===expected;
           console.log(JSON.stringify({verified:ok,trigger_uuid:x?.trigger_uuid,branch_includes:x?.branch_includes,build_command:x?.build_command,deploy_command:x?.deploy_command},null,2));
           if(!ok) process.exit(1);
           NODE
