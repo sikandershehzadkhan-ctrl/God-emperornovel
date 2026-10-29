@@ -69,6 +69,7 @@ assert.equal(manifest.version,'17.17.0','PWA manifest version matches release');
 const entry = fs.readFileSync('public/index.html','utf8');
 const runtime = fs.readFileSync('public/app-17.17.0.js','utf8');
 const sw = fs.readFileSync('public/sw.js','utf8');
+const luxuryCss = fs.readFileSync('public/imperial-luxury-17.17.0.css','utf8');
 assert.ok(entry.includes('/app-17.17.0.js'), 'Entry point loads the cache-busted application runtime');
 assert.ok(entry.includes('property="og:title"') && entry.includes('property="og:description"') && entry.includes('name="twitter:card"'), 'Entry point provides international social-sharing metadata');
 assert.ok(entry.includes('https://god-emperornovel.sikandershehzadkhan.workers.dev/imperial-novel-app-icon.svg?v=17.17.0'), 'Social preview uses an absolute crest URL');
@@ -77,5 +78,6 @@ assert.ok(!/imperial-novel-app-icon\\.svg\\?v=17\\.(?:13|15|16)\\.0/.test(runtim
 assert.ok(sw.includes("const CACHE='imperial-novel-v17.17.0'"), 'Service worker cache key matches the release');
 assert.ok(sw.includes("key!==CACHE") && sw.includes("caches.delete(key)"), 'Activation clears obsolete Imperial Novel caches');
 assert.ok(runtime.includes("navigator.serviceWorker.register('/sw.js',{updateViaCache:'none'})"), 'Application registers the cache worker without stale update checks');
+assert.ok(luxuryCss.includes(':focus-visible') && luxuryCss.includes('prefers-reduced-motion:reduce') && luxuryCss.includes('forced-colors:active'), 'Design system includes keyboard, reduced-motion, and forced-color accessibility safeguards');
 
 console.log('Content format checks passed: '+formats.length+' formats, comic viewer modes, versioned assets verified.');
