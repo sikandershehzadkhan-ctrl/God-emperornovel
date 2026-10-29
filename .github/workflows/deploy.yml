@@ -153,6 +153,7 @@ jobs:
           fi
           printf '%s' "$response" | EXPECTED_VERSION="$EXPECTED_VERSION" node -e 'let s="";process.stdin.on("data",d=>s+=d).on("end",()=>{const d=JSON.parse(s);if(d.ok!==true||d.database!==true||d.version!==process.env.EXPECTED_VERSION){console.error("Live Worker version/database mismatch: "+JSON.stringify({version:d.version,database:d.database}));process.exit(1)}console.log("Live Worker release "+process.env.EXPECTED_VERSION+" and database health verified.")})'
 
+      # Keep this verification in sync with post-deploy route checks; retries absorb edge propagation only.
       - name: Verify live homepage and versioned frontend assets
         shell: bash
         run: |
