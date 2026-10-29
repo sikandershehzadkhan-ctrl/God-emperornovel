@@ -386,3 +386,36 @@ html[data-theme="dark"] .hero.imperialArchiveHero .nextHeroLead{
     padding:24px 18px 26px;
   }
 }
+
+
+/* Mobile resilience: prevent the global shell from creating a clipped, sideways canvas. */
+html,body{max-width:100%;overflow-x:clip}
+@supports not (overflow:clip){html,body{overflow-x:hidden}}
+#app,.top,.top>.wrap,.page,.footer{min-width:0;max-width:100%}
+@media(max-width:760px){
+  .top{width:100%;overflow:visible}
+  .top .nav{width:100%;max-width:100%;box-sizing:border-box;padding-inline:10px;gap:7px;min-width:0}
+  .top .brand{flex:0 1 auto;min-width:0;max-width:42%;gap:7px}
+  .top .brand .mark{flex:0 0 36px;width:36px;height:36px}
+  .top .brandText{min-width:0;overflow:hidden}
+  .top .brandText b{font-size:12px;letter-spacing:.055em;overflow-wrap:anywhere}
+  .top .brandText small{display:none}
+  .top .navright{flex:0 0 auto;min-width:0;gap:5px}
+  .top .navright .iconbtn,.top .navright .menuToggle{width:38px;min-width:38px;height:40px;padding:0;display:inline-flex;align-items:center;justify-content:center}
+  .top .navright .languageControl select{width:54px;max-width:54px!important;height:40px;min-height:40px;padding:0 3px!important}
+  .top .navright .iconbtn[aria-label="Notifications"],.top .navright .iconbtn[aria-label="Account"]{display:none}
+  .hero.nextHero{min-height:0!important}
+  .hero.nextHero .nextHeroInner,.hero.nextHero .heroInner{padding:38px 20px 26px!important}
+  .hero.nextHero h1,.hero.imperialArchiveHero h1{font-size:clamp(38px,10.2vw,58px)!important;line-height:.98!important;letter-spacing:-.045em;overflow-wrap:normal}
+  .hero.nextHero p,.hero.nextHero .nextHeroLead{font-size:15px;line-height:1.65}
+  .footer{padding:24px 0 34px!important}
+  .footerInner{gap:14px!important}
+  .footerLinks{gap:10px 16px!important}
+}
+@media(max-width:390px){
+  .top .brand{max-width:35%}
+  .top .brandText b{font-size:11px}
+  .top .navright{gap:4px}
+  .top .navright .iconbtn,.top .navright .menuToggle{width:34px;min-width:34px}
+  .top .navright .languageControl select{width:48px;max-width:48px!important}
+}
