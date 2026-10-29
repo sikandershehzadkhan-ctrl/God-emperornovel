@@ -1,0 +1,65 @@
+name: Imperial Novel Live Asset Diagnostics
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/live-asset-diagnostics.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: imperial-novel-live-asset-diagnostics
+  cancel-in-progress: false
+
+jobs:
+  inspect-live-assets:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Check out release manifest
+        uses: actions/checkout@v4
+
+      - name: Diagnose live Worker and each referenced asset
+        shell: bash
+        run: |
+          set -euo pipefail
+          BASE="https://god-emperornovel.sikandershehzadkhan.workers.dev"
+          EXPECTED_VERSION="$(node -p "require('./package.json').version")"
+          STAMP="$(date +%s%N)"
+          HEALTH="$(curl --fail --silent --show-error --max-time 20 "$BASE/api/health?diagnostic=$STAMP")"
+          printf 'Live health: %s\n' "$HEALTH"
+          printf '%s' "$HEALTH" | EXPECTED_VERSION="$EXPECTED_VERSION" node -e 'let s="";process.stdin.on("data",d=>s+=d).on("end",()=>{try{const h=JSON.parse(s);if(h.ok!==true||h.database!==true||h.version!==process.env.EXPECTED_VERSION)throw Error(JSON.stringify(h));console.log("Healthy release confirmed: "+h.version)}catch(e){console.error("Health/release mismatch:",e.message);process.exit(1)}})'
+
+          HTML="$(curl --fail --silent --show-error --max-time 20 -H "Cache-Control: no-cache" "$BASE/?diagnostic=$STAMP")"
+          printf '%s' "$HTML" | grep -F "Imperial Novel" >/dev/null
+          ASSETS="$(printf '%s' "$HTML" | node -e 'let s="";process.stdin.on("data",d=>s+=d).on("end",()=>{const a=[...s.matchAll(/(?:src|href)="(\/[^\"?#]+\.(?:js|css|webmanifest|svg))"/g)].map(m=>m[1]);console.log([...new Set(a)].join("\n"))})')"
+          test -n "$ASSETS" || { echo "::error::No local assets found in live homepage HTML."; exit 1; }
+          printf 'Assets discovered from live HTML:\n%s\n' "$ASSETS"
+
+          FAILED=0
+          while IFS= read -r ASSET; do
+            [ -n "$ASSET" ] || continue
+            STATUS="$(curl --silent --show-error --max-time 20 -o /dev/null -w '%{http_code}' "$BASE$ASSET" || true)"
+            CACHE_STATUS="$(curl --silent --show-error --max-time 20 -o /dev/null -w '%{http_code}' "$BASE$ASSET?diagnostic=$STAMP" || true)"
+            printf 'Asset %-42s direct=%s cache-busted=%s\n' "$ASSET" "$STATUS" "$CACHE_STATUS"
+            case "$STATUS" in 2??|3??) ;; *) FAILED=1 ;; esac
+            case "$CACHE_STATUS" in 2??|3??) ;; *) echo "::warning::Cache-busted asset request failed for $ASSET ($CACHE_STATUS), direct status was $STATUS." ;; esac
+          done <<< "$ASSETS"
+
+          if [ "$FAILED" -ne 0 ]; then
+            echo "::error::At least one homepage asset is unavailable. See per-asset HTTP status lines above."
+            exit 1
+          fi
+
+          JS="$(curl --fail --silent --show-error --max-time 20 "$BASE/app-$EXPECTED_VERSION.js")"
+          printf '%s' "$JS" | grep -F 'Open a world.' >/dev/null
+          printf '%s' "$JS" | grep -F 'Shape an empire.' >/dev/null
+          printf '%s' "$JS" | grep -F 'imperialLanguageSelect' >/dev/null
+          if printf '%s' "$JS" | grep -F 'heroSideCard' >/dev/null || printf '%s' "$JS" | grep -F 'nextQuickGrid' >/dev/null; then
+            echo "::error::Legacy hero markup exists in the versioned live runtime."
+            exit 1
+          fi
+          echo "Live release $EXPECTED_VERSION passed the asset and redesigned-hero checks."
