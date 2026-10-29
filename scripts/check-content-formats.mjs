@@ -66,4 +66,14 @@ assert.ok(source.includes('Rights evidence is required before submitting this wo
 
 const manifest = JSON.parse(fs.readFileSync('public/manifest-17.17.0.webmanifest','utf8'));
 assert.equal(manifest.version,'17.17.0','PWA manifest version matches release');
+const entry = fs.readFileSync('public/index.html','utf8');
+const runtime = fs.readFileSync('public/app-17.17.0.js','utf8');
+const sw = fs.readFileSync('public/sw.js','utf8');
+assert.ok(entry.includes('/app-17.17.0.js'), 'Entry point loads the cache-busted application runtime');
+assert.ok(runtime.includes('imperial-novel-app-icon.svg?v=17.17.0'), 'Application shell uses the cache-busted crest asset');
+assert.ok(!/imperial-novel-app-icon\\.svg\\?v=17\\.(?:13|15|16)\\.0/.test(runtime), 'Application shell contains no stale crest cache references');
+assert.ok(sw.includes("const CACHE='imperial-novel-v17.17.0'"), 'Service worker cache key matches the release');
+assert.ok(sw.includes("key!==CACHE") && sw.includes("caches.delete(key)"), 'Activation clears obsolete Imperial Novel caches');
+assert.ok(runtime.includes("navigator.serviceWorker.register('/sw.js',{updateViaCache:'none'})"), 'Application registers the cache worker without stale update checks');
+
 console.log('Content format checks passed: '+formats.length+' formats, comic viewer modes, versioned assets verified.');
