@@ -26,6 +26,8 @@ for (const name of new Set(appFiles)) {
   assert.ok(app.includes("api('/api/formats')"), name + ' consumes server-owned format registry');
   assert.ok(app.includes("p==='/formats'"), name + ' routes the format directory');
   assert.ok(app.includes('/format/'), name + ' links to format-specific shelves');
+  assert.ok(app.includes('function formatKindLabel('), name + ' labels catalog format types');
+  assert.ok(app.includes('Playback is not enabled for this format.'), name + ' avoids implying unconfigured media playback');
 }
 assert.ok(index.includes('/imperial-formats-17.15.0.css'), 'HTML references versioned format styles');
 assert.ok(fs.existsSync('public/imperial-formats-17.15.0.css'), 'Versioned format stylesheet exists');
