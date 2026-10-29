@@ -54,6 +54,8 @@ for (const path of ['public/app.js', 'public/app-17.16.0.js']) {
 }
 assert.ok(source.includes('if(p==="/api/author/novels"&&m==="POST")'), 'Backend supports creating story drafts');
 assert.ok(source.includes('if(p==="/api/author/chapters"&&m==="POST")'), 'Backend supports creating chapter drafts');
+assert.ok(source.includes("const kind=String(b.kind??n.kind??'original').trim().toLowerCase();if(!CONTENT_FORMAT_IDS.has(kind))"), 'Backend validates format IDs when editing stories');
+
 assert.ok(source.includes('Rights evidence is required before submitting this work for review.'), 'Backend independently enforces rights evidence');
 
 const manifest = JSON.parse(fs.readFileSync('public/manifest-17.16.0.webmanifest','utf8'));
