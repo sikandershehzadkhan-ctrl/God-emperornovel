@@ -13,7 +13,7 @@ assert.ok(source.includes('if(p==="/api/formats"&&m==="GET")'), 'Public format r
 assert.ok(source.includes('CONTENT_FORMAT_IDS.has(kind)'), 'Publishing validates format IDs');
 assert.ok(source.includes('supported_formats:CONTENT_FORMATS.map'), 'Invalid formats return accepted IDs');
 assert.ok(source.includes('originHint:') && source.includes('experience:'), 'Format registry documents origin traditions and reader experiences');
-for (const path of ['public/app.js', 'public/app-17.16.0.js']) {
+for (const path of ['public/app.js', 'public/app-17.17.0.js']) {
  const app = fs.readFileSync(path, 'utf8');
  assert.ok(app.includes('aria-labelledby="homeFormatTitle"'), path + ' makes format discovery visible from the homepage');
  assert.ok(app.includes('href="/format/original"') && app.includes('href="/format/fanfiction"'), path + ' keeps original novels and fanfiction first-class homepage destinations');
@@ -29,12 +29,12 @@ for (const name of new Set(['app.js', scriptMatch[1]])) {
  assert.ok(app.includes('initComicViewer()'), name + ' initializes comic reading modes');
  assert.ok(app.includes('Switch to single-page mode'), name + ' supports single-page comic reading');
 }
-for (const asset of ['imperial-formats-17.16.0.css','imperial-comic-reader-17.16.0.css','manifest-17.16.0.webmanifest']) {
+for (const asset of ['imperial-formats-17.17.0.css','imperial-comic-reader-17.17.0.css','manifest-17.17.0.webmanifest']) {
  assert.ok(index.includes('/'+asset), 'HTML references '+asset);
  assert.ok(fs.existsSync('public/'+asset), asset+' exists');
 }
 
-for (const path of ['public/app.js', 'public/app-17.16.0.js']) {
+for (const path of ['public/app.js', 'public/app-17.17.0.js']) {
  const app = fs.readFileSync(path, 'utf8');
  assert.ok(app.includes('async function authorStudio()'), path + ' includes the Creator Suite');
  assert.ok(app.includes("else if(p==='/author')await authorStudio();"), path + ' routes the author workspace');
@@ -48,7 +48,7 @@ for (const path of ['public/app.js', 'public/app-17.16.0.js']) {
  assert.ok(app.includes("$$('.authorChapterForm',list).forEach"), path + ' binds all chapter forms as a collection');
  assert.ok(app.includes("$$('.authorSubmitStory',list).forEach"), path + ' binds all review submission controls as a collection');
  assert.ok(app.includes("$$('.authorEditToggle',list).forEach"), path + ' binds story edit toggles');
- assert.ok(app.includes("$('.authorCancelEdit',list).forEach"), path + ' binds story edit cancel controls');
+ assert.ok(app.includes("$$('.authorCancelEdit',list).forEach"), path + ' binds story edit cancel controls');
  assert.ok(app.includes("$$('.authorEditForm',list).forEach"), path + ' binds editable story forms');
  assert.ok(app.includes("CONTENT_FORMAT_OPTIONS.map"), path + ' populates edit format options from the canonical registry');
  assert.ok(app.includes('name="alt_titles"'), path + ' supports alternate titles');
@@ -60,6 +60,6 @@ assert.ok(source.includes("const kind=String(b.kind??n.kind??'original').trim().
 
 assert.ok(source.includes('Rights evidence is required before submitting this work for review.'), 'Backend independently enforces rights evidence');
 
-const manifest = JSON.parse(fs.readFileSync('public/manifest-17.16.0.webmanifest','utf8'));
-assert.equal(manifest.version,'17.16.0','PWA manifest version matches release');
+const manifest = JSON.parse(fs.readFileSync('public/manifest-17.17.0.webmanifest','utf8'));
+assert.equal(manifest.version,'17.17.0','PWA manifest version matches release');
 console.log('Content format checks passed: '+formats.length+' formats, comic viewer modes, versioned assets verified.');
