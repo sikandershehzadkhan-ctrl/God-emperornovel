@@ -45,6 +45,6 @@ assert.ok(worker.includes('env.APP_ICON_PATH'), 'HTML rendering uses the configu
 assert.ok(wrangler.includes('APP_ICON_PATH = "/imperial-novel-crest-17.18.0.svg"'), 'Cloudflare config declares the versioned crest asset');
 assert.ok(!worker.includes('style-17.11.0.css') && !worker.includes('app-17.13.0.js') && !worker.includes('manifest-17.13.0.webmanifest'), 'HTML rendering has no stale hardcoded frontend release URLs');
 assert.ok(worker.includes('"/author":"index.html"'), 'Author Studio uses the unified branded application shell');
-assert.ok(worker.includes('"/formats":"index.html"') && worker.includes('"/format/'), 'Format directory and shelves are routed through the branded shell');
+assert.ok(worker.includes('"/formats":"index.html"') && worker.includes('else if(/^\\/format\\/[^/]+\\/?$/.test(p))file="index.html"'), 'Format directory and shelves are routed through the branded shell');
 
 console.log(`Release and precache consistency passed: ${pkg.version}; ${coreAssets.length} assets verified.`);
