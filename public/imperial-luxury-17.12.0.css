@@ -117,3 +117,29 @@ html[data-theme="light"] body{background:#fbfcff;color:#171629}
 @media(prefers-reduced-motion:reduce){
  *,*::before,*::after{scroll-behavior:auto!important;animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important}
 }
+
+/* Low-end mobile performance: preserve the visual identity without costly blur layers. */
+@media (max-width:760px){
+  html[data-theme="dark"] .top,
+  html[data-theme="dark"] .mobileNav{
+    -webkit-backdrop-filter:none;
+    backdrop-filter:none;
+    background:#080a12;
+  }
+  html[data-theme="dark"] body:before{
+    background-image:none;
+    opacity:0;
+  }
+  html[data-theme="dark"] .hero.nextHero,
+  html[data-theme="dark"] .heroSideCard,
+  html[data-theme="dark"] .card,
+  html[data-theme="dark"] .catalogCard,
+  html[data-theme="dark"] .panel,
+  html[data-theme="dark"] .settingsPanel,
+  html[data-theme="dark"] .novelHero,
+  html[data-theme="dark"] .catalogTop,
+  html[data-theme="dark"] .heroSearch,
+  html[data-theme="dark"] .primary{
+    box-shadow:none;
+  }
+}
