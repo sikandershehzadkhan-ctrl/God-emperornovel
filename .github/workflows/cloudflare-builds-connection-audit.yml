@@ -30,7 +30,7 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 5
     steps:
-      - name: Inspect Cloudflare Workers Builds repository connections (read-only)
+      - name: Read Worker tag and inspect Cloudflare Builds triggers (read-only)
         shell: bash
         env:
           CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
@@ -39,69 +39,88 @@ jobs:
           set -euo pipefail
           test -n "${CLOUDFLARE_API_TOKEN:-}" || { echo "::error::CLOUDFLARE_API_TOKEN is missing"; exit 1; }
           test -n "${CLOUDFLARE_ACCOUNT_ID:-}" || { echo "::error::CLOUDFLARE_ACCOUNT_ID is missing"; exit 1; }
+          headers=(-H "Authorization: Bearer $CLOUDFLARE_API_TOKEN" -H "Content-Type: application/json")
+          tmp="$(mktemp -d)"
+          trap 'rm -rf "$tmp"' EXIT
 
-          # Workers Builds repository inventory is read-only. Do not print tokens,
-          # account identifiers, full response bodies, or unrelated repository data.
-          url="https://api.cloudflare.com/client/v4/accounts/$CLOUDFLARE_ACCOUNT_ID/builds/repos"
-          tmp="$(mktemp)"
-          trap 'rm -f "$tmp"' EXIT
-          status="$(curl --silent --show-error --max-time 25 -o "$tmp" -w '%{http_code}' \
-            -H "Authorization: Bearer $CLOUDFLARE_API_TOKEN" \
-            -H "Content-Type: application/json" "$url" || true)"
-          echo "Cloudflare Workers Builds repository endpoint HTTP status: $status"
-          if [ "$status" != "200" ]; then
-            echo "The endpoint did not return HTTP 200. This may mean the token lacks read permission, the account has no Builds integration, or the endpoint is unavailable to this account."
-            node --input-type=module - "$tmp" <<'NODE'
-          import fs from 'node:fs';
-          try {
-            const d = JSON.parse(fs.readFileSync(process.argv[2], 'utf8'));
-            console.log(JSON.stringify({
-              success: d.success,
-              errors: Array.isArray(d.errors) ? d.errors.map(e => ({code:e.code, message:e.message})) : [],
-              result_shape: d.result && typeof d.result === 'object' ? Object.keys(d.result) : typeof d.result
-            }, null, 2));
-          } catch { console.log('Response was not JSON. Body intentionally omitted.'); }
-          NODE
+          scripts_status="$(curl --silent --show-error --max-time 25 -o "$tmp/scripts.json" -w '%{http_code}' "${headers[@]}" "https://api.cloudflare.com/client/v4/accounts/$CLOUDFLARE_ACCOUNT_ID/workers/scripts" || true)"
+          echo "Worker script inventory HTTP status: $scripts_status"
+          if [ "$scripts_status" != "200" ]; then
+            echo "Cannot read Worker script inventory; no configuration changes were made."
             exit 0
           fi
 
-          node --input-type=module - "$tmp" <<'NODE'
+          tag="$(node --input-type=module - "$tmp/scripts.json" <<'NODE'
           import fs from 'node:fs';
-          const d = JSON.parse(fs.readFileSync(process.argv[2], 'utf8'));
-          if (d.success !== true) {
-            console.log(JSON.stringify({success:d.success, errors:Array.isArray(d.errors)?d.errors.map(e=>({code:e.code,message:e.message})):[]}, null, 2));
-            process.exit(0);
-          }
-          const root = d.result;
-          const items = Array.isArray(root) ? root
-            : Array.isArray(root?.repos) ? root.repos
-            : Array.isArray(root?.items) ? root.items
-            : Array.isArray(root?.builds) ? root.builds : [];
-          const safe = items.map(x => ({
-            id: x.id ?? x.repo_id ?? null,
-            name: x.name ?? x.repo_name ?? x.repository_name ?? null,
-            provider: x.provider ?? x.provider_type ?? null,
-            repository_url: typeof (x.repo_url ?? x.repository_url) === 'string' ? (x.repo_url ?? x.repository_url) : undefined,
-            created_on: x.created_on ?? null,
-            updated_on: x.updated_on ?? null,
-            build_configs: Array.isArray(x.build_configs) ? x.build_configs.map(c => ({
-              id: c.id ?? null,
-              name: c.name ?? c.build_name ?? null,
-              production_branch: c.production_branch ?? c.production_branch_name ?? null,
-              production_deployments_enabled: c.production_deployments_enabled ?? null,
-              preview_deployments_enabled: c.preview_deployments_enabled ?? null
-            })) : undefined
-          }));
-          console.log(JSON.stringify({
-            success: d.success,
-            result_shape: Array.isArray(root) ? 'array' : Object.keys(root ?? {}),
-            repository_connection_count: items.length,
-            connections: safe,
-            target_repo_match: safe.filter(x => JSON.stringify(x).toLowerCase().includes('sikandershehzadkhan-ctrl/god-emperornovel') || JSON.stringify(x).toLowerCase().includes('god-emperornovel'))
-          }, null, 2));
+          const d=JSON.parse(fs.readFileSync(process.argv[2],'utf8'));
+          const x=(Array.isArray(d.result)?d.result:[]).find(v=>v.id==='god-emperornovel');
+          if(x?.tag) process.stdout.write(x.tag);
+          NODE
+          )"
+          if [ -z "$tag" ]; then
+            echo "Cloudflare script inventory did not expose a tag for god-emperornovel. Safe metadata only:"
+            node --input-type=module - "$tmp/scripts.json" <<'NODE'
+          import fs from 'node:fs';
+          const d=JSON.parse(fs.readFileSync(process.argv[2],'utf8'));
+          console.log(JSON.stringify({success:d.success,errors:Array.isArray(d.errors)?d.errors.map(e=>({code:e.code,message:e.message})):[],script_found:(Array.isArray(d.result)?d.result:[]).some(x=>x.id==='god-emperornovel')},null,2));
+          NODE
+            exit 0
+          fi
+          echo "Found the target Worker tag; tag value intentionally withheld."
+
+          triggers_status="$(curl --silent --show-error --max-time 25 -o "$tmp/triggers.json" -w '%{http_code}' "${headers[@]}" "https://api.cloudflare.com/client/v4/accounts/$CLOUDFLARE_ACCOUNT_ID/builds/workers/$tag/triggers" || true)"
+          echo "Workers Builds trigger inventory HTTP status: $triggers_status"
+          node --input-type=module - "$tmp/triggers.json" "$triggers_status" <<'NODE'
+          import fs from 'node:fs';
+          const status=process.argv[3];
+          try {
+            const d=JSON.parse(fs.readFileSync(process.argv[2],'utf8'));
+            if(status!=='200' || d.success!==true) {
+              console.log(JSON.stringify({success:d.success,http_status:status,errors:Array.isArray(d.errors)?d.errors.map(e=>({code:e.code,message:e.message})):[],result_shape:d.result&&typeof d.result==='object'?(Array.isArray(d.result)?'array':Object.keys(d.result)) : typeof d.result},null,2));
+              process.exit(0);
+            }
+            const items=Array.isArray(d.result)?d.result:(Array.isArray(d.result?.triggers)?d.result.triggers:[]);
+            console.log(JSON.stringify({success:true,trigger_count:items.length,triggers:items.map(x=>({
+              trigger_name:x.trigger_name,
+              branch_includes:x.branch_includes,
+              branch_excludes:x.branch_excludes,
+              path_includes:x.path_includes,
+              path_excludes:x.path_excludes,
+              root_directory:x.root_directory,
+              build_command:x.build_command,
+              deploy_command:x.deploy_command,
+              created_on:x.created_on,
+              modified_on:x.modified_on
+            }))},null,2));
+          } catch { console.log(JSON.stringify({http_status:status,response:'non-JSON; body omitted'})); }
           NODE
 
-      - name: Confirm production health without changing anything
+          builds_status="$(curl --silent --show-error --max-time 25 -o "$tmp/builds.json" -w '%{http_code}' "${headers[@]}" "https://api.cloudflare.com/client/v4/accounts/$CLOUDFLARE_ACCOUNT_ID/builds/workers/$tag/builds" || true)"
+          echo "Workers Builds history HTTP status: $builds_status"
+          node --input-type=module - "$tmp/builds.json" "$builds_status" <<'NODE'
+          import fs from 'node:fs';
+          const status=process.argv[3];
+          try {
+            const d=JSON.parse(fs.readFileSync(process.argv[2],'utf8'));
+            if(status!=='200' || d.success!==true) {
+              console.log(JSON.stringify({success:d.success,http_status:status,errors:Array.isArray(d.errors)?d.errors.map(e=>({code:e.code,message:e.message})):[],result_shape:d.result&&typeof d.result==='object'?(Array.isArray(d.result)?'array':Object.keys(d.result)) : typeof d.result},null,2));
+              process.exit(0);
+            }
+            const root=d.result;
+            const items=Array.isArray(root)?root:(Array.isArray(root?.builds)?root.builds:[]);
+            console.log(JSON.stringify({success:true,build_count:items.length,latest_builds:items.slice(0,10).map(x=>({
+              build_uuid:x.build_uuid,
+              status:x.status,
+              created_at:x.created_at,
+              branch:x.build_trigger_metadata?.branch,
+              commit_hash:x.build_trigger_metadata?.commit_hash,
+              trigger_name:x.trigger?.trigger_name,
+              trigger_uuid:x.trigger?.trigger_uuid
+            }))},null,2));
+          } catch { console.log(JSON.stringify({http_status:status,response:'non-JSON; body omitted'})); }
+          NODE
+
+      - name: Compare live Worker health (read-only)
         shell: bash
         run: |
           set -euo pipefail
