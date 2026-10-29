@@ -15,7 +15,7 @@ assert.ok(source.includes('if(p==="/api/formats"&&m==="GET")'), 'Public format r
 assert.ok(source.includes('CONTENT_FORMAT_IDS.has(kind)'), 'Author/admin publishing validates format IDs');
 assert.ok(source.includes('supported_formats:CONTENT_FORMATS.map'), 'Invalid formats return accepted IDs');
 
-const scriptMatch = index.match(/<script src="\\/([^"]+\\.js)" defer><\\/script>/);
+const scriptMatch = index.match(/<script src="\/([^"]+\.js)" defer><\/script>/);
 assert.ok(scriptMatch, 'HTML entry references a versioned application bundle');
 assert.ok(fs.existsSync('public/' + scriptMatch[1]), 'HTML application bundle exists');
 const appFiles = ['app.js', scriptMatch[1]];
