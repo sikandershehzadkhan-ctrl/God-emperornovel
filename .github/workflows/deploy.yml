@@ -132,26 +132,55 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          response=""; for attempt in $(seq 1 10); do response="$(curl --fail --silent --show-error --max-time 25 -H "Cache-Control: no-cache" "https://god-emperornovel.sikandershehzadkhan.workers.dev/api/health?verify=$(date +%s%N)" || true)"; if printf "%s" "$response" | node -e 'let s="";process.stdin.on("data",d=>s+=d).on("end",()=>{try{const d=JSON.parse(s);process.exit(d.ok===true&&d.database===true&&d.version==="17.13.0"?0:1)}catch{process.exit(1)}})'; then break; fi; echo "Waiting for the new Worker version to become live (attempt $attempt/10)..."; sleep 6; done
+          EXPECTED_VERSION="$(node -p "require('./package.json').version")"
+          base="https://god-emperornovel.sikandershehzadkhan.workers.dev"
+          response=""
+          verified=false
+          for attempt in $(seq 1 10); do
+            response="$(curl --fail --silent --show-error --max-time 20 -H "Cache-Control: no-cache" "$base/api/health?verify=$(date +%s%N)" || true)"
+            if printf '%s' "$response" | EXPECTED_VERSION="$EXPECTED_VERSION" node -e 'let s="";process.stdin.on("data",d=>s+=d).on("end",()=>{try{const d=JSON.parse(s);process.exit(d.ok===true&&d.database===true&&d.version===process.env.EXPECTED_VERSION?0:1)}catch{process.exit(1)}})'; then
+              verified=true
+              break
+            fi
+            echo "Waiting for release $EXPECTED_VERSION to become healthy (attempt $attempt/10)..."
+            sleep 6
+          done
           printf '%s\n' "$response"
-          printf '%s' "$response" | node -e 'let s="";process.stdin.on("data",d=>s+=d).on("end",()=>{let d;try{d=JSON.parse(s)}catch{console.error("Health endpoint did not return JSON");process.exit(1)};if(d.ok!==true||d.database!==true||d.version!=="17.13.0"){console.error("Live Worker version/database mismatch: "+JSON.stringify({version:d.version,database:d.database}));process.exit(1)};console.log("Live Worker release 17.13.0 and database health verified.")})'
+          if [ "$verified" != true ]; then
+            echo "::error::Live Worker did not report healthy release $EXPECTED_VERSION."
+            exit 1
+          fi
+          printf '%s' "$response" | EXPECTED_VERSION="$EXPECTED_VERSION" node -e 'let s="";process.stdin.on("data",d=>s+=d).on("end",()=>{const d=JSON.parse(s);if(d.ok!==true||d.database!==true||d.version!==process.env.EXPECTED_VERSION){console.error("Live Worker version/database mismatch: "+JSON.stringify({version:d.version,database:d.database}));process.exit(1)}console.log("Live Worker release "+process.env.EXPECTED_VERSION+" and database health verified.")})'
 
-      - name: Verify live homepage serves the redesigned release assets
+      - name: Verify live homepage and versioned frontend assets
         shell: bash
         run: |
           set -euo pipefail
+          EXPECTED_VERSION="$(node -p "require('./package.json').version")"
           base="https://god-emperornovel.sikandershehzadkhan.workers.dev"
           stamp="$(date +%s%N)"
           html="$(curl --fail --silent --show-error --max-time 20 -H "Cache-Control: no-cache" "$base/?verify=$stamp")"
-          printf '%s' "$html" | grep -F '/app-17.13.0.js' >/dev/null
-          printf '%s' "$html" | grep -F '/imperial-luxury-17.13.0.css' >/dev/null
-          js="$(curl --fail --silent --show-error --max-time 20 "$base/app-17.13.0.js?verify=$stamp")"
-          css="$(curl --fail --silent --show-error --max-time 20 "$base/imperial-luxury-17.13.0.css?verify=$stamp")"
-          icon="$(curl --fail --silent --show-error --max-time 20 "$base/imperial-novel-app-icon.svg?verify=$stamp")"
+          printf '%s' "$html" | grep -F "Imperial Novel" >/dev/null
+          printf '%s' "$html" | grep -F "Read • Create • Conquer" >/dev/null
+          printf '%s' "$html" | grep -F "/app-$EXPECTED_VERSION.js" >/dev/null
+          printf '%s' "$html" | grep -F "/manifest-$EXPECTED_VERSION.webmanifest" >/dev/null
+          asset_paths="$(printf '%s' "$html" | node -e 'let s="";process.stdin.on("data",d=>s+=d).on("end",()=>{const found=[...s.matchAll(/(?:src|href)="(\/[^\"?#]+\.(?:js|css|webmanifest|svg))"/g)].map(m=>m[1]);console.log([...new Set(found)].join("\n"))})')"
+          test -n "$asset_paths" || { echo "::error::No local frontend assets found in homepage HTML."; exit 1; }
+          while IFS= read -r asset; do
+            [ -n "$asset" ] || continue
+            curl --fail --silent --show-error --max-time 20 "$base$asset?verify=$stamp" -o /dev/null
+            echo "Asset reachable: $asset"
+          done <<< "$asset_paths"
+          js="$(curl --fail --silent --show-error --max-time 20 "$base/app-$EXPECTED_VERSION.js?verify=$stamp")"
           printf '%s' "$js" | grep -F 'Open a world.' >/dev/null
           printf '%s' "$js" | grep -F 'Shape an empire.' >/dev/null
-          if printf '%s' "$js" | grep -F 'heroSideCard' >/dev/null; then echo "::error::Legacy hero card is still in the live runtime."; exit 1; fi
-          if printf '%s' "$js" | grep -F 'nextQuickGrid' >/dev/null; then echo "::error::Legacy quick-tile row is still in the live runtime."; exit 1; fi
-          printf '%s' "$css" | grep -F 'single-column editorial homepage' >/dev/null
-          printf '%s' "$icon" | grep -F 'Imperial Novel' >/dev/null
-          echo "Verified live homepage, redesigned single-column hero, versioned CSS and Imperial Novel icon."
+          printf '%s' "$js" | grep -F 'imperialLanguageSelect' >/dev/null
+          if printf '%s' "$js" | grep -F 'heroSideCard' >/dev/null; then
+            echo "::error::Legacy hero card is still in the live runtime."
+            exit 1
+          fi
+          if printf '%s' "$js" | grep -F 'nextQuickGrid' >/dev/null; then
+            echo "::error::Legacy quick-tile row is still in the live runtime."
+            exit 1
+          fi
+          echo "Verified release $EXPECTED_VERSION, redesigned hero, language control, crest, manifest, and every referenced frontend asset."
