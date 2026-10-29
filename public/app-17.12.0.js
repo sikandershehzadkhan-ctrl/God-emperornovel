@@ -35,20 +35,20 @@ async function home(){
   <section class="hero nextHero">
    <div class="nextHeroGlow" aria-hidden="true"></div>
    <div class="nextHeroCopy">
-    <div class="heroKicker"><span class="statusPulse"></span> THE STORYVERSE IS YOURS <span class="kickerPill">IMPERIAL / 01</span></div>
-    <h1>Your next<br><span>obsession</span><br>starts here.</h1>
-    <p class="nextHeroLead">Find the worlds you can't put down. Build the ones nobody has seen. One home for readers, authors and lore addicts.</p>
+    
+    <h1>Open a world.<br><span>Shape an empire.</span></h1>
+    <p class="nextHeroLead">Discover stories worth staying up for, then create the worlds only you can imagine.</p>
     <form class="heroSearch" action="/search" method="get" role="search"><span aria-hidden="true">${iconSvg("search")}</span><input name="q" type="search" placeholder="Search titles, tropes, worlds..." aria-label="Search novels, genres and authors"><button type="submit">Find your story <span aria-hidden="true">↗</span></button></form>
-    <div class="heroTags"><span>IN YOUR NEXT ERA:</span><a href="/genres?genre=Fantasy">Fantasy</a><a href="/genres?genre=Progression">Progression</a><a href="/genres?genre=Romance">Romance</a><a href="/genres?genre=Isekai">Isekai</a></div>
-    <div class="heroPromise"><span>✦</span> Read • Create • Conquer <i></i><span class="promiseText">Original. Authorized. Reader-first.</span></div>
+    <div class="heroTags"><a href="/genres?genre=Fantasy">Fantasy</a><a href="/genres?genre=Progression">Progression</a><a href="/genres?genre=Romance">Romance</a><a href="/genres?genre=Isekai">Isekai</a></div>
+    <div class="heroPromise">Read • Create • Conquer <span class="promiseText">Original. Authorized. Reader-first.</span></div>
    </div>
    <aside class="heroSideCard"><div class="heroSideTop"><img src="/imperial-novel-app-icon.svg?v=17.12.0" alt="" width="34" height="34"><div><small>IMPERIAL NOVEL</small><b>Your portal to another world</b></div><span class="liveBadge"><i></i> OPEN</span></div><div class="heroSideRule"></div>
-    <a href="/catalog?sort=trending" class="portalLink"><span class="portalIcon portalViolet">↗</span><span><small>01 / FIND YOUR NEXT READ</small><b>Trending right now</b><em>Stories readers are moving toward</em></span><strong>↗</strong></a>
-    <a href="/made-for-you" class="portalLink"><span class="portalIcon portalCyan">✳</span><span><small>02 / MATCH YOUR MOOD</small><b>Made for you</b><em>Discover your next favourite world</em></span><strong>↗</strong></a>
-    <a href="/author" class="portalLink"><span class="portalIcon portalLime">＋</span><span><small>03 / MAKE SOMETHING REAL</small><b>Creator Studio</b><em>Turn your lore into a living story</em></span><strong>↗</strong></a>
+    <a href="/catalog?sort=trending" class="portalLink"><span class="portalIcon portalViolet">↗</span><span><small>DISCOVER</small><b>Trending right now</b><em>Stories readers are moving toward</em></span><strong>↗</strong></a>
+    <a href="/made-for-you" class="portalLink"><span class="portalIcon portalCyan">✳</span><span><small>PERSONALIZED</small><b>Made for you</b><em>Discover your next favourite world</em></span><strong>↗</strong></a>
+    <a href="/author" class="portalLink"><span class="portalIcon portalLime">＋</span><span><small>AUTHOR STUDIO</small><b>Creator Studio</b><em>Turn your lore into a living story</em></span><strong>↗</strong></a>
     <div class="portalFoot"><span>BLACK SUN / OPEN GATE</span><span>NO ALGORITHM HYPE. JUST WORLDS.</span></div>
    </aside>
-   <div class="heroOrbitLabel" aria-hidden="true">INFINITE WORLDS <span>✦</span></div>
+   
   </section>
   <section class="quickGrid nextQuickGrid" aria-label="Quick access">
    <a class="quickCard" href="/catalog?sort=trending"><span class="quickIcon qiViolet">↗</span><div><b>Trending</b><small>What's catching fire</small></div><strong>↗</strong></a>
