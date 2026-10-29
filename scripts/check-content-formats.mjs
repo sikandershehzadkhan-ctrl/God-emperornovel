@@ -5,7 +5,7 @@ const source = fs.readFileSync('src/index.js', 'utf8');
 const index = fs.readFileSync('public/index.html', 'utf8');
 const registryMatch = source.match(/const CONTENT_FORMATS=(\[[\s\S]*?\n\];)/);
 assert.ok(registryMatch, 'Server-owned content format registry exists');
-const formats = [...registryMatch[1].matchAll(/\{id:"([a-z_]+)",label:"([^"]+)",group:"([a-z]+)"\}/g)].map(([, id, label, group]) => ({ id, label, group }));
+const formats = [...registryMatch[1].matchAll(/\{id:"([a-z_]+)",label:"([^"]+)",group:"([a-z]+)"[^}]*\}/g)].map(([, id, label, group]) => ({ id, label, group }));
 assert.ok(formats.length >= 12, 'Registry includes a broad set of formats');
 assert.equal(new Set(formats.map(x => x.id)).size, formats.length, 'Format IDs are unique');
 assert.ok(formats.every(x => x.label.trim() && x.group.trim()), 'Every format has a label and group');
