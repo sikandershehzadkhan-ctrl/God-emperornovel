@@ -333,3 +333,24 @@ html[data-theme="dark"] .nextQuickGrid{display:none!important}
   :where(a,button,input,select,textarea,[role="button"],[tabindex]):focus-visible{outline:2px solid Highlight}
   :where(button,a,[role="button"]){forced-color-adjust:auto}
 }
+
+/* Skip navigation stays invisible until keyboard users need it. */
+.skipLink{
+  position:fixed;
+  z-index:10000;
+  inset-block-start:8px;
+  inset-inline-start:8px;
+  transform:translateY(calc(-100% - 12px));
+  padding:12px 16px;
+  border:2px solid #83a9ff;
+  border-radius:10px;
+  background:#080a12;
+  color:#fff;
+  font-weight:700;
+  text-decoration:none;
+}
+.skipLink:focus,
+.skipLink:focus-visible{
+  transform:translateY(0);
+}
+#app:focus{outline:none}
