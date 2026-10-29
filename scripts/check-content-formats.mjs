@@ -54,6 +54,8 @@ for (const path of ['public/app.js', 'public/app-17.17.0.js']) {
  assert.ok(app.includes("api('/api/formats')"), path + ' fetches canonical formats from the server registry');
  assert.ok(app.includes("id=\"storyKind\" name=\"kind\" required>'+CONTENT_FORMAT_OPTIONS.map"), path + ' builds the new-story format selector from the registry');
  assert.ok(app.includes('name="alt_titles"'), path + ' supports alternate titles');
+ assert.ok(app.includes('list="imperialLanguageOptions"'), path + ' accepts international language names and endonyms');
+ assert.ok(app.includes('Chinese (Simplified)') && app.includes('Chinese (Traditional)') && app.includes('Vietnamese') && app.includes('Persian'), path + ' offers broader multilingual language suggestions');
 
 }
 assert.ok(source.includes('if(p==="/api/author/novels"&&m==="POST")'), 'Backend supports creating story drafts');
