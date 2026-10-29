@@ -1094,3 +1094,11 @@ button:disabled{opacity:.5;cursor:not-allowed}
 @keyframes bootSpin{to{transform:rotate(360deg)}}
 @media(prefers-reduced-motion:reduce){.bootSpinner{animation:none}.appBootRoot{scroll-behavior:auto}}
 @media(max-width:700px){.appBootRoot{min-height:60vh;padding:28px 14px}.bootFallback{border-radius:22px;box-shadow:none}}
+
+/* Full preference controls, mobile settings and accessibility */
+.settingsGridPro{align-items:start}.settingsPanel{min-width:0}.settingsPanel h2{margin:8px 0 16px;letter-spacing:-.025em}.settingsPanel .settingRow{gap:14px;padding:15px 0}.settingsPanel .settingRow>div{min-width:0;flex:1}.settingsPanel .settingRow select{width:min(46%,220px);min-width:120px}.settingsPanel .settingRow input[type=range]{width:min(42%,190px);accent-color:var(--violet)}.settingsPanel .settingRow output{min-width:42px;text-align:right;font-variant-numeric:tabular-nums}.settingsActions{flex-wrap:wrap;gap:10px}.settingsNotice{margin-top:14px}
+html[data-theme="dark"][data-high-contrast="true"]{--text:#fff;--muted:#e0d9ee;--line:#76658b;--silver:#b3a5c8}
+html[data-theme="light"][data-high-contrast="true"]{--text:#080616;--muted:#39354b;--line:#777087;--silver:#69637b}
+html[data-reduced-motion="true"] *,html[data-reduced-motion="true"] *::before,html[data-reduced-motion="true"] *::after{animation-duration:.01ms!important;animation-iteration-count:1!important;scroll-behavior:auto!important;transition-duration:.01ms!important}
+html[data-compact-cards="true"] .novelGrid{gap:10px}html[data-compact-cards="true"] .novelCard{padding:10px}
+@media(max-width:620px){.settingsGridPro{grid-template-columns:minmax(0,1fr)}.settingsPanel .settingRow{align-items:flex-start;flex-wrap:wrap}.settingsPanel .settingRow select{width:100%;max-width:none}.settingsPanel .settingRow input[type=range]{width:calc(100% - 58px)}.settingsActions>*{flex:1 1 100%;text-align:center;justify-content:center}}
