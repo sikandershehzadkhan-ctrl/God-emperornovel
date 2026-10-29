@@ -11,6 +11,7 @@ const manifestPath = `public/manifest-${pkg.version}.webmanifest`;
 const manifest = JSON.parse(fs.readFileSync(manifestPath, 'utf8'));
 const serviceWorker = fs.readFileSync('public/sw.js', 'utf8');
 const entry = fs.readFileSync('public/index.html', 'utf8');
+const worker = fs.readFileSync('src/index.js', 'utf8');
 
 assert.equal(lock.version, pkg.version, 'Lockfile root version must match package.json');
 assert.equal(lock.packages?.['']?.version, pkg.version, 'Lockfile package version must match package.json');
@@ -39,4 +40,11 @@ for (const icon of manifest.icons || []) {
     assert.ok(fs.existsSync(relative), `PWA manifest icon is missing: ${icon.src}`);
   }
 }
+assert.ok(worker.includes('const version=String(env.APP_VERSION||"").trim()'), 'HTML rendering derives versioned asset URLs from the active Worker release');
+assert.ok(worker.includes('env.APP_ICON_PATH'), 'HTML rendering uses the configured same-origin crest path');
+assert.ok(wrangler.includes('APP_ICON_PATH = "/imperial-novel-crest-17.18.0.svg"'), 'Cloudflare config declares the versioned crest asset');
+assert.ok(!worker.includes('style-17.11.0.css') && !worker.includes('app-17.13.0.js') && !worker.includes('manifest-17.13.0.webmanifest'), 'HTML rendering has no stale hardcoded frontend release URLs');
+assert.ok(worker.includes('"/author":"index.html"'), 'Author Studio uses the unified branded application shell');
+assert.ok(worker.includes('"/formats":"index.html"') && worker.includes('"/format/'), 'Format directory and shelves are routed through the branded shell');
+
 console.log(`Release and precache consistency passed: ${pkg.version}; ${coreAssets.length} assets verified.`);
