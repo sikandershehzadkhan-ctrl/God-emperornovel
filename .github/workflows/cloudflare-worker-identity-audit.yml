@@ -64,6 +64,8 @@ jobs:
                 created_on:x.created_on,
                 source:x.source,
                 strategy:x.strategy,
+                author_domain:typeof x.author_email==="string"?x.author_email.split("@").pop():undefined,
+                annotations:x.annotations?Object.fromEntries(Object.entries(x.annotations).filter(([k])=>/message|trigger|dispatch|commit|source/i.test(k))):undefined,
                 versions:Array.isArray(x.versions)?x.versions.map(v=>({version_id:v.version_id,percentage:v.percentage})):undefined
               }));
             }
