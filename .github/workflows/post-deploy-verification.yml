@@ -141,7 +141,7 @@ jobs:
                     printf '%s' "$page" | grep -F "/app-$EXPECTED_VERSION.css" >/dev/null \
                       && printf '%s' "$page" | grep -F "/imperial-luxury-$EXPECTED_VERSION.css" >/dev/null || continue
                     ;;
-                  /privacy|/terms|/copyright)
+                  /privacy|/terms|/copyright|/community-taxonomy)
                     printf '%s' "$page" | grep -F "/style-$EXPECTED_VERSION.css" >/dev/null \
                       && printf '%s' "$page" | grep -F "/imperial-luxury-$EXPECTED_VERSION.css" >/dev/null || continue
                     ;;

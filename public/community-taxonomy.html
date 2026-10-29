@@ -1,20 +1,78 @@
-<!doctype html><html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Community Taxonomy | Imperial Novel</title><link rel="stylesheet" href="/style.css"></head><body><main class="container" style="padding:24px;max-width:760px;margin:auto"><h1>Community Genres & Tags</h1><p>Suggest a genre or tag. Every submission is moderated before becoming part of Imperial Novel's shared taxonomy.</p><form id="f"><p><select id="type"><option value="genre">Genre</option><option value="tag">Tag</option></select></p><p><input id="name" maxlength="80" placeholder="Name" required style="width:100%"></p><p><textarea id="description" maxlength="500" placeholder="Optional description" style="width:100%;min-height:100px"></textarea></p><p><input id="creator_name" maxlength="80" placeholder="Creator name (optional)" style="width:100%"></p><button>Submit for review</button></form><pre id="out"></pre><p><a href="/genres">Genres</a> · <a href="/tags">Tags</a> · <a href="/">Home</a></p></main><script>
-const form=document.getElementById('f');
-const typeEl=document.getElementById('type');
-const nameEl=document.getElementById('name');
-const descriptionEl=document.getElementById('description');
-const creatorEl=document.getElementById('creator_name');
-const outEl=document.getElementById('out');
-form.addEventListener('submit',async e=>{
- e.preventDefault();
- const name=nameEl.value.trim().replace(/\s+/g,' ');
- if(name.length<2||name.length>80){outEl.textContent='Please enter a name between 2 and 80 characters.';nameEl.focus();return;}
- outEl.textContent='Submitting...';
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#090b16">
+<meta name="description" content="Help shape Imperial Novel's shared genre and tag taxonomy. Every suggestion is reviewed before publication.">
+<title>Community Taxonomy | Imperial Novel</title>
+<link rel="stylesheet" href="/style.css">
+<style>
+:root{color-scheme:dark;--tax-bg:#090b16;--tax-panel:rgba(19,23,42,.88);--tax-line:rgba(160,174,216,.2);--tax-text:#f6f7ff;--tax-muted:#aab3cd;--tax-purple:#a78bfa;--tax-blue:#79a7ff}
+*{box-sizing:border-box}body{margin:0;background:radial-gradient(ellipse at 12% 0%,rgba(111,67,201,.22),transparent 38%),radial-gradient(ellipse at 100% 20%,rgba(50,103,203,.13),transparent 34%),var(--tax-bg);color:var(--tax-text);font:16px/1.6 Inter,ui-sans-serif,system-ui,-apple-system,"Segoe UI",sans-serif;min-height:100vh}
+.tax-wrap{width:min(100% - 32px,900px);margin:auto;padding:clamp(24px,6vw,64px) 0}.tax-top{display:flex;align-items:center;gap:12px;margin-bottom:36px}.tax-crest{width:46px;height:46px;object-fit:contain}.tax-brand{font-weight:800;letter-spacing:.04em}.tax-tagline{display:block;color:var(--tax-muted);font-size:.8rem;letter-spacing:.13em;text-transform:uppercase}
+.tax-eyebrow{font-size:.75rem;letter-spacing:.18em;text-transform:uppercase;color:var(--tax-blue);font-weight:750}.tax-title{font-size:clamp(2rem,7vw,3.5rem);line-height:1.06;letter-spacing:-.045em;max-width:740px;margin:.65rem 0 1rem}.tax-lede{max-width:650px;color:var(--tax-muted);font-size:1.05rem;margin:0 0 28px}.tax-grid{display:grid;grid-template-columns:minmax(0,1.15fr) minmax(220px,.85fr);gap:18px;align-items:start}.tax-card{border:1px solid var(--tax-line);border-radius:24px;background:var(--tax-panel);padding:clamp(18px,4vw,30px);box-shadow:0 24px 80px rgba(0,0,0,.2);backdrop-filter:blur(18px)}.tax-card h2{font-size:1.05rem;margin:0 0 6px}.tax-card p{color:var(--tax-muted);font-size:.92rem;margin:.25rem 0 20px}.tax-field{display:grid;gap:7px;margin:18px 0}.tax-field label{font-size:.88rem;font-weight:650}.tax-field small{font-size:.78rem;color:var(--tax-muted)}.tax-field input,.tax-field select,.tax-field textarea{width:100%;min-width:0;border:1px solid var(--tax-line);border-radius:12px;background:#0c1020;color:var(--tax-text);font:inherit;padding:12px 13px;outline:none}.tax-field textarea{min-height:116px;resize:vertical}.tax-field input:focus-visible,.tax-field select:focus-visible,.tax-field textarea:focus-visible{border-color:var(--tax-blue);box-shadow:0 0 0 3px rgba(121,167,255,.18)}.tax-submit{width:100%;border:0;border-radius:12px;background:linear-gradient(115deg,#7450d4,#376fce);color:white;font:inherit;font-weight:750;padding:13px 18px;cursor:pointer}.tax-submit:disabled{opacity:.65;cursor:wait}.tax-note{border-top:1px solid var(--tax-line);margin-top:20px;padding-top:16px;color:var(--tax-muted);font-size:.82rem}.tax-links{display:flex;flex-wrap:wrap;gap:10px;margin-top:26px}.tax-links a{color:#d4ddff;text-decoration:none;border:1px solid var(--tax-line);border-radius:999px;padding:8px 13px;font-size:.88rem}.tax-links a:hover{border-color:var(--tax-blue)}.tax-status{white-space:pre-wrap;overflow-wrap:anywhere;border-radius:12px;padding:12px;background:rgba(4,7,16,.65);color:#dbe6ff;font-size:.85rem;margin-top:14px;min-height:12px}.tax-status:empty{display:none}.tax-status[data-kind="error"]{color:#ffc7d0}.tax-status[data-kind="success"]{color:#b8f5d0}.tax-rules{list-style:none;padding:0;margin:18px 0 0}.tax-rules li{padding:12px 0;border-bottom:1px solid var(--tax-line);color:var(--tax-muted);font-size:.9rem}.tax-rules li:last-child{border:0}.tax-rules strong{display:block;color:var(--tax-text);font-weight:650;margin-bottom:3px}.tax-footer{margin-top:30px;color:var(--tax-muted);font-size:.8rem}
+@media(max-width:680px){.tax-grid{grid-template-columns:1fr}.tax-wrap{width:min(100% - 24px,900px)}.tax-card{border-radius:18px}.tax-top{margin-bottom:28px}}
+@media(prefers-reduced-motion:reduce){*,*::before,*::after{scroll-behavior:auto!important;animation-duration:.01ms!important;transition-duration:.01ms!important}}
+</style>
+</head>
+<body>
+<main class="tax-wrap">
+<header class="tax-top">
+<img class="tax-crest" src="/imperial-novel-crest-17.18.0.svg" alt="" width="46" height="46">
+<div><div class="tax-brand">IMPERIAL NOVEL</div><span class="tax-tagline">Read · Create · Conquer</span></div>
+</header>
+<div class="tax-eyebrow">Community governance</div>
+<h1 class="tax-title">Help shape the language of worlds.</h1>
+<p class="tax-lede">Suggest a genre or tag that helps readers discover the right stories. Each proposal is reviewed before it becomes part of Imperial Novel's shared catalog vocabulary.</p>
+<div class="tax-grid">
+<section class="tax-card" aria-labelledby="form-title">
+<h2 id="form-title">Propose a taxonomy entry</h2>
+<p>Keep names clear, distinct, inclusive, and useful across languages and story formats.</p>
+<form id="taxonomy-form">
+<div class="tax-field"><label for="type">Entry type</label><select id="type" name="type"><option value="genre">Genre</option><option value="tag">Tag</option></select></div>
+<div class="tax-field"><label for="name">Proposed name <span aria-hidden="true">*</span></label><input id="name" name="name" minlength="2" maxlength="80" autocomplete="off" required placeholder="e.g. Political progression"><small>2 to 80 characters. Avoid duplicates and promotional phrases.</small></div>
+<div class="tax-field"><label for="description">Meaning and usage</label><textarea id="description" name="description" maxlength="500" placeholder="Explain what stories this entry describes, and what it should not include."></textarea><small>Optional, up to 500 characters.</small></div>
+<div class="tax-field"><label for="creator-name">Display name</label><input id="creator-name" name="creator_name" maxlength="80" autocomplete="nickname" placeholder="Optional"></div>
+<button class="tax-submit" id="taxonomy-submit" type="submit">Submit for moderation</button>
+<div class="tax-status" id="taxonomy-status" role="status" aria-live="polite"></div>
+</form>
+<div class="tax-note">Submission is a proposal, not an immediate catalog change. Please do not include private information.</div>
+</section>
+<aside class="tax-card" aria-labelledby="principles-title">
+<h2 id="principles-title">The Imperial standard</h2>
+<p>Shared labels should make discovery more precise, never noisier.</p>
+<ul class="tax-rules">
+<li><strong>Specific and searchable</strong>Use a name readers can understand and search for.</li>
+<li><strong>One clear meaning</strong>Avoid overlapping labels, near-duplicates, and vague catch-alls.</li>
+<li><strong>Format-aware</strong>Distinguish genre and story themes from formats such as manga or webtoons.</li>
+<li><strong>Respectful and rights-safe</strong>No harassment, personal data, impersonation, or infringing promotional material.</li>
+</ul>
+<div class="tax-links"><a href="/genres">Browse genres</a><a href="/tags">Browse tags</a><a href="/community">Community</a><a href="/">Home</a></div>
+</aside>
+</div>
+<footer class="tax-footer">Imperial Novel · Read · Create · Conquer</footer>
+</main>
+<script>
+(()=>{"use strict";
+const form=document.getElementById("taxonomy-form");
+const nameEl=document.getElementById("name");
+const statusEl=document.getElementById("taxonomy-status");
+const submit=document.getElementById("taxonomy-submit");
+form.addEventListener("submit",async event=>{
+ event.preventDefault();
+ const name=nameEl.value.trim().replace(/\s+/g," ");
+ if(name.length<2||name.length>80){statusEl.dataset.kind="error";statusEl.textContent="Enter a name between 2 and 80 characters.";nameEl.focus();return;}
+ submit.disabled=true;submit.textContent="Submitting…";statusEl.dataset.kind="";statusEl.textContent="Sending your proposal securely…";
  try{
-  const r=await fetch('/api/taxonomy',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({type:typeEl.value,name,description:descriptionEl.value.trim(),creator_name:creatorEl.value.trim()})});
-  const data=await r.json();
-  outEl.textContent=JSON.stringify(data,null,2);
-  if(r.ok) form.reset();
- }catch(err){outEl.textContent='Could not submit right now. Please try again.';}
+  const response=await fetch("/api/taxonomy",{method:"POST",headers:{"content-type":"application/json","accept":"application/json"},body:JSON.stringify({type:document.getElementById("type").value,name,description:document.getElementById("description").value.trim(),creator_name:document.getElementById("creator-name").value.trim()})});
+  const data=await response.json().catch(()=>({}));
+  if(!response.ok){statusEl.dataset.kind="error";statusEl.textContent=data.error||data.message||"The proposal could not be submitted. Please check your entry and try again.";return;}
+  statusEl.dataset.kind="success";statusEl.textContent=data.message||"Proposal received. It will be reviewed before publication.";form.reset();
+ }catch(error){statusEl.dataset.kind="error";statusEl.textContent="Connection unavailable. Your proposal was not confirmed. Please try again.";}
+ finally{submit.disabled=false;submit.textContent="Submit for moderation";}
 });
-</script></body></html>
+})();
+</script>
+</body>
+</html>
