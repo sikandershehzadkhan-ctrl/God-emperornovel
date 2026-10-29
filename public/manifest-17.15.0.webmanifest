@@ -1,0 +1,18 @@
+{
+  "name": "Imperial Novel",
+  "short_name": "Imperial Novel",
+  "start_url": "/?app=17.15.0",
+  "display": "standalone",
+  "background_color": "#080a12",
+  "theme_color": "#080a12",
+  "description": "Imperial Novel. Read • Create • Conquer. Discover original, licensed and authorized stories.",
+  "icons": [
+    {
+      "src": "/imperial-novel-app-icon.svg?v=17.15.0",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ],
+  "version": "17.15.0"
+}

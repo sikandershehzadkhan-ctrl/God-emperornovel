@@ -1,0 +1,19 @@
+/* Imperial Novel 17.16: format-aware comic and manhwa reader. */
+.comicReader{width:100%;max-width:980px;margin:0 auto}
+.comicReaderControls{position:sticky;top:72px;z-index:4;display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;padding:10px 12px;margin:0 0 14px;border:1px solid var(--line,rgba(150,160,190,.22));border-radius:14px;background:var(--panel,#101421);backdrop-filter:blur(12px)}
+.comicPageNav{display:flex;align-items:center;justify-content:center;gap:10px}
+#comicPageStatus{font-size:12px;color:var(--muted,#a3abc2);min-width:100px;text-align:center}
+.comicPages{display:flex;flex-direction:column;align-items:center;gap:12px;width:100%;margin:0 auto}
+.comicPage{width:100%;max-width:900px;margin:0;padding:0;overflow:hidden;background:var(--panel,#101421);border-radius:4px}
+.comicPage img{display:block;width:100%;height:auto;max-height:none;object-fit:contain;background:#080a12}
+.comicPage figcaption{padding:8px 12px;color:var(--muted,#a3abc2);font-size:13px}
+.comicPageError img{display:none}
+.comicPageError::after{content:'Page image could not be loaded';display:block;padding:30px 16px;text-align:center;color:var(--muted,#a3abc2)}
+.comicPageUnavailable{width:100%;padding:24px;border:1px dashed var(--line,rgba(150,160,190,.22));border-radius:12px;text-align:center;color:var(--muted,#a3abc2)}
+.comicReader.is-single .comicPages{min-height:55vh;justify-content:center}
+.comicReader.is-single .comicPage{display:none}
+.comicReader.is-single .comicPage.is-current{display:block}
+.comicReader.is-single .comicPage img{max-height:calc(100dvh - 210px);width:auto;max-width:100%;margin:auto}
+.comicReader.is-single .comicPage figcaption{text-align:center}
+@media(max-width:640px){.comicReaderControls{top:56px;padding:8px;border-radius:10px}.comicReaderControls>.secondary{font-size:12px;min-height:38px}.comicPage{border-radius:0}.comicPages{gap:4px}.comicReader.is-single .comicPages{min-height:45vh}.comicReader.is-single .comicPage img{max-height:calc(100dvh - 190px)}}
+@media(prefers-reduced-motion:reduce){.comicPages *{scroll-behavior:auto!important;transition:none!important}}

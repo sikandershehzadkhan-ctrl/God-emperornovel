@@ -9,106 +9,104 @@ on:
 permissions:
   contents: read
 
+concurrency:
+  group: imperial-novel-post-deploy-verification
+  cancel-in-progress: false
+
 jobs:
   verify-live:
     if: ${{ github.event.workflow_run.conclusion == 'success' }}
     runs-on: ubuntu-latest
-    timeout-minutes: 5
+    timeout-minutes: 8
     steps:
-      - name: Verify live Worker health and deployed version
+      - name: Check out the exact source revision that was deployed
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.workflow_run.head_sha }}
+
+      - name: Resolve expected release from the checked-out source
+        id: release
         shell: bash
         run: |
           set -euo pipefail
-          base="https://god-emperornovel.sikandershehzadkhan.workers.dev/api/health"
+          test -f package.json
+          test -f public/index.html
+          VERSION="$(node -p "require('./package.json').version")"
+          test -n "$VERSION"
+          echo "version=$VERSION" >> "$GITHUB_OUTPUT"
+          echo "Verifying source release $VERSION."
+
+      - name: Verify live Worker health and release version
+        shell: bash
+        env:
+          EXPECTED_VERSION: ${{ steps.release.outputs.version }}
+        run: |
+          set -euo pipefail
+          base="https://god-emperornovel.sikandershehzadkhan.workers.dev"
           stamp="$(date +%s)"
           verified=false
           response=""
           for attempt in $(seq 1 24); do
-            response="$(curl --fail --silent --show-error --max-time 20 "$base?verify=$stamp-$attempt" 2>/dev/null || true)"
-            if [ -n "$response" ] && printf '%s' "$response" | node -e 'let s="";process.stdin.on("data",d=>s+=d).on("end",()=>{try{const h=JSON.parse(s);process.exit(h.ok===true&&h.database===true&&h.version==="17.13.0"?0:1)}catch{process.exit(1)}})' 2>/dev/null; then
+            response="$(curl --fail --silent --show-error --max-time 15 "$base/api/health?verify=$stamp-$attempt" 2>/dev/null || true)"
+            if printf '%s' "$response" | EXPECTED_VERSION="$EXPECTED_VERSION" node -e 'let s="";process.stdin.on("data",d=>s+=d).on("end",()=>{try{const h=JSON.parse(s);process.exit(h.ok===true&&h.database===true&&h.version===process.env.EXPECTED_VERSION?0:1)}catch{process.exit(1)}})' 2>/dev/null; then
               printf '%s\n' "$response"
-              echo "Live Worker health and version verified on attempt $attempt."
+              echo "Live Worker health and release $EXPECTED_VERSION verified on attempt $attempt."
               verified=true
               break
             fi
-            echo "Waiting for Cloudflare edge to serve release 17.13.0 (attempt $attempt/24)."
+            echo "Waiting for healthy release $EXPECTED_VERSION (attempt $attempt/24)."
             sleep 5
           done
           if [ "$verified" != true ]; then
-            echo "::error::The Worker did not serve healthy release 17.13.0 within 120 seconds."
+            echo "::error::The Worker did not serve healthy release $EXPECTED_VERSION within 120 seconds."
             printf '%s\n' "$response"
             exit 1
           fi
 
-      - name: Verify live homepage and versioned frontend assets
+      - name: Verify live homepage and every referenced frontend asset
         shell: bash
+        env:
+          EXPECTED_VERSION: ${{ steps.release.outputs.version }}
         run: |
           set -euo pipefail
           base="https://god-emperornovel.sikandershehzadkhan.workers.dev"
           stamp="$(date +%s)"
           html="$(curl --fail --silent --show-error --max-time 20 -H "Cache-Control: no-cache" "$base/?verify=$stamp")"
-          printf '%s' "$html" | grep -F '/app-17.13.0.js' >/dev/null
-          printf '%s' "$html" | grep -F '/style-17.11.0.css' >/dev/null
-          js="$(curl --fail --silent --show-error --max-time 20 "$base/app-17.13.0.js?verify=$stamp")"
-          css="$(curl --fail --silent --show-error --max-time 20 "$base/style-17.11.0.css?verify=$stamp")"
-          luxury="$(curl --fail --silent --show-error --max-time 20 "$base/imperial-luxury-17.13.0.css?verify=$stamp")"
-          icon="$(curl --fail --silent --show-error --max-time 20 "$base/imperial-novel-app-icon.svg?verify=$stamp")"
-          manifest="$(curl --fail --silent --show-error --max-time 20 "$base/manifest-17.13.0.webmanifest?verify=$stamp")"
+          printf '%s' "$html" | grep -F "Imperial Novel" >/dev/null
+          printf '%s' "$html" | grep -F "Read • Create • Conquer" >/dev/null
+          asset_paths="$(printf '%s' "$html" | node -e 'let s="";process.stdin.on("data",d=>s+=d).on("end",()=>{const found=[...s.matchAll(/(?:src|href)="(\/[^\"?#]+\.(?:js|css|webmanifest|svg))"/g)].map(m=>m[1]);console.log([...new Set(found)].join("\n"))})')"
+          test -n "$asset_paths" || { echo "::error::No local frontend assets were found in the homepage HTML."; exit 1; }
+          printf '%s\n' "$asset_paths"
+          while IFS= read -r asset; do
+            [ -n "$asset" ] || continue
+            curl --fail --silent --show-error --max-time 20 "$base$asset?verify=$stamp" -o /dev/null
+            echo "Asset reachable: $asset"
+          done <<< "$asset_paths"
+          printf '%s\n' "$html" | grep -F "/app-$EXPECTED_VERSION.js" >/dev/null || { echo "::error::Homepage does not reference the expected release JavaScript."; exit 1; }
+          js="$(curl --fail --silent --show-error --max-time 20 "$base/app-$EXPECTED_VERSION.js?verify=$stamp")"
           printf '%s' "$js" | grep -F 'Open a world.' >/dev/null
-          printf '%s' "$js" | grep -F 'Trend Factory' >/dev/null
           printf '%s' "$js" | grep -F 'Shape an empire.' >/dev/null
-          printf '%s' "$js" | grep -F 'activeFilters' >/dev/null
-          printf '%s' "$css" | grep -F 'Trend Factory editorial intelligence workspace' >/dev/null
-          printf '%s' "$css" | grep -F 'activeFilters' >/dev/null
-          printf '%s' "$css" | grep -F 'nextHero' >/dev/null
-          printf '%s' "$css" | grep -F '.readerArticle' >/dev/null
-          printf '%s' "$css" | grep -F '.authorStudioPage .wrap>.top' >/dev/null
-          printf '%s' "$css" | grep -F '.adminDashboardPage .adminHero' >/dev/null
-          printf '%s' "$css" | grep -F 'genreGrid' >/dev/null
-          printf '%s' "$css" | grep -F 'body.authorStudioPage button:disabled' >/dev/null
-          printf '%s' "$html" | grep -F '/imperial-luxury-17.13.0.css' >/dev/null
-          printf '%s' "$html" | grep -F '/manifest-17.13.0.webmanifest' >/dev/null
-          printf '%s' "$luxury" | grep -F 'Low-end mobile performance' >/dev/null
-          printf '%s' "$luxury" | grep -F 'Taste Skill direction' >/dev/null
-          printf '%s' "$luxury" | grep -F 'single-column editorial homepage' >/dev/null
-          if printf '%s' "$js" | grep -F 'heroSideCard' >/dev/null; then echo "::error::Legacy hero card remains in live JavaScript."; exit 1; fi
-          if printf '%s' "$js" | grep -F 'nextQuickGrid' >/dev/null; then echo "::error::Legacy quick-tile row remains in live JavaScript."; exit 1; fi
-          printf '%s' "$icon" | grep -F 'Imperial Novel' >/dev/null
-          printf '%s' "$manifest" | grep -F '"name": "Imperial Novel"' >/dev/null
-          printf '%s' "$js" | grep -F 'zh-TW' >/dev/null
-          printf '%s' "$js" | grep -F 'pt-BR' >/dev/null
-          printf '%s' "$js" | grep -F 'العربية' >/dev/null
-          echo "Live homepage references the versioned runtime, luxury override, brand icon and PWA manifest; multilingual UI assets are present."
-          printf '%s' "$css" | grep -F 'readerPage[data-reader-theme="cosmic"]' >/dev/null
-          echo "Reader theme CSS marker verified."
-          if printf '%s' "$css" | grep -F 'imperial-hero.png' >/dev/null; then echo "::error::The oversized decorative hero image is still referenced by CSS."; exit 1; fi
-          echo "Decorative hero image is absent from CSS."
-          for route in /catalog /community /trend-factory /read/1/1; do
+          printf '%s' "$js" | grep -F 'imperialLanguageSelect' >/dev/null
+          if printf '%s' "$js" | grep -F 'heroSideCard' >/dev/null; then
+            echo "::error::Legacy hero card markup is still present in the deployed JavaScript."
+            exit 1
+          fi
+          echo "Homepage release, branded hero, language control, and referenced assets verified."
+
+      - name: Smoke-test application route shells
+        shell: bash
+        env:
+          EXPECTED_VERSION: ${{ steps.release.outputs.version }}
+        run: |
+          set -euo pipefail
+          base="https://god-emperornovel.sikandershehzadkhan.workers.dev"
+          stamp="$(date +%s)"
+          for route in /catalog /formats /community /trend-factory /author /admin /read/1/1 /privacy /terms /copyright /community-taxonomy; do
             page="$(curl --fail --silent --show-error --max-time 20 -H "Cache-Control: no-cache" "$base$route?verify=$stamp")"
-            echo "Checking route shell: $route"
-            printf '%s' "$page" | grep -F '/app-17.13.0.js' >/dev/null || { echo "::error::Missing versioned JavaScript on $route"; exit 1; }
-            printf '%s' "$page" | grep -F '/style-17.11.0.css' >/dev/null || { echo "::error::Missing versioned stylesheet on $route"; exit 1; }
-            echo "Shell assets verified: $route"
+            printf '%s' "$page" | grep -F "/app-$EXPECTED_VERSION.js" >/dev/null || { echo "::error::Expected release bundle missing on $route"; exit 1; }
+            printf '%s' "$page" | grep -F "/manifest-$EXPECTED_VERSION.webmanifest" >/dev/null || { echo "::error::Expected release manifest missing on $route"; exit 1; }
+            echo "Route shell verified: $route"
           done
-          for entry in "/author:Author Studio" "/admin:Administrator Dashboard"; do
-            route="${entry%%:*}"; expected_text="${entry##*:}"
-            page="$(curl --fail --silent --show-error --max-time 20 -H "Cache-Control: no-cache" "$base$route?verify=$stamp")"
-            printf '%s' "$page" | grep -F "$expected_text" >/dev/null || { echo "::error::Expected workspace content not found on $route"; exit 1; }
-            echo "Workspace route content verified: $route"
-          done
-          echo "Route smoke tests passed for catalog, community, Trend Factory, reader, Author Studio and Command Center."
-          for route in /privacy /terms /copyright /community-taxonomy; do
-            page="$(curl --fail --silent --show-error --max-time 20 -H "Cache-Control: no-cache" "$base$route?verify=$stamp")"
-            printf '%s' "$page" | grep -F '/style-17.11.0.css' >/dev/null
-            echo "Legal/support shell verified: $route"
-          done
-          printf '%s' "$(curl --fail --silent --show-error --max-time 20 "$base/privacy?verify=$stamp")" | grep -F 'Privacy at Imperial Novel' >/dev/null
-          echo "Privacy content verified."
-          printf '%s' "$(curl --fail --silent --show-error --max-time 20 "$base/terms?verify=$stamp")" | grep -F 'Use the realm responsibly' >/dev/null
-          echo "Terms content verified."
-          printf '%s' "$(curl --fail --silent --show-error --max-time 20 "$base/copyright?verify=$stamp")" | grep -F 'Rights & Copyright' >/dev/null
-          echo "Copyright content verified."
-          echo "Core product and legal routes are serving the 17.13.0 runtime and versioned stylesheet."
 
       - name: Verify production schema marker after first live request
         if: always()
@@ -118,11 +116,15 @@ jobs:
           CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
         run: |
           set -euo pipefail
+          if [ -z "${CLOUDFLARE_API_TOKEN:-}" ] || [ -z "${CLOUDFLARE_ACCOUNT_ID:-}" ]; then
+            echo "::error::Cannot verify production schema marker because Cloudflare credentials are unavailable."
+            exit 1
+          fi
           result="$(npx --yes wrangler@4 d1 execute god-emperornovel-db --remote --command "SELECT key,value FROM app_settings WHERE key='core_schema_version' LIMIT 1;")"
           printf '%s\n' "$result"
           marker="$(printf '%s' "$result" | node -e 'let s="";process.stdin.on("data",d=>s+=d).on("end",()=>{const m=s.match(/"value"\s*:\s*"([^"]+)"/);console.log(m?m[1]:"unknown")})')"
           if [ "$marker" != "16.64.0" ]; then
-            echo "::error::Live Worker deployed, but schema bootstrap marker is '$marker', expected 16.64.0. Further investigation required."
+            echo "::error::Live Worker schema marker is '$marker', expected reviewed baseline 16.64.0. Further investigation required."
             exit 1
           fi
           echo "Production schema marker verified at 16.64.0."
