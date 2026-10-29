@@ -25,17 +25,17 @@ jobs:
           response=""
           for attempt in $(seq 1 24); do
             response="$(curl --fail --silent --show-error --max-time 20 "$base?verify=$stamp-$attempt" 2>/dev/null || true)"
-            if [ -n "$response" ] && printf '%s' "$response" | node -e 'let s="";process.stdin.on("data",d=>s+=d).on("end",()=>{try{const h=JSON.parse(s);process.exit(h.ok===true&&h.database===true&&h.version==="17.11.0"?0:1)}catch{process.exit(1)}})' 2>/dev/null; then
+            if [ -n "$response" ] && printf '%s' "$response" | node -e 'let s="";process.stdin.on("data",d=>s+=d).on("end",()=>{try{const h=JSON.parse(s);process.exit(h.ok===true&&h.database===true&&h.version==="17.12.0"?0:1)}catch{process.exit(1)}})' 2>/dev/null; then
               printf '%s\n' "$response"
               echo "Live Worker health and version verified on attempt $attempt."
               verified=true
               break
             fi
-            echo "Waiting for Cloudflare edge to serve release 17.11.0 (attempt $attempt/24)."
+            echo "Waiting for Cloudflare edge to serve release 17.12.0 (attempt $attempt/24)."
             sleep 5
           done
           if [ "$verified" != true ]; then
-            echo "::error::The Worker did not serve healthy release 17.11.0 within 120 seconds."
+            echo "::error::The Worker did not serve healthy release 17.12.0 within 120 seconds."
             printf '%s\n' "$response"
             exit 1
           fi
@@ -47,13 +47,16 @@ jobs:
           base="https://god-emperornovel.sikandershehzadkhan.workers.dev"
           stamp="$(date +%s)"
           html="$(curl --fail --silent --show-error --max-time 20 -H "Cache-Control: no-cache" "$base/?verify=$stamp")"
-          printf '%s' "$html" | grep -F '/app-17.11.0.js' >/dev/null
+          printf '%s' "$html" | grep -F '/app-17.12.0.js' >/dev/null
           printf '%s' "$html" | grep -F '/style-17.11.0.css' >/dev/null
-          js="$(curl --fail --silent --show-error --max-time 20 "$base/app-17.11.0.js?verify=$stamp")"
+          js="$(curl --fail --silent --show-error --max-time 20 "$base/app-17.12.0.js?verify=$stamp")"
           css="$(curl --fail --silent --show-error --max-time 20 "$base/style-17.11.0.css?verify=$stamp")"
-          printf '%s' "$js" | grep -F 'Your next' >/dev/null
+          luxury="$(curl --fail --silent --show-error --max-time 20 "$base/imperial-luxury-17.12.0.css?verify=$stamp")"
+          icon="$(curl --fail --silent --show-error --max-time 20 "$base/imperial-novel-app-icon.svg?verify=$stamp")"
+          manifest="$(curl --fail --silent --show-error --max-time 20 "$base/manifest-17.12.0.webmanifest?verify=$stamp")"
+          printf '%s' "$js" | grep -F 'Open a world.' >/dev/null
           printf '%s' "$js" | grep -F 'Trend Factory' >/dev/null
-          printf '%s' "$js" | grep -F 'STORYVERSE' >/dev/null
+          printf '%s' "$js" | grep -F 'Shape an empire.' >/dev/null
           printf '%s' "$js" | grep -F 'activeFilters' >/dev/null
           printf '%s' "$css" | grep -F 'Trend Factory editorial intelligence workspace' >/dev/null
           printf '%s' "$css" | grep -F 'activeFilters' >/dev/null
@@ -63,7 +66,16 @@ jobs:
           printf '%s' "$css" | grep -F '.adminDashboardPage .adminHero' >/dev/null
           printf '%s' "$css" | grep -F 'genreGrid' >/dev/null
           printf '%s' "$css" | grep -F 'body.authorStudioPage button:disabled' >/dev/null
-          echo "Live homepage references immutable release assets; redesigned homepage JS and CSS are present."
+          printf '%s' "$html" | grep -F '/imperial-luxury-17.12.0.css' >/dev/null
+          printf '%s' "$html" | grep -F '/manifest-17.12.0.webmanifest' >/dev/null
+          printf '%s' "$luxury" | grep -F 'Low-end mobile performance' >/dev/null
+          printf '%s' "$luxury" | grep -F 'Taste Skill direction' >/dev/null
+          printf '%s' "$icon" | grep -F 'Imperial Novel' >/dev/null
+          printf '%s' "$manifest" | grep -F '"name": "Imperial Novel"' >/dev/null
+          printf '%s' "$js" | grep -F 'zh-TW' >/dev/null
+          printf '%s' "$js" | grep -F 'pt-BR' >/dev/null
+          printf '%s' "$js" | grep -F 'العربية' >/dev/null
+          echo "Live homepage references the versioned runtime, luxury override, brand icon and PWA manifest; multilingual UI assets are present."
           printf '%s' "$css" | grep -F 'readerPage[data-reader-theme="cosmic"]' >/dev/null
           echo "Reader theme CSS marker verified."
           if printf '%s' "$css" | grep -F 'imperial-hero.png' >/dev/null; then echo "::error::The oversized decorative hero image is still referenced by CSS."; exit 1; fi
@@ -71,7 +83,7 @@ jobs:
           for route in /catalog /community /trend-factory /read/1/1; do
             page="$(curl --fail --silent --show-error --max-time 20 -H "Cache-Control: no-cache" "$base$route?verify=$stamp")"
             echo "Checking route shell: $route"
-            printf '%s' "$page" | grep -F '/app-17.11.0.js' >/dev/null || { echo "::error::Missing versioned JavaScript on $route"; exit 1; }
+            printf '%s' "$page" | grep -F '/app-17.12.0.js' >/dev/null || { echo "::error::Missing versioned JavaScript on $route"; exit 1; }
             printf '%s' "$page" | grep -F '/style-17.11.0.css' >/dev/null || { echo "::error::Missing versioned stylesheet on $route"; exit 1; }
             echo "Shell assets verified: $route"
           done
@@ -98,7 +110,7 @@ jobs:
           echo "Terms content verified."
           printf '%s' "$(curl --fail --silent --show-error --max-time 20 "$base/copyright?verify=$stamp")" | grep -F 'Rights & Copyright' >/dev/null
           echo "Copyright content verified."
-          echo "Core product and legal routes are serving the immutable 17.11.0 stylesheet."
+          echo "Core product and legal routes are serving the 17.12.0 runtime and versioned stylesheet."
 
       - name: Verify production schema marker after first live request
         if: always()

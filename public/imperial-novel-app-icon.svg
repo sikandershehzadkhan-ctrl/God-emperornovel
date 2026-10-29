@@ -1,1 +1,16 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><defs><linearGradient id="v" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#a78bfa"/><stop offset=".55" stop-color="#6d45d9"/><stop offset="1" stop-color="#22d3ee"/></linearGradient><radialGradient id="s"><stop stop-color="#20133b"/><stop offset="1" stop-color="#070b18"/></radialGradient></defs><rect width="512" height="512" rx="116" fill="#070b18"/><circle cx="256" cy="256" r="213" fill="url(#s)" stroke="#22d3ee" stroke-opacity=".75" stroke-width="7"/><circle cx="256" cy="225" r="132" fill="none" stroke="#8b5cf6" stroke-width="5" stroke-dasharray="7 18"/><path d="M152 236l20-89 61 45 23-92 23 92 61-45 20 89z" fill="url(#v)" stroke="#e9e5ff" stroke-width="7" stroke-linejoin="round"/><path d="M174 256h164v100H174z" fill="#111329" stroke="url(#v)" stroke-width="8"/><path d="M150 256h24v115h-24q-18 0-18-18v-79q0-18 18-18zM338 256h24q18 0 18 18v79q0 18-18 18h-24z" fill="#252044" stroke="#a78bfa" stroke-width="6"/><path d="M198 278h116v56H198z" fill="#070b18" stroke="#22d3ee" stroke-width="5"/><path d="M158 386h196l29 28H129z" fill="url(#v)"/><path d="M211 423h90" stroke="#22d3ee" stroke-width="8" stroke-linecap="round"/><circle cx="256" cy="120" r="10" fill="#22d3ee"/></svg>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" role="img" aria-label="Imperial Novel crest">
+<defs>
+ <linearGradient id="purple" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#c4b5fd"/><stop offset=".52" stop-color="#8b5cf6"/><stop offset="1" stop-color="#4f8cff"/></linearGradient>
+ <radialGradient id="void"><stop stop-color="#17172b"/><stop offset="1" stop-color="#070911"/></radialGradient>
+</defs>
+<rect width="512" height="512" rx="112" fill="#070911"/>
+<circle cx="256" cy="256" r="213" fill="url(#void)" stroke="#8b5cf6" stroke-opacity=".8" stroke-width="5"/>
+<circle cx="256" cy="256" r="185" fill="none" stroke="#4f8cff" stroke-opacity=".65" stroke-width="2"/>
+<circle cx="256" cy="218" r="105" fill="#05060b" stroke="url(#purple)" stroke-width="5"/>
+<circle cx="256" cy="218" r="83" fill="none" stroke="#c4b5fd" stroke-opacity=".45" stroke-width="2" stroke-dasharray="2 11"/>
+<path d="M151 348V281l35 19v-41l35 20v-57l35 35 35-35v57l35-20v41l35-19v67H151Z" fill="#101528" stroke="url(#purple)" stroke-width="7" stroke-linejoin="round"/>
+<path d="M174 348v-31h164v31M196 317v-24h120v24M221 293v-20h70v20" fill="none" stroke="#e9e7ff" stroke-opacity=".9" stroke-width="5" stroke-linejoin="round"/>
+<path d="M126 373h260l-27 24H153z" fill="url(#purple)"/>
+<path d="M205 411h102" stroke="#4f8cff" stroke-width="7" stroke-linecap="round"/>
+<circle cx="256" cy="95" r="6" fill="#c4b5fd"/><circle cx="111" cy="256" r="4" fill="#4f8cff"/><circle cx="401" cy="256" r="4" fill="#4f8cff"/>
+</svg>
