@@ -43,11 +43,11 @@ for (const path of ['public/app.js', 'public/app-17.16.0.js']) {
  assert.ok(app.includes("rights_status!=='original'&&!payload.rights_evidence"), path + ' checks rights evidence before submitting a non-original work');
  assert.ok(app.includes('aria-live="polite"'), path + ' announces draft status updates accessibly');
  assert.ok(app.includes("api('/api/author/novels/'+Number(f.dataset.id),{method:'PATCH'"), path + ' saves story metadata through the authenticated update endpoint');
- assert.ok(app.includes("$('.authorAddChapter',list).forEach"), path + ' binds all chapter controls as a collection');
- assert.ok(app.includes("$('.authorCancelChapter',list).forEach"), path + ' binds all chapter cancel controls as a collection');
- assert.ok(app.includes("$('.authorChapterForm',list).forEach"), path + ' binds all chapter forms as a collection');
- assert.ok(app.includes("$('.authorSubmitStory',list).forEach"), path + ' binds all review submission controls as a collection');
- assert.ok(app.includes("$('.authorEditForm',list).forEach"), path + ' binds editable story forms');
+ assert.ok(app.includes("$$('.authorAddChapter',list).forEach"), path + ' binds all chapter controls as a collection');
+ assert.ok(app.includes("$$('.authorCancelChapter',list).forEach"), path + ' binds all chapter cancel controls as a collection');
+ assert.ok(app.includes("$$('.authorChapterForm',list).forEach"), path + ' binds all chapter forms as a collection');
+ assert.ok(app.includes("$$('.authorSubmitStory',list).forEach"), path + ' binds all review submission controls as a collection');
+ assert.ok(app.includes("$$('.authorEditForm',list).forEach"), path + ' binds editable story forms');
  assert.ok(app.includes("CONTENT_FORMAT_OPTIONS.map"), path + ' populates edit format options from the canonical registry');
  assert.ok(app.includes('name="alt_titles"'), path + ' supports alternate titles');
 
