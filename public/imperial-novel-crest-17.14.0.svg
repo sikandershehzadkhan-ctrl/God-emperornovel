@@ -1,0 +1,18 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" role="img" aria-label="Imperial Novel black sun and empty throne crest">
+<defs>
+ <linearGradient id="crest" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#c4b5fd"/><stop offset=".55" stop-color="#8b5cf6"/><stop offset="1" stop-color="#4f8cff"/></linearGradient>
+ <radialGradient id="sun"><stop stop-color="#19162b"/><stop offset=".72" stop-color="#0a0b14"/><stop offset="1" stop-color="#05060b"/></radialGradient>
+</defs>
+<rect width="512" height="512" rx="112" fill="#070911"/>
+<circle cx="256" cy="246" r="205" fill="url(#sun)" stroke="url(#crest)" stroke-width="4"/>
+<circle cx="256" cy="246" r="177" fill="none" stroke="#8b5cf6" stroke-opacity=".5" stroke-width="2"/>
+<circle cx="256" cy="212" r="103" fill="#030409" stroke="#a78bfa" stroke-opacity=".78" stroke-width="3"/>
+<circle cx="256" cy="212" r="86" fill="none" stroke="#4f8cff" stroke-opacity=".5" stroke-width="1.5" stroke-dasharray="1 10"/>
+<path d="M256 55v30M256 339v30M65 246h30M417 246h30M120 110l21 21M371 361l21 21M392 110l-21 21M141 361l-21 21" stroke="#8b5cf6" stroke-opacity=".75" stroke-width="3" stroke-linecap="round"/>
+<!-- Empty throne silhouette -->
+<path d="M169 327V253l28 16v-42l31 18v-37l28 25 28-25v37l31-18v42l28-16v74Z" fill="#111525" stroke="url(#crest)" stroke-width="5" stroke-linejoin="round"/>
+<path d="M184 327v-26h144v26M205 301v-18h102v18M229 283v-20h54v20" fill="none" stroke="#eef0ff" stroke-opacity=".88" stroke-width="4" stroke-linejoin="round"/>
+<path d="M153 347h206l-23 20H176z" fill="url(#crest)"/>
+<path d="M207 386h98M226 401h60" stroke="#4f8cff" stroke-width="4" stroke-linecap="round"/>
+<circle cx="256" cy="103" r="4" fill="#e9ddff"/>
+</svg>
