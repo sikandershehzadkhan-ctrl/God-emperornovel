@@ -5,11 +5,14 @@ import fs from 'node:fs';
 
 const pkg = JSON.parse(fs.readFileSync('package.json', 'utf8'));
 const wrangler = fs.readFileSync('wrangler.toml', 'utf8');
+const lock = JSON.parse(fs.readFileSync('package-lock.json', 'utf8'));
 const manifestPath = `public/manifest-${pkg.version}.webmanifest`;
 const manifest = JSON.parse(fs.readFileSync(manifestPath, 'utf8'));
 const serviceWorker = fs.readFileSync('public/sw.js', 'utf8');
 const entry = fs.readFileSync('public/index.html', 'utf8');
 
+assert.equal(lock.version, pkg.version, 'Lockfile root version must match package.json');
+assert.equal(lock.packages?.['']?.version, pkg.version, 'Lockfile package version must match package.json');
 assert.ok(wrangler.split('\n').includes(`APP_VERSION = "${pkg.version}"`), 'Cloudflare APP_VERSION must match package.json');
 assert.equal(manifest.version, pkg.version, 'PWA manifest version must match package.json');
 assert.ok(manifest.start_url.includes(`app=${pkg.version}`), 'PWA start URL must include the current release version');
