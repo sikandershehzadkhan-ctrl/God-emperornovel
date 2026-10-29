@@ -136,12 +136,19 @@ jobs:
               page="$(curl --silent --show-error --max-time 20 -H "Cache-Control: no-cache" "$base$route?verify=$stamp-$attempt" || true)"
               if [ -n "$page" ] \
                 && printf '%s' "$page" | grep -F "/manifest-$EXPECTED_VERSION.webmanifest" >/dev/null; then
-                if [ "$route" = "/admin" ]; then
-                  printf '%s' "$page" | grep -F "/app-$EXPECTED_VERSION.css" >/dev/null \
-                    && printf '%s' "$page" | grep -F "/imperial-luxury-$EXPECTED_VERSION.css" >/dev/null || continue
-                else
-                  printf '%s' "$page" | grep -F "/app-$EXPECTED_VERSION.js" >/dev/null || continue
-                fi
+                case "$route" in
+                  /admin)
+                    printf '%s' "$page" | grep -F "/app-$EXPECTED_VERSION.css" >/dev/null \
+                      && printf '%s' "$page" | grep -F "/imperial-luxury-$EXPECTED_VERSION.css" >/dev/null || continue
+                    ;;
+                  /privacy|/terms|/copyright)
+                    printf '%s' "$page" | grep -F "/style-$EXPECTED_VERSION.css" >/dev/null \
+                      && printf '%s' "$page" | grep -F "/imperial-luxury-$EXPECTED_VERSION.css" >/dev/null || continue
+                    ;;
+                  *)
+                    printf '%s' "$page" | grep -F "/app-$EXPECTED_VERSION.js" >/dev/null || continue
+                    ;;
+                esac
                 route_verified=true
                 break
               fi
