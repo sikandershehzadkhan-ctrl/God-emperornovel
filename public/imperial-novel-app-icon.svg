@@ -1,16 +1,38 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" role="img" aria-label="Imperial Novel crest">
-<defs>
- <linearGradient id="purple" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#c4b5fd"/><stop offset=".52" stop-color="#8b5cf6"/><stop offset="1" stop-color="#4f8cff"/></linearGradient>
- <radialGradient id="void"><stop stop-color="#17172b"/><stop offset="1" stop-color="#070911"/></radialGradient>
-</defs>
-<rect width="512" height="512" rx="112" fill="#070911"/>
-<circle cx="256" cy="256" r="213" fill="url(#void)" stroke="#8b5cf6" stroke-opacity=".8" stroke-width="5"/>
-<circle cx="256" cy="256" r="185" fill="none" stroke="#4f8cff" stroke-opacity=".65" stroke-width="2"/>
-<circle cx="256" cy="218" r="105" fill="#05060b" stroke="url(#purple)" stroke-width="5"/>
-<circle cx="256" cy="218" r="83" fill="none" stroke="#c4b5fd" stroke-opacity=".45" stroke-width="2" stroke-dasharray="2 11"/>
-<path d="M151 348V281l35 19v-41l35 20v-57l35 35 35-35v57l35-20v41l35-19v67H151Z" fill="#101528" stroke="url(#purple)" stroke-width="7" stroke-linejoin="round"/>
-<path d="M174 348v-31h164v31M196 317v-24h120v24M221 293v-20h70v20" fill="none" stroke="#e9e7ff" stroke-opacity=".9" stroke-width="5" stroke-linejoin="round"/>
-<path d="M126 373h260l-27 24H153z" fill="url(#purple)"/>
-<path d="M205 411h102" stroke="#4f8cff" stroke-width="7" stroke-linecap="round"/>
-<circle cx="256" cy="95" r="6" fill="#c4b5fd"/><circle cx="111" cy="256" r="4" fill="#4f8cff"/><circle cx="401" cy="256" r="4" fill="#4f8cff"/>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" role="img" aria-label="Imperial Novel black sun and empty throne crest">
+  <defs>
+    <linearGradient id="imperial" x1="0" y1="0" x2="1" y2="1">
+      <stop stop-color="#d9ccff"/>
+      <stop offset=".48" stop-color="#8b5cf6"/>
+      <stop offset="1" stop-color="#4f8cff"/>
+    </linearGradient>
+    <radialGradient id="eclipse">
+      <stop stop-color="#03040a"/>
+      <stop offset=".76" stop-color="#070912"/>
+      <stop offset="1" stop-color="#17132a"/>
+    </radialGradient>
+    <linearGradient id="throne" x1="0" y1="0" x2="0.9" y2="1">
+      <stop stop-color="#ffffff"/>
+      <stop offset=".55" stop-color="#c4b5fd"/>
+      <stop offset="1" stop-color="#60a5fa"/>
+    </linearGradient>
+  </defs>
+  <rect width="512" height="512" rx="112" fill="#05060b"/>
+  <circle cx="256" cy="256" r="218" fill="#080a13" stroke="url(#imperial)" stroke-width="5"/>
+  <circle cx="256" cy="230" r="163" fill="url(#eclipse)" stroke="#8b5cf6" stroke-opacity=".55" stroke-width="3"/>
+  <circle cx="256" cy="230" r="139" fill="none" stroke="#4f8cff" stroke-opacity=".5" stroke-width="2" stroke-dasharray="1 12"/>
+  <circle cx="256" cy="193" r="76" fill="#020309" stroke="url(#imperial)" stroke-width="4"/>
+  <path d="M198 193a58 58 0 0 1 116 0" fill="none" stroke="#d9ccff" stroke-opacity=".72" stroke-width="3"/>
+  <path d="M256 96v20M256 270v18M122 193h18M372 193h18M160 125l13 13M339 248l13 13M352 125l-13 13M173 248l-13 13" stroke="#8b5cf6" stroke-opacity=".72" stroke-width="3" stroke-linecap="round"/>
+  <g fill="none" stroke="url(#throne)" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M194 218v83c0 12 8 20 20 20h84c12 0 20-8 20-20v-83" stroke-width="8"/>
+    <path d="M194 231h-19v83c0 12 8 20 20 20h122c12 0 20-8 20-20v-83h-19" stroke-width="8"/>
+    <path d="M209 321v53l-22 20M303 321v53l22 20" stroke-width="9"/>
+    <path d="M175 277h-21v26c0 13 10 23 23 23h18M337 277h21v26c0 13-10 23-23 23h-18" stroke-width="8"/>
+    <path d="M222 218v-17l17 9 17-20 17 20 17-9v17" stroke-width="6"/>
+    <path d="M217 352h78" stroke-width="5" stroke-opacity=".8"/>
+  </g>
+  <path d="M143 418h226" stroke="url(#imperial)" stroke-width="5" stroke-linecap="round"/>
+  <circle cx="256" cy="418" r="7" fill="#d9ccff"/>
+  <circle cx="109" cy="256" r="4" fill="#60a5fa"/>
+  <circle cx="403" cy="256" r="4" fill="#8b5cf6"/>
 </svg>
