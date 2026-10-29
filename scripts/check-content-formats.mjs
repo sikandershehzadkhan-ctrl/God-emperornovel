@@ -4,7 +4,7 @@ import assert from 'node:assert/strict';
 const source = fs.readFileSync('src/index.js', 'utf8');
 const index = fs.readFileSync('public/index.html', 'utf8');
 const appSource = fs.readFileSync('public/app.js', 'utf8');
-const registryMatch = source.match(/const CONTENT_FORMATS=(\[[\s\S]*?\n\]);/);
+const registryMatch = source.match(/const CONTENT_FORMATS=(\[[\s\S]*?\n\];)/);
 assert.ok(registryMatch, 'Server-owned content format registry exists');
 const formats = [...registryMatch[1].matchAll(/\{id:"([a-z_]+)",label:"([^"]+)",group:"([a-z]+)"\}/g)]
   .map(([, id, label, group]) => ({ id, label, group }));
