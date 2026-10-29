@@ -33,6 +33,20 @@ for (const asset of ['imperial-formats-17.16.0.css','imperial-comic-reader-17.16
  assert.ok(index.includes('/'+asset), 'HTML references '+asset);
  assert.ok(fs.existsSync('public/'+asset), asset+' exists');
 }
+
+for (const path of ['public/app.js', 'public/app-17.16.0.js']) {
+ const app = fs.readFileSync(path, 'utf8');
+ assert.ok(app.includes('async function authorStudio()'), path + ' includes the Creator Suite');
+ assert.ok(app.includes("else if(p==='/author')await authorStudio();"), path + ' routes the author workspace');
+ assert.ok(app.includes("api('/api/author/novels'"), path + ' loads the signed-in author library');
+ assert.ok(app.includes("api('/api/author/chapters'"), path + ' supports chapter draft creation');
+ assert.ok(app.includes("rights_status!=='original'&&!payload.rights_evidence"), path + ' checks rights evidence before submitting a non-original work');
+ assert.ok(app.includes('aria-live="polite"'), path + ' announces draft status updates accessibly');
+}
+assert.ok(source.includes('if(p==="/api/author/novels"&&m==="POST")'), 'Backend supports creating story drafts');
+assert.ok(source.includes('if(p==="/api/author/chapters"&&m==="POST")'), 'Backend supports creating chapter drafts');
+assert.ok(source.includes('rights evidence is required before submitting this work for review'), 'Backend independently enforces rights evidence');
+
 const manifest = JSON.parse(fs.readFileSync('public/manifest-17.16.0.webmanifest','utf8'));
 assert.equal(manifest.version,'17.16.0','PWA manifest version matches release');
 console.log('Content format checks passed: '+formats.length+' formats, comic viewer modes, versioned assets verified.');
