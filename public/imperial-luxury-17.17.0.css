@@ -419,3 +419,45 @@ html,body{max-width:100%;overflow-x:clip}
   .top .navright .iconbtn,.top .navright .menuToggle{width:34px;min-width:34px}
   .top .navright .languageControl select{width:48px;max-width:48px!important}
 }
+
+
+/* Clean core palette pass: purple + sapphire accents, white surfaces, obsidian foundation.
+   Avoid legacy cyan/teal accents and excessive decorative glow. */
+:root{
+  --in-obsidian:#080a12;
+  --in-panel:#101421;
+  --in-panel-raised:#151b2b;
+  --in-line:rgba(174,185,221,.16);
+  --in-purple:#8b5cf6;
+  --in-purple-bright:#a78bfa;
+  --in-sapphire:#4f8cff;
+  --in-white:#f5f7ff;
+  --in-muted:#a3abc2;
+}
+html[data-theme="dark"] a:not(.primary):not(.secondary):not(.pill):not(.brand),
+html[data-theme="dark"] .footer a,
+html[data-theme="dark"] .unlockBanner a{color:#a78bfa}
+html[data-theme="dark"] a:not(.primary):not(.secondary):not(.pill):not(.brand):hover,
+html[data-theme="dark"] .footer a:hover{color:#8fb5ff}
+html[data-theme="dark"] .primary,
+html[data-theme="dark"] button.primary,
+html[data-theme="dark"] .actions .primary{
+  color:#fff;background:linear-gradient(135deg,#7045d8,#8b5cf6);
+  border:1px solid rgba(196,181,253,.42);box-shadow:none
+}
+html[data-theme="dark"] .primary:hover,
+html[data-theme="dark"] button.primary:hover{background:linear-gradient(135deg,#7950e6,#966df8);box-shadow:0 8px 24px rgba(79,140,255,.12)}
+html[data-theme="dark"] .pill,
+html[data-theme="dark"] .tag,
+html[data-theme="dark"] .chip{border-color:var(--in-line);box-shadow:none}
+html[data-theme="dark"] .hero.nextHero,
+html[data-theme="dark"] .hero.imperialArchiveHero{box-shadow:none}
+html[data-theme="dark"] .hero.nextHero:before{opacity:.55}
+html[data-theme="dark"] .top,
+html[data-theme="dark"] .footer,
+html[data-theme="dark"] .mobileNav{box-shadow:none}
+html[data-theme="dark"] :focus-visible{outline:2px solid #4f8cff;outline-offset:3px}
+@media(prefers-reduced-motion:reduce){
+  html:focus-within{scroll-behavior:auto!important}
+  *,*::before,*::after{animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important;scroll-behavior:auto!important}
+}
