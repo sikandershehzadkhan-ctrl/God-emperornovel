@@ -120,6 +120,8 @@ assert.ok(appCss.includes('prefers-reduced-motion:reduce'), 'Shared interface st
 assert.ok(appCss.includes('.ratingStar:focus-visible'), 'Rating controls have a visible keyboard focus state');
 
 const luxuryDesign = fs.readFileSync('public/imperial-luxury-17.17.0.css','utf8');
+assert.ok(index.includes('Your storyverse is taking longer than expected.') && index.includes("root.replaceChildren(panel)") && index.includes("window.setTimeout"), 'Boot failure shows a retryable recovery screen instead of an endless loader');
+
 assert.ok(index.includes('<html lang="en" data-theme="light">'), 'New visitors receive a white-first theme before JavaScript runs');
 assert.ok(luxuryDesign.includes('--white:#FFFFFF') && luxuryDesign.includes('--black:#0B1215') && luxuryDesign.includes('--purple:#6A0DAD') && luxuryDesign.includes('--blue:#0F52BA'), 'Design tokens use the approved four-color palette');
 assert.ok(luxuryDesign.includes('background:#6A0DAD;color:#FFFFFF') && luxuryDesign.includes('background:#0F52BA'), 'Primary and hover actions use purple then sapphire');
