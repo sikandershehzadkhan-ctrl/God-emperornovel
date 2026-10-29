@@ -150,14 +150,13 @@ jobs:
           while IFS= read -r version_id; do
             [ -n "$version_id" ] || continue
             case "$version_id" in *[!a-fA-F0-9-]*) continue;; esac
-            response="$(curl --silent --show-error --max-time 20 "${headers[@]}" \
-              "https://api.cloudflare.com/client/v4/accounts/$CLOUDFLARE_ACCOUNT_ID/builds/builds?version_ids=$version_id" || true)"
-            printf '%s' "$response" | node --input-type=module - "$version_id" <<'NODE'
+            curl --silent --show-error --max-time 20 -o "$tmp/version-build.json" "${headers[@]}" \
+              "https://api.cloudflare.com/client/v4/accounts/$CLOUDFLARE_ACCOUNT_ID/builds/builds?version_ids=$version_id" || true
+            node --input-type=module - "$tmp/version-build.json" "$version_id" <<'NODE'
           import fs from 'node:fs';
-          const versionId=process.argv[2];
-          let s=''; for await (const c of process.stdin) s+=c;
+          const versionId=process.argv[3];
           try {
-            const d=JSON.parse(s);
+            const d=JSON.parse(fs.readFileSync(process.argv[2],'utf8'));
             const root=d.result;
             const items=Array.isArray(root)?root:(Array.isArray(root?.builds)?root.builds:[]);
             console.log(JSON.stringify({queried_version_id:versionId,success:d.success,errors:Array.isArray(d.errors)?d.errors.map(e=>({code:e.code,message:e.message})):[],builds:items.slice(0,3).map(x=>({
