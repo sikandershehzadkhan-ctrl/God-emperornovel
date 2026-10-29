@@ -16,6 +16,7 @@ migrations_dir = "migrations"
 [vars]
 SITE_NAME = "Imperial Novel"
 APP_VERSION = "17.17.0"
+APP_ICON_PATH = "/imperial-novel-crest-17.18.0.svg"
 OPENAI_MODEL = "gpt-5-mini"
 OPENAI_BASE_URL = "https://api.openai.com/v1/responses"
 EASYPaisa_NUMBER = "03154329984"
