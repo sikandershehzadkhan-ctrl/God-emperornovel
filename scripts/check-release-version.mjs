@@ -22,7 +22,8 @@ assert.ok(serviceWorker.includes(`imperial-novel-v${pkg.version}`), 'Service-wor
 assert.ok(serviceWorker.includes(`/manifest-${pkg.version}.webmanifest`), 'Service worker must precache the current manifest');
 assert.ok(serviceWorker.includes(`/react-islands-${pkg.version}.js`), 'Service worker must precache the versioned React island bundle');
 assert.ok(fs.existsSync(`public/react-islands-${pkg.version}.js`), 'Versioned React island bundle must be built before release validation');
-assert.ok(entry.includes('react-islands-') || worker.includes('react-islands-'), 'React island bundle must be wired into the application shell');
+const appBundle = fs.readFileSync(`public/app-${pkg.version}.js`, 'utf8');
+assert.ok(appBundle.includes('react-islands-'), 'Versioned application entry must lazy-load the local React island bundle');
 assert.ok(entry.includes(`/manifest-${pkg.version}.webmanifest`), 'HTML entry point must reference the current manifest');
 
 const coreMatch = serviceWorker.match(/const CORE=\[(.*?)\];/s);
