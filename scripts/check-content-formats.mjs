@@ -77,6 +77,8 @@ const manifest = JSON.parse(fs.readFileSync(`public/manifest-${version}.webmanif
 assert.equal(manifest.version,version,'PWA manifest version matches release');
 const entry = fs.readFileSync('public/index.html','utf8');
 const runtime = fs.readFileSync(`public/app-${version}.js`,'utf8');
+const editableRuntime = fs.readFileSync('public/app.js','utf8');
+assert.equal(editableRuntime, runtime, 'Editable application source must match the active versioned runtime to prevent feature and localization drift');
 const sw = fs.readFileSync('public/sw.js','utf8');
 const luxuryCss = fs.readFileSync(`public/imperial-luxury-${version}.css`,'utf8');
 assert.ok(entry.includes(`/app-${version}.js`), 'Entry point loads the cache-busted application runtime');
