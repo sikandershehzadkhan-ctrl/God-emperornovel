@@ -41,7 +41,7 @@ function renderChapterContent(raw,kind){
 function initComicViewer(){
  const viewer=$('#comicReader');if(!viewer)return;
  const pages=$('.comicPage',viewer),toggle=$('#comicModeToggle'),directionToggle=$('#comicDirectionToggle'),prev=$('#comicPrev'),next=$('#comicNext'),status=$('#comicPageStatus');
- const chapterKey='imperial_comic_progress:'+location.pathname.replace(/\\/+$/,'');
+ const chapterKey='imperial_comic_progress:'+location.pathname;
  let single=false,current=0,direction='ltr';
  try{const saved=JSON.parse(localStorage.getItem(chapterKey)||'null');if(saved&&typeof saved==='object'){single=saved.single===true;direction=saved.direction==='rtl'?'rtl':'ltr';current=Math.max(0,Math.min(pages.length-1,Number.isInteger(saved.current)?saved.current:0));}}catch(e){}
  pages.forEach(page=>{const image=$('img',page);if(image)image.addEventListener('error',()=>page.classList.add('comicPageError'),{once:true})});
