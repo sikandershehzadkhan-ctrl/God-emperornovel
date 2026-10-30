@@ -41,6 +41,9 @@ for (const name of new Set(['app.js', scriptMatch[1]])) {
  assert.ok(app.includes("type!=='imperial_comic_chapter'"), name + ' validates structured comic payloads');
  assert.ok(app.includes('initComicViewer()'), name + ' initializes comic reading modes');
  assert.ok(app.includes('Switch to single-page mode'), name + ' supports single-page comic reading');
+ assert.ok(app.includes('Reading direction: LTR') && app.includes("direction==='rtl'?'←':'→'"), name + ' supports explicit LTR and RTL comic navigation');
+ assert.ok(app.includes('imperial_comic_progress:') && app.includes('localStorage.setItem(chapterKey'), name + ' restores comic mode, direction and page progress locally');
+ assert.ok(app.includes("event.key===forward") && app.includes("event.key===backward"), name + ' supports keyboard page navigation in the selected reading direction');
  assert.ok(app.includes('id="novelComments"') && app.includes('mountNovelComments(box,id)'), name + ' mounts the discussion composer and thread as a React island');
  assert.ok(!app.includes('id="postComment"') && !app.includes('id="commentsList"'), name + ' no longer contains the duplicate legacy comment controls');
 }
