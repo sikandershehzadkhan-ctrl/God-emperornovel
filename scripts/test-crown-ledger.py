@@ -93,4 +93,18 @@ with db:
 assert db.execute("SELECT tickets FROM users WHERE id=2").fetchone()[0]==9
 assert db.execute("SELECT COUNT(*) FROM ticket_ledger WHERE user_id=2 AND reason='novel_request_refund'").fetchone()[0]==1
 
-print("PASS: Crown debits, chapter grants, batch unlocks, payment credits, paid requests and refunds are conditional and idempotent.")
+# Administrator-issued Crown credits must update the balance and ledger together.
+with db:
+    db.execute("UPDATE users SET tickets=tickets+? WHERE id=?", (7,1))
+    db.execute("INSERT INTO ticket_ledger(user_id,delta,reason,reference) SELECT ?,?,?,? WHERE changes()=1", (1,7,"admin_credit","admin:99:test-ref"))
+assert db.execute("SELECT tickets FROM users WHERE id=1").fetchone()[0]==7
+assert db.execute("SELECT COUNT(*) FROM ticket_ledger WHERE user_id=1 AND reason='admin_credit' AND delta=7").fetchone()[0]==1
+
+# A nonexistent target account must not receive a ledger-only credit.
+with db:
+    cur=db.execute("UPDATE users SET tickets=tickets+? WHERE id=?", (7,999))
+    db.execute("INSERT INTO ticket_ledger(user_id,delta,reason,reference) SELECT ?,?,?,? WHERE changes()=1", (999,7,"admin_credit","admin:99:missing"))
+assert cur.rowcount==0
+assert db.execute("SELECT COUNT(*) FROM ticket_ledger WHERE user_id=999 AND reason='admin_credit'").fetchone()[0]==0
+
+print("PASS: Crown debits, chapter grants, batch unlocks, payment credits, paid requests, refunds and administrator credits are ledger-consistent and conditional.")
