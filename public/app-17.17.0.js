@@ -130,7 +130,7 @@ async function loadNovelReactions(id){
    if(!imperialReactBundlePromise){
     imperialReactBundlePromise=new Promise((resolve,reject)=>{
      const appScript=document.querySelector('script[src*="/app-"]');
-     const version=appScript?.src.match(/app-(\\d+\\.\\d+\\.\\d+)\\.js/)?.[1]||"17.17.0";
+     const appPath=appScript?.getAttribute("src")||"";const version=appPath.includes("app-")?appPath.slice(appPath.lastIndexOf("app-")+4).replace(".js",""):"17.17.0";
      const script=document.createElement("script");script.src="/react-islands-"+version+".js";script.async=true;
      script.onload=()=>window.ImperialReactIslands?.mountNovelReactions?resolve():reject(new Error("React island did not initialize."));
      script.onerror=()=>reject(new Error("React reader component could not be loaded."));
