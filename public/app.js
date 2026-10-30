@@ -36,15 +36,44 @@ function renderChapterContent(raw,kind){
   if(!safeSrc)return '<div class="comicPageUnavailable" role="note">This page image has an invalid or unsupported address.</div>';
   return '<figure class="comicPage" data-comic-page="'+i+'"><img src="'+esc(src)+'" alt="'+alt+'" loading="'+(i===0?'eager':'lazy')+'" decoding="async"'+(i===0?' fetchpriority="high"':'')+'>'+(caption?'<figcaption>'+esc(caption)+'</figcaption>':'')+'</figure>';
  }).join('');
- return '<section class="comicReader" id="comicReader" aria-label="Comic chapter reader"><div class="comicReaderControls"><button type="button" id="comicModeToggle" class="secondary">Switch to single-page mode</button><div class="comicPageNav"><button type="button" id="comicPrev" class="readerTool" aria-label="Previous comic page" disabled>←</button><span id="comicPageStatus" aria-live="polite">Vertical scroll · '+pages.length+' pages</span><button type="button" id="comicNext" class="readerTool" aria-label="Next comic page" disabled>→</button></div></div><div class="comicPages" id="comicPages">'+pages+'</div></section>';
+ return '<section class="comicReader" id="comicReader" aria-label="Comic chapter reader"><div class="comicReaderControls"><div class="comicReaderOptions"><button type="button" id="comicModeToggle" class="secondary">Switch to single-page mode</button><button type="button" id="comicDirectionToggle" class="secondary" aria-pressed="false">Reading direction: LTR</button></div><div class="comicPageNav"><button type="button" id="comicPrev" class="readerTool" aria-label="Previous comic page" disabled>←</button><span id="comicPageStatus" aria-live="polite">Vertical scroll · '+pages.length+' pages</span><button type="button" id="comicNext" class="readerTool" aria-label="Next comic page" disabled>→</button></div></div><div class="comicPages" id="comicPages">'+pages+'</div></section>';
 }
 function initComicViewer(){
  const viewer=$('#comicReader');if(!viewer)return;
- const pages=$('.comicPage',viewer),toggle=$('#comicModeToggle'),prev=$('#comicPrev'),next=$('#comicNext'),status=$('#comicPageStatus');
- let single=false,current=0;
+ const pages=$('.comicPage',viewer),toggle=$('#comicModeToggle'),directionToggle=$('#comicDirectionToggle'),prev=$('#comicPrev'),next=$('#comicNext'),status=$('#comicPageStatus');
+ const chapterKey='imperial_comic_progress:'+location.pathname.replace(/\\/+$/,'');
+ let single=false,current=0,direction='ltr';
+ try{const saved=JSON.parse(localStorage.getItem(chapterKey)||'null');if(saved&&typeof saved==='object'){single=saved.single===true;direction=saved.direction==='rtl'?'rtl':'ltr';current=Math.max(0,Math.min(pages.length-1,Number.isInteger(saved.current)?saved.current:0));}}catch(e){}
  pages.forEach(page=>{const image=$('img',page);if(image)image.addEventListener('error',()=>page.classList.add('comicPageError'),{once:true})});
- const paint=()=>{viewer.classList.toggle('is-single',single);pages.forEach((page,i)=>{page.classList.toggle('is-current',i===current);page.setAttribute('aria-hidden',String(single&&i!==current));});toggle.textContent=single?'Switch to vertical-scroll mode':'Switch to single-page mode';prev.disabled=!single||current===0;next.disabled=!single||current===pages.length-1;status.textContent=single?'Page '+(current+1)+' of '+pages.length:'Vertical scroll · '+pages.length+' pages';};
- toggle.addEventListener('click',()=>{single=!single;paint()});prev.addEventListener('click',()=>{current=Math.max(0,current-1);paint()});next.addEventListener('click',()=>{current=Math.min(pages.length-1,current+1);paint()});paint();
+ const paint=()=>{
+  viewer.classList.toggle('is-single',single);
+  viewer.dataset.direction=direction;
+  pages.forEach((page,i)=>{page.classList.toggle('is-current',i===current);page.setAttribute('aria-hidden',String(single&&i!==current));});
+  toggle.textContent=single?'Switch to vertical-scroll mode':'Switch to single-page mode';
+  directionToggle.textContent='Reading direction: '+(direction==='rtl'?'RTL':'LTR');
+  directionToggle.setAttribute('aria-pressed',String(direction==='rtl'));
+  prev.textContent=direction==='rtl'?'→':'←';
+  next.textContent=direction==='rtl'?'←':'→';
+  prev.disabled=!single||current===0;
+  next.disabled=!single||current===pages.length-1;
+  status.textContent=single?'Page '+(current+1)+' of '+pages.length+' · '+direction.toUpperCase():'Vertical scroll · '+pages.length+' pages · '+direction.toUpperCase();
+  try{localStorage.setItem(chapterKey,JSON.stringify({single,current,direction,updatedAt:Date.now()}));}catch(e){}
+ };
+ const move=step=>{current=Math.max(0,Math.min(pages.length-1,current+step));paint();};
+ toggle.addEventListener('click',()=>{single=!single;paint()});
+ directionToggle.addEventListener('click',()=>{direction=direction==='ltr'?'rtl':'ltr';paint()});
+ prev.addEventListener('click',()=>move(-1));
+ next.addEventListener('click',()=>move(1));
+ viewer.addEventListener('keydown',event=>{
+  if(!single||event.altKey||event.ctrlKey||event.metaKey)return;
+  const target=event.target;
+  if(target&&/^(INPUT|TEXTAREA|SELECT)$/.test(target.tagName))return;
+  const forward=direction==='rtl'?'ArrowLeft':'ArrowRight';
+  const backward=direction==='rtl'?'ArrowRight':'ArrowLeft';
+  if(event.key===forward){event.preventDefault();move(1);}
+  else if(event.key===backward){event.preventDefault();move(-1);}
+ });
+ paint();
 }
 function formatKindLabel(kind){return ({original:'Original novel',fanfiction:'Fanfiction',light_novel:'Light novel',web_novel:'Web novel',manga:'Manga',manhwa:'Manhwa',manhua:'Manhua',webtoon:'Webtoon',comic:'Comic',graphic_novel:'Graphic novel',anime:'Anime listing',cartoon:'Cartoon listing',audiobook:'Audiobook listing',drama:'Drama adaptation listing',game:'Game listing'})[String(kind||'original').toLowerCase()]||'Story';}
 function catalogCard(n){const genres=(n.genres||[]).slice(0,2).map(g=>`<span class="pill">${esc(typeof g==='string'?g:g.name)}</span>`).join('');const tags=(n.tags||[]).slice(0,2).map(t=>`<span class="pill purple">#${esc(typeof t==='string'?t:t.name)}</span>`).join('');const status=String(n.status||'ongoing');return `<a class="catalogCard" href="/novel/${n.id}"><div class="catalogCover"><img src="${img(n.cover_url,n.title)}" alt="${esc(n.title)} cover" loading="lazy" decoding="async" fetchpriority="low" onerror="this.onerror=null;this.src='/story-cover-placeholder.svg'"><span class="statusBadge">${esc(status)}</span><span class="formatBadge">${esc(formatKindLabel(n.kind))}</span></div><div class="catalogBody"><div class="catalogTitle">${esc(n.title)}</div><div class="muted">${esc(n.author||'Unknown author')}</div><div class="catalogStats"><span>★ ${Number(n.rating||0).toFixed(1)}</span><span>◷ ${Number(n.chapter_count||n.latest_chapter||0)} ch.</span><span>◉ ${Number(n.views||0).toLocaleString()}</span></div><div class="catalogTags">${genres}${tags}</div><span class="readMini">${['anime','cartoon','audiobook','drama','game'].includes(String(n.kind||'').toLowerCase())?'View Details →':'Read Story →'}</span></div></a>`}
