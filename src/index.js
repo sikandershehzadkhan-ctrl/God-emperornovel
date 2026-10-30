@@ -337,18 +337,17 @@ function localAgentResult(env,slug){
 }
 async function callOpenAI(env,slug){
  const key=String(env.OPENAI_API_KEY||'').trim();
- if(!key) return localAgentResult(env,slug);
- try{
-  const model=String(env.OPENAI_MODEL||'gpt-5-mini').trim();
-  const prompt=AI_AGENT_PROMPTS[slug]||'Confirm that the Imperial Novel AI provider is available for this specialist agent.';
-  const r=await fetch(String(env.OPENAI_BASE_URL||'https://api.openai.com/v1/responses'),{method:'POST',headers:{'content-type':'application/json','authorization':`Bearer ${key}`},body:JSON.stringify({model,input:[{role:'system',content:'You are a safe internal AI provider for Imperial Novel. Keep responses concise. Never claim access to data you were not given. Respect rights, privacy, security, and human-review requirements.'},{role:'user',content:prompt}],max_output_tokens:120})});
-  const text=await r.text();
-  if(!r.ok) return localAgentResult(env,slug)+` OpenAI fallback active (${r.status}).`;
-  let d;try{d=JSON.parse(text)}catch{return localAgentResult(env,slug);}
-  let out=String(d.output_text||'').trim();
-  if(!out&&Array.isArray(d.output))for(const item of d.output){for(const c of (item.content||[])){if(c.type==='output_text'&&c.text)out+=String(c.text)}}
-  return out?out.slice(0,2000):localAgentResult(env,slug);
- }catch{return localAgentResult(env,slug);}
+ if(!key) throw new Error("AI provider is not configured");
+ const model=String(env.OPENAI_MODEL||'gpt-5-mini').trim();
+ const prompt=AI_AGENT_PROMPTS[slug]||'Confirm that the Imperial Novel AI provider is available for this specialist agent.';
+ const r=await fetch(String(env.OPENAI_BASE_URL||'https://api.openai.com/v1/responses'),{method:'POST',headers:{'content-type':'application/json','authorization':`Bearer ${key}`},body:JSON.stringify({model,input:[{role:'system',content:'You are a safe internal AI provider for Imperial Novel. Keep responses concise. Never claim access to data you were not given. Respect rights, privacy, security, and human-review requirements.'},{role:'user',content:prompt}],max_output_tokens:120})});
+ const responseText=await r.text();
+ if(!r.ok) throw new Error(`AI provider request failed (HTTP ${r.status})`);
+ let d;try{d=JSON.parse(responseText)}catch{throw new Error("AI provider returned invalid JSON")}
+ let out=String(d.output_text||'').trim();
+ if(!out&&Array.isArray(d.output))for(const item of d.output){for(const c of (item.content||[])){if(c.type==='output_text'&&c.text)out+=String(c.text)}}
+ if(!out) throw new Error("AI provider returned no usable output");
+ return out.slice(0,2000);
 }
 async function runAgent(env,slug,trigger="manual"){await ensureAgents(env);const a=await env.DB.prepare("SELECT * FROM agents WHERE slug=? AND enabled=1").bind(slug).first();if(!a)return {slug,status:"not-found"};let result="queued",runStatus="ok";try{if(slug==="provider-health"){await ensureOmniTables(env);const rows=(await env.DB.prepare(`SELECT * FROM connectors WHERE enabled=1 AND rights_status='authorized'`).all()).results;result=`Checked ${rows.length} authorized connectors`;for(const c of rows){const status=c.search_url?"configured":"not-configured";await env.DB.prepare("UPDATE connectors SET last_status=?,last_checked_at=CURRENT_TIMESTAMP WHERE id=?").bind(status,c.id).run()}}else if(slug==="notification"){result="Notification queue scan complete"}else if(slug==="catalog"){const r=await env.DB.prepare("SELECT COUNT(*) n FROM novels").first();result=`Catalog steward scanned ${Number(r.n)} novels`}else if(slug==="duplicate"){result="Duplicate detection pass queued for review"}else if(slug==="security"){const r=await env.DB.prepare("SELECT COUNT(*) n FROM reports WHERE status='open'").first();result=`Security review sees ${Number(r.n)} open reports`}else if(slug==="analytics"){const [u,n,c]=await Promise.all([env.DB.prepare("SELECT COUNT(*) n FROM users").first(),env.DB.prepare("SELECT COUNT(*) n FROM novels").first(),env.DB.prepare("SELECT COUNT(*) n FROM chapters").first()]);result=`Users ${u.n}; novels ${n.n}; chapters ${c.n}`}else if(slug==="orchestrator"){const rows=(await env.DB.prepare("SELECT slug,name,enabled,status FROM agents WHERE slug<>? ORDER BY name").bind("orchestrator").all()).results;const active=rows.filter(x=>Number(x.enabled)===1).length;result=`Local Omni Orchestrator active: ${active} specialist agents available for Cloudflare-native routing; rights, security, and human-review boundaries enforced.`}else if(AI_AGENT_PROMPTS[slug]){if(!String(env.OPENAI_API_KEY||"").trim()){result=localAgentResult(env,slug);runStatus="degraded"}else{result=await callOpenAI(env,slug)}}else{result=`Local Cloudflare agent logic is active for ${slug}.`}await env.DB.prepare("UPDATE agents SET last_run_at=CURRENT_TIMESTAMP,last_result=?,status=? WHERE id=?").bind(result,runStatus,a.id).run();await env.DB.prepare("INSERT INTO agent_runs(agent_id,trigger,result,status) VALUES(?,?,?,?)").bind(a.id,trigger,result,runStatus).run();return {slug,status:runStatus,result}}catch(e){const msg=String(e.message||e);await env.DB.prepare("UPDATE agents SET last_run_at=CURRENT_TIMESTAMP,last_result=?,status='error' WHERE id=?").bind(msg,a.id).run();await env.DB.prepare("INSERT INTO agent_runs(agent_id,trigger,result,status) VALUES(?,?,?,'error')").bind(a.id,trigger,msg).run();return {slug,status:"error",result:msg}}}
 async function runAutomation(env){for(const slug of ['provider-health','notification','catalog','duplicate','security','analytics'])await runAgent(env,slug,'scheduled');return {ok:true,ran:6}}
