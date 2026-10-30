@@ -7,7 +7,7 @@ if (!/^\d+\.\d+\.\d+$/.test(pkg.version)) {
 }
 
 await build({
-  entryPoints: ["src/react/NovelReactions.jsx"],
+  entryPoints: ["src/react/index.jsx"],
   bundle: true,
   minify: true,
   format: "iife",
