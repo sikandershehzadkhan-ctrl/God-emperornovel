@@ -114,5 +114,8 @@ jobs:
           print(f'PASS: {len(paths)} migrations applied to fresh SQLite.')
           PY
 
+      - name: Test atomic novel request charging
+        run: python3 scripts/test-novel-request-ledger.py
+
       - name: Confirm validation only
         run: echo "Validation passed. This workflow does not deploy or modify production D1.";
