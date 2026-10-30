@@ -8,7 +8,7 @@ def setup():
       CREATE TABLE unlocks(user_id INTEGER NOT NULL, chapter_id INTEGER NOT NULL, cost REAL NOT NULL, PRIMARY KEY(user_id,chapter_id));
       CREATE TABLE ticket_ledger(id INTEGER PRIMARY KEY, user_id INTEGER NOT NULL, delta REAL NOT NULL, reason TEXT NOT NULL, reference TEXT NOT NULL);
       CREATE TABLE unlock_batches(id INTEGER PRIMARY KEY, user_id INTEGER, novel_id INTEGER, start_chapter INTEGER, end_chapter INTEGER, requested_count INTEGER, cost REAL);
-      INSERT INTO users VALUES(1, 10);
+      INSERT INTO users VALUES(1, 15);
       INSERT INTO users VALUES(2, 1);
       INSERT INTO chapters VALUES(101, 5, 1);
       INSERT INTO chapters VALUES(102, 5, 1);
@@ -24,7 +24,7 @@ def single(db, user, chapter, cost):
     return db.execute("SELECT tickets FROM users WHERE id=?", (user,)).fetchone()[0]
 
 db=setup()
-assert single(db,1,101,5)==5
+assert single(db,1,101,5)==10
 assert db.execute("SELECT COUNT(*) FROM unlocks WHERE user_id=1 AND chapter_id=101").fetchone()[0]==1
 assert db.execute("SELECT COUNT(*) FROM ticket_ledger WHERE user_id=1 AND reference='101'").fetchone()[0]==1
 # Insufficient balance: no grant and no ledger entry.
@@ -35,18 +35,19 @@ assert db.execute("SELECT COUNT(*) FROM unlocks WHERE user_id=2").fetchone()[0]=
 assert db.execute("SELECT COUNT(*) FROM ticket_ledger WHERE user_id=2").fetchone()[0]==0
 # Repeated requests cannot charge the same chapter twice.
 single(db,1,101,5)
-assert db.execute("SELECT tickets FROM users WHERE id=1").fetchone()[0]==5
+assert db.execute("SELECT tickets FROM users WHERE id=1").fetchone()[0]==10
 assert db.execute("SELECT COUNT(*) FROM ticket_ledger WHERE user_id=1 AND reference='101'").fetchone()[0]==1
 # A batch debit is conditional on both sufficient balance and no overlapping prior unlock.
-rows=[101,102]
+rows=[102,103]
 slots=",".join("?" for _ in rows)
 with db:
-    cur=db.execute(f"UPDATE users SET tickets=tickets-? WHERE id=? AND tickets>=? AND NOT EXISTS (SELECT 1 FROM unlocks WHERE user_id=? AND chapter_id IN ({slots}))", (10,1,10,1,*rows))
+    cur=db.execute(f"UPDATE users SET tickets=tickets-? WHERE id=? AND tickets>=? AND NOT EXISTS (SELECT 1 FROM unlocks WHERE user_id=? AND chapter_id IN ({slots}))", (5,1,5,1,*rows))
     db.execute("INSERT INTO unlocks(user_id,chapter_id,cost) SELECT ?,?,? WHERE changes()=1", (1,102,5))
-    db.execute("INSERT INTO unlock_batches(user_id,novel_id,start_chapter,end_chapter,requested_count,cost) SELECT ?,?,?,?,?,? WHERE changes()=1", (1,9,1,2,10,10))
-    db.execute("INSERT INTO ticket_ledger(user_id,delta,reason,reference) SELECT ?,?,?,? WHERE changes()=1", (1,-10,"batch_unlock","9:1:10"))
+    db.execute("INSERT INTO unlocks(user_id,chapter_id,cost) SELECT ?,?,? WHERE changes()=1", (1,103,0))
+    db.execute("INSERT INTO unlock_batches(user_id,novel_id,start_chapter,end_chapter,requested_count,cost) SELECT ?,?,?,?,?,? WHERE changes()=1", (1,9,2,3,10,5))
+    db.execute("INSERT INTO ticket_ledger(user_id,delta,reason,reference) SELECT ?,?,?,? WHERE changes()=1", (1,-5,"batch_unlock","9:2:10"))
 assert db.execute("SELECT tickets FROM users WHERE id=1").fetchone()[0]==5
-assert db.execute("SELECT COUNT(*) FROM unlocks WHERE user_id=1 AND chapter_id=102").fetchone()[0]==1
+assert db.execute("SELECT COUNT(*) FROM unlocks WHERE user_id=1 AND chapter_id IN (102,103)").fetchone()[0]==2
 assert db.execute("SELECT COUNT(*) FROM ticket_ledger WHERE user_id=1 AND reason='batch_unlock'").fetchone()[0]==1
 # Insufficient batch: neither unlock nor debit.
 with db:
