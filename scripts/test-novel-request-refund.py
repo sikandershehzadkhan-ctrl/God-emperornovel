@@ -38,6 +38,7 @@ assert db.execute("SELECT COUNT(*) FROM ticket_ledger").fetchone()[0] == 1
 
 missing = fixture()
 missing.execute("DELETE FROM users WHERE id=7")
+missing.commit()
 assert reject(missing, 12) == (0, 0, 0)
 assert missing.execute("SELECT status FROM novel_requests WHERE id=12").fetchone()[0] == "pending"
 print("PASS: one-time request refund, status transition guard, balance credit and ledger idempotency.")
