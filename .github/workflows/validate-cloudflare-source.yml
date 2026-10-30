@@ -96,6 +96,8 @@ jobs:
               'single chapter unlock gates grant and ledger writes on successful debit': 'SELECT ?,?,? WHERE changes()=1' in Path('src/crown-ledger.mjs').read_text(encoding='utf-8') and 'tickets>=? AND NOT EXISTS' in Path('src/crown-ledger.mjs').read_text(encoding='utf-8'),
               'single and batch chapter purchases reject fractional Crown prices': 'Number.isSafeInteger(cost)' in source and 'Number.isSafeInteger(price)' in source,
               'shared Crown transaction helper rejects fractional amounts': 'Number.isSafeInteger(amount)' in Path('src/crown-ledger.mjs').read_text(encoding='utf-8'),
+              'author chapter creation and edits reject fractional or oversized Crown prices': "!Number.isSafeInteger(cost)||cost<0||cost>1000000" in source,
+              'admin chapter creation rejects fractional or oversized Crown prices': "!Number.isSafeInteger(cost)||cost<0||cost>1000000" in source and "Math.max(0,Number(b.ticket_cost??1))" not in source,
               'batch unlock debit is conditional and prevents overlapping purchases': 'tickets>=? AND NOT EXISTS (SELECT 1 FROM unlocks' in source and 'WHERE changes()=1' in source,
               'admin and author studio HTML pages use explicit role policy': 'protectedPageAccess' in source and './page-access.mjs' in source,
               'direct admin and author HTML assets are routed through the Worker': '"/admin.html"' in Path('wrangler.toml').read_text(encoding='utf-8') and '"/author.html"' in Path('wrangler.toml').read_text(encoding='utf-8'),
