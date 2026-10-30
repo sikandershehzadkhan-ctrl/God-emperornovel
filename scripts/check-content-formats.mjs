@@ -41,6 +41,7 @@ for (const name of new Set(['app.js', scriptMatch[1]])) {
  assert.ok(app.includes("type!=='imperial_comic_chapter'"), name + ' validates structured comic payloads');
  assert.ok(app.includes('initComicViewer()'), name + ' initializes comic reading modes');
  assert.ok(app.includes('Switch to single-page mode'), name + ' supports single-page comic reading');
+ assert.ok(app.includes('id="comicReader" aria-label="Comic chapter reader" tabindex="0" aria-keyshortcuts="ArrowLeft ArrowRight"'), name + ' exposes a keyboard-focusable comic reader with declared arrow shortcuts');
  assert.ok(app.includes('Reading direction: ') && app.includes("direction==='rtl'?'←':'→'"), name + ' supports explicit LTR and RTL comic navigation');
  assert.ok(app.includes('imperial_comic_progress:') && app.includes('localStorage.setItem(chapterKey'), name + ' restores comic mode, direction and page progress locally');
  assert.ok(app.includes("'imperial_comic_progress:'+location.pathname"), name + ' scopes saved comic progress to the exact chapter route');
