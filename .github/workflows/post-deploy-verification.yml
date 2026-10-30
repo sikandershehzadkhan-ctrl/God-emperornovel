@@ -193,3 +193,10 @@ jobs:
             exit 1
           fi
           echo "Production schema marker verified at 16.64.0."
+          limiter_result="$(npx --yes wrangler@4 d1 execute god-emperornovel-db --remote --command "SELECT CASE WHEN EXISTS (SELECT 1 FROM sqlite_master WHERE type='table' AND name='auth_rate_limits') THEN 'present' ELSE 'missing' END AS status;")"
+          printf '%s\\n' "$limiter_result"
+          if ! printf '%s' "$limiter_result" | grep -Eq '"status"[[:space:]]*:[[:space:]]*"present"'; then
+            echo "::error::Authentication rate-limit table was not initialized by the live Worker."
+            exit 1
+          fi
+          echo "Authentication rate-limit table verified after the live Worker health request."
