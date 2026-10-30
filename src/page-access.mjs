@@ -1,5 +1,5 @@
 export function protectedPageAccess(path, user) {
-  const adminPage = path === "/admin" || path === "/admin.html";
+  const adminPage = path === "/admin" || path === "/admin.html" || path === "/admin/crown-vault" || path.startsWith("/admin/crown-vault/");
   const authorPage = path === "/author" || path === "/author.html" ||
     path === "/author/studio" || path.startsWith("/author/studio/");
   if (!adminPage && !authorPage) return { allowed: true, status: 200 };
