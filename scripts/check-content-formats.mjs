@@ -16,6 +16,12 @@ assert.ok(taxonomyHandler.includes("if(status!=='approved') return json({error:'
 assert.ok(taxonomyHandler.includes('SELECT id,type,name,slug,description,created_at FROM taxonomy_submissions'), 'Public taxonomy API returns only non-sensitive approved fields');
 assert.ok(!taxonomyHandler.includes('SELECT * FROM taxonomy_submissions WHERE type=?'), 'Public taxonomy API never returns full submission records');
 assert.ok(!taxonomyHandler.includes("detail:String(e&&e.message"), 'Public taxonomy API never leaks internal database error details');
+const publicAgentRoute = source.match(/if\(p===\"\/api\/agents\"&&m===\"GET\"\)\{return json\(\(await env\.DB\.prepare\(`([^\x60]+)`\)\.all\(\)\)\.results\)\}/);
+assert.ok(publicAgentRoute, 'Public agent directory route exists');
+assert.ok(!/\\blast_result\\b/.test(publicAgentRoute[1]), 'Public agent directory never exposes private execution results');
+const adminAgentRoute = source.match(/if\(p===\"\/api\/admin\/agents\"&&m===\"GET\"\)\{([\s\S]*?)\}/);
+assert.ok(adminAgentRoute && adminAgentRoute[1].includes('admin(u)'), 'Private agent execution details remain behind administrator authorization');
+
 assert.ok(taxonomyHandler.includes("console.error('taxonomy submission write failed',e)"), 'Taxonomy write failures remain available to private server logs');
 assert.ok(source.includes('CONTENT_FORMAT_IDS.has(kind)'), 'Publishing validates format IDs');
 assert.ok(source.includes('supported_formats:CONTENT_FORMATS.map'), 'Invalid formats return accepted IDs');
