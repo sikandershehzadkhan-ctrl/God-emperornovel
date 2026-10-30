@@ -57,6 +57,7 @@ jobs:
           npm run check:cloudflare-readiness
           npm ci
           npm run build
+          python3 scripts/test-crown-ledger.py
           python3 - <<'PY'
           import glob, sqlite3, sys
           db = sqlite3.connect(':memory:')
