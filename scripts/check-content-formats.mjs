@@ -18,7 +18,7 @@ assert.ok(!taxonomyHandler.includes('SELECT * FROM taxonomy_submissions WHERE ty
 assert.ok(!taxonomyHandler.includes("detail:String(e&&e.message"), 'Public taxonomy API never leaks internal database error details');
 const publicAgentRoute = source.match(/if\(p===\"\/api\/agents\"&&m===\"GET\"\)\{return json\(\(await env\.DB\.prepare\(`([^\x60]+)`\)\.all\(\)\)\.results\)\}/);
 assert.ok(publicAgentRoute, 'Public agent directory route exists');
-assert.ok(!/\\blast_result\\b/.test(publicAgentRoute[1]), 'Public agent directory never exposes private execution results');
+assert.ok(!/\blast_result\b/.test(publicAgentRoute[1]), 'Public agent directory never exposes private execution results');
 const adminAgentRoute = source.match(/if\(p===\"\/api\/admin\/agents\"&&m===\"GET\"\)\{([\s\S]*?)\}/);
 assert.ok(adminAgentRoute && adminAgentRoute[1].includes('admin(u)'), 'Private agent execution details remain behind administrator authorization');
 
