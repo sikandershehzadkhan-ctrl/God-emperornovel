@@ -3,7 +3,7 @@
 export async function spendAndUnlockChapter(db, userId, chapterId, cost) {
   const uid = Number(userId), cid = Number(chapterId), amount = Number(cost);
   if (!Number.isSafeInteger(uid) || uid < 1 || !Number.isSafeInteger(cid) || cid < 1 ||
-      !Number.isFinite(amount) || amount < 0) {
+      !Number.isSafeInteger(amount) || amount < 0) {
     throw new TypeError("Invalid Crown transaction");
   }
   const results = await db.batch([
