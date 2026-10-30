@@ -1,6 +1,7 @@
 import fs from 'node:fs';
 import assert from 'node:assert/strict';
 
+const version = JSON.parse(fs.readFileSync('package.json', 'utf8')).version;
 const source = fs.readFileSync('src/index.js', 'utf8');
 const index = fs.readFileSync('public/index.html', 'utf8');
 const registryMatch = source.match(/const CONTENT_FORMATS=(\[[\s\S]*?\n\];)/);
@@ -19,7 +20,7 @@ assert.ok(taxonomyHandler.includes("console.error('taxonomy submission write fai
 assert.ok(source.includes('CONTENT_FORMAT_IDS.has(kind)'), 'Publishing validates format IDs');
 assert.ok(source.includes('supported_formats:CONTENT_FORMATS.map'), 'Invalid formats return accepted IDs');
 assert.ok(source.includes('originHint:') && source.includes('experience:'), 'Format registry documents origin traditions and reader experiences');
-for (const path of ['public/app.js', 'public/app-17.20.0.js']) {
+for (const path of ['public/app.js', `public/app-${version}.js`]) {
  const app = fs.readFileSync(path, 'utf8');
  assert.ok(app.includes('aria-labelledby="homeFormatTitle"'), path + ' makes format discovery visible from the homepage');
  assert.ok(app.includes('href="/format/original"') && app.includes('href="/format/fanfiction"'), path + ' keeps original novels and fanfiction first-class homepage destinations');
@@ -37,7 +38,7 @@ for (const name of new Set(['app.js', scriptMatch[1]])) {
  assert.ok(app.includes('id="novelComments"') && app.includes('mountNovelComments(box,id)'), name + ' mounts the discussion composer and thread as a React island');
  assert.ok(!app.includes('id="postComment"') && !app.includes('id="commentsList"'), name + ' no longer contains the duplicate legacy comment controls');
 }
-for (const asset of ['style-17.20.0.css','app-17.20.0.css','imperial-luxury-17.20.0.css','imperial-formats-17.20.0.css','imperial-comic-reader-17.20.0.css','manifest-17.20.0.webmanifest']) {
+for (const asset of [`style-${version}.css`,`app-${version}.css`,`imperial-luxury-${version}.css`,`imperial-formats-${version}.css`,`imperial-comic-reader-${version}.css`,`manifest-${version}.webmanifest`]) {
  assert.ok(index.includes('/'+asset), 'HTML references '+asset);
  assert.ok(fs.existsSync('public/'+asset), asset+' exists');
 }
@@ -73,12 +74,12 @@ assert.ok(source.includes("const kind=String(b.kind??n.kind??'original').trim().
 assert.ok(source.includes('Rights evidence is required before submitting this work for review.'), 'Backend independently enforces rights evidence');
 
 const manifest = JSON.parse(fs.readFileSync('public/manifest-17.20.0.webmanifest','utf8'));
-assert.equal(manifest.version,'17.20.0','PWA manifest version matches release');
+assert.equal(manifest.version,version,'PWA manifest version matches release');
 const entry = fs.readFileSync('public/index.html','utf8');
 const runtime = fs.readFileSync('public/app-17.20.0.js','utf8');
 const sw = fs.readFileSync('public/sw.js','utf8');
 const luxuryCss = fs.readFileSync('public/imperial-luxury-17.20.0.css','utf8');
-assert.ok(entry.includes('/app-17.20.0.js'), 'Entry point loads the cache-busted application runtime');
+assert.ok(entry.includes(`/app-${version}.js`), 'Entry point loads the cache-busted application runtime');
 assert.ok(entry.includes('property="og:title"') && entry.includes('property="og:description"') && entry.includes('name="twitter:card"'), 'Entry point provides international social-sharing metadata');
 assert.ok(entry.includes('https://god-emperornovel.sikandershehzadkhan.workers.dev/imperial-novel-crest-17.18.0.svg'), 'Social preview uses the new absolute crest URL');
 assert.ok(runtime.includes('/imperial-novel-crest-17.18.0.svg'), 'Application shell uses the new versioned crest asset');
@@ -86,7 +87,7 @@ assert.ok(!/imperial-novel-app-icon\.svg\?v=17\.(?:13|15|16|17)\.0/.test(runtime
 assert.ok(fs.existsSync('public/imperial-novel-crest-17.18.0.svg'), 'New versioned Imperial Novel crest asset exists');
 assert.ok(sw.includes("'/imperial-novel-crest-17.18.0.svg'"), 'Service worker precaches the new crest asset');
 assert.ok(JSON.parse(fs.readFileSync('public/manifest-17.20.0.webmanifest','utf8')).icons[0].src==='/imperial-novel-crest-17.18.0.svg', 'Installed app manifest uses the new crest');
-assert.ok(sw.includes("const CACHE='imperial-novel-v17.20.0'"), 'Service worker cache key matches the release');
+assert.ok(sw.includes(`const CACHE='imperial-novel-v${version}'`), 'Service worker cache key matches the release');
 assert.ok(sw.includes("key!==CACHE") && sw.includes("caches.delete(key)"), 'Activation clears obsolete Imperial Novel caches');
 const coreMatch = sw.match(/const CORE=\[([^\]]+)\]/);
 assert.ok(coreMatch, 'Service worker declares a core asset list');
