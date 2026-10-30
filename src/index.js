@@ -25,7 +25,7 @@ const CONTENT_FORMATS=[
  {id:"game",label:"Games",group:"interactive",originHint:"Global interactive media",experience:"Catalog only · game integration not enabled"}
 ];
 const CONTENT_FORMAT_IDS=new Set(CONTENT_FORMATS.map(x=>x.id));
-const cookies=h=>Object.fromEntries((h||"").split(";").map(x=>x.trim()).filter(Boolean).map(x=>{const i=x.indexOf("=");return[i<0?x:x.slice(0,i),decodeURIComponent(i<0?"":x.slice(i+1))]}));
+const cookies=h=>Object.fromEntries((h||"").split(";").map(x=>x.trim()).filter(Boolean).map(x=>{const i=x.indexOf("="),key=i<0?x:x.slice(0,i),raw=i<0?"":x.slice(i+1);let value=raw;try{value=decodeURIComponent(raw)}catch{}return[key,value]}));
 const body=async r=>await r.json().catch(()=>({}));
 
 
