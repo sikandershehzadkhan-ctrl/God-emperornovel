@@ -24,6 +24,7 @@ assert.ok(fs.existsSync(`public/react-islands-${pkg.version}.js`), 'Versioned Re
 const appBundle = fs.readFileSync(`public/app-${pkg.version}.js`, 'utf8');
 assert.ok(appBundle.includes('react-islands-'), 'Versioned application entry must lazy-load the local React island bundle');
 assert.ok(appBundle.includes('mountNovelComments'), 'Versioned application entry mounts the React community discussion island');
+assert.ok(appBundle.includes('mountNovelRating'), 'Versioned application entry mounts the React novel rating island');
 assert.ok(fs.readFileSync('src/react/index.jsx', 'utf8').includes('mountNovelComments'), 'React bundle entry exports the discussion island');
 assert.ok(entry.includes(`/manifest-${pkg.version}.webmanifest`), 'HTML entry point must reference the current manifest');
 
