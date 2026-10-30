@@ -1,5 +1,6 @@
 /* Imperial Novel 17.17: format-aware comic and manhwa reader. */
 .comicReader{width:100%;max-width:980px;margin:0 auto}
+.comicReader:focus-visible{outline:3px solid var(--in-sapphire,#4f8cff);outline-offset:4px;border-radius:8px}
 .comicReaderControls{position:sticky;top:72px;z-index:4;display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;padding:10px 12px;margin:0 0 14px;border:1px solid var(--line,rgba(150,160,190,.22));border-radius:14px;background:var(--panel,#101421);backdrop-filter:blur(12px)}
 .comicPageNav{display:flex;align-items:center;justify-content:center;gap:10px}
 #comicPageStatus{font-size:12px;color:var(--muted,#a3abc2);min-width:100px;text-align:center}
