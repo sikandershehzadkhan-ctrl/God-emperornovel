@@ -86,6 +86,7 @@ jobs:
               'cookie parser tolerates malformed percent-encoding without throwing': 'try{value=decodeURIComponent(raw)}catch{}' in source,
               'bookmark writes validate published novel and chapter relationship': 'if(p==="/api/bookmark"&&m==="POST")' in source and "n.publication_status='published' AND c.chapter_number=? AND c.publication_status='published'" in source,
               'reading history writes validate published novel and chapter relationship': 'if(p==="/api/history"&&m==="POST")' in source and "n.publication_status='published' AND c.chapter_number=? AND c.publication_status='published'" in source,
+              'reports require a valid published novel or matching published chapter': 'if(p==="/api/report"&&m==="POST")' in source and "n.publication_status='published' AND c.publication_status='published' AND (? IS NULL OR n.id=?)" in source,
               'public OmniPortal status only exposes authorized enabled connector metadata': "WHERE enabled=1 AND rights_status='authorized'" in source and 'SELECT id,name,base_url,type,enabled,rights_status,last_status,last_checked_at FROM connectors ORDER BY name' not in source,
               'legacy novels remain published when the publication column is added': "['publication_status',\"TEXT NOT NULL DEFAULT 'published'\"]" in source,
               'first-admin bootstrap cannot promote an arbitrary user': "UPDATE users SET role='admin',verified=1 WHERE id=?" not in source,
