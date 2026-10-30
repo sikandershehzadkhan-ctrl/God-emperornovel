@@ -20,6 +20,9 @@ assert.equal(manifest.version, pkg.version, 'PWA manifest version must match pac
 assert.ok(manifest.start_url.includes(`app=${pkg.version}`), 'PWA start URL must include the current release version');
 assert.ok(serviceWorker.includes(`imperial-novel-v${pkg.version}`), 'Service-worker cache key must match package.json');
 assert.ok(serviceWorker.includes(`/manifest-${pkg.version}.webmanifest`), 'Service worker must precache the current manifest');
+assert.ok(fs.existsSync(`public/react-islands-${pkg.version}.js`), 'Versioned React island bundle must be built before release validation');
+const appBundle = fs.readFileSync(`public/app-${pkg.version}.js`, 'utf8');
+assert.ok(appBundle.includes('react-islands-'), 'Versioned application entry must lazy-load the local React island bundle');
 assert.ok(entry.includes(`/manifest-${pkg.version}.webmanifest`), 'HTML entry point must reference the current manifest');
 
 const coreMatch = serviceWorker.match(/const CORE=\[(.*?)\];/s);
