@@ -26,6 +26,7 @@ const cookies=h=>Object.fromEntries((h||"").split(";").map(x=>x.trim()).filter(B
 const body=async r=>await r.json().catch(()=>({}));
 const phash=async(p,s)=>digest(p+":"+s);
 
+// Atomic D1 buckets keep authentication throttling consistent across Worker isolates.
 let authRateSchemaReady=null;
 async function ensureAuthRateLimitSchema(env){
  if(!authRateSchemaReady)authRateSchemaReady=(async()=>{
