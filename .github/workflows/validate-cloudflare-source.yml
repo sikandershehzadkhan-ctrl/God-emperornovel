@@ -65,6 +65,9 @@ jobs:
       - name: Validate Cloudflare Worker bundle without deploying
         run: npx --yes wrangler@4 deploy --dry-run
 
+      - name: Test Crown ledger atomicity against SQLite
+        run: python3 scripts/test-crown-ledger.py
+
       - name: Check production safety invariants
         shell: bash
         run: |
@@ -79,12 +82,31 @@ jobs:
           missing_audit_tables = sorted(runtime_tables - audited_tables)
           checks = {
               'read-only audit inventory covers every literal runtime table': not missing_audit_tables,
+              'public agent status does not expose internal run results': 'SELECT slug,name,role,icon,mode,status,last_run_at FROM agents WHERE enabled=1' in source and 'SELECT slug,name,role,icon,mode,status,last_run_at,last_result FROM agents WHERE enabled=1' not in source,
+              'cookie parser tolerates malformed percent-encoding without throwing': 'try{value=decodeURIComponent(raw)}catch{}' in source,
+              'bookmark writes validate published novel and chapter relationship': 'if(p==="/api/bookmark"&&m==="POST")' in source and "n.publication_status='published' AND c.chapter_number=? AND c.publication_status='published'" in source,
+              'reading history writes validate published novel and chapter relationship': 'if(p==="/api/history"&&m==="POST")' in source and "n.publication_status='published' AND c.chapter_number=? AND c.publication_status='published'" in source,
+              'reports require a valid published novel or matching published chapter': 'if(p==="/api/report"&&m==="POST")' in source and "n.publication_status='published' AND c.publication_status='published' AND (? IS NULL OR n.id=?)" in source,
+              'public OmniPortal status only exposes authorized enabled connector metadata': "WHERE enabled=1 AND rights_status='authorized'" in source and 'SELECT id,name,base_url,type,enabled,rights_status,last_status,last_checked_at FROM connectors ORDER BY name' not in source,
               'legacy novels remain published when the publication column is added': "['publication_status',\"TEXT NOT NULL DEFAULT 'published'\"]" in source,
               'first-admin bootstrap cannot promote an arbitrary user': "UPDATE users SET role='admin',verified=1 WHERE id=?" not in source,
               'the schema marker remains compatible with the existing runtime migration': "core_schema_version','16.64.0" in source,
               'production deployment workflow includes a schema compatibility gate': "Verify production schema compatibility before deployment" in Path('.github/workflows/deploy.yml').read_text(encoding='utf-8'),
               'production deployment gate blocks unknown markers and checks legacy schema compatibility': 'Unrecognized production schema marker' in Path('.github/workflows/deploy.yml').read_text(encoding='utf-8') and 'compatibility"' in Path('.github/workflows/deploy.yml').read_text(encoding='utf-8'),
-              'novel-request refunds use four SQL placeholders': "INSERT INTO ticket_ledger(user_id,delta,reason,reference) VALUES(?,?,?,?)" in source,
+              'novel-request refunds are conditional and idempotent': "UPDATE novel_requests SET status=? WHERE id=? AND status='pending'" in source and "INSERT INTO ticket_ledger(user_id,delta,reason,reference) SELECT ?,?,?,? WHERE changes()=1" in source,
+              'payment credits are derived from the server-side donation amount': 'const crowns=Number(d.amount)' in source and 'Number(b.tickets||0)' not in source,
+              'manual administrator Crown credits are positive and bounded': 'amount<1||amount>1000000' in source,
+              'paid novel-request charges require a successful server-side debit': 'tickets>=?' in source and 'INSERT INTO novel_requests(user_id,url,source_host,week_key,cost,status) SELECT ?,?,?,?,?, \'pending\' WHERE changes()=1' in source,
+              'single chapter unlock gates grant and ledger writes on successful debit': 'SELECT ?,?,? WHERE changes()=1' in Path('src/crown-ledger.mjs').read_text(encoding='utf-8') and 'tickets>=? AND NOT EXISTS' in Path('src/crown-ledger.mjs').read_text(encoding='utf-8'),
+              'single and batch chapter purchases reject fractional Crown prices': 'Number.isSafeInteger(cost)' in source and 'Number.isSafeInteger(price)' in source,
+              'shared Crown transaction helper rejects fractional amounts': 'Number.isSafeInteger(amount)' in Path('src/crown-ledger.mjs').read_text(encoding='utf-8'),
+              'author chapter creation and edits reject fractional or oversized Crown prices': "!Number.isSafeInteger(cost)||cost<0||cost>1000000" in source,
+              'admin chapter creation rejects fractional or oversized Crown prices': "!Number.isSafeInteger(cost)||cost<0||cost>1000000" in source and "Math.max(0,Number(b.ticket_cost??1))" not in source,
+              'admin chapter edits reject fractional or oversized Crown prices': "if(!Number.isSafeInteger(cost)||cost<0||cost>1000000)" in source,
+              'batch unlock debit is conditional and prevents overlapping purchases': 'tickets>=? AND NOT EXISTS (SELECT 1 FROM unlocks' in source and 'WHERE changes()=1' in source,
+              'admin and author studio HTML pages use explicit role policy': 'protectedPageAccess' in source and './page-access.mjs' in source,
+              'admin chapter preview renders untrusted chapter content as text, not executable HTML': "getElementById('chapterPreviewContent').textContent=c.content" in Path('public/admin.html').read_text(encoding='utf-8') and "getElementById('chapterPreviewContent').innerHTML=c.content" not in Path('public/admin.html').read_text(encoding='utf-8'),
+              'direct admin and author HTML assets are routed through the Worker': '"/admin.html"' in Path('wrangler.toml').read_text(encoding='utf-8') and '"/author.html"' in Path('wrangler.toml').read_text(encoding='utf-8'),
           }
           for label, ok in checks.items():
               print(('PASS' if ok else 'FAIL') + ': ' + label)

@@ -140,7 +140,7 @@ jobs:
           set -euo pipefail
           base="https://god-emperornovel.sikandershehzadkhan.workers.dev"
           stamp="$(date +%s)"
-          for route in /catalog /formats /community /trend-factory /author /admin /read/1/1 /privacy /terms /copyright /community-taxonomy; do
+          for route in /catalog /formats /community /trend-factory /read/1/1 /privacy /terms /copyright /community-taxonomy; do
             page=""
             route_verified=false
             for attempt in $(seq 1 6); do
@@ -172,6 +172,22 @@ jobs:
             fi
             echo "Route shell verified: $route"
           done
+
+      - name: Verify protected routes reject unauthenticated direct access
+        shell: bash
+        run: |
+          set -euo pipefail
+          base="https://god-emperornovel.sikandershehzadkhan.workers.dev"
+          stamp="$(date +%s)"
+          for route in /admin /admin.html /admin/crown-vault /author /author.html /author/studio; do
+            status="$(curl --silent --show-error --max-time 20 -o /dev/null -w '%{http_code}' -H "Cache-Control: no-cache" "$base$route?security-check=$stamp" || true)"
+            if [ "$status" != "401" ]; then
+              echo "::error::Protected route $route returned HTTP $status without a session; expected 401."
+              exit 1
+            fi
+            echo "PASS: unauthenticated direct access blocked at $route (401)."
+          done
+          echo "Unauthenticated admin and Author Studio page-route protections verified on the live Worker."
 
       - name: Verify production schema marker after first live request
         if: always()
