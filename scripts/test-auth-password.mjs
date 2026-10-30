@@ -23,6 +23,10 @@ const legacyHash = btoa(String.fromCharCode(...new Uint8Array(legacyDigest)))
 const legacyStored = legacyHash + ":" + legacySalt;
 assert.equal(await verifyPassword(password, legacyStored), true, "Legacy accounts must remain able to sign in");
 assert.equal(await verifyPassword("incorrect-password", legacyStored), false);
+const longLegacyPassword = "L".repeat(1100);
+const longLegacyDigest = await crypto.subtle.digest("SHA-256", new TextEncoder().encode(longLegacyPassword + ":" + legacySalt));
+const longLegacyHash = btoa(String.fromCharCode(...new Uint8Array(longLegacyDigest))).replaceAll("+", "-").replaceAll("/", "_").replaceAll("=", "");
+assert.equal(await verifyPassword(longLegacyPassword, longLegacyHash + ":" + legacySalt), true, "Legacy accounts with older long passwords remain compatible");
 
 await assert.rejects(() => hashPassword("short"), /between 8 and 1024/);
 await assert.rejects(() => hashPassword("x".repeat(1025)), /between 8 and 1024/);
