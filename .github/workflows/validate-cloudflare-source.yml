@@ -114,5 +114,8 @@ jobs:
           print(f'PASS: {len(paths)} migrations applied to fresh SQLite.')
           PY
 
+      - name: Test connector search URL policy
+        run: node scripts/test-connector-url-policy.mjs
+
       - name: Confirm validation only
         run: echo "Validation passed. This workflow does not deploy or modify production D1.";
