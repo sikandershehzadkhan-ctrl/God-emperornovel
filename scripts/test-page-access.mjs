@@ -1,7 +1,7 @@
 import assert from "node:assert/strict";
 import { protectedPageAccess } from "../src/page-access.mjs";
 const normal={id:1,role:"user"}, author={id:2,role:"author"}, admin={id:3,role:"admin"};
-for (const path of ["/admin","/admin.html"]) {
+for (const path of ["/admin","/admin.html","/admin/crown-vault","/admin/crown-vault/ledger"]) {
   assert.equal(protectedPageAccess(path,null).status,401);
   assert.equal(protectedPageAccess(path,normal).status,403);
   assert.equal(protectedPageAccess(path,author).status,403);
