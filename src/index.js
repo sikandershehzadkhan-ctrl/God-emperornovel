@@ -26,6 +26,36 @@ const cookies=h=>Object.fromEntries((h||"").split(";").map(x=>x.trim()).filter(B
 const body=async r=>await r.json().catch(()=>({}));
 const phash=async(p,s)=>digest(p+":"+s);
 
+// Atomic D1 buckets keep authentication throttling consistent across Worker isolates.
+let authRateSchemaReady=null;
+async function ensureAuthRateLimitSchema(env){
+ if(!authRateSchemaReady)authRateSchemaReady=(async()=>{
+  await env.DB.prepare(`CREATE TABLE IF NOT EXISTS auth_rate_limits (
+   scope TEXT NOT NULL,
+   key_hash TEXT NOT NULL,
+   window_start INTEGER NOT NULL,
+   attempts INTEGER NOT NULL DEFAULT 0,
+   PRIMARY KEY(scope,key_hash)
+  )`).run();
+  await env.DB.prepare("CREATE INDEX IF NOT EXISTS idx_auth_rate_limits_window ON auth_rate_limits(window_start)").run();
+  await env.DB.prepare("DELETE FROM auth_rate_limits WHERE window_start<?").bind(now()-172800).run();
+ })();
+ try{await authRateSchemaReady}catch(e){authRateSchemaReady=null;throw e}
+}
+async function consumeAuthRateLimit(env,scope,key,limit,windowSeconds){
+ const keyHash=await digest(`imperial-auth-rate-v1:${scope}:${key}`);
+ const windowStart=Math.floor(now()/windowSeconds)*windowSeconds;
+ const row=await env.DB.prepare(`INSERT INTO auth_rate_limits(scope,key_hash,window_start,attempts)
+ VALUES(?,?,?,1)
+ ON CONFLICT(scope,key_hash) DO UPDATE SET
+ window_start=excluded.window_start,
+ attempts=CASE WHEN auth_rate_limits.window_start=excluded.window_start THEN auth_rate_limits.attempts+1 ELSE 1 END
+ RETURNING attempts`).bind(scope,keyHash,windowStart).first();
+ const retryAfter=Math.max(1,windowStart+windowSeconds-now());
+ if(Number(row?.attempts||0)>limit)return json({error:"Too many attempts. Please wait before trying again."},429,{"retry-after":String(retryAfter)});
+ return null;
+}
+
 let coreSchemaReady=null;
 async function ensurePublishingSchema(env){
  const novelCols=[
@@ -417,6 +447,7 @@ function ensureCommunityV2(env){
 }
 async function api(req,env){
  await ensureCoreSchema(env);
+ await ensureAuthRateLimitSchema(env);
  await ensureCommunityV2(env);
  await ensureDiscoverySchema(env);
  const url=new URL(req.url),p=url.pathname,m=req.method,u=await getUser(req,env);
@@ -427,8 +458,8 @@ async function api(req,env){
  if(p==="/api/admin/taxonomy"&&m==='GET'){const e=admin(u);if(e)return e;return json((await env.DB.prepare("SELECT * FROM taxonomy_submissions ORDER BY CASE status WHEN 'pending' THEN 0 ELSE 1 END,created_at DESC LIMIT 300").all()).results||[])}
  if(p==="/api/admin/taxonomy"&&m==='POST')return adminTaxonomy(req,env,u);
  if(p==="/api/health"){let db=true;try{await env.DB.prepare("SELECT 1").first()}catch{db=false}return json({ok:db,service:env.SITE_NAME||"Imperial Novel",version:env.APP_VERSION||"5.0.0",database:db,time:new Date().toISOString()})}
- if(p==="/api/auth/register"&&m==="POST"){const b=await body(req),username=String(b.username||"").trim(),email=String(b.email||"").trim().toLowerCase(),password=String(b.password||"");if(!/^[a-zA-Z0-9_]{3,24}$/.test(username))return json({error:"Username must be 3-24 letters, numbers or underscores"},400);if(!email.includes("@"))return json({error:"Enter a valid email"},400);if(password.length<8)return json({error:"Password must be at least 8 characters"},400);const salt=rnd(16);try{await env.DB.prepare("INSERT INTO users(username,email,password_hash) VALUES(?,?,?)").bind(username,email,(await phash(password,salt))+":"+salt).run()}catch{return json({error:"Username or email already exists"},409)}return json({ok:true,message:"Account created. You can now sign in."})}
- if(p==="/api/auth/login"&&m==="POST"){const b=await body(req),x=await env.DB.prepare("SELECT * FROM users WHERE email=?").bind(String(b.email||"").trim().toLowerCase()).first();if(!x)return json({error:"Invalid email or password"},401);const [hp,salt]=String(x.password_hash||"").split(":");if(!salt||await phash(String(b.password||""),salt)!==hp)return json({error:"Invalid email or password"},401);const token=rnd(32);await env.DB.prepare("INSERT INTO sessions(token_hash,user_id,expires_at) VALUES(?,?,?)").bind(await digest(token),x.id,now()+2592000).run();return json({ok:true,user:{id:x.id,username:x.username,email:x.email,role:x.role,tickets:x.tickets}},200,{"set-cookie":`session=${encodeURIComponent(token)}; Path=/; HttpOnly; Secure; SameSite=Lax; Max-Age=2592000`})}
+ if(p==="/api/auth/register"&&m==="POST"){const ip=String(req.headers.get("cf-connecting-ip")||"unknown").trim().slice(0,128);const limited=await consumeAuthRateLimit(env,"register-ip",ip,5,3600);if(limited)return limited;const b=await body(req),username=String(b.username||"").trim(),email=String(b.email||"").trim().toLowerCase(),password=String(b.password||"");if(!/^[a-zA-Z0-9_]{3,24}$/.test(username))return json({error:"Username must be 3-24 letters, numbers or underscores"},400);if(!email.includes("@"))return json({error:"Enter a valid email"},400);if(password.length<8)return json({error:"Password must be at least 8 characters"},400);const salt=rnd(16);try{await env.DB.prepare("INSERT INTO users(username,email,password_hash) VALUES(?,?,?)").bind(username,email,(await phash(password,salt))+":"+salt).run()}catch{return json({error:"Username or email already exists"},409)}return json({ok:true,message:"Account created. You can now sign in."})}
+ if(p==="/api/auth/login"&&m==="POST"){const ip=String(req.headers.get("cf-connecting-ip")||"unknown").trim().slice(0,128);const ipLimited=await consumeAuthRateLimit(env,"login-ip",ip,30,900);if(ipLimited)return ipLimited;const b=await body(req),email=String(b.email||"").trim().toLowerCase().slice(0,254);const emailLimited=await consumeAuthRateLimit(env,"login-email",email,10,900);if(emailLimited)return emailLimited;const x=await env.DB.prepare("SELECT * FROM users WHERE email=?").bind(email).first();if(!x)return json({error:"Invalid email or password"},401);const [hp,salt]=String(x.password_hash||"").split(":");if(!salt||await phash(String(b.password||""),salt)!==hp)return json({error:"Invalid email or password"},401);await env.DB.prepare("DELETE FROM auth_rate_limits WHERE scope=? AND key_hash=?").bind("login-email",await digest("imperial-auth-rate-v1:login-email:"+email)).run();const token=rnd(32);await env.DB.prepare("INSERT INTO sessions(token_hash,user_id,expires_at) VALUES(?,?,?)").bind(await digest(token),x.id,now()+2592000).run();return json({ok:true,user:{id:x.id,username:x.username,email:x.email,role:x.role,tickets:x.tickets}},200,{"set-cookie":`session=${encodeURIComponent(token)}; Path=/; HttpOnly; Secure; SameSite=Lax; Max-Age=2592000`})}
  if(p==="/api/auth/logout"&&m==="POST"){const c=cookies(req.headers.get("cookie"));if(c.session)await env.DB.prepare("DELETE FROM sessions WHERE token_hash=?").bind(await digest(c.session)).run();return json({ok:true},200,{"set-cookie":"session=; Path=/; HttpOnly; Secure; SameSite=Lax; Max-Age=0"})}
  if(p==="/api/me")return json({user:u?{id:u.id,username:u.username,email:u.email,role:u.role,tickets:u.tickets,verified:u.verified}:null});
  if(p==="/api/config")return json({site:env.SITE_NAME||"Imperial Novel",payment:{method:"Not configured",account:"",enabled:false,verification:"Payments are unavailable until an approved merchant integration is configured."},batchUnlock:[10,25,50,100]});
