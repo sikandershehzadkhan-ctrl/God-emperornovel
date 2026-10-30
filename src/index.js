@@ -452,7 +452,7 @@ async function api(req,env){
  await ensureCommunityV2(env);
  await ensureDiscoverySchema(env);
  const url=new URL(req.url),p=url.pathname,m=req.method,u=await getUser(req,env);
- if(p==="/api/agents"&&m==="GET"){return json((await env.DB.prepare(`SELECT slug,name,role,icon,mode,status,last_run_at,last_result FROM agents WHERE enabled=1 ORDER BY id`).all()).results)}
+ if(p==="/api/agents"&&m==="GET"){return json((await env.DB.prepare(`SELECT slug,name,role,icon,mode,status,last_run_at FROM agents WHERE enabled=1 ORDER BY id`).all()).results)}
  if(p==="/api/admin/agents"&&m==="GET"){const e=admin(u);if(e)return e;return json((await env.DB.prepare(`SELECT id,slug,name,role,icon,mode,status,enabled,last_run_at,last_result FROM agents ORDER BY id`).all()).results)}
  if(p==="/api/admin/agents/run"&&m==="POST"){const e=admin(u);if(e)return e;const b=await body(req);const slug=String(b.slug||'');if(slug)return json(await runAgent(env,slug,'admin'));return json(await runAutomation(env))}
  if(p==="/api/taxonomy")return communityTaxonomy(req,env);
