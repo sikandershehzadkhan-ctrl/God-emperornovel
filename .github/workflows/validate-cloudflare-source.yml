@@ -84,6 +84,8 @@ jobs:
               'read-only audit inventory covers every literal runtime table': not missing_audit_tables,
               'public agent status does not expose internal run results': 'SELECT slug,name,role,icon,mode,status,last_run_at FROM agents WHERE enabled=1' in source and 'SELECT slug,name,role,icon,mode,status,last_run_at,last_result FROM agents WHERE enabled=1' not in source,
               'cookie parser tolerates malformed percent-encoding without throwing': 'try{value=decodeURIComponent(raw)}catch{}' in source,
+              'bookmark writes validate published novel and chapter relationship': 'if(p==="/api/bookmark"&&m==="POST")' in source and "n.publication_status='published' AND c.chapter_number=? AND c.publication_status='published'" in source,
+              'reading history writes validate published novel and chapter relationship': 'if(p==="/api/history"&&m==="POST")' in source and "n.publication_status='published' AND c.chapter_number=? AND c.publication_status='published'" in source,
               'public OmniPortal status only exposes authorized enabled connector metadata': "WHERE enabled=1 AND rights_status='authorized'" in source and 'SELECT id,name,base_url,type,enabled,rights_status,last_status,last_checked_at FROM connectors ORDER BY name' not in source,
               'legacy novels remain published when the publication column is added': "['publication_status',\"TEXT NOT NULL DEFAULT 'published'\"]" in source,
               'first-admin bootstrap cannot promote an arbitrary user': "UPDATE users SET role='admin',verified=1 WHERE id=?" not in source,
