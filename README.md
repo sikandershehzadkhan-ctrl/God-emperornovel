@@ -23,7 +23,7 @@ Only content that Imperial Novel has the right to host or distribute may be publ
 
 A work being free to read, visible on another website, or discoverable through a search engine does **not** grant permission to copy, translate, mirror, hotlink, or monetize it. Manga, manhwa, webtoon pages, covers, and other visual material require the same rights checks as written chapters. Record provenance, licence terms, attribution, and any restrictions before adding third-party assets or content.
 
-See [Free Asset Policy](docs/FREE-ASSET-POLICY.md).
+See [Free Asset Policy](docs/FREE-ASSET-POLICY.md). See [Sustainable Revenue Model](docs/SUSTAINABLE-REVENUE-MODEL.md) for the staged, rights-first business plan.
 
 ## Technology and operating constraints
 
