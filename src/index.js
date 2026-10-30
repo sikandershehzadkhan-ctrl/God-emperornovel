@@ -750,8 +750,8 @@ if(p==="/api/requests"&&m==="GET"){const e=need(u);if(e)return e;const week=Math
   const content=String(b.content??row.content).trim();
   if(!title||!content)return json({error:"Chapter title and content are required"},400);
   const locked=b.is_locked===undefined?Number(row.is_locked):b.is_locked?1:0;
-  const cost=b.ticket_cost===undefined?Number(row.ticket_cost):Math.max(0,Number(b.ticket_cost));
-  if(!Number.isFinite(cost))return json({error:"Invalid ticket cost"},400);
+  const cost=b.ticket_cost===undefined?Number(row.ticket_cost):Number(b.ticket_cost);
+  if(!Number.isSafeInteger(cost)||cost<0||cost>1000000)return json({error:"Ticket cost must be a whole number from 0 to 1000000"},400);
   const pub=String(b.publication_status??row.publication_status??'draft').toLowerCase();
   if(!['draft','published'].includes(pub))return json({error:"Invalid chapter publication status"},400);
   if(pub==='published'){const novel=await env.DB.prepare('SELECT rights_status FROM novels WHERE id=?').bind(row.novel_id).first();if(!novel||!['original','public_domain','licensed','authorized'].includes(String(novel.rights_status)))return json({error:"Novel rights are not eligible for publication"},403);}
