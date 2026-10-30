@@ -37,6 +37,7 @@ async function ensureAuthRateLimitSchema(env){
    PRIMARY KEY(scope,key_hash)
   )`).run();
   await env.DB.prepare("CREATE INDEX IF NOT EXISTS idx_auth_rate_limits_window ON auth_rate_limits(window_start)").run();
+  await env.DB.prepare("DELETE FROM auth_rate_limits WHERE window_start<?").bind(now()-172800).run();
  })();
  try{await authRateSchemaReady}catch(e){authRateSchemaReady=null;throw e}
 }
