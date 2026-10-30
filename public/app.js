@@ -139,7 +139,7 @@ async function ensureImperialReactIslands(){
   imperialReactBundlePromise=new Promise((resolve,reject)=>{
    const appScript=document.querySelector('script[src*="/app-"]');
    const appPath=appScript?.getAttribute("src")||"";
-   const version=appPath.includes("app-")?appPath.slice(appPath.lastIndexOf("app-")+4).replace(".js",""):"17.19.0";
+   const version=appPath.includes("app-")?appPath.slice(appPath.lastIndexOf("app-")+4).replace(".js",""):"17.20.0";
    const script=document.createElement("script");script.src="/react-islands-"+version+".js";script.async=true;
    script.onload=()=>window.ImperialReactIslands?.mountNovelReactions&&window.ImperialReactIslands?.mountNovelComments&&window.ImperialReactIslands?.mountNovelRating?resolve():reject(new Error("React community components did not initialize."));
    script.onerror=()=>reject(new Error("React community components could not be loaded."));
