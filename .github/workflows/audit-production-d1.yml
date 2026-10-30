@@ -115,7 +115,7 @@ jobs:
                    ('unlocks'),('unlock_batches'),('bookmarks'),('history'),('donations'),('connectors'),('comments'),
                    ('novel_requests'),('audit_logs'),('ticket_ledger'),('follows'),('user_library'),('ratings'),('reports'),
                    ('notifications'),('agents'),('agent_runs'),('app_settings'),('chapter_views'),('connector_events'),('import_jobs'),('recommendations'),('request_votes'),('comment_likes'),('comment_reports'),('novel_reactions'),('connector_authorization_requests'),('taxonomy_submissions'),('taxonomy_suggestions'),('tag_follows'),('ai_author_projects'),
-                   ('ai_chapter_jobs'),('ai_generation_runs'),('ai_provider_benchmarks'),('ai_publish_policies')
+                   ('ai_chapter_jobs'),('ai_generation_runs'),('ai_provider_benchmarks'),('ai_publish_policies'),('auth_rate_limits')
           )
           SELECT required.name AS required_table,
                  CASE WHEN actual.name IS NULL THEN 'MISSING' ELSE 'present' END AS status
