@@ -34,6 +34,8 @@ for (const name of new Set(['app.js', scriptMatch[1]])) {
  assert.ok(app.includes("type!=='imperial_comic_chapter'"), name + ' validates structured comic payloads');
  assert.ok(app.includes('initComicViewer()'), name + ' initializes comic reading modes');
  assert.ok(app.includes('Switch to single-page mode'), name + ' supports single-page comic reading');
+ assert.ok(app.includes('id="novelComments"') && app.includes('mountNovelComments(box,id)'), name + ' mounts the discussion composer and thread as a React island');
+ assert.ok(!app.includes('id="postComment"') && !app.includes('id="commentsList"'), name + ' no longer contains the duplicate legacy comment controls');
 }
 for (const asset of ['style-17.19.0.css','app-17.19.0.css','imperial-luxury-17.19.0.css','imperial-formats-17.19.0.css','imperial-comic-reader-17.19.0.css','manifest-17.19.0.webmanifest']) {
  assert.ok(index.includes('/'+asset), 'HTML references '+asset);
