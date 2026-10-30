@@ -1,6 +1,6 @@
 {
   "name": "imperial-novel",
-  "version": "17.18.0",
+  "version": "17.19.0",
   "private": true,
   "scripts": {
     "build": "node scripts/build-react-islands.mjs && node --check src/index.js && node --check public/app.js && for f in public/app-*.js public/react-islands-*.js; do node --check \"$f\"; done && node scripts/check-public-entry.mjs && node scripts/check-content-formats.mjs && node scripts/check-release-version.mjs",
