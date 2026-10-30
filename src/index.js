@@ -317,38 +317,6 @@ const AI_AGENT_PROMPTS={
  'support':'Act as a support assistant. Confirm you can classify support issues and route complex or sensitive cases to humans.',
  'orchestrator':'Act as the Imperial Novel Omni Orchestrator. Confirm you can route a permitted job to the appropriate specialist agent while preserving rights, security, and human-review boundaries.'
 };
-function localAgentResult(env,slug){
- const local={
-  'novel-finder':'Local discovery engine ready: searches the Imperial Novel catalog and only configured authorized indexes.',
-  'import':'Local import guard ready: accepts only author-owned, licensed, public-domain, or otherwise authorized material.',
-  'metadata':'Local metadata engine ready: normalizes title, author, genres, tags, fandom, language, and publication status without inventing facts.',
-  'chapter-tracker':'Local chapter tracker ready: checks permitted first-party or licensed publishing updates only.',
-  'recommendation':'Local recommendation engine ready: uses permitted catalog and reading signals while avoiding sensitive profiling.',
-  'summary':'Local summary workflow ready: processes only content Imperial Novel is permitted to process.',
-  'translation':'Local translation workflow ready: processes only content Imperial Novel is permitted to process.',
-  'rights':'Local rights engine ready: checks rights metadata and routes uncertain ownership or takedown cases to human review.',
-  'moderation':'Local moderation engine ready: flags basic spam, abuse, unsafe links, and policy-sensitive submissions for review.',
-  'trend':'Local trend engine ready: calculates trends from platform signals without exposing private user data.',
-  'seo':'Local SEO engine ready: prepares public metadata for eligible pages without unsupported claims.',
-  'community':'Local community workflow ready: checks basic comment quality signals and routes serious issues to human review.',
-  'support':'Local support router ready: classifies basic support categories and routes complex or sensitive cases to humans.'
- };
- return local[slug]||`Local Cloudflare agent logic is active for ${slug}.`;
-}
-async function callOpenAI(env,slug){
- const key=String(env.OPENAI_API_KEY||'').trim();
- if(!key) throw new Error("AI provider is not configured");
- const model=String(env.OPENAI_MODEL||'gpt-5-mini').trim();
- const prompt=AI_AGENT_PROMPTS[slug]||'Confirm that the Imperial Novel AI provider is available for this specialist agent.';
- const r=await fetch(String(env.OPENAI_BASE_URL||'https://api.openai.com/v1/responses'),{method:'POST',headers:{'content-type':'application/json','authorization':`Bearer ${key}`},body:JSON.stringify({model,input:[{role:'system',content:'You are a safe internal AI provider for Imperial Novel. Keep responses concise. Never claim access to data you were not given. Respect rights, privacy, security, and human-review requirements.'},{role:'user',content:prompt}],max_output_tokens:120})});
- const responseText=await r.text();
- if(!r.ok) throw new Error(`AI provider request failed (HTTP ${r.status})`);
- let d;try{d=JSON.parse(responseText)}catch{throw new Error("AI provider returned invalid JSON")}
- let out=String(d.output_text||'').trim();
- if(!out&&Array.isArray(d.output))for(const item of d.output){for(const c of (item.content||[])){if(c.type==='output_text'&&c.text)out+=String(c.text)}}
- if(!out) throw new Error("AI provider returned no usable output");
- return out.slice(0,2000);
-}
 async function runAgent(env,slug,trigger="manual"){await ensureAgents(env);const a=await env.DB.prepare("SELECT * FROM agents WHERE slug=? AND enabled=1").bind(slug).first();if(!a)return {slug,status:"not-found"};let result="queued",runStatus="ok";try{if(slug==="provider-health"){await ensureOmniTables(env);const rows=(await env.DB.prepare(`SELECT * FROM connectors WHERE enabled=1 AND rights_status='authorized'`).all()).results;result=`Checked ${rows.length} authorized connectors for configuration only`;runStatus="degraded";for(const c of rows){const status=c.search_url?"configured":"not-configured";await env.DB.prepare("UPDATE connectors SET last_status=?,last_checked_at=CURRENT_TIMESTAMP WHERE id=?").bind(status,c.id).run()}}else if(slug==="notification"){result="Notification processing is not implemented yet";runStatus="degraded"}else if(slug==="catalog"){const r=await env.DB.prepare("SELECT COUNT(*) n FROM novels").first();result=`Catalog steward scanned ${Number(r.n)} novels`}else if(slug==="duplicate"){result="Duplicate detection is not implemented yet; no records were scanned";runStatus="degraded"}else if(slug==="security"){const r=await env.DB.prepare("SELECT COUNT(*) n FROM reports WHERE status='open'").first();result=`Security review sees ${Number(r.n)} open reports`}else if(slug==="analytics"){const [u,n,c]=await Promise.all([env.DB.prepare("SELECT COUNT(*) n FROM users").first(),env.DB.prepare("SELECT COUNT(*) n FROM novels").first(),env.DB.prepare("SELECT COUNT(*) n FROM chapters").first()]);result=`Users ${u.n}; novels ${n.n}; chapters ${c.n}`}else if(slug==="orchestrator"){const rows=(await env.DB.prepare("SELECT slug,name,enabled,status FROM agents WHERE slug<>? ORDER BY name").bind("orchestrator").all()).results;const active=rows.filter(x=>Number(x.enabled)===1).length;result=`Local Omni Orchestrator lists ${active} enabled specialists; automatic job routing is not implemented.`;runStatus="degraded"}else if(AI_AGENT_PROMPTS[slug]){result="AI task execution is not implemented; no provider request was made";runStatus="degraded"}else{result=`No executable local task is implemented for ${slug}.`;runStatus="degraded"}await env.DB.prepare("UPDATE agents SET last_run_at=CURRENT_TIMESTAMP,last_result=?,status=? WHERE id=?").bind(result,runStatus,a.id).run();await env.DB.prepare("INSERT INTO agent_runs(agent_id,trigger,result,status) VALUES(?,?,?,?)").bind(a.id,trigger,result,runStatus).run();return {slug,status:runStatus,result}}catch(e){const msg=String(e.message||e);await env.DB.prepare("UPDATE agents SET last_run_at=CURRENT_TIMESTAMP,last_result=?,status='error' WHERE id=?").bind(msg,a.id).run();await env.DB.prepare("INSERT INTO agent_runs(agent_id,trigger,result,status) VALUES(?,?,?,'error')").bind(a.id,trigger,msg).run();return {slug,status:"error",result:msg}}}
 async function runAutomation(env){const slugs=['provider-health','notification','catalog','duplicate','security','analytics'];const results=[];for(const slug of slugs)results.push(await runAgent(env,slug,'scheduled'));const failed=results.filter(x=>x.status==='error').length;const degraded=results.filter(x=>x.status==='degraded').length;return {ok:failed===0&&degraded===0,status:failed?'error':degraded?'degraded':'ok',ran:results.length,failed,degraded,results}}
 
