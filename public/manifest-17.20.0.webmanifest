@@ -8,7 +8,7 @@
   "description": "Imperial Novel. Read • Create • Conquer. Discover original, licensed and authorized stories.",
   "icons": [
     {
-      "src": "/imperial-novel-crest-17.18.0.svg",
+      "src": "/imperial-novel-app-icon.svg",
       "sizes": "any",
       "type": "image/svg+xml",
       "purpose": "any maskable"
