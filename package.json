@@ -3,7 +3,7 @@
   "version": "17.20.0",
   "private": true,
   "scripts": {
-    "build": "node scripts/test-auth-password.mjs && node scripts/build-react-islands.mjs && node --check src/index.js && node --check public/app.js && for f in public/app-*.js public/react-islands-*.js; do node --check \"$f\"; done && node scripts/check-public-entry.mjs && node scripts/check-content-formats.mjs && node scripts/check-release-version.mjs",
+    "build": "node scripts/test-auth-password.mjs && node scripts/test-admin-crown-policy.mjs && node scripts/build-react-islands.mjs && node --check src/index.js && node --check public/app.js && for f in public/app-*.js public/react-islands-*.js; do node --check \"$f\"; done && node scripts/check-public-entry.mjs && node scripts/check-content-formats.mjs && node scripts/check-release-version.mjs",
     "check:cloudflare-readiness": "node -e \"const fs=require('node:fs');const p=require('./package.json');const required=['wrangler.toml','src/index.js','public/index.html','public/app.js'];const missing=required.filter(f=>!fs.existsSync(f));if(missing.length){console.error('Missing required files: '+missing.join(', '));process.exit(1)}if(!p.scripts?.build){console.error('Missing build script');process.exit(1)}const w=fs.readFileSync('wrangler.toml','utf8');if(!w.includes('main = \\\"src/index.js\\\"')||!w.includes('binding = \\\"DB\\\"')||!w.includes('database_name = \\\"god-emperornovel-db\\\"')){console.error('Wrangler Worker or D1 configuration did not match expected production settings');process.exit(1)}console.log('Cloudflare source and Worker/D1 configuration checks passed.');\"",
     "build:cloudflare": "npm run build && npx --yes wrangler@4 deploy --dry-run",
     "build:react": "node scripts/build-react-islands.mjs"
