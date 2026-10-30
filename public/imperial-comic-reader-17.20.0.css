@@ -17,3 +17,16 @@
 .comicReader.is-single .comicPage figcaption{text-align:center}
 @media(max-width:640px){.comicReaderControls{top:56px;padding:8px;border-radius:10px}.comicReaderControls>.secondary{font-size:12px;min-height:38px}.comicPage{border-radius:0}.comicPages{gap:4px}.comicReader.is-single .comicPages{min-height:45vh}.comicReader.is-single .comicPage img{max-height:calc(100dvh - 190px)}}
 @media(prefers-reduced-motion:reduce){.comicPages *{scroll-behavior:auto!important;transition:none!important}}
+
+
+/* Comic reader controls: direction and mode are available without crowding mobile. */
+.comicReaderOptions{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.comicReaderOptions .secondary{min-height:40px}
+.comicReader[data-direction="rtl"] .comicPage figcaption{text-align:right}
+.comicReader[data-direction="rtl"] .comicPage{direction:rtl}
+.comicReader .comicPage[aria-hidden="true"]{display:none}
+@media(max-width:600px){
+ .comicReaderOptions{display:grid;grid-template-columns:1fr 1fr;width:100%}
+ .comicReaderOptions button{min-width:0;padding-inline:9px;font-size:12px}
+ .comicReaderControls{align-items:stretch}
+}
