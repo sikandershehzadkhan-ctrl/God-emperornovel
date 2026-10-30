@@ -38,7 +38,7 @@ export async function hashPassword(password) {
 }
 
 export async function verifyPassword(password, stored) {
-  if (typeof password !== "string" || typeof stored !== "string" || password.length > 1024) return false;
+  if (typeof password !== "string" || typeof stored !== "string") return false;
   const parts = stored.split(":");
   if (parts.length === 2) {
     const [legacyHash, legacySalt] = parts;
@@ -47,6 +47,7 @@ export async function verifyPassword(password, stored) {
     return constantTimeEqual(actual, legacyHash);
   }
 
+  if (password.length > 1024) return false;
   const [algorithm, iterationText, saltText, expected, ...extra] = stored.split("$");
   if (algorithm !== "pbkdf2-sha256" || extra.length || !/^\d+$/.test(iterationText)) return false;
   const iterations = Number(iterationText);
