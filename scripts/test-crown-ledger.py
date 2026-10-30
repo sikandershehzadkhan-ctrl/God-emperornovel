@@ -8,6 +8,10 @@ def setup():
       CREATE TABLE unlocks(user_id INTEGER NOT NULL, chapter_id INTEGER NOT NULL, cost REAL NOT NULL, PRIMARY KEY(user_id,chapter_id));
       CREATE TABLE ticket_ledger(id INTEGER PRIMARY KEY, user_id INTEGER NOT NULL, delta REAL NOT NULL, reason TEXT NOT NULL, reference TEXT NOT NULL);
       CREATE TABLE unlock_batches(id INTEGER PRIMARY KEY, user_id INTEGER, novel_id INTEGER, start_chapter INTEGER, end_chapter INTEGER, requested_count INTEGER, cost REAL);
+      CREATE TABLE donations(id INTEGER PRIMARY KEY, user_id INTEGER, amount REAL, status TEXT);
+      CREATE TABLE novel_requests(id INTEGER PRIMARY KEY, user_id INTEGER, cost REAL, status TEXT, url TEXT);
+      INSERT INTO donations VALUES(1,2,5,'pending');
+      INSERT INTO novel_requests VALUES(1,2,3,'pending','https://source.example/book/1');
       INSERT INTO users VALUES(1, 15);
       INSERT INTO users VALUES(2, 1);
       INSERT INTO chapters VALUES(101, 5, 1);
@@ -56,4 +60,37 @@ with db:
 assert cur.rowcount==0
 assert db.execute("SELECT COUNT(*) FROM unlocks WHERE user_id=2").fetchone()[0]==0
 assert db.execute("SELECT tickets FROM users WHERE id=2").fetchone()[0]==1
-print("PASS: Crown debit, chapter grants, duplicate requests, insufficient balance and batch unlocks are server-authoritative and atomic.")
+
+# Payment approval credits the pending server-side amount once, never a callback-supplied amount.
+with db:
+    db.execute("UPDATE donations SET status='approved' WHERE id=? AND status='pending'", (1,))
+    db.execute("UPDATE users SET tickets=tickets+? WHERE id=? AND changes()=1", (5,2))
+    db.execute("INSERT INTO ticket_ledger(user_id,delta,reason,reference) SELECT ?,?,?,? WHERE changes()=1", (2,5,"payment","1"))
+assert db.execute("SELECT tickets FROM users WHERE id=2").fetchone()[0]==6
+with db:
+    db.execute("UPDATE donations SET status='approved' WHERE id=? AND status='pending'", (1,))
+    db.execute("UPDATE users SET tickets=tickets+? WHERE id=? AND changes()=1", (5,2))
+    db.execute("INSERT INTO ticket_ledger(user_id,delta,reason,reference) SELECT ?,?,?,? WHERE changes()=1", (2,5,"payment","1"))
+assert db.execute("SELECT tickets FROM users WHERE id=2").fetchone()[0]==6
+assert db.execute("SELECT COUNT(*) FROM ticket_ledger WHERE user_id=2 AND reason='payment'").fetchone()[0]==1
+# Paid request charge: request and ledger writes occur only after a successful debit.
+with db:
+    db.execute("UPDATE users SET tickets=tickets-? WHERE id=? AND tickets>=?", (5,1,5))
+    db.execute("INSERT INTO novel_requests(user_id,url,cost,status) SELECT ?,?,?, 'pending' WHERE changes()=1", (1,"https://source.example/book/2",5))
+    db.execute("INSERT INTO ticket_ledger(user_id,delta,reason,reference) SELECT ?,?,?,? WHERE changes()=1", (1,-5,"novel_request","https://source.example/book/2"))
+assert db.execute("SELECT tickets FROM users WHERE id=1").fetchone()[0]==0
+assert db.execute("SELECT COUNT(*) FROM novel_requests WHERE user_id=1 AND url LIKE '%/2'").fetchone()[0]==1
+# Refund status transition gates both Crown credit and ledger insertion.
+with db:
+    db.execute("UPDATE novel_requests SET status='rejected' WHERE id=1 AND status='pending'")
+    db.execute("UPDATE users SET tickets=tickets+? WHERE id=? AND changes()=1", (3,2))
+    db.execute("INSERT INTO ticket_ledger(user_id,delta,reason,reference) SELECT ?,?,?,? WHERE changes()=1", (2,3,"novel_request_refund","https://source.example/book/1"))
+assert db.execute("SELECT tickets FROM users WHERE id=2").fetchone()[0]==9
+with db:
+    db.execute("UPDATE novel_requests SET status='rejected' WHERE id=1 AND status='pending'")
+    db.execute("UPDATE users SET tickets=tickets+? WHERE id=? AND changes()=1", (3,2))
+    db.execute("INSERT INTO ticket_ledger(user_id,delta,reason,reference) SELECT ?,?,?,? WHERE changes()=1", (2,3,"novel_request_refund","https://source.example/book/1"))
+assert db.execute("SELECT tickets FROM users WHERE id=2").fetchone()[0]==9
+assert db.execute("SELECT COUNT(*) FROM ticket_ledger WHERE user_id=2 AND reason='novel_request_refund'").fetchone()[0]==1
+
+print("PASS: Crown debits, chapter grants, batch unlocks, payment credits, paid requests and refunds are conditional and idempotent.")
