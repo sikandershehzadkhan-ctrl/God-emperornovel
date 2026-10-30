@@ -119,7 +119,18 @@ jobs:
             echo "::error::Legacy quick-tile row is still present in the deployed JavaScript."
             exit 1
           fi
-          echo "Homepage release, branded hero, language control, and referenced assets verified."
+          react_bundle_path="/react-islands-$EXPECTED_VERSION.js"
+          react_bundle="$(curl --fail --silent --show-error --max-time 20 "$base$react_bundle_path?verify=$stamp")"
+          for export_name in mountNovelReactions mountNovelComments mountNovelRating; do
+            if ! printf '%s' "$react_bundle" | grep -F "$export_name" >/dev/null; then
+              echo "::error::The deployed local React bundle is missing $export_name."
+              exit 1
+            fi
+          done
+          printf '%s' "$js" | grep -F 'react-islands-' >/dev/null
+          printf '%s' "$js" | grep -F 'mountNovelRating' >/dev/null
+          printf '%s' "$js" | grep -F 'mountNovelComments' >/dev/null
+          echo "Homepage release, branded hero, language control, referenced assets, and all three lazy React community islands verified."
 
       - name: Smoke-test application route shells
         shell: bash
