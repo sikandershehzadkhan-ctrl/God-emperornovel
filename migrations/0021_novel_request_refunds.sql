@@ -5,6 +5,7 @@ CREATE TABLE IF NOT EXISTS novel_request_refunds (
   admin_user_id INTEGER NOT NULL,
   user_id INTEGER NOT NULL,
   amount INTEGER NOT NULL CHECK (amount BETWEEN 1 AND 100000),
+  note TEXT NOT NULL CHECK (length(trim(note)) BETWEEN 1 AND 500),
   created_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,
   FOREIGN KEY (request_id) REFERENCES novel_requests(id) ON DELETE RESTRICT,
   FOREIGN KEY (admin_user_id) REFERENCES users(id) ON DELETE RESTRICT,
