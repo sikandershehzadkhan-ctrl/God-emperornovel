@@ -77,6 +77,13 @@ jobs:
           IMPERIAL_BASE_URL: http://127.0.0.1:8787
         run: node scripts/browser-smoke.mjs
 
+      - name: Run non-blocking read-only production browser smoke
+        if: steps.smoke.outputs.enabled == 'true'
+        continue-on-error: true
+        env:
+          IMPERIAL_PRODUCTION_URL: https://god-emperornovel.sikandershehzadkhan.workers.dev
+        run: node scripts/production-readonly-smoke.mjs
+
       - name: Stop local Worker
         if: always() && steps.smoke.outputs.enabled == 'true'
         shell: bash
