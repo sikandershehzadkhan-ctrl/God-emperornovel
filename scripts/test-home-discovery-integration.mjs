@@ -3,10 +3,10 @@ import { readFile } from "node:fs/promises";
 
 const [html,app,css]=await Promise.all([
  readFile(new URL("../public/index.html",import.meta.url),"utf8"),
- readFile(new URL("../public/app-17.24.0.js",import.meta.url),"utf8"),
+ readFile(new URL("../public/app-17.23.0.js",import.meta.url),"utf8"),
  readFile(new URL("../public/imperial-design-foundation.css",import.meta.url),"utf8")
 ]);
-assert.ok(html.includes("/app-17.24.0.js"),"HTML must load the refreshed client bundle");
+assert.ok(html.includes("/app-17.23.0.js"),"HTML must load the refreshed client bundle");
 assert.ok(!html.includes("/app-17.23.0.js"),"HTML must not keep loading the previous client bundle");
 assert.ok(app.includes("id=\"homeConnections\""),"Homepage must expose the connected discovery region");
 assert.ok(app.includes("/api/discovery/graph?limit=60"),"Homepage must use the bounded live graph endpoint");
