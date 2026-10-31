@@ -21,6 +21,15 @@ assert.ok(route.includes("cm.created_at>=datetime('now','-24 hours')"),"Recent c
 assert.ok(route.includes("Cumulative chapter view requests")&&route.includes("not unique readers"),"Chapter views must not be misrepresented as unique readers.");
 assert.ok(source.includes("async function ensureEngagementSchema(env)")&&source.includes("CREATE TABLE IF NOT EXISTS comment_likes")&&source.includes("CREATE TABLE IF NOT EXISTS novel_reactions"),"Engagement endpoints must safely initialize the reaction and comment-like tables on existing databases.");
 assert.ok(route.includes("await ensureEngagementSchema(env)"),"The overview endpoint must ensure engagement tables exist before querying their totals.");
+const novelEngagementStart=source.indexOf('if(p==="/api/novel-engagement"&&m==="GET"){');
+const novelEngagementEnd=source.indexOf('if(p==="/api/platform/overview"&&m==="GET"){',novelEngagementStart);
+assert.ok(novelEngagementStart>=0&&novelEngagementEnd>novelEngagementStart,"A dedicated per-novel engagement endpoint must exist before the platform overview route.");
+const novelEngagementRoute=source.slice(novelEngagementStart,novelEngagementEnd);
+for(const field of ["novelViews","chapterViews","visibleComments","commentLikes","novelReactions","ratings"])assert.ok(novelEngagementRoute.includes(field),`Per-novel activity must expose ${field}.`);
+assert.ok(novelEngagementRoute.includes("await ensureEngagementSchema(env)")&&novelEngagementRoute.includes("await ensurePublishingSchema(env)"),"Per-novel activity must ensure the required D1 tables exist.");
+assert.ok(novelEngagementRoute.includes("clientRefreshSeconds:30")&&novelEngagementRoute.includes('cache:"no-store"'),"Per-novel activity must declare its near-real-time polling and cache behavior.");
+assert.ok(!novelEngagementRoute.includes("UPDATE novels SET views"),"Reading the activity endpoint must not increment novel views.");
+
 assert.ok(engagementMigration.includes("CREATE TABLE IF NOT EXISTS comment_likes")&&engagementMigration.includes("CREATE TABLE IF NOT EXISTS novel_reactions"),"Fresh database installations must receive the engagement tables through migration 0013.");
 assert.ok(engagementMigration.includes("PRIMARY KEY(user_id,comment_id)")&&engagementMigration.includes("PRIMARY KEY(user_id,novel_id)"),"Engagement tables must prevent duplicate likes and multiple active reactions per user and content.");
 
@@ -60,6 +69,11 @@ assert.ok(app.includes("Signed-in readers · 24h"),"Reader activity must be labe
 for(const label of ["Novel views · all-time","Chapter views · all-time","Visible comments","New comments · 24h","Comment likes","Novel reactions","Reader ratings","Bookmarks","Novel follows"])assert.ok(app.includes(label),`Homepage must display the recorded ${label} metric.`);
 assert.ok(app.includes("metricCards.map")&&app.includes("title=\"'+esc(definition)+'\""),"Homepage engagement metrics must expose concise definitions for their measurement.");
 assert.ok(app.includes("measured from recorded platform events"),"Homepage must explain that engagement counts come from recorded events.");
+assert.ok(app.includes('id="novelEngagementMetrics"')&&app.includes("loadNovelEngagement(id)"),"Novel detail pages must display their own reader and community activity.");
+assert.ok(app.includes("setInterval(()=>{if(document.visibilityState==='visible')loadNovelEngagement(id)},30000)"),"Novel engagement must refresh every 30 seconds only while visible.");
+assert.ok(app.includes("/api/novel-engagement?novel_id="),"Novel detail activity must use its read-only engagement endpoint rather than recounting views via the novel page route.");
+assert.ok(css.includes(".novelLivePulseMetrics{display:grid;grid-template-columns:repeat(6")&&css.includes("@media(max-width:600px)"),"Per-novel engagement metrics must adapt to narrow mobile screens.");
+
 
 assert.ok(app.includes("Credited authors")&&!app.includes("Public authors"),"The author metric must describe distinct credited author names, not imply verified profile accounts");
 assert.equal(app,bundle,"Editable and versioned browser entry points must remain byte-for-byte synchronized");
