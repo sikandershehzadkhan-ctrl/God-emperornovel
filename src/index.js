@@ -1,6 +1,7 @@
 import { hashPassword, verifyPassword } from "./auth-password.mjs";
 import { isAllowedConnectorSearchUrl } from "./connector-url-policy.mjs";
 import { parseManualDonationApproval } from "./donation-approval-policy.mjs";
+import { parseDonationSubmission } from "./donation-reference-policy.mjs";
 const json=(d,s=200,h={})=>new Response(JSON.stringify(d),{status:s,headers:{"content-type":"application/json;charset=UTF-8","cache-control":"no-store",...h}});
 const now=()=>Math.floor(Date.now()/1000);
 const b64=a=>btoa(String.fromCharCode(...new Uint8Array(a))).replaceAll("+","-").replaceAll("/","_").replaceAll("=","");
@@ -31,6 +32,13 @@ const body=async r=>await r.json().catch(()=>({}));
 
 // Atomic D1 buckets keep authentication throttling consistent across Worker isolates.
 let authRateSchemaReady=null;
+let donationReferenceIndexReady=null;
+async function ensureDonationReferenceIndex(env){
+ if(!donationReferenceIndexReady)donationReferenceIndexReady=(async()=>{
+  await env.DB.prepare("CREATE UNIQUE INDEX IF NOT EXISTS idx_donations_reference_normalized ON donations(LOWER(TRIM(reference_id)))").run();
+ })();
+ try{await donationReferenceIndexReady}catch(e){donationReferenceIndexReady=null;throw e}
+}
 async function ensureAuthRateLimitSchema(env){
  if(!authRateSchemaReady)authRateSchemaReady=(async()=>{
   await env.DB.prepare(`CREATE TABLE IF NOT EXISTS auth_rate_limits (
@@ -523,7 +531,23 @@ async function api(req,env){
  if(p==="/api/admin/community/reports"&&m==="GET"){const e=admin(u);if(e)return e;return json((await env.DB.prepare(`SELECT r.*,c.body,u.username,n.title FROM comment_reports r JOIN comments c ON c.id=r.comment_id JOIN users u ON u.id=r.user_id JOIN novels n ON n.id=c.novel_id ORDER BY CASE r.status WHEN 'open' THEN 0 ELSE 1 END,r.created_at DESC LIMIT 300`).all()).results)}
  if(p==="/api/admin/community/reports"&&m==="PATCH"){const e=admin(u);if(e)return e;const b=await body(req),id=Number(b.report_id),status=String(b.status||"");if(!Number.isSafeInteger(id)||id<1||!["open","resolved","dismissed"].includes(status))return json({error:"A valid report and status are required"},400);const report=await env.DB.prepare("SELECT id FROM comment_reports WHERE id=?").bind(id).first();if(!report)return json({error:"Report not found"},404);await env.DB.prepare("UPDATE comment_reports SET status=? WHERE id=?").bind(status,id).run();await env.DB.prepare("INSERT INTO audit_logs(user_id,action,details) VALUES(?,?,?)").bind(u.id,"community_report_"+status,"report_id="+id).run();return json({ok:true,report_id:id,status})}
 
- if(p==="/api/donations"&&m==="POST"){const e=need(u);if(e)return e;const b=await body(req),amount=Number(b.amount),ref=String(b.reference_id||"").trim();if(!amount||amount<1||!ref)return json({error:"Amount and transaction/reference ID are required"},400);await env.DB.prepare("INSERT INTO donations(user_id,amount,reference_id,status) VALUES(?,?,?,'pending')").bind(u.id,amount,ref).run();return json({ok:true,message:"Payment submitted for verification"})}
+ if(p==="/api/donations"&&m==="POST"){
+  const e=need(u);if(e)return e;
+  const parsed=parseDonationSubmission(await body(req));
+  if(!parsed.ok)return json({error:parsed.error},400);
+  try{
+   await ensureDonationReferenceIndex(env);
+   const result=await env.DB.prepare("INSERT INTO donations(user_id,amount,reference_id,status) SELECT ?,?,?,'pending' WHERE NOT EXISTS (SELECT 1 FROM donations WHERE LOWER(TRIM(reference_id))=LOWER(TRIM(?)))").bind(u.id,parsed.amount,parsed.reference,parsed.reference).run();
+   const changed=Number(result?.meta?.changes??result?.changes??0);
+   if(changed!==1)return json({error:"This transaction reference has already been submitted."},409);
+   return json({ok:true,message:"Payment submitted for verification"});
+  }catch(error){
+   const detail=String(error?.message||error||"");
+   if(/unique constraint|idx_donations_reference_normalized/i.test(detail))return json({error:"This transaction reference has already been submitted."},409);
+   console.error("donation submission failed",error);
+   return json({error:"Donation submission is temporarily unavailable. No payment credit was applied."},503);
+  }
+ }
  if(p==="/api/payment/webhook"&&m==="POST"){return json({error:"Automated payment confirmation is temporarily disabled until provider-specific signature, amount, currency, event identity and replay protections are verified. Donations remain subject to administrator verification."},503)}
  if(p==="/api/requests"&&m==="POST"){const e=need(u);if(e)return e;const b=await body(req),url2=String(b.url||"").trim();let parsed;try{parsed=new URL(url2)}catch{return json({error:"Enter a complete valid URL"},400)}if(parsed.protocol!=="https:"||parsed.username||parsed.password)return json({error:"Novel request URLs must use HTTPS and cannot contain embedded credentials."},400);const source=SOURCES.find(x=>parsed.hostname.toLowerCase()===x[1]||parsed.hostname.toLowerCase().endsWith("."+x[1]));if(!source)return json({error:"This source is not in the supported registry"},400);const week=Math.floor(now()/604800),costSql="(SELECT CASE WHEN COUNT(*)<3 THEN 0 ELSE MIN((COUNT(*)-2)*100,100000) END FROM novel_requests WHERE user_id=? AND week_key=?)";const results=await env.DB.batch([env.DB.prepare(`INSERT INTO novel_requests(user_id,url,source_host,week_key,cost,status) SELECT ?,?,?,?,${costSql},'pending' WHERE EXISTS (SELECT 1 FROM users WHERE id=? AND tickets>=${costSql})`).bind(u.id,url2,source[1],week,u.id,week,u.id,u.id,week),env.DB.prepare("UPDATE users SET tickets=tickets-(SELECT cost FROM novel_requests WHERE id=last_insert_rowid() AND user_id=?) WHERE id=? AND changes()=1 AND EXISTS (SELECT 1 FROM novel_requests WHERE id=last_insert_rowid() AND user_id=?)").bind(u.id,u.id,u.id),env.DB.prepare("INSERT INTO ticket_ledger(user_id,delta,reason,reference) SELECT user_id,-cost,'novel_request',substr(url,1,180) FROM novel_requests WHERE id=last_insert_rowid() AND cost>0 AND changes()=1").bind()]);const inserted=Number(results?.[0]?.meta?.changes??results?.[0]?.changes??0);if(inserted!==1){const count=await env.DB.prepare("SELECT COUNT(*) n FROM novel_requests WHERE user_id=? AND week_key=?").bind(u.id,week).first(),used=Number(count?.n||0),cost=used<3?0:Math.min((used-2)*100,100000);return json({error:cost?"Weekly free limit reached. This request costs "+cost+" Crowns.":"Could not create the request. Please retry.",cost},cost?402:409)}const requestId=Number(results?.[0]?.meta?.last_row_id??results?.[0]?.last_row_id??0);if(!Number.isSafeInteger(requestId)||requestId<1)return json({error:"Request was created but its identifier could not be confirmed. Contact support."},500);const saved=await env.DB.prepare("SELECT cost FROM novel_requests WHERE id=? AND user_id=?").bind(requestId,u.id).first();const cost=Number(saved?.cost||0),debited=Number(results?.[1]?.meta?.changes??results?.[1]?.changes??0),ledger=Number(results?.[2]?.meta?.changes??results?.[2]?.changes??0);if(debited!==1||(cost>0&&ledger!==1))return json({error:"Request accounting requires administrator review.",request_id:requestId},500);return json({ok:true,cost,request_id:requestId,message:"Request queued for review/import."})}
  if(p==="/api/requests"&&m==="GET"){const e=need(u);if(e)return e;const week=Math.floor(now()/604800),count=await env.DB.prepare("SELECT COUNT(*) n FROM novel_requests WHERE user_id=? AND week_key=?").bind(u.id,week).first();return json({used:Number(count.n),limit:3})}
