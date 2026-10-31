@@ -463,6 +463,16 @@ async function api(req,env){
  if(p==="/api/omni/smart-unlock"){const e=need(u);if(e)return e;const novelId=Number(url.searchParams.get('novel_id'));const n=await env.DB.prepare(`SELECT COUNT(*) n FROM chapters WHERE novel_id=? AND publication_status='published' AND is_locked=1 AND id NOT IN(SELECT chapter_id FROM unlocks WHERE user_id=?)`).bind(novelId,u.id).first();const bal=Number(u.tickets);const packs=[10,25,50,100],options=[];for(const psize of packs){const rows=(await env.DB.prepare(`SELECT ticket_cost FROM chapters c WHERE c.novel_id=? AND c.publication_status='published' AND c.is_locked=1 AND c.id NOT IN(SELECT chapter_id FROM unlocks WHERE user_id=?) ORDER BY chapter_number LIMIT ?`).bind(novelId,u.id,psize).all()).results;const cost=rows.reduce((a,x)=>a+Number(x.ticket_cost),0);options.push({count:psize,cost,affordable:bal>=cost,chapters:rows.length})}return json({balance:bal,remaining:Number(n),recommended:options.find(x=>x.affordable&&x.chapters>0)?.count||0,options})}
 
  if(p==="/api/formats"&&m==="GET")return json({formats:CONTENT_FORMATS,groups:["text","comics","screen","audio","interactive"],version:1});
+ if(p==="/api/chapter-engagement"&&m==="GET"){
+  await ensurePublishingSchema(env);
+  const chapterId=Number(url.searchParams.get("chapter_id"));
+  if(!Number.isSafeInteger(chapterId)||chapterId<1)return json({error:"Chapter id required"},400);
+  const chapter=await env.DB.prepare("SELECT c.id,c.novel_id,c.chapter_number,v.views FROM chapters c JOIN novels n ON n.id=c.novel_id LEFT JOIN chapter_views v ON v.chapter_id=c.id WHERE c.id=? AND c.publication_status='published' AND n.publication_status='published' AND n.rights_status IN ('original','public_domain','licensed','authorized')").bind(chapterId).first();
+  if(!chapter)return json({error:"Chapter not found"},404);
+  const stats=await env.DB.prepare("SELECT (SELECT COUNT(*) FROM unlocks WHERE chapter_id=?) unlocks,(SELECT COUNT(DISTINCT h.user_id) FROM history h WHERE h.novel_id=? AND h.chapter_number=? AND h.updated_at>=datetime('now','-24 hours')) signedInReadersLast24Hours").bind(chapterId,chapter.novel_id,chapter.chapter_number).first();
+  const generatedAt=new Date().toISOString();
+  return json({chapterId,generated_at:generatedAt,freshness:{mode:"request-time-d1-query",cache:"no-store",clientRefreshSeconds:30,automaticRefreshRequiresVisiblePage:true},metrics:{chapterReaderRequests:Number(chapter.views||0),unlocks:Number(stats?.unlocks||0),signedInReadersLast24Hours:Number(stats?.signedInReadersLast24Hours||0)},definitions:{chapterReaderRequests:"Cumulative requests to the chapter endpoint; may include locked-chapter checks and repeat requests. Not unique readers.",unlocks:"Current recorded unlock transactions for this chapter.",signedInReadersLast24Hours:"Distinct signed-in accounts whose latest novel reading-history record points to this chapter within the previous 24 hours. This is not a live-online count and may undercount readers who moved to another chapter."}});
+ }
  if(p==="/api/novel-engagement"&&m==="GET"){
   await ensurePublishingSchema(env);
   await ensureEngagementSchema(env);
