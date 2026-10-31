@@ -249,3 +249,15 @@ The chapter panel reports:
 The endpoint is restricted to published chapters in published novels with eligible rights status. It does not return chapter content, user IDs, comment bodies or personal reading histories. Locked chapters do not display the activity panel's figures. Polling pauses while the reader page is hidden, and a failed refresh must not interrupt reading or erase the last successful metrics.
 
 Novel-level comments and reactions remain attributed to the novel because the current comments schema has no chapter_id. Do not imply that a novel comment belongs to the chapter currently open. A future chapter discussion feature requires an explicit schema migration and moderation/privacy design.
+## Author Studio analytics contract
+
+The authenticated GET /api/author/analytics endpoint is restricted to author/admin roles and scopes every result to novels owned by the signed-in account. Its supported windows are 7, 30 and 90 days. Public engagement figures include only published novels with rights status original, public_domain, licensed or authorized.
+
+The Author Studio dashboard separates measurement windows:
+- **Lifetime request counters:** novel detail-page views and chapter-content endpoint requests. These are cumulative counters; repeat requests can count and the current schema does not preserve historical daily view events. They cannot honestly be charted as daily unique readers or selected-period view trends.
+- **Selected-period events:** chapter unlock transactions and reader ticket spend, visible comments, visible-comment likes, novel reactions and follows. Daily activity is grouped from their stored event timestamps.
+- **Current state:** ratings and their weighted average, bookmarks and follows are current records, not lifetime event totals.
+
+Reader ticket spend is the ticket cost recorded on unlock transactions. It is not creator revenue, payout, profit or an earnings statement. The platform does not yet have an author-attributed payout ledger, so Author Studio must not label this amount as earnings.
+
+Story breakdowns and aggregate totals are limited to the author's own published, rights-eligible novels. Drafts and works without eligible publication rights are excluded from engagement totals. The endpoint returns aggregate counts only and does not disclose reader identities or personal reading histories. The browser refreshes the request-time D1 snapshot every 60 seconds while the Author Studio page is visible, with manual refresh and a generated timestamp.
