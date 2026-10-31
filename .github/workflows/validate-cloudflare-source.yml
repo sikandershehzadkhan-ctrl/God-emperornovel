@@ -141,6 +141,9 @@ jobs:
       - name: Test chapter publishing lifecycle security gates
         run: python3 scripts/test-chapter-publishing-guards.py
 
+      - name: Test same-origin mutation request security
+        run: node scripts/test-request-security.mjs
+
       - name: Test ticket unlock charging and rate limits
         run: python3 scripts/test-ticket-unlock-security.py
 
