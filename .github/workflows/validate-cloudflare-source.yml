@@ -84,7 +84,7 @@ jobs:
               'the schema marker remains compatible with the existing runtime migration': "core_schema_version','16.64.0" in source,
               'production deployment workflow includes a schema compatibility gate': "Verify production schema compatibility before deployment" in Path('.github/workflows/deploy.yml').read_text(encoding='utf-8'),
               'production deployment gate blocks unknown markers and checks legacy schema compatibility': 'Unrecognized production schema marker' in Path('.github/workflows/deploy.yml').read_text(encoding='utf-8') and 'compatibility"' in Path('.github/workflows/deploy.yml').read_text(encoding='utf-8'),
-              'novel-request refunds use four SQL placeholders': "INSERT INTO ticket_ledger(user_id,delta,reason,reference) VALUES(?,?,?,?)" in source,
+              'novel-request refunds are conditional and idempotent': "UPDATE novel_requests SET status=? WHERE id=? AND status='pending'" in source and "INSERT INTO ticket_ledger(user_id,delta,reason,reference) SELECT ?,?,?,? WHERE changes()=1" in source,
           }
           for label, ok in checks.items():
               print(('PASS' if ok else 'FAIL') + ': ' + label)
@@ -113,6 +113,9 @@ jobs:
                   sys.exit(1)
           print(f'PASS: {len(paths)} migrations applied to fresh SQLite.')
           PY
+
+      - name: Test atomic novel request charging
+        run: python3 scripts/test-novel-request-charge-atomic.py
 
       - name: Confirm validation only
         run: echo "Validation passed. This workflow does not deploy or modify production D1.";
