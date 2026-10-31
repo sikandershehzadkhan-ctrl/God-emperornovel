@@ -1,5 +1,6 @@
+import { CONTENT_FORMATS } from "./content-formats.mjs";
 const DEFAULT_ORIGIN="https://god-emperornovel.sikandershehzadkhan.workers.dev";
-const STATIC_PUBLIC_PATHS=["/","/catalog","/genres","/tags","/community","/leaderboard","/omniportal","/privacy","/terms","/copyright"];
+const STATIC_PUBLIC_PATHS=["/","/catalog","/genres","/tags","/community","/leaderboard","/omniportal","/privacy","/terms","/copyright",...CONTENT_FORMATS.map(format=>"/format/"+format.id)];
 const PRIVATE_PREFIXES=["/api/","/admin","/account","/login","/register","/library","/history","/following","/settings","/notifications","/tickets","/requests","/author$"];
 
 export function canonicalOrigin(value){
@@ -122,5 +123,7 @@ const PAGE_SEO={
   "/notifications":{title:"Notifications | Imperial Novel",description:"View your Imperial Novel account notifications."}
 };
 export function getPageSeo(path){
+  const format=String(path||"").match(/^\/format\/([a-z0-9_-]+)\/?$/);
+  if(format){const item=CONTENT_FORMATS.find(entry=>entry.id===format[1]);if(item)return {title:item.label+" | Imperial Novel",description:"Discover "+item.label.toLowerCase()+" on Imperial Novel. Explore published, rights-cleared stories and new worlds."}}
   return PAGE_SEO[path]||{title:"Imperial Novel | Read • Create • Conquer",description:"Discover original, licensed and authorized stories on Imperial Novel."};
 }
