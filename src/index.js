@@ -479,6 +479,35 @@ async function api(req,env){
  if(p==="/api/omni/jobs"&&m==="GET"){const e=need(u);if(e)return e;await ensureOmniTables(env);return json((await env.DB.prepare(`SELECT j.*,c.name connector FROM import_jobs j LEFT JOIN connectors c ON c.id=j.connector_id WHERE j.user_id=? ORDER BY j.created_at DESC LIMIT 50`).bind(u.id).all()).results)}
  if(p==="/api/omni/smart-unlock"){const e=need(u);if(e)return e;const novelId=Number(url.searchParams.get('novel_id'));const n=await env.DB.prepare(`SELECT COUNT(*) n FROM chapters WHERE novel_id=? AND publication_status='published' AND is_locked=1 AND id NOT IN(SELECT chapter_id FROM unlocks WHERE user_id=?)`).bind(novelId,u.id).first();const bal=Number(u.tickets);const packs=[10,25,50,100],options=[];for(const psize of packs){const rows=(await env.DB.prepare(`SELECT ticket_cost FROM chapters c WHERE c.novel_id=? AND c.publication_status='published' AND c.is_locked=1 AND c.id NOT IN(SELECT chapter_id FROM unlocks WHERE user_id=?) ORDER BY chapter_number LIMIT ?`).bind(novelId,u.id,psize).all()).results;const cost=rows.reduce((a,x)=>a+Number(x.ticket_cost),0);options.push({count:psize,cost,affordable:bal>=cost,chapters:rows.length})}return json({balance:bal,remaining:Number(n),recommended:options.find(x=>x.affordable&&x.chapters>0)?.count||0,options})}
 
+
+ if(p==="/api/audio/catalog"&&m==="GET"){
+  const term=(url.searchParams.get("q")||"").trim().slice(0,100);
+  if(term.length<2)return json({error:"Enter at least two characters to search the audiobook catalogue."},400);
+  const limit=Math.min(20,Math.max(1,Number(url.searchParams.get("limit")||12)));
+  const upstream=new URL("https://librivox.org/api/feed/audiobooks/");
+  upstream.searchParams.set("format","json");upstream.searchParams.set("limit",String(limit));upstream.searchParams.set("extended","0");upstream.searchParams.set("title",term);
+  try{
+   const response=await fetch(new Request(upstream.toString(),{headers:{"accept":"application/json"}}),{cf:{cacheTtl:300,cacheEverything:true}});
+   if(!response.ok)return json({error:"The LibriVox catalogue is temporarily unavailable. Please try again later."},502);
+   const data=await response.json(),books=Array.isArray(data.books)?data.books:[];
+   const clean=books.map(b=>({id:String(b.id||""),title:String(b.title||"Untitled"),description:String(b.description||"").replace(/<[^>]*>/g," ").slice(0,700),language:String(b.language||"Unknown"),copyright_year:String(b.copyright_year||""),duration:String(b.totaltime||""),duration_seconds:Number(b.totaltimesecs||0),sections:Number(b.num_sections||0),authors:Array.isArray(b.authors)?b.authors.map(a=>[a.first_name,a.last_name].filter(Boolean).join(" ")).filter(Boolean):[],catalog_url:typeof b.url_librivox==="string"&&b.url_librivox.startsWith("https://librivox.org/")?b.url_librivox:"https://librivox.org/",source_url:typeof b.url_text_source==="string"&&b.url_text_source.startsWith("https://")?b.url_text_source:""})).filter(b=>/^\d+$/.test(b.id));
+   return json({provider:"LibriVox",results:clean,attribution:"LibriVox recordings are public domain under US law. Copyright status may differ in Pakistan and other countries; verify the underlying text and translation locally before reuse.",source:"https://librivox.org/api/info"},200,{"cache-control":"public, max-age=300"});
+  }catch(e){console.error("LibriVox catalogue",e);return json({error:"Could not reach the LibriVox catalogue."},502)}
+ }
+ let audioBook=url.pathname.match(/^\/api\/audio\/book\/(\d+)$/);
+ if(audioBook&&m==="GET"){
+  const upstream=new URL("https://librivox.org/api/feed/audiobooks/");
+  upstream.searchParams.set("format","json");upstream.searchParams.set("id",audioBook[1]);upstream.searchParams.set("extended","1");
+  try{
+   const response=await fetch(new Request(upstream.toString(),{headers:{"accept":"application/json"}}),{cf:{cacheTtl:3600,cacheEverything:true}});
+   if(!response.ok)return json({error:"This audiobook record is temporarily unavailable."},502);
+   const data=await response.json(),b=Array.isArray(data.books)?data.books[0]:null;
+   if(!b)return json({error:"Audiobook not found."},404);
+   const sections=Array.isArray(b.sections)?b.sections.map(x=>{let listen="";try{const u=new URL(x.listen_url);if(u.protocol==="https:"&&(u.hostname==="archive.org"||u.hostname.endsWith(".archive.org")))listen=u.toString()}catch{}return {id:String(x.id||""),number:Number(x.section_number||0),title:String(x.title||"Audio section"),duration:Number(x.playtime||0),language:String(x.language||b.language||"Unknown"),reader:Array.isArray(x.readers)?x.readers.map(r=>r.display_name).filter(Boolean).join(", "):"",listen_url:listen}}).filter(x=>/^\d+$/.test(x.id)&&x.listen_url):[];
+   return json({provider:"LibriVox",book:{id:String(b.id),title:String(b.title||"Untitled"),authors:Array.isArray(b.authors)?b.authors.map(a=>[a.first_name,a.last_name].filter(Boolean).join(" ")).filter(Boolean):[],language:String(b.language||"Unknown"),copyright_year:String(b.copyright_year||""),duration:String(b.totaltime||""),sections, catalog_url:typeof b.url_librivox==="string"&&b.url_librivox.startsWith("https://librivox.org/")?b.url_librivox:"https://librivox.org/",source_url:typeof b.url_text_source==="string"&&b.url_text_source.startsWith("https://")?b.url_text_source:""}},200,{"cache-control":"public, max-age=3600"});
+  }catch(e){console.error("LibriVox audiobook",e);return json({error:"Could not load audiobook chapters."},502)}
+ }
+
  if(p==="/api/formats"&&m==="GET")return json({formats:CONTENT_FORMATS,groups:["text","comics","screen","audio","interactive"],version:1});
 
  if(p==="/api/novels"){
