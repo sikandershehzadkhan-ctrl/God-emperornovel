@@ -1,4 +1,5 @@
 import sqlite3
+from pathlib import Path
 
 db = sqlite3.connect(":memory:")
 db.row_factory = sqlite3.Row
@@ -11,7 +12,12 @@ CREATE TABLE novel_tags(novel_id INTEGER,tag_id INTEGER,PRIMARY KEY(novel_id,tag
 CREATE TABLE chapters(id INTEGER PRIMARY KEY,novel_id INTEGER,chapter_number INTEGER,publication_status TEXT);
 CREATE TABLE unlocks(user_id INTEGER,chapter_id INTEGER,unlocked_at TEXT);
 CREATE INDEX idx_chapters_publication ON chapters(novel_id,publication_status,chapter_number);
+CREATE INDEX idx_unlocks_time ON unlocks(unlocked_at);
 """)
+
+# Apply the exact additive migration so the test checks the production D1 index definitions.
+migration = Path(__file__).resolve().parents[1] / "migrations" / "0009_catalog_filter_indexes.sql"
+db.executescript(migration.read_text(encoding="utf-8"))
 for i in range(1, 7):
     db.execute("INSERT INTO genres VALUES(?,?,?)", (i, f"Genre {i}", f"genre-{i}"))
 for i in range(1, 16):
@@ -34,6 +40,38 @@ for nid in range(1, 81):
         if ch % 4 == 0:
             db.execute("INSERT INTO unlocks VALUES(1,?,datetime('now','-1 day'))", (cid,))
 db.commit()
+
+genre_plan = " ".join(row[3] for row in db.execute(
+    """EXPLAIN QUERY PLAN
+       SELECT n.id FROM novels n
+       WHERE n.publication_status='published'
+         AND n.id IN (
+           SELECT ng.novel_id FROM novel_genres ng
+           JOIN genres g ON g.id=ng.genre_id WHERE g.slug=?
+         )""",
+    ("genre-2",),
+))
+tag_plan = " ".join(row[3] for row in db.execute(
+    """EXPLAIN QUERY PLAN
+       SELECT n.id FROM novels n
+       WHERE n.publication_status='published'
+         AND n.id IN (
+           SELECT nt.novel_id FROM novel_tags nt
+           JOIN tags t ON t.id=nt.tag_id WHERE t.slug=?
+         )""",
+    ("tag-3",),
+))
+assert "idx_novel_genres_genre_novel" in genre_plan, genre_plan
+assert "idx_novel_tags_tag_novel" in tag_plan, tag_plan
+
+trending_plan = " ".join(row[3] for row in db.execute(
+    """EXPLAIN QUERY PLAN
+       SELECT COUNT(*) FROM unlocks ux
+       JOIN chapters cx ON cx.id=ux.chapter_id
+       WHERE cx.novel_id=? AND ux.unlocked_at>=datetime('now','-7 days')""",
+    (1,),
+))
+assert "idx_unlocks_chapter_time" in trending_plan, trending_plan
 
 OLD = """SELECT n.*,GROUP_CONCAT(DISTINCT g.name) genres,GROUP_CONCAT(DISTINCT t.name) tags,
 COUNT(DISTINCT c.id) chapter_count,MAX(c.chapter_number) latest_chapter
