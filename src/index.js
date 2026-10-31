@@ -490,7 +490,7 @@ async function api(req,env){
   return json((await env.DB.prepare(`SELECT a.id,a.owner_user_id,u.username AS owner_username,a.mime_type,a.size_bytes,a.status,a.rights_status,a.rights_holder,a.license_name,a.rights_evidence,a.created_at,a.uploaded_at,a.reviewed_at,a.reviewed_by_user_id,r.decision AS last_decision,r.note AS last_review_note,r.created_at AS last_review_at
    FROM media_assets a JOIN users u ON u.id=a.owner_user_id
    LEFT JOIN media_asset_reviews r ON r.id=(SELECT r2.id FROM media_asset_reviews r2 WHERE r2.media_asset_id=a.id ORDER BY r2.created_at DESC,r2.id DESC LIMIT 1)
-   WHERE a.rights_status='pending_review' OR a.status IN ('uploaded','processing')
+   WHERE a.rights_status='pending_review' AND a.status IN ('uploaded','processing','ready')
    ORDER BY a.created_at ASC LIMIT 200`).all()).results||[]);
  }
  if(/^\/api\/admin\/media\/\d+\/review$/.test(p)&&m==="POST"){
