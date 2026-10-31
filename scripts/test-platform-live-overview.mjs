@@ -11,7 +11,7 @@ const start=source.indexOf('if(p==="/api/platform/overview"&&m==="GET"){');
 const end=source.indexOf('if(p==="/api/discovery/graph"&&m==="GET"){',start);
 assert.ok(start>=0&&end>start,"Worker must expose the public platform overview endpoint before the discovery graph route");
 const route=source.slice(start,end);
-for(const field of ["publishedNovels","publishedChapters","publicAuthors","catalogViews","readersInLast24Hours","chapterViewsInLast24Hours"])assert.ok(route.includes(field),`Overview must expose the real ${field} metric`);
+for(const field of ["publishedNovels","publishedChapters","publicAuthors","catalogViews","readersInLast24Hours","chapterUpdatesLast24Hours"])assert.ok(route.includes(field),`Overview must expose the real ${field} metric`);
 assert.ok(route.includes("new Date().toISOString()"),"Overview must expose the actual response timestamp");
 assert.ok(route.includes("await ensurePublishingSchema(env)"),"Overview must safely ensure its chapter-view and update timestamp schema before querying");
 assert.ok(source.includes("ALTER TABLE chapters ADD COLUMN updated_at TEXT"),"Runtime compatibility must add chapter update timestamps to existing databases");
@@ -21,7 +21,7 @@ assert.ok(route.includes("datetime('now','-24 hours')"),"Recent reader and chapt
 assert.ok(route.includes("datetime('now','-7 days')"),"Trending must use a rolling seven-day unlock window");
 assert.ok(route.includes("publication_status='published' AND rights_status IN ('original','public_domain','licensed','authorized')"),"Every overview query must restrict results to published, rights-eligible catalog works");
 assert.ok(route.includes("FROM history h JOIN novels n"),"Recent readers must come from recorded reading-history activity");
-assert.ok(route.includes("FROM chapter_views v JOIN chapters c"),"Recent chapter views must come from recorded chapter-view events");
+assert.ok(route.includes("c.updated_at>=datetime('now','-24 hours')"),"Recent chapter updates must use stored chapter update timestamps");
 assert.ok(route.includes("recentUpdates:updates.results||[]"),"Overview must return actual recently updated published chapters");
 assert.ok(route.includes("trending:trending.results||[]"),"Overview must return actual recent unlock-based trending stories");
 assert.ok(!route.toLowerCase().includes("onlineusers")&&!route.toLowerCase().includes("activeusers"),"Do not imply a live-online count without presence tracking");
