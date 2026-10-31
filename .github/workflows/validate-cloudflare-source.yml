@@ -114,5 +114,8 @@ jobs:
           print(f'PASS: {len(paths)} migrations applied to fresh SQLite.')
           PY
 
+      - name: Test TVmaze metadata guide
+        run: node scripts/test-tvmaze-metadata-guide.mjs
+
       - name: Confirm validation only
         run: echo "Validation passed. This workflow does not deploy or modify production D1.";
