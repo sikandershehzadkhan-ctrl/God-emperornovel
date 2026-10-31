@@ -137,32 +137,53 @@ async function home(){
   const target=$('#homeConnections');
   if(target)target.innerHTML='<div class="homeConnectionEmpty">Connected discovery is temporarily unavailable. <a href="/catalog">Browse the live catalog</a>.</div>';
  }
+ let platformPulseRequest=null,platformPulseHasData=false,platformPulseLastUpdated='';
  async function refreshPlatformPulse(){
-  const updated=$('#platformPulseUpdated'),metrics=$('#platformPulseMetrics'),updates=$('#platformPulseUpdates'),trending=$('#platformPulseTrending');
+  const updated=$('#platformPulseUpdated'),metrics=$('#platformPulseMetrics'),updates=$('#platformPulseUpdates'),trending=$('#platformPulseTrending'),refreshButton=$('#platformPulseRefresh');
   if(!metrics||!updates||!trending)return;
-  try{
-   const data=await apiWithTimeout('/api/platform/overview',{},10000),m=data.metrics||{};
-   const number=v=>Number(v||0).toLocaleString();
-   metrics.setAttribute('aria-busy','false');
-   metrics.innerHTML=[['Published novels',m.publishedNovels],['Published chapters',m.publishedChapters],['Credited authors',m.creditedAuthors],['Catalog views',m.catalogViews],['Signed-in readers · 24h',m.readersInLast24Hours],['Chapter updates · 24h',m.chapterUpdatesLast24Hours]].map(([label,value])=>'<div class="platformPulseMetric"><b>'+number(value)+'</b><span>'+label+'</span></div>').join('');
-   const stamp=new Date(data.asOf);
-   updated.textContent='Updated '+(Number.isNaN(stamp.getTime())?'just now':stamp.toLocaleTimeString([], {hour:'2-digit',minute:'2-digit'}));
-   const rows=Array.isArray(data.recentUpdates)?data.recentUpdates:[];
-   updates.innerHTML=rows.length?rows.slice(0,6).map(row=>'<a class="platformPulseRow" href="/read/'+Number(row.novel_id)+'/'+Number(row.chapter_number)+'"><span><b>'+esc(row.novel_title)+'</b><small>Chapter '+Number(row.chapter_number)+' · '+esc(row.chapter_title)+'</small></span><span aria-hidden="true">↗</span></a>').join():'<p class="muted">No published chapter updates are recorded yet.</p>';
-   const hot=Array.isArray(data.trending)?data.trending:[];
-   trending.innerHTML=hot.length?hot.map(row=>'<a class="platformPulseRow" href="/novel/'+Number(row.id)+'"><span><b>'+esc(row.title)+'</b><small>'+esc(row.author||'Imperial author')+'</small></span><span class="platformPulseCount">'+number(row.unlocksLast7Days)+' unlocks</span></a>').join():'<p class="muted">No chapter unlock activity in the last seven days yet.</p>';
-  }catch(error){
-   if(updated)updated.textContent='Live data temporarily unavailable';
-   metrics.setAttribute('aria-busy','false');
-   metrics.innerHTML='<div class="platformPulseError" role="status">Live platform figures could not be refreshed. Your catalog remains available.</div>';
-   updates.innerHTML='<p class="muted">Update feed unavailable right now.</p>';
-   trending.innerHTML='<p class="muted">Trend data unavailable right now.</p>';
-  }
+  if(platformPulseRequest)return platformPulseRequest;
+  if(refreshButton){refreshButton.disabled=true;refreshButton.textContent='Refreshing…'}
+  if(updated)updated.textContent=platformPulseHasData?'Refreshing · last successful update '+platformPulseLastUpdated:'Refreshing live data…';
+  if(!platformPulseHasData)metrics.setAttribute('aria-busy','true');
+  platformPulseRequest=(async()=>{
+   try{
+    const data=await apiWithTimeout('/api/platform/overview',{},10000),m=data?.metrics;
+    if(!m||!data.asOf)throw new Error('The live overview response is incomplete.');
+    const number=v=>{const n=Number(v);return Number.isFinite(n)&&n>=0?n.toLocaleString():'—'};
+    const stamp=new Date(data.asOf);
+    if(Number.isNaN(stamp.getTime()))throw new Error('The live overview timestamp is invalid.');
+    platformPulseLastUpdated=stamp.toLocaleTimeString([], {hour:'2-digit',minute:'2-digit',second:'2-digit',timeZoneName:'short'});
+    metrics.innerHTML=[['Published novels',m.publishedNovels],['Published chapters',m.publishedChapters],['Credited authors',m.creditedAuthors],['Catalog views',m.catalogViews],['Signed-in readers · 24h',m.readersInLast24Hours],['Chapter updates · 24h',m.chapterUpdatesLast24Hours]].map(([label,value])=>'<div class="platformPulseMetric"><b>'+number(value)+'</b><span>'+label+'</span></div>').join('');
+    const rows=Array.isArray(data.recentUpdates)?data.recentUpdates:[];
+    const validUpdates=rows.filter(row=>Number.isSafeInteger(Number(row.novel_id))&&Number(row.novel_id)>0&&Number.isSafeInteger(Number(row.chapter_number))&&Number(row.chapter_number)>0);
+    updates.innerHTML=validUpdates.length?validUpdates.slice(0,6).map(row=>'<a class="platformPulseRow" href="/read/'+Number(row.novel_id)+'/'+Number(row.chapter_number)+'"><span><b>'+esc(row.novel_title)+'</b><small>Chapter '+Number(row.chapter_number)+' · '+esc(row.chapter_title)+'</small></span><span aria-hidden="true">↗</span></a>').join():'<p class="muted">No published chapter updates are recorded yet.</p>';
+    const hot=Array.isArray(data.trending)?data.trending:[];
+    const validHot=hot.filter(row=>Number.isSafeInteger(Number(row.id))&&Number(row.id)>0);
+    trending.innerHTML=validHot.length?validHot.slice(0,5).map(row=>'<a class="platformPulseRow" href="/novel/'+Number(row.id)+'"><span><b>'+esc(row.title)+'</b><small>'+esc(row.author||'Imperial author')+'</small></span><span class="platformPulseCount">'+number(row.unlocksLast7Days)+' unlocks</span></a>').join():'<p class="muted">No chapter unlock activity in the last seven days yet.</p>';
+    platformPulseHasData=true;
+    metrics.setAttribute('aria-busy','false');
+    if(updated)updated.textContent='Updated '+platformPulseLastUpdated+' · refreshes every 60 seconds';
+   }catch(error){
+    metrics.setAttribute('aria-busy','false');
+    if(platformPulseHasData){
+     if(updated)updated.textContent='Refresh failed · showing last successful update '+platformPulseLastUpdated;
+    }else{
+     if(updated)updated.textContent='Live data temporarily unavailable';
+     metrics.innerHTML='<div class="platformPulseError" role="status">Live platform figures could not be loaded. Your catalog remains available.</div>';
+     updates.innerHTML='<p class="muted">Update feed unavailable right now.</p>';
+     trending.innerHTML='<p class="muted">Trend data unavailable right now.</p>';
+    }
+   }finally{
+    platformPulseRequest=null;
+    if(refreshButton){refreshButton.disabled=false;refreshButton.textContent='Refresh ↻'}
+   }
+  })();
+  return platformPulseRequest;
  }
  $('#platformPulseRefresh')?.addEventListener('click',refreshPlatformPulse);
  await refreshPlatformPulse();
  setInterval(()=>{if(document.visibilityState==='visible')refreshPlatformPulse()},60000);
- document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='visible')refreshPlatformPulse()},{once:true});
+ document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='visible')refreshPlatformPulse()});
 }
 async function trendFactory(){const root=$('#app');root.innerHTML=pageStart('Trend Factory','A rights-first intelligence desk for spotting momentum in the live Imperial catalog.')+`<section class="trendFactoryHero"><div><div class="eyebrow">SIGNAL → ANALYZE → RIGHTS REVIEW</div><h2>Find the next world<br>before it rises.</h2><p>Explore published catalog signals, compare available reader activity, and plan responsible author discovery. This workspace does not ingest chapter text or bypass rights approval.</p><div class="actions"><a class="primary" href="/catalog?sort=trending">Open live catalog ↗</a><a class="secondary" href="/omniportal">Source permissions</a></div></div><div class="trendSeal"><span>IN</span><b>TF</b><small>METADATA FIRST<br>RIGHTS ALWAYS</small></div></section><section class="trendPipeline"><div class="trendStep active"><span>01</span><b>Signal</b><small>Find momentum</small></div><div class="trendConnector"></div><div class="trendStep"><span>02</span><b>Analyze</b><small>Inspect metadata</small></div><div class="trendConnector"></div><div class="trendStep"><span>03</span><b>Author</b><small>Discover & invite</small></div><div class="trendConnector"></div><div class="trendStep"><span>04</span><b>Rights</b><small>Verify permission</small></div><div class="trendConnector"></div><div class="trendStep"><span>05</span><b>Review</b><small>Human approval</small></div></section><section class="trendControls panel"><div class="trendControlTitle"><div><div class="eyebrow">LIVE CATALOG SIGNALS</div><h2>Explore momentum</h2></div><span class="trendDataTag"><i></i> LIVE CATALOG DATA</span></div><div class="trendControlRow"><label class="trendSearch"><span>⌕</span><input id="tfSearch" type="search" placeholder="Search title, author or description" autocomplete="off"></label><select id="tfSort" aria-label="Sort signals"><option value="trending">Trending order</option><option value="views">Most viewed</option><option value="rating">Highest rating</option><option value="updated">Recently updated</option></select><select id="tfType" aria-label="Filter story format"><option value="">All formats</option><option value="original">Original novels</option><option value="fanfiction">Fanfiction</option><option value="manga">Manga</option><option value="manhwa">Manhwa</option><option value="manhua">Manhua</option><option value="webtoon">Webtoons</option><option value="comic">Comics</option><option value="graphic_novel">Graphic novels</option><option value="light_novel">Light novels</option><option value="web_novel">Web novels</option><option value="anime">Anime</option><option value="cartoon">Cartoons</option></select><button class="secondary" id="tfReset" type="button">Reset</button></div><div id="tfMeta" class="trendMeta">Loading current catalog signals…</div><div id="tfResults" class="grid trendResults"><div class="skeletonCard"></div><div class="skeletonCard"></div></div></section><section class="trendSafetyGrid"><article class="trendSafetyCard"><span class="trendSafetyIcon">⌕</span><div class="eyebrow">SOURCE INTAKE</div><h3>Metadata before content</h3><p>Start with public catalog metadata, RSS feeds or approved APIs. Chapter-body ingestion remains off by default.</p><a href="/omniportal">Review connected sources ↗</a></article><article class="trendSafetyCard"><span class="trendSafetyIcon">♧</span><div class="eyebrow">AUTHOR DISCOVERY</div><h3>Invite, don’t appropriate</h3><p>Creators should be contacted through permitted channels, with attribution and authorization recorded.</p><a href="/author">Open Author Studio ↗</a></article><article class="trendSafetyCard"><span class="trendSafetyIcon">◇</span><div class="eyebrow">RIGHTS GATE</div><h3>Permission before publishing</h3><p>Only permitted works proceed. Human review remains the final gate.</p><a href="/admin">Open review center ↗</a></article></section><div class="trendFactoryNote"><b>Integrity rule</b><span>Trend signals prioritize research. They are not proof of permission or a guarantee that a work may be republished.</span></div></div></div>`;let all=[];const list=$('#tfResults'),meta=$('#tfMeta');const paint=()=>{const q=$('#tfSearch').value.trim().toLowerCase(),kind=$('#tfType').value,sort=$('#tfSort').value;let rows=all.filter(n=>(!kind||String(n.kind||'').toLowerCase()===kind)&&(!q||[n.title,n.author,n.description,n.alt_titles].some(v=>String(v||'').toLowerCase().includes(q))));if(sort==='views')rows.sort((a,b)=>(Number(b.views)||0)-(Number(a.views)||0));else if(sort==='rating')rows.sort((a,b)=>(Number(b.rating)||0)-(Number(a.rating)||0));else if(sort==='updated')rows.sort((a,b)=>String(b.updated_at||'').localeCompare(String(a.updated_at||'')));meta.textContent=`Showing ${rows.length} of ${all.length} loaded published catalog titles · Available fields only`;list.innerHTML=rows.length?rows.map(card).join(''):`<div class="empty" style="grid-column:1/-1"><h3>No matching titles</h3><p>Try a broader search or reset the filters.</p></div>`};try{const d=await api('/api/novels?sort=trending&limit=50');all=(d.results||[]).filter(n=>!n.publication_status||n.publication_status==='published');paint();$('#tfSearch').addEventListener('input',paint);$('#tfSort').addEventListener('change',paint);$('#tfType').addEventListener('change',paint);$('#tfReset').addEventListener('click',()=>{$('#tfSearch').value='';$('#tfSort').value='trending';$('#tfType').value='';paint()})}catch(e){meta.textContent='Catalog signals could not be loaded.';list.innerHTML=`<div class="notice" style="grid-column:1/-1">${esc(e.message||'Please try again later.')} <a href="/catalog">Open catalog</a></div>`}}
 
