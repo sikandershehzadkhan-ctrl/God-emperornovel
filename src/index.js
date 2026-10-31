@@ -413,6 +413,37 @@ async function api(req,env){
  await ensureCoreSchema(env);
  await ensureRuntimeFeatureSchema(env);
  const u=await getUser(req,env);
+ if(p==="/api/author/media"&&m==="GET"){
+  const e=author(u);if(e)return e;
+  const usage=await env.DB.prepare("SELECT COALESCE(SUM(size_bytes),0) AS used_bytes,COUNT(*) AS asset_count FROM media_assets WHERE owner_user_id=? AND status!='deleted'").bind(u.id).first();
+  const assets=(await env.DB.prepare("SELECT id,mime_type,size_bytes,status,rights_status,rights_holder,license_name,created_at,uploaded_at,reviewed_at,deleted_at FROM media_assets WHERE owner_user_id=? ORDER BY created_at DESC,id DESC LIMIT 100").bind(u.id).all()).results||[];
+  const used=Number(usage?.used_bytes||0),limit=104857600;
+  return json({quota:{used_bytes:used,limit_bytes:limit,remaining_bytes:Math.max(0,limit-used),asset_count:Number(usage?.asset_count||0)},storage_configured:!!(env.MEDIA_BUCKET&&typeof env.MEDIA_BUCKET.put==="function"&&typeof env.MEDIA_BUCKET.delete==="function"),assets});
+ }
+ if(/^\/api\/author\/media\/\d+$/.test(p)&&m==="DELETE"){
+  const e=author(u);if(e)return e;
+  if(req.headers.get("origin")!==url.origin)return json({error:"Cross-origin media deletion is not allowed."},403);
+  if(!env.MEDIA_BUCKET||typeof env.MEDIA_BUCKET.delete!=="function")return json({error:"Private media storage is not configured."},503);
+  const assetId=Number(p.split("/").pop());
+  if(!Number.isSafeInteger(assetId)||assetId<1)return json({error:"Invalid media asset id."},400);
+  const asset=await env.DB.prepare("SELECT id,object_key,status,deleted_at FROM media_assets WHERE id=? AND owner_user_id=?").bind(assetId,u.id).first();
+  if(!asset)return json({error:"Media asset not found."},404);
+  if(!["pending_upload","uploaded","ready","rejected"].includes(asset.status)&&!(asset.status==="processing"&&asset.deleted_at))return json({error:"This media asset cannot be deleted in its current state."},409);
+  const reserved=await env.DB.prepare("UPDATE media_assets SET status='processing',deleted_at=COALESCE(deleted_at,CURRENT_TIMESTAMP) WHERE id=? AND owner_user_id=? AND status=? AND NOT EXISTS (SELECT 1 FROM comic_chapter_pages WHERE media_asset_id=?)").bind(assetId,u.id,asset.status,assetId).run();
+  if(!Number(reserved.meta?.changes||0)){
+   const linked=await env.DB.prepare("SELECT 1 FROM comic_chapter_pages WHERE media_asset_id=? LIMIT 1").bind(assetId).first();
+   return linked?json({error:"Remove this image from its comic chapter before deleting it."},409):json({error:"Media asset changed while deletion was starting. Refresh and retry."},409);
+  }
+  try{await env.MEDIA_BUCKET.delete(asset.object_key)}
+  catch{
+   await env.DB.prepare("UPDATE media_assets SET status=?,deleted_at=? WHERE id=? AND owner_user_id=? AND status='processing'").bind(asset.status,asset.deleted_at,assetId,u.id).run();
+   return json({error:"Private image deletion failed. Its storage quota remains reserved."},502);
+  }
+  const removed=await env.DB.prepare("UPDATE media_assets SET status='deleted',deleted_at=CURRENT_TIMESTAMP WHERE id=? AND owner_user_id=? AND status='processing' AND deleted_at IS NOT NULL").bind(assetId,u.id).run();
+  if(!Number(removed.meta?.changes||0))return json({error:"The private object was deleted, but the database cleanup needs a retry. Storage quota remains reserved."},500);
+  await audit(env,u,"media_asset_deleted",`asset=${assetId}`);
+  return json({ok:true,asset_id:assetId,status:"deleted"});
+ }
  if(p==="/api/author/media/upload"&&m==="POST"){
   const e=author(u);if(e)return e;
   const requestOrigin=req.headers.get("origin");
