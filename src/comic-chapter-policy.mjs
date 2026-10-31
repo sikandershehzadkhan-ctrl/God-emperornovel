@@ -10,7 +10,7 @@ function isPublicHttpsImageUrl(value){
  return true;
 }
 function isPrivateImperialMediaPath(value){
- return typeof value==="string"&&/^\\/api\\/media\\/[1-9][0-9]*$/.test(value);
+ return typeof value==="string"&&value.startsWith("/api/media/")&&/^[1-9][0-9]*$/.test(value.slice(11));
 }
 export function validateComicChapterContent(raw){
  if(typeof raw!=="string"||!raw.trim())return {ok:false,error:"Comic chapter pages are required."};
