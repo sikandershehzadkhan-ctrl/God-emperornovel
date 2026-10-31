@@ -6,4 +6,11 @@ AFTER INSERT ON chapters
 BEGIN
   UPDATE chapters SET updated_at=CURRENT_TIMESTAMP WHERE id=NEW.id;
 END;
+
+CREATE TRIGGER IF NOT EXISTS chapters_set_updated_at_after_edit
+AFTER UPDATE OF title,content,chapter_number,publication_status ON chapters
+WHEN NEW.updated_at IS OLD.updated_at
+BEGIN
+  UPDATE chapters SET updated_at=CURRENT_TIMESTAMP WHERE id=NEW.id;
+END;
 CREATE INDEX IF NOT EXISTS idx_chapters_updated ON chapters(publication_status,updated_at);
