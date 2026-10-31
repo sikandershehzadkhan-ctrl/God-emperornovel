@@ -20,7 +20,7 @@ for (const input of [
   { ...valid, bio: "short" },
   { ...valid, sample_work: "too short" },
   { ...valid, preferred_formats: ["anime"] },
-  { ...valid, preferred_formats: ["original", "original", "manga", "manhwa", "manhua", "webtoon"] },
+  { ...valid, preferred_formats: ["original", "fanfiction", "light_novel", "web_novel", "manga", "manhwa"] },
   { ...valid, rights_confirmed: false },
   { ...valid, portfolio_url: "http://example.com" },
   { ...valid, portfolio_url: "javascript:alert(1)" },
