@@ -135,6 +135,9 @@ jobs:
       - name: Test Author Studio comic page manager interface
         run: python3 scripts/test-comic-page-manager-ui.py
 
+      - name: Test private comic reader rendering
+        run: python3 scripts/test-comic-reader-rendering.py
+
       - name: Test media upload byte and metadata policy
         run: node scripts/test-media-upload-policy.mjs
 
