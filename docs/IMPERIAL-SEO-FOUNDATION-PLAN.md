@@ -136,3 +136,33 @@ Before release:
 ## Release boundary
 
 This document is a plan and audit record. It does not modify production, D1, Cloudflare settings or live SEO behavior. Implement in a reviewable branch, run tests, inspect rendered page source and verify production only after an explicitly approved deployment.
+
+
+## Production baseline and implementation record — 31 October 2026
+
+### Live production observations
+- The live robots.txt allowed all paths and declared the sitemap.
+- The live sitemap contained only five static URLs: homepage, catalog, OmniPortal, community and leaderboard. It did not include published novel or author URLs, genres or tags.
+- The live catalog had a page-specific title and description and exposed sorting, status, format, rating, genre, tag and language controls.
+- The homepage exposed the editorial hero, format shelf, story shelves, Creator Studio, Trend Factory, community and OmniPortal.
+- The live homepage's Open Graph and Twitter descriptions were generic and differed from the fuller visible homepage positioning.
+
+### Competitor observations
+- WebNovel's public homepage exposes multiple ranking dimensions, fanfiction/tag discovery, new arrivals, editor selections and author onboarding.
+- WTR-LAB's public pages expose novel lists, daily rankings, leaderboard, community-driven requests, reading progress and translation/language choices.
+- These observations inform our information architecture only. They do not authorize copying protected content, scraping chapter bodies or connecting unapproved sources.
+
+### Implemented in the review branch
+- Worker-served robots.txt with private-route crawl exclusions.
+- D1-backed sitemap for published, rights-cleared novels and public author profiles, with safe URL encoding and novel last-modified dates.
+- Page-specific title/description, canonical URL, Open Graph and Twitter metadata, and JSON-LD WebSite/Organization/WebPage graph.
+- Canonical normalization for the /discover and /formats aliases.
+- Noindex handling for internal search and private account/admin routes; public author profile routes remain crawlable.
+- Real HTTP 404 status for unknown routes and for novel/chapter/author records that fail the published and rights-cleared lookup.
+- A build-integrated test suite for canonical origins/aliases, sitemap inclusion and deduplication, author URLs, lastmod, robots policy, metadata escaping and structured data.
+
+### Release limitations still open
+- The sitemap and robots implementation is committed to the feature branch only. Production currently still serves the five-URL static sitemap until the reviewed branch is merged and an approved deployment is completed.
+- The sitemap intentionally does not include chapter URLs yet. Chapter indexing needs a separate quality/access policy and canonical/content-availability review.
+- Public author profiles are included only when the author has published, rights-cleared works.
+- JSON-LD must be validated against rendered production pages after deployment; Search Console submission and crawl/indexing monitoring remain post-deployment work.
