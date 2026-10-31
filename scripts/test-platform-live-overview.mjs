@@ -102,6 +102,12 @@ assert.ok(authorAnalyticsRoute.includes("current schema does not retain historic
 assert.ok(authorAnalyticsRoute.includes("clientRefreshSeconds:60")&&authorAnalyticsRoute.includes('cache:"no-store"'),"Author analytics must declare its request-time, no-store, 60-second refresh contract.");
 assert.ok(authorAnalyticsRoute.includes("stories:eligible.map")&&authorAnalyticsRoute.includes("publishedNovels:eligible.length"),"The story breakdown and summary must include only published, rights-eligible novels owned by this author.");
 assert.ok(authorAnalyticsRoute.includes("currentAverageRating")&&authorAnalyticsRoute.includes("timeline"),"The author summary must include a weighted rating average and timestamped activity timeline.");
+assert.ok(authorAnalyticsRoute.includes("chapterRows")&&authorAnalyticsRoute.includes("chapterReaderRequests")&&authorAnalyticsRoute.includes("readerTicketSpendInPeriod"),"Author analytics must return individual chapter request, unlock and reader ticket-spend metrics.");
+assert.ok(authorAnalyticsRoute.includes("LIMIT 100"),"Chapter performance must be bounded to avoid unbounded dashboard queries.");
+assert.ok(app.includes('id="authorAnalyticsChapters"')&&app.includes("Chapter performance"),"Author Studio must render a per-chapter performance breakdown.");
+assert.ok(app.includes("No published chapters have activity data yet"),"The chapter performance section must have a truthful empty state.");
+assert.ok(css.includes(".authorAnalyticsChapterStats{display:flex")&&css.includes(".authorAnalyticsChapter{display:grid"),"Chapter analytics must have dedicated responsive list styling.");
+
 assert.ok(app.includes("Published stories")&&app.includes("No published, rights-eligible stories have analytics yet"),"The Author Studio must distinguish an empty published analytics catalog from an empty draft library.");
 
 assert.ok(app.includes('id="authorAnalyticsMetrics"')&&app.includes('id="authorAnalyticsStories"')&&app.includes('id="authorAnalyticsTimeline"'),"Author Studio must render summary, story performance and daily activity regions.");
