@@ -156,7 +156,7 @@ This document is a plan and audit record. It does not modify production, D1, Clo
 - Worker-served robots.txt with private-route crawl exclusions.
 - D1-backed sitemap for published, rights-cleared novels and public author profiles, with safe URL encoding and novel last-modified dates.
 - Page-specific title/description, canonical URL, Open Graph and Twitter metadata, and JSON-LD WebSite/Organization/WebPage graph.
-- Canonical normalization for the /discover and /formats aliases.
+- Canonical normalization for the /discover alias; /formats is a distinct directory page with a self-canonical URL and sitemap entry.
 - Noindex handling for internal search and private account/admin routes; public author profile routes remain crawlable.
 - Real HTTP 404 status for unknown routes and for novel/chapter/author records that fail the published and rights-cleared lookup.
 - A build-integrated test suite for canonical origins/aliases, sitemap inclusion and deduplication, author URLs, lastmod, robots policy, metadata escaping and structured data.
