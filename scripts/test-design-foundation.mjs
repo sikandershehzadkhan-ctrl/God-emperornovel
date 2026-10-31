@@ -7,6 +7,23 @@ const sourceApp=readFileSync("public/app.js","utf8");
 const releaseApp=readFileSync("public/app-17.23.0.js","utf8");
 const manifest=JSON.parse(readFileSync("public/manifest-17.23.0.webmanifest","utf8"));
 
+function luminance(hex){
+  const rgb=hex.replace("#","").match(/.{2}/g).map(value=>parseInt(value,16)/255).map(value=>value<=.04045?value/12.92:((value+.055)/1.055)**2.4);
+  return .2126*rgb[0]+.7152*rgb[1]+.0722*rgb[2];
+}
+function contrast(foreground,background){
+  const a=luminance(foreground),b=luminance(background);
+  return (Math.max(a,b)+.05)/(Math.min(a,b)+.05);
+}
+function token(block,name){return block.match(new RegExp(name+":(#[0-9A-Fa-f]{6})"))?.[1]||null}
+const lightBlock=css.match(/:root\\{([\\s\\S]*?)\\}/)?.[1]||"";
+const darkBlock=css.match(/html\\[data-theme="dark"\\]\\{([\\s\\S]*?)\\}/)?.[1]||"";
+const lightSubtle=token(lightBlock,"--in-subtle"),lightCanvas=token(lightBlock,"--in-canvas");
+const darkSubtle=token(darkBlock,"--in-subtle"),darkCanvas=token(darkBlock,"--in-canvas");
+assert.ok(lightSubtle&&lightCanvas&&darkSubtle&&darkCanvas,"Light and dark text contrast tokens must be explicit hex colors");
+assert.ok(contrast(lightSubtle,lightCanvas)>=4.5,"Light-theme subtle text must meet WCAG AA normal-text contrast");
+assert.ok(contrast(darkSubtle,darkCanvas)>=4.5,"Dark-theme subtle text must meet WCAG AA normal-text contrast");
+
 let braces=0,parens=0,quote="",comment=false,escaped=false;
 for(let i=0;i<css.length;i++){
   const ch=css[i],next=css[i+1];
