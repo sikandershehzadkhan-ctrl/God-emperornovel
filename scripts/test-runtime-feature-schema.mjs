@@ -46,5 +46,10 @@ for (const table of ["auth_rate_limits", "comment_likes", "comment_reports", "no
 }
 assert.match(migration, /idx_comment_reports_user_comment/);
 assert.match(migration, /FOREIGN KEY\(comment_id\) REFERENCES comments\(id\) ON DELETE CASCADE/);
+assert.match(worker, /INSERT OR IGNORE INTO comment_likes/,
+  "concurrent duplicate likes must not surface as database errors");
+assert.match(worker, /You have already reported this comment/);
+assert.match(worker, /UNIQUE constraint failed/,
+  "duplicate report races must return a conflict instead of HTTP 500");
 
 console.log("PASS: runtime feature schema upgrades legacy installations, constrains duplicate reports, and matches the forward migration.");
