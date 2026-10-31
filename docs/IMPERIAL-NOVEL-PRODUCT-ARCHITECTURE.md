@@ -127,6 +127,17 @@ Publish only pages with complete, accurate content and an accountable support pr
 
 Do not put every feature on the homepage. Give each major domain a clear destination.
 
+### Real-time information and freshness contract
+
+- The homepage platform pulse is sourced from request-time D1 queries and returns `generated_at`, measurement windows and metric definitions.
+- The overview endpoint uses `Cache-Control: no-store`; the browser refreshes every 60 seconds while visible and provides a manual refresh action.
+- This is near-real-time polling, not instant push, WebSockets or a guarantee that every event appears immediately.
+- Show the data-generation timestamp and each chapter's recorded `updated_at` timestamp. Keep event time separate from fetch time.
+- Reader activity means distinct signed-in accounts with reading-history activity in the previous 24 hours, never current online users.
+- Credited authors means distinct non-empty author-name strings, not verified author accounts.
+- Provider health is a timestamped observation from its last health check. A registered or authorized provider is not automatically connected or healthy.
+- On refresh failure, retain the last successful data with its timestamp and disclose the stale state. Never replace unavailable values with invented figures.
+
 ### Catalog and discovery
 - Search by title, author, alternate title and permitted metadata
 - Filters: genre, tags, format, language, completion status, rating where data supports it
