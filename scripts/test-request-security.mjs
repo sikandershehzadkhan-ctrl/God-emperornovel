@@ -30,3 +30,9 @@ assert.ok(worker.includes('h.set("cross-origin-resource-policy","same-origin")')
 assert.ok(worker.includes("HttpOnly; Secure; SameSite=Lax"), "session cookies must be HttpOnly, Secure and SameSite protected");
 
 console.log("Security header and session cookie policy tests passed.");
+
+const admin = fs.readFileSync(new URL("../public/admin.html", import.meta.url), "utf8");
+assert.ok(admin.includes("chapterPreviewContent').textContent=c.content"), "admin chapter preview must render untrusted chapter text without HTML interpretation");
+assert.ok(!admin.includes("chapterPreviewContent').innerHTML=c.content"), "admin chapter preview must not inject untrusted chapter HTML");
+
+console.log("Administrator stored-XSS regression tests passed.");
