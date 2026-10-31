@@ -43,6 +43,11 @@ Signature checks do not decode or sanitize images. Production readiness still re
 
 Run the repository's Cloudflare source validation workflow. It builds the Worker and runs the SQLite migration and security regression tests. This validation workflow does not deploy the Worker or modify production D1.
 
+## Administrator storage health
+
+- `GET /api/admin/media/storage` is administrator-only and reports platform storage usage against the 1 GiB hard cap, counts and bytes by asset state, and whether the private R2 binding is present.
+- The Command Center shows this information so administrators can see quota pressure and failed/rejected assets. It does not expose object keys or provider credentials.
+
 ## Creator media library API
 
 - `GET /api/author/media` returns the authenticated creator's own asset metadata and usage against the 100 MiB creator quota. It never returns private object keys.
