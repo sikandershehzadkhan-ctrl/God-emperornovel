@@ -8,7 +8,7 @@ def section(start, end):
     return source[a:b]
 
 media_list = section('if(p==="/api/author/media"&&m==="GET"){', 'const assetId=Number(p.split("/").pop());')
-media_delete = section('const assetId=Number(p.split("/").pop());', 'if(p==="/api/author/media/upload"&&m==="POST"){')
+media_delete = section('if(req.headers.get("origin")!==url.origin)return json({error:"Cross-origin media deletion is not allowed."},403);', 'if(p==="/api/author/media/upload"&&m==="POST"){')
 upload = section('if(p==="/api/author/media/upload"&&m==="POST"){', 'let mediaMatch=p.match(')
 review = section('if(p==="/api/admin/media/review-queue"&&m==="GET"){', 'if(p==="/api/agents"&&m==="GET"){')
 delivery = section('if(mediaMatch&&m==="GET"){', 'if(p==="/api/admin/media/review-queue"&&m==="GET"){')
