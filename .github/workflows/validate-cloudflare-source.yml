@@ -126,6 +126,9 @@ jobs:
       - name: Test media upload byte and metadata policy
         run: node scripts/test-media-upload-policy.mjs
 
+      - name: Test private media API security boundaries
+        run: python3 scripts/test-media-api-security.py
+
       - name: Test catalog query aggregation parity
         run: python3 scripts/test-catalog-query.py
 
