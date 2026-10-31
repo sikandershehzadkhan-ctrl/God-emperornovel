@@ -923,9 +923,9 @@ async function api(req,env){
   try{
    const statements=[env.DB.prepare("DELETE FROM comic_chapter_pages WHERE chapter_id=?").bind(chapterId),...normalized.map((x,i)=>env.DB.prepare("INSERT INTO comic_chapter_pages(chapter_id,media_asset_id,page_number,alt_text,caption) VALUES(?,?,?,?,?)").bind(chapterId,x.assetId,i+1,x.alt,x.caption)),env.DB.prepare("UPDATE chapters SET updated_at=CURRENT_TIMESTAMP WHERE id=?").bind(chapterId),env.DB.prepare("UPDATE novels SET updated_at=CURRENT_TIMESTAMP WHERE id=?").bind(chapter.novel_id)];
    await env.DB.batch(statements);
-   await audit(env,u,"comic_chapter_pages_saved",`chapter=${chapterId};pages=${normalized.length}`);
-   return json({ok:true,chapter_id:chapterId,page_count:normalized.length,message:"Comic page order saved."});
   }catch(err){console.error("comic page save failed",err);return json({error:"Comic pages could not be saved. Existing page order was preserved."},409)}
+  try{await audit(env,u,"comic_chapter_pages_saved",`chapter=${chapterId};pages=${normalized.length}`)}catch(err){console.error("comic page audit event failed",err)}
+  return json({ok:true,chapter_id:chapterId,page_count:normalized.length,message:"Comic page order saved."});
  }
  if(/^\/api\/author\/chapters\/\d+$/.test(p)&&m==="PATCH"){
   const e=author(u);if(e)return e;const id=Number(p.split('/').pop()),b=await body(req);
