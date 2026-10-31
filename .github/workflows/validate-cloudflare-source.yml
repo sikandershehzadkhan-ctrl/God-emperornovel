@@ -147,6 +147,9 @@ jobs:
       - name: Test read-only ticket ledger reconciliation
         run: python3 scripts/test-ticket-ledger-reconciliation.py
 
+      - name: Test immutable donation reviews and atomic Crown posting
+        run: python3 scripts/test-donation-review-atomicity.py
+
       - name: Test media upload byte and metadata policy
         run: node scripts/test-media-upload-policy.mjs
 
