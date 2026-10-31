@@ -2,7 +2,10 @@ import sqlite3
 from pathlib import Path
 
 root = Path(".")
-migration = (root / "migrations/0018_donation_review_audit.sql").read_text(encoding="utf-8")
+migrations = [
+    (root / "migrations/0018_donation_review_audit.sql").read_text(encoding="utf-8"),
+    (root / "migrations/0020_donation_independent_review.sql").read_text(encoding="utf-8"),
+]
 source = (root / "src/index.js").read_text(encoding="utf-8")
 start = source.index('if(p==="/api/admin/donations"&&m==="GET"){')
 end = source.index('if(p==="/api/admin/reports"&&m==="GET"){', start)
@@ -19,7 +22,8 @@ INSERT INTO donations(id,user_id,amount,reference_id,status) VALUES(41,7,25,'TX-
 INSERT INTO donations(id,user_id,amount,reference_id,status) VALUES(42,7,50,'TX-42','pending');
 INSERT INTO donations(id,user_id,amount,reference_id,status) VALUES(43,7,75,'TX-43','pending');
 """)
-db.executescript(migration)
+for migration in migrations:
+    db.executescript(migration)
 
 def expect_integrity_error(fn, label):
     try:
@@ -58,6 +62,17 @@ expect_integrity_error(
 db.execute(
     "INSERT INTO donation_reviews(donation_id,reviewer_user_id,decision,tickets,note) VALUES(42,99,'rejected',0,'Reference could not be verified')"
 )
+
+# Even an administrator cannot approve their own donation.
+db.execute(
+    "INSERT INTO donation_reviews(donation_id,reviewer_user_id,decision,tickets,note) VALUES(43,7,'approved',75,'Attempted self-approval')"
+)
+expect_integrity_error(
+    lambda: db.execute("UPDATE donations SET status='approved' WHERE id=43"),
+    "database rejects a donation reviewed by its own donor"
+)
+print("PASS: donor cannot approve or reject their own donation, even through direct SQL")
+
 db.execute("UPDATE donations SET status='rejected' WHERE id=42")
 assert db.execute("SELECT tickets FROM users WHERE id=7").fetchone()[0] == 40
 assert db.execute("SELECT COUNT(*) FROM ticket_ledger WHERE reference='42'").fetchone()[0] == 0
@@ -72,6 +87,7 @@ checks = {
     "admin authentication protects donation review": 'const e=admin(u);if(e)return e;' in route,
     "donation review endpoint is rate-limited": 'consumeAuthRateLimit(env,"admin-donation-review",String(u.id),30,300)' in route,
     "review requires a bounded explanation": 'if(!note||note.length>1000)' in route,
+    "review API blocks donor self-review": "You cannot review your own donation." in route,
     "reviewer identity and decision are recorded before finalization": "INSERT INTO donation_reviews" in route and "reviewer_user_id" in route,
     "approval amount remains server-validated": "parseManualDonationApproval(b,d)" in route,
     "approval route does not directly credit users or insert payment ledger rows": "UPDATE users SET tickets" not in route and "INSERT INTO ticket_ledger" not in route,
