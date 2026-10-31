@@ -1,3 +1,4 @@
+import { validateComicChapterContent } from "./comic-chapter-policy.mjs";
 import { hashPassword, verifyPassword } from "./auth-password.mjs";
 import { isAllowedConnectorSearchUrl } from "./connector-url-policy.mjs";
 import { parseManualDonationApproval } from "./donation-approval-policy.mjs";
@@ -721,8 +722,9 @@ async function api(req,env){
  }
  if(p==="/api/author/chapters"&&m==="POST"){
   const e=author(u);if(e)return e;const b=await body(req),nid=Number(b.novel_id),num=Number(b.chapter_number),title=String(b.title||'').trim(),content=String(b.content||'');
-  const n=await env.DB.prepare('SELECT id,owner_user_id FROM novels WHERE id=?').bind(nid).first();if(!n)return json({error:'Novel not found'},404);if(u.role!=="admin"&&Number(n.owner_user_id)!==Number(u.id))return json({error:'You do not own this novel'},403);
+  const n=await env.DB.prepare('SELECT id,owner_user_id,kind FROM novels WHERE id=?').bind(nid).first();if(!n)return json({error:'Novel not found'},404);if(u.role!=="admin"&&Number(n.owner_user_id)!==Number(u.id))return json({error:'You do not own this novel'},403);
   if(!Number.isInteger(num)||num<1||!title||!content)return json({error:'Chapter number, title and content are required'},400);
+  if(["manga","manhwa","manhua","webtoon","comic","graphic_novel"].includes(String(n.kind||"").toLowerCase())){const comicCheck=validateComicChapterContent(content);if(!comicCheck.ok)return json({error:comicCheck.error},400)}
   const locked=!!b.is_locked,cost=Number(b.ticket_cost||0);if(cost<0)return json({error:'Ticket cost cannot be negative'},400);
   try{const r=await env.DB.prepare(`INSERT INTO chapters(novel_id,chapter_number,title,content,is_locked,ticket_cost,publication_status) VALUES(?,?,?,?,?,?, 'draft')`).bind(nid,num,title,content,locked?1:0,cost).run();await env.DB.prepare('UPDATE novels SET updated_at=CURRENT_TIMESTAMP WHERE id=?').bind(nid).run();await audit(env,u,'author_chapter_created',`novel=${nid};chapter=${num}`);return json({ok:true,id:Number(r.meta.last_row_id),message:'Chapter saved as draft.'},201)}catch(err){return json({error:'Chapter number already exists or could not be saved'},409)}
  }
