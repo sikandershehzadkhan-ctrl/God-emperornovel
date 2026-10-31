@@ -54,6 +54,10 @@ assert.ok(css.includes("Homepage story cards: editorial hierarchy"),"Homepage st
 assert.ok(css.includes("-webkit-line-clamp:2"),"Story titles must wrap to two readable lines instead of truncating after one");
 assert.ok(css.includes(".homeStoryGrid.multiStory{grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}"),"Phone story shelves must use a stable two-column grid");
 assert.ok(css.includes("@media(max-width:360px)"),"Very narrow phones must switch story cards to a readable horizontal layout");
+assert.ok(css.includes(".homePage .heroSearch{\n  display:flex;align-items:center;gap:8px;width:100%;box-sizing:border-box;"),"Hero search must size itself safely inside the mobile hero");
+assert.ok(css.includes(".homePage .heroSearch input{flex:1 1 auto;width:0;min-width:0}"),"Hero search input must shrink without forcing horizontal overflow");
+assert.ok(css.includes("@media(max-width:340px)"),"Extra-narrow phone hero controls need a dedicated layout refinement");
+assert.ok(css.includes(".skeletonCard::before,.skeletonCard::after{animation:none!important}"),"Reduced-motion preference must disable skeleton pseudo-element animation");
 assert.ok(css.includes(".homeStoryGrid .card:focus-visible"),"Story cards must have a visible keyboard focus treatment");
 assert.equal((html.match(/imperial-design-foundation\.css/g)||[]).length,1,"Design foundation must be linked exactly once");
 assert.ok(html.indexOf("imperial-glass.css")<html.indexOf("imperial-design-foundation.css"),"Foundation must load after legacy global styles");
