@@ -2,6 +2,7 @@ import { hashPassword, verifyPassword } from "./auth-password.mjs";
 import { isAllowedConnectorSearchUrl } from "./connector-url-policy.mjs";
 import { parseManualDonationApproval } from "./donation-approval-policy.mjs";
 import { parseDonationSubmission } from "./donation-reference-policy.mjs";
+import { createRuntimeFeatureSchemaEnsurer } from "./runtime-feature-schema.mjs";
 const json=(d,s=200,h={})=>new Response(JSON.stringify(d),{status:s,headers:{"content-type":"application/json;charset=UTF-8","cache-control":"no-store",...h}});
 const now=()=>Math.floor(Date.now()/1000);
 const b64=a=>btoa(String.fromCharCode(...new Uint8Array(a))).replaceAll("+","-").replaceAll("/","_").replaceAll("=","");
@@ -30,29 +31,7 @@ const cookies=h=>Object.fromEntries((h||"").split(";").map(x=>x.trim()).filter(B
 const body=async r=>await r.json().catch(()=>({}));
 
 
-// Atomic D1 buckets keep authentication throttling consistent across Worker isolates.
-let authRateSchemaReady=null;
-let donationReferenceIndexReady=null;
-async function ensureDonationReferenceIndex(env){
- if(!donationReferenceIndexReady)donationReferenceIndexReady=(async()=>{
-  await env.DB.prepare("CREATE UNIQUE INDEX IF NOT EXISTS idx_donations_reference_normalized ON donations(LOWER(TRIM(reference_id)))").run();
- })();
- try{await donationReferenceIndexReady}catch(e){donationReferenceIndexReady=null;throw e}
-}
-async function ensureAuthRateLimitSchema(env){
- if(!authRateSchemaReady)authRateSchemaReady=(async()=>{
-  await env.DB.prepare(`CREATE TABLE IF NOT EXISTS auth_rate_limits (
-   scope TEXT NOT NULL,
-   key_hash TEXT NOT NULL,
-   window_start INTEGER NOT NULL,
-   attempts INTEGER NOT NULL DEFAULT 0,
-   PRIMARY KEY(scope,key_hash)
-  )`).run();
-  await env.DB.prepare("CREATE INDEX IF NOT EXISTS idx_auth_rate_limits_window ON auth_rate_limits(window_start)").run();
-  await env.DB.prepare("DELETE FROM auth_rate_limits WHERE window_start<?").bind(now()-172800).run();
- })();
- try{await authRateSchemaReady}catch(e){authRateSchemaReady=null;throw e}
-}
+const ensureRuntimeFeatureSchema=createRuntimeFeatureSchemaEnsurer();
 async function consumeAuthRateLimit(env,scope,key,limit,windowSeconds){
  const keyHash=await digest(`imperial-auth-rate-v1:${scope}:${key}`);
  const windowStart=Math.floor(now()/windowSeconds)*windowSeconds;
@@ -438,33 +417,13 @@ async function seed(env){
  const n=await env.DB.prepare("SELECT id FROM novels LIMIT 1").first();
  if(!n){const r=await env.DB.prepare("INSERT INTO novels(title,alt_titles,author,description,status,kind,language,rights_status,cover_url) VALUES(?,?,?,?,?,?,?,?,?)").bind("God-Emperor's Infinite Ascension","Infinite Ascension","Sikander Shehzad","A cosmic system, an empire, and an infinite path upward. This seeded title is a deployment demo. Replace it with content you own or are licensed to publish.","ongoing","original","English","original","https://images.unsplash.com/photo-1518709268805-4e9042af9f23?auto=format&fit=crop&w=700&q=80").run();const id=r.meta.last_row_id;for(let i=1;i<=120;i++)await env.DB.prepare("INSERT INTO chapters(novel_id,chapter_number,title,content,is_locked,ticket_cost,publication_status) VALUES(?,?,?,?,?,?,?)").bind(id,i,`Chapter ${i}: The Imperial Awakening`,`<p><strong>Imperial Novel</strong></p><p>This is placeholder chapter content for deployment testing. Replace it with text you own or have permission to publish.</p><p>The story continues beyond the mortal page.</p>`,i>1,1,'published').run();for(const x of (await env.DB.prepare("SELECT id FROM genres WHERE slug IN ('fantasy','action','isekai','system','fanfiction')").all()).results)await env.DB.prepare("INSERT OR IGNORE INTO novel_genres VALUES(?,?)").bind(id,x.id).run();for(const x of (await env.DB.prepare("SELECT id FROM tags WHERE slug IN ('system','isekai','empire','strong-mc','multiverse')").all()).results)await env.DB.prepare("INSERT OR IGNORE INTO novel_tags VALUES(?,?)").bind(id,x.id).run();}
 }
-async function ensureDiscoverySchema(env){
- if(globalThis.__discoveryReady)return globalThis.__discoveryReady;
- globalThis.__discoveryReady=(async()=>{
-  try{await env.DB.prepare("CREATE TABLE IF NOT EXISTS request_votes (request_id INTEGER NOT NULL,user_id INTEGER NOT NULL,created_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,PRIMARY KEY(request_id,user_id))").run()}catch(e){console.error('discovery schema',e)}
-  try{await env.DB.prepare("CREATE INDEX IF NOT EXISTS idx_request_votes_request ON request_votes(request_id)").run()}catch{}
- })(); return globalThis.__discoveryReady;
-}
-function ensureCommunityV2(env){
- if(globalThis.__communityV2Ready)return globalThis.__communityV2Ready;
- globalThis.__communityV2Ready=(async()=>{
-  try{await env.DB.prepare("ALTER TABLE comments ADD COLUMN parent_id INTEGER").run()}catch{}
-  try{await env.DB.prepare("ALTER TABLE comments ADD COLUMN edited_at TEXT").run()}catch{}
-  await env.DB.prepare("CREATE TABLE IF NOT EXISTS comment_likes (user_id INTEGER NOT NULL,comment_id INTEGER NOT NULL,created_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,PRIMARY KEY(user_id,comment_id))").run();
-  await env.DB.prepare("CREATE TABLE IF NOT EXISTS comment_reports (id INTEGER PRIMARY KEY AUTOINCREMENT,user_id INTEGER NOT NULL,comment_id INTEGER NOT NULL,reason TEXT NOT NULL,details TEXT DEFAULT '',status TEXT NOT NULL DEFAULT 'open',created_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP)").run();
-  await env.DB.prepare("CREATE TABLE IF NOT EXISTS novel_reactions (user_id INTEGER NOT NULL,novel_id INTEGER NOT NULL,reaction TEXT NOT NULL CHECK(reaction IN ('love','fire','laugh','sad','clap')),created_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,PRIMARY KEY(user_id,novel_id),FOREIGN KEY(user_id) REFERENCES users(id) ON DELETE CASCADE,FOREIGN KEY(novel_id) REFERENCES novels(id) ON DELETE CASCADE)").run();
-  await env.DB.prepare("CREATE INDEX IF NOT EXISTS idx_novel_reactions_novel ON novel_reactions(novel_id,reaction)").run();
- })(); return globalThis.__communityV2Ready;
-}
 async function api(req,env){
  const url=new URL(req.url),p=url.pathname,m=req.method;
  // Health checks must not trigger schema bootstrap, rate-limit DDL, community setup,
  // or session reads. Keep this path fast and side-effect-free for platform probes.
  if(p==="/api/health"&&m==="GET"){let db=true;try{await env.DB.prepare("SELECT 1").first()}catch{db=false}return json({ok:db,service:env.SITE_NAME||"Imperial Novel",version:env.APP_VERSION||"5.0.0",database:db,time:new Date().toISOString()})}
  await ensureCoreSchema(env);
- await ensureAuthRateLimitSchema(env);
- await ensureCommunityV2(env);
- await ensureDiscoverySchema(env);
+ await ensureRuntimeFeatureSchema(env);
  const u=await getUser(req,env);
  if(p==="/api/agents"&&m==="GET"){return json((await env.DB.prepare(`SELECT slug,name,role,icon,mode,status,last_run_at FROM agents WHERE enabled=1 ORDER BY id`).all()).results)}
  if(p==="/api/admin/agents"&&m==="GET"){const e=admin(u);if(e)return e;return json((await env.DB.prepare(`SELECT id,slug,name,role,icon,mode,status,enabled,last_run_at,last_result FROM agents ORDER BY id`).all()).results)}
