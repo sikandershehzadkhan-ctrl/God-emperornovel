@@ -75,7 +75,7 @@ checks = {
     "reviewer identity and decision are recorded before finalization": "INSERT INTO donation_reviews" in route and "reviewer_user_id" in route,
     "approval amount remains server-validated": "parseManualDonationApproval(b,d)" in route,
     "approval route does not directly credit users or insert payment ledger rows": "UPDATE users SET tickets" not in route and "INSERT INTO ticket_ledger" not in route,
-    "review history is returned to administrators": "r.review_decision" in route and "r.review_note" in route,
+    "review history is returned to administrators": "AS review_decision" in route and "AS review_note" in route,
 }
 for label, ok in checks.items():
     print(("PASS" if ok else "FAIL") + ": " + label)
