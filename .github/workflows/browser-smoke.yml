@@ -21,6 +21,17 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
+      - name: Check whether this branch contains browser smoke tests
+        id: smoke
+        shell: bash
+        run: |
+          if [ -f scripts/browser-smoke.mjs ]; then
+            echo "enabled=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "enabled=false" >> "$GITHUB_OUTPUT"
+            echo "Skipping browser QA for this older branch because it does not contain the smoke-test source."
+          fi
+
       - name: Set up Node.js
         uses: actions/setup-node@v4
         with:
@@ -28,15 +39,19 @@ jobs:
           cache: npm
 
       - name: Install locked project dependencies
+        if: steps.smoke.outputs.enabled == 'true'
         run: npm ci
 
       - name: Install pinned Playwright runner without changing project lockfiles
+        if: steps.smoke.outputs.enabled == 'true'
         run: npm install --no-save --package-lock=false playwright@1.64.1
 
       - name: Install Chromium and system dependencies
+        if: steps.smoke.outputs.enabled == 'true'
         run: npx playwright install --with-deps chromium
 
       - name: Start local Cloudflare Worker with local D1 only
+        if: steps.smoke.outputs.enabled == 'true'
         shell: bash
         env:
           CI: "true"
@@ -57,12 +72,13 @@ jobs:
           exit 1
 
       - name: Run real Chromium route and provider smoke tests
+        if: steps.smoke.outputs.enabled == 'true'
         env:
           IMPERIAL_BASE_URL: http://127.0.0.1:8787
         run: node scripts/browser-smoke.mjs
 
       - name: Stop local Worker
-        if: always()
+        if: always() && steps.smoke.outputs.enabled == 'true'
         shell: bash
         run: |
           if [ -f /tmp/imperial-novel-worker.pid ]; then
