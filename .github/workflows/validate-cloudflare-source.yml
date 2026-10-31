@@ -117,6 +117,9 @@ jobs:
       - name: Test media asset registry constraints
         run: python3 scripts/test-media-asset-registry.py
 
+      - name: Test media publication and rights lifecycle gates
+        run: python3 scripts/test-media-publication-gates.py
+
       - name: Test media upload byte and metadata policy
         run: node scripts/test-media-upload-policy.mjs
 
