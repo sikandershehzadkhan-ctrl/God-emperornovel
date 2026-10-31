@@ -121,6 +121,22 @@ jobs:
           CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
 
+      - name: Verify catalog and author-application D1 migrations after deployment
+        shell: bash
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+        run: |
+          set -euo pipefail
+          output="$(npx --yes wrangler@4 d1 execute god-emperornovel-db --remote --command "SELECT CASE WHEN EXISTS(SELECT 1 FROM sqlite_master WHERE type='index' AND name='idx_novel_genres_genre_novel') AND EXISTS(SELECT 1 FROM sqlite_master WHERE type='index' AND name='idx_novel_tags_tag_novel') AND EXISTS(SELECT 1 FROM sqlite_master WHERE type='index' AND name='idx_unlocks_chapter_time') AND EXISTS(SELECT 1 FROM sqlite_master WHERE type='index' AND name='idx_novels_published_views') AND EXISTS(SELECT 1 FROM sqlite_master WHERE type='index' AND name='idx_novels_published_rating') AND EXISTS(SELECT 1 FROM sqlite_master WHERE type='index' AND name='idx_novels_published_created') AND EXISTS(SELECT 1 FROM sqlite_master WHERE type='table' AND name='author_applications') AND EXISTS(SELECT 1 FROM sqlite_master WHERE type='index' AND name='idx_author_applications_one_pending') AND EXISTS(SELECT 1 FROM sqlite_master WHERE type='index' AND name='idx_author_applications_status_created') AND EXISTS(SELECT 1 FROM sqlite_master WHERE type='index' AND name='idx_author_applications_user_created') THEN 'ready' ELSE 'missing' END AS readiness;")"
+          printf '%s\n' "$output"
+          readiness="$(printf '%s' "$output" | node -e 'let s="";process.stdin.on("data",d=>s+=d).on("end",()=>{const m=s.match(/"readiness"\s*:\s*"([^"]+)"/);console.log(m?m[1]:"unknown")})')"
+          if [ "$readiness" != "ready" ]; then
+            echo "::error::Required catalog indexes or author application schema are missing after deployment."
+            exit 1
+          fi
+          echo "Verified catalog filter/sort indexes and author application schema in production D1."
+
       - name: Verify live Worker health after deployment
         shell: bash
         run: |
@@ -206,4 +222,26 @@ jobs:
           css="$(curl --fail --silent --show-error --max-time 20 "$base/imperial-luxury-$EXPECTED_VERSION.css?verify=$stamp")"
           printf '%s' "$css" | grep -F 'Final art direction: editorial authority' >/dev/null
           echo "Verified release $EXPECTED_VERSION, redesigned hero, language control, Imperial art direction, crest, manifest, and every referenced frontend asset."
+
+      - name: Verify direct Discover and creator application routes
+        shell: bash
+        run: |
+          set -euo pipefail
+          EXPECTED_VERSION="$(node -p "require('./package.json').version")"
+          base="https://god-emperornovel.sikandershehzadkhan.workers.dev"
+          stamp="$(date +%s%N)"
+          discover="$(curl --fail --silent --show-error --max-time 20 "$base/discover?verify=$stamp")"
+          printf '%s' "$discover" | grep -F "Imperial Novel" >/dev/null
+          printf '%s' "$discover" | grep -F "/app-$EXPECTED_VERSION.js" >/dev/null
+          author="$(curl --fail --silent --show-error --max-time 20 "$base/author?verify=$stamp")"
+          printf '%s' "$author" | grep -F "/app-$EXPECTED_VERSION.js" >/dev/null
+          printf '%s' "$author" | grep -F "Author Studio" >/dev/null
+          admin="$(curl --fail --silent --show-error --max-time 20 "$base/admin?verify=$stamp")"
+          printf '%s' "$admin" | grep -F "Author Applications" >/dev/null
+          auth_status="$(curl --silent --show-error --max-time 20 -o /dev/null -w '%{http_code}' "$base/api/author/applications/me")"
+          if [ "$auth_status" != "401" ]; then
+            echo "::error::Unauthenticated author application endpoint returned HTTP $auth_status, expected 401."
+            exit 1
+          fi
+          echo "Verified direct /discover, /author and /admin shells plus the protected author application API route."
 
