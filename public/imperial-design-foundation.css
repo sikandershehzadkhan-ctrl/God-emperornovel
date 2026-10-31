@@ -595,3 +595,48 @@ html[data-theme="dark"] .homeFormatPrimary{background:var(--in-brand-soft)}
 @media(max-width:980px){.platformPulseMetrics{grid-template-columns:repeat(3,minmax(0,1fr))}}
 @media(max-width:760px){.platformPulseHead{align-items:flex-start;flex-direction:column}.platformPulseActions{justify-content:flex-start}.platformPulseMetrics{grid-template-columns:repeat(2,minmax(0,1fr))}.platformPulseDetails{grid-template-columns:1fr}.platformPulse{border-radius:18px}}
 @media(prefers-reduced-motion:reduce){.skeletonPulse{animation:none}}
+
+
+/* Public author onboarding: editorial, compact and responsive. */
+.authorLandingHero{
+  position:relative;overflow:hidden;margin:0 0 24px;padding:clamp(24px,5vw,52px);
+  border:1px solid var(--in-line);border-radius:24px;
+  background:linear-gradient(125deg,var(--in-brand-soft),var(--in-discovery-soft));
+}
+.authorLandingEyebrow{color:var(--in-brand);font-size:10px;font-weight:850;letter-spacing:.16em}
+.authorLandingHero h2{max-width:760px;margin:14px 0;font-size:clamp(30px,5vw,54px);line-height:1.04;letter-spacing:-.05em}
+.authorLandingHero>p{max-width:680px;color:var(--in-muted);font-size:clamp(14px,1.7vw,17px);line-height:1.7}
+.authorLandingActions{display:flex;gap:10px;flex-wrap:wrap;margin-top:24px}
+.authorLandingTrust{margin-top:20px;color:var(--in-muted);font-size:12px;font-weight:650}
+.authorLandingBenefits{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px;margin:24px 0 42px}
+.authorLandingCard{min-width:0;padding:18px;border:1px solid var(--in-line);border-radius:16px;background:var(--in-surface)}
+.authorLandingNumber{display:inline-flex;color:var(--in-brand);font-size:11px;font-weight:850;letter-spacing:.12em}
+.authorLandingCard h3{margin:12px 0 8px;font-size:17px}
+.authorLandingCard p,.authorLandingProcess p,.authorLandingProcess li span,.authorLandingRights p,.authorLandingFaq details p{color:var(--in-muted);font-size:13px;line-height:1.7}
+.authorLandingProcess{display:grid;grid-template-columns:minmax(0,.85fr) minmax(0,1.15fr);gap:32px;padding:28px 0;border-top:1px solid var(--in-line);border-bottom:1px solid var(--in-line)}
+.authorLandingProcess h2,.authorLandingFormats h2,.authorLandingRights h2{margin:10px 0;font-size:clamp(23px,3vw,34px);letter-spacing:-.04em}
+.authorLandingProcess ol{display:grid;gap:14px;margin:0;padding:0;list-style:none;counter-reset:authorstep}
+.authorLandingProcess li{display:grid;gap:4px;grid-template-columns:30px 1fr;counter-increment:authorstep}
+.authorLandingProcess li:before{content:counter(authorstep,decimal-leading-zero);grid-row:span 2;color:var(--in-brand);font-size:11px;font-weight:850}
+.authorLandingProcess li b{font-size:14px}
+.authorLandingFormats{padding:32px 0}
+.authorLandingFormatList{display:flex;flex-wrap:wrap;gap:8px;margin-top:18px}
+.authorLandingFormatList span{padding:9px 12px;border:1px solid var(--in-line);border-radius:999px;background:var(--in-surface);color:var(--in-ink);font-size:12px;font-weight:650}
+.authorLandingRights{display:flex;align-items:center;justify-content:space-between;gap:24px;padding:24px;border:1px solid var(--in-line);border-radius:18px;background:var(--in-surface)}
+.authorLandingRights>div{max-width:680px}
+.authorLandingRights .ghost{display:inline-block;margin-top:8px}
+.authorLandingFaq{max-width:850px;margin:40px auto 0}
+.authorLandingFaq h2{margin-bottom:14px;font-size:24px}
+.authorLandingFaq details{padding:15px 2px;border-bottom:1px solid var(--in-line)}
+.authorLandingFaq summary{cursor:pointer;font-size:14px;font-weight:700}
+.authorLandingFaq details p{margin:10px 0 0}
+@media(max-width:900px){.authorLandingBenefits{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(max-width:640px){
+ .authorLandingHero{padding:22px;border-radius:18px}
+ .authorLandingBenefits{grid-template-columns:1fr;gap:9px;margin-bottom:30px}
+ .authorLandingCard{padding:16px}
+ .authorLandingProcess{grid-template-columns:1fr;gap:18px}
+ .authorLandingRights{align-items:flex-start;flex-direction:column;padding:19px}
+ .authorLandingActions>a{width:100%;justify-content:center;text-align:center}
+}
+@media(prefers-reduced-motion:reduce){.authorLandingHero *{scroll-behavior:auto!important;transition:none!important;animation:none!important}}
