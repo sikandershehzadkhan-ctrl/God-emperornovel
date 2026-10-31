@@ -14,6 +14,7 @@ delivery = section('if(mediaMatch&&m==="GET"){', 'if(p==="/api/admin/media/revie
 checks = {
     "upload requires author authentication": "author(u)" in upload,
     "upload rejects cross-origin requests": 'requestOrigin!==url.origin' in upload,
+    "upload is rate-limited per creator": 'consumeAuthRateLimit(env,"media-upload",String(u.id),10,3600)' in upload,
     "upload requires a bounded Content-Length": "requestLength" in upload and "20*1024*1024+65536" in upload,
     "upload validates image metadata and bytes": "validateMediaUploadMetadata" in upload and "validateImageBytes" in upload,
     "upload requires private R2 binding": 'env.MEDIA_BUCKET.put' in upload,
