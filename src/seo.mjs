@@ -45,7 +45,7 @@ function upsertMeta(html,attribute,key,content){
   return html.replace(/<\/head>/i,'<meta '+attribute+'="'+attr(key)+'" content="'+attr(content)+'">\n</head>');
 }
 export function canonicalPath(path){return path==="/discover"?"/catalog":path==="/formats"?"/":path}
-export function applySeoMetadata(html,{title,description,canonical,robots="index,follow"}={}){
+export function applySeoMetadata(html,{title,description,canonical,robots="index,follow",image}={}){
   const safeTitle=String(title||"Imperial Novel | Read • Create • Conquer").slice(0,180);
   const safeDescription=String(description||"Discover original, licensed and authorized stories on Imperial Novel.").replace(/\s+/g," ").trim().slice(0,300);
   let output=String(html).replace(/<title>[\s\S]*?<\/title>/i,"<title>"+attr(safeTitle)+"</title>");
@@ -61,6 +61,12 @@ export function applySeoMetadata(html,{title,description,canonical,robots="index
   }
   if(canonical){
     const origin=new URL(canonical).origin;
+    let safeImage=origin+"/imperial-novel-app-icon.svg";
+    try{const candidate=new URL(image||safeImage,origin);if(candidate.protocol==="https:"&&!candidate.username&&!candidate.password)safeImage=candidate.href}catch{}
+    output=upsertMeta(output,"property","og:url",canonical);
+    output=upsertMeta(output,"property","og:image",safeImage);
+    output=upsertMeta(output,"name","twitter:image",safeImage);
+    const originForGraph=origin;
     const graph={"@context":"https://schema.org","@graph":[
       {"@type":"Organization","name":"Imperial Novel","url":origin},
       {"@type":"WebSite","name":"Imperial Novel","url":origin,"potentialAction":{"@type":"SearchAction","target":origin+"/search?q={search_term_string}","query-input":"required name=search_term_string"}},
