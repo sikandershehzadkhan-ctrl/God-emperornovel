@@ -162,7 +162,7 @@ async function home(){
     const number=v=>{const n=Number(v);return Number.isFinite(n)&&n>=0?n.toLocaleString():'—'};
     const stamp=new Date(generatedAt);
     if(Number.isNaN(stamp.getTime()))throw new Error('The real-time overview timestamp is invalid.');
-    platformPulseLastUpdated=stamp.toLocaleString([], {dateStyle:'medium',timeStyle:'medium'});
+    platformPulseLastUpdated=stamp.toLocaleString([], {year:'numeric',month:'short',day:'numeric',hour:'2-digit',minute:'2-digit',second:'2-digit',timeZoneName:'short'});
     metrics.innerHTML=[['Published novels',m.publishedNovels],['Published chapters',m.publishedChapters],['Credited authors',m.creditedAuthors],['Catalog views',m.catalogViews],['Signed-in readers · 24h',m.readersInLast24Hours],['Chapter updates · 24h',m.chapterUpdatesLast24Hours]].map(([label,value])=>'<div class="platformPulseMetric"><b>'+number(value)+'</b><span>'+label+'</span></div>').join('');
     const rows=Array.isArray(data.recentUpdates)?data.recentUpdates:[];
     const validUpdates=rows.filter(row=>Number.isSafeInteger(Number(row.novel_id))&&Number(row.novel_id)>0&&Number.isSafeInteger(Number(row.chapter_number))&&Number(row.chapter_number)>0);
