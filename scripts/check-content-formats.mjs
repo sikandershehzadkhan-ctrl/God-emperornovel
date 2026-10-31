@@ -58,7 +58,7 @@ for (const path of ['public/app.js', `public/app-${version}.js`]) {
  assert.ok(app.includes("api('/api/author/chapters'"), path + ' supports chapter draft creation');
  assert.ok(app.includes("rights_status!=='original'&&!payload.rights_evidence"), path + ' checks rights evidence before submitting a non-original work');
  assert.ok(app.includes('aria-live="polite"'), path + ' announces draft status updates accessibly');
- assert.ok(app.includes('const all='+'$'+';'), path + ' aliases the plural querySelectorAll helper for multi-element bindings');
+ assert.ok(/const all=\${2};/.test(app), path + ' aliases the plural querySelectorAll helper for multi-element bindings');
  assert.ok(app.includes("api('/api/author/novels/'+Number(f.dataset.id),{method:'PATCH'"), path + ' saves story metadata through the authenticated update endpoint');
  assert.ok(app.includes("all('.authorAddChapter',list).forEach"), path + ' binds all chapter controls as a collection');
  assert.ok(app.includes("all('.authorCancelChapter',list).forEach"), path + ' binds all chapter cancel controls as a collection');
