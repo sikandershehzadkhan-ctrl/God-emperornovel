@@ -6,6 +6,12 @@ Positioning: A mobile-first international publishing and reading platform for au
 
 This is the target architecture, not a claim that every listed route or feature is already implemented.
 
+## Discovery entity graph and publication quality gate
+
+The current foundation exposes a bounded, read-only `GET /api/discovery/graph?limit=30` endpoint. It derives author → novel, novel → genre, novel → tag and novel → format relationships from existing D1 catalog tables. Only published works with eligible rights declarations are included. The endpoint has a hard maximum of 100 novels per response, stable entity IDs and no new schema migration. It is a data foundation, not yet a visual graph explorer or a claim that external knowledge graphs have been populated.
+
+Admin publication now runs a deterministic quality gate: valid title, author, meaningful description, language, supported format, eligible rights declaration, required evidence for non-original works, and at least one published chapter with a title and readable body. Short descriptions, missing covers and unusually short text chapters are editorial warnings, not automatic rejection criteria. The gate does not verify copyright ownership or replace human rights review.
+
 ## Product principles
 
 1. Reader-first: discovery, novel details, reading, progress and library must be effortless.
