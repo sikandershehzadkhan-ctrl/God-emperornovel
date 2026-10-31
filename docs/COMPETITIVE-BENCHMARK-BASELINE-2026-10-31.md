@@ -179,27 +179,49 @@ A competitor-inspired feature is not complete until:
 **Status:** Baseline reconnaissance recorded. Full competitor workflow testing, weighted score and overall percentage remain pending. This document does not certify that Imperial Novel is complete or competitive yet.
 
 
-## Production browser smoke-test addendum (2026-10-31)
+## Production browser smoke-test and latency addendum (2026-10-31)
 
-A read-only TinyFish browser session completed against production. This is an observed smoke test, not a full QA certification.
+Read-only browser checks were repeated. The second catalog test deliberately waited 10 seconds before classifying the page.
 
 | Flow | Result | Finding |
 |---|---|---|
-| Homepage | Pass | Hero/navigation render; dynamic story shelves remained in skeleton/loading state |
-| Discover `/catalog` | Partial | Search/filter interface renders, but catalog stayed on “Loading catalog…” with no cards |
-| Novel `/novel/1` | Pass | The Imperial Ascendant, cover, author, rating and two chapters displayed |
-| Reader `/read/1/1` | Pass | Chapter text, font-size controls, bookmark, theme toggle, progress and next/chapter navigation displayed |
-| Locked chapter | Pass (presentation only) | Chapter 2 showed as locked for 1 Imperial Crown; purchase/settlement was not tested |
-| Community | Pass (surface only) | Leaderboard, tier list, vote and random-novel entry points rendered; trending story displayed |
-| Trend Factory | Pass (surface only) | Rights-first metadata discovery page rendered |
+| Homepage | Partial | Hero/navigation render; story shelves showed skeletons in the first browser session |
+| Discover `/catalog` | Pass after wait | After approximately 10 seconds, the Imperial Ascendant card appeared; no loading indicator or visible error remained |
+| Catalog API | Pass | HTTP 200; one published result, The Imperial Ascendant |
+| Novel `/novel/1` | Pass | Cover, author, rating and two chapters displayed |
+| Reader `/read/1/1` | Pass (render only) | Chapter text, font-size controls, bookmark, theme toggle, progress and chapter navigation displayed |
+| Locked chapter | Presentation only | Chapter 2 showed as locked for 1 Imperial Crown; purchase/settlement was not tested |
+| Community | Surface only | Leaderboard, tier list, vote and random-novel entry points rendered; trending story displayed |
+| Trend Factory | Surface only | Rights-first metadata discovery page rendered |
 
-### Additional confirmed weaknesses
+### Corrected catalog diagnosis
 
-- **Catalog hydration defect or data-fetch issue:** the public catalog API returned one novel, but the live catalog UI remained in a loading state and did not render that result. This is a P0/P1 user-facing defect until its cause is isolated. Test API success, client parsing, filtering, empty/error handling and JS console/network errors.
-- **Homepage shelf data gap:** story shelf skeletons remained visible in the browser session despite the published novel existing. Check the shelf endpoints, client hydration and timeout/error states.
-- **Test-quality content:** the only published first chapter currently displays “Test it / Test 2”. Replace with a properly edited, authorized production chapter before public acquisition campaigns. Do not inflate chapter count with filler.
-- **Paywall flow not certified:** the browser only observed the locked state. No purchase, unlock, refund, balance or ledger flow was executed in this smoke test.
+The earlier claim that the catalog failed to render was premature. The second browser run confirms that the card eventually appears. The catalog is therefore **not currently classified as broken**. It is classified as **slow to become useful**: the test observed about 10 seconds before the story card appeared.
+
+Repeated external fetch observations for the catalog API were approximately 4.5s and 7.4s, with one health fetch around 6.6s; another request was unreachable. These are tool-observed end-to-end fetch timings, not isolated Worker execution time or a controlled TTFB benchmark. They justify a controlled performance investigation, but they do not prove the Worker or D1 is solely responsible.
+
+### Confirmed content and product gaps
+
+- **Extremely sparse public catalog:** one published title and two chapters in the inspected API response. This is a severe audience-retention and competitive-positioning gap.
+- **Test-quality content:** the only published first chapter currently displays “Test it / Test 2”. Replace it with a properly edited, authorized production chapter before public acquisition campaigns. Do not inflate chapter count with filler.
+- **Homepage shelf delay:** the first browser run saw loading skeletons. Retest after controlled wait and trace shelf API timings and client hydration.
+- **Paywall flow not certified:** only the locked presentation was observed. No purchase, unlock, refund, balance or ledger flow was executed.
+- **Media formats:** five formats still declare catalog-only/playback or integration unavailable in the live formats response.
+
+### Donation reference audit status
+
+The read-only production D1 audit workflow run #25 for commit `850c6b8b760ac19e95b98b921bfe35f18f0a5ca7` completed successfully in 1m 1s. Its database inventory step includes the aggregate-only donation reference audit, which counts total donation rows, blank references, distinct normalized references, duplicate groups and extra duplicate rows. The actual SQL output is behind GitHub Actions authentication and was not accessible in the public browser session.
+
+**Important:** a successful workflow run proves the audit job completed, not that duplicate count is zero. The production duplicate count remains **unknown** until an authorized operator can inspect the log output. Do not add a production uniqueness constraint or mutate donation records based on an assumed clean result.
+
+### Next technical investigation
+
+1. Use controlled browser instrumentation to measure navigation start, HTML response, JavaScript boot, catalog API start/end, format registry start/end, and first story-card paint separately.
+2. Repeat at least five cold and warm samples on the same low-end Android device/network profile; report median and p75, not one fetch latency.
+3. Inspect Worker initialization, D1 query plan/indexes, static asset caching, and client-side concurrent requests only after timings isolate the bottleneck.
+4. Keep catalog loading, empty, and error states distinct. A slow response must not be mistaken for an empty catalog or an indefinite skeleton.
+5. Retrieve the donation audit aggregate output through authorized GitHub Actions access before deciding whether a unique normalized-reference index is safe.
 
 ### Interpretation
 
-A route returning HTML or a page title is not enough to pass. The catalog API and rendered catalog disagree, so the catalog is not considered functionally passed. Reader rendering passed for the one sample chapter, but content quality and payment workflows remain unverified. Repeat this test after fixes and on a low-end Android device/network profile.
+A route returning HTML is not enough to pass. The catalog eventually renders its one result, but the observed delay is unacceptable as an uninvestigated experience. Reader rendering passed for one sample chapter, but content quality and payment workflows remain unverified. No production code or data was changed by these read-only tests.
