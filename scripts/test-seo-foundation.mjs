@@ -30,6 +30,7 @@ assert.equal(robotsForPath("/account"),"noindex,nofollow");
 assert.equal(robotsForPath("/author"),"noindex,nofollow");
 assert.equal(robotsForPath("/author/some-writer"),"index,follow");
 assert.equal(robotsForPath("/catalog",404),"noindex,nofollow");
+assert.equal(robotsForPath("/read/12/5",200,true),"noindex,nofollow");
 assert.match(getPageSeo("/author/some-writer").title,/Imperial Novel/);
 
 const sitemap=buildSitemapXml(origin,[{id:12,updated_at:"2026-10-30T12:00:00Z"},{id:"13"},{id:"bad"},{id:0},{id:12}],[{author:"Sikander Khan"},{author:"Sikander & Co."},{author:"Sikander Khan"},{author:""}]);
