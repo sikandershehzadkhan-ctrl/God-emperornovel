@@ -31,8 +31,12 @@ assert.ok(coldDb.calls.some(sql => sql.includes("UNIQUE(user_id,comment_id)")),
   "new comment report tables must enforce one report per user/comment");
 assert.ok(coldDb.calls.some(sql => sql.includes("idx_comment_reports_user_comment")),
   "existing comment report tables need a unique index");
-assert.ok(coldDb.calls.some(sql => sql.includes("DELETE FROM comment_reports")),
-  "legacy duplicate reports must be collapsed before adding the unique index");
+const archiveAt = coldDb.calls.findIndex(sql => sql.includes("CREATE TABLE IF NOT EXISTS comment_reports_legacy_duplicates"));
+const archiveCopyAt = coldDb.calls.findIndex(sql => sql.includes("INSERT OR IGNORE INTO comment_reports_legacy_duplicates"));
+const dedupeAt = coldDb.calls.findIndex(sql => sql.includes("DELETE FROM comment_reports"));
+const uniqueIndexAt = coldDb.calls.findIndex(sql => sql.includes("idx_comment_reports_user_comment"));
+assert.ok(archiveAt >= 0 && archiveCopyAt > archiveAt && dedupeAt > archiveCopyAt && uniqueIndexAt > dedupeAt,
+  "legacy duplicate reports must be archived before deduplication and uniqueness enforcement");
 assert.ok(coldDb.calls.some(sql => sql.includes("FOREIGN KEY(comment_id) REFERENCES comments(id)")),
   "comment engagement tables must cascade with deleted comments");
 assert.ok(coldDb.calls.some(sql => sql.includes("ALTER TABLE comments ADD COLUMN parent_id INTEGER")));
@@ -45,6 +49,9 @@ for (const table of ["auth_rate_limits", "comment_likes", "comment_reports", "no
   assert.match(migration, new RegExp("CREATE TABLE IF NOT EXISTS " + table));
 }
 assert.match(migration, /idx_comment_reports_user_comment/);
+assert.match(migration, /INSERT OR IGNORE INTO comment_reports_legacy_duplicates/);
+assert.ok(migration.indexOf("INSERT OR IGNORE INTO comment_reports_legacy_duplicates") < migration.indexOf("DELETE FROM comment_reports"),
+  "migration must preserve legacy report records before removing duplicates");
 assert.match(migration, /FOREIGN KEY\(comment_id\) REFERENCES comments\(id\) ON DELETE CASCADE/);
 assert.match(worker, /INSERT OR IGNORE INTO comment_likes/,
   "concurrent duplicate likes must not surface as database errors");
