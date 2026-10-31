@@ -418,7 +418,7 @@ async function api(req,env){
   if(!env.MEDIA_BUCKET||typeof env.MEDIA_BUCKET.put!=="function")return json({error:"Private media storage is not configured. Uploads are not enabled yet."},503);
   const contentType=String(req.headers.get("content-type")||"").toLowerCase();
   const requestLength=req.headers.get("content-length");
-  if(!requestLength||!/^\\d+$/.test(requestLength))return json({error:"A valid Content-Length is required for bounded uploads."},411);
+  if(!requestLength||!/^\d+$/.test(requestLength))return json({error:"A valid Content-Length is required for bounded uploads."},411);
   const requestBytes=Number(requestLength);
   if(!Number.isSafeInteger(requestBytes)||requestBytes<1)return json({error:"Invalid upload request size."},400);
   if(requestBytes>20*1024*1024+65536)return json({error:"Upload request exceeds the 20 MiB image limit."},413);
