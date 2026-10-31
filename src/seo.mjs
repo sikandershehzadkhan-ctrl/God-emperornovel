@@ -59,7 +59,7 @@ function upsertMeta(html,attribute,key,content){
   return html.replace(/<\/head>/i,'<meta '+attribute+'="'+attr(key)+'" content="'+attr(content)+'">\n</head>');
 }
 export function canonicalPath(path){return path==="/discover"?"/catalog":path==="/formats"?"/":path}
-export function applySeoMetadata(html,{title,description,canonical,robots="index,follow",image}={}){
+export function applySeoMetadata(html,{title,description,canonical,robots="index,follow",image,structuredData}={}){
   const safeTitle=String(title||"Imperial Novel | Read • Create • Conquer").slice(0,180);
   const safeDescription=String(description||"Discover original, licensed and authorized stories on Imperial Novel.").replace(/\s+/g," ").trim().slice(0,300);
   let output=String(html).replace(/<title>[\s\S]*?<\/title>/i,"<title>"+attr(safeTitle)+"</title>");
@@ -84,7 +84,8 @@ export function applySeoMetadata(html,{title,description,canonical,robots="index
     const graph={"@context":"https://schema.org","@graph":[
       {"@type":"Organization","name":"Imperial Novel","url":origin},
       {"@type":"WebSite","name":"Imperial Novel","url":origin},
-      {"@type":"WebPage","name":safeTitle,"description":safeDescription,"url":canonical}
+      {"@type":"WebPage","name":safeTitle,"description":safeDescription,"url":canonical},
+      ...(structuredData&&typeof structuredData==="object"&&!Array.isArray(structuredData)?[structuredData]:[])
     ]};
     const jsonLd=JSON.stringify(graph).replaceAll("<","\\u003c");
     output=output.replace(/<script\s+type=["']application\/ld\+json["'][^>]*>[\s\S]*?<\/script>/gi,"");
