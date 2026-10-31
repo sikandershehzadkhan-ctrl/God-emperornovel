@@ -159,6 +159,7 @@ jobs:
           run_query "Session schema (columns only)" "PRAGMA table_info(sessions);"
           run_query "Ticket ledger schema (columns only)" "PRAGMA table_info(ticket_ledger);"
           run_query "Donation schema (columns only)" "PRAGMA table_info(donations);"
+          run_query "Donation reference duplicate audit (aggregate only)" "SELECT COUNT(*) AS donation_rows, COUNT(*)-COUNT(NULLIF(TRIM(reference_id),'')) AS blank_reference_rows, COUNT(DISTINCT CASE WHEN TRIM(reference_id)<>'' THEN LOWER(TRIM(reference_id)) END) AS distinct_nonblank_references, (SELECT COUNT(*) FROM (SELECT LOWER(TRIM(reference_id)) AS normalized_reference FROM donations WHERE TRIM(reference_id)<>'' GROUP BY LOWER(TRIM(reference_id)) HAVING COUNT(*)>1)) AS duplicate_reference_groups, (SELECT COALESCE(SUM(duplicate_rows-1),0) FROM (SELECT COUNT(*) AS duplicate_rows FROM donations WHERE TRIM(reference_id)<>'' GROUP BY LOWER(TRIM(reference_id)) HAVING COUNT(*)>1)) AS duplicate_extra_rows FROM donations;"
           run_query "Novel request schema (columns only)" "PRAGMA table_info(novel_requests);"
           run_query "Connector schema (columns only)" "PRAGMA table_info(connectors);"
           run_query "Comment schema (columns only)" "PRAGMA table_info(comments);"
@@ -172,7 +173,7 @@ jobs:
               ('novels','id'),('novels','title'),('novels','author'),('novels','description'),('novels','status'),('novels','kind'),('novels','rights_status'),('novels','views'),('novels','rating'),('novels','publication_status'),('novels','owner_user_id'),('novels','rights_evidence'),
               ('chapters','id'),('chapters','novel_id'),('chapters','chapter_number'),('chapters','title'),('chapters','content'),('chapters','is_locked'),('chapters','ticket_cost'),('chapters','publication_status'),
               ('app_settings','key'),('app_settings','value'),
-              ('donations','id'),('donations','user_id'),('donations','amount'),('donations','status'),
+              ('donations','id'),('donations','user_id'),('donations','amount'),('donations','reference_id'),('donations','status'),
               ('novel_requests','id'),('novel_requests','user_id'),('novel_requests','status')
           )
           SELECT e.table_name,e.column_name,
