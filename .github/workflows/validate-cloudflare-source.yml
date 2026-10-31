@@ -150,6 +150,9 @@ jobs:
       - name: Test immutable donation reviews and atomic Crown posting
         run: python3 scripts/test-donation-review-atomicity.py
 
+      - name: Test idempotent administrator Crown adjustments
+        run: python3 scripts/test-admin-ticket-adjustment-atomicity.py
+
       - name: Test media upload byte and metadata policy
         run: node scripts/test-media-upload-policy.mjs
 
