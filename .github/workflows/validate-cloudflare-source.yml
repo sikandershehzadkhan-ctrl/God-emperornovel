@@ -114,5 +114,8 @@ jobs:
           print(f'PASS: {len(paths)} migrations applied to fresh SQLite.')
           PY
 
+      - name: Test atomic batch chapter unlock accounting
+        run: python3 scripts/test-batch-chapter-unlock.py
+
       - name: Confirm validation only
         run: echo "Validation passed. This workflow does not deploy or modify production D1.";
