@@ -51,7 +51,12 @@ for(const label of ["Home","Discover","Trending","Rankings","Library","Community
   assert.ok(sourceApp.includes(">"+label+"</a>"),"Primary desktop navigation must include "+label);
 }
 assert.ok(sourceApp.includes('<nav class="navlinks" aria-label="Primary navigation">'),"Desktop navigation must have an accessible label");
-assert.ok(sourceApp.includes('aria-current="${active(\'/\')?\'page\':\'false\'}"'),"Current-page state must be exposed to assistive technology");
+assert.ok(sourceApp.includes("const isTrending="),"Trending navigation state must be derived from the catalog sort query");
+assert.ok(sourceApp.includes("const current=x=>navActive(x)?"),"Current-page state must be exposed to assistive technology");
+assert.ok(sourceApp.includes("aria-current"),"Current navigation destination must expose aria-current");
+assert.ok(!sourceApp.includes("aria-current=false"),"Inactive navigation links must not receive aria-current=false");
+for(const genre of ["fantasy","progression","romance","isekai"]){assert.ok(sourceApp.includes('href="/catalog?genre='+genre+'"'),"Homepage genre shortcut must open the catalog filter for "+genre);}
+assert.ok(!sourceApp.includes('href="/genres?genre='),"Homepage must not send genre shortcuts to an unsupported genre query route");
 assert.ok(sourceApp.includes('aria-label="Primary mobile navigation"'),"Mobile navigation must have an accessible label");
 assert.ok(sourceApp.includes("menuDrawer?.querySelector('a[href]')?.focus()"),"Opening the navigation drawer must move keyboard focus inside");
 assert.ok(sourceApp.includes("e.key==='Tab'&&menuButton?.getAttribute('aria-expanded')==='true'"),"Navigation drawer must trap keyboard focus while open");
