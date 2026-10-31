@@ -1,0 +1,207 @@
+/* Imperial Novel 17.24 design foundation
+   Home surfaces use one coherent imperial palette: purple for identity,
+   sapphire for discovery, white for clarity and obsidian for depth. */
+:root{
+  --in-brand-purple:#7652d5;
+  --in-brand-purple-strong:#6541c4;
+  --in-brand-sapphire:#3978e8;
+  --in-brand-obsidian:#0b0d16;
+  --in-brand-white:#fbfcff;
+}
+.homePage .nextHero{
+  border:1px solid rgba(118,82,213,.20);
+  border-radius:24px;
+  background:linear-gradient(125deg,#fff 0%,#f8f7ff 58%,#f0f5ff 100%);
+  box-shadow:0 12px 34px rgba(31,35,68,.055);
+}
+.homePage .nextHero h1 span{
+  background:none;
+  color:var(--in-brand-purple);
+  -webkit-text-fill-color:currentColor;
+}
+.homePage .heroSearch{
+  border-color:rgba(118,82,213,.22);
+  box-shadow:0 8px 24px rgba(31,35,68,.06);
+}
+.homePage .heroSearch button,
+.homePage .actions .primary,
+.homePage .nextCreatorBand .primary{
+  background:var(--in-brand-purple);
+  border-color:var(--in-brand-purple);
+  color:#fff;
+  box-shadow:none;
+}
+.homePage .heroSearch button:hover,
+.homePage .actions .primary:hover,
+.homePage .nextCreatorBand .primary:hover{
+  background:var(--in-brand-purple-strong);
+}
+.homePage .heroTags a{
+  border-color:rgba(118,82,213,.18);
+  color:#56516d;
+}
+.homePage .heroTags a:hover{
+  border-color:var(--in-brand-sapphire);
+  background:rgba(57,120,232,.07);
+  color:#244f9b;
+}
+.homePage .homeFormatShelf{
+  border-color:rgba(118,82,213,.16);
+  background:linear-gradient(135deg,#fff 0%,#f7f5ff 62%,#f1f6ff 100%);
+  box-shadow:0 10px 28px rgba(31,35,68,.045);
+}
+.homePage .homeFormatHeading h2 span,
+.homePage .nextFeatureIntro h2 span{
+  color:var(--in-brand-sapphire);
+}
+.homePage .homeFormatCard{
+  border-color:rgba(118,82,213,.15);
+  background:#fff;
+  color:#242338;
+}
+.homePage .homeFormatPrimary{
+  border-color:rgba(118,82,213,.30);
+  background:linear-gradient(115deg,rgba(118,82,213,.075),rgba(57,120,232,.045));
+}
+.homePage .homeFormatGlyph{
+  background:rgba(118,82,213,.10);
+  color:var(--in-brand-purple);
+}
+.homePage .homeFormatArrow,
+.homePage .featureInlineLink{
+  color:var(--in-brand-sapphire);
+}
+.homePage .nextFeatureDeck{
+  gap:14px;
+}
+.homePage .nextFeatureTile{
+  border-color:rgba(118,82,213,.16);
+  background:#fff;
+  box-shadow:0 8px 24px rgba(31,35,68,.035);
+}
+.homePage .featureTrend,
+.homePage .featureForge,
+.homePage .featureCommunity,
+.homePage .featurePortal{
+  --tile-accent:var(--in-brand-purple);
+}
+.homePage .featureForge,
+.homePage .featurePortal{
+  --tile-accent:var(--in-brand-sapphire);
+}
+.homePage .nextFeatureTile:before{
+  height:2px;
+  opacity:.9;
+}
+.homePage .featureGlyph{
+  background:rgba(118,82,213,.09);
+  color:var(--tile-accent);
+}
+.homePage .nextFeatureTile:hover{
+  border-color:rgba(57,120,232,.35);
+  box-shadow:0 12px 28px rgba(31,35,68,.06);
+}
+.homePage .nextCreatorBand{
+  border:1px solid rgba(118,82,213,.18);
+  background:linear-gradient(115deg,#f7f5ff,#f2f6ff);
+}
+.homePage .nextReaderPromise{
+  border-color:rgba(118,82,213,.17);
+}
+.homePage .homeStoryGrid .card{
+  border-color:rgba(118,82,213,.14);
+  box-shadow:0 6px 20px rgba(31,35,68,.035);
+}
+.homePage .homeStoryGrid .card:hover{
+  border-color:rgba(57,120,232,.34);
+  box-shadow:0 10px 26px rgba(31,35,68,.07);
+}
+.homePage a:focus-visible,
+.homePage button:focus-visible,
+.homePage input:focus-visible{
+  outline:3px solid var(--in-brand-sapphire);
+  outline-offset:3px;
+}
+html[data-theme="dark"] .homePage .nextHero{
+  border-color:#292d40;
+  background:#0e111c;
+  box-shadow:none;
+}
+html[data-theme="dark"] .homePage .nextHero h1 span{
+  color:#a991ff;
+}
+html[data-theme="dark"] .homePage .heroSearch{
+  border-color:#343950;
+  box-shadow:none;
+}
+html[data-theme="dark"] .homePage .heroSearch button,
+html[data-theme="dark"] .homePage .actions .primary,
+html[data-theme="dark"] .homePage .nextCreatorBand .primary{
+  background:#7652d5;
+  border-color:#8b70e5;
+  color:#fff;
+}
+html[data-theme="dark"] .homePage .heroTags a{
+  border-color:#30364b;
+  color:#c7cce0;
+}
+html[data-theme="dark"] .homePage .homeFormatShelf{
+  border-color:#292e42;
+  background:#111522;
+  box-shadow:none;
+}
+html[data-theme="dark"] .homePage .homeFormatCard{
+  border-color:#30364b;
+  background:#0e1320;
+  color:#f1f3ff;
+}
+html[data-theme="dark"] .homePage .homeFormatPrimary{
+  border-color:rgba(169,145,255,.40);
+  background:rgba(118,82,213,.12);
+}
+html[data-theme="dark"] .homePage .nextFeatureTile{
+  border-color:#292e42;
+  background:#111522;
+  box-shadow:none;
+}
+html[data-theme="dark"] .homePage .nextFeatureTile:hover{
+  border-color:#536da8;
+  background:#151c2d;
+  box-shadow:none;
+}
+html[data-theme="dark"] .homePage .featureGlyph{
+  background:rgba(118,82,213,.15);
+}
+html[data-theme="dark"] .homePage .nextCreatorBand{
+  border-color:#292e42;
+  background:#111522;
+}
+html[data-theme="dark"] .homePage .homeStoryGrid .card{
+  border-color:#292e42;
+  box-shadow:none;
+}
+html[data-theme="dark"] .homePage .homeStoryGrid .card:hover{
+  border-color:#536da8;
+  box-shadow:none;
+}
+@media(max-width:760px){
+  .homePage .nextHero{border-radius:18px;box-shadow:none}
+  .homePage .homeFormatShelf{box-shadow:none}
+  .homePage .nextFeatureDeck{gap:10px}
+  .homePage .nextFeatureTile{min-height:230px}
+  .homePage .nextCreatorBand{box-shadow:none}
+  .homePage .homeStoryGrid .card{box-shadow:none}
+}
+@media(prefers-reduced-motion:reduce){
+  .homePage .homeFormatCard,
+  .homePage .nextFeatureTile,
+  .homePage .homeStoryGrid .card,
+  .homePage .homeStoryGrid .card img{
+    transition:none!important;
+  }
+  .homePage .homeFormatCard:hover,
+  .homePage .nextFeatureTile:hover,
+  .homePage .homeStoryGrid .card:hover img{
+    transform:none!important;
+  }
+}
