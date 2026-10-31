@@ -61,12 +61,6 @@ WHERE rowid NOT IN (
 DELETE FROM comment_likes
 WHERE NOT EXISTS (SELECT 1 FROM users u WHERE u.id=comment_likes.user_id)
    OR NOT EXISTS (SELECT 1 FROM comments c WHERE c.id=comment_likes.comment_id);
-DELETE FROM novel_reactions
-WHERE NOT EXISTS (SELECT 1 FROM users u WHERE u.id=novel_reactions.user_id)
-   OR NOT EXISTS (SELECT 1 FROM novels n WHERE n.id=novel_reactions.novel_id);
-DELETE FROM request_votes
-WHERE NOT EXISTS (SELECT 1 FROM users u WHERE u.id=request_votes.user_id)
-   OR NOT EXISTS (SELECT 1 FROM novel_requests r WHERE r.id=request_votes.request_id);
 -- Remove duplicate and orphan reports only after preserving report history above.
 DELETE FROM comment_reports
 WHERE rowid NOT IN (
@@ -101,6 +95,13 @@ CREATE TABLE IF NOT EXISTS request_votes (
 );
 CREATE INDEX IF NOT EXISTS idx_request_votes_request
   ON request_votes(request_id);
+-- Clean orphan rows from the legacy tables after all referenced tables exist.
+DELETE FROM novel_reactions
+WHERE NOT EXISTS (SELECT 1 FROM users u WHERE u.id=novel_reactions.user_id)
+   OR NOT EXISTS (SELECT 1 FROM novels n WHERE n.id=novel_reactions.novel_id);
+DELETE FROM request_votes
+WHERE NOT EXISTS (SELECT 1 FROM users u WHERE u.id=request_votes.user_id)
+   OR NOT EXISTS (SELECT 1 FROM novel_requests r WHERE r.id=request_votes.request_id);
 
 
 -- Enforce referential integrity for legacy tables created before FK constraints existed.
