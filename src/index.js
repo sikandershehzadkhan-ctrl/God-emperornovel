@@ -456,6 +456,28 @@ async function api(req,env){
    return json({error:"Private image upload could not be completed."},500);
   }
  }
+ if(/^\/api\/admin\/media\/\d+\/review$/.test(p)&&m==="POST"){
+  const e=admin(u);if(e)return e;
+  if(req.headers.get("origin")!==url.origin)return json({error:"Cross-origin media review requests are not allowed."},403);
+  const assetId=Number(p.split("/")[4]);
+  if(!Number.isSafeInteger(assetId)||assetId<1)return json({error:"Invalid media asset id."},400);
+  const b=await body(req),decision=String(b.decision||"").trim().toLowerCase();
+  const note=String(b.note||"").trim().slice(0,2000);
+  if(!["approved","rejected","withdrawn"].includes(decision))return json({error:"Decision must be approved, rejected or withdrawn."},400);
+  const asset=await env.DB.prepare("SELECT id,status,rights_status,rights_holder,license_name,rights_evidence FROM media_assets WHERE id=?").bind(assetId).first();
+  if(!asset)return json({error:"Media asset not found."},404);
+  if(!["uploaded","processing","ready"].includes(asset.status))return json({error:"Only uploaded or processed assets can be reviewed."},409);
+  if(decision==="approved"&&(!String(asset.rights_holder||"").trim()||!String(asset.license_name||"").trim()||!String(asset.rights_evidence||"").trim()))return json({error:"Rights holder, license and evidence are required before approval."},409);
+  try{
+   const results=await env.DB.batch([
+    env.DB.prepare("INSERT INTO media_asset_reviews(media_asset_id,reviewer_user_id,decision,note) VALUES(?,?,?,?)").bind(assetId,u.id,decision,note),
+    env.DB.prepare("UPDATE media_assets SET rights_status=?,reviewed_at=CURRENT_TIMESTAMP,reviewed_by_user_id=? WHERE id=? AND status IN ('uploaded','processing','ready')").bind(decision,u.id,assetId)
+   ]);
+   if(!Number(results?.[1]?.meta?.changes||0))return json({error:"Media asset changed during review. Refresh and review again."},409);
+   await audit(env,u,"media_asset_rights_reviewed",`asset=${assetId};decision=${decision}`);
+   return json({ok:true,asset_id:assetId,rights_status:decision,reviewer_user_id:u.id});
+  }catch(err){console.error("media rights review failed",err);return json({error:"Media rights review could not be recorded."},500)}
+ }
  if(p==="/api/agents"&&m==="GET"){return json((await env.DB.prepare(`SELECT slug,name,role,icon,mode,status,last_run_at FROM agents WHERE enabled=1 ORDER BY id`).all()).results)}
  if(p==="/api/admin/agents"&&m==="GET"){const e=admin(u);if(e)return e;return json((await env.DB.prepare(`SELECT id,slug,name,role,icon,mode,status,enabled,last_run_at,last_result FROM agents ORDER BY id`).all()).results)}
  if(p==="/api/admin/agents/run"&&m==="POST"){const e=admin(u);if(e)return e;const b=await body(req);const slug=String(b.slug||'');if(slug)return json(await runAgent(env,slug,'admin'));return json(await runAutomation(env))}
