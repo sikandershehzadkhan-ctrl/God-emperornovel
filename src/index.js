@@ -58,6 +58,12 @@ async function ensurePublishingSchema(env){
   const ci=(await env.DB.prepare('PRAGMA table_info(chapters)').all()).results||[];
   const chHave=new Set(ci.map(x=>String(x.name)));
   if(!chHave.has('publication_status')){await env.DB.prepare("ALTER TABLE chapters ADD COLUMN publication_status TEXT NOT NULL DEFAULT 'published'").run()}
+  if(!chHave.has('updated_at')){
+   await env.DB.prepare('ALTER TABLE chapters ADD COLUMN updated_at TEXT').run();
+   await env.DB.prepare('UPDATE chapters SET updated_at=COALESCE(created_at,CURRENT_TIMESTAMP) WHERE updated_at IS NULL OR updated_at=\'\'').run();
+  }
+  await env.DB.prepare(`CREATE TRIGGER IF NOT EXISTS chapters_set_updated_at_after_insert AFTER INSERT ON chapters BEGIN UPDATE chapters SET updated_at=CURRENT_TIMESTAMP WHERE id=NEW.id; END`).run();
+  await env.DB.prepare('CREATE INDEX IF NOT EXISTS idx_chapters_updated ON chapters(publication_status,updated_at)').run();
   await env.DB.prepare("UPDATE chapters SET publication_status='published' WHERE publication_status IS NULL OR publication_status=''").run()
   await env.DB.prepare('CREATE INDEX IF NOT EXISTS idx_chapters_publication ON chapters(novel_id,publication_status,chapter_number)').run()
   await env.DB.prepare(`CREATE TABLE IF NOT EXISTS chapter_views (chapter_id INTEGER PRIMARY KEY, views INTEGER NOT NULL DEFAULT 0, updated_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP, FOREIGN KEY(chapter_id) REFERENCES chapters(id) ON DELETE CASCADE)`).run();
