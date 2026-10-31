@@ -80,3 +80,85 @@ CREATE TABLE IF NOT EXISTS request_votes (
 );
 CREATE INDEX IF NOT EXISTS idx_request_votes_request
   ON request_votes(request_id);
+
+
+-- Enforce referential integrity for legacy tables created before FK constraints existed.
+CREATE TRIGGER IF NOT EXISTS trg_comment_likes_validate_insert
+BEFORE INSERT ON comment_likes
+WHEN NOT EXISTS (SELECT 1 FROM users WHERE id=NEW.user_id)
+  OR NOT EXISTS (SELECT 1 FROM comments WHERE id=NEW.comment_id)
+BEGIN SELECT RAISE(ABORT,'comment_likes parent missing'); END;
+
+CREATE TRIGGER IF NOT EXISTS trg_comment_likes_validate_update
+BEFORE UPDATE OF user_id,comment_id ON comment_likes
+WHEN NOT EXISTS (SELECT 1 FROM users WHERE id=NEW.user_id)
+  OR NOT EXISTS (SELECT 1 FROM comments WHERE id=NEW.comment_id)
+BEGIN SELECT RAISE(ABORT,'comment_likes parent missing'); END;
+
+CREATE TRIGGER IF NOT EXISTS trg_comment_likes_user_cascade
+AFTER DELETE ON users
+BEGIN DELETE FROM comment_likes WHERE user_id=OLD.id; END;
+
+CREATE TRIGGER IF NOT EXISTS trg_comment_likes_comment_cascade
+AFTER DELETE ON comments
+BEGIN DELETE FROM comment_likes WHERE comment_id=OLD.id; END;
+
+CREATE TRIGGER IF NOT EXISTS trg_comment_reports_validate_insert
+BEFORE INSERT ON comment_reports
+WHEN NOT EXISTS (SELECT 1 FROM users WHERE id=NEW.user_id)
+  OR NOT EXISTS (SELECT 1 FROM comments WHERE id=NEW.comment_id)
+BEGIN SELECT RAISE(ABORT,'comment_reports parent missing'); END;
+
+CREATE TRIGGER IF NOT EXISTS trg_comment_reports_validate_update
+BEFORE UPDATE OF user_id,comment_id ON comment_reports
+WHEN NOT EXISTS (SELECT 1 FROM users WHERE id=NEW.user_id)
+  OR NOT EXISTS (SELECT 1 FROM comments WHERE id=NEW.comment_id)
+BEGIN SELECT RAISE(ABORT,'comment_reports parent missing'); END;
+
+CREATE TRIGGER IF NOT EXISTS trg_comment_reports_user_cascade
+AFTER DELETE ON users
+BEGIN DELETE FROM comment_reports WHERE user_id=OLD.id; END;
+
+CREATE TRIGGER IF NOT EXISTS trg_comment_reports_comment_cascade
+AFTER DELETE ON comments
+BEGIN DELETE FROM comment_reports WHERE comment_id=OLD.id; END;
+
+CREATE TRIGGER IF NOT EXISTS trg_novel_reactions_validate_insert
+BEFORE INSERT ON novel_reactions
+WHEN NOT EXISTS (SELECT 1 FROM users WHERE id=NEW.user_id)
+  OR NOT EXISTS (SELECT 1 FROM novels WHERE id=NEW.novel_id)
+BEGIN SELECT RAISE(ABORT,'novel_reactions parent missing'); END;
+
+CREATE TRIGGER IF NOT EXISTS trg_novel_reactions_validate_update
+BEFORE UPDATE OF user_id,novel_id ON novel_reactions
+WHEN NOT EXISTS (SELECT 1 FROM users WHERE id=NEW.user_id)
+  OR NOT EXISTS (SELECT 1 FROM novels WHERE id=NEW.novel_id)
+BEGIN SELECT RAISE(ABORT,'novel_reactions parent missing'); END;
+
+CREATE TRIGGER IF NOT EXISTS trg_novel_reactions_user_cascade
+AFTER DELETE ON users
+BEGIN DELETE FROM novel_reactions WHERE user_id=OLD.id; END;
+
+CREATE TRIGGER IF NOT EXISTS trg_novel_reactions_novel_cascade
+AFTER DELETE ON novels
+BEGIN DELETE FROM novel_reactions WHERE novel_id=OLD.id; END;
+
+CREATE TRIGGER IF NOT EXISTS trg_request_votes_validate_insert
+BEFORE INSERT ON request_votes
+WHEN NOT EXISTS (SELECT 1 FROM users WHERE id=NEW.user_id)
+  OR NOT EXISTS (SELECT 1 FROM novel_requests WHERE id=NEW.request_id)
+BEGIN SELECT RAISE(ABORT,'request_votes parent missing'); END;
+
+CREATE TRIGGER IF NOT EXISTS trg_request_votes_validate_update
+BEFORE UPDATE OF user_id,request_id ON request_votes
+WHEN NOT EXISTS (SELECT 1 FROM users WHERE id=NEW.user_id)
+  OR NOT EXISTS (SELECT 1 FROM novel_requests WHERE id=NEW.request_id)
+BEGIN SELECT RAISE(ABORT,'request_votes parent missing'); END;
+
+CREATE TRIGGER IF NOT EXISTS trg_request_votes_user_cascade
+AFTER DELETE ON users
+BEGIN DELETE FROM request_votes WHERE user_id=OLD.id; END;
+
+CREATE TRIGGER IF NOT EXISTS trg_request_votes_request_cascade
+AFTER DELETE ON novel_requests
+BEGIN DELETE FROM request_votes WHERE request_id=OLD.id; END;
