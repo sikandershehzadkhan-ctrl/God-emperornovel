@@ -1,0 +1,74 @@
+name: Graphify architecture map
+
+on:
+  pull_request:
+    paths:
+      - "**/*.js"
+      - "**/*.mjs"
+      - "**/*.ts"
+      - "**/*.tsx"
+      - "**/*.jsx"
+      - "**/*.py"
+      - "**/*.sql"
+      - "**/*.json"
+      - "**/*.toml"
+      - ".github/workflows/graphify.yml"
+  push:
+    branches: [main]
+    paths:
+      - "**/*.js"
+      - "**/*.mjs"
+      - "**/*.ts"
+      - "**/*.tsx"
+      - "**/*.jsx"
+      - "**/*.py"
+      - "**/*.sql"
+      - "**/*.json"
+      - "**/*.toml"
+      - ".github/workflows/graphify.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: imperial-novel-graphify-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  code-architecture:
+    name: Build official Graphify code graph (offline)
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - name: Checkout source
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 1
+
+      - name: Set up Python and uv
+        uses: astral-sh/setup-uv@v5
+        with:
+          python-version: "3.12"
+          enable-cache: true
+
+      - name: Install official Graphify CLI
+        run: uv tool install graphifyy
+
+      - name: Extract repository code graph without an LLM
+        run: graphify extract . --code-only
+
+      - name: Verify graph outputs
+        run: |
+          set -euo pipefail
+          test -s graphify-out/graph.json
+          test -s graphify-out/GRAPH_REPORT.md
+          echo "Official Graphify code-only extraction produced graph.json and GRAPH_REPORT.md."
+
+      - name: Publish architecture graph artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: imperial-novel-graphify-${{ github.sha }}
+          path: graphify-out/
+          if-no-files-found: error
+          retention-days: 14
