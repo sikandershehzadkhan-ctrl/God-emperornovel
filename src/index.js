@@ -454,12 +454,21 @@ async function api(req,env){
  if(p==="/api/platform/overview"&&m==="GET"){
   await ensurePublishingSchema(env);
   const eligible="publication_status='published' AND rights_status IN ('original','public_domain','licensed','authorized')";
-  const [catalog,activity,updates,trending]=await Promise.all([
+  const [catalog,activity,engagement,updates,trending]=await Promise.all([
    env.DB.prepare(`SELECT COUNT(*) publishedNovels,COALESCE(SUM(views),0) catalogViews,COUNT(DISTINCT NULLIF(TRIM(author),'')) publicAuthors FROM novels WHERE ${eligible}`).first(),
    env.DB.prepare(`SELECT
     (SELECT COUNT(*) FROM chapters c JOIN novels n ON n.id=c.novel_id WHERE c.publication_status='published' AND n.${eligible}) publishedChapters,
     (SELECT COUNT(DISTINCT h.user_id) FROM history h JOIN novels n ON n.id=h.novel_id WHERE n.${eligible} AND h.updated_at>=datetime('now','-24 hours')) readersInLast24Hours,
     (SELECT COUNT(*) FROM chapters c JOIN novels n ON n.id=c.novel_id WHERE c.publication_status='published' AND n.${eligible} AND c.updated_at>=datetime('now','-24 hours')) chapterUpdatesLast24Hours`).first(),
+   env.DB.prepare(`SELECT
+    (SELECT COALESCE(SUM(cv.views),0) FROM chapter_views cv JOIN chapters c ON c.id=cv.chapter_id JOIN novels n ON n.id=c.novel_id WHERE c.publication_status='published' AND n.${eligible}) chapterViews,
+    (SELECT COUNT(*) FROM comments cm JOIN novels n ON n.id=cm.novel_id WHERE cm.status='visible' AND n.${eligible}) visibleComments,
+    (SELECT COUNT(*) FROM comments cm JOIN novels n ON n.id=cm.novel_id WHERE cm.status='visible' AND n.${eligible} AND cm.created_at>=datetime('now','-24 hours')) commentsLast24Hours,
+    (SELECT COUNT(*) FROM comment_likes cl JOIN comments cm ON cm.id=cl.comment_id JOIN novels n ON n.id=cm.novel_id WHERE cm.status='visible' AND n.${eligible}) commentLikes,
+    (SELECT COUNT(*) FROM novel_reactions nr JOIN novels n ON n.id=nr.novel_id WHERE n.${eligible}) novelReactions,
+    (SELECT COUNT(*) FROM ratings r JOIN novels n ON n.id=r.novel_id WHERE n.${eligible}) ratings,
+    (SELECT COUNT(*) FROM bookmarks b JOIN novels n ON n.id=b.novel_id WHERE n.${eligible}) bookmarks,
+    (SELECT COUNT(*) FROM follows f JOIN novels n ON n.id=f.novel_id WHERE n.${eligible}) follows`).first(),
    env.DB.prepare(`SELECT c.novel_id,n.title novel_title,n.author,n.cover_url,c.chapter_number,c.title chapter_title,c.updated_at FROM chapters c JOIN novels n ON n.id=c.novel_id WHERE c.publication_status='published' AND n.${eligible} ORDER BY c.updated_at DESC,c.id DESC LIMIT 8`).all(),
    env.DB.prepare(`SELECT n.id,n.title,n.author,n.cover_url,COUNT(u.chapter_id) unlocksLast7Days FROM novels n JOIN chapters c ON c.novel_id=n.id AND c.publication_status='published' JOIN unlocks u ON u.chapter_id=c.id AND u.unlocked_at>=datetime('now','-7 days') WHERE n.${eligible} GROUP BY n.id ORDER BY unlocksLast7Days DESC,n.updated_at DESC LIMIT 5`).all()
   ]);
@@ -477,6 +486,14 @@ async function api(req,env){
     catalogViews:"Cumulative view counter stored on eligible published novels.",
     readersInLast24Hours:"Distinct signed-in accounts with a reading-history update in the previous 24 hours; not current online users.",
     chapterUpdatesLast24Hours:"Published chapters on eligible novels whose updated_at falls within the previous 24 hours.",
+    chapterViews:"Cumulative chapter view requests recorded by the chapter reader; repeat visits may count again and are not unique readers.",
+    visibleComments:"Total comments currently visible on eligible published novels.",
+    commentsLast24Hours:"Visible comments created during the previous rolling 24 hours.",
+    commentLikes:"Cumulative likes on currently visible comments on eligible published novels.",
+    novelReactions:"Current novel reactions across eligible published novels; one current reaction per account and novel.",
+    ratings:"Current reader ratings recorded for eligible published novels; one current rating per account and novel.",
+    bookmarks:"Current chapter bookmarks recorded on eligible published novels.",
+    follows:"Current novel follows recorded on eligible published novels.",
     trending:"Published chapter unlock events during the previous seven days, grouped by eligible novel."
    },
    metrics:{
@@ -485,7 +502,15 @@ async function api(req,env){
     creditedAuthors:Number(catalog?.publicAuthors||0),
     catalogViews:Number(catalog?.catalogViews||0),
     readersInLast24Hours:Number(activity?.readersInLast24Hours||0),
-    chapterUpdatesLast24Hours:Number(activity?.chapterUpdatesLast24Hours||0)
+    chapterUpdatesLast24Hours:Number(activity?.chapterUpdatesLast24Hours||0),
+    chapterViews:Number(engagement?.chapterViews||0),
+    visibleComments:Number(engagement?.visibleComments||0),
+    commentsLast24Hours:Number(engagement?.commentsLast24Hours||0),
+    commentLikes:Number(engagement?.commentLikes||0),
+    novelReactions:Number(engagement?.novelReactions||0),
+    ratings:Number(engagement?.ratings||0),
+    bookmarks:Number(engagement?.bookmarks||0),
+    follows:Number(engagement?.follows||0)
    },
    recentUpdates:updates.results||[],
    trending:trending.results||[]
