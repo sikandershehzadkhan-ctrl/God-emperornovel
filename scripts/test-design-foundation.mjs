@@ -56,6 +56,10 @@ assert.ok(sourceApp.includes("$('#trend').setAttribute('aria-busy','false');$('#
 assert.ok(css.includes("aspect-ratio:.76"),"Loading placeholders must reserve a stable story-card footprint");
 assert.ok(css.includes("@media(prefers-reduced-motion:reduce){.skeletonCard{animation:none;background:var(--in-surface)}}"),"Story loading animation must respect reduced-motion preferences");
 assert.ok(css.includes("Homepage story cards: editorial hierarchy"),"Homepage story-card refinement must remain in the design foundation");
+assert.ok(css.includes(".authorLandingHero"),"Public author onboarding must use the shared Imperial design system.");
+assert.ok(css.includes(".authorLandingBenefits"),"Author benefits must have a responsive card layout.");
+assert.ok(css.includes(".authorLandingProcess"),"Author onboarding steps must have a structured responsive layout.");
+assert.ok(css.includes("@media(max-width:640px)"),"Author onboarding must have a dedicated narrow-screen layout.");
 assert.ok(css.includes("-webkit-line-clamp:2"),"Story titles must wrap to two readable lines instead of truncating after one");
 assert.ok(css.includes(".homeStoryGrid.multiStory{grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}"),"Phone story shelves must use a stable two-column grid");
 assert.ok(css.includes("@media(max-width:360px)"),"Very narrow phones must switch story cards to a readable horizontal layout");
