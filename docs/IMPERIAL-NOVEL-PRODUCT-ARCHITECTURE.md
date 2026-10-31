@@ -236,3 +236,16 @@ All public overview engagement queries are restricted to published novels with o
 The comment-like and novel-reaction tables are created idempotently at runtime for existing installations and by migration 0013_reader_engagement_metrics.sql for fresh installations. The runtime path exists because older production databases may already have the core-schema marker and skip the original bootstrap statements.
 
 Before introducing unique readers, reading sessions, online presence, or per-minute activity charts, add a deliberate privacy-aware event model with retention limits, deduplication rules and abuse controls. Do not infer these metrics from page requests or current history rows.
+
+## Chapter-level real-time activity in the reader
+
+Unlocked chapter pages expose a dedicated GET /api/chapter-engagement?chapter_id=... endpoint and refresh it every 30 seconds while the reader page is visible. It returns a request-time D1 snapshot with generated_at, Cache-Control: no-store, and explicit metric definitions.
+
+The chapter panel reports:
+- **Reader requests:** the existing cumulative chapter_views.views counter. The current chapter-content endpoint increments this counter before unlock authorization is resolved, so it can include locked-chapter checks and repeat requests. It is not a unique-reader or successful-read count.
+- **Unlocks:** current unlock rows recorded for the chapter.
+- **Signed-in readers · 24h:** distinct accounts whose latest history row for the novel points to this chapter and was updated within the previous 24 hours. Because history stores only one current chapter per account and novel, this can undercount readers who moved elsewhere. It is not online presence.
+
+The endpoint is restricted to published chapters in published novels with eligible rights status. It does not return chapter content, user IDs, comment bodies or personal reading histories. Locked chapters do not display the activity panel's figures. Polling pauses while the reader page is hidden, and a failed refresh must not interrupt reading or erase the last successful metrics.
+
+Novel-level comments and reactions remain attributed to the novel because the current comments schema has no chapter_id. Do not imply that a novel comment belongs to the chapter currently open. A future chapter discussion feature requires an explicit schema migration and moderation/privacy design.
