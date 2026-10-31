@@ -14,7 +14,7 @@ db.executescript("""
 CREATE TABLE users(id INTEGER PRIMARY KEY, tickets REAL NOT NULL DEFAULT 0);
 CREATE TABLE donations(id INTEGER PRIMARY KEY, user_id INTEGER REFERENCES users(id) ON DELETE SET NULL, amount REAL NOT NULL, reference_id TEXT NOT NULL, status TEXT NOT NULL DEFAULT 'pending');
 CREATE TABLE ticket_ledger(id INTEGER PRIMARY KEY, user_id INTEGER NOT NULL, delta REAL NOT NULL, reason TEXT NOT NULL, reference TEXT DEFAULT '');
-INSERT INTO users(id,tickets) VALUES(7,15);
+INSERT INTO users(id,tickets) VALUES(7,15),(99,0);
 INSERT INTO donations(id,user_id,amount,reference_id,status) VALUES(41,7,25,'TX-41','pending');
 INSERT INTO donations(id,user_id,amount,reference_id,status) VALUES(42,7,50,'TX-42','pending');
 INSERT INTO donations(id,user_id,amount,reference_id,status) VALUES(43,7,75,'TX-43','pending');
