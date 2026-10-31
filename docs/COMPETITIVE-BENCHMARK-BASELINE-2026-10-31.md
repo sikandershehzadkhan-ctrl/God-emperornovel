@@ -393,3 +393,35 @@ The visible Discover navigation points to \`/catalog\`. The application also map
 ### Verification boundaries
 
 These were public, read-only requests. The browser did not authenticate, submit forms, unlock paid chapters, or alter data. The returned HTTP status and JSON body are verified; response-time measurements were not exposed by this run.
+
+
+## Fish browser competitive review (31 October 2026)
+
+Read-only public-page comparison of Imperial Novel, WebNovel and WTR-LAB. No sign-in, purchases, form submissions, or data changes.
+
+### Imperial Novel observations
+- Public navigation exposes Discover, Formats, Genres, Community, Rankings, OmniPortal and Library, with language, theme, search, notifications and profile controls.
+- Hero positioning and search are visible; catalog filters include sort, status, type, rating, genre, tag and language.
+- Creator Studio, World Forge and Trend Factory entry points are visible.
+- Language selector exposes 14 choices in this browser session. This establishes interface language options only; it does not prove chapter translation quality or RTL correctness.
+- The public health URL returned HTTP 200 in this browser session. This run did not expose a version string or detailed JSON payload; earlier direct API tests did return version 17.20.0. Treat health body/version presentation as inconsistent across observations and retest with a direct HTTP client.
+- Homepage first-view content density was sparse compared with WebNovel. Some shelves may hydrate after initial load; the browser did not certify their complete load behavior.
+- Rankings exist, but public inspection did not establish the depth of time-windowed rankings or separate ranking families for novels, fanfiction and comics.
+- The comic/manhwa catalog population and actual creator upload/publishing journey remain unverified.
+
+### Competitor observations
+- WebNovel public pages showed dense content shelves, distinct novel/comic/fanfiction discovery, extensive ranking families (including trending, collection, popularity, update, active and fandom), and a separate Inkstone creator entry point.
+- WTR-LAB public pages showed a focused novel list, daily ranking, leaderboard, public statistics, changelog, Discord and Patreon links.
+- This is a public-surface comparison only. It does not certify competitors' backend, security, payment systems or logged-in workflows.
+
+### Prioritized product gaps
+1. Increase useful first-screen content density without sacrificing load performance.
+2. Expand rankings only where metrics are real and auditable: trending, update activity, collection/favorites, reader activity, and separate eligible content formats.
+3. Add a clear author onboarding/benefits/help journey and explain Creator Studio vs World Forge.
+4. Build a public transparency/statistics and help center surface with privacy-safe, real counts.
+5. Verify localization end to end, including persistence, translated UI coverage, Arabic/Persian RTL and accessible language switching.
+6. Implement and test a genuine comic creator workflow: authorized image upload/storage, ordering, validation, preview, draft/publish, reader rendering, and takedown/rights controls. Do not present catalog format labels as a complete comics publishing system.
+7. Keep external community integrations optional and do not add fake Discord/social links before official channels exist.
+
+### Confidence
+High confidence for the elements directly visible in the browser; medium/low for dynamically loaded sections; not assessed for authenticated, transactional, administrative, backend and competitor-only account features. No comparative numerical score is assigned until equivalent test scenarios and sample sizes are established.
