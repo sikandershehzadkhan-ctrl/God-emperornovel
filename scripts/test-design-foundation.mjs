@@ -47,6 +47,13 @@ for(const token of ["--in-brand:#6A0DAD","--in-discovery:#0F52BA","--in-ink:#0B1
 assert.equal((html.match(/imperial-design-foundation\.css/g)||[]).length,1,"Design foundation must be linked exactly once");
 assert.ok(html.indexOf("imperial-glass.css")<html.indexOf("imperial-design-foundation.css"),"Foundation must load after legacy global styles");
 assert.equal(sourceApp,releaseApp,"Editable and versioned browser bundles must remain synchronized");
+for(const label of ["Home","Discover","Trending","Rankings","Library","Community","Create"]){
+  assert.ok(sourceApp.includes(">"+label+"</a>"),"Primary desktop navigation must include "+label);
+}
+assert.ok(sourceApp.includes('<nav class="navlinks" aria-label="Primary navigation">'),"Desktop navigation must have an accessible label");
+assert.ok(sourceApp.includes('aria-current="${active(\'/\')?\'page\':\'false\'}"'),"Current-page state must be exposed to assistive technology");
+assert.ok(sourceApp.includes('aria-label="Primary mobile navigation"'),"Mobile navigation must have an accessible label");
+
 const theme=html.match(/<meta name="theme-color" content="([^"]+)"/);
 assert.ok(theme,"HTML theme color meta must exist");
 assert.equal(theme[1],manifest.theme_color,"HTML and PWA theme colors must match");
