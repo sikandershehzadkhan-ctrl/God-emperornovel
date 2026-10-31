@@ -11,11 +11,12 @@ const start=source.indexOf('if(p==="/api/platform/overview"&&m==="GET"){');
 const end=source.indexOf('if(p==="/api/discovery/graph"&&m==="GET"){',start);
 assert.ok(start>=0&&end>start,"Worker must expose the public platform overview endpoint before the discovery graph route");
 const route=source.slice(start,end);
-for(const field of ["publishedNovels","publishedChapters","publicAuthors","catalogViews","readersInLast24Hours","chapterUpdatesLast24Hours"])assert.ok(route.includes(field),`Overview must expose the real ${field} metric`);
+for(const field of ["publishedNovels","publishedChapters","creditedAuthors","catalogViews","readersInLast24Hours","chapterUpdatesLast24Hours"])assert.ok(route.includes(field),`Overview must expose the real ${field} metric`);
 assert.ok(route.includes("new Date().toISOString()"),"Overview must expose the actual response timestamp");
 assert.ok(route.includes("await ensurePublishingSchema(env)"),"Overview must safely ensure its chapter-view and update timestamp schema before querying");
 assert.ok(source.includes("ALTER TABLE chapters ADD COLUMN updated_at TEXT"),"Runtime compatibility must add chapter update timestamps to existing databases");
 assert.ok(source.includes("chapters_set_updated_at_after_insert"),"New chapters must receive an actual update timestamp");
+assert.ok(source.includes("chapters_set_updated_at_after_edit"),"Edited chapter content and publication state must refresh the live update timestamp");
 
 assert.ok(route.includes("datetime('now','-24 hours')"),"Recent reader and chapter-view activity must use a rolling 24-hour window");
 assert.ok(route.includes("datetime('now','-7 days')"),"Trending must use a rolling seven-day unlock window");
@@ -31,6 +32,7 @@ assert.ok(app.includes("apiWithTimeout('/api/platform/overview'"),"Homepage must
 assert.ok(app.includes("setInterval(()=>{if(document.visibilityState==='visible')refreshPlatformPulse()},60000)"),"Homepage must refresh every 60 seconds only while visible");
 assert.ok(app.includes("platformPulseRefresh"),"Readers must have a manual refresh control");
 assert.ok(app.includes("Signed-in readers · 24h"),"Reader activity must be labelled accurately as signed-in activity");
+assert.ok(app.includes("Credited authors")&&!app.includes("Public authors"),"The author metric must describe distinct credited author names, not imply verified profile accounts");
 assert.equal(app,bundle,"Editable and versioned browser entry points must remain byte-for-byte synchronized");
 assert.ok(css.includes(".platformPulseMetrics{display:grid;grid-template-columns:repeat(6"),"Live metrics must use a six-column desktop layout");
 assert.ok(css.includes("@media(max-width:980px)")&&css.includes("@media(max-width:760px)"),"Live intelligence must adapt to tablet and phone layouts");
