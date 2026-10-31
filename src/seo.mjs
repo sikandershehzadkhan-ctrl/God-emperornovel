@@ -84,11 +84,12 @@ export function applySeoMetadata(html,{title,description,canonical,robots="index
     output=upsertMeta(output,"name","twitter:image",safeImage);
     const originForGraph=origin;
     const graph={"@context":"https://schema.org","@graph":[
-      {"@type":"Organization","name":"Imperial Novel","url":origin},
+      {"@type":"Organization","name":"Imperial Novel","url":origin,"logo":origin+"/imperial-novel-app-icon.svg"},
       {"@type":"WebSite","name":"Imperial Novel","url":origin},
       {"@type":"WebPage","name":safeTitle,"description":safeDescription,"url":canonical},
       ...(structuredData&&typeof structuredData==="object"&&!Array.isArray(structuredData)?[structuredData]:[])
     ]};
+    if(entity&&typeof entity==="object")graph["@graph"].push(entity);
     const jsonLd=JSON.stringify(graph).replaceAll("<","\\u003c");
     output=output.replace(/<script\s+type=["']application\/ld\+json["'][^>]*>[\s\S]*?<\/script>/gi,"");
     output=output.replace(/<\/head>/i,'<script type="application/ld+json">'+jsonLd+'</script>\n</head>');
