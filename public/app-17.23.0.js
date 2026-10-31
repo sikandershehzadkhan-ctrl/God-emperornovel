@@ -95,7 +95,7 @@ async function home(){
   </section>
   <section class="section nextShelf">
    <div class="sectionHead"><div><div class="eyebrow"><span class="eyebrowDot"></span> THE CURRENT ROTATION</div><h2>Stories with momentum.</h2><p>Real published stories from the Imperial catalog. No made-up counters, no filler.</p></div><a class="ghost" href="/catalog?sort=trending">Explore all <span>↗</span></a></div>
-   <div id="trend" class="grid homeStoryGrid"><div class="skeletonCard"></div><div class="skeletonCard"></div><div class="skeletonCard"></div></div>
+   <div id="trend" class="grid homeStoryGrid" aria-label="Trending stories" aria-busy="true"><div class="skeletonCard" aria-hidden="true"></div><div class="skeletonCard" aria-hidden="true"></div><div class="skeletonCard" aria-hidden="true"></div></div>
   </section>
   <section class="nextFeatureDeck">
    <div class="nextFeatureIntro"><div class="eyebrow"><span class="eyebrowDot"></span> NOT JUST ANOTHER READER</div><h2>Read the lore.<br><span>Build the universe.</span></h2><p>A whole creative ecosystem built around the stories you love and the worlds you want to make.</p><a class="featureInlineLink" href="/author">Meet your Creator Studio <span>↗</span></a></div>
@@ -107,19 +107,19 @@ async function home(){
   <section class="nextCreatorBand"><div class="creatorOrb" aria-hidden="true"><img src="/imperial-novel-app-icon.svg" alt="" width="88" height="88" loading="lazy"></div><div><div class="eyebrow">YOUR IDEAS DESERVE A WORLD</div><h2>You're not just a reader.</h2><p>Start with a spark. Build characters, systems, kingdoms, timelines and stories that are yours to tell.</p></div><a class="primary" href="/author">Enter Creator Studio <span>↗</span></a></section>
   <section class="section nextShelf">
    <div class="sectionHead"><div><div class="eyebrow"><span class="eyebrowDot"></span> FRESH FROM THE REALM</div><h2>New chapters. New reasons to stay.</h2><p>Recently updated stories from the live catalog.</p></div><a class="ghost" href="/catalog?sort=updated">Latest updates <span>↗</span></a></div>
-   <div id="latest" class="grid homeStoryGrid"><div class="skeletonCard"></div><div class="skeletonCard"></div><div class="skeletonCard"></div></div>
+   <div id="latest" class="grid homeStoryGrid" aria-label="Recently updated stories" aria-busy="true"><div class="skeletonCard" aria-hidden="true"></div><div class="skeletonCard" aria-hidden="true"></div><div class="skeletonCard" aria-hidden="true"></div></div>
   </section>
   <section class="nextReaderPromise"><span class="promiseIcon">◈</span><div><b>Clear rules. Your reading, your call.</b><p>Imperial Crowns and chapter unlocks show their real status. Payments remain pending until manually reviewed.</p></div><a href="/tickets">Imperial Crown Vault ↗</a></section>
  </div></div>`;
  try{
   const [t,l]=await Promise.all([apiWithTimeout('/api/novels?sort=trending&limit=10'),apiWithTimeout('/api/novels?sort=updated&limit=10')]);
   const trendRows=t.results||[],latestRows=l.results||[];
-  const renderHomeStories=(selector,rows,empty)=>{const el=$(selector);el.classList.toggle('singleStory',rows.length===1);el.classList.toggle('multiStory',rows.length>1);el.innerHTML=rows.length?rows.map(card).join():`<div class="empty homeCatalogEmpty" style="grid-column:1/-1">${empty}</div>`};
+  const renderHomeStories=(selector,rows,empty)=>{const el=$(selector);el.setAttribute('aria-busy','false');el.classList.toggle('singleStory',rows.length===1);el.classList.toggle('multiStory',rows.length>1);el.innerHTML=rows.length?rows.map(card).join():`<div class="empty homeCatalogEmpty" style="grid-column:1/-1">${empty}</div>`};
   renderHomeStories('#trend',trendRows,'The catalog is growing. Be among the first to discover what comes next.');
   renderHomeStories('#latest',latestRows,'No new updates yet. Explore the catalog and find your first world.');
  }catch(error){
   const notice=`<div class="notice" role="alert" style="grid-column:1/-1"><b>Story shelves could not be loaded.</b><p>${esc(error.message||'Please try again in a moment.')}</p><a class="secondary" href="/">Try again</a></div>`;
-  $('#trend').innerHTML=notice;$('#latest').innerHTML=notice;
+  $('#trend').setAttribute('aria-busy','false');$('#latest').setAttribute('aria-busy','false');$('#trend').innerHTML=notice;$('#latest').innerHTML=notice;
  }
  try{
   const graph=await apiWithTimeout('/api/discovery/graph?limit=60',{},10000);
