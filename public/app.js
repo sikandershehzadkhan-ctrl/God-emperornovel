@@ -414,7 +414,7 @@ async function boot(){const root=document.querySelector('#app')||document.create
       <button class="primary" type="button" data-media-review-decision="approved" data-media-asset-id="${Number(a.id)}" ${canApprove?'':'disabled'}>Approve rights</button>
       <button class="secondary" type="button" data-media-review-decision="rejected" data-media-asset-id="${Number(a.id)}">Reject</button>
      </div>
-     ${canApprove?'':'<p class="muted">Approval is disabled until rights holder, license and evidence are all supplied.'}
+     ${canApprove?'':'<p class="muted">Approval is disabled until rights holder, license and evidence are all supplied.</p>'}
     </article>`;
    }).join('');
    $('[data-media-review-decision]',queue).forEach(button=>button.addEventListener('click',async()=>{
