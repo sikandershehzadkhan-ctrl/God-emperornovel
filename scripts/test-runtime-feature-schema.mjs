@@ -37,6 +37,19 @@ const dedupeAt = coldDb.calls.findIndex(sql => sql.includes("DELETE FROM comment
 const uniqueIndexAt = coldDb.calls.findIndex(sql => sql.includes("idx_comment_reports_user_comment"));
 assert.ok(archiveAt >= 0 && archiveCopyAt > archiveAt && dedupeAt > archiveCopyAt && uniqueIndexAt > dedupeAt,
   "legacy duplicate reports must be archived before deduplication and uniqueness enforcement");
+for (const trigger of [
+  "trg_comment_likes_validate_insert", "trg_comment_likes_validate_update",
+  "trg_comment_likes_user_cascade", "trg_comment_likes_comment_cascade",
+  "trg_comment_reports_validate_insert", "trg_comment_reports_validate_update",
+  "trg_comment_reports_user_cascade", "trg_comment_reports_comment_cascade",
+  "trg_novel_reactions_validate_insert", "trg_novel_reactions_validate_update",
+  "trg_novel_reactions_user_cascade", "trg_novel_reactions_novel_cascade",
+  "trg_request_votes_validate_insert", "trg_request_votes_validate_update",
+  "trg_request_votes_user_cascade", "trg_request_votes_request_cascade"
+]) {
+  assert.ok(coldDb.calls.some(sql => sql.includes("CREATE TRIGGER IF NOT EXISTS " + trigger)),
+    trigger + " must enforce referential integrity for pre-existing tables");
+}
 assert.ok(coldDb.calls.some(sql => sql.includes("FOREIGN KEY(comment_id) REFERENCES comments(id)")),
   "comment engagement tables must cascade with deleted comments");
 assert.ok(coldDb.calls.some(sql => sql.includes("ALTER TABLE comments ADD COLUMN parent_id INTEGER")));
@@ -53,6 +66,8 @@ assert.match(migration, /INSERT OR IGNORE INTO comment_reports_legacy_duplicates
 assert.ok(migration.indexOf("INSERT OR IGNORE INTO comment_reports_legacy_duplicates") < migration.indexOf("DELETE FROM comment_reports"),
   "migration must preserve legacy report records before removing duplicates");
 assert.match(migration, /FOREIGN KEY\(comment_id\) REFERENCES comments\(id\) ON DELETE CASCADE/);
+assert.match(migration, /CREATE TRIGGER IF NOT EXISTS trg_request_votes_request_cascade/);
+assert.match(migration, /CREATE TRIGGER IF NOT EXISTS trg_comment_reports_validate_insert/);
 assert.match(worker, /INSERT OR IGNORE INTO comment_likes/,
   "concurrent duplicate likes must not surface as database errors");
 assert.match(worker, /You have already reported this comment/);
