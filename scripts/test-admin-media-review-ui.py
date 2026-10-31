@@ -8,6 +8,7 @@ checks = {
     "administrator link appears in mobile drawer": "class=\"menuDrawerAdmin\"" in app and "Command Center</span>" in app,
     "command center checks the current user role": "me.user?.role!=='admin'" in app,
     "command center loads the administrator review queue": "/api/admin/media/review-queue" in app,
+    "command center displays private storage health": "adminMediaStorage" in app and "api('/api/admin/media/storage')" in app,
     "rights approval requires explicit confirmation": "Confirm that you checked the rights holder" in app,
     "rights decision is sent to the administrator review endpoint": "/api/admin/media/" in app and "/review" in app,
     "versioned runtime matches the primary browser bundle": versioned == app,
