@@ -29,6 +29,19 @@ for(const field of ["novelViews","chapterViews","visibleComments","commentLikes"
 assert.ok(novelEngagementRoute.includes("await ensureEngagementSchema(env)")&&novelEngagementRoute.includes("await ensurePublishingSchema(env)"),"Per-novel activity must ensure the required D1 tables exist.");
 assert.ok(novelEngagementRoute.includes("clientRefreshSeconds:30")&&novelEngagementRoute.includes('cache:"no-store"'),"Per-novel activity must declare its near-real-time polling and cache behavior.");
 assert.ok(!novelEngagementRoute.includes("UPDATE novels SET views"),"Reading the activity endpoint must not increment novel views.");
+const chapterEngagementStart=source.indexOf('if(p==="/api/chapter-engagement"&&m==="GET"){');
+const chapterEngagementEnd=source.indexOf('if(p==="/api/novel-engagement"&&m==="GET"){',chapterEngagementStart);
+assert.ok(chapterEngagementStart>=0&&chapterEngagementEnd>chapterEngagementStart,"A dedicated per-chapter activity endpoint must exist.");
+const chapterEngagementRoute=source.slice(chapterEngagementStart,chapterEngagementEnd);
+for(const field of ["chapterReaderRequests","unlocks","signedInReadersLast24Hours"])assert.ok(chapterEngagementRoute.includes(field),`Chapter activity must expose ${field}.`);
+assert.ok(chapterEngagementRoute.includes("c.publication_status='published'")&&chapterEngagementRoute.includes("n.rights_status IN"),"Chapter activity must be limited to published, rights-eligible stories.");
+assert.ok(chapterEngagementRoute.includes("clientRefreshSeconds:30")&&chapterEngagementRoute.includes('cache:"no-store"'),"Chapter activity must declare its 30-second near-real-time freshness contract.");
+assert.ok(chapterEngagementRoute.includes("not a unique-reader")&&chapterEngagementRoute.includes("not a live-online count"),"Chapter activity must disclose the limits of request and reading-history counters.");
+assert.ok(app.includes('id="chapterActivityMetrics"')&&app.includes("refreshChapterActivity"),"The chapter reader must display a dedicated activity panel.");
+assert.ok(app.includes("/api/chapter-engagement?chapter_id="),"Chapter activity must use its read-only endpoint.");
+assert.ok(app.includes("setInterval(()=>{if(document.visibilityState==='visible')refreshChapterActivity()},30000)"),"Chapter activity polling must pause while the page is hidden.");
+assert.ok(css.includes(".chapterLivePulseMetrics{display:grid;grid-template-columns:repeat(3")&&css.includes("@media(max-width:560px)"),"Chapter activity must have responsive desktop and mobile layouts.");
+
 
 assert.ok(engagementMigration.includes("CREATE TABLE IF NOT EXISTS comment_likes")&&engagementMigration.includes("CREATE TABLE IF NOT EXISTS novel_reactions"),"Fresh database installations must receive the engagement tables through migration 0013.");
 assert.ok(engagementMigration.includes("PRIMARY KEY(user_id,comment_id)")&&engagementMigration.includes("PRIMARY KEY(user_id,novel_id)"),"Engagement tables must prevent duplicate likes and multiple active reactions per user and content.");
