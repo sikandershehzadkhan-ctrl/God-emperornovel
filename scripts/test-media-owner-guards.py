@@ -13,9 +13,9 @@ db.executemany(
 db.execute("INSERT INTO novels(title,author,owner_user_id) VALUES('Creator comic','creator',1)")
 db.execute("INSERT INTO novels(title,author,owner_user_id) VALUES('Other comic','other',2)")
 db.execute("INSERT INTO novels(title,author) VALUES('Unclaimed comic','legacy')")
-db.execute("INSERT INTO chapters(novel_id,chapter_number,title,content) VALUES(1,1,'Creator chapter','')")
-db.execute("INSERT INTO chapters(novel_id,chapter_number,title,content) VALUES(2,1,'Other chapter','')")
-db.execute("INSERT INTO chapters(novel_id,chapter_number,title,content) VALUES(3,1,'Unclaimed chapter','')")
+db.execute("INSERT INTO chapters(novel_id,chapter_number,title,content,publication_status) VALUES(1,1,'Creator chapter','','draft')")
+db.execute("INSERT INTO chapters(novel_id,chapter_number,title,content,publication_status) VALUES(2,1,'Other chapter','','draft')")
+db.execute("INSERT INTO chapters(novel_id,chapter_number,title,content,publication_status) VALUES(3,1,'Unclaimed chapter','','draft')")
 db.executemany(
     """INSERT INTO media_assets(owner_user_id,object_key,mime_type,size_bytes,status,rights_status)
        VALUES(?,?, 'image/webp',1024,'ready','approved')""",
