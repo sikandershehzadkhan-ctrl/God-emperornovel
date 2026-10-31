@@ -58,4 +58,6 @@ if not all(checks.values()):
 
 assert "sessionStorage.getItem(storageKey)" in admin and "idempotency_key:key" in admin
 assert "Required reason for this Crown adjustment" in admin
-print("PASS: Admin UI reuses a pending idempotency key and requires a reason")
+assert 'id="ticketAdjustmentsBody"' in admin and 'api("/api/admin/ticket-adjustments")' in admin
+assert "loadTicketAdjustments()" in admin and "Crown adjustment history" in admin
+print("PASS: Admin UI reuses pending idempotency keys, requires a reason and displays adjustment history")
