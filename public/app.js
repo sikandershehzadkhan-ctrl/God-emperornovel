@@ -407,8 +407,19 @@ async function boot(){const root=document.querySelector('#app')||document.create
    <div id="mediaReviewStatus" class="muted" role="status" aria-live="polite"></div>
    <div id="mediaReviewQueue"><p class="muted">Loading review queue…</p></div>
   </section>
+  <section class="panel">
+   <div class="eyebrow">PRIVATE STORAGE OPERATIONS</div>
+   <h2>Media storage health</h2>
+   <div id="adminMediaStorage" class="muted" role="status" aria-live="polite">Loading storage usage…</div>
+  </section>
   </div></div>`;
- const queue=$('#mediaReviewQueue',root),status=$('#mediaReviewStatus',root);
+ const queue=$('#mediaReviewQueue',root),status=$('#mediaReviewStatus',root),storage=$('#adminMediaStorage',root);
+ async function loadStorage(){
+  try{
+   const data=await api('/api/admin/media/storage'),used=Number(data.used_bytes||0),limit=Number(data.limit_bytes||1073741824),percent=Math.min(100,Math.max(0,limit?used/limit*100:0));
+   storage.innerHTML='<b>'+((used/1048576).toFixed(2))+' MiB</b> used of '+(limit/1073741824).toFixed(0)+' GiB platform cap · '+Number(data.asset_count||0)+' asset(s)<div class="quotaTrack" role="progressbar" aria-label="Platform media storage" aria-valuemin="0" aria-valuemax="100" aria-valuenow="'+Math.round(percent)+'"><span style="width:'+percent.toFixed(2)+'%"></span></div><p class="muted">'+(data.storage_configured?'Private storage binding is present.':'Private storage is not configured. Uploads remain disabled.')+'</p><ul>'+((data.statuses||[]).map(x=>'<li>'+esc(x.status)+': '+Number(x.asset_count)+' asset(s), '+(Number(x.used_bytes)/1048576).toFixed(2)+' MiB</li>').join('')||'<li>No stored media assets.</li>')+'</ul>';
+  }catch(error){storage.textContent=error.message||'Could not load storage health.'}
+ }
  async function refresh(){
   queue.innerHTML='<p class="muted">Refreshing review queue…</p>';
   try{
@@ -441,7 +452,7 @@ async function boot(){const root=document.querySelector('#app')||document.create
    }));
   }catch(error){queue.innerHTML=`<p class="muted">${esc(error.message||'Could not load the media review queue.')}</p>`}
  }
- await refresh();
+ await Promise.all([refresh(),loadStorage()]);
 }
 const titles={'/':'Home','/discover':'Discover','/community':'Community','/leaderboard':'Leaderboard','/tier-list':'Tier List','/random':'Random Novel','/made-for-you':'Made For You','/for-you':'Made For You','/trending':'Trending Now','/vote':'Vote Novels','/notifications':'Notifications','/settings':'Settings','/omniportal':'OmniPortal','/author':'Author Studio','/admin':'Command Center','/trend-factory':'Trend Factory'};if(titles[p])document.title=titles[p]+' | Imperial Novel';if(p==='/')await home();else if(p==='/trend-factory')await trendFactory();else if(p==='/discover'||p==='/catalog')await catalog();else if(p==='/formats')await formatDirectory();else if(/^\/format\/[^/]+\/?$/.test(p))await formatLanding(decodeURIComponent(p.split('/')[2]||''));else if(p==='/genres')await genres();else if(p==='/tags')await tags();else if(p==='/search')await search();else if(/^\/novel\/\d+\/chapters\/?$/.test(p))await chapters();else if(/^\/novel\/\d+\/?$/.test(p))await novel();else if(/^\/read\/\d+\/\d+\/?$/.test(p))await reader();else if(p==='/library')await library();else if(p==='/history')await history();else if(p==='/following')await following();else if(p==='/tickets')await tickets();else if(p==='/requests')await requests();else if(p==='/omniportal')await omni();else if(p==='/community')await discoveryPage('community');else if(p==='/leaderboard')await discoveryPage('leaderboard');else if(p==='/tier-list')await discoveryPage('tier-list');else if(p==='/random')await discoveryPage('random');else if(p==='/made-for-you'||p==='/for-you')await discoveryPage('made-for-you');else if(p==='/trending')await discoveryPage('trending');else if(p==='/vote')await discoveryPage('vote');else if(p==='/notifications')await discoveryPage('notifications');else if(p==='/settings')settings();else if(p==='/author')await authorStudio();else if(p==='/admin')await commandCenter();else if(p==='/account')await account();else if(p==='/login')await authPage('login');else if(p==='/register')await authPage('register');else if(p.startsWith('/fandom/')){const slug=p.split('/').pop();location.href='/catalog?tag='+encodeURIComponent(slug)}else if(/^\/author\/[^/]+$/.test(p))await authorPublic();else simplePage('Page not found','The page you requested does not exist.');}catch(e){console.error('Imperial Novel boot failed',e);root.innerHTML=`<section class="bootFallback bootFailure" role="alert"><div class="bootCrest" aria-hidden="true">IN</div><p class="bootEyebrow">IMPERIAL NOVEL</p><h1>We hit a loading snag.</h1><p>${esc(e&&e.message||'The page could not finish loading.')}</p><button class="btn primary" onclick="location.reload()">Try again</button><p class="bootHelp">If this repeats, close this tab and reopen Imperial Novel.</p></section>`}}
 boot();
