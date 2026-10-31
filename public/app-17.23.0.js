@@ -313,10 +313,11 @@ async function omni(){
    const metrics=[['Registered',counts.registered],['Rights-authorized',counts.authorized],['Search-ready',counts.search_ready],['Online',counts.online]];
    statusRoot.innerHTML='<div class="omniStatusMetrics">'+metrics.map(([label,value])=>'<div class="omniMetric"><b>'+Number(value||0).toLocaleString()+'</b><span>'+label+'</span></div>').join('')+'</div>'+
     '<div class="omniSourceList">'+(sources.length?sources.slice(0,10).map(source=>{
-      const state=source.search_ready?(source.last_status==='online'?'Online':'Configured, not health-confirmed'):Number(source.enabled)===1&&source.rights_status==='authorized'?'Authorized, no search endpoint':source.rights_status==='authorized'?'Authorized, disabled':'Awaiting authorization';
-      return '<div class="omniSourceRow"><span><b>'+esc(source.name)+'</b><small>'+esc(new URL(source.base_url).hostname)+'</small></span><span class="omniSourceState">'+esc(state)+'</span></div>';
+      const state=source.search_ready?(source.last_status==='online'?'Online at last check':'Configured, health not confirmed'):Number(source.enabled)===1&&source.rights_status==='authorized'?'Authorized, no search endpoint':source.rights_status==='authorized'?'Authorized, disabled':'Awaiting authorization';
+      const checked=source.last_checked_at?new Date(String(source.last_checked_at).replace(' ','T')+'Z').toLocaleString([], {dateStyle:'medium',timeStyle:'short',timeZone:'UTC'})+' UTC':'Not checked yet';
+      return '<div class="omniSourceRow"><span><b>'+esc(source.name)+'</b><small>'+esc(new URL(source.base_url).hostname)+' · Last health check: '+esc(checked)+'</small></span><span class="omniSourceState">'+esc(state)+'</span></div>';
     }).join(''):'<p class="muted">No provider records are registered yet.</p>')+'</div>'+
-    '<p class="omniStatusFoot">Updated '+(d.generated_at?esc(new Date(d.generated_at).toLocaleString()):'just now')+'. Only providers with authorized, allowlisted search endpoints are queried.</p>';
+    '<p class="omniStatusFoot">Registry snapshot generated '+(d.generated_at?esc(new Date(d.generated_at).toLocaleString()):'just now')+'. Health state reflects each provider’s last recorded check, not a continuous uptime guarantee.</p>';
   }catch(error){statusRoot.innerHTML='<p class="muted">Provider status is temporarily unavailable. Imperial Novel catalog search remains available.</p>';}
  }
  $('#omniStatusRefresh').onclick=loadStatus;
