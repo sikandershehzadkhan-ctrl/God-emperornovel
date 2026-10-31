@@ -11,10 +11,14 @@ db.execute("INSERT INTO novels(title,author,owner_user_id) VALUES('Test comic','
 db.execute("INSERT INTO chapters(novel_id,chapter_number,title,content) VALUES(1,1,'Chapter 1','')")
 db.execute("""INSERT INTO media_assets(owner_user_id,object_key,mime_type,size_bytes)
               VALUES(1,'private/creator/asset-1.webp','image/webp',1024)""")
-# The registry test checks the asset constraints and page uniqueness. The
-# publication lifecycle is tested separately by test-media-publication-gates.py.
-# Satisfy the new publication gate before creating this valid page fixture.
-db.execute("UPDATE media_assets SET status='ready', rights_status='approved' WHERE id=1")
+# The registry test checks asset constraints and page uniqueness. The
+# publication lifecycle is tested separately. Record an attributable review
+# before the fixture transitions to approved and ready.
+db.execute("""INSERT INTO media_asset_reviews(media_asset_id,reviewer_user_id,decision,note)
+              VALUES(1,1,'approved','Test fixture review')""")
+db.execute("""UPDATE media_assets
+              SET status='ready', rights_status='approved', reviewed_by_user_id=1
+              WHERE id=1""")
 db.execute("""INSERT INTO comic_chapter_pages(chapter_id,media_asset_id,page_number,alt_text)
               VALUES(1,1,1,'Opening page')""")
 
