@@ -40,6 +40,7 @@ assert.ok(coldDb.calls.some(sql => sql.includes("DELETE FROM auth_rate_limits"))
 assert.match(coldDb.calls.at(-1), /runtime_feature_schema_version.*'2'/);
 
 const migration = await readFile(new URL("../migrations/0012_runtime_feature_schema.sql", import.meta.url), "utf8");
+const worker = await readFile(new URL("../src/index.js", import.meta.url), "utf8");
 for (const table of ["auth_rate_limits", "comment_likes", "comment_reports", "novel_reactions", "request_votes"]) {
   assert.match(migration, new RegExp("CREATE TABLE IF NOT EXISTS " + table));
 }
