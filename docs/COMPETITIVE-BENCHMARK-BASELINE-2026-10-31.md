@@ -2,7 +2,7 @@
 
 **Baseline date:** 2026-10-31  
 **Production inspected:** https://god-emperornovel.sikandershehzadkhan.workers.dev/  
-**Source inspected:** `main`, release `17.20.0`  
+**Source inspected:** `main`, release `17.21.0`; **live production:** `17.20.0`  
 **Purpose:** Keep Imperial Novel in a recurring, evidence-based comparison with relevant reading, publishing, comics, translation and story-community products. This is a living audit, not a marketing scorecard.
 
 ## Rules of evidence
@@ -71,7 +71,7 @@ Live homepage showed:
 
 ### TomatoMTL — https://tomatomtl.com/
 
-Search results describe a reading-assistance tool for real-time machine translation of novels. The site fetch was bot-blocked in this reconnaissance, so current live features were **not verified**.
+A direct public fetch succeeded. The homepage identifies TomatoMTL as a Chinese MTL reading-assistance tool and exposes Most Viewed and Garden discovery shelves, category navigation, community topic posts with reply/save counts, language selection in Settings, and published reading-rate limits (the page text displayed 121 chapters/hour and 676/day in one notice, with a different hourly threshold in a repeated notice). The live reader translation workflow, provider details, rights status of individual source texts and actual output quality were not tested.
 
 **Imperial Novel implications:** investigate reader-side bilingual/MTL assistance as a possible differentiator, but only after rights, provider cost, privacy, caching and translation-quality economics are solved.
 
@@ -90,7 +90,21 @@ These are visible product surfaces and company claims, not independently audited
 
 ### Qidian — https://www.qidian.com/
 
-Direct fetch was unreachable in this run. Its current live experience remains **not verified** and must be revisited through accessible official pages/apps. Do not substitute third-party descriptions for a live product audit.
+A direct public homepage fetch succeeded in Chinese. Visible surfaces include account login/registration, synced bookshelf and reading progress messaging, personalized recommendation messaging, category browsing, rankings, completed/free shelves, a dedicated author area, and multiple editorial/ranking shelves (including monthly-ticket, reading-follow, collection, potential and new-book rankings). The desktop homepage also advertises app downloads. Login-gated sync, recommendation quality, author publishing, paid reading and app behavior were not tested.
+
+
+### Fanqie Novel (番茄小说) — https://fanqienovel.com/
+
+A direct public homepage fetch succeeded in Chinese. It identifies Fanqie as a free-reading product associated with Douyin and exposes:
+- Male- and female-oriented ranking entry points.
+- A recent-updates table with category, title, latest chapter, author and update time.
+- A writer-benefits area and author portal for creating works and viewing work data/earnings.
+- A copyright/rights showcase area and references to original/IP works.
+- Marketing copy for listening/read-aloud, reader community/book-circle features and a large authorized catalog.
+
+These are visible page surfaces and product/company descriptions. Actual audio playback, payout eligibility, author contract workflow, recommendation personalization and the legal status of any individual title were not independently tested.
+
+**Imperial Novel implications:** creator analytics and earnings visibility, separate reader/author experiences, update freshness, accessible audio controls and rights-aware catalog metadata are important benchmarks. We must not imply payouts or audio playback until provider, rights and payment workflows work end to end.
 
 ## 100-point competitive scorecard
 
@@ -328,3 +342,29 @@ All three PRs were merged to \`main\`. **None of these source changes has been d
 ### Current status
 
 The immediate catalog, donation-integrity and cold-isolate schema-bootstrap source changes have passed CI. The platform is still not certified as competitive or launch-ready: the live catalog remains critically sparse, content quality needs editorial remediation, authenticated author/community/payment flows remain incompletely tested, and mobile/performance QA remains pending.
+
+
+## Second direct-fetch competitor recheck (2026-10-31)
+
+This pass used public homepage fetches only. It did not create accounts, submit forms, purchase, bypass access controls or test private APIs. Homepage claims are not treated as verified backend capability.
+
+| Platform | Newly observed public surfaces | Important unverified areas |
+|---|---|---|
+| WTR-LAB | Translation options, request/vote/priority queue positioning, rankings, library and community links | Actual translation quality, rights/provenance of each title, chapter reader, ticket mechanics |
+| FictionZone | Recommendations, hidden gems, recent user reviews, browse, collections, OmniPortal links, Discord; rankings page disclosed a calculating state | Ranking calculations, OmniPortal rights gates, author application lifecycle, authenticated community |
+| TomatoMTL | MTL reader-assistance positioning, Most Viewed/Garden shelves, community topic counters, language settings and rate-limit notices | Actual translation UI/output, source licensing, translator providers, reader reliability |
+| WebNovel | Weekly featured, top fanfiction books/tags, distinct fanfic and general Power/Collection/Active ranking groups, original-story and author onboarding sections | Authenticated Inkstone publishing, creator payouts, full reader/account behavior |
+| Fanqie | Male/female rankings, fresh-update table, writer portal and earnings/data messaging, rights showcase, audio/community positioning | Audio playback, contract/payout flow, author analytics and recommendation behavior |
+| Faloo | Male/female channels, genre taxonomy, click/monthly-ticket/collection rankings, author portal, audio and IP adaptation business surfaces | Actual audio playback, creator contract/payment process, IP rights and app workflows |
+| Qidian | Category/search, rankings, completed/free shelves, author zone, synced bookshelf/progress and personalized-recommendation messaging, many editorial shelves | Login-gated sync, personalization quality, author lifecycle, purchase/payment and mobile app workflows |
+
+### Updated strategic implications
+
+1. **Content supply remains the dominant gap.** Imperial Novel's live catalog API still returns one published novel and two chapters. No feature-count comparison offsets this supply deficit.
+2. **Discovery must be signal-backed.** Competitors expose differentiated rankings (power, collection, activity, monthly tickets, reading-follow, clicks and completion). Imperial Novel should define transparent metrics and anti-manipulation controls before expanding ranking labels.
+3. **Creator economics are a full workflow.** Fanqie, Qidian, Faloo and WebNovel visibly market author portals, benefits, analytics, earnings or author education. Imperial Novel must build drafts, review, publishing, analytics, rights and payment ledgers as one tested lifecycle, not a form plus a dashboard label.
+4. **Translation is a distinct product strategy.** WTR-LAB and TomatoMTL position translation as a core reading capability. Any Imperial Novel translation system must require source rights, attribution, provider terms, cost controls, privacy protections and quality evaluation.
+5. **Audio/IP adaptation is not a format checkbox.** Fanqie/Faloo advertise listening or broader adaptation ecosystems. Imperial Novel's current audiobook format remains explicitly catalog-only; no live playback claim is justified.
+6. **Localized product depth matters.** Chinese platforms expose different male/female audience paths, update tables and large genre/ranking taxonomies. Localization requires native editorial, metadata and moderation quality, not only translated navigation labels.
+
+No overall competitive score is assigned. The sample is public-homepage reconnaissance, not a complete product or security audit.
