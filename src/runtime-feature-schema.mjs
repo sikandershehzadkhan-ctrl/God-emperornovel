@@ -14,6 +14,8 @@ export function createRuntimeFeatureSchemaEnsurer() {
         "CREATE INDEX IF NOT EXISTS idx_novel_reactions_novel ON novel_reactions(novel_id,reaction)",
         "CREATE TABLE IF NOT EXISTS request_votes (request_id INTEGER NOT NULL,user_id INTEGER NOT NULL,created_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,PRIMARY KEY(request_id,user_id),FOREIGN KEY(request_id) REFERENCES novel_requests(id) ON DELETE CASCADE,FOREIGN KEY(user_id) REFERENCES users(id) ON DELETE CASCADE)",
         "CREATE INDEX IF NOT EXISTS idx_request_votes_request ON request_votes(request_id)",
+        "CREATE TABLE IF NOT EXISTS comment_reports_legacy_duplicates (id INTEGER PRIMARY KEY,user_id INTEGER NOT NULL,comment_id INTEGER NOT NULL,reason TEXT NOT NULL,details TEXT DEFAULT '',status TEXT NOT NULL DEFAULT 'open',created_at TEXT NOT NULL,archived_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP)",
+        "INSERT OR IGNORE INTO comment_reports_legacy_duplicates(id,user_id,comment_id,reason,details,status,created_at) SELECT id,user_id,comment_id,reason,details,status,created_at FROM comment_reports WHERE rowid NOT IN (SELECT MIN(rowid) FROM comment_reports GROUP BY user_id,comment_id)",
         "DELETE FROM comment_reports WHERE rowid NOT IN (SELECT MIN(rowid) FROM comment_reports GROUP BY user_id,comment_id)",
         "CREATE UNIQUE INDEX IF NOT EXISTS idx_comment_reports_user_comment ON comment_reports(user_id,comment_id)",
         "CREATE INDEX IF NOT EXISTS idx_comment_reports_status_created ON comment_reports(status,created_at)"
