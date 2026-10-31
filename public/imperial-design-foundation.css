@@ -570,7 +570,7 @@ html[data-theme="dark"] .homeFormatPrimary{background:var(--in-brand-soft)}
 .platformPulseHead p{margin:0;color:var(--in-muted);max-width:620px}
 .platformPulseActions{display:flex;align-items:center;gap:12px;flex-wrap:wrap;justify-content:flex-end}
 .platformPulseUpdated{font-size:.78rem;color:var(--in-muted);font-variant-numeric:tabular-nums}
-.platformPulseMetrics{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px}
+.platformPulseMetrics{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:10px}
 .platformPulseMetric{min-height:94px;padding:17px;border:1px solid var(--in-border);border-radius:16px;background:var(--in-surface)}
 .platformPulseMetric b{display:block;font-size:clamp(1.5rem,3vw,2.15rem);letter-spacing:-.05em;font-variant-numeric:tabular-nums}
 .platformPulseMetric span{display:block;margin-top:5px;color:var(--in-muted);font-size:.82rem}
@@ -586,5 +586,6 @@ html[data-theme="dark"] .homeFormatPrimary{background:var(--in-brand-soft)}
 .skeletonPulse{position:relative;overflow:hidden;background:linear-gradient(100deg,var(--in-surface) 25%,var(--in-border) 45%,var(--in-surface) 65%);background-size:220% 100%;animation:imperialPulseShimmer 1.5s ease-in-out infinite}
 .platformPulseError{grid-column:1/-1;color:var(--in-muted);font-size:.9rem}
 @keyframes imperialPulseShimmer{to{background-position-x:-220%}}
+@media(max-width:980px){.platformPulseMetrics{grid-template-columns:repeat(3,minmax(0,1fr))}}
 @media(max-width:760px){.platformPulseHead{align-items:flex-start;flex-direction:column}.platformPulseActions{justify-content:flex-start}.platformPulseMetrics{grid-template-columns:repeat(2,minmax(0,1fr))}.platformPulseDetails{grid-template-columns:1fr}.platformPulse{border-radius:18px}}
 @media(prefers-reduced-motion:reduce){.skeletonPulse{animation:none}}
