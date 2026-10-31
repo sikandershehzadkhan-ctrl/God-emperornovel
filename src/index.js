@@ -930,14 +930,24 @@ async function api(req,env){
  }
  if(/^\/api\/author\/chapters\/\d+$/.test(p)&&m==="PATCH"){
   const e=author(u);if(e)return e;const id=Number(p.split('/').pop()),b=await body(req);
-  const c=await env.DB.prepare(`SELECT c.*,n.owner_user_id FROM chapters c JOIN novels n ON n.id=c.novel_id WHERE c.id=?`).bind(id).first();if(!c)return json({error:'Chapter not found'},404);if(u.role!=="admin"&&Number(c.owner_user_id)!==Number(u.id))return json({error:'You do not own this chapter'},403);
+  const c=await env.DB.prepare(`SELECT c.*,n.owner_user_id,n.kind FROM chapters c JOIN novels n ON n.id=c.novel_id WHERE c.id=?`).bind(id).first();if(!c)return json({error:'Chapter not found'},404);if(u.role!=="admin"&&Number(c.owner_user_id)!==Number(u.id))return json({error:'You do not own this chapter'},403);
+  if(c.publication_status!=="draft")return json({error:'Move this chapter to draft before editing its content or metadata.'},409);
   const num=Number(b.chapter_number??c.chapter_number),title=String(b.title??c.title).trim(),content=String(b.content??c.content);const cost=Number(b.ticket_cost??c.ticket_cost);if(!Number.isInteger(num)||num<1||!title||!content||cost<0)return json({error:'Invalid chapter data'},400);
+  if(["manga","manhwa","manhua","webtoon","comic","graphic_novel"].includes(String(c.kind||"").toLowerCase())){
+   const comicCheck=validateComicChapterContent(content);if(!comicCheck.ok)return json({error:comicCheck.error},400);
+   const linked=(await env.DB.prepare("SELECT media_asset_id,alt_text,caption FROM comic_chapter_pages WHERE chapter_id=? ORDER BY page_number").bind(id).all()).results||[];
+   if(linked.length){const canonical=JSON.stringify({type:"imperial_comic_chapter",version:1,pages:linked.map(x=>({src:"/api/media/"+x.media_asset_id,alt:x.alt_text||"",caption:x.caption||""}))});if(content!==canonical)return json({error:"This chapter uses private managed pages. Edit its page sequence through Comic Page Manager."},409)}
+  }
   const dup=await env.DB.prepare('SELECT id FROM chapters WHERE novel_id=? AND chapter_number=? AND id<>?').bind(c.novel_id,num,id).first();if(dup)return json({error:'Another chapter already uses that chapter number.'},409);
   await env.DB.prepare(`UPDATE chapters SET chapter_number=?,title=?,content=?,is_locked=?,ticket_cost=?,updated_at=CURRENT_TIMESTAMP WHERE id=?`).bind(num,title,content,b.is_locked?1:0,cost,id).run();await env.DB.prepare('UPDATE novels SET updated_at=CURRENT_TIMESTAMP WHERE id=?').bind(c.novel_id).run();await audit(env,u,'author_chapter_updated',`chapter=${id}`);return json({ok:true,message:'Chapter saved.'})
  }
  if(/^\/api\/author\/chapters\/\d+\/publish$/.test(p)&&m==="POST"){
   const e=author(u);if(e)return e;const id=Number(p.split('/')[3]),b=await body(req);const c=await env.DB.prepare(`SELECT c.*,n.owner_user_id,n.rights_status FROM chapters c JOIN novels n ON n.id=c.novel_id WHERE c.id=?`).bind(id).first();if(!c)return json({error:'Chapter not found'},404);if(u.role!=="admin"&&Number(c.owner_user_id)!==Number(u.id))return json({error:'You do not own this chapter'},403);
   const status=String(b.publication_status||'published');if(!['draft','published'].includes(status))return json({error:'Invalid publication status'},400);if(status==='published'&&!['original','public_domain','licensed','authorized'].includes(String(c.rights_status)))return json({error:'Novel rights are not eligible for publication'},403);
+  if(status==='published'&&["manga","manhwa","manhua","webtoon","comic","graphic_novel"].includes(String(c.kind||"").toLowerCase())){
+   const pageCount=await env.DB.prepare("SELECT COUNT(*) AS page_count FROM comic_chapter_pages cp JOIN media_assets a ON a.id=cp.media_asset_id WHERE cp.chapter_id=? AND a.status='ready' AND a.rights_status='approved'").bind(id).first();
+   if(Number(pageCount?.page_count||0)<1)return json({error:"Comic chapters require at least one processed, rights-approved private page before publication."},409);
+  }
   await env.DB.prepare('UPDATE chapters SET publication_status=?,updated_at=CURRENT_TIMESTAMP WHERE id=?').bind(status,id).run();await env.DB.prepare('UPDATE novels SET updated_at=CURRENT_TIMESTAMP WHERE id=?').bind(c.novel_id).run();await audit(env,u,status==='published'?'author_chapter_published':'author_chapter_unpublished',`chapter=${id}`);return json({ok:true,message:status==='published'?'Chapter published.':'Chapter moved to draft.'})
  }
  if(p==="/api/admin/publishing"&&m==="GET"){const e=admin(u);if(e)return e;await ensurePublishingSchema(env);return json((await env.DB.prepare(`SELECT n.*,COALESCE(u.username,'') owner_username,(SELECT COUNT(*) FROM chapters c WHERE c.novel_id=n.id) chapter_count FROM novels n LEFT JOIN users u ON u.id=n.owner_user_id ORDER BY CASE n.publication_status WHEN 'review' THEN 0 WHEN 'draft' THEN 1 WHEN 'published' THEN 2 ELSE 3 END,n.updated_at DESC LIMIT 300`).all()).results)}
