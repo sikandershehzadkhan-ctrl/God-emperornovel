@@ -449,11 +449,15 @@ function ensureCommunityV2(env){
  })(); return globalThis.__communityV2Ready;
 }
 async function api(req,env){
+ const url=new URL(req.url),p=url.pathname,m=req.method;
+ // Health checks must not trigger schema bootstrap, rate-limit DDL, community setup,
+ // or session reads. Keep this path fast and side-effect-free for platform probes.
+ if(p==="/api/health"&&m==="GET"){let db=true;try{await env.DB.prepare("SELECT 1").first()}catch{db=false}return json({ok:db,service:env.SITE_NAME||"Imperial Novel",version:env.APP_VERSION||"5.0.0",database:db,time:new Date().toISOString()})}
  await ensureCoreSchema(env);
  await ensureAuthRateLimitSchema(env);
  await ensureCommunityV2(env);
  await ensureDiscoverySchema(env);
- const url=new URL(req.url),p=url.pathname,m=req.method,u=await getUser(req,env);
+ const u=await getUser(req,env);
  if(p==="/api/agents"&&m==="GET"){return json((await env.DB.prepare(`SELECT slug,name,role,icon,mode,status,last_run_at FROM agents WHERE enabled=1 ORDER BY id`).all()).results)}
  if(p==="/api/admin/agents"&&m==="GET"){const e=admin(u);if(e)return e;return json((await env.DB.prepare(`SELECT id,slug,name,role,icon,mode,status,enabled,last_run_at,last_result FROM agents ORDER BY id`).all()).results)}
  if(p==="/api/admin/agents/run"&&m==="POST"){const e=admin(u);if(e)return e;const b=await body(req);const slug=String(b.slug||'');if(slug)return json(await runAgent(env,slug,'admin'));return json(await runAutomation(env))}
