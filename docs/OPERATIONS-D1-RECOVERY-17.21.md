@@ -28,10 +28,17 @@ The database must report the production backend. The repository's read-only prod
 For an independently held copy, Cloudflare documents:
 
 ```sh
-npx wrangler@4 d1 export god-emperornovel-db --remote --output=./imperial-novel-production-backup.sql
+BACKUP="$HOME/imperial-novel-private-backups/imperial-novel-d1-$(date -u +%Y%m%dT%H%M%SZ).sql"
+mkdir -p "$(dirname "$BACKUP")"
+npx --yes wrangler@4 d1 export god-emperornovel-db --remote --output="$BACKUP"
+test -s "$BACKUP"
+wc -c "$BACKUP"
+sha256sum "$BACKUP"
 ```
 
-The export contains production data, potentially including personal information. Never commit it to this public repository, attach it to a public issue/PR, or print its contents in CI logs. Store it only in encrypted private storage with access restricted to the owner. If safe private storage is unavailable, do not create or upload a copy merely to tick a checklist.
+The export contains production data, potentially including personal information. Never commit it to this public repository, attach it to a public issue/PR, or print its contents in CI logs. Store it only in encrypted private storage with access restricted to the owner. Record the UTC timestamp, file size, checksum, Wrangler version and restore-test result in a private operations log. Keep a second encrypted copy in a separate owner-controlled location if one is available. If safe private storage is unavailable, do not create or upload a copy merely to tick a checklist.
+
+Do not treat a non-empty file as a verified backup by itself. Verify the export command's exit status, checksum and ability to import into a separate empty disposable database before calling the backup restore-tested. Do not import into the live database as a test.
 
 To import an export, use a **new empty D1 database**, not the live production database:
 
