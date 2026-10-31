@@ -18,6 +18,7 @@ checks = {
     "comic page writes bound alt text and captions": "alt.length>300||caption.length>500" in routes,
     "comic page writes require novel-owner media that is ready and rights-approved": "owner_user_id=? AND status='ready' AND rights_status='approved'" in routes and "bind(chapter.owner_user_id,...ids)" in routes,
     "comic page writes rely on database triggers and a batched replacement": "env.DB.batch(statements)" in routes and "DELETE FROM comic_chapter_pages" in routes,
+    "comic page save updates reader content in the same batch": 'const comicContent=JSON.stringify({type:"imperial_comic_chapter",version:1,pages:normalized.map(x=>({src:"/api/media/"+x.assetId,alt:x.alt,caption:x.caption}))})' in routes and 'UPDATE chapters SET content=?,updated_at=CURRENT_TIMESTAMP' in routes,
     "comic page writes audit the saved page count": "comic_chapter_pages_saved" in routes,
     "failed page replacement returns a safe conflict": "Existing page order was preserved." in routes,
 }
