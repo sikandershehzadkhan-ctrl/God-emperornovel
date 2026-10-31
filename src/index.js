@@ -4,6 +4,7 @@ import { parseManualDonationApproval } from "./donation-approval-policy.mjs";
 import { parseDonationSubmission } from "./donation-reference-policy.mjs";
 import { createRuntimeFeatureSchemaEnsurer } from "./runtime-feature-schema.mjs";
 import { createDonationReferenceIndexEnsurer } from "./donation-reference-index.mjs";
+import { validateAuthorApplication, validateAuthorApplicationDecision } from "./author-application-policy.mjs";
 const json=(d,s=200,h={})=>new Response(JSON.stringify(d),{status:s,headers:{"content-type":"application/json;charset=UTF-8","cache-control":"no-store",...h}});
 const now=()=>Math.floor(Date.now()/1000);
 const b64=a=>btoa(String.fromCharCode(...new Uint8Array(a))).replaceAll("+","-").replaceAll("/","_").replaceAll("=","");
@@ -557,7 +558,58 @@ async function api(req,env){
  if(p==="/api/recommendations"&&m==="GET"){const e=need(u);if(e)return e;await ensureOmniTables(env);const rows=(await env.DB.prepare(`SELECT n.*,r.reason,r.score,GROUP_CONCAT(DISTINCT g.name) genres,COUNT(DISTINCT c.id) chapter_count FROM recommendations r JOIN novels n ON n.id=r.novel_id LEFT JOIN novel_genres ng ON ng.novel_id=n.id LEFT JOIN genres g ON g.id=ng.genre_id LEFT JOIN chapters c ON c.novel_id=n.id WHERE r.user_id=? AND n.publication_status='published' GROUP BY n.id,r.id ORDER BY r.score DESC,r.created_at DESC LIMIT 20`).bind(u.id).all()).results;if(rows.length)return json(rows);const fallback=(await env.DB.prepare(`SELECT n.*,GROUP_CONCAT(DISTINCT g.name) genres,COUNT(DISTINCT c.id) chapter_count FROM novels n LEFT JOIN novel_genres ng ON ng.novel_id=n.id LEFT JOIN genres g ON g.id=ng.genre_id LEFT JOIN chapters c ON c.novel_id=n.id WHERE n.publication_status='published' AND n.id NOT IN(SELECT novel_id FROM follows WHERE user_id=?) GROUP BY n.id ORDER BY n.rating DESC,n.views DESC LIMIT 12`).bind(u.id).all()).results;return json(fallback.map((x,i)=>({...x,reason:'Popular with Imperial readers',score:100-i}))) }
  if(p==="/api/follows"&&m==="GET"){const e=need(u);if(e)return e;return json((await env.DB.prepare(`SELECT n.*,f.created_at FROM follows f JOIN novels n ON n.id=f.novel_id WHERE f.user_id=? AND n.publication_status='published' ORDER BY f.created_at DESC`).bind(u.id).all()).results)}
  if(p==="/api/profile"&&m==="GET"){const e=need(u);if(e)return e;const [lib,fol,unl,led]=await Promise.all([env.DB.prepare("SELECT COUNT(*) n FROM history WHERE user_id=?").bind(u.id).first(),env.DB.prepare("SELECT COUNT(*) n FROM follows WHERE user_id=?").bind(u.id).first(),env.DB.prepare("SELECT COUNT(*) n FROM unlocks WHERE user_id=?").bind(u.id).first(),env.DB.prepare("SELECT COALESCE(SUM(delta),0) n FROM ticket_ledger WHERE user_id=?").bind(u.id).first()]);return json({user:{id:u.id,username:u.username,email:u.email,role:u.role,tickets:u.tickets,verified:u.verified},stats:{history:Number(lib.n),following:Number(fol.n),unlocks:Number(unl.n),ticketFlow:Number(led.n)}})}
- if(p==="/api/admin/stats"){const e=admin(u);if(e)return e;const [a,b,c,d,r,t,rep]=await Promise.all([env.DB.prepare("SELECT COUNT(*) n FROM users").first(),env.DB.prepare("SELECT COUNT(*) n FROM novels").first(),env.DB.prepare("SELECT COUNT(*) n FROM chapters").first(),env.DB.prepare("SELECT COUNT(*) n FROM donations WHERE status='pending'").first(),env.DB.prepare("SELECT COUNT(*) n FROM novel_requests WHERE status='pending'").first(),env.DB.prepare("SELECT COUNT(*) n FROM taxonomy_submissions WHERE status='pending'").first(),env.DB.prepare("SELECT COUNT(*) n FROM reports WHERE status IN ('open','reviewing')").first()]);return json({users:a.n,novels:b.n,chapters:c.n,pendingDonations:d.n,pendingRequests:r.n,pendingTaxonomy:t.n,openReports:rep.n})}
+ if(p==="/api/author/applications/me"&&m==="GET"){
+  const e=need(u);if(e)return e;
+  const row=await env.DB.prepare("SELECT id,display_name,bio,experience,portfolio_url,preferred_formats,status,review_notes,created_at,reviewed_at FROM author_applications WHERE user_id=? ORDER BY created_at DESC,id DESC LIMIT 1").bind(u.id).first();
+  let preferred=[];try{preferred=JSON.parse(row?.preferred_formats||"[]")}catch{}
+  return json({role:u.role,application:row?{...row,preferred_formats:Array.isArray(preferred)?preferred:[]}:null});
+ }
+ if(p==="/api/author/applications"&&m==="POST"){
+  const e=need(u);if(e)return e;
+  if(u.role!=="user")return json({error:"Only reader accounts can submit a new author application."},403);
+  const b=await body(req),checked=validateAuthorApplication(b);
+  if(!checked.ok)return json({error:checked.error},400);
+  const recent=await env.DB.prepare("SELECT COUNT(*) n FROM author_applications WHERE user_id=? AND created_at>=datetime('now','-30 days')").bind(u.id).first();
+  if(Number(recent?.n||0)>=3)return json({error:"You have reached the application limit. Please wait before applying again."},429);
+  let id;
+  try{
+   const r=await env.DB.prepare("INSERT INTO author_applications(user_id,display_name,bio,experience,portfolio_url,sample_work,preferred_formats,rights_confirmed,status) VALUES(?,?,?,?,?,?,?,?, 'pending')").bind(u.id,checked.value.display_name,checked.value.bio,checked.value.experience,checked.value.portfolio_url,checked.value.sample_work,JSON.stringify(checked.value.preferred_formats),1).run();
+   id=Number(r.meta.last_row_id);
+  }catch(err){return json({error:"You already have a pending application or the application could not be saved."},409)}
+  await audit(env,u,"author_application_submitted","application="+id+";formats="+checked.value.preferred_formats.join(","));
+  await notifyAdmins(env,"New author application",u.username+" submitted an application to join Imperial Novel as an author.");
+  return json({ok:true,id,status:"pending",message:"Your author application has been submitted for review."},201);
+ }
+ if(p==="/api/admin/author-applications"&&m==="GET"){
+  const e=admin(u);if(e)return e;
+  const filter=String(url.searchParams.get("status")||"pending");
+  if(!["pending","approved","rejected","withdrawn","all"].includes(filter))return json({error:"Invalid application status filter."},400);
+  const rows=(await env.DB.prepare("SELECT a.id,a.user_id,a.display_name,a.bio,a.experience,a.portfolio_url,a.sample_work,a.preferred_formats,a.rights_confirmed,a.status,a.review_notes,a.created_at,a.reviewed_at,u.username,u.email,u.role user_role,u.banned FROM author_applications a JOIN users u ON u.id=a.user_id WHERE (?='all' OR a.status=?) ORDER BY CASE a.status WHEN 'pending' THEN 0 WHEN 'rejected' THEN 1 WHEN 'approved' THEN 2 ELSE 3 END,a.created_at ASC,a.id ASC LIMIT 100").bind(filter,filter).all()).results||[];
+  return json(rows.map(row=>{let formats=[];try{formats=JSON.parse(row.preferred_formats||"[]")}catch{}return {...row,preferred_formats:Array.isArray(formats)?formats:[]}}));
+ }
+ const authorApplicationReviewId=p.startsWith("/api/admin/author-applications/")?Number(p.slice("/api/admin/author-applications/".length)):0;
+ if(authorApplicationReviewId>0&&Number.isSafeInteger(authorApplicationReviewId)&&m==="PATCH"){
+  const e=admin(u);if(e)return e;
+  const id=authorApplicationReviewId,b=await body(req),checked=validateAuthorApplicationDecision(b);
+  if(!checked.ok)return json({error:checked.error},400);
+  const application=await env.DB.prepare("SELECT id,user_id,status FROM author_applications WHERE id=?").bind(id).first();
+  if(!application)return json({error:"Author application not found."},404);
+  if(application.status!=="pending")return json({error:"This application has already been reviewed."},409);
+  if(checked.value.status==="approved"){
+   const results=await env.DB.batch([
+    env.DB.prepare("UPDATE author_applications SET status='approved',review_notes=?,reviewed_by=?,reviewed_at=CURRENT_TIMESTAMP,updated_at=CURRENT_TIMESTAMP WHERE id=? AND status='pending' AND EXISTS(SELECT 1 FROM users WHERE id=author_applications.user_id AND role='user' AND banned=0)").bind(checked.value.review_notes,u.id,id),
+    env.DB.prepare("UPDATE users SET role='author' WHERE id=? AND role='user' AND banned=0 AND EXISTS(SELECT 1 FROM author_applications WHERE id=? AND status='approved' AND reviewed_by=?)").bind(application.user_id,id,u.id)
+   ]);
+   if(Number(results?.[0]?.meta?.changes||0)!==1||Number(results?.[1]?.meta?.changes||0)!==1)return json({error:"The application could not be approved. The applicant may be banned or their account role has changed."},409);
+  }else{
+   const result=await env.DB.prepare("UPDATE author_applications SET status='rejected',review_notes=?,reviewed_by=?,reviewed_at=CURRENT_TIMESTAMP,updated_at=CURRENT_TIMESTAMP WHERE id=? AND status='pending'").bind(checked.value.review_notes,u.id,id).run();
+   if(Number(result.meta.changes||0)!==1)return json({error:"This application has already been reviewed."},409);
+  }
+  await audit(env,u,"author_application_"+checked.value.status,"application="+id+";applicant="+application.user_id);
+  await notifyUser(env,application.user_id,checked.value.status==="approved"?"Author application approved":"Author application needs changes",checked.value.status==="approved"?"Your author application was approved. Author Studio is now unlocked.":"Your author application was not approved yet. Review notes: "+checked.value.review_notes);
+  return json({ok:true,status:checked.value.status,message:checked.value.status==="approved"?"Application approved. Author access has been granted.":"Application rejected with feedback."});
+ }
+ if(p==="/api/admin/stats"){const e=admin(u);if(e)return e;const [a,b,c,d,r,t,rep,authorApps]=await Promise.all([env.DB.prepare("SELECT COUNT(*) n FROM users").first(),env.DB.prepare("SELECT COUNT(*) n FROM novels").first(),env.DB.prepare("SELECT COUNT(*) n FROM chapters").first(),env.DB.prepare("SELECT COUNT(*) n FROM donations WHERE status='pending'").first(),env.DB.prepare("SELECT COUNT(*) n FROM novel_requests WHERE status='pending'").first(),env.DB.prepare("SELECT COUNT(*) n FROM taxonomy_submissions WHERE status='pending'").first(),env.DB.prepare("SELECT COUNT(*) n FROM reports WHERE status IN ('open','reviewing')").first(),env.DB.prepare("SELECT COUNT(*) n FROM author_applications WHERE status='pending'").first()]);return json({users:a.n,novels:b.n,chapters:c.n,pendingDonations:d.n,pendingRequests:r.n,pendingTaxonomy:t.n,openReports:rep.n,pendingAuthorApplications:authorApps.n})}
  if(p==="/api/admin/users"&&m==="GET"){const e=admin(u);if(e)return e;return json((await env.DB.prepare("SELECT id,username,email,role,tickets,verified,banned,created_at FROM users ORDER BY id LIMIT 500").all()).results)}
  let au=p.match(/^\/api\/admin\/users\/(\d+)$/);if(au&&m==="PATCH"){const e=admin(u);if(e)return e;const b=await body(req),id=Number(au[1]);if(id===u.id&&String(b.role||u.role)!=='admin')return json({error:"You cannot remove your own administrator role"},400);const role=String(b.role||'user');if(!['user','author','moderator','admin'].includes(role))return json({error:"Invalid role"},400);await env.DB.prepare("UPDATE users SET role=?,verified=?,banned=? WHERE id=?").bind(role,b.verified?1:0,b.banned?1:0,id).run();return json({ok:true})}
 
