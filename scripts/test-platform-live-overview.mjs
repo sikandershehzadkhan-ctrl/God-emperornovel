@@ -16,6 +16,7 @@ for(const field of ["publishedNovels","publishedChapters","creditedAuthors","cat
 assert.ok(route.includes("new Date().toISOString()"),"Overview must expose the actual response timestamp");
 assert.ok(route.includes("generated_at:generatedAt"),"The real-time response must expose a canonical generated_at timestamp.");
 assert.ok(route.includes('mode:"request-time-d1-query"')&&route.includes('cache:"no-store"'),"Real-time overview freshness must be explicit and avoid stale HTTP caching.");
+assert.ok(source.includes('"cache-control":"no-store"'),"JSON API responses must default to no-store so real-time reads are not served stale.");
 assert.ok(route.includes("metric_definitions:"),"Every platform metric must publish its definition.");
 assert.ok(route.includes("readersInLast24Hours:" )&&route.includes("not current online users"),"Recent signed-in readers must not be represented as people online now.");
 assert.ok(route.includes("measurement_windows:"),"The API must expose its measurement windows.");
