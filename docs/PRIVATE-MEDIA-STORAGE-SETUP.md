@@ -64,3 +64,11 @@ Run the repository's Cloudflare source validation workflow. It builds the Worker
 - `GET /api/media/:assetId` serves an object only when it is ready, rights-approved, attached to a published chapter in a published novel, and (for locked chapters) the reader has unlocked that chapter. It never accepts an object key from the client.
 
 These routes are not a substitute for image processing. No upload path currently promotes an object to `ready`; do not manually mark unprocessed files ready. A trusted decoder/re-encoder must be implemented before any uploaded image can be published.
+
+## Comic chapter page authoring
+
+- `GET /api/author/chapters/:chapterId/pages` returns ordered page metadata only to the chapter's owner (or an administrator); it never returns private object keys. Reader image paths use the authenticated `/api/media/:assetId` delivery route.
+- `PUT /api/author/chapters/:chapterId/pages` replaces the page order as one D1 batch. It is same-origin, author-only, rate-limited to 30 changes per hour, and limited to draft chapters in comic formats.
+- Each page must use a distinct media asset owned by the novel owner, with status `ready` and rights status `approved`. Alt text is limited to 300 characters, captions to 500, and a chapter can contain at most 300 pages.
+- Migration `0017_comic_page_draft_guards.sql` enforces draft-only page insertion, updates and deletion directly in D1. A chapter must be moved back to draft before its page composition can change.
+- This is the secure backend foundation for the Comic Studio page-ordering interface. Uploads remain blocked until private R2 storage and trusted image processing are configured.
