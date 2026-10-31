@@ -19,3 +19,6 @@ const required = [
 ];
 for (const item of required) assert.ok(secure.includes(item), "Missing response security header: " + item);
 console.log("PASS: Worker response security headers are enforced globally.");
+assert.ok(source.includes("base-uri 'self'"), "CSP must restrict document base URLs");
+assert.ok(source.includes("object-src 'none'"), "CSP must disable plugin objects");
+assert.ok(source.includes("form-action 'self'"), "CSP must restrict form submissions");
