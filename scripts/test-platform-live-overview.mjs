@@ -19,7 +19,7 @@ assert.ok(route.includes('mode:"request-time-d1-query"')&&route.includes('cache:
 assert.ok(route.includes("metric_definitions:"),"Every platform metric must publish its definition.");
 assert.ok(route.includes("readersInLast24Hours:" )&&route.includes("not current online users"),"Recent signed-in readers must not be represented as people online now.");
 assert.ok(route.includes("measurement_windows:"),"The API must expose its measurement windows.");
-assert.ok(route.includes("updated_at FROM chapters"),"The update feed must return source timestamps for individual chapters.");
+assert.ok(route.includes("c.updated_at FROM chapters"),"The update feed must return source timestamps for individual chapters.");
 assert.ok(route.includes("await ensurePublishingSchema(env)"),"Overview must safely ensure its chapter-view and update timestamp schema before querying");
 assert.ok(source.includes("ALTER TABLE chapters ADD COLUMN updated_at TEXT"),"Runtime compatibility must add chapter update timestamps to existing databases");
 assert.ok(source.includes("chapters_set_updated_at_after_insert"),"New chapters must receive an actual update timestamp");
