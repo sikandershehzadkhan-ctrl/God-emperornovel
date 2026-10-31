@@ -1,0 +1,20 @@
+import assert from "node:assert/strict";
+import { readFile } from "node:fs/promises";
+
+const source=await readFile(new URL("../src/index.js",import.meta.url),"utf8");
+const start=source.indexOf('if(p==="/api/platform/overview"&&m==="GET"){');
+const end=source.indexOf('if(p==="/api/discovery/graph"&&m==="GET"){',start);
+assert.ok(start>=0&&end>start,"Worker must expose the public platform overview endpoint before the discovery graph route");
+const route=source.slice(start,end);
+for(const field of ["publishedNovels","publishedChapters","publicAuthors","catalogViews","readersInLast24Hours","chapterViewsInLast24Hours"])assert.ok(route.includes(field),`Overview must expose the real ${field} metric`);
+assert.ok(route.includes("new Date().toISOString()"),"Overview must expose the actual response timestamp");
+assert.ok(route.includes("datetime('now','-24 hours')"),"Recent reader and chapter-view activity must use a rolling 24-hour window");
+assert.ok(route.includes("datetime('now','-7 days')"),"Trending must use a rolling seven-day unlock window");
+assert.ok(route.includes("publication_status='published' AND rights_status IN ('original','public_domain','licensed','authorized')"),"Every overview query must restrict results to published, rights-eligible catalog works");
+assert.ok(route.includes("FROM history h JOIN novels n"),"Recent readers must come from recorded reading-history activity");
+assert.ok(route.includes("FROM chapter_views v JOIN chapters c"),"Recent chapter views must come from recorded chapter-view events");
+assert.ok(route.includes("recentUpdates:updates.results||[]"),"Overview must return actual recently updated published chapters");
+assert.ok(route.includes("trending:trending.results||[]"),"Overview must return actual recent unlock-based trending stories");
+assert.ok(!route.toLowerCase().includes("onlineusers")&&!route.toLowerCase().includes("activeusers"),"Do not imply a live-online count without presence tracking");
+assert.ok(!route.includes("Math.random"),"Live platform metrics must never be randomized");
+console.log("Platform live overview tests passed: timestamped, rights-filtered catalog metrics, 24-hour reading activity, seven-day unlock trends and real chapter updates.");
