@@ -7,10 +7,10 @@ def section(start, end):
     b = source.index(end, a)
     return source[a:b]
 
-media_list = section('if(p==="/api/author/media"&&m==="GET"){', 'if(/^\\/api\\/author\\/media\\/\\d+$/.test(p)&&m==="DELETE"){')
-media_delete = section('if(/^\\/api\\/author\\/media\\/\\d+$/.test(p)&&m==="DELETE"){', 'if(p==="/api/author/media/upload"&&m==="POST"){')
+media_list = section('if(p==="/api/author/media"&&m==="GET"){', 'const assetId=Number(p.split("/").pop());')
+media_delete = section('const assetId=Number(p.split("/").pop());', 'if(p==="/api/author/media/upload"&&m==="POST"){')
 upload = section('if(p==="/api/author/media/upload"&&m==="POST"){', 'let mediaMatch=p.match(')
-review = section('if(/^\\/api\\/admin\\/media\\/\\d+\\/review$/.test(p)&&m==="POST"){', 'if(p==="/api/agents"&&m==="GET"){')
+review = section('const assetId=Number(p.split("/")[4]);', 'if(p==="/api/agents"&&m==="GET"){')
 delivery = section('if(mediaMatch&&m==="GET"){', 'if(p==="/api/admin/media/review-queue"&&m==="GET"){')
 
 checks = {
