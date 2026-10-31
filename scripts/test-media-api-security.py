@@ -42,6 +42,8 @@ checks = {
     "failed upload cleanup deletes confirmed objects and retains quota if deletion fails": "status='deleted',deleted_at=CURRENT_TIMESTAMP" in upload and "status='rejected'" in upload and "MEDIA_BUCKET.delete(objectKey)" in upload,
     "rights review requires administrator role": "admin(u)" in review,
     "rights review rejects cross-origin requests": 'req.headers.get("origin")!==url.origin' in review,
+    "rights rejection or withdrawal checks chapter attachments": "SELECT COUNT(*) AS page_count FROM comic_chapter_pages WHERE media_asset_id=?" in review and 'decision!=="approved"' in review,
+    "rights rejection or withdrawal returns a safe conflict for attached pages": "Remove those references through the chapter editor" in review,
     "rights approval records reviewer and decision atomically": "media_asset_reviews" in review and "reviewed_by_user_id" in review and "env.DB.batch" in review,
     "reader delivery requires ready and approved media": "a.status='ready' AND a.rights_status='approved'" in delivery,
     "reader delivery requires published chapter and novel": "c.publication_status='published' AND n.publication_status='published'" in delivery,
