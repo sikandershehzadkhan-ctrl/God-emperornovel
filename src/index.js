@@ -5,30 +5,13 @@ import { parseDonationSubmission } from "./donation-reference-policy.mjs";
 import { createRuntimeFeatureSchemaEnsurer } from "./runtime-feature-schema.mjs";
 import { createDonationReferenceIndexEnsurer } from "./donation-reference-index.mjs";
 import { validateAuthorApplication, validateAuthorApplicationDecision } from "./author-application-policy.mjs";
+import { CONTENT_FORMATS, CONTENT_FORMAT_IDS } from "./content-formats.mjs";
 const json=(d,s=200,h={})=>new Response(JSON.stringify(d),{status:s,headers:{"content-type":"application/json;charset=UTF-8","cache-control":"no-store",...h}});
 const now=()=>Math.floor(Date.now()/1000);
 const b64=a=>btoa(String.fromCharCode(...new Uint8Array(a))).replaceAll("+","-").replaceAll("/","_").replaceAll("=","");
 const digest=async s=>b64(await crypto.subtle.digest("SHA-256",new TextEncoder().encode(s)));
 const rnd=n=>{const a=new Uint8Array(n);crypto.getRandomValues(a);return b64(a)};
 const slug=s=>String(s||"").toLowerCase().trim().replace(/[^a-z0-9]+/g,"-").replace(/^-|-$/g,"");
-const CONTENT_FORMATS=[
- {id:"original",label:"Original novels",group:"text",originHint:"Global · original fiction",experience:"Text reader"},
- {id:"fanfiction",label:"Fanfiction",group:"text",originHint:"Global · fandom stories",experience:"Text reader"},
- {id:"light_novel",label:"Light novels",group:"text",originHint:"Japan-associated format tradition",experience:"Text reader"},
- {id:"web_novel",label:"Web novels",group:"text",originHint:"Global · serialized fiction",experience:"Text reader"},
- {id:"manga",label:"Manga",group:"comics",originHint:"Japan-associated comics tradition",experience:"Panel reader"},
- {id:"manhwa",label:"Manhwa",group:"comics",originHint:"Korea-associated comics tradition",experience:"Vertical or page reader"},
- {id:"manhua",label:"Manhua",group:"comics",originHint:"China-associated comics tradition",experience:"Panel reader"},
- {id:"webtoon",label:"Webtoons",group:"comics",originHint:"Digital-first · often vertical-scroll",experience:"Vertical-scroll reader"},
- {id:"comic",label:"Comics",group:"comics",originHint:"Global comics tradition",experience:"Panel reader"},
- {id:"graphic_novel",label:"Graphic novels",group:"comics",originHint:"Global illustrated storytelling",experience:"Panel reader"},
- {id:"anime",label:"Anime",group:"screen",originHint:"Japan-associated animation tradition",experience:"Catalog only · playback not enabled"},
- {id:"cartoon",label:"Cartoons",group:"screen",originHint:"Global animation category",experience:"Catalog only · playback not enabled"},
- {id:"audiobook",label:"Audiobooks",group:"audio",originHint:"Global audio storytelling",experience:"Catalog only · audio playback not enabled"},
- {id:"drama",label:"Drama adaptations",group:"screen",originHint:"Global screen adaptations",experience:"Catalog only · playback not enabled"},
- {id:"game",label:"Games",group:"interactive",originHint:"Global interactive media",experience:"Catalog only · game integration not enabled"}
-];
-const CONTENT_FORMAT_IDS=new Set(CONTENT_FORMATS.map(x=>x.id));
 const cookies=h=>Object.fromEntries((h||"").split(";").map(x=>x.trim()).filter(Boolean).map(x=>{const i=x.indexOf("=");return[i<0?x:x.slice(0,i),decodeURIComponent(i<0?"":x.slice(i+1))]}));
 const body=async r=>await r.json().catch(()=>({}));
 
