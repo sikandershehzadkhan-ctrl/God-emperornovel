@@ -25,8 +25,15 @@ For a dashboard-managed Worker, add an R2 bucket binding with variable name `MED
 - Objects use opaque private keys and are written only through the R2 binding.
 - The database stores an asset as `uploaded` with `pending_review` rights. The upload route cannot approve rights or mark an asset ready.
 - If the R2 binding is absent, the route returns HTTP 503 and does not accept the upload.
-- If storage or the database write fails partway through an upload, the handler attempts to delete the private object and marks the incomplete asset record `rejected` rather than leaving it in the review queue.
+- If storage or the database write fails partway through an upload, the handler attempts to delete the private object. It marks the record `deleted` only after storage deletion succeeds; if deletion fails, it remains `rejected` and continues consuming quota.
 - No public R2 URL is generated or returned.
+
+## Storage quotas
+
+- Maximum active media storage per creator: 100 MiB.
+- Maximum active media storage across the platform: 1 GiB.
+- Pending, uploaded, processing, ready and rejected objects count against quotas. Rejected objects continue consuming quota until their private object is confirmed deleted.
+- Database triggers enforce the limits atomically, including owner changes and size/status updates. A transition to `deleted` stamps `deleted_at` and releases quota.
 
 ## Not yet implemented
 
