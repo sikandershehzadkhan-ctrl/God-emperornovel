@@ -8,6 +8,12 @@ const worker = fs.readFileSync("src/index.js", "utf8");
 const migration = fs.readFileSync("migrations/0011_author_applications.sql", "utf8");
 
 assert.ok(app.includes("async function authorApplicationPage(user)"), "Reader accounts need a real creator application page.");
+assert.ok(app.includes("async function becomeAuthor()"), "Visitors need a public author onboarding page before sign-in.");
+assert.ok(app.includes('href="/author">Start your author application'), "Public onboarding must lead into the authenticated application flow.");
+assert.ok(app.includes("Your work stays yours. Every publication is reviewed."), "Public onboarding must explain creator ownership and review.");
+assert.ok(app.includes("else if(p==='/become-an-author')await becomeAuthor()"), "The public author route must be dispatched by the application.");
+assert.ok(app.includes('href="/become-an-author">Create</a>'), "Primary Create navigation must lead to public onboarding.");
+assert.ok(app.includes("async function authorStudio()"), "Approved creators must retain the Author Studio workflow.");
 assert.ok(app.includes("api('/api/author/applications/me')"), "The author page must retrieve the current application status.");
 assert.ok(app.includes("api('/api/author/applications'"), "The author page must submit applications to the backend.");
 assert.ok(app.includes("me.user.role!=='author'&&me.user.role!=='admin'"), "Non-author accounts must be routed to the application flow.");
