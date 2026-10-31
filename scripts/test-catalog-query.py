@@ -12,6 +12,7 @@ CREATE TABLE novel_tags(novel_id INTEGER,tag_id INTEGER,PRIMARY KEY(novel_id,tag
 CREATE TABLE chapters(id INTEGER PRIMARY KEY,novel_id INTEGER,chapter_number INTEGER,publication_status TEXT);
 CREATE TABLE unlocks(user_id INTEGER,chapter_id INTEGER,unlocked_at TEXT);
 CREATE INDEX idx_chapters_publication ON chapters(novel_id,publication_status,chapter_number);
+CREATE INDEX idx_unlocks_time ON unlocks(unlocked_at);
 """)
 
 # Apply the exact additive migration so the test checks the production D1 index definitions.
@@ -62,6 +63,15 @@ tag_plan = " ".join(row[3] for row in db.execute(
 ))
 assert "idx_novel_genres_genre_novel" in genre_plan, genre_plan
 assert "idx_novel_tags_tag_novel" in tag_plan, tag_plan
+
+trending_plan = " ".join(row[3] for row in db.execute(
+    """EXPLAIN QUERY PLAN
+       SELECT COUNT(*) FROM unlocks ux
+       JOIN chapters cx ON cx.id=ux.chapter_id
+       WHERE cx.novel_id=? AND ux.unlocked_at>=datetime('now','-7 days')""",
+    (1,),
+))
+assert "idx_unlocks_chapter_time" in trending_plan, trending_plan
 
 OLD = """SELECT n.*,GROUP_CONCAT(DISTINCT g.name) genres,GROUP_CONCAT(DISTINCT t.name) tags,
 COUNT(DISTINCT c.id) chapter_count,MAX(c.chapter_number) latest_chapter
