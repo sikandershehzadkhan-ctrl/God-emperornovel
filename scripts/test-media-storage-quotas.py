@@ -28,7 +28,7 @@ def must_fail(fn, message):
         return
     raise AssertionError(message)
 
-owners = [user(i) for i in range(1, 12)]
+owners = [user(i) for i in range(1, 13)]
 # Per-creator hard cap is 100 MiB, even while files are pending or rejected.
 for i in range(5):
     add_asset(owners[0], i + 1)
@@ -50,8 +50,14 @@ must_fail(
 
 # Platform cap is 1 GiB. Ten creators can fill exactly 1 GiB at 100 MiB each.
 for owner_id in owners[1:10]:
-    for i in range(5):
-        add_asset(owner_id, i + 2 if owner_id == owners[1] else i + 1)
-# The second creator has an extra 1 KiB test asset, so the platform cap is already reached.
-must_fail(lambda: add_asset(owners[10], 1, size=1), "Platform quota should reject additional storage")
+    for i in range(4):
+        add_asset(owner_id, i + 2)
+    if owner_id == owners[1]:
+        add_asset(owner_id, 6, size=20*1024*1024-1024)
+    else:
+        add_asset(owner_id, 5)
+# Ten creators now consume exactly 1,000 MiB. Fill the platform's final 24 MiB.
+add_asset(owners[10], 1, size=20*1024*1024)
+add_asset(owners[10], 2, size=4*1024*1024)
+must_fail(lambda: add_asset(owners[11], 1, size=1), "Platform quota should reject additional storage")
 print("PASS: per-creator 100 MiB quota, platform 1 GiB cap, rejected-object accounting, deletion release, and owner-reassignment enforcement.")
