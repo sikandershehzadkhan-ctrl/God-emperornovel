@@ -2,7 +2,9 @@ import assert from "node:assert/strict";
 import { applySeoMetadata, buildRobotsTxt, buildSitemapXml, canonicalOrigin, canonicalPath, getPageSeo } from "../src/seo.mjs";
 
 const origin="https://imperial.example";
-assert.equal(canonicalOrigin(origin),origin);\nassert.equal(canonicalPath("/discover"),"/catalog");\nassert.equal(canonicalPath("/formats"),"/");
+assert.equal(canonicalOrigin(origin),origin);
+assert.equal(canonicalPath("/discover"),"/catalog");
+assert.equal(canonicalPath("/formats"),"/");
 assert.equal(canonicalOrigin("http://evil.example"),"https://god-emperornovel.sikandershehzadkhan.workers.dev");
 const robots=buildRobotsTxt(origin);
 assert.match(robots,/Sitemap: https:\/\/imperial\.example\/sitemap\.xml/);
@@ -23,7 +25,9 @@ const page=applySeoMetadata('<html><head><title>Old</title><meta name="descripti
 assert.match(page,/<title>A &lt;Story&gt; &amp; More<\/title>/);
 assert.match(page,/name="description" content="A useful story description\."/);
 assert.match(page,/property="og:title" content="A &lt;Story&gt; &amp; More"/);
-assert.match(page,/rel="canonical" href="https:\/\/imperial\.example\/novel\/12"/);\nassert.match(page,/application\\/ld\\+json/);\nassert.match(page,/schema\\.org/);
+assert.match(page,/rel="canonical" href="https:\/\/imperial\.example\/novel\/12"/);
+assert.match(page,/application\/ld\+json/);
+assert.match(page,/schema\.org/);
 assert.equal((page.match(/name="description"/g)||[]).length,1);
 const privatePage=applySeoMetadata('<html><head><title>Account</title></head></html>',{title:"Account",robots:"noindex,nofollow"});
 assert.match(privatePage,/name="robots" content="noindex,nofollow"/);
