@@ -6,7 +6,7 @@ on:
   workflow_dispatch:
     inputs:
       confirm_production_deploy:
-        description: "Type true only after the read-only production D1 audit and release review have passed"
+        description: "Type true to apply reviewed additive D1 migrations 0009-0011 and deploy after the read-only audit and release review"
         required: true
         default: "false"
         type: choice
@@ -114,6 +114,63 @@ jobs:
 
       - name: Validate Cloudflare bundle without deploying
         run: npx --yes wrangler@4 deploy --dry-run
+
+      - name: Apply and verify additive D1 migrations before Worker deployment
+        shell: bash
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+        run: |
+          set -euo pipefail
+          db="god-emperornovel-db"
+          d1_command() {
+            npx --yes wrangler@4 d1 execute "$db" --remote --command "$1"
+          }
+          read_status() {
+            node -e 'let s="";process.stdin.on("data",d=>s+=d).on("end",()=>{const m=s.match(/"status"\s*:\s*"([^"]+)"/);console.log(m?m[1]:"unknown")})'
+          }
+
+          echo "Preflight: verify the existing production tables required by catalog indexes and creator applications."
+          base_output="$(d1_command "SELECT CASE WHEN EXISTS(SELECT 1 FROM sqlite_master WHERE type='table' AND name='novel_genres') AND EXISTS(SELECT 1 FROM sqlite_master WHERE type='table' AND name='novel_tags') AND EXISTS(SELECT 1 FROM sqlite_master WHERE type='table' AND name='unlocks') AND EXISTS(SELECT 1 FROM sqlite_master WHERE type='table' AND name='novels') AND EXISTS(SELECT 1 FROM sqlite_master WHERE type='table' AND name='users') AND EXISTS(SELECT 1 FROM pragma_table_info('novel_genres') WHERE name='novel_id') AND EXISTS(SELECT 1 FROM pragma_table_info('novel_genres') WHERE name='genre_id') AND EXISTS(SELECT 1 FROM pragma_table_info('novel_tags') WHERE name='novel_id') AND EXISTS(SELECT 1 FROM pragma_table_info('novel_tags') WHERE name='tag_id') AND EXISTS(SELECT 1 FROM pragma_table_info('unlocks') WHERE name='chapter_id') AND EXISTS(SELECT 1 FROM pragma_table_info('unlocks') WHERE name='unlocked_at') AND EXISTS(SELECT 1 FROM pragma_table_info('novels') WHERE name='publication_status') THEN 'ready' ELSE 'incompatible' END AS status;")"
+          base_status="$(printf '%s' "$base_output" | read_status)"
+          printf '%s\n' "$base_output"
+          if [ "$base_status" != "ready" ]; then
+            echo "::error::Production base tables/columns do not match the reviewed catalog migrations. No D1 migration or Worker deployment was attempted."
+            exit 1
+          fi
+
+          echo "Preflight: determine whether author_applications is absent, complete, or partially initialized."
+          author_output="$(d1_command "SELECT CASE WHEN NOT EXISTS(SELECT 1 FROM sqlite_master WHERE type='table' AND name='author_applications') THEN 'absent' WHEN (SELECT COUNT(*) FROM pragma_table_info('author_applications') WHERE name IN ('id','user_id','display_name','bio','experience','portfolio_url','sample_work','preferred_formats','rights_confirmed','status','review_notes','reviewed_by','reviewed_at','created_at','updated_at'))=15 THEN 'complete' ELSE 'partial' END AS status;")"
+          author_status="$(printf '%s' "$author_output" | read_status)"
+          printf '%s\n' "$author_output"
+          if [ "$author_status" = "partial" ] || [ "$author_status" = "unknown" ]; then
+            echo "::error::author_applications exists with an incomplete or unrecognized schema. Stop for manual reconciliation; do not attempt an automatic table repair."
+            exit 1
+          fi
+
+          echo "Applying idempotent catalog filter indexes (migration 0009)."
+          npx --yes wrangler@4 d1 execute "$db" --remote --file=migrations/0009_catalog_filter_indexes.sql
+
+          echo "Applying idempotent catalog sort indexes (migration 0010)."
+          npx --yes wrangler@4 d1 execute "$db" --remote --file=migrations/0010_catalog_sort_indexes.sql
+
+          if [ "$author_status" = "absent" ]; then
+            echo "Creating the missing author application table and indexes (migration 0011)."
+          else
+            echo "Author application table exists; reapplying CREATE IF NOT EXISTS to ensure all migration 0011 indexes exist."
+          fi
+          npx --yes wrangler@4 d1 execute "$db" --remote --file=migrations/0011_author_applications.sql
+
+          echo "Post-migration verification before Worker deployment."
+          ready_output="$(d1_command "SELECT CASE WHEN EXISTS(SELECT 1 FROM sqlite_master WHERE type='index' AND name='idx_novel_genres_genre_novel') AND EXISTS(SELECT 1 FROM sqlite_master WHERE type='index' AND name='idx_novel_tags_tag_novel') AND EXISTS(SELECT 1 FROM sqlite_master WHERE type='index' AND name='idx_unlocks_chapter_time') AND EXISTS(SELECT 1 FROM sqlite_master WHERE type='index' AND name='idx_novels_published_views') AND EXISTS(SELECT 1 FROM sqlite_master WHERE type='index' AND name='idx_novels_published_rating') AND EXISTS(SELECT 1 FROM sqlite_master WHERE type='index' AND name='idx_novels_published_created') AND EXISTS(SELECT 1 FROM sqlite_master WHERE type='table' AND name='author_applications') AND (SELECT COUNT(*) FROM pragma_table_info('author_applications') WHERE name IN ('id','user_id','display_name','bio','experience','portfolio_url','sample_work','preferred_formats','rights_confirmed','status','review_notes','reviewed_by','reviewed_at','created_at','updated_at'))=15 AND EXISTS(SELECT 1 FROM sqlite_master WHERE type='index' AND name='idx_author_applications_one_pending') AND EXISTS(SELECT 1 FROM sqlite_master WHERE type='index' AND name='idx_author_applications_status_created') AND EXISTS(SELECT 1 FROM sqlite_master WHERE type='index' AND name='idx_author_applications_user_created') THEN 'ready' ELSE 'missing' END AS status;")"
+          ready_status="$(printf '%s' "$ready_output" | read_status)"
+          printf '%s\n' "$ready_output"
+          if [ "$ready_status" != "ready" ]; then
+            echo "::error::Required production D1 structures were not verified. Worker deployment is blocked."
+            exit 1
+          fi
+          echo "PASS: migrations 0009-0011 are present and verified before Worker deployment."
+
 
       - name: Deploy Worker and static assets
         run: npx --yes wrangler@4 deploy
