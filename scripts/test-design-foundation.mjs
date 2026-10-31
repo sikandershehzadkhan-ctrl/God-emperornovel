@@ -53,6 +53,10 @@ for(const label of ["Home","Discover","Trending","Rankings","Library","Community
 assert.ok(sourceApp.includes('<nav class="navlinks" aria-label="Primary navigation">'),"Desktop navigation must have an accessible label");
 assert.ok(sourceApp.includes('aria-current="${active(\'/\')?\'page\':\'false\'}"'),"Current-page state must be exposed to assistive technology");
 assert.ok(sourceApp.includes('aria-label="Primary mobile navigation"'),"Mobile navigation must have an accessible label");
+assert.ok(sourceApp.includes("menuDrawer?.querySelector('a[href]')?.focus()"),"Opening the navigation drawer must move keyboard focus inside");
+assert.ok(sourceApp.includes("e.key==='Tab'&&menuButton?.getAttribute('aria-expanded')==='true'"),"Navigation drawer must trap keyboard focus while open");
+assert.ok(sourceApp.includes("menuButton?.focus()"),"Closing the navigation drawer must restore focus to its trigger");
+
 
 const theme=html.match(/<meta name="theme-color" content="([^"]+)"/);
 assert.ok(theme,"HTML theme color meta must exist");
