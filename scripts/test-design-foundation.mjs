@@ -16,8 +16,8 @@ function contrast(foreground,background){
   return (Math.max(a,b)+.05)/(Math.min(a,b)+.05);
 }
 function token(block,name){return block.match(new RegExp(name+":(#[0-9A-Fa-f]{6})"))?.[1]||null}
-const lightBlock=css.match(/:root\\{([\\s\\S]*?)\\}/)?.[1]||"";
-const darkBlock=css.match(/html\\[data-theme="dark"\\]\\{([\\s\\S]*?)\\}/)?.[1]||"";
+const lightBlock=css.match(/:root\{([\s\S]*?)\}/)?.[1]||"";
+const darkBlock=css.match(/html\[data-theme="dark"\]\{([\s\S]*?)\}/)?.[1]||"";
 const lightSubtle=token(lightBlock,"--in-subtle"),lightCanvas=token(lightBlock,"--in-canvas");
 const darkSubtle=token(darkBlock,"--in-subtle"),darkCanvas=token(darkBlock,"--in-canvas");
 assert.ok(lightSubtle&&lightCanvas&&darkSubtle&&darkCanvas,"Light and dark text contrast tokens must be explicit hex colors");
