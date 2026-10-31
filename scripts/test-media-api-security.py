@@ -7,11 +7,23 @@ def section(start, end):
     b = source.index(end, a)
     return source[a:b]
 
+media_list = section('if(p==="/api/author/media"&&m==="GET"){', 'if(/^\\/api\\/author\\/media\\/\\d+$/.test(p)&&m==="DELETE"){')
+media_delete = section('if(/^\\/api\\/author\\/media\\/\\d+$/.test(p)&&m==="DELETE"){', 'if(p==="/api/author/media/upload"&&m==="POST"){')
 upload = section('if(p==="/api/author/media/upload"&&m==="POST"){', 'let mediaMatch=p.match(')
 review = section('if(/^\\/api\\/admin\\/media\\/\\d+\\/review$/.test(p)&&m==="POST"){', 'if(p==="/api/agents"&&m==="GET"){')
 delivery = section('if(mediaMatch&&m==="GET"){', 'if(p==="/api/admin/media/review-queue"&&m==="GET"){')
 
 checks = {
+    "creator media library requires author access": "author(u)" in media_list,
+    "creator media library scopes assets to the authenticated owner": "WHERE owner_user_id=?" in media_list,
+    "creator media library reports bounded storage usage": "SUM(size_bytes)" in media_list and "limit=104857600" in media_list,
+    "creator media library does not expose private object keys": "object_key" not in media_list,
+    "asset deletion requires author access and same-origin request": "author(u)" in media_delete and 'req.headers.get("origin")!==url.origin' in media_delete,
+    "asset deletion checks creator ownership": "WHERE id=? AND owner_user_id=?" in media_delete,
+    "asset deletion atomically refuses attached comic pages": "NOT EXISTS (SELECT 1 FROM comic_chapter_pages WHERE media_asset_id=?)" in media_delete,
+    "asset deletion reserves quota before removing private storage": "status='processing',deleted_at=COALESCE(deleted_at,CURRENT_TIMESTAMP)" in media_delete,
+    "asset deletion marks deleted only after R2 deletion": "env.MEDIA_BUCKET.delete(asset.object_key)" in media_delete and "status='deleted',deleted_at=CURRENT_TIMESTAMP" in media_delete,
+    "asset deletion restores state if private storage deletion fails": "status=?,deleted_at=?" in media_delete,
     "upload requires author authentication": "author(u)" in upload,
     "upload rejects cross-origin requests": 'requestOrigin!==url.origin' in upload,
     "upload is rate-limited per creator": 'consumeAuthRateLimit(env,"media-upload",String(u.id),10,3600)' in upload,
