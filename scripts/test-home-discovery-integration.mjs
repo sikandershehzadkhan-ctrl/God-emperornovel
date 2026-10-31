@@ -29,6 +29,13 @@ assert.ok(pulse.includes("if(platformPulseRequest)return platformPulseRequest"),
 assert.ok(pulse.includes("last successful update"),"A failed refresh must preserve the last successful snapshot and disclose its age");
 assert.ok(pulse.includes("second:'2-digit',timeZoneName:'short'"),"The refresh timestamp must show seconds and the visitor's local timezone");
 assert.ok(pulse.includes("refreshes every 60 seconds"),"The live panel must disclose its refresh cadence");
+
+assert.ok(app.includes('id="platformPulseHealth"'),"Homepage must expose a separate live service-health indicator");
+assert.ok(pulse.includes("apiWithTimeout('/api/health',{},10000)"),"Platform pulse must query the real health endpoint independently");
+assert.ok(pulse.includes("service.ok===true&&service.database===true"),"Healthy status must require both Worker and database checks");
+assert.ok(pulse.includes("Health status unavailable"),"Health-check failures must be disclosed instead of implying the service is healthy");
+assert.ok(css.includes(".platformPulseHealth[data-state=\"healthy\"]")&&css.includes(".platformPulseHealth[data-state=\"degraded\"]"),"Service health states must have distinct visual treatment");
+
 assert.ok(pulse.includes("Number.isSafeInteger(Number(row.novel_id))"),"Update-feed links must reject invalid record identifiers");
 assert.ok(worker.includes('if(p==="/api/platform/overview"&&m==="GET")'),"Worker must expose the real platform overview endpoint");
 assert.ok(worker.includes("readersInLast24Hours"),"Reader activity must be sourced from the recorded 24-hour history window");
