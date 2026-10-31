@@ -28,7 +28,7 @@ No provider in this register is authorized to supply copyrighted manga/manhwa ch
 | Project Gutenberg | Public-domain ebook discovery and possible title-by-title text sourcing | Public ebook catalogue; no API key or paid subscription required for ordinary access. | The vast majority are public domain in the US, not necessarily in Pakistan or every territory. Confirm each title's status. Project Gutenberg name/trademark has separate terms; its permission page notes commercial use of the trademark may require royalties. Link to ebook landing pages, not deep file URLs. | **Conditional public-domain source**, no blanket ingestion |
 | Standard Ebooks | High-quality public-domain ebook editions and metadata | Volunteer-driven, freely accessible project. | Confirm the underlying work's status in every relevant territory and the edition's own terms. Do not imply endorsement. | **Good candidate for carefully cleared public-domain editions** |
 | Open Library | Book, author, edition and cover metadata | Public API. Default limit 1 request/second; identified apps with User-Agent and contact details 3 requests/second. | Its official guidance says APIs are not intended as a bulk backend or high-traffic commercial infrastructure. Cache; make user-driven requests; do not scrape HTML or bulk harvest. | **Small-scale user-triggered metadata lookup only** |
-| AniList | Anime/manga metadata, season/series relationships and discovery links | Public GraphQL API; documented baseline 90 requests/minute, but current documentation reports temporary degraded limit of 30/minute. | Metadata API only. Not an episode, manga page or streaming licence. Respect terms, rate limits and attribution requirements. | **Promising metadata candidate**, test and cache before integration |
+| AniList | Anime/manga metadata, season/series relationships and discovery links | Public GraphQL API; documented baseline 90 requests/minute, temporarily degraded to 30/minute at research time. Its commercial-use terms say free below $150/month revenue, but that does not override its competing-service restriction. | Terms explicitly prohibit using its API in competing, non-complementary services of the same nature, including anime/manga list or tracker services. The restriction applies to all API data, including media data. Imperial Novel's unified media catalogue overlaps this category. | **Reject for Imperial Novel catalogue** unless AniList grants explicit written permission or changes its terms. |
 | Google Books API | Bibliographic search and preview availability links | Public API documentation exists; quota and current project eligibility must be checked before adoption. | Metadata and preview availability do not grant rights to copy or serve full books. | **Hold for quota/terms verification** |
 | MangaDex API | Manga metadata and source links | Public API; general limit approximately 5 requests/second/IP. | MangaDex explicitly requires clients to proxy requests for CORS and image delivery, and warns that hotlinked images will not be served correctly. API availability is not proof that uploaded chapter images are licensed for republication. Proxying user traffic creates cost, abuse and rights exposure. | **Do not proxy or rehost chapters**; metadata/link-out only after policy review |
 | Spotify Web API | Music metadata and user-library integrations | Official documentation says a Spotify Premium account is required to use the Web API. | Playback is Spotify's service, not a licence to stream tracks through Imperial Novel. | **Reject for PKR 0 architecture** |
@@ -70,7 +70,7 @@ Every proposed connector must pass these checks before it can be enabled:
 ### Tier A: safe candidates for limited metadata and asset discovery
 - Library of Congress: public API, strict rate limits and per-item rights review.
 - Wikimedia Commons: per-file license verification and attribution.
-- AniList: metadata-only integration after API terms review and caching.
+- AniList: **not approved**. Its official terms prohibit use in competing anime/manga list or tracker services. The under-$150/month commercial allowance does not waive this separate restriction.
 - Standard Ebooks / Project Gutenberg: title-by-title public-domain review, no blanket import.
 
 ### Tier B: restricted research or link-out
@@ -106,6 +106,7 @@ For now, Imperial Novel's strongest zero-budget content supply is:
 - Project Gutenberg permissions: https://www.gutenberg.org/policy/permission.html
 - Standard Ebooks: https://standardebooks.org/
 - Open Library API and usage rules: https://openlibrary.org/developers/api
+- AniList API terms: https://docs.anilist.co/guide/terms-of-use
 - AniList API rate limits: https://anilist.gitbook.io/anilist-apiv2-docs/docs/guide/rate-limiting
 - MangaDex API limitations: https://api.mangadex.org/docs/2-limitations/
 - MangaDex chapter image delivery: https://api.mangadex.org/docs/04-chapter/retrieving-chapter/
