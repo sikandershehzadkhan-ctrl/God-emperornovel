@@ -39,20 +39,41 @@ CREATE TABLE IF NOT EXISTS comment_reports_legacy_duplicates (
   details TEXT DEFAULT '',
   status TEXT NOT NULL DEFAULT 'open',
   created_at TEXT NOT NULL,
-  archived_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP
+  archived_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  archive_reason TEXT NOT NULL DEFAULT 'duplicate'
 );
+-- Preserve invalid legacy reports for moderation/audit review before removing them.
 INSERT OR IGNORE INTO comment_reports_legacy_duplicates
-  (id,user_id,comment_id,reason,details,status,created_at)
-SELECT id,user_id,comment_id,reason,details,status,created_at
+  (id,user_id,comment_id,reason,details,status,created_at,archive_reason)
+SELECT r.id,r.user_id,r.comment_id,r.reason,r.details,r.status,r.created_at,'orphan_reference'
+FROM comment_reports r
+WHERE NOT EXISTS (SELECT 1 FROM users u WHERE u.id=r.user_id)
+   OR NOT EXISTS (SELECT 1 FROM comments c WHERE c.id=r.comment_id);
+-- Preserve duplicate reports before keeping the earliest active report per user/comment.
+INSERT OR IGNORE INTO comment_reports_legacy_duplicates
+  (id,user_id,comment_id,reason,details,status,created_at,archive_reason)
+SELECT id,user_id,comment_id,reason,details,status,created_at,'duplicate'
 FROM comment_reports
 WHERE rowid NOT IN (
   SELECT MIN(rowid) FROM comment_reports GROUP BY user_id,comment_id
 );
--- Keep the earliest active report after preserving every removed row above.
+-- Invalid non-report interactions have no valid parent and are safe to discard.
+DELETE FROM comment_likes
+WHERE NOT EXISTS (SELECT 1 FROM users u WHERE u.id=comment_likes.user_id)
+   OR NOT EXISTS (SELECT 1 FROM comments c WHERE c.id=comment_likes.comment_id);
+DELETE FROM novel_reactions
+WHERE NOT EXISTS (SELECT 1 FROM users u WHERE u.id=novel_reactions.user_id)
+   OR NOT EXISTS (SELECT 1 FROM novels n WHERE n.id=novel_reactions.novel_id);
+DELETE FROM request_votes
+WHERE NOT EXISTS (SELECT 1 FROM users u WHERE u.id=request_votes.user_id)
+   OR NOT EXISTS (SELECT 1 FROM novel_requests r WHERE r.id=request_votes.request_id);
+-- Remove duplicate and orphan reports only after preserving report history above.
 DELETE FROM comment_reports
 WHERE rowid NOT IN (
   SELECT MIN(rowid) FROM comment_reports GROUP BY user_id,comment_id
-);
+)
+   OR NOT EXISTS (SELECT 1 FROM users u WHERE u.id=comment_reports.user_id)
+   OR NOT EXISTS (SELECT 1 FROM comments c WHERE c.id=comment_reports.comment_id);
 CREATE UNIQUE INDEX IF NOT EXISTS idx_comment_reports_user_comment
   ON comment_reports(user_id,comment_id);
 CREATE INDEX IF NOT EXISTS idx_comment_reports_status_created
