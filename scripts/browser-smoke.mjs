@@ -62,7 +62,11 @@ try {
   assert.ok(await page.locator("#storyKind option").count() >= 15, "Author Studio must expose the supported format registry");
   assert.equal(await page.locator("#storyRights").count(), 1, "creator submission must expose a rights-status field");
   assert.equal(await page.locator("#rightsEvidence").count(), 1, "non-original work must have a rights-evidence field");
-  await page.locator("#authorWorksList").waitFor({ timeout: 10000 });
+  await page.waitForFunction(() => {
+    const list = document.querySelector("#authorWorksList");
+    return list && !/Loading your stories/i.test(list.textContent);
+  }, { timeout: 15000 });
+  await page.locator('#authorWorksList a[href="/login"]').waitFor({ timeout: 10000 });
   await assertNoMobileOverflow("Author Studio");
 
   app = await open("/tickets");
