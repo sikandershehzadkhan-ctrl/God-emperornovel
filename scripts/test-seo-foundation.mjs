@@ -4,7 +4,7 @@ import { applySeoMetadata, buildRobotsTxt, buildSitemapXml, canonicalOrigin, can
 const origin="https://imperial.example";
 assert.equal(canonicalOrigin(origin),origin);
 assert.equal(canonicalPath("/discover"),"/catalog");
-assert.equal(canonicalPath("/formats"),"/");
+assert.equal(canonicalPath("/formats"),"/formats");
 assert.equal(canonicalOrigin("http://evil.example"),"https://god-emperornovel.sikandershehzadkhan.workers.dev");
 
 const robots=buildRobotsTxt(origin);
@@ -23,6 +23,7 @@ const searchDisabled=buildRobotsTxt(origin,{allowOaiSearch:false});
 assert.match(searchDisabled,/User-agent: OAI-SearchBot\nDisallow: \/\n/);
 
 assert.match(getPageSeo("/catalog").title,/Discover Novels/);
+assert.match(getPageSeo("/formats").title,/Explore Story Formats/);
 assert.match(getPageSeo("/search").title,/Search Stories/);
 assert.match(getPageSeo("/format/manhwa").title,/Manhwa/);
 assert.equal(robotsForPath("/search"),"noindex,nofollow");
@@ -38,6 +39,7 @@ assert.match(sitemap,/<loc>https:\/\/imperial\.example\/novel\/12<\/loc><lastmod
 assert.match(sitemap,/<loc>https:\/\/imperial\.example\/novel\/13<\/loc>/);
 assert.equal((sitemap.match(/\/novel\/12/g)||[]).length,1);
 assert.doesNotMatch(sitemap,/\/novel\/bad/);
+assert.match(sitemap,/<loc>https:\/\/imperial\.example\/formats<\/loc>/);
 assert.match(sitemap,/\/format\/original/);
 assert.match(sitemap,/\/format\/audiobook/);
 assert.equal((sitemap.match(/\/format\//g)||[]).length,15);
