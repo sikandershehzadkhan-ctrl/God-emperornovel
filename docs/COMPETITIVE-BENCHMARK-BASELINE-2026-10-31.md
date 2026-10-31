@@ -225,3 +225,12 @@ The read-only production D1 audit workflow run #25 for commit `850c6b8b760ac19e9
 ### Interpretation
 
 A route returning HTML is not enough to pass. The catalog eventually renders its one result, but the observed delay is unacceptable as an uninvestigated experience. Reader rendering passed for one sample chapter, but content quality and payment workflows remain unverified. No production code or data was changed by these read-only tests.
+
+
+### Third catalog inspection: hydration and timing evidence
+
+A direct HTML extraction of `/catalog` showed the initial client shell text **“Loading catalog…”** and did not contain the story card. The browser smoke test later observed the card after waiting; a separate browser run reported it visible on its initial observation and gave only a rough ~3-second estimate. These observations are not a controlled, consistent timing series.
+
+The browser automation interface explicitly could not expose Navigation Timing or Resource Timing APIs. Therefore we still do not have reliable `responseEnd`, API duration, or first-card paint measurements. Direct external fetch samples also include tool/network overhead and must not be treated as Worker TTFB.
+
+**Current classification:** client-side catalog hydration is eventually successful, but first-content timing is not yet measured reliably. Keep this as a performance investigation, not a confirmed functional defect. Do not add indexes or alter Worker logic until controlled measurements isolate the bottleneck.
