@@ -2,17 +2,17 @@
 
 **Date:** 2026-10-31  
 **Method:** Official Graphify CLI 0.9.99, code-only extraction and clustering  
-**Workflow:** GitHub Actions run 41185214517  
-**Artifact:** imperial-novel-graphify-a307ea1a5d4364af0ed36f76224517b2678952de  
+**Workflow:** GitHub Actions run 41186996429  
+**Artifact:** imperial-novel-graphify-8bcbb4221eb7ac146523e9b9910cdb7c6e4f944b  
 **Mode:** Offline AST extraction; no model/API token; no prose, image or semantic extraction
 
 ## Measured graph
 
 | Measure | Result |
 |---|---:|
-| Nodes | 640 |
-| Edges | 946 |
-| Communities | 33 |
+| Nodes | 673 |
+| Edges | 1,001 |
+| Communities | 34 |
 | Extracted edges | 99% |
 | Inferred edges | 9 (1%, average confidence 0.85) |
 | Ambiguous edges | 0 |
@@ -27,9 +27,9 @@ The artifact contains graph.json, graph.html, and GRAPH_REPORT.md. GitHub Action
 
 ### 1. Worker request dispatcher is the primary coupling hotspot
 
-- src/index.js: 154,552 bytes, 791 lines in the checked source.
-- Graphify identified the api() dispatcher as the most connected node (40 edges).
-- The Worker community cohesion score was approximately **0.079**, indicating weak internal grouping in this static graph.
+- src/index.js: 160,514 bytes, 843 lines in the checked source.
+- Graphify identified the api() dispatcher as the most connected node (42 edges).
+- The Worker community cohesion score was approximately **0.07**, indicating weak internal grouping in this static graph.
 
 **Interpretation:** The Worker currently centralizes many domains behind one dispatcher. This is not proof of a runtime defect, but it increases the cost and risk of changing unrelated domains together.
 
@@ -37,9 +37,9 @@ The artifact contains graph.json, graph.html, and GRAPH_REPORT.md. GitHub Action
 
 ### 2. Browser application is another major coupling hotspot
 
-- public/app.js: 120,731 bytes, 325 lines in the checked source (many statements are densely packed).
-- Graphify identified api(), esc() and boot() among the most connected browser-side nodes.
-- The browser app community cohesion score was approximately **0.136**.
+- public/app.js: 127,105 bytes, 373 lines in the checked source (many statements are densely packed).
+- Graphify identified api(), esc() and boot() among the most connected browser-side nodes; esc() has 34 edges and boot() has 27.
+- The browser app community cohesion score was approximately **0.13**.
 
 **Interpretation:** The low cohesion and compressed source make review, regression isolation and future feature work harder. This is a maintainability risk, not a measured performance score.
 
@@ -47,7 +47,7 @@ The artifact contains graph.json, graph.html, and GRAPH_REPORT.md. GitHub Action
 
 ### 3. Existing modular boundaries are useful and should be preserved
 
-Graphify found distinct modules for password hashing, connector URL policy, donation submission/approval policy, donation reference indexing, and runtime feature schema initialization. Their focused communities are stronger than the two main application hubs. Preserve and expand this pattern where domain logic is pure and independently testable.
+Graphify found distinct modules for password hashing, connector URL policy, donation submission/approval policy, donation reference indexing, runtime feature schema initialization, and author-application validation. The creator application feature now has a separate policy module, D1 application table, reader application page and admin review queue. Their focused communities are stronger than the two main application hubs. Preserve and expand this pattern where domain logic is pure and independently testable.
 
 ### 4. Database and rights boundaries are visible
 
@@ -60,7 +60,7 @@ This is a useful static result, not proof of runtime correctness, secure authori
 ## Product-critical issues not solved by architecture cleanup
 
 1. **Content supply:** production currently exposes one published story and two chapters. This is the biggest platform viability gap. The correct response is a rights-cleared creator and editorial pipeline, not scraped or fabricated catalog entries.
-2. **Production/source drift:** source 17.21.0 includes a /discover alias; production was still 17.20.0 and direct /discover returned the branded 404 in the latest read-only check. Source validation passing does not deploy it.
+2. **Production/source drift:** source is now 17.22.0 and includes the `/discover` alias, author applications, and migrations 0009–0011. Production was still 17.20.0 in the latest read-only check, and direct `/discover` returned the branded 404. Source validation passing does not deploy it.
 3. **Feature truthfulness:** anime, cartoons, audiobooks, dramas and games are catalog-only placeholders in the current format registry. They must not be described as playable/integrated. Comic chapter rendering is implemented for a structured page payload, but a format reader is not the same as a licensed content supply.
 4. **Performance evidence:** no trustworthy LCP, INP, CLS, or mobile network profile has yet been captured. Tool-side fetch duration is not a Core Web Vital or definitive Worker TTFB.
 
@@ -72,7 +72,8 @@ This is a useful static result, not proof of runtime correctness, secure authori
 4. Modularize Worker domains one at a time, beginning with low-risk pure policies and keeping authorization/transaction behavior unchanged.
 5. Modularize the browser application behind stable route and state contracts; measure actual mobile performance before and after.
 6. Prioritize rights-cleared publishing and author onboarding to grow the real catalog.
-7. Re-run Graphify after each substantial architectural milestone and compare graph snapshots. Do not optimize for graph scores alone.
+7. Use the researched ImageKit Forever Free candidate only after account-level no-card/free limits are confirmed; keep uploads disabled until private upload verification, asset registry, signed delivery and quota controls are implemented.
+8. Re-run Graphify after each substantial architectural milestone and compare graph snapshots. Do not optimize for graph scores alone.
 
 ## Limits
 
