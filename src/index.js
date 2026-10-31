@@ -549,6 +549,10 @@ async function api(req,env){
   if(!asset)return json({error:"Media asset not found."},404);
   if(!["uploaded","processing","ready"].includes(asset.status))return json({error:"Only uploaded or processed assets can be reviewed."},409);
   if(decision==="approved"&&(!String(asset.rights_holder||"").trim()||!String(asset.license_name||"").trim()||!String(asset.rights_evidence||"").trim()))return json({error:"Rights holder, license and evidence are required before approval."},409);
+  if(decision!=="approved"){
+   const attached=await env.DB.prepare("SELECT COUNT(*) AS page_count FROM comic_chapter_pages WHERE media_asset_id=?").bind(assetId).first();
+   if(Number(attached?.page_count||0)>0)return json({error:"This asset is attached to comic chapter pages. Remove those references through the chapter editor before rejecting or withdrawing its rights."},409);
+  }
   try{
    const results=await env.DB.batch([
     env.DB.prepare("INSERT INTO media_asset_reviews(media_asset_id,reviewer_user_id,decision,note) VALUES(?,?,?,?)").bind(assetId,u.id,decision,note),
