@@ -90,7 +90,19 @@ const PAGE_SEO={
   "/omniportal":{title:"OmniPortal | Imperial Novel",description:"Explore authorized catalog connections and discover stories across connected providers."},
   "/privacy":{title:"Privacy Policy | Imperial Novel",description:"Read how Imperial Novel handles account information, privacy and data protection."},
   "/terms":{title:"Terms of Service | Imperial Novel",description:"Review the terms governing use of the Imperial Novel platform."},
-  "/copyright":{title:"Copyright & Rights | Imperial Novel",description:"Learn about content rights, licensing, attribution and copyright reporting on Imperial Novel."}
+  "/copyright":{title:"Copyright & Rights | Imperial Novel",description:"Learn about content rights, licensing, attribution and copyright reporting on Imperial Novel."},
+  "/discover":{title:"Discover Novels & Stories | Imperial Novel",description:"Explore the Imperial Novel catalog and discover original and authorized stories across genres and formats."},
+  "/tier-list":{title:"Story Tier Lists | Imperial Novel",description:"Explore community story tier lists and reader recommendations on Imperial Novel."},
+  "/random":{title:"Discover a Random Story | Imperial Novel",description:"Find a new story to explore from the Imperial Novel catalog."},
+  "/made-for-you":{title:"Stories Made for You | Imperial Novel",description:"Explore story recommendations and reading discoveries on Imperial Novel."},
+  "/for-you":{title:"Stories Made for You | Imperial Novel",description:"Explore story recommendations and reading discoveries on Imperial Novel."},
+  "/trending":{title:"Trending Stories | Imperial Novel",description:"Discover stories gaining attention across the Imperial Novel catalog."},
+  "/vote":{title:"Community Story Voting | Imperial Novel",description:"Take part in community story voting on Imperial Novel."},
+  "/trend-factory":{title:"Trend Factory | Imperial Novel",description:"Explore story signals and authorized catalog metadata in Imperial Novel Trend Factory."},
+  "/admin":{title:"Command Center | Imperial Novel",description:"Imperial Novel administration."},
+  "/author":{title:"Author Studio | Imperial Novel",description:"Create and manage original, licensed and authorized stories on Imperial Novel."},
+  "/settings":{title:"Settings | Imperial Novel",description:"Manage your Imperial Novel account and reading preferences."},
+  "/notifications":{title:"Notifications | Imperial Novel",description:"View your Imperial Novel account notifications."}
 };
 export function getPageSeo(path){
   return PAGE_SEO[path]||{title:"Imperial Novel | Read • Create • Conquer",description:"Discover original, licensed and authorized stories on Imperial Novel."};
