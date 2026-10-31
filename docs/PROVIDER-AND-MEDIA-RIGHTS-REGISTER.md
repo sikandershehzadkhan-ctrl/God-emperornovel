@@ -55,6 +55,24 @@ Official references:
 - Google Fonts source and font licences: https://github.com/google/fonts
 - MDN Web Speech API: https://developer.mozilla.org/en-US/docs/Web/API/Web_Speech_API
 
+## No-cost infrastructure providers and services
+
+| Service | Purpose | Official cost/access evidence | Decision |
+|---|---|---|---|
+| Cloudflare Turnstile Free | Bot/challenge protection for registration, login, ticket requests and abuse-prone actions | Free plan includes unlimited challenges, up to 20 widgets and 10 hostnames per widget. | **Preferred security provider.** Configure keys in Cloudflare dashboard, keep the secret server-side, validate tokens on the server and never treat a client-only widget as protection. |
+| Cloudflare Web Analytics | Privacy-first real-user page and performance analytics | Official docs describe it as free and state that it does not collect or use visitors' personal data. Requires a Cloudflare account and a page beacon snippet. | **Preferred analytics provider.** Enable only after reviewing the snippet and privacy notice. No paid dependency. |
+| Cloudflare Email Routing | Receive/forward email for domain aliases | Available on Free and Paid plans. It handles inbound routing/forwarding. | **Useful for inbound contact aliases only.** It is not a free outbound transactional email sender. |
+| Cloudflare Email Sending | Verification, password reset and transactional email | Official docs state arbitrary-recipient sending requires Workers Paid. | **Reject under PKR 0.** Do not upgrade the Worker plan for email. |
+| Cloudflare R2 | User-uploaded covers, pages, audio and other object storage | Free monthly allowance is 10 GB-month, 1M Class A and 10M Class B operations; standard rates apply beyond the allowance. | **Do not adopt for production uploads under the strict zero-billing rule.** Free allowance is not a hard spending cap; excess usage is billable. |
+| Resend | Transactional email | A free plan exists, but the pricing page also documents optional pay-as-you-go transactional overages. Card acceptance and upgrade paths are present. | **Defer.** Do not connect until signup requirements, billing lock, overage disablement and free quota are verified. |
+ 
+Cloudflare official references:
+- Turnstile plans: https://developers.cloudflare.com/turnstile/plans/
+- Web Analytics: https://developers.cloudflare.com/web-analytics/about/
+- Email service and plan availability: https://developers.cloudflare.com/email-routing/
+- R2 pricing and free allowance: https://developers.cloudflare.com/r2/pricing/
+- Resend pricing and overages: https://resend.com/pricing
+
 ## Provider integration rules
 
 Every proposed connector must pass these checks before it can be enabled:
