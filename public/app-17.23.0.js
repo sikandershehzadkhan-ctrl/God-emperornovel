@@ -301,27 +301,48 @@ async function tickets(){const root=$('#app');try{const [p,l]=await Promise.all(
 async function requests(){const root=$('#app');let r;try{r=await api('/api/requests')}catch(e){root.innerHTML=pageStart('Request a New Novel','Three free requests each week, then Imperial Crown pricing applies.')+`<div class="notice">${esc(e.message)} <a href="/login" style="color:var(--gold2)">Sign in</a></div></div></div>`;return}root.innerHTML=pageStart('Request a New Novel','Three free requests each week, then Imperial Crown pricing applies.')+`<div class="panel" style="max-width:720px"><div class="stats"><div class="stat"><b>${r.used}/${r.limit}</b>Free requests used</div></div><form id="req"><div class="field"><label>Novel URL</label><input name="url" placeholder="https://example.com/novel/..." required></div><button class="primary">Submit Request</button></form><div id="reqMsg" style="margin-top:12px"></div></div></div></div>`;$('#req').onsubmit=async e=>{e.preventDefault();try{const d=await api('/api/requests',{method:'POST',body:JSON.stringify(Object.fromEntries(new FormData(e.target)))});$('#reqMsg').innerHTML=`<div class="notice">${esc(d.message)} Cost: ${d.cost} Imperial Crowns.</div>`;e.target.reset()}catch(x){$('#reqMsg').innerHTML=`<div class="notice">${esc(x.message)}</div>`}}}
 async function omni(){
  const root=$('#app');
- root.innerHTML=pageStart('OmniPortal','Rights-first discovery across Imperial Novel and authorized provider connectors.')+`<div class="panel"><form id="omni" class="toolbar"><div class="search" style="display:flex"><span>✦</span><input name="q" placeholder="Search titles, authors and worlds..."></div><button class="primary">Search</button></form><div class="notice"><b>Legal mode:</b> only authorized connectors are queried. Imports are metadata-only by default. Imperial Novel does not bypass paywalls, DRM, logins or access controls, and does not copy source chapters.</div><div id="omniRes" class="grid" style="margin-top:18px"></div></div></div></div>`;
- $('#omni').onsubmit=async e=>{
-  e.preventDefault();
-  const q=String(new FormData(e.target).get('q')||'');
-  if(q.length<2)return;
+ root.innerHTML=pageStart('OmniPortal','One discovery gateway for Imperial Novel and providers that have passed rights and connection checks.')+
+ '<section class="omniIntroPanel"><div><div class="eyebrow">FEDERATED DISCOVERY · RIGHTS FIRST</div><h2>Explore connected reading worlds.</h2><p>Search the Imperial catalog and approved external provider APIs in one place. External results remain attributed to their source.</p></div><div class="omniTrustNote">No paywall bypass. No DRM circumvention. No unauthorized chapter copying.</div></section>'+
+ '<section class="omniStatusPanel" aria-labelledby="omniStatusTitle"><div class="omniStatusHead"><div><div class="eyebrow">LIVE PROVIDER STATUS</div><h2 id="omniStatusTitle">Connection directory</h2><p class="muted">A registered source is not necessarily authorized, connected or online.</p></div><button id="omniStatusRefresh" class="ghost" type="button">Refresh status ↻</button></div><div id="omniStatus" role="status" aria-live="polite"><p class="muted">Checking provider registry…</p></div></section>'+
+ '<section class="panel omniSearchPanel"><form id="omni" class="toolbar" role="search"><div class="search" style="display:flex"><span aria-hidden="true">✦</span><input name="q" minlength="2" maxlength="120" aria-label="Search connected catalogs" placeholder="Search titles, authors and worlds..." required></div><button class="primary" type="submit">Search sources</button></form><p class="notice"><b>Import policy:</b> metadata import appears only when the provider has explicitly enabled it. Reading external works stays on the provider unless a written agreement allows another arrangement.</p><div id="omniMessage" class="muted" role="status" aria-live="polite"></div><div id="omniRes" class="grid" style="margin-top:18px"></div></section></div></div>';
+ const statusRoot=$('#omniStatus');
+ async function loadStatus(){
+  statusRoot.innerHTML='<p class="muted">Refreshing provider status…</p>';
+  try{
+   const d=await api('/api/omni/status'),counts=d.counts||{},sources=Array.isArray(d.sources)?d.sources:[];
+   const metrics=[['Registered',counts.registered],['Rights-authorized',counts.authorized],['Search-ready',counts.search_ready],['Online',counts.online]];
+   statusRoot.innerHTML='<div class="omniStatusMetrics">'+metrics.map(([label,value])=>'<div class="omniMetric"><b>'+Number(value||0).toLocaleString()+'</b><span>'+label+'</span></div>').join('')+'</div>'+
+    '<div class="omniSourceList">'+(sources.length?sources.slice(0,10).map(source=>{
+      const state=source.search_ready?(source.last_status==='online'?'Online':'Configured, not health-confirmed'):Number(source.enabled)===1&&source.rights_status==='authorized'?'Authorized, no search endpoint':source.rights_status==='authorized'?'Authorized, disabled':'Awaiting authorization';
+      return '<div class="omniSourceRow"><span><b>'+esc(source.name)+'</b><small>'+esc(new URL(source.base_url).hostname)+'</small></span><span class="omniSourceState">'+esc(state)+'</span></div>';
+    }).join(''):'<p class="muted">No provider records are registered yet.</p>')+'</div>'+
+    '<p class="omniStatusFoot">Updated '+(d.generated_at?esc(new Date(d.generated_at).toLocaleString()):'just now')+'. Only providers with authorized, allowlisted search endpoints are queried.</p>';
+  }catch(error){statusRoot.innerHTML='<p class="muted">Provider status is temporarily unavailable. Imperial Novel catalog search remains available.</p>';}
+ }
+ $('#omniStatusRefresh').onclick=loadStatus;
+ await loadStatus();
+ $('#omni').onsubmit=async event=>{
+  event.preventDefault();
+  const q=String(new FormData(event.currentTarget).get('q')||'').trim(),message=$('#omniMessage'),results=$('#omniRes');
+  if(q.length<2){message.textContent='Enter at least two characters to search.';return}
+  message.textContent='Searching the Imperial catalog and currently authorized providers…';
+  results.innerHTML='';
   try{
    const d=await api('/api/omni/search?q='+encodeURIComponent(q));
-   if(!d.results.length){$('#omniRes').innerHTML='<div class="empty" style="grid-column:1/-1">No authorized results found.</div>';return;}
-   $('#omniRes').innerHTML=d.results.map(x=>{
-    const ext=String(x.url||'').startsWith('http');
-    return `<div class="card"><div class="cardBody"><span class="pill purple">${esc(x.provider)}</span><div class="cardTitle" style="margin-top:10px">${esc(x.title)}</div><div class="muted">${esc(x.author)}</div><p class="muted">${esc(x.description||'')}</p><div class="actions" style="margin-top:12px">${ext?`<a class="ghost" href="${esc(x.url)}" target="_blank" rel="noopener">Open Source</a><button class="secondary omniImport" data-url="${esc(x.url)}">Request Metadata Import</button>`:`<a class="primary" href="${esc(x.url)}">Read on Imperial Novel</a>`}</div></div></div>`;
+   if(!d.results.length){message.textContent='No results found in the Imperial catalog or currently searchable providers.';results.innerHTML='<div class="empty" style="grid-column:1/-1">Try another title, author or topic, or browse the local catalog.</div>';return;}
+   message.textContent='Found '+d.results.length+' result(s). '+Number(d.searched_connectors||0)+' authorized provider connector(s) were queried.';
+   results.innerHTML=d.results.map(item=>{
+    const external=String(item.url||'').startsWith('https://');
+    const open=external?'<a class="ghost" href="'+esc(item.url)+'" target="_blank" rel="noopener noreferrer">Open at source ↗</a>':'<a class="primary" href="'+esc(item.url)+'">Read on Imperial Novel ↗</a>';
+    const importAction=external&&item.metadata_import_allowed?'<button class="secondary omniImport" data-url="'+esc(item.url)+'" type="button">Request metadata import</button>':'';
+    return '<article class="card omniResultCard"><div class="cardBody"><span class="pill purple">'+esc(item.provider)+'</span><h3 class="cardTitle">'+esc(item.title)+'</h3><div class="muted">'+esc(item.author||'Unknown author')+'</div><p class="muted">'+esc(item.description||'')+'</p><div class="actions">'+open+importAction+'</div>'+(external&&item.attribution_required?'<small class="muted">Provider attribution required.</small>':'')+'</div></article>';
    }).join('');
-   document.querySelectorAll('.omniImport').forEach(btn=>{
-    btn.onclick=async()=>{
-     try{
-      const d=await api('/api/omni/import',{method:'POST',body:JSON.stringify({url:btn.dataset.url})});
-      alert(`Metadata import request #${d.job_id} queued. No source chapters will be copied.`);
-     }catch(err){alert(err.message)}
-    };
+   document.querySelectorAll('.omniImport').forEach(button=>button.onclick=async()=>{
+    button.disabled=true;
+    try{const queued=await api('/api/omni/import',{method:'POST',body:JSON.stringify({url:button.dataset.url})});message.textContent='Metadata import request #'+queued.job_id+' queued for authorized processing.';}
+    catch(error){message.textContent=error.message||'Metadata import could not be requested.';button.disabled=false;}
    });
-  }catch(err){alert(err.message)}
+  }catch(error){message.textContent=error.message||'Search is temporarily unavailable. Try again.';}
  };
 }
 async function discoveryPage(kind){
