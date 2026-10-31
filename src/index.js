@@ -452,7 +452,7 @@ async function api(req,env){
    return json({ok:true,asset_id:assetId,status:"uploaded",rights_status:"pending_review",message:"Image stored privately. It is not publishable until it is safely processed and rights are approved."},201);
   }catch(err){
    if(objectKey&&env.MEDIA_BUCKET){try{await env.MEDIA_BUCKET.delete(objectKey)}catch{}}
-   if(assetId){try{await env.DB.prepare("UPDATE media_assets SET status='rejected' WHERE id=? AND owner_user_id=? AND status='pending_upload'").bind(assetId,u.id).run()}catch{}}
+   if(assetId){try{await env.DB.prepare("UPDATE media_assets SET status='rejected' WHERE id=? AND owner_user_id=? AND status IN ('pending_upload','uploaded')").bind(assetId,u.id).run()}catch{}}
    console.error("private media upload failed",err);
    return json({error:"Private image upload could not be completed."},500);
   }
