@@ -10,8 +10,8 @@ for username in ("owner", "intruder"):
     db.execute("INSERT INTO users(username,email,password_hash) VALUES(?,?,?)",
                (username, f"{username}@example.test", "hash"))
 db.execute("INSERT INTO novels(title,author,kind,owner_user_id) VALUES('Comic','owner','webtoon',1)")
-db.execute("INSERT INTO chapters(novel_id,chapter_number,title,content) VALUES(1,1,'Episode 1','')")
-db.execute("INSERT INTO chapters(novel_id,chapter_number,title,content) VALUES(1,2,'Episode 2','')")
+db.execute("INSERT INTO chapters(novel_id,chapter_number,title,content,publication_status) VALUES(1,1,'Episode 1','','draft')")
+db.execute("INSERT INTO chapters(novel_id,chapter_number,title,content,publication_status) VALUES(1,2,'Episode 2','','draft')")
 
 def asset(owner, key):
     cur = db.execute("""INSERT INTO media_assets(owner_user_id,object_key,mime_type,size_bytes)
