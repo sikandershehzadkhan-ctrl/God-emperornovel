@@ -38,6 +38,10 @@ must_fail(lambda: add_asset(owners[0], 7), "Rejected objects must continue consu
 db.execute("UPDATE media_assets SET status='deleted' WHERE owner_user_id=? AND id=(SELECT MIN(id) FROM media_assets WHERE owner_user_id=?)", (owners[0], owners[0]))
 deleted_at = db.execute("SELECT deleted_at FROM media_assets WHERE owner_user_id=? AND status='deleted'", (owners[0],)).fetchone()[0]
 assert deleted_at is not None, "Deleting an asset must stamp deleted_at"
+must_fail(
+    lambda: db.execute("UPDATE media_assets SET status='uploaded' WHERE owner_user_id=? AND status='deleted'", (owners[0],)),
+    "Deleted media assets must be terminal and cannot be reactivated",
+)
 add_asset(owners[0], 8)
 
 # Owner changes cannot move an asset into an account already at its quota.
