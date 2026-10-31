@@ -580,6 +580,12 @@ html[data-theme="dark"] .homeFormatPrimary{background:var(--in-brand-soft)}
 .platformPulseMetric{min-height:94px;padding:17px;border:1px solid var(--in-line);border-radius:16px;background:var(--in-surface)}
 .platformPulseMetric b{display:block;font-size:clamp(1.5rem,3vw,2.15rem);letter-spacing:-.05em;font-variant-numeric:tabular-nums}
 .platformPulseMetric span{display:block;margin-top:5px;color:var(--in-muted);font-size:.82rem}
+.platformPulseMetric{display:flex;flex-direction:column;justify-content:center;min-width:0}
+.platformPulseMetric b{overflow-wrap:anywhere}
+.platformPulseMetric span{font-size:.76rem;line-height:1.4;min-height:2.8em}
+.platformPulseMetric[title]{cursor:help}
+@media(max-width:760px){.platformPulseMetric span{font-size:.72rem;min-height:2.6em}}
+
 .platformPulseDetails{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:12px}
 .platformPulsePanel{min-width:0;padding:17px;border:1px solid var(--in-line);border-radius:16px;background:var(--in-surface)}
 .platformPulsePanel h3{margin:0 0 10px;font-size:1rem}
