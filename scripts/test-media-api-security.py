@@ -10,7 +10,7 @@ def section(start, end):
 media_list = section('if(p==="/api/author/media"&&m==="GET"){', 'const assetId=Number(p.split("/").pop());')
 media_delete = section('const assetId=Number(p.split("/").pop());', 'if(p==="/api/author/media/upload"&&m==="POST"){')
 upload = section('if(p==="/api/author/media/upload"&&m==="POST"){', 'let mediaMatch=p.match(')
-review = section('const assetId=Number(p.split("/")[4]);', 'if(p==="/api/agents"&&m==="GET"){')
+review = section('const e=admin(u);if(e)return e;\\n  if(req.headers.get("origin")!==url.origin)', 'if(p==="/api/agents"&&m==="GET"){')
 delivery = section('if(mediaMatch&&m==="GET"){', 'if(p==="/api/admin/media/review-queue"&&m==="GET"){')
 
 checks = {
