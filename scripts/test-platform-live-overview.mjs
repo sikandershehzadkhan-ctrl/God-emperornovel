@@ -39,4 +39,10 @@ assert.equal(app,bundle,"Editable and versioned browser entry points must remain
 assert.ok(css.includes(".platformPulseMetrics{display:grid;grid-template-columns:repeat(6"),"Live metrics must use a six-column desktop layout");
 assert.ok(css.includes("@media(max-width:980px)")&&css.includes("@media(max-width:760px)"),"Live intelligence must adapt to tablet and phone layouts");
 assert.ok(css.includes("@media(prefers-reduced-motion:reduce){.skeletonPulse{animation:none}}"),"Live skeletons must respect reduced-motion preferences");
+assert.ok(app.includes("let notificationRefreshTimer=null"),"Notification polling must have a single managed timer");
+assert.ok(app.includes("apiWithTimeout('/api/notifications',{},10000)"),"Notifications must refresh from the authenticated server endpoint with a request timeout");
+assert.ok(app.includes("setInterval(()=>{if(location.pathname!=='/notifications')"),"Notification polling must stop when the user leaves the notifications page");
+assert.ok(app.includes("document.visibilityState==='visible')loadNotifications()"),"Notification polling must pause while the page is hidden");
+assert.ok(app.includes("setInterval(()=>{if(location.pathname!=='/notifications')"),"Notification polling must be scoped to the notifications route");
+assert.ok(app.includes("aria-live=\"polite\"")&&app.includes("aria-busy=\"true\""),"Notification updates must announce status accessibly");
 console.log("Platform live overview tests passed: truthful API metrics, rights filtering, 24-hour reading activity, seven-day unlock trends, refreshed homepage UI, responsive layout and synchronized browser bundles.");
