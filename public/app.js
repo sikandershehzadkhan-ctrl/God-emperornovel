@@ -336,6 +336,62 @@ function initComicPageComposer(form){
  add.addEventListener('click',()=>{const url=src.value.trim();if(!isSafeComicImageUrl(url)){status.textContent='Enter a valid public HTTPS image URL. Local and IP-address hosts are not accepted.';src.focus();return}if(pages.length>=80)return;pages.push({src:url,alt:alt.value.trim().slice(0,300),caption:caption.value.trim().slice(0,500)});if(JSON.stringify({type:'imperial_comic_chapter',version:1,pages}).length>95000){pages.pop();status.textContent='This page would exceed the 95 KB chapter-data limit.';return}src.value='';alt.value='';caption.value='';sync();src.focus()});
  list.addEventListener('click',event=>{const b=event.target.closest('button'),row=b?.closest('[data-page-index]');if(!b||!row)return;const i=Number(row.dataset.pageIndex);if(b.hasAttribute('data-page-remove'))pages.splice(i,1);else if(b.hasAttribute('data-page-move')){const j=i+Number(b.dataset.pageMove);if(j<0||j>=pages.length)return;[pages[i],pages[j]]=[pages[j],pages[i]]}sync()});sync();
 }
+async function initComicChapterManager(card,novelId){
+ const panel=card.querySelector('[data-comic-chapter-manager]'),toggle=card.querySelector('[data-open-comic-manager]');
+ if(!panel||!toggle)return;
+ let chapters=[],assets=[],activeChapter=0,pages=[];
+ const status=panel.querySelector('[data-comic-manager-status]'),chapterSelect=panel.querySelector('[data-comic-manager-chapter]'),assetSelect=panel.querySelector('[data-comic-manager-asset]'),pageList=panel.querySelector('[data-comic-manager-pages]'),add=panel.querySelector('[data-comic-manager-add]'),save=panel.querySelector('[data-comic-manager-save]');
+ const say=(message,bad=false)=>{status.textContent=message;status.classList.toggle('noticeError',bad)};
+ const selected=()=>chapters.find(x=>Number(x.id)===Number(activeChapter));
+ const draw=()=>{
+  const chapter=selected(),editable=!!chapter&&chapter.publication_status==='draft';
+  save.disabled=!editable;
+  add.disabled=!editable||!assetSelect.value;
+  pageList.innerHTML=pages.length?pages.map((p,i)=>'<article class="comicComposerPage" data-managed-page="'+i+'"><div><b>Page '+(i+1)+' · Asset #'+Number(p.media_asset_id)+'</b><small>'+esc(p.alt_text||'Alt text not provided')+'</small>'+(p.caption?'<small>'+esc(p.caption)+'</small>':'')+'</div><div class="comicComposerPageActions"><button type="button" class="ghost" data-managed-move="-1" '+(i===0?'disabled':'')+'>↑</button><button type="button" class="ghost" data-managed-move="1" '+(i===pages.length-1?'disabled':'')+'>↓</button><button type="button" class="ghost" data-managed-remove>Remove</button></div></article>').join(''):'<p class="muted">No private media pages attached to this chapter.</p>';
+  panel.querySelector('[data-comic-manager-edit-note]').textContent=!chapter?'Choose a chapter.':editable?'Draft chapter: page order can be edited.':'Published or in-review chapters are locked. Return the chapter to draft before changing pages.';
+ };
+ const loadPages=async()=>{
+  const chapter=selected();if(!chapter){pages=[];draw();return}
+  try{const result=await api('/api/author/chapters/'+Number(chapter.id)+'/pages');pages=Array.isArray(result.pages)?result.pages.map(x=>({media_asset_id:Number(x.media_asset_id),alt_text:String(x.alt_text||''),caption:String(x.caption||'')})):[];draw()}
+  catch(error){pages=[];draw();say(error.message||'Could not load comic pages.',true)}
+ };
+ toggle.addEventListener('click',async()=>{
+  panel.hidden=!panel.hidden;if(panel.dataset.loaded==='1'||panel.hidden)return;
+  toggle.disabled=true;say('Loading comic chapters and approved private assets…');
+  try{
+   const [chapterRows,media]=await Promise.all([api('/api/author/chapters?novel_id='+Number(novelId)),api('/api/author/media')]);
+   chapters=Array.isArray(chapterRows)?chapterRows.filter(x=>COMIC_FORMATS.has(String(card.querySelector('.eyebrow')?.textContent||'').trim().toLowerCase().replaceAll(' ','_'))||true):[];
+   assets=(Array.isArray(media.assets)?media.assets:[]).filter(x=>x.status==='ready'&&x.rights_status==='approved');
+   chapterSelect.innerHTML=chapters.length?chapters.map(x=>'<option value="'+Number(x.id)+'">Chapter '+Number(x.chapter_number)+': '+esc(x.title)+' ('+esc(x.publication_status||'draft')+')</option>').join(''):'<option value="">No chapters yet</option>';
+   assetSelect.innerHTML='<option value="">Choose an approved image…</option>'+assets.map(x=>'<option value="'+Number(x.id)+'">Asset #'+Number(x.id)+' · '+esc(x.mime_type)+' · '+(Number(x.size_bytes)/1048576).toFixed(2)+' MiB</option>').join('');
+   if(!assets.length)say(media.storage_configured?'No ready, rights-approved images are available yet.':'Private image storage is not configured. Upload and processing remain disabled.');
+   else say('Loaded '+chapters.length+' chapters and '+assets.length+' publishable private images.');
+   activeChapter=Number(chapterSelect.value)||0;panel.dataset.loaded='1';await loadPages();
+  }catch(error){say(error.message||'Comic page manager could not load.',true)}
+  finally{toggle.disabled=false}
+ });
+ chapterSelect.addEventListener('change',async()=>{activeChapter=Number(chapterSelect.value)||0;await loadPages()});
+ assetSelect.addEventListener('change',()=>{add.disabled=!selected()||selected().publication_status!=='draft'||!assetSelect.value});
+ add.addEventListener('click',()=>{
+  const id=Number(assetSelect.value);if(!id||pages.some(x=>x.media_asset_id===id)||pages.length>=300)return;
+  const alt=panel.querySelector('[data-comic-manager-alt]').value.trim().slice(0,300),caption=panel.querySelector('[data-comic-manager-caption]').value.trim().slice(0,500);
+  pages.push({media_asset_id:id,alt_text:alt,caption});assetSelect.value='';panel.querySelector('[data-comic-manager-alt]').value='';panel.querySelector('[data-comic-manager-caption]').value='';draw();say('Page added to the unsaved sequence. Save page order to apply it.');
+ });
+ pageList.addEventListener('click',event=>{
+  const button=event.target.closest('button'),row=button?.closest('[data-managed-page]');if(!button||!row)return;
+  const i=Number(row.dataset.managedPage),chapter=selected();if(!chapter||chapter.publication_status!=='draft')return;
+  if(button.hasAttribute('data-managed-remove'))pages.splice(i,1);
+  else if(button.hasAttribute('data-managed-move')){const j=i+Number(button.dataset.managedMove);if(j<0||j>=pages.length)return;[pages[i],pages[j]]=[pages[j],pages[i]]}
+  draw();say('Unsaved page sequence changed.');
+ });
+ save.addEventListener('click',async()=>{
+  const chapter=selected();if(!chapter||chapter.publication_status!=='draft')return;
+  save.disabled=true;
+  try{const result=await api('/api/author/chapters/'+Number(chapter.id)+'/pages',{method:'PUT',body:JSON.stringify({pages})});say(result.message||'Comic page order saved.');await loadPages()}
+  catch(error){say(error.message||'Could not save comic page order.',true)}
+  finally{draw()}
+ });
+}
 async function authorStudio(){
  const me=await api('/api/me');if(!me.user){const root=$('#app');root.innerHTML=pageStart('Author Studio','Sign in to apply for creator access.')+'<section class="panel"><p class="muted">An Imperial Novel account is required before you can apply.</p><div class="actions"><a class="primary" href="/login">Sign in</a><a class="secondary" href="/register">Create account</a></div></section></div></div>';return}if(me.user.role!=='author'&&me.user.role!=='admin'){if(me.user.role==='user'){await authorApplicationPage(me.user);return}const root=$('#app');root.innerHTML=pageStart('Author Studio','Your account role does not support a new author application.')+'<section class="panel"><p class="muted">Please contact an administrator if you believe you should have creator access.</p><a class="ghost" href="/account">Return to your account</a></section></div></div>';return}
  let CONTENT_FORMAT_OPTIONS=[['original','Original novel'],['fanfiction','Fanfiction'],['light_novel','Light novel'],['web_novel','Web novel'],['manga','Manga'],['manhwa','Manhwa'],['manhua','Manhua'],['webtoon','Webtoon'],['comic','Comic'],['graphic_novel','Graphic novel'],['anime','Anime catalog entry'],['cartoon','Cartoon catalog entry'],['audiobook','Audiobook catalog entry'],['drama','Drama catalog entry'],['game','Game catalog entry']];
