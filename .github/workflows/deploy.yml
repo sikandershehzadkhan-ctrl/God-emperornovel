@@ -112,6 +112,9 @@ jobs:
             exit 1
           fi
 
+      - name: Validate Cloudflare bundle without deploying
+        run: npx --yes wrangler@4 deploy --dry-run
+
       - name: Apply and verify additive D1 migrations before Worker deployment
         shell: bash
         env:
@@ -168,8 +171,6 @@ jobs:
           fi
           echo "PASS: migrations 0009-0011 are present and verified before Worker deployment."
 
-      - name: Validate Cloudflare bundle without deploying
-        run: npx --yes wrangler@4 deploy --dry-run
 
       - name: Deploy Worker and static assets
         run: npx --yes wrangler@4 deploy
