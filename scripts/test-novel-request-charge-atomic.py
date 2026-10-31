@@ -44,7 +44,7 @@ def create_request(db, url):
     debited = db.execute("SELECT changes()").fetchone()[0]
     db.execute(
         """INSERT INTO ticket_ledger(user_id,delta,reason,reference)
-           SELECT user_id,-cost,'novel_request',substr(url,1,180)
+           SELECT user_id,-cost,'novel_request','novel_request:' || id
            FROM novel_requests
            WHERE id=last_insert_rowid() AND cost>0 AND changes()=1"""
     )
@@ -61,6 +61,14 @@ assert (inserted, debited, ledger) == (1, 1, 1)
 assert db.execute("SELECT tickets FROM users WHERE id=1").fetchone()[0] == 400
 assert db.execute("SELECT cost FROM novel_requests WHERE id=?", (request_id,)).fetchone()[0] == 100
 assert db.execute("SELECT COUNT(*) FROM ticket_ledger").fetchone()[0] == 1
+assert db.execute("SELECT reference FROM ticket_ledger").fetchone()[0] == f"novel_request:{request_id}"
+# Reusing the exact same source URL must still produce distinct, unambiguous ledger references.
+inserted2, request_id2, debited2, ledger2 = create_request(db, "https://source.example/paid")
+assert (inserted2, debited2, ledger2) == (1, 1, 1)
+assert request_id2 != request_id
+references = [row[0] for row in db.execute("SELECT reference FROM ticket_ledger ORDER BY id")]
+assert references == [f"novel_request:{request_id}", f"novel_request:{request_id2}"]
+assert db.execute("SELECT tickets FROM users WHERE id=1").fetchone()[0] == 200
 
 poor = setup(50, prior_requests=4)
 inserted, _, debited, ledger = create_request(poor, "https://source.example/blocked")
