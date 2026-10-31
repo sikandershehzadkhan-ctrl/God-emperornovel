@@ -36,7 +36,8 @@ assert.ok(worker.includes("find(canImportConnectorMetadata)"),"Metadata imports 
 assert.ok(worker.includes("metadata_import_allowed:Number(connector.metadata_import_allowed)===1"),"External search results must carry provider-specific import permission.");
 assert.ok(worker.includes("target.protocol!=='https:'"),"External result links must reject non-HTTPS URLs.");
 assert.ok(worker.includes("target.hostname===base.hostname||target.hostname.endsWith('.'+base.hostname)"),"External result links must stay within the connector host.");
-assert.ok(app.includes("LIVE PROVIDER STATUS")&&app.includes("Connection directory"),"OmniPortal must show its live provider directory.");
+assert.ok(app.includes("PROVIDER STATUS SNAPSHOT")&&app.includes("Connection directory"),"OmniPortal must show a timestamped provider status snapshot.");
+assert.ok(app.includes("Last health check:")&&app.includes("not a continuous uptime guarantee"),"Provider status must expose observation freshness and avoid implying continuous uptime.");
 assert.ok(app.includes("Registered")&&app.includes("Rights-authorized")&&app.includes("Search-ready")&&app.includes("Online"),"Provider status must distinguish registration, rights, readiness and health.");
 assert.ok(app.includes("external&&item.metadata_import_allowed"),"Import action must only appear when the provider permits metadata imports.");
 assert.ok(app.includes("No paywall bypass. No DRM circumvention."),"OmniPortal must state its rights and access boundaries.");
