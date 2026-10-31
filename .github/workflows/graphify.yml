@@ -55,6 +55,15 @@ jobs:
       - name: Install official Graphify CLI
         run: uv tool install 'graphifyy[sql]'
 
+      - name: Exclude generated version-stamped runtime copies from source graph
+        run: |
+          set -euo pipefail
+          # The canonical editable files remain in the graph. These version-stamped copies
+          # are generated deployment assets and otherwise create duplicate app communities.
+          find public -maxdepth 1 -type f \\
+            \\( -name 'app-*.js' -o -name 'sw-*.js' -o -name 'react-islands-*.js' \\) \\
+            -print -delete
+
       - name: Extract repository code graph without an LLM
         run: graphify extract . --code-only
 
