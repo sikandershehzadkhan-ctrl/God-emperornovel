@@ -416,7 +416,7 @@ async function api(req,env){
  if(p==="/api/author/media"&&m==="GET"){
   const e=author(u);if(e)return e;
   const usage=await env.DB.prepare("SELECT COALESCE(SUM(size_bytes),0) AS used_bytes,COUNT(*) AS asset_count FROM media_assets WHERE owner_user_id=? AND status!='deleted'").bind(u.id).first();
-  const assets=(await env.DB.prepare("SELECT id,mime_type,size_bytes,status,rights_status,rights_holder,license_name,created_at,uploaded_at,reviewed_at,deleted_at FROM media_assets WHERE owner_user_id=? ORDER BY created_at DESC,id DESC LIMIT 100").bind(u.id).all()).results||[];
+  const assets=(await env.DB.prepare("SELECT id,mime_type,size_bytes,status,rights_status,rights_holder,license_name,created_at,uploaded_at,reviewed_at,deleted_at,EXISTS(SELECT 1 FROM comic_chapter_pages WHERE media_asset_id=media_assets.id) AS is_attached FROM media_assets WHERE owner_user_id=? ORDER BY created_at DESC,id DESC LIMIT 100").bind(u.id).all()).results||[];
   const used=Number(usage?.used_bytes||0),limit=104857600;
   return json({quota:{used_bytes:used,limit_bytes:limit,remaining_bytes:Math.max(0,limit-used),asset_count:Number(usage?.asset_count||0)},storage_configured:!!(env.MEDIA_BUCKET&&typeof env.MEDIA_BUCKET.put==="function"&&typeof env.MEDIA_BUCKET.delete==="function"),assets});
  }
