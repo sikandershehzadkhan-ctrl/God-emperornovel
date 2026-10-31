@@ -1,0 +1,13 @@
+import assert from "node:assert/strict";
+import fs from "node:fs";
+const pkg=JSON.parse(fs.readFileSync("package.json","utf8"));
+const app=fs.readFileSync("public/app-"+pkg.version+".js","utf8");
+const worker=fs.readFileSync("src/index.js","utf8");
+assert.ok(app.includes("data-comic-builder"));
+assert.ok(app.includes("data-page-move"));
+assert.ok(app.includes("data-page-remove"));
+assert.ok(app.includes("data-comic-content"));
+assert.ok(app.includes("initComicPageComposer(f)"));
+assert.ok(app.includes("File uploads and image hosting are not enabled yet."));
+assert.ok(worker.includes("validateComicChapterContent(content)"));
+console.log("Comic Author Studio UI source checks passed.");
