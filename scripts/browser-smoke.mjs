@@ -56,6 +56,30 @@ try {
   assert.ok(await page.locator("#cf select[name=kind]").count() === 1, "catalog format filter must be present");
   await assertNoMobileOverflow("Catalog page");
 
+  app = await open("/author");
+  await page.getByRole("heading", { name: "Author Studio" }).waitFor({ timeout: 20000 });
+  await page.locator("#createStoryForm").waitFor({ timeout: 10000 });
+  assert.ok(await page.locator("#storyKind option").count() >= 15, "Author Studio must expose the supported format registry");
+  assert.equal(await page.locator("#storyRights").count(), 1, "creator submission must expose a rights-status field");
+  assert.equal(await page.locator("#rightsEvidence").count(), 1, "non-original work must have a rights-evidence field");
+  await page.locator("#authorWorksList").waitFor({ timeout: 10000 });
+  await assertNoMobileOverflow("Author Studio");
+
+  app = await open("/tickets");
+  await page.getByRole("heading", { name: "Imperial Crown Vault" }).waitFor({ timeout: 20000 });
+  await page.getByRole("link", { name: "Sign in" }).waitFor({ timeout: 10000 });
+  await assertNoMobileOverflow("Crown Vault");
+
+  app = await open("/login");
+  await page.getByRole("heading", { name: "Sign in" }).waitFor({ timeout: 15000 });
+  assert.equal(await page.locator('#auth input[name="email"]').count(), 1, "login form must expose an email field");
+  assert.equal(await page.locator('#auth input[name="password"]').count(), 1, "login form must expose a password field");
+
+  app = await open("/register");
+  await page.getByRole("heading", { name: "Create account" }).waitFor({ timeout: 15000 });
+  assert.equal(await page.locator('#auth input[name="username"]').count(), 1, "registration form must expose a username field");
+  assert.equal(await page.locator('#auth input[name="confirm"]').count(), 1, "registration form must expose password confirmation");
+
   app = await open("/omniportal");
   await page.getByRole("heading", { name: "OmniPortal" }).waitFor({ timeout: 20000 });
   await page.locator("#tvmazeSearch").waitFor({ timeout: 10000 });
@@ -82,7 +106,7 @@ try {
   assert.equal(desktopFormatsOverflow, false, "desktop Formats page must not create horizontal overflow at 1440px");
 
   assert.deepEqual(pageErrors, [], "browser routes must not emit uncaught JavaScript page errors");
-  console.log("PASS: local Worker/D1 health, 15+ format registry, mobile (360px Android emulation), desktop (1440px), homepage, formats directory, format landing, catalog filters, overflow checks and live TVmaze browser search.");
+  console.log("PASS: local Worker/D1 health, 15+ format registry, mobile (360px Android emulation), desktop (1440px), homepage, formats directory, format landing, catalog filters, Author Studio rights form, Crown Vault auth gate, login/register forms, overflow checks and live TVmaze browser search.");
 } finally {
   await browser.close();
 }
