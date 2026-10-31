@@ -423,6 +423,7 @@ async function api(req,env){
  if(/^\/api\/author\/media\/\d+$/.test(p)&&m==="DELETE"){
   const e=author(u);if(e)return e;
   if(req.headers.get("origin")!==url.origin)return json({error:"Cross-origin media deletion is not allowed."},403);
+  const deleteLimit=await consumeAuthRateLimit(env,"media-delete",String(u.id),20,3600);if(deleteLimit)return deleteLimit;
   if(!env.MEDIA_BUCKET||typeof env.MEDIA_BUCKET.delete!=="function")return json({error:"Private media storage is not configured."},503);
   const assetId=Number(p.split("/").pop());
   if(!Number.isSafeInteger(assetId)||assetId<1)return json({error:"Invalid media asset id."},400);
