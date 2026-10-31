@@ -8,7 +8,7 @@ for path in sorted(Path("migrations").glob("*.sql")):
 
 db.execute("INSERT INTO users(username,email,password_hash) VALUES('creator','creator@example.test','hash')")
 db.execute("INSERT INTO novels(title,author,owner_user_id) VALUES('Test comic','creator',1)")
-db.execute("INSERT INTO chapters(novel_id,chapter_number,title,content) VALUES(1,1,'Chapter 1','')")
+db.execute("INSERT INTO chapters(novel_id,chapter_number,title,content,publication_status) VALUES(1,1,'Chapter 1','','draft')")
 db.execute("""INSERT INTO media_assets(owner_user_id,object_key,mime_type,size_bytes)
               VALUES(1,'private/users/1/assets/1/token','image/webp',1024)""")
 
@@ -61,6 +61,7 @@ must_fail("UPDATE media_assets SET status='deleted' WHERE id=1")
 must_fail("UPDATE media_assets SET status='processing' WHERE id=1")
 
 # Once a page references it, only an authorized unlink workflow can permit a state change.
+db.execute("UPDATE chapters SET publication_status='draft' WHERE id=1")
 db.execute("DELETE FROM comic_chapter_pages WHERE chapter_id=1 AND media_asset_id=1")
 db.execute("UPDATE media_assets SET rights_status='withdrawn' WHERE id=1")
 assert db.execute("SELECT rights_status FROM media_assets WHERE id=1").fetchone()[0] == "withdrawn"
