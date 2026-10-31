@@ -1,4 +1,5 @@
 import { validateComicChapterContent } from "./comic-chapter-policy.mjs";
+import { isSameOriginMutationAllowed } from "./request-security.mjs";
 import { validateMediaUploadMetadata, validateImageBytes, createPrivateMediaObjectKey } from "./media-upload-policy.mjs";
 import { hashPassword, verifyPassword } from "./auth-password.mjs";
 import { isAllowedConnectorSearchUrl } from "./connector-url-policy.mjs";
@@ -10,12 +11,8 @@ import { createDonationReferenceIndexEnsurer } from "./donation-reference-index.
 import { validateAuthorApplication, validateAuthorApplicationDecision } from "./author-application-policy.mjs";
 import { CONTENT_FORMATS, CONTENT_FORMAT_IDS } from "./content-formats.mjs";
 const json=(d,s=200,h={})=>new Response(JSON.stringify(d),{status:s,headers:{"content-type":"application/json;charset=UTF-8","cache-control":"no-store",...h}});
-const SAFE_HTTP_METHODS=new Set(["GET","HEAD","OPTIONS"]);
 function enforceSameOriginMutation(req,url){
- if(SAFE_HTTP_METHODS.has(req.method.toUpperCase()))return null;
- const origin=req.headers.get("origin");
- const fetchSite=String(req.headers.get("sec-fetch-site")||"").toLowerCase();
- if(!origin||origin!==url.origin||fetchSite==="cross-site"||fetchSite==="none"){
+ if(!isSameOriginMutationAllowed(req,url)){
   return json({error:"Cross-origin or origin-less state-changing requests are not allowed."},403);
  }
  return null;
