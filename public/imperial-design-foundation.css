@@ -492,3 +492,41 @@ html[data-theme="dark"] .homeFormatPrimary{background:var(--in-brand-soft)}
 .navlinks a{padding:9px 9px;font-size:11.5px;white-space:nowrap}
 .navlinks a[aria-current="page"]{color:var(--in-brand);background:var(--in-brand-soft);border-color:rgba(106,13,173,.16)}
 @media(max-width:1180px) and (min-width:761px){.nav{gap:12px}.brand{min-width:205px}.navlinks{display:none!important}.navright{gap:6px}.navright .iconbtn,.navright .menuToggle{width:38px;min-width:38px;height:40px}.languageControl select{max-width:58px!important}}
+
+
+/* Homepage story cards: editorial hierarchy with readable two-line titles. */
+.homeStoryGrid .card{
+  min-width:0;display:flex;flex-direction:column;height:100%;text-decoration:none;
+  border-color:var(--in-line);background:var(--in-surface);box-shadow:0 2px 12px rgba(11,18,21,.035);
+}
+.homeStoryGrid .cover{position:relative;aspect-ratio:3/3.65;background:var(--in-surface-raised)}
+.homeStoryGrid .cover img{width:100%;height:100%;object-fit:cover;display:block}
+.homeStoryGrid .cardBody{display:flex;flex:1;flex-direction:column;align-items:flex-start;gap:5px;min-width:0;padding:13px}
+.homeStoryGrid .cardTitle{
+  display:-webkit-box;width:100%;white-space:normal;overflow:hidden;
+  -webkit-box-orient:vertical;-webkit-line-clamp:2;line-clamp:2;
+  color:var(--in-ink);font-size:14px;font-weight:760;line-height:1.35;letter-spacing:-.018em;
+}
+.homeStoryGrid .cardBody>.muted{
+  width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;
+  color:var(--in-muted);font-size:11px;line-height:1.45;
+}
+.homeStoryGrid .meta{display:flex;gap:7px;flex-wrap:wrap;margin-top:auto;padding-top:7px;color:var(--in-subtle);font-size:10px}
+.homeStoryGrid .meta span{display:inline-flex;align-items:center;gap:4px}
+.homeStoryGrid .card:focus-visible{outline:3px solid var(--in-focus);outline-offset:3px}
+.homeStoryGrid .card:hover{border-color:var(--in-brand);box-shadow:0 10px 28px rgba(11,18,21,.08)}
+@media(max-width:760px){
+  .homeStoryGrid.multiStory{grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+  .homeStoryGrid.multiStory .cardBody{padding:10px;gap:4px}
+  .homeStoryGrid.multiStory .cardTitle{font-size:12px;line-height:1.35}
+  .homeStoryGrid.multiStory .cardBody>.muted{font-size:10px}
+  .homeStoryGrid.multiStory .meta{gap:6px;padding-top:6px;font-size:9px}
+}
+@media(max-width:360px){
+  .homeStoryGrid.multiStory{grid-template-columns:minmax(0,1fr);gap:10px}
+  .homeStoryGrid.multiStory .card{display:grid;grid-template-columns:104px minmax(0,1fr);min-height:136px}
+  .homeStoryGrid.multiStory .cover{height:100%;aspect-ratio:auto;min-height:136px}
+  .homeStoryGrid.multiStory .cardBody{align-self:center;padding:11px}
+  .homeStoryGrid.multiStory .cardTitle{font-size:13px}
+}
+@media(prefers-reduced-motion:reduce){.homeStoryGrid .card:hover{transform:none}}
