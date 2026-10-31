@@ -60,3 +60,19 @@ export function applySeoMetadata(html,{title,description,canonical,robots="index
   return output;
 }
 export const seoStaticPaths=STATIC_PUBLIC_PATHS;
+
+const PAGE_SEO={
+  "/":{title:"Imperial Novel | Read • Create • Conquer",description:"Discover original, licensed and authorized novels, comics and connected worlds. Read, create and explore on Imperial Novel."},
+  "/catalog":{title:"Discover Novels & Stories | Imperial Novel",description:"Explore the Imperial Novel catalog. Discover original and authorized stories across genres, formats and reading worlds."},
+  "/genres":{title:"Explore Story Genres | Imperial Novel",description:"Browse story genres and discover your next novel on Imperial Novel."},
+  "/tags":{title:"Explore Story Tags | Imperial Novel",description:"Find stories by topic, theme and tag in the Imperial Novel catalog."},
+  "/community":{title:"Reader Community | Imperial Novel",description:"Connect with readers and creators in the Imperial Novel storytelling community."},
+  "/leaderboard":{title:"Story Rankings | Imperial Novel",description:"Explore popular stories and reader rankings on Imperial Novel."},
+  "/omniportal":{title:"OmniPortal | Imperial Novel",description:"Explore authorized catalog connections and discover stories across connected providers."},
+  "/privacy":{title:"Privacy Policy | Imperial Novel",description:"Read how Imperial Novel handles account information, privacy and data protection."},
+  "/terms":{title:"Terms of Service | Imperial Novel",description:"Review the terms governing use of the Imperial Novel platform."},
+  "/copyright":{title:"Copyright & Rights | Imperial Novel",description:"Learn about content rights, licensing, attribution and copyright reporting on Imperial Novel."}
+};
+export function getPageSeo(path){
+  return PAGE_SEO[path]||{title:"Imperial Novel | Read • Create • Conquer",description:"Discover original, licensed and authorized stories on Imperial Novel."};
+}
