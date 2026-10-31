@@ -7,7 +7,7 @@ const [html,app,css]=await Promise.all([
  readFile(new URL("../public/imperial-design-foundation.css",import.meta.url),"utf8")
 ]);
 assert.ok(html.includes("/app-17.23.0.js"),"HTML must load the refreshed client bundle");
-assert.equal((html.match(/\\/app-17\\.23\\.0\\.js/g)||[]).length,1,"HTML must reference the current versioned client bundle exactly once");
+assert.equal(html.split("/app-17.23.0.js").length-1,1,"HTML must reference the current versioned client bundle exactly once");
 assert.ok(app.includes("id=\"homeConnections\""),"Homepage must expose the connected discovery region");
 assert.ok(app.includes("/api/discovery/graph?limit=60"),"Homepage must use the bounded live graph endpoint");
 assert.ok(app.includes("node.type==='genre'||node.type==='tag'"),"Only catalog genres and tags should become discovery links");
