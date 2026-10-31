@@ -32,7 +32,7 @@ assert.match(sitemap,/\/author\/Sikander%20Khan/);
 assert.match(sitemap,/\/author\/Sikander%20%26%20Co\./);
 assert.equal((sitemap.match(/\/author\/Sikander%20Khan/g)||[]).length,1);
 const page=applySeoMetadata('<html><head><title>Old</title><meta name="description" content="old"><meta property="og:title" content="old"></head></html>',{
- title:'A <Story> & More',description:'A useful story description.',canonical:origin+'/novel/12',robots:'index,follow',image:'/covers/novel-12.webp'
+ title:'A <Story> & More',description:'A useful story description.',canonical:origin+'/novel/12',robots:'index,follow',image:'/covers/novel-12.webp',structuredData:{'@type':'Book',name:'A <Novel>',author:{'@type':'Person',name:'Writer'}}
 });
 assert.match(page,/<title>A &lt;Story&gt; &amp; More<\/title>/);
 assert.match(page,/name="description" content="A useful story description\."/);
@@ -42,7 +42,7 @@ assert.match(page,/property="og:url" content="https:\/\/imperial\.example\/novel
 assert.match(page,/property="og:image" content="https:\/\/imperial\.example\/covers\/novel-12\.webp"/);
 assert.match(page,/name="twitter:image" content="https:\/\/imperial\.example\/covers\/novel-12\.webp"/);
 assert.match(page,/application\/ld\+json/);
-assert.match(page,/schema\.org/);\nassert.doesNotMatch(page,/SearchAction/);
+assert.match(page,/schema\.org/);\nassert.match(page,/@type\\\\?":\\\\?"Book/);\nassert.match(page,/A \\\\u003cNovel>/);\nassert.doesNotMatch(page,/SearchAction/);
 assert.equal((page.match(/name="description"/g)||[]).length,1);
 const unsafeImage=applySeoMetadata('<html><head></head></html>',{title:"Test",canonical:origin+"/test",image:"javascript:alert(1)"});
 assert.match(unsafeImage,/og:image" content="https:\/\/imperial\.example\/imperial-novel-app-icon\.svg"/);
