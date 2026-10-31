@@ -64,9 +64,9 @@ jobs:
       - name: Verify graph outputs
         run: |
           set -euo pipefail
-          test -s graph.json
-          test -s GRAPH_REPORT.md
-          test -s graph.html
+          test -s graphify-out/graph.json
+          test -s graphify-out/GRAPH_REPORT.md
+          test -s graphify-out/graph.html
           echo "Official Graphify code-only extraction produced graph.json, GRAPH_REPORT.md and graph.html."
 
       - name: Publish architecture graph artifact
@@ -74,10 +74,6 @@ jobs:
         with:
           name: imperial-novel-graphify-${{ github.sha }}
           path: |
-            graph.json
-            graph.html
-            GRAPH_REPORT.md
-            manifest.json
-            cache/**
+            graphify-out/
           if-no-files-found: error
           retention-days: 14
