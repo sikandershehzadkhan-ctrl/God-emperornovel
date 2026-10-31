@@ -20,11 +20,11 @@ def add_asset(owner_id, number, size=20*1024*1024, status="pending_upload"):
         (owner_id, f"private/{owner_id}/{number}", size, status),
     )
 
-def must_fail(fn, message):
+def must_fail(fn, message, expected="quota exceeded"):
     try:
         fn()
     except sqlite3.IntegrityError as error:
-        assert "quota exceeded" in str(error), f"Unexpected constraint: {error}"
+        assert expected in str(error), f"Unexpected constraint: {error}"
         return
     raise AssertionError(message)
 
@@ -41,6 +41,7 @@ assert deleted_at is not None, "Deleting an asset must stamp deleted_at"
 must_fail(
     lambda: db.execute("UPDATE media_assets SET status='uploaded' WHERE owner_user_id=? AND status='deleted'", (owners[0],)),
     "Deleted media assets must be terminal and cannot be reactivated",
+    expected="deleted media assets cannot be reactivated",
 )
 add_asset(owners[0], 8)
 
