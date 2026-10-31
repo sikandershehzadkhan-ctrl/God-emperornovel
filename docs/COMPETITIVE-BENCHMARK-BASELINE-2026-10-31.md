@@ -234,3 +234,20 @@ A direct HTML extraction of `/catalog` showed the initial client shell text **�
 The browser automation interface explicitly could not expose Navigation Timing or Resource Timing APIs. Therefore we still do not have reliable `responseEnd`, API duration, or first-card paint measurements. Direct external fetch samples also include tool/network overhead and must not be treated as Worker TTFB.
 
 **Current classification:** client-side catalog hydration is eventually successful, but first-content timing is not yet measured reliably. Keep this as a performance investigation, not a confirmed functional defect. Do not add indexes or alter Worker logic until controlled measurements isolate the bottleneck.
+
+
+## Public discovery and creator-surface audit (2026-10-31)
+
+A separate read-only browser session inspected Search, Formats, Genres, Author Studio and Account.
+
+| Surface | Observed result | What remains unproven |
+|---|---|---|
+| Search `/search` | Public search works; searching “fantasy” returned The Imperial Ascendant | Ranking relevance, typo tolerance, synonyms, multilingual search and large-catalog performance |
+| Formats `/formats` | Five format groups and format subtypes render; catalog-only constraints are disclosed | Actual comic/audio/video/game end-to-end experiences and format-specific metadata quality |
+| Genres `/genres` | Browser displayed 158 genre cards with active catalog links | Taxonomy quality, duplicates, empty genre usefulness and search/filter consistency |
+| Author Studio `/author` | Story creation form, format/language/status and rights fields render; unauthenticated “Your Works” is properly gated | Authenticated draft creation, autosave, edit, upload, preview, moderation feedback, publishing and analytics |
+| Account `/account` | Correct sign-in/register landing state | Authenticated profile, privacy, notification, security and account deletion workflows |
+
+### Interpretation
+
+Public discovery is broader than the published catalog: 158 genre links and multiple format families exist, but only one published story appeared in the live catalog query. This is taxonomy breadth, not catalog depth. A visible Author Studio form is not proof that the full author publishing lifecycle works; that requires an authorized test account and end-to-end tests.
