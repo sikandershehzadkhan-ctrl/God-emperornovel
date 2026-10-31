@@ -12,10 +12,15 @@ media_delete = section('if(req.headers.get("origin")!==url.origin)return json({e
 upload = section('if(p==="/api/author/media/upload"&&m==="POST"){', 'let mediaMatch=p.match(')
 review = section('if(p==="/api/admin/media/review-queue"&&m==="GET"){', 'if(p==="/api/agents"&&m==="GET"){')
 delivery = section('if(mediaMatch&&m==="GET"){', 'if(p==="/api/admin/media/review-queue"&&m==="GET"){')
+storage = section('if(p==="/api/admin/media/storage"&&m==="GET"){', 'if(p==="/api/admin/media/review-queue"&&m==="GET"){')
 delete_origin = source.index('if(req.headers.get("origin")!==url.origin)return json({error:"Cross-origin media deletion is not allowed."},403);')
 delete_auth = source.rfind("const e=author(u);if(e)return e;", 0, delete_origin)
 
 checks = {
+    "administrator storage overview requires admin access": "admin(u)" in storage,
+    "administrator storage overview enforces the global cap": "SUM(size_bytes)" in storage and "limit=1073741824" in storage,
+    "administrator storage overview reports per-status usage": "GROUP BY status" in storage,
+    "administrator storage overview exposes only binding readiness": "storage_configured" in storage and "MEDIA_BUCKET.get" in storage,
     "creator media library requires author access": "author(u)" in media_list,
     "creator media library scopes assets to the authenticated owner": "WHERE owner_user_id=?" in media_list,
     "creator media library reports bounded storage usage": "SUM(size_bytes)" in media_list and "limit=104857600" in media_list,
