@@ -4,6 +4,12 @@
 **Date:** 31 October 2026  
 **Principle:** Make the real platform and its original, authorized works easy for people and machines to understand. Never manufacture answers, authorship, popularity, reviews, citations or rights claims.
 
+## Implementation status: discovery entities and content quality
+
+A bounded read-only discovery graph endpoint now exposes relationships derived from the existing catalog: authors, novels, genres, tags and supported formats. Its source query is restricted to published novels with eligible rights declarations, and the response is capped at 100 novels. This is an internal structured-data foundation, not a guarantee that third-party AI systems ingest or cite the graph.
+
+Admin publication also applies a deterministic completeness gate for story metadata, rights declaration/evidence and at least one readable published chapter. Editorial recommendations such as stronger descriptions and cover art are warnings rather than hard blocks. Human rights review remains necessary; metadata checks cannot prove ownership or license validity.
+
 ## 1. Definitions and outcome
 
 - **SEO:** Search engine discovery, crawlability, indexability and useful search snippets.
