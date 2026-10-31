@@ -202,9 +202,10 @@ function initTvmazeSearch(){
   if(q.length<2){status.textContent='Enter at least two characters.';return}
   if(Date.now()-lastRequestAt<1000){status.textContent='Please wait a moment before searching again.';return}
   lastRequestAt=Date.now();button.disabled=true;status.textContent='Searching TVmaze metadata…';output.replaceChildren();
+  const controller=new AbortController(),timeout=setTimeout(()=>controller.abort(),10000);
   try{
-   const response=await fetch('https://api.tvmaze.com/search/shows?q='+encodeURIComponent(q),{method:'GET',mode:'cors',credentials:'omit',headers:{Accept:'application/json'},cache:'default'});
-   if(response.status===429){status.textContent='TVmaze is rate-limiting requests. Please wait a few seconds before trying again.';return}
+   const response=await fetch('https://api.tvmaze.com/search/shows?q='+encodeURIComponent(q),{method:'GET',mode:'cors',credentials:'omit',headers:{Accept:'application/json'},cache:'default',signal:controller.signal});
+   if(response.status===429){const retry=Number(response.headers.get('Retry-After')||0);status.textContent='TVmaze is rate-limiting requests. '+(retry>0?'Wait '+retry+' seconds.':'Please wait a few seconds before trying again.');return}
    if(!response.ok)throw new Error('TVmaze returned HTTP '+response.status);
    const data=await response.json(),rows=Array.isArray(data)?data.slice(0,12):[];
    if(!rows.length){status.textContent='No matching screen titles were found.';return}
