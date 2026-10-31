@@ -172,3 +172,25 @@ Do not put every feature on the homepage. Give each major domain a clear destina
 - Canonical URL policy is documented before route migration.
 - No route is added to sitemap unless it returns a useful, indexable page.
 - Architecture changes pass route, accessibility, security and regression checks.
+
+
+## Live competitor and product baseline — 31 October 2026
+
+Read-only public-page comparison was performed against the current Imperial Novel production homepage, WebNovel and WTR-LAB. This is a feature comparison, not a claim of feature parity or a full authenticated product audit.
+
+### Verified current Imperial Novel strengths
+- The homepage already presents a clear editorial hero, format discovery, live-catalog story shelves, Creator Studio positioning, Trend Factory, community and OmniPortal.
+- The catalog exposes useful discovery controls for sort order, publication status, content format, rating, genre, tag and language.
+- The mobile navigation exposes Home, Discover, Library, Create, Community and Profile.
+
+### Competitor patterns worth learning from
+- WebNovel exposes several distinct ranking views, including power, collection and activity; fanfiction and comics have their own discovery paths; the homepage also surfaces new arrivals, editor selections and an author onboarding path.
+- WTR-LAB makes its novel list, daily rankings and leaderboard easy to find, and explains community requests, reading progress, language/translation choices and content-rights handling in its public information architecture.
+- Imperial Novel should build equivalent discovery depth with its own rights-first catalog, not copy competitor layouts or adopt unlicensed ingestion/translation workflows.
+
+### Product architecture decisions
+- Keep separate discovery destinations for catalog, genres, tags, formats, trending and rankings; filters must preserve state and be shareable.
+- Give rankings explicit dimensions and explain their underlying real data. Never fabricate popularity, activity or review counts.
+- Make author profiles and author onboarding distinct routes; public profiles are indexable only when they have published, rights-cleared works.
+- Keep internal search, private libraries, account settings, payment and author/admin tools out of search indexes.
+- Preserve the existing numeric novel and chapter identifiers until a tested slug-and-redirect migration is designed.
