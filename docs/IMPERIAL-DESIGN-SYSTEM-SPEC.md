@@ -96,6 +96,15 @@ Gold is not a core color. If used at all, it is a rare, small accent for a genui
 - Locked-chapter purchase disclosure
 - Comic page viewer where licensed visual content exists
 
+### Real-time intelligence components
+- Platform Pulse: six truthful catalog/activity metrics, explicit measurement windows, last-generated timestamp, manual refresh and service-health state.
+- Recent Updates: timestamped chapter events linked to their published reading destinations.
+- Reader Momentum: unlock-based ranking with its measurement window visible.
+- Provider Snapshot: registered, authorized, search-ready and health-observed states kept distinct, with last-check timestamps.
+- Loading, stale, refreshing, unavailable and degraded states must be visually distinct and accessible.
+- Use tabular numerals for changing metrics. Avoid flashing counters, false online indicators and continuous animation.
+- Refresh only while the page is visible; announce meaningful updates politely without repeatedly interrupting screen readers.
+
 ### Creator and operations
 - Dashboard metric card
 - Work and chapter table/list
