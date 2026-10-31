@@ -463,9 +463,22 @@ async function api(req,env){
    env.DB.prepare(`SELECT c.novel_id,n.title novel_title,n.author,n.cover_url,c.chapter_number,c.title chapter_title,c.updated_at FROM chapters c JOIN novels n ON n.id=c.novel_id WHERE c.publication_status='published' AND n.${eligible} ORDER BY c.updated_at DESC,c.id DESC LIMIT 8`).all(),
    env.DB.prepare(`SELECT n.id,n.title,n.author,n.cover_url,COUNT(u.chapter_id) unlocksLast7Days FROM novels n JOIN chapters c ON c.novel_id=n.id AND c.publication_status='published' JOIN unlocks u ON u.chapter_id=c.id AND u.unlocked_at>=datetime('now','-7 days') WHERE n.${eligible} GROUP BY n.id ORDER BY unlocksLast7Days DESC,n.updated_at DESC LIMIT 5`).all()
   ]);
+  const generatedAt=new Date().toISOString();
   return json({
-   asOf:new Date().toISOString(),
+   generated_at:generatedAt,
+   asOf:generatedAt,
+   freshness:{mode:"request-time-d1-query",cache:"no-store",clientRefreshSeconds:60,automaticRefreshRequiresVisiblePage:true},
+   measurement_windows:{reader_activity_hours:24,trending_days:7},
    windows:{readerActivityHours:24,trendingDays:7},
+   metric_definitions:{
+    publishedNovels:"Published novels with original, public-domain, licensed or authorized rights status.",
+    publishedChapters:"Published chapters belonging to eligible published novels.",
+    creditedAuthors:"Distinct non-empty author-name strings on eligible published novels; not verified account count.",
+    catalogViews:"Cumulative view counter stored on eligible published novels.",
+    readersInLast24Hours:"Distinct signed-in accounts with a reading-history update in the previous 24 hours; not current online users.",
+    chapterUpdatesLast24Hours:"Published chapters on eligible novels whose updated_at falls within the previous 24 hours.",
+    trending:"Published chapter unlock events during the previous seven days, grouped by eligible novel."
+   },
    metrics:{
     publishedNovels:Number(catalog?.publishedNovels||0),
     publishedChapters:Number(activity?.publishedChapters||0),
