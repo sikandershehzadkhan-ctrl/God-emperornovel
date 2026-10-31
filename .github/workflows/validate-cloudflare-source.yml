@@ -183,5 +183,8 @@ jobs:
       - name: Test atomic novel request refunds
         run: node scripts/test-novel-request-refund-atomic.mjs
 
+      - name: Test database-enforced novel request refunds
+        run: python3 scripts/test-novel-request-refund-db.py
+
       - name: Confirm validation only
         run: echo "Validation passed. This workflow does not deploy or modify production D1.";
