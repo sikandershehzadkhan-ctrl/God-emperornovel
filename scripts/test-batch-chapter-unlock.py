@@ -56,7 +56,7 @@ def batch_unlock(db, novel=5, start=1, count=10):
     """, (novel,rows[0][1],rows[-1][1],count,cost))
     batch = db.execute("SELECT changes()").fetchone()[0]
     db.commit()
-    return {"debited":debited,"batch":batch,"unlocked":len(rows) if debited==1 and batch==1 else 0,"cost":cost if debited==1 and batch==1 else 0}
+    return {"debited":debited,"batch":batch,"unlocked":len(rows) if debited==1 and batch==1 else 0,"cost":cost}
 
 db=fixture(100)
 first=batch_unlock(db)
