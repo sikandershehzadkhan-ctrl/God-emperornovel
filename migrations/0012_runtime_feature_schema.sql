@@ -30,8 +30,25 @@ CREATE TABLE IF NOT EXISTS comment_reports (
   FOREIGN KEY(user_id) REFERENCES users(id) ON DELETE CASCADE,
   FOREIGN KEY(comment_id) REFERENCES comments(id) ON DELETE CASCADE
 );
--- Existing lazy-bootstrap databases may contain duplicates from concurrent reports.
--- Keep the earliest report per user/comment before enforcing the same invariant.
+-- Preserve legacy duplicate reports for moderation/audit history before deduplication.
+CREATE TABLE IF NOT EXISTS comment_reports_legacy_duplicates (
+  id INTEGER PRIMARY KEY,
+  user_id INTEGER NOT NULL,
+  comment_id INTEGER NOT NULL,
+  reason TEXT NOT NULL,
+  details TEXT DEFAULT '',
+  status TEXT NOT NULL DEFAULT 'open',
+  created_at TEXT NOT NULL,
+  archived_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP
+);
+INSERT OR IGNORE INTO comment_reports_legacy_duplicates
+  (id,user_id,comment_id,reason,details,status,created_at)
+SELECT id,user_id,comment_id,reason,details,status,created_at
+FROM comment_reports
+WHERE rowid NOT IN (
+  SELECT MIN(rowid) FROM comment_reports GROUP BY user_id,comment_id
+);
+-- Keep the earliest active report after preserving every removed row above.
 DELETE FROM comment_reports
 WHERE rowid NOT IN (
   SELECT MIN(rowid) FROM comment_reports GROUP BY user_id,comment_id
