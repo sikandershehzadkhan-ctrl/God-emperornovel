@@ -13,6 +13,12 @@ const end=source.indexOf('if(p==="/api/discovery/graph"&&m==="GET"){',start);
 assert.ok(start>=0&&end>start,"Worker must expose the public platform overview endpoint before the discovery graph route");
 const route=source.slice(start,end);
 for(const field of ["publishedNovels","publishedChapters","creditedAuthors","catalogViews","readersInLast24Hours","chapterUpdatesLast24Hours"])assert.ok(route.includes(field),`Overview must expose the real ${field} metric`);
+for(const field of ["chapterViews","visibleComments","commentsLast24Hours","commentLikes","novelReactions","ratings","bookmarks","follows"])assert.ok(route.includes(field),`Overview must expose recorded engagement metric ${field}`);
+for(const table of ["chapter_views","comments","comment_likes","novel_reactions","ratings","bookmarks","follows"])assert.ok(route.includes(table),`Engagement totals must be queried from the existing ${table} event or state table`);
+assert.ok(route.includes("cm.status='visible'"),"Comment totals must exclude hidden or deleted comments.");
+assert.ok(route.includes("cm.created_at>=datetime('now','-24 hours')"),"Recent comment activity must use a rolling 24-hour window.");
+assert.ok(route.includes("Cumulative chapter view requests")&&route.includes("not unique readers"),"Chapter views must not be misrepresented as unique readers.");
+
 assert.ok(route.includes("new Date().toISOString()"),"Overview must expose the actual response timestamp");
 assert.ok(route.includes("generated_at:generatedAt"),"The real-time response must expose a canonical generated_at timestamp.");
 assert.ok(route.includes('mode:"request-time-d1-query"')&&route.includes('cache:"no-store"'),"Real-time overview freshness must be explicit and avoid stale HTTP caching.");
@@ -45,6 +51,10 @@ assert.ok(app.includes("refreshes every 60 seconds while this page is visible"),
 assert.ok(app.includes("Updated '+esc(changedLabel)"),"Each recent chapter update must display its recorded timestamp.");
 assert.ok(app.includes("Loading real-time data…"),"The interface must consistently describe real-time information rather than ambiguous live data.");
 assert.ok(app.includes("Signed-in readers · 24h"),"Reader activity must be labelled accurately as signed-in activity");
+for(const label of ["Novel views · all-time","Chapter views · all-time","Visible comments","New comments · 24h","Comment likes","Novel reactions","Reader ratings","Bookmarks","Novel follows"])assert.ok(app.includes(label),`Homepage must display the recorded ${label} metric.`);
+assert.ok(app.includes("metricCards.map")&&app.includes("title=\"'+esc(definition)+'\""),"Homepage engagement metrics must expose concise definitions for their measurement.");
+assert.ok(app.includes("measured from recorded platform events"),"Homepage must explain that engagement counts come from recorded events.");
+
 assert.ok(app.includes("Credited authors")&&!app.includes("Public authors"),"The author metric must describe distinct credited author names, not imply verified profile accounts");
 assert.equal(app,bundle,"Editable and versioned browser entry points must remain byte-for-byte synchronized");
 assert.ok(css.includes(".platformPulseMetrics{display:grid;grid-template-columns:repeat(6"),"Live metrics must use a six-column desktop layout");
