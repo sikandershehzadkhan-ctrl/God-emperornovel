@@ -1,6 +1,6 @@
 const DEFAULT_ORIGIN="https://god-emperornovel.sikandershehzadkhan.workers.dev";
 const STATIC_PUBLIC_PATHS=["/","/catalog","/genres","/tags","/community","/leaderboard","/omniportal","/privacy","/terms","/copyright"];
-const PRIVATE_PREFIXES=["/api/","/admin","/account","/login","/register","/library","/history","/following","/settings","/notifications","/tickets","/requests","/author"];
+const PRIVATE_PREFIXES=["/api/","/admin","/account","/login","/register","/library","/history","/following","/settings","/notifications","/tickets","/requests","/author$"];
 
 export function canonicalOrigin(value){
   try{
