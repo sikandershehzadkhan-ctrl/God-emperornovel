@@ -8,6 +8,7 @@ import { createDonationReferenceIndexEnsurer } from "./donation-reference-index.
 import { validateAuthorApplication, validateAuthorApplicationDecision } from "./author-application-policy.mjs";
 import { CONTENT_FORMATS, CONTENT_FORMAT_IDS } from "./content-formats.mjs";
 import { assessPublicationQuality } from "./content-quality-policy.mjs";
+import { buildDiscoveryGraph } from "./discovery-knowledge-graph.mjs";
 import { applySeoMetadata, buildRobotsTxt, buildSitemapXml, canonicalOrigin, canonicalPath, getPageSeo, robotsForPath } from "./seo.mjs";
 const json=(d,s=200,h={})=>new Response(JSON.stringify(d),{status:s,headers:{"content-type":"application/json;charset=UTF-8","cache-control":"no-store",...h}});
 const now=()=>Math.floor(Date.now()/1000);
@@ -442,6 +443,18 @@ async function api(req,env){
  if(p==="/api/omni/smart-unlock"){const e=need(u);if(e)return e;const novelId=Number(url.searchParams.get('novel_id'));const n=await env.DB.prepare(`SELECT COUNT(*) n FROM chapters WHERE novel_id=? AND publication_status='published' AND is_locked=1 AND id NOT IN(SELECT chapter_id FROM unlocks WHERE user_id=?)`).bind(novelId,u.id).first();const bal=Number(u.tickets);const packs=[10,25,50,100],options=[];for(const psize of packs){const rows=(await env.DB.prepare(`SELECT ticket_cost FROM chapters c WHERE c.novel_id=? AND c.publication_status='published' AND c.is_locked=1 AND c.id NOT IN(SELECT chapter_id FROM unlocks WHERE user_id=?) ORDER BY chapter_number LIMIT ?`).bind(novelId,u.id,psize).all()).results;const cost=rows.reduce((a,x)=>a+Number(x.ticket_cost),0);options.push({count:psize,cost,affordable:bal>=cost,chapters:rows.length})}return json({balance:bal,remaining:Number(n),recommended:options.find(x=>x.affordable&&x.chapters>0)?.count||0,options})}
 
  if(p==="/api/formats"&&m==="GET")return json({formats:CONTENT_FORMATS,groups:["text","comics","screen","audio","interactive"],version:1});
+ if(p==="/api/discovery/graph"&&m==="GET"){
+  const limit=Math.min(100,Math.max(1,Number(url.searchParams.get("limit")||30)));
+  const novels=(await env.DB.prepare("SELECT id,title,author,kind,language,description,cover_url FROM novels WHERE publication_status='published' AND rights_status IN ('original','public_domain','licensed','authorized') ORDER BY views DESC,updated_at DESC LIMIT ?").bind(limit).all()).results||[];
+  if(!novels.length)return json({version:1,nodes:[],edges:[]});
+  const ids=novels.map(item=>Number(item.id)).filter(id=>Number.isSafeInteger(id)&&id>0);
+  const marks=ids.map(()=>"?").join(",");
+  const [genres,tags]=await Promise.all([
+   env.DB.prepare("SELECT ng.novel_id,g.id,g.name,g.slug FROM novel_genres ng JOIN genres g ON g.id=ng.genre_id WHERE ng.novel_id IN ("+marks+") ORDER BY g.name").bind(...ids).all(),
+   env.DB.prepare("SELECT nt.novel_id,t.id,t.name,t.slug FROM novel_tags nt JOIN tags t ON t.id=nt.tag_id WHERE nt.novel_id IN ("+marks+") ORDER BY t.name").bind(...ids).all()
+  ]);
+  return json(buildDiscoveryGraph(novels,genres.results||[],tags.results||[],CONTENT_FORMATS));
+ }
 
  if(p==="/api/novels"){
   const q=url.searchParams,term=(q.get("q")||"").trim().toLowerCase(),genre=q.get("genre"),tag=q.get("tag"),status=q.get("status"),kind=q.get("kind"),language=q.get("language"),author=(q.get("author")||"").trim(),minRating=Number(q.get("min_rating")||0),sort=q.get("sort")||"updated",page=Math.max(1,Number(q.get("page")||1)),limit=Math.min(50,Math.max(1,Number(q.get("limit")||24))),offset=(page-1)*limit;
