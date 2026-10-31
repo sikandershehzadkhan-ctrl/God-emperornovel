@@ -25,11 +25,12 @@ For a dashboard-managed Worker, add an R2 bucket binding with variable name `MED
 - Objects use opaque private keys and are written only through the R2 binding.
 - The database stores an asset as `uploaded` with `pending_review` rights. The upload route cannot approve rights or mark an asset ready.
 - If the R2 binding is absent, the route returns HTTP 503 and does not accept the upload.
+- If storage or the database write fails partway through an upload, the handler attempts to delete the private object and marks the incomplete asset record `rejected` rather than leaving it in the review queue.
 - No public R2 URL is generated or returned.
 
 ## Not yet implemented
 
-Signature checks do not decode or sanitize images. Production readiness still requires a trusted image-processing pipeline that decodes and re-encodes files, limits dimensions and pixel count, strips metadata, and applies an explicit animation policy. A rights-review workflow and authenticated reader-delivery endpoint are also required. Until those exist, uploaded objects remain private and cannot be attached to published comic pages because the database publication gates require `ready` plus `approved`.
+Signature checks do not decode or sanitize images. Production readiness still requires a trusted image-processing pipeline that decodes and re-encodes files, limits dimensions and pixel count, strips metadata, and applies an explicit animation policy. The administrator rights-review workflow and authenticated reader-delivery endpoint now exist, but they do not make an unprocessed image safe. Until a trusted decoder/re-encoder is implemented, uploaded objects remain private and cannot be attached to comic pages because the database publication gates require `ready` plus `approved`.
 
 ## Validation
 
