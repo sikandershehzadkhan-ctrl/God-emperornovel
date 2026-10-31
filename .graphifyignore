@@ -1,0 +1,4 @@
+# Ignore generated, version-stamped runtime copies. public/app.js and public/sw.js are the canonical source files.
+public/app-*.js
+public/sw-*.js
+public/react-islands-*.js
