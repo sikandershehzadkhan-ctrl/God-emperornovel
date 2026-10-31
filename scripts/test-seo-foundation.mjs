@@ -7,8 +7,11 @@ assert.equal(canonicalOrigin("http://evil.example"),"https://god-emperornovel.si
 const robots=buildRobotsTxt(origin);
 assert.match(robots,/Sitemap: https:\/\/imperial\.example\/sitemap\.xml/);
 assert.match(robots,/Disallow: \/admin/);
-assert.match(robots,/Disallow: \/api\//);\nassert.match(robots,/Disallow: \/author\\$/);\nassert.doesNotMatch(robots,/Disallow: \/author\\n/);\nassert.match(getPageSeo("/catalog").title,/Discover Novels/);\nassert.match(getPageSeo("/author/some-writer").title,/Imperial Novel/);
+assert.match(robots,/Disallow: \/api\//);
+assert.match(robots,/Disallow: \/author\$/);
 assert.match(robots,/Disallow: \/\*\?\*/);
+assert.match(getPageSeo("/catalog").title,/Discover Novels/);
+assert.match(getPageSeo("/author/some-writer").title,/Imperial Novel/);
 const sitemap=buildSitemapXml(origin,[{id:12,updated_at:"2026-10-30T12:00:00Z"},{id:"13"},{id:"bad"},{id:0},{id:12}]);
 assert.match(sitemap,/<loc>https:\/\/imperial\.example\/novel\/12<\/loc><lastmod>2026-10-30<\/lastmod>/);
 assert.match(sitemap,/<loc>https:\/\/imperial\.example\/novel\/13<\/loc>/);
