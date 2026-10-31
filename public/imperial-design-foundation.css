@@ -570,6 +570,12 @@ html[data-theme="dark"] .homeFormatPrimary{background:var(--in-brand-soft)}
 .platformPulseHead p{margin:0;color:var(--in-muted);max-width:620px}
 .platformPulseActions{display:flex;align-items:center;gap:12px;flex-wrap:wrap;justify-content:flex-end}
 .platformPulseUpdated{font-size:.78rem;color:var(--in-muted);font-variant-numeric:tabular-nums}
+.platformPulseHealth{display:inline-flex;align-items:center;gap:7px;font-size:.78rem;color:var(--in-muted)}
+.platformPulseHealth::before{content:"";width:7px;height:7px;border-radius:50%;background:var(--in-muted)}
+.platformPulseHealth[data-state="healthy"]{color:var(--in-success,var(--in-blue))}
+.platformPulseHealth[data-state="healthy"]::before{background:#16845B}
+.platformPulseHealth[data-state="degraded"]{color:#B54736}
+.platformPulseHealth[data-state="degraded"]::before{background:#B54736}
 .platformPulseMetrics{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:10px}
 .platformPulseMetric{min-height:94px;padding:17px;border:1px solid var(--in-border);border-radius:16px;background:var(--in-surface)}
 .platformPulseMetric b{display:block;font-size:clamp(1.5rem,3vw,2.15rem);letter-spacing:-.05em;font-variant-numeric:tabular-nums}
