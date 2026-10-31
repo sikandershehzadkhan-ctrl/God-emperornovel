@@ -1,12 +1,13 @@
 import assert from "node:assert/strict";
 import { readFile } from "node:fs/promises";
 
-const [source,app,bundle,css,migration]=await Promise.all([
+const [source,app,bundle,css,migration,engagementMigration]=await Promise.all([
  readFile(new URL("../src/index.js",import.meta.url),"utf8"),
  readFile(new URL("../public/app.js",import.meta.url),"utf8"),
  readFile(new URL("../public/app-17.23.0.js",import.meta.url),"utf8"),
  readFile(new URL("../public/imperial-design-foundation.css",import.meta.url),"utf8"),
- readFile(new URL("../migrations/0012_chapter_update_timestamps.sql",import.meta.url),"utf8")
+ readFile(new URL("../migrations/0012_chapter_update_timestamps.sql",import.meta.url),"utf8"),
+ readFile(new URL("../migrations/0013_reader_engagement_metrics.sql",import.meta.url),"utf8")
 ]);
 const start=source.indexOf('if(p==="/api/platform/overview"&&m==="GET"){');
 const end=source.indexOf('if(p==="/api/discovery/graph"&&m==="GET"){',start);
@@ -18,6 +19,11 @@ for(const table of ["chapter_views","comments","comment_likes","novel_reactions"
 assert.ok(route.includes("cm.status='visible'"),"Comment totals must exclude hidden or deleted comments.");
 assert.ok(route.includes("cm.created_at>=datetime('now','-24 hours')"),"Recent comment activity must use a rolling 24-hour window.");
 assert.ok(route.includes("Cumulative chapter view requests")&&route.includes("not unique readers"),"Chapter views must not be misrepresented as unique readers.");
+assert.ok(source.includes("async function ensureEngagementSchema(env)")&&source.includes("CREATE TABLE IF NOT EXISTS comment_likes")&&source.includes("CREATE TABLE IF NOT EXISTS novel_reactions"),"Engagement endpoints must safely initialize the reaction and comment-like tables on existing databases.");
+assert.ok(route.includes("await ensureEngagementSchema(env)"),"The overview endpoint must ensure engagement tables exist before querying their totals.");
+assert.ok(engagementMigration.includes("CREATE TABLE IF NOT EXISTS comment_likes")&&engagementMigration.includes("CREATE TABLE IF NOT EXISTS novel_reactions"),"Fresh database installations must receive the engagement tables through migration 0013.");
+assert.ok(engagementMigration.includes("PRIMARY KEY(user_id,comment_id)")&&engagementMigration.includes("PRIMARY KEY(user_id,novel_id)"),"Engagement tables must prevent duplicate likes and multiple active reactions per user and content.");
+
 
 assert.ok(route.includes("new Date().toISOString()"),"Overview must expose the actual response timestamp");
 assert.ok(route.includes("generated_at:generatedAt"),"The real-time response must expose a canonical generated_at timestamp.");
