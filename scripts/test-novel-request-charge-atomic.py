@@ -44,7 +44,7 @@ def create_request(db, url):
     debited = db.execute("SELECT changes()").fetchone()[0]
     db.execute(
         """INSERT INTO ticket_ledger(user_id,delta,reason,reference)
-           SELECT user_id,-cost,'novel_request',substr(url,1,180)
+           SELECT user_id,-cost,'novel_request','novel_request:' || id
            FROM novel_requests
            WHERE id=last_insert_rowid() AND cost>0 AND changes()=1"""
     )
@@ -61,6 +61,7 @@ assert (inserted, debited, ledger) == (1, 1, 1)
 assert db.execute("SELECT tickets FROM users WHERE id=1").fetchone()[0] == 400
 assert db.execute("SELECT cost FROM novel_requests WHERE id=?", (request_id,)).fetchone()[0] == 100
 assert db.execute("SELECT COUNT(*) FROM ticket_ledger").fetchone()[0] == 1
+assert db.execute("SELECT reference FROM ticket_ledger").fetchone()[0] == f"novel_request:{request_id}"
 
 poor = setup(50, prior_requests=4)
 inserted, _, debited, ledger = create_request(poor, "https://source.example/blocked")
