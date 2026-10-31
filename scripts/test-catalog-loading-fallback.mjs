@@ -29,6 +29,11 @@ assert.match(catalogLoad, /catch\(error\)/);
 assert.match(app, /else if\(p==='\/discover'\|\|p==='\/catalog'\)await catalog\(\)/);
 assert.match(app, /x==='\/catalog'&&path==='\/discover'/);
 assert.match(worker, /"\/discover":"catalog\.html"/);
-assert.match(wrangler, /"\/catalog", "\/discover", "\/formats"/);
+assert.ok(wrangler.includes('"/catalog", "/discover", "/formats"'), "Wrangler routes /discover through the Worker");
+const catalogTemplate = await readFile("public/catalog.html", "utf8");
+assert.match(catalogTemplate, /<title>Catalog \| Imperial Novel<\/title>/);
+const fetchDispatch = worker.slice(worker.indexOf("export default"));
+assert.match(fetchDispatch, /else if\(!p\.includes\("\."\)\)r=await html\(req,env\)/, "Extensionless public routes, including /discover, must reach the HTML router");
+assert.ok(worker.includes('"/discover":"catalog.html"'), "The HTML router must map the direct Discover route to the catalog shell");
 
 console.log("PASS: homepage/catalog API requests time out safely, render retry states, and /discover resolves to the catalog.");
