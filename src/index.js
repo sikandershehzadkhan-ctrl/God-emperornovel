@@ -3,6 +3,7 @@ import { isAllowedConnectorSearchUrl } from "./connector-url-policy.mjs";
 import { parseManualDonationApproval } from "./donation-approval-policy.mjs";
 import { parseDonationSubmission } from "./donation-reference-policy.mjs";
 import { createRuntimeFeatureSchemaEnsurer } from "./runtime-feature-schema.mjs";
+import { createDonationReferenceIndexEnsurer } from "./donation-reference-index.mjs";
 const json=(d,s=200,h={})=>new Response(JSON.stringify(d),{status:s,headers:{"content-type":"application/json;charset=UTF-8","cache-control":"no-store",...h}});
 const now=()=>Math.floor(Date.now()/1000);
 const b64=a=>btoa(String.fromCharCode(...new Uint8Array(a))).replaceAll("+","-").replaceAll("/","_").replaceAll("=","");
@@ -32,6 +33,7 @@ const body=async r=>await r.json().catch(()=>({}));
 
 
 const ensureRuntimeFeatureSchema=createRuntimeFeatureSchemaEnsurer();
+const ensureDonationReferenceIndex=createDonationReferenceIndexEnsurer();
 async function consumeAuthRateLimit(env,scope,key,limit,windowSeconds){
  const keyHash=await digest(`imperial-auth-rate-v1:${scope}:${key}`);
  const windowStart=Math.floor(now()/windowSeconds)*windowSeconds;
