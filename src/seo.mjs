@@ -1,0 +1,74 @@
+const DEFAULT_ORIGIN="https://god-emperornovel.sikandershehzadkhan.workers.dev";
+const STATIC_PUBLIC_PATHS=["/","/catalog","/genres","/tags","/community","/leaderboard","/omniportal","/privacy","/terms","/copyright"];
+const PRIVATE_PREFIXES=["/api/","/admin","/account","/login","/register","/library","/history","/following","/settings","/notifications","/tickets","/requests","/author"];
+
+export function canonicalOrigin(value){
+  try{
+    const url=new URL(value||DEFAULT_ORIGIN);
+    if(url.protocol!=="https:"||url.username||url.password||url.pathname!=="/"||url.search||url.hash) return DEFAULT_ORIGIN;
+    return url.origin;
+  }catch{return DEFAULT_ORIGIN}
+}
+export function buildRobotsTxt(origin){
+  const base=canonicalOrigin(origin);
+  return [
+    "User-agent: *",
+    "Allow: /",
+    ...PRIVATE_PREFIXES.map(path=>"Disallow: "+path),
+    "Disallow: /*?*",
+    "Sitemap: "+base+"/sitemap.xml",
+    ""
+  ].join("\n");
+}
+export function buildSitemapXml(origin,novels=[]){
+  const base=canonicalOrigin(origin);
+  const paths=STATIC_PUBLIC_PATHS.map(path=>({loc:base+path}));
+  const seen=new Set(paths.map(x=>x.loc));
+  for(const novel of Array.isArray(novels)?novels:[]){
+    const id=Number(novel?.id);
+    if(!Number.isSafeInteger(id)||id<1)continue;
+    const loc=base+"/novel/"+id;
+    if(seen.has(loc))continue;
+    seen.add(loc);
+    const item={loc};
+    const date=novel.updated_at?new Date(novel.updated_at):null;
+    if(date&&!Number.isNaN(date.getTime()))item.lastmod=date.toISOString().slice(0,10);
+    paths.push(item);
+  }
+  const entries=paths.map(item=>"  <url><loc>"+xml(item.loc)+"</loc>"+(item.lastmod?"<lastmod>"+item.lastmod+"</lastmod>":"")+"</url>").join("\n");
+  return '<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n'+entries+"\n</urlset>\n";
+}
+function xml(value){return String(value).replaceAll("&","&amp;").replaceAll("<","&lt;").replaceAll(">","&gt;").replaceAll('"',"&quot;").replaceAll("'","&apos;")}
+function attr(value){return String(value).replaceAll("&","&amp;").replaceAll('"',"&quot;").replaceAll("<","&lt;").replaceAll(">","&gt;")}
+function upsertMeta(html,attribute,key,content){
+  const escapedKey=key.replace(/[.*+?^${}()|[\]\\]/g,"\\$&");
+  const re=new RegExp("<meta\\s+(?=[^>]*\\b"+attribute+"=[\\\"']"+escapedKey+"[\\\"'])[^>]*>","i");
+  const existing=html.match(re);
+  if(existing){
+    let tag=existing[0];
+    if(/\\bcontent=[\\\"'][^\\\"']*[\\\"']/i.test(tag))tag=tag.replace(/\\bcontent=([\\\"'])[^\\\"']*\\1/i,'content="'+attr(content)+'"');
+    else tag=tag.replace(/\\s*\\/?>(?=$)/,' content="'+attr(content)+'">');
+    return html.replace(existing[0],tag);
+  }
+  return html.replace(/<\\/head>/i,'<meta '+attribute+'="'+attr(key)+'" content="'+attr(content)+'">\\n</head>');
+}
+export function applySeoMetadata(html,{title,description,canonical,robots="index,follow"}={}){
+  const safeTitle=String(title||"Imperial Novel | Read • Create • Conquer").slice(0,180);
+  const safeDescription=String(description||"Discover original, licensed and authorized stories on Imperial Novel.").replace(/\\s+/g," ").trim().slice(0,300);
+  let output=String(html).replace(/<title>[\\s\\S]*?<\\/title>/i,"<title>"+attr(safeTitle)+"</title>");
+  for(const [attribute,key,value] of [
+    ["name","description",safeDescription],
+    ["property","og:title",safeTitle],
+    ["property","og:description",safeDescription],
+    ["name","twitter:title",safeTitle],
+    ["name","twitter:description",safeDescription],
+    ["name","robots",robots]
+  ])output=upsertMeta(output,attribute,key,value);
+  if(canonical){
+    const href=attr(canonical);
+    if(/<link\\s+[^>]*rel=["']canonical["'][^>]*>/i.test(output))output=output.replace(/<link\\s+[^>]*rel=["']canonical["'][^>]*>/i,'<link rel="canonical" href="'+href+'">');
+    else output=output.replace(/<\\/head>/i,'<link rel="canonical" href="'+href+'">\\n</head>');
+  }
+  return output;
+}
+export const seoStaticPaths=STATIC_PUBLIC_PATHS;
