@@ -43,6 +43,7 @@ function upsertMeta(html,attribute,key,content){
   }
   return html.replace(/<\/head>/i,'<meta '+attribute+'="'+attr(key)+'" content="'+attr(content)+'">\n</head>');
 }
+export function canonicalPath(path){return path==="/discover"?"/catalog":path==="/formats"?"/":path}
 export function applySeoMetadata(html,{title,description,canonical,robots="index,follow"}={}){
   const safeTitle=String(title||"Imperial Novel | Read • Create • Conquer").slice(0,180);
   const safeDescription=String(description||"Discover original, licensed and authorized stories on Imperial Novel.").replace(/\s+/g," ").trim().slice(0,300);
@@ -56,6 +57,17 @@ export function applySeoMetadata(html,{title,description,canonical,robots="index
     const href=attr(canonical);
     if(/<link\s+[^>]*rel=["']canonical["'][^>]*>/i.test(output))output=output.replace(/<link\s+[^>]*rel=["']canonical["'][^>]*>/i,'<link rel="canonical" href="'+href+'">');
     else output=output.replace(/<\/head>/i,'<link rel="canonical" href="'+href+'">\n</head>');
+  }
+  if(canonical){
+    const origin=new URL(canonical).origin;
+    const graph={"@context":"https://schema.org","@graph":[
+      {"@type":"Organization","name":"Imperial Novel","url":origin},
+      {"@type":"WebSite","name":"Imperial Novel","url":origin,"potentialAction":{"@type":"SearchAction","target":origin+"/search?q={search_term_string}","query-input":"required name=search_term_string"}},
+      {"@type":"WebPage","name":safeTitle,"description":safeDescription,"url":canonical}
+    ]};
+    const jsonLd=JSON.stringify(graph).replaceAll("<","\\u003c");
+    output=output.replace(/<script\s+type=["']application\/ld\+json["'][^>]*>[\s\S]*?<\/script>/gi,"");
+    output=output.replace(/<\/head>/i,'<script type="application/ld+json">'+jsonLd+'</script>\n</head>');
   }
   return output;
 }
