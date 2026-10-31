@@ -1,4 +1,5 @@
 import { hashPassword, verifyPassword } from "./auth-password.mjs";
+import { parseManualDonationApproval } from "./donation-approval-policy.mjs";
 const json=(d,s=200,h={})=>new Response(JSON.stringify(d),{status:s,headers:{"content-type":"application/json;charset=UTF-8","cache-control":"no-store",...h}});
 const now=()=>Math.floor(Date.now()/1000);
 const b64=a=>btoa(String.fromCharCode(...new Uint8Array(a))).replaceAll("+","-").replaceAll("/","_").replaceAll("=","");
