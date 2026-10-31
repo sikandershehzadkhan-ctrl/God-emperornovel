@@ -37,3 +37,12 @@ WHEN NEW.status='deleted' AND OLD.status!='deleted'
 BEGIN
   UPDATE media_assets SET deleted_at=COALESCE(deleted_at,CURRENT_TIMESTAMP) WHERE id=NEW.id;
 END;
+
+-- Deleted objects are terminal: a removed object must never be reactivated by changing metadata.
+CREATE TRIGGER IF NOT EXISTS trg_media_asset_deleted_is_terminal
+BEFORE UPDATE OF status ON media_assets
+FOR EACH ROW
+WHEN OLD.status='deleted' AND NEW.status!='deleted'
+BEGIN
+  SELECT RAISE(ABORT, 'deleted media assets cannot be reactivated');
+END;
