@@ -14,6 +14,12 @@ assert.ok(start>=0&&end>start,"Worker must expose the public platform overview e
 const route=source.slice(start,end);
 for(const field of ["publishedNovels","publishedChapters","creditedAuthors","catalogViews","readersInLast24Hours","chapterUpdatesLast24Hours"])assert.ok(route.includes(field),`Overview must expose the real ${field} metric`);
 assert.ok(route.includes("new Date().toISOString()"),"Overview must expose the actual response timestamp");
+assert.ok(route.includes("generated_at:generatedAt"),"The real-time response must expose a canonical generated_at timestamp.");
+assert.ok(route.includes('mode:"request-time-d1-query"')&&route.includes('cache:"no-store"'),"Real-time overview freshness must be explicit and avoid stale HTTP caching.");
+assert.ok(route.includes("metric_definitions:"),"Every platform metric must publish its definition.");
+assert.ok(route.includes("readersInLast24Hours:" )&&route.includes("not current online users"),"Recent signed-in readers must not be represented as people online now.");
+assert.ok(route.includes("measurement_windows:"),"The API must expose its measurement windows.");
+assert.ok(route.includes("updated_at FROM chapters"),"The update feed must return source timestamps for individual chapters.");
 assert.ok(route.includes("await ensurePublishingSchema(env)"),"Overview must safely ensure its chapter-view and update timestamp schema before querying");
 assert.ok(source.includes("ALTER TABLE chapters ADD COLUMN updated_at TEXT"),"Runtime compatibility must add chapter update timestamps to existing databases");
 assert.ok(source.includes("chapters_set_updated_at_after_insert"),"New chapters must receive an actual update timestamp");
@@ -33,6 +39,10 @@ assert.ok(app.includes('id="platformPulseMetrics"')&&app.includes('id="platformP
 assert.ok(app.includes("apiWithTimeout('/api/platform/overview'"),"Homepage must consume the live overview API with a bounded request");
 assert.ok(app.includes("setInterval(()=>{if(document.visibilityState==='visible')refreshPlatformPulse()},60000)"),"Homepage must refresh every 60 seconds only while visible");
 assert.ok(app.includes("platformPulseRefresh"),"Readers must have a manual refresh control");
+assert.ok(app.includes("Data generated "),"The homepage must display the exact generation timestamp for its metrics.");
+assert.ok(app.includes("refreshes every 60 seconds while this page is visible"),"The freshness cadence must be visible and accurately described.");
+assert.ok(app.includes("Updated '+esc(changedLabel)"),"Each recent chapter update must display its recorded timestamp.");
+assert.ok(app.includes("Loading real-time data…"),"The interface must consistently describe real-time information rather than ambiguous live data.");
 assert.ok(app.includes("Signed-in readers · 24h"),"Reader activity must be labelled accurately as signed-in activity");
 assert.ok(app.includes("Credited authors")&&!app.includes("Public authors"),"The author metric must describe distinct credited author names, not imply verified profile accounts");
 assert.equal(app,bundle,"Editable and versioned browser entry points must remain byte-for-byte synchronized");
@@ -45,4 +55,4 @@ assert.ok(app.includes("setInterval(()=>{if(location.pathname!=='/notifications'
 assert.ok(app.includes("document.visibilityState==='visible')loadNotifications()"),"Notification polling must pause while the page is hidden");
 assert.ok(app.includes("setInterval(()=>{if(location.pathname!=='/notifications')"),"Notification polling must be scoped to the notifications route");
 assert.ok(app.includes("aria-live=\"polite\"")&&app.includes("aria-busy=\"true\""),"Notification updates must announce status accessibly");
-console.log("Platform live overview tests passed: truthful API metrics, rights filtering, 24-hour reading activity, seven-day unlock trends, refreshed homepage UI, responsive layout and synchronized browser bundles.");
+console.log("Platform real-time overview tests passed: truthful API metrics, rights filtering, 24-hour reading activity, seven-day unlock trends, refreshed homepage UI, responsive layout and synchronized browser bundles.");
