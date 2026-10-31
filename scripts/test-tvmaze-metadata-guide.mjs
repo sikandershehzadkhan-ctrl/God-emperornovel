@@ -23,6 +23,8 @@ assert.match(helper, /esc\(show\.name/, "untrusted provider titles must be escap
 assert.match(helper, /replace\(\/<\[\^>\]\*>\/g,' '\)/, "provider HTML summaries must be reduced to plain text before escaping");
 assert.match(helper, /www\.tvmaze\.com/, "provider attribution and source links must be present");
 assert.match(app, /licensed under CC BY-SA/, "the provider's share-alike licence must be disclosed");
+assert.match(app, /summary is shortened and HTML formatting removed/, "summary modifications must be disclosed for CC BY-SA attribution");
+assert.match(app, /provider data remains under CC BY-SA/, "provider-derived data must retain its share-alike licence");
 assert.doesNotMatch(helper, /show\.image|show\.episodes|videoPlayer|<video|playback/, "metadata search must not embed artwork or provide episode streaming");
 assert.doesNotMatch(helper, /api\('\/api\/omni\/import/, "TVmaze results must not be routed into automatic source import");
 console.log("PASS: TVmaze metadata search is user-triggered, bounded, CORS-only, cookie-free, cached, rate-limit aware, attributed and does not stream or rehost media.");
