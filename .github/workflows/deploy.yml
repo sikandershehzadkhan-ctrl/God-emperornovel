@@ -1,16 +1,8 @@
 name: Deploy Imperial Novel to Cloudflare
 
+# Production deployment is deliberately manual. A push or PR merge must
+# never publish to the live Worker without an explicit release decision.
 on:
-  push:
-    branches: [main]
-    # Documentation, agent profiles, and audit-workflow additions must never
-    # trigger a production deployment by themselves. App/source changes still do.
-    paths-ignore:
-      - 'docs/**'
-      - '.claude/**'
-      - '.github/workflows/**'
-      - 'scripts/**'
-      - '*.md'
   workflow_dispatch:
     inputs:
       confirm_production_deploy:
@@ -31,7 +23,7 @@ concurrency:
 
 jobs:
   deploy:
-    if: ${{ github.event_name == 'push' || inputs.confirm_production_deploy == 'true' }}
+    if: ${{ github.event_name == 'workflow_dispatch' && inputs.confirm_production_deploy == 'true' }}
     runs-on: ubuntu-latest
     timeout-minutes: 10
     steps:
