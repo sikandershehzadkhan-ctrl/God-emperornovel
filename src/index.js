@@ -443,6 +443,32 @@ async function api(req,env){
  if(p==="/api/omni/smart-unlock"){const e=need(u);if(e)return e;const novelId=Number(url.searchParams.get('novel_id'));const n=await env.DB.prepare(`SELECT COUNT(*) n FROM chapters WHERE novel_id=? AND publication_status='published' AND is_locked=1 AND id NOT IN(SELECT chapter_id FROM unlocks WHERE user_id=?)`).bind(novelId,u.id).first();const bal=Number(u.tickets);const packs=[10,25,50,100],options=[];for(const psize of packs){const rows=(await env.DB.prepare(`SELECT ticket_cost FROM chapters c WHERE c.novel_id=? AND c.publication_status='published' AND c.is_locked=1 AND c.id NOT IN(SELECT chapter_id FROM unlocks WHERE user_id=?) ORDER BY chapter_number LIMIT ?`).bind(novelId,u.id,psize).all()).results;const cost=rows.reduce((a,x)=>a+Number(x.ticket_cost),0);options.push({count:psize,cost,affordable:bal>=cost,chapters:rows.length})}return json({balance:bal,remaining:Number(n),recommended:options.find(x=>x.affordable&&x.chapters>0)?.count||0,options})}
 
  if(p==="/api/formats"&&m==="GET")return json({formats:CONTENT_FORMATS,groups:["text","comics","screen","audio","interactive"],version:1});
+ if(p==="/api/platform/overview"&&m==="GET"){
+  const eligible="publication_status='published' AND rights_status IN ('original','public_domain','licensed','authorized')";
+  const [catalog,activity,updates,trending]=await Promise.all([
+   env.DB.prepare(`SELECT COUNT(*) publishedNovels,COALESCE(SUM(views),0) catalogViews,COUNT(DISTINCT NULLIF(TRIM(author),'')) publicAuthors FROM novels WHERE ${eligible}`).first(),
+   env.DB.prepare(`SELECT
+    (SELECT COUNT(*) FROM chapters c JOIN novels n ON n.id=c.novel_id WHERE c.publication_status='published' AND n.${eligible}) publishedChapters,
+    (SELECT COUNT(DISTINCT h.user_id) FROM history h JOIN novels n ON n.id=h.novel_id WHERE n.${eligible} AND h.updated_at>=datetime('now','-24 hours')) readersInLast24Hours,
+    (SELECT COALESCE(SUM(v.views),0) FROM chapter_views v JOIN chapters c ON c.id=v.chapter_id JOIN novels n ON n.id=c.novel_id WHERE c.publication_status='published' AND n.${eligible} AND v.updated_at>=datetime('now','-24 hours')) chapterViewsInLast24Hours`).first(),
+   env.DB.prepare(`SELECT c.novel_id,n.title novel_title,n.author,n.cover_url,c.chapter_number,c.title chapter_title,c.updated_at FROM chapters c JOIN novels n ON n.id=c.novel_id WHERE c.publication_status='published' AND n.${eligible} ORDER BY c.updated_at DESC,c.id DESC LIMIT 8`).all(),
+   env.DB.prepare(`SELECT n.id,n.title,n.author,n.cover_url,COUNT(u.chapter_id) unlocksLast7Days FROM novels n JOIN chapters c ON c.novel_id=n.id AND c.publication_status='published' JOIN unlocks u ON u.chapter_id=c.id AND u.unlocked_at>=datetime('now','-7 days') WHERE n.${eligible} GROUP BY n.id ORDER BY unlocksLast7Days DESC,n.updated_at DESC LIMIT 5`).all()
+  ]);
+  return json({
+   asOf:new Date().toISOString(),
+   windows:{readerActivityHours:24,trendingDays:7},
+   metrics:{
+    publishedNovels:Number(catalog?.publishedNovels||0),
+    publishedChapters:Number(activity?.publishedChapters||0),
+    publicAuthors:Number(catalog?.publicAuthors||0),
+    catalogViews:Number(catalog?.catalogViews||0),
+    readersInLast24Hours:Number(activity?.readersInLast24Hours||0),
+    chapterViewsInLast24Hours:Number(activity?.chapterViewsInLast24Hours||0)
+   },
+   recentUpdates:updates.results||[],
+   trending:trending.results||[]
+  });
+ }
  if(p==="/api/discovery/graph"&&m==="GET"){
   const limit=Math.min(100,Math.max(1,Number(url.searchParams.get("limit")||30)));
   const novels=(await env.DB.prepare("SELECT id,title,author,kind,language,description,cover_url FROM novels WHERE publication_status='published' AND rights_status IN ('original','public_domain','licensed','authorized') ORDER BY views DESC,updated_at DESC LIMIT ?").bind(limit).all()).results||[];
