@@ -36,7 +36,7 @@ const chapterEngagementRoute=source.slice(chapterEngagementStart,chapterEngageme
 for(const field of ["chapterReaderRequests","unlocks","signedInReadersLast24Hours"])assert.ok(chapterEngagementRoute.includes(field),`Chapter activity must expose ${field}.`);
 assert.ok(chapterEngagementRoute.includes("c.publication_status='published'")&&chapterEngagementRoute.includes("n.rights_status IN"),"Chapter activity must be limited to published, rights-eligible stories.");
 assert.ok(chapterEngagementRoute.includes("clientRefreshSeconds:30")&&chapterEngagementRoute.includes('cache:"no-store"'),"Chapter activity must declare its 30-second near-real-time freshness contract.");
-assert.ok(chapterEngagementRoute.includes("Not a unique-reader")&&chapterEngagementRoute.includes("not a live-online count"),"Chapter activity must disclose the limits of request and reading-history counters.");
+assert.ok(chapterEngagementRoute.includes("Not unique readers")&&chapterEngagementRoute.includes("not a live-online count"),"Chapter activity must disclose the limits of request and reading-history counters.");
 assert.ok(app.includes('id="chapterActivityMetrics"')&&app.includes("refreshChapterActivity"),"The chapter reader must display a dedicated activity panel.");
 assert.ok(app.includes("/api/chapter-engagement?chapter_id="),"Chapter activity must use its read-only endpoint.");
 assert.ok(app.includes("setInterval(()=>{if(document.visibilityState==='visible')refreshChapterActivity()},30000)"),"Chapter activity polling must pause while the page is hidden.");
