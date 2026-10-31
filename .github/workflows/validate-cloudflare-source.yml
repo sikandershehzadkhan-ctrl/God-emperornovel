@@ -117,6 +117,9 @@ jobs:
       - name: Test catalog query aggregation parity
         run: python3 scripts/test-catalog-query.py
 
+      - name: Test author application database constraints
+        run: python scripts/test-author-applications.py
+
       - name: Test normalized donation reference uniqueness
         run: python3 scripts/test-donation-reference-unique.py
 
