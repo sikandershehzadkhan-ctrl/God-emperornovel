@@ -1,4 +1,5 @@
 import { validateComicChapterContent } from "./comic-chapter-policy.mjs";
+import { validateMediaUploadMetadata, validateImageBytes, createPrivateMediaObjectKey } from "./media-upload-policy.mjs";
 import { hashPassword, verifyPassword } from "./auth-password.mjs";
 import { isAllowedConnectorSearchUrl } from "./connector-url-policy.mjs";
 import { parseManualDonationApproval } from "./donation-approval-policy.mjs";
@@ -412,6 +413,42 @@ async function api(req,env){
  await ensureCoreSchema(env);
  await ensureRuntimeFeatureSchema(env);
  const u=await getUser(req,env);
+ if(p==="/api/author/media/upload"&&m==="POST"){
+  const e=author(u);if(e)return e;
+  if(!env.MEDIA_BUCKET||typeof env.MEDIA_BUCKET.put!=="function")return json({error:"Private media storage is not configured. Uploads are not enabled yet."},503);
+  const contentType=String(req.headers.get("content-type")||"").toLowerCase();
+  if(!contentType.startsWith("multipart/form-data;"))return json({error:"Send an image using multipart/form-data."},415);
+  let form;try{form=await req.formData()}catch{return json({error:"Invalid multipart upload."},400)}
+  const file=form.get("file");
+  if(!file||typeof file.arrayBuffer!=="function")return json({error:"Image file is required in the file field."},400);
+  const checked=validateMediaUploadMetadata({mime_type:file.type,size_bytes:file.size});
+  if(!checked.ok)return json({error:checked.error},400);
+  const rightsHolder=String(form.get("rights_holder")||"").trim().slice(0,200);
+  const licenseName=String(form.get("license_name")||"").trim().slice(0,160);
+  const rightsEvidence=String(form.get("rights_evidence")||"").trim().slice(0,2000);
+  const bytes=new Uint8Array(await file.arrayBuffer());
+  if(bytes.byteLength!==checked.value.size_bytes)return json({error:"Uploaded file size changed during transfer."},400);
+  const signature=validateImageBytes(bytes,checked.value.mime_type);
+  if(!signature.ok)return json({error:signature.error},400);
+  const token=Array.from(crypto.getRandomValues(new Uint8Array(32)),x=>x.toString(16).padStart(2,"0")).join("");
+  let assetId=null,objectKey=null;
+  try{
+   const created=await env.DB.prepare("INSERT INTO media_assets(owner_user_id,object_key,mime_type,size_bytes,status,rights_status,rights_holder,license_name,rights_evidence) VALUES(?,?,?,?, 'pending_upload','pending_review',?,?,?)").bind(u.id,"pending/"+token,checked.value.mime_type,checked.value.size_bytes,rightsHolder,licenseName,rightsEvidence).run();
+   assetId=Number(created.meta.last_row_id);
+   objectKey=createPrivateMediaObjectKey(u.id,assetId,token);
+   await env.DB.prepare("UPDATE media_assets SET object_key=? WHERE id=? AND owner_user_id=? AND status='pending_upload'").bind(objectKey,assetId,u.id).run();
+   const sha=Array.from(new Uint8Array(await crypto.subtle.digest("SHA-256",bytes)),x=>x.toString(16).padStart(2,"0")).join("");
+   await env.MEDIA_BUCKET.put(objectKey,bytes,{httpMetadata:{contentType:checked.value.mime_type,cacheControl:"private, no-store"},customMetadata:{owner_user_id:String(u.id),asset_id:String(assetId),sha256:sha}});
+   await env.DB.prepare("UPDATE media_assets SET status='uploaded',uploaded_at=CURRENT_TIMESTAMP,sha256_hex=? WHERE id=? AND owner_user_id=? AND status='pending_upload'").bind(sha,assetId,u.id).run();
+   await audit(env,u,"media_asset_uploaded",`asset=${assetId};bytes=${bytes.byteLength};rights=pending_review`);
+   return json({ok:true,asset_id:assetId,status:"uploaded",rights_status:"pending_review",message:"Image stored privately. It is not publishable until it is safely processed and rights are approved."},201);
+  }catch(err){
+   if(objectKey&&env.MEDIA_BUCKET){try{await env.MEDIA_BUCKET.delete(objectKey)}catch{}}
+   if(assetId){try{await env.DB.prepare("UPDATE media_assets SET status='rejected' WHERE id=? AND owner_user_id=? AND status='pending_upload'").bind(assetId,u.id).run()}catch{}}
+   console.error("private media upload failed",err);
+   return json({error:"Private image upload could not be completed."},500);
+  }
+ }
  if(p==="/api/agents"&&m==="GET"){return json((await env.DB.prepare(`SELECT slug,name,role,icon,mode,status,last_run_at FROM agents WHERE enabled=1 ORDER BY id`).all()).results)}
  if(p==="/api/admin/agents"&&m==="GET"){const e=admin(u);if(e)return e;return json((await env.DB.prepare(`SELECT id,slug,name,role,icon,mode,status,enabled,last_run_at,last_result FROM agents ORDER BY id`).all()).results)}
  if(p==="/api/admin/agents/run"&&m==="POST"){const e=admin(u);if(e)return e;const b=await body(req);const slug=String(b.slug||'');if(slug)return json(await runAgent(env,slug,'admin'));return json(await runAutomation(env))}
