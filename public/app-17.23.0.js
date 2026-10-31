@@ -72,6 +72,7 @@ async function home(){
     <h1>Open a world.<br><span>Shape an empire.</span></h1>
     <p class="nextHeroLead">Discover stories worth staying up for, then create the worlds only you can imagine.</p>
     <form class="heroSearch" action="/search" method="get" role="search"><span aria-hidden="true">${iconSvg("search")}</span><input name="q" type="search" placeholder="Search titles, tropes, worlds..." aria-label="Search novels, genres and authors"><button type="submit">Find your story <span aria-hidden="true">↗</span></button></form>
+    <div class="imperialHeroActions"><a class="imperialHeroAuthor" href="/become-an-author">Become an Author <span aria-hidden="true">↗</span></a><a class="imperialHeroBrowse" href="/catalog">Explore the library</a></div>
     <div class="heroTags"><a href="/catalog?genre=fantasy">Fantasy</a><a href="/catalog?genre=progression">Progression</a><a href="/catalog?genre=romance">Romance</a><a href="/catalog?genre=isekai">Isekai</a></div>
     <div class="heroPromise">Read • Create • Conquer <span class="promiseText">Original. Authorized. Reader-first.</span></div>
    </div>
