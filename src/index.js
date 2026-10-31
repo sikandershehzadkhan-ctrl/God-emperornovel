@@ -1,7 +1,7 @@
 import { validateComicChapterContent } from "./comic-chapter-policy.mjs";
 import { hashPassword, verifyPassword } from "./auth-password.mjs";
 import { isAllowedConnectorSearchUrl } from "./connector-url-policy.mjs";
-import { canImportConnectorMetadata, deduplicateConnectorRows, summarizeConnectorRows } from "./omni-connector-policy.mjs";
+import { canImportConnectorMetadata, deduplicateConnectorRows, normalizeConnectorBaseUrl, summarizeConnectorRows } from "./omni-connector-policy.mjs";
 import { parseManualDonationApproval } from "./donation-approval-policy.mjs";
 import { parseDonationSubmission } from "./donation-reference-policy.mjs";
 import { createRuntimeFeatureSchemaEnsurer } from "./runtime-feature-schema.mjs";
