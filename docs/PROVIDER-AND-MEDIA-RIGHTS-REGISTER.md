@@ -34,6 +34,23 @@ No provider in this register is authorized to supply copyrighted manga/manhwa ch
 | Spotify Web API | Music metadata and user-library integrations | Official documentation says a Spotify Premium account is required to use the Web API. | Playback is Spotify's service, not a licence to stream tracks through Imperial Novel. | **Reject for PKR 0 architecture** |
 | Deezer API | Music metadata | Official developer page could not be read without login during this review. | No verified free production terms or playback rights established. | **Do not adopt until terms and access are verified** |
 
+## No-cost design and on-device reader capabilities
+
+These are not content catalogues. They are useful supporting technologies that can reduce recurring service costs:
+
+| Resource | Use | Licence / cost basis | Guardrail |
+|---|---|---|---|
+| Lucide | Consistent UI icons | Official repository uses ISC licensing for the project; selected legacy icon assets may carry their own notices. | Keep the licence notice in the source distribution; inspect any separately licensed asset. |
+| Tabler Icons | Large set of UI SVG icons | Official repository states MIT licence. | Keep the MIT notice; use a curated subset and self-host the SVGs. |
+| Google Fonts repository | Typography for multilingual UI and reading | Individual font folders declare their own licences, commonly SIL Open Font License. | Check the exact font's OFL file; self-host only the chosen font files to avoid a runtime font CDN dependency. |
+| Browser Web Speech API | Read-aloud narration of unlocked prose | Built into supported browsers/devices; no Imperial Novel speech API account or per-request API key. | Voices and languages depend on the device/browser. Some system voices may use network services. Do not promise offline playback or audiobook-quality voices. Do not upload chapter text to a third-party TTS service. Provide stop/pause controls and respect user gestures. |
+
+Official references:
+- Lucide licence: https://github.com/lucide-icons/lucide/blob/main/LICENSE
+- Tabler Icons licence: https://github.com/tabler/tabler-icons/blob/master/LICENSE
+- Google Fonts source and font licences: https://github.com/google/fonts
+- MDN Web Speech API: https://developer.mozilla.org/en-US/docs/Web/API/Web_Speech_API
+
 ## Provider integration rules
 
 Every proposed connector must pass these checks before it can be enabled:
