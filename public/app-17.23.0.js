@@ -1,5 +1,5 @@
 
-const $=(s,r=document)=>r.querySelector(s); const all=(s,r=document)=>[...r.querySelectorAll(s)];
+const $=(s,r=document)=>r.querySelector(s); const $=(s,r=document)=>[...r.querySelectorAll(s)]; const all=$;
 let notificationRefreshTimer=null;
 const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 async function api(path,opt={}){const r=await fetch(path,{credentials:'same-origin',...opt,headers:{'content-type':'application/json',...(opt.headers||{})}});let d={};try{d=await r.json()}catch{}if(!r.ok)throw Object.assign(new Error(d.error||`Request failed (${r.status})`),{data:d,status:r.status});return d}
