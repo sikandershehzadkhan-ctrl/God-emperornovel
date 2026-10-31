@@ -96,7 +96,7 @@ async function home(){
    </div>
   </section>
   <section class="homeConnectionShelf" aria-labelledby="homeConnectionTitle">
-   <div class="homeConnectionHeading"><div><div class="eyebrow"><span class="eyebrowDot"></span> CONNECTED DISCOVERY</div><h2 id="homeConnectionTitle">Follow the threads between worlds.</h2><p>Explore genres and themes attached to published stories in the live catalog.</p></div><a class="ghost" href="/catalog">Explore the library <span>↗</span></a></div>
+   <div class="homeConnectionHeading"><div><div class="eyebrow"><span class="eyebrowDot"></span> CONNECTED DISCOVERY</div><h2 id="homeConnectionTitle">Follow the threads between worlds.</h2><p>Explore genres and themes attached to published stories in the Imperial catalog.</p></div><a class="ghost" href="/catalog">Explore the library <span>↗</span></a></div>
    <div id="homeConnections" class="homeConnectionGrid" aria-live="polite"><span class="homeConnectionLoading">Mapping the published library…</span></div>
   </section>
   <section class="platformPulse" aria-labelledby="platformPulseTitle">
@@ -117,7 +117,7 @@ async function home(){
   </section>
   <section class="nextCreatorBand"><div class="creatorOrb" aria-hidden="true"><img src="/imperial-novel-app-icon.svg" alt="" width="88" height="88" loading="lazy"></div><div><div class="eyebrow">YOUR IDEAS DESERVE A WORLD</div><h2>You're not just a reader.</h2><p>Start with a spark. Build characters, systems, kingdoms, timelines and stories that are yours to tell.</p></div><a class="primary" href="/become-an-author">Become an Author <span>↗</span></a></section>
   <section class="section nextShelf">
-   <div class="sectionHead"><div><div class="eyebrow"><span class="eyebrowDot"></span> FRESH FROM THE REALM</div><h2>New chapters. New reasons to stay.</h2><p>Recently updated stories from the live catalog.</p></div><a class="ghost" href="/catalog?sort=updated">Latest updates <span>↗</span></a></div>
+   <div class="sectionHead"><div><div class="eyebrow"><span class="eyebrowDot"></span> FRESH FROM THE REALM</div><h2>New chapters. New reasons to stay.</h2><p>Recently updated stories from the Imperial catalog.</p></div><a class="ghost" href="/catalog?sort=updated">Latest updates <span>↗</span></a></div>
    <div id="latest" class="grid homeStoryGrid" aria-label="Recently updated stories" aria-busy="true"><div class="skeletonCard" aria-hidden="true"></div><div class="skeletonCard" aria-hidden="true"></div><div class="skeletonCard" aria-hidden="true"></div></div>
   </section>
   <section class="nextReaderPromise"><span class="promiseIcon">◈</span><div><b>Clear rules. Your reading, your call.</b><p>Imperial Crowns and chapter unlocks show their real status. Payments remain pending until manually reviewed.</p></div><a href="/tickets">Imperial Crown Vault ↗</a></section>
@@ -141,7 +141,7 @@ async function home(){
   if(target)target.innerHTML=links.length?links.map(node=>'<a class="homeConnectionChip" href="/catalog?'+node.type+'='+encodeURIComponent(node.slug)+'"><span class="homeConnectionType">'+(node.type==='genre'?'GENRE':'THEME')+'</span><b>'+esc(node.label)+'</b><span aria-hidden="true">↗</span></a>').join(''):'<div class="homeConnectionEmpty">The catalog is still building its discovery map. Explore published stories while more genre and theme connections are added.</div>';
  }catch(error){
   const target=$('#homeConnections');
-  if(target)target.innerHTML='<div class="homeConnectionEmpty">Connected discovery is temporarily unavailable. <a href="/catalog">Browse the live catalog</a>.</div>';
+  if(target)target.innerHTML='<div class="homeConnectionEmpty">Connected discovery is temporarily unavailable. <a href="/catalog">Browse the catalog</a>.</div>';
  }
  let platformPulseRequest=null,platformPulseHasData=false,platformPulseLastUpdated='';
  async function refreshPlatformPulse(){
