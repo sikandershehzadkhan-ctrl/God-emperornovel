@@ -13,7 +13,7 @@ export function buildRobotsTxt(origin){
   const base=canonicalOrigin(origin);
   return ["User-agent: *","Allow: /",...PRIVATE_PREFIXES.map(path=>"Disallow: "+path),"Disallow: /*?*","Sitemap: "+base+"/sitemap.xml",""].join("\n");
 }
-export function buildSitemapXml(origin,novels=[]){
+export function buildSitemapXml(origin,novels=[],authors=[]){
   const base=canonicalOrigin(origin),paths=STATIC_PUBLIC_PATHS.map(path=>({loc:base+path}));
   const seen=new Set(paths.map(item=>item.loc));
   for(const novel of Array.isArray(novels)?novels:[]){
@@ -26,7 +26,7 @@ export function buildSitemapXml(origin,novels=[]){
     if(date&&!Number.isNaN(date.getTime()))item.lastmod=date.toISOString().slice(0,10);
     paths.push(item);
   }
-  const entries=paths.map(item=>"  <url><loc>"+xml(item.loc)+"</loc>"+(item.lastmod?"<lastmod>"+item.lastmod+"</lastmod>":"")+"</url>").join("\n");
+  for(const author of Array.isArray(authors)?authors:[]){const name=String(author?.author??author??"").trim();if(!name)continue;const loc=base+"/author/"+encodeURIComponent(name);if(seen.has(loc))continue;seen.add(loc);paths.push({loc})}\n  const entries=paths.map(item=>"  <url><loc>"+xml(item.loc)+"</loc>"+(item.lastmod?"<lastmod>"+item.lastmod+"</lastmod>":"")+"</url>").join("\n");
   return '<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n'+entries+"\n</urlset>\n";
 }
 function xml(value){return String(value).replaceAll("&","&amp;").replaceAll("<","&lt;").replaceAll(">","&gt;").replaceAll('"',"&quot;").replaceAll("'","&apos;")}
