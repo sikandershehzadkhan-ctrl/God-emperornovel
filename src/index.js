@@ -415,6 +415,8 @@ async function api(req,env){
  const u=await getUser(req,env);
  if(p==="/api/author/media/upload"&&m==="POST"){
   const e=author(u);if(e)return e;
+  const requestOrigin=req.headers.get("origin");
+  if(!requestOrigin||requestOrigin!==url.origin)return json({error:"Cross-origin media uploads are not allowed."},403);
   if(!env.MEDIA_BUCKET||typeof env.MEDIA_BUCKET.put!=="function")return json({error:"Private media storage is not configured. Uploads are not enabled yet."},503);
   const contentType=String(req.headers.get("content-type")||"").toLowerCase();
   const requestLength=req.headers.get("content-length");
