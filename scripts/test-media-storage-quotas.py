@@ -55,7 +55,7 @@ for owner_id in owners[1:10]:
     if owner_id == owners[1]:
         add_asset(owner_id, 6, size=20*1024*1024-1024)
     else:
-        add_asset(owner_id, 5)
+        add_asset(owner_id, 6)
 # Ten creators now consume exactly 1,000 MiB. Fill the platform's final 24 MiB.
 add_asset(owners[10], 1, size=20*1024*1024)
 add_asset(owners[10], 2, size=4*1024*1024)
