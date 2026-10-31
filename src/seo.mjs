@@ -9,9 +9,23 @@ export function canonicalOrigin(value){
     return url.origin;
   }catch{return DEFAULT_ORIGIN}
 }
-export function buildRobotsTxt(origin){
+export function buildRobotsTxt(origin,{allowOaiSearch=true,allowModelTraining=false}={}){
   const base=canonicalOrigin(origin);
-  return ["User-agent: *","Allow: /",...PRIVATE_PREFIXES.map(path=>"Disallow: "+path),"Disallow: /*?*","Sitemap: "+base+"/sitemap.xml",""].join("\n");
+  const privateRules=[...PRIVATE_PREFIXES.map(path=>"Disallow: "+path),"Disallow: /*?*"];
+  return [
+    "User-agent: OAI-SearchBot",
+    allowOaiSearch?"Allow: /":"Disallow: /",
+    ...privateRules,
+    "",
+    "User-agent: GPTBot",
+    allowModelTraining?"Allow: /":"Disallow: /",
+    "",
+    "User-agent: Google-Extended",
+    allowModelTraining?"Allow: /":"Disallow: /",
+    "",
+    "User-agent: *","Allow: /",...privateRules,
+    "Sitemap: "+base+"/sitemap.xml",""
+  ].join("\n");
 }
 export function buildSitemapXml(origin,novels=[],authors=[]){
   const base=canonicalOrigin(origin),paths=STATIC_PUBLIC_PATHS.map(path=>({loc:base+path}));
@@ -69,7 +83,7 @@ export function applySeoMetadata(html,{title,description,canonical,robots="index
     const originForGraph=origin;
     const graph={"@context":"https://schema.org","@graph":[
       {"@type":"Organization","name":"Imperial Novel","url":origin},
-      {"@type":"WebSite","name":"Imperial Novel","url":origin,"potentialAction":{"@type":"SearchAction","target":origin+"/search?q={search_term_string}","query-input":"required name=search_term_string"}},
+      {"@type":"WebSite","name":"Imperial Novel","url":origin},
       {"@type":"WebPage","name":safeTitle,"description":safeDescription,"url":canonical}
     ]};
     const jsonLd=JSON.stringify(graph).replaceAll("<","\\u003c");
