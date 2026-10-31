@@ -368,3 +368,28 @@ This pass used public homepage fetches only. It did not create accounts, submit 
 6. **Localized product depth matters.** Chinese platforms expose different male/female audience paths, update tables and large genre/ranking taxonomies. Localization requires native editorial, metadata and moderation quality, not only translated navigation labels.
 
 No overall competitive score is assigned. The sample is public-homepage reconnaissance, not a complete product or security audit.
+
+
+## Production smoke-test correction (31 October 2026, 09:31 UTC)
+
+A follow-up Fish browser session independently repeated the health and catalog API requests after the earlier browser audit reported a 502.
+
+| Request | Attempt/result |
+|---|---|
+| \`GET /api/health\` | HTTP 200, \`ok:true\`, database \`true\`, version \`17.20.0\` |
+| \`GET /api/health\` retry after 3 seconds | HTTP 200, \`ok:true\`, database \`true\`, version \`17.20.0\` |
+| \`GET /api/novels?limit=10&page=1\` | HTTP 200, one published result |
+
+This means the previous 502 was transient or specific to that browser run. It is **not evidence of a sustained health-endpoint outage**. Two successful retries are also not a full uptime or resilience test.
+
+The latest mobile-first audit again observed the catalog's "Loading catalog…" state during its limited visit window, while an earlier follow-up had observed the title card render after waiting approximately 10 seconds. Taken together, the evidence points to **intermittent or excessive catalog hydration delay**, not a permanently empty catalog. The API returns one result; the UI wait behavior still needs controlled cold/warm testing on real mobile networks.
+
+The live catalog contains one novel and two published chapters. The platform is healthy at the time of the repeat API checks, but content supply remains the most severe competitive gap.
+
+### Route clarification
+
+The visible Discover navigation points to \`/catalog\`. The application also maps \`/discover\` to the catalog template and dispatches it through the Worker. Therefore the earlier report that \`/discover\` is a broken navigation link was too strong; the direct path is supported by the application route map. No navigation defect is confirmed from that observation.
+
+### Verification boundaries
+
+These were public, read-only requests. The browser did not authenticate, submit forms, unlock paid chapters, or alter data. The returned HTTP status and JSON body are verified; response-time measurements were not exposed by this run.
