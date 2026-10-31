@@ -924,3 +924,14 @@ html[data-theme="dark"] .novelLivePulseMetric{background:var(--in-surface-raised
 .authorAnalyticsNotes p{margin:8px 0 0}
 @media(max-width:760px){.authorAnalyticsMetrics{grid-template-columns:repeat(3,minmax(0,1fr))}.authorAnalyticsSplit{grid-template-columns:1fr}}
 @media(max-width:480px){.authorAnalyticsMetrics{grid-template-columns:repeat(2,minmax(0,1fr))}.authorAnalyticsTools{width:100%}.authorAnalyticsTools select{flex:1;min-width:0}.authorAnalyticsStoryStats{gap:5px}}
+
+
+.authorAnalyticsChapterSection{display:grid;gap:10px}
+.authorAnalyticsChapterSection h3{margin:0;font-size:15px}
+.authorAnalyticsChapters{display:grid;gap:8px}
+.authorAnalyticsChapter{display:grid;gap:8px;padding:11px 12px;border:1px solid var(--in-line);border-radius:11px;background:var(--in-surface)}
+.authorAnalyticsChapter b,.authorAnalyticsChapter small{display:block}
+.authorAnalyticsChapter b{font-size:12px;overflow-wrap:anywhere}
+.authorAnalyticsChapter small{margin-top:3px;color:var(--in-muted);font-size:10px}
+.authorAnalyticsChapterStats{display:flex;gap:6px;flex-wrap:wrap}
+.authorAnalyticsChapterStats span{padding:4px 7px;border-radius:7px;background:var(--in-canvas);color:var(--in-muted);font-size:10px}
