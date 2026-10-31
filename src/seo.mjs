@@ -92,6 +92,7 @@ const PAGE_SEO={
   "/terms":{title:"Terms of Service | Imperial Novel",description:"Review the terms governing use of the Imperial Novel platform."},
   "/copyright":{title:"Copyright & Rights | Imperial Novel",description:"Learn about content rights, licensing, attribution and copyright reporting on Imperial Novel."},
   "/discover":{title:"Discover Novels & Stories | Imperial Novel",description:"Explore the Imperial Novel catalog and discover original and authorized stories across genres and formats."},
+  "/search":{title:"Search Stories | Imperial Novel",description:"Search novels, authors and story metadata across the Imperial Novel catalog."},
   "/tier-list":{title:"Story Tier Lists | Imperial Novel",description:"Explore community story tier lists and reader recommendations on Imperial Novel."},
   "/random":{title:"Discover a Random Story | Imperial Novel",description:"Find a new story to explore from the Imperial Novel catalog."},
   "/made-for-you":{title:"Stories Made for You | Imperial Novel",description:"Explore story recommendations and reading discoveries on Imperial Novel."},
