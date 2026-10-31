@@ -22,9 +22,14 @@ INSERT INTO novels VALUES(20);
 INSERT INTO novel_requests VALUES(30);
 INSERT INTO comment_reports(user_id,comment_id,reason,details) VALUES(1,10,'spam','keep earliest');
 INSERT INTO comment_reports(user_id,comment_id,reason,details) VALUES(1,10,'copyright','preserve duplicate');
+INSERT INTO comment_reports(user_id,comment_id,reason,details) VALUES(999,10,'spam','orphan user report');
+INSERT INTO comment_reports(user_id,comment_id,reason,details) VALUES(1,999,'spam','orphan comment report');
 INSERT INTO comment_likes(user_id,comment_id) VALUES(1,10);
+INSERT INTO comment_likes(user_id,comment_id) VALUES(999,10);
 INSERT INTO novel_reactions(user_id,novel_id,reaction) VALUES(1,20,'love');
+INSERT INTO novel_reactions(user_id,novel_id,reaction) VALUES(1,999,'fire');
 INSERT INTO request_votes(request_id,user_id) VALUES(30,1);
+INSERT INTO request_votes(request_id,user_id) VALUES(999,1);
 """)
 
 # Existing CREATE TABLE IF NOT EXISTS definitions remain unchanged. The migration
@@ -33,13 +38,19 @@ db.executescript(migration)
 db.executescript(migration)  # Must be safe to re-run.
 
 archived = db.execute(
-    "SELECT reason,details FROM comment_reports_legacy_duplicates"
+    "SELECT reason,details,archive_reason FROM comment_reports_legacy_duplicates ORDER BY id"
 ).fetchall()
 active = db.execute(
     "SELECT reason,details FROM comment_reports"
 ).fetchall()
-assert archived == [("copyright", "preserve duplicate")], archived
+assert archived == [
+    ("copyright", "preserve duplicate", "duplicate"),
+    ("spam", "orphan user report", "orphan_reference"),
+    ("spam", "orphan comment report", "orphan_reference"),
+], archived
 assert active == [("spam", "keep earliest")], active
+for table in ("comment_likes", "novel_reactions", "request_votes"):
+    assert db.execute(f"SELECT COUNT(*) FROM {table}").fetchone()[0] == 1, table
 
 def rejected(sql, params=()):
     try:
@@ -81,4 +92,4 @@ DELETE FROM users WHERE id=2;
 for table in ("comment_likes", "comment_reports", "novel_reactions", "request_votes"):
     assert db.execute(f"SELECT COUNT(*) FROM {table}").fetchone()[0] == 0, table
 
-print("PASS: migration 0012 preserves duplicate report history, upgrades legacy integrity, cascades deletes, and is idempotent.")
+print("PASS: migration 0012 archives duplicate/orphan report history, cleans orphan interactions, upgrades legacy integrity, cascades deletes, and is idempotent.")
