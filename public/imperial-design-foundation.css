@@ -291,3 +291,182 @@ html[data-theme="dark"] .hero.imperialArchiveHero{background:#111A1F;color:var(-
 @media(forced-colors:active){
   :where(a,button,input,select,textarea,[role="button"],[tabindex]):focus-visible{outline:2px solid Highlight!important}
 }
+
+
+/* Homepage art direction: one signature imperial seal, calm editorial surfaces. */
+.homePage{padding-top:24px;padding-bottom:64px}
+.homePage>.wrap{width:min(1240px,calc(100% - 48px))}
+.homePage .hero.imperialArchiveHero{
+  position:relative;isolation:isolate;display:grid;align-items:center;
+  min-height:clamp(430px,58vw,560px);padding:clamp(34px,6vw,76px);
+  border:1px solid var(--in-line);border-top:3px solid var(--in-brand);
+  border-radius:var(--in-radius-lg);background:var(--in-surface);box-shadow:none;
+}
+.homePage .hero.imperialArchiveHero::before{
+  content:"";display:block!important;position:absolute;z-index:0;pointer-events:none;
+  width:clamp(260px,34vw,440px);aspect-ratio:1;right:-3%;top:50%;transform:translateY(-50%);
+  border:1px solid rgba(106,13,173,.18);border-radius:50%;
+  background:radial-gradient(circle,transparent 0 30%,rgba(106,13,173,.09) 30.2% 30.6%,transparent 30.8% 52%,rgba(15,82,186,.11) 52.2% 52.6%,transparent 52.8% 68%,rgba(106,13,173,.08) 68.2% 68.6%,transparent 68.8%);
+}
+.homePage .hero.imperialArchiveHero::after{
+  content:"";display:block!important;position:absolute;z-index:0;pointer-events:none;
+  width:clamp(92px,12vw,148px);aspect-ratio:1;right:calc(clamp(260px,34vw,440px)*.42);
+  top:50%;transform:translateY(-50%) rotate(45deg);border:1px solid rgba(11,18,21,.22);
+  background:linear-gradient(145deg,rgba(106,13,173,.12),rgba(15,82,186,.07));
+}
+.homePage .hero.imperialArchiveHero .nextHeroCopy{position:relative;z-index:1;max-width:760px}
+.homePage .hero.imperialArchiveHero h1{
+  max-width:11ch;margin:0 0 20px;color:var(--in-ink);
+  font-size:clamp(46px,6.2vw,78px);font-weight:820;line-height:.98;letter-spacing:-.065em;
+}
+.homePage .hero.imperialArchiveHero h1 span{color:var(--in-brand);-webkit-text-fill-color:var(--in-brand)}
+.homePage .hero.imperialArchiveHero .nextHeroLead{max-width:52ch;color:var(--in-muted);font-size:clamp(15px,1.4vw,18px);line-height:1.7}
+.homePage .heroSearch{
+  max-width:620px;min-height:58px;margin-top:26px;padding:6px 7px 6px 15px;
+  border:1px solid var(--in-line-strong);border-radius:12px;background:var(--in-surface);
+  box-shadow:0 6px 22px rgba(11,18,21,.045);
+}
+.homePage .heroSearch input{min-width:0;color:var(--in-ink);font-size:14px}
+.homePage .heroSearch input::placeholder{color:var(--in-subtle)}
+.homePage .heroSearch button{min-height:44px;border-radius:9px;background:var(--in-brand);color:#fff;font-weight:750}
+.homePage .heroSearch button:hover{background:var(--in-brand-hover)}
+.homePage .heroTags{display:flex;flex-wrap:wrap;gap:8px;margin-top:17px}
+.homePage .heroTags a{
+  padding:7px 11px;border:1px solid var(--in-line);border-radius:999px;
+  background:var(--in-surface);color:var(--in-muted);font-size:11px;font-weight:650;text-decoration:none;
+}
+.homePage .heroTags a:hover{border-color:var(--in-brand);background:var(--in-brand-soft);color:var(--in-brand)}
+.homePage .heroPromise{margin-top:24px;color:var(--in-ink);font-size:11px;font-weight:800;letter-spacing:.08em}
+.homePage .promiseText{display:block;margin-top:5px;color:var(--in-muted);font-size:11px;font-weight:500;letter-spacing:0}
+.homeFormatShelf{
+  margin:28px 0 26px;padding:clamp(18px,3vw,28px);
+  border:1px solid var(--in-line);border-radius:var(--in-radius-lg);
+  background:var(--in-surface);box-shadow:none;
+}
+.homeFormatHeading{margin-bottom:18px}
+.homeFormatHeading h2{color:var(--in-ink);font-size:clamp(23px,3vw,32px);font-weight:780;letter-spacing:-.045em}
+.homeFormatHeading h2 span{color:var(--in-brand)}
+.homeFormatHeading p{color:var(--in-muted);font-size:13px}
+.homeFormatCard,.homeFormatPrimary{
+  min-height:78px;border:1px solid var(--in-line);border-radius:12px;
+  background:var(--in-surface);color:var(--in-ink);box-shadow:none;
+}
+.homeFormatCard:hover,.homeFormatCard:focus-visible{
+  transform:translateY(-1px);border-color:var(--in-brand);background:var(--in-brand-soft);
+}
+.homeFormatPrimary{border-color:rgba(106,13,173,.2);background:var(--in-brand-soft)}
+.homeFormatGlyph{background:var(--in-discovery-soft);color:var(--in-discovery);border-radius:10px}
+.homeFormatCopy b{color:var(--in-ink);font-size:13px}
+.homeFormatCopy small{color:var(--in-muted)}
+.homeFormatArrow{color:var(--in-brand)}
+.homePage .section{margin-top:42px}
+.homePage .sectionHead h2{color:var(--in-ink);font-size:clamp(25px,3.3vw,36px);font-weight:790}
+.homePage .sectionHead p{color:var(--in-muted)}
+.homePage .sectionHead .ghost{white-space:nowrap}
+.homeStoryGrid{grid-template-columns:repeat(3,minmax(0,1fr));gap:16px}
+.homeStoryGrid .card{border:1px solid var(--in-line);border-radius:14px;background:var(--in-surface)}
+.homeStoryGrid .card:hover{border-color:var(--in-line-strong);transform:translateY(-2px)}
+.nextFeatureDeck{gap:12px;margin:48px 0 28px}
+.nextFeatureIntro h2{color:var(--in-ink);font-weight:800;letter-spacing:-.055em}
+.nextFeatureIntro h2 span{color:var(--in-brand)}
+.nextFeatureIntro p{color:var(--in-muted);line-height:1.7}
+.nextFeatureTile{
+  min-height:245px;padding:19px;border:1px solid var(--in-line);
+  border-radius:14px;background:var(--in-surface);box-shadow:none;
+}
+.nextFeatureTile:before{height:2px;background:var(--in-brand);opacity:1}
+.featureTrend,.featureForge,.featureCommunity,.featurePortal{--tile-accent:var(--in-brand)}
+.featureForge,.featurePortal{--tile-accent:var(--in-discovery)}
+.nextFeatureTile .featureMeta{color:var(--in-subtle)}
+.nextFeatureTile .featureGlyph{
+  background:var(--in-brand-soft);color:var(--in-brand);border-radius:12px;
+}
+.nextFeatureTile b{color:var(--in-ink)}
+.nextFeatureTile p{color:var(--in-muted);font-size:12px;line-height:1.7}
+.nextFeatureTile .featureInlineLink,.featureInlineLink{color:var(--in-discovery);font-weight:750}
+.nextFeatureTile:hover{transform:translateY(-2px);border-color:var(--in-line-strong);background:var(--in-surface)}
+.nextCreatorBand{
+  margin:42px 0;padding:24px;border:1px solid var(--in-line);
+  border-radius:var(--in-radius-lg);background:var(--in-surface);box-shadow:none;
+}
+.creatorOrb{border:1px solid var(--in-line);border-radius:16px;background:var(--in-brand-soft)}
+.nextCreatorBand h2{color:var(--in-ink);font-weight:790}
+.nextCreatorBand p{color:var(--in-muted);font-size:13px}
+.nextReaderPromise{border:1px solid var(--in-line);border-radius:14px;background:var(--in-surface)}
+.promiseIcon{background:var(--in-discovery-soft);color:var(--in-discovery)}
+.nextReaderPromise b{color:var(--in-ink)}
+.nextReaderPromise p{color:var(--in-muted)}
+.nextReaderPromise>a{color:var(--in-discovery)}
+.skeletonCard{
+  border:1px solid var(--in-line);border-radius:14px;
+  background:linear-gradient(100deg,var(--in-surface) 20%,var(--in-brand-soft) 40%,var(--in-surface) 60%);
+  background-size:200% 100%;
+}
+html[data-theme="dark"] .homePage .hero.imperialArchiveHero{background:var(--in-surface);border-color:var(--in-line);border-top-color:var(--in-brand)}
+html[data-theme="dark"] .homePage .hero.imperialArchiveHero h1{color:var(--in-ink)}
+html[data-theme="dark"] .homePage .hero.imperialArchiveHero h1 span{-webkit-text-fill-color:var(--in-brand);color:var(--in-brand)}
+html[data-theme="dark"] .homePage .heroSearch{background:var(--in-surface-raised);border-color:var(--in-line)}
+html[data-theme="dark"] .homePage .heroSearch input{background:transparent;color:var(--in-ink)}
+html[data-theme="dark"] .homePage .heroSearch button{background:var(--in-brand);color:#fff}
+html[data-theme="dark"] .homeFormatShelf,
+html[data-theme="dark"] .homeFormatCard,
+html[data-theme="dark"] .homeFormatPrimary,
+html[data-theme="dark"] .nextFeatureTile,
+html[data-theme="dark"] .nextCreatorBand,
+html[data-theme="dark"] .nextReaderPromise{background:var(--in-surface);border-color:var(--in-line)}
+html[data-theme="dark"] .homeFormatPrimary{background:var(--in-brand-soft)}
+@media(max-width:900px){
+  .homePage .hero.imperialArchiveHero::before{right:-12%;opacity:.8}
+  .homePage .hero.imperialArchiveHero::after{right:calc(clamp(260px,34vw,440px)*.34)}
+  .nextFeatureDeck{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .homeStoryGrid{grid-template-columns:repeat(2,minmax(0,1fr))}
+}
+@media(max-width:760px){
+  .homePage{padding-top:12px;padding-bottom:34px}
+  .homePage>.wrap{width:calc(100% - 24px)}
+  .homePage .hero.imperialArchiveHero{min-height:0;padding:28px 20px 26px;border-radius:16px}
+  .homePage .hero.imperialArchiveHero::before,
+  .homePage .hero.imperialArchiveHero::after{display:none!important}
+  .homePage .hero.imperialArchiveHero h1{max-width:10ch;font-size:clamp(42px,11vw,58px);line-height:1.01}
+  .homePage .hero.imperialArchiveHero .nextHeroCopy{padding:0}
+  .homePage .heroSearch{min-height:52px;margin-top:20px}
+  .homePage .heroSearch button{padding-inline:12px;font-size:11px}
+  .homePage .heroSearch input{font-size:12px}
+  .homeFormatShelf{margin:22px 0;padding:16px}
+  .homeFormatGrid{grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
+  .homeFormatCard{min-height:68px;padding:10px;gap:8px}
+  .homeFormatGlyph{width:34px;height:34px;flex-basis:34px;font-size:17px}
+  .homeFormatCopy b{font-size:11px}
+  .homeFormatCopy small{font-size:10px}
+  .homePage .section{margin-top:30px}
+  .homePage .sectionHead{align-items:flex-start}
+  .homePage .sectionHead h2{font-size:24px}
+  .homePage .sectionHead .ghost{padding:9px 10px;font-size:10px}
+  .nextFeatureDeck{grid-template-columns:1fr 1fr;gap:9px;margin:32px 0 22px}
+  .nextFeatureIntro{display:block;grid-column:1/-1}
+  .nextFeatureIntro h2{font-size:31px;margin:9px 0}
+  .nextFeatureIntro p{margin:0 0 10px;font-size:12px}
+  .nextFeatureTile{min-height:215px;padding:13px}
+  .nextFeatureTile .featureGlyph{width:38px;height:38px;margin:18px 0 12px}
+  .nextFeatureTile b{font-size:13px}
+  .nextFeatureTile p{font-size:11px}
+  .nextCreatorBand{display:grid;grid-template-columns:48px 1fr;gap:12px;margin:30px 0;padding:15px}
+  .creatorOrb{width:48px;height:48px;border-radius:12px}
+  .creatorOrb img{width:40px;height:40px}
+  .nextCreatorBand>div:nth-child(2){min-width:0}
+  .nextCreatorBand h2{font-size:19px}
+  .nextCreatorBand p{font-size:11px;line-height:1.55}
+  .nextCreatorBand>.primary{grid-column:1/-1;justify-self:start}
+  .nextReaderPromise{display:grid;grid-template-columns:38px 1fr;gap:10px;padding:14px}
+  .nextReaderPromise>a{grid-column:2;white-space:normal}
+  .homeStoryGrid{grid-template-columns:repeat(2,minmax(0,1fr));gap:9px}
+}
+@media(max-width:390px){
+  .homePage .hero.imperialArchiveHero{padding:24px 16px}
+  .homePage .hero.imperialArchiveHero h1{font-size:40px}
+  .homePage .heroSearch button{font-size:10px;padding-inline:9px}
+  .homeFormatGrid{grid-template-columns:1fr}
+  .nextFeatureDeck{grid-template-columns:1fr}
+  .nextFeatureTile{min-height:190px}
+}
+@media(prefers-reduced-motion:reduce){.skeletonCard{animation:none;background:var(--in-surface)}}
