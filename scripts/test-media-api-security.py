@@ -22,6 +22,7 @@ checks = {
     "creator media library does not expose private object keys": "object_key" not in media_list,
     "asset deletion requires author access and same-origin request": delete_auth >= 0 and delete_origin > delete_auth and 'req.headers.get("origin")!==url.origin' in media_delete,
     "asset deletion checks creator ownership": "WHERE id=? AND owner_user_id=?" in media_delete,
+    "asset deletion is rate-limited per creator": 'consumeAuthRateLimit(env,"media-delete",String(u.id),20,3600)' in media_delete,
     "asset deletion atomically refuses attached comic pages": "NOT EXISTS (SELECT 1 FROM comic_chapter_pages WHERE media_asset_id=?)" in media_delete,
     "asset deletion reserves quota before removing private storage": "status='processing',deleted_at=COALESCE(deleted_at,CURRENT_TIMESTAMP)" in media_delete,
     "asset deletion marks deleted only after R2 deletion": "env.MEDIA_BUCKET.delete(asset.object_key)" in media_delete and "status='deleted',deleted_at=CURRENT_TIMESTAMP" in media_delete,
