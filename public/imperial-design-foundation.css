@@ -893,3 +893,34 @@ html[data-theme="dark"] .novelLivePulseMetric{background:var(--in-surface-raised
 .chapterLivePulseMetric span{display:block;margin-top:4px;color:var(--in-muted);font-size:10px;line-height:1.4}
 @media(max-width:560px){.chapterLivePulse{padding:11px}.chapterLivePulseHead{flex-direction:column}.chapterLivePulseTools{justify-content:flex-start}.chapterLivePulseMetrics{grid-template-columns:repeat(2,minmax(0,1fr))}}
 @media(prefers-reduced-motion:reduce){.chapterLivePulse *{transition:none!important;scroll-behavior:auto!important}}
+
+
+/* Author analytics dashboard: responsive, restrained and data-first. */
+.authorAnalyticsPanel{display:grid;gap:16px;margin-bottom:18px}
+.authorAnalyticsTools{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.authorAnalyticsTools select,.authorAnalyticsTools button{min-height:38px}
+.authorAnalyticsUpdated{font-size:11px;color:var(--in-muted);font-variant-numeric:tabular-nums}
+.authorAnalyticsMetrics{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:9px}
+.authorAnalyticsMetric{min-width:0;padding:13px;border:1px solid var(--in-line);border-radius:12px;background:var(--in-surface)}
+.authorAnalyticsMetric b{display:block;font-size:clamp(19px,2vw,25px);font-variant-numeric:tabular-nums;overflow-wrap:anywhere}
+.authorAnalyticsMetric span,.authorAnalyticsMetric small{display:block}
+.authorAnalyticsMetric span{margin-top:5px;font-size:12px;font-weight:650}
+.authorAnalyticsMetric small{margin-top:4px;color:var(--in-muted);font-size:10px;line-height:1.4}
+.authorAnalyticsSplit{display:grid;grid-template-columns:minmax(0,1.2fr) minmax(0,1fr);gap:18px}
+.authorAnalyticsSplit h3{margin:0 0 10px;font-size:15px}
+.authorAnalyticsStories,.authorAnalyticsTimeline{display:grid;gap:8px}
+.authorAnalyticsStory{display:grid;gap:9px;padding:12px;border:1px solid var(--in-line);border-radius:11px}
+.authorAnalyticsStory b,.authorAnalyticsStory small{display:block}
+.authorAnalyticsStory b{font-size:13px;overflow-wrap:anywhere}
+.authorAnalyticsStory small{margin-top:3px;color:var(--in-muted);font-size:10px}
+.authorAnalyticsStoryStats{display:flex;gap:7px;flex-wrap:wrap}
+.authorAnalyticsStoryStats span{padding:4px 7px;border-radius:7px;background:var(--in-canvas);font-size:10px;color:var(--in-muted)}
+.authorAnalyticsDays{display:grid;gap:7px;max-height:360px;overflow:auto}
+.authorAnalyticsDay{display:grid;grid-template-columns:48px 40px minmax(0,1fr);align-items:center;gap:8px;padding:8px;border-bottom:1px solid var(--in-line)}
+.authorAnalyticsDay time,.authorAnalyticsDay small{font-size:10px;color:var(--in-muted)}
+.authorAnalyticsDay b{font-size:13px;font-variant-numeric:tabular-nums}
+.authorAnalyticsNotes{padding:11px 12px;border:1px solid var(--in-line);border-radius:10px;color:var(--in-muted);font-size:11px;line-height:1.6}
+.authorAnalyticsNotes summary{color:var(--in-text);font-weight:650;cursor:pointer}
+.authorAnalyticsNotes p{margin:8px 0 0}
+@media(max-width:760px){.authorAnalyticsMetrics{grid-template-columns:repeat(3,minmax(0,1fr))}.authorAnalyticsSplit{grid-template-columns:1fr}}
+@media(max-width:480px){.authorAnalyticsMetrics{grid-template-columns:repeat(2,minmax(0,1fr))}.authorAnalyticsTools{width:100%}.authorAnalyticsTools select{flex:1;min-width:0}.authorAnalyticsStoryStats{gap:5px}}
