@@ -841,11 +841,11 @@ async function publicSitemap(req,env){
   entries.push(entry);
  }
  const body='<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n'+entries.map(entry=>'  <url><loc>'+xmlEscape(entry.loc)+'</loc>'+(entry.lastmod?'<lastmod>'+entry.lastmod+'</lastmod>':'')+'</url>').join("\n")+'\n</urlset>\n';
- return new Response(body,{status:200,headers:{"content-type":"application/xml; charset=utf-8","cache-control":"public, max-age=300, stale-while-revalidate=600","x-robots-tag":"noindex"}});
+ return new Response(body,{status:200,headers:{"content-type":"application/xml; charset=utf-8","cache-control":"public, max-age=300, stale-while-revalidate=600"}});
 }
 function publicRobots(req){
  const origin=new URL(req.url).origin;
- const body=["User-agent: *","Allow: /","Disallow: /admin","Disallow: /account","Disallow: /login","Disallow: /register","Disallow: /settings","Disallow: /notifications","Disallow: /tickets","Disallow: /requests","Disallow: /library","Disallow: /history","Disallow: /following","Disallow: /omniportal","Disallow: /trend-factory","Disallow: /author$","Disallow: /api/","Sitemap: "+origin+"/sitemap.xml",""].join("\n");
+ const body=["User-agent: *","Allow: /","Disallow: /api/","Sitemap: "+origin+"/sitemap.xml",""].join("\n");
  return new Response(body,{status:200,headers:{"content-type":"text/plain; charset=utf-8","cache-control":"public, max-age=3600"}});
 }
 const escapeHtml=s=>String(s).replaceAll("&","&amp;").replaceAll("<","&lt;").replaceAll(">","&gt;").replaceAll('"',"&quot;");
