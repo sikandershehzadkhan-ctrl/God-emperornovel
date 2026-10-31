@@ -14,11 +14,11 @@ assert.match(robots,/Disallow: \/author\$/);
 assert.match(robots,/Disallow: \/\*\?\*/);
 assert.match(getPageSeo("/catalog").title,/Discover Novels/);
 assert.match(getPageSeo("/author/some-writer").title,/Imperial Novel/);
-const sitemap=buildSitemapXml(origin,[{id:12,updated_at:"2026-10-30T12:00:00Z"},{id:"13"},{id:"bad"},{id:0},{id:12}]);
+const sitemap=buildSitemapXml(origin,[{id:12,updated_at:"2026-10-30T12:00:00Z"},{id:"13"},{id:"bad"},{id:0},{id:12}],[{author:"Sikander Khan"},{author:"Sikander & Co."},{author:"Sikander Khan"},{author:""}]);
 assert.match(sitemap,/<loc>https:\/\/imperial\.example\/novel\/12<\/loc><lastmod>2026-10-30<\/lastmod>/);
 assert.match(sitemap,/<loc>https:\/\/imperial\.example\/novel\/13<\/loc>/);
 assert.equal((sitemap.match(/\/novel\/12/g)||[]).length,1);
-assert.doesNotMatch(sitemap,/\/novel\/bad/);
+assert.doesNotMatch(sitemap,/\/novel\/bad/);\nassert.match(sitemap,/\/author\/Sikander%20Khan/);\nassert.match(sitemap,/\/author\/Sikander%20%26%20Co\./);\nassert.equal((sitemap.match(/\/author\/Sikander%20Khan/g)||[]).length,1);
 const page=applySeoMetadata('<html><head><title>Old</title><meta name="description" content="old"><meta property="og:title" content="old"></head></html>',{
  title:'A <Story> & More',description:'A useful story description.',canonical:origin+'/novel/12',robots:'index,follow'
 });
