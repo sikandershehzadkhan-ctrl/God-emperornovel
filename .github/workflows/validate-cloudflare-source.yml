@@ -120,6 +120,9 @@ jobs:
       - name: Test media publication and rights lifecycle gates
         run: python3 scripts/test-media-publication-gates.py
 
+      - name: Test comic media owner isolation
+        run: python3 scripts/test-media-owner-guards.py
+
       - name: Test media upload byte and metadata policy
         run: node scripts/test-media-upload-policy.mjs
 
