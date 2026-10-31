@@ -1,11 +1,12 @@
 import assert from "node:assert/strict";
 import { readFile } from "node:fs/promises";
 
-const [source,app,bundle,css]=await Promise.all([
+const [source,app,bundle,css,migration]=await Promise.all([
  readFile(new URL("../src/index.js",import.meta.url),"utf8"),
  readFile(new URL("../public/app.js",import.meta.url),"utf8"),
  readFile(new URL("../public/app-17.23.0.js",import.meta.url),"utf8"),
- readFile(new URL("../public/imperial-design-foundation.css",import.meta.url),"utf8")
+ readFile(new URL("../public/imperial-design-foundation.css",import.meta.url),"utf8"),
+ readFile(new URL("../migrations/0012_chapter_update_timestamps.sql",import.meta.url),"utf8")
 ]);
 const start=source.indexOf('if(p==="/api/platform/overview"&&m==="GET"){');
 const end=source.indexOf('if(p==="/api/discovery/graph"&&m==="GET"){',start);
@@ -17,6 +18,7 @@ assert.ok(route.includes("await ensurePublishingSchema(env)"),"Overview must saf
 assert.ok(source.includes("ALTER TABLE chapters ADD COLUMN updated_at TEXT"),"Runtime compatibility must add chapter update timestamps to existing databases");
 assert.ok(source.includes("chapters_set_updated_at_after_insert"),"New chapters must receive an actual update timestamp");
 assert.ok(source.includes("chapters_set_updated_at_after_edit"),"Edited chapter content and publication state must refresh the live update timestamp");
+assert.ok(migration.includes("chapters_set_updated_at_after_edit")&&migration.includes("AFTER UPDATE OF title,content,chapter_number,publication_status"),"Fresh installations must receive the same chapter edit timestamp trigger");
 
 assert.ok(route.includes("datetime('now','-24 hours')"),"Recent reader and chapter-view activity must use a rolling 24-hour window");
 assert.ok(route.includes("datetime('now','-7 days')"),"Trending must use a rolling seven-day unlock window");
