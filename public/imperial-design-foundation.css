@@ -486,3 +486,9 @@ html[data-theme="dark"] .homeFormatPrimary{background:var(--in-brand-soft)}
 .homeConnectionEmpty a{color:var(--in-brand);font-weight:700}
 @media(max-width:640px){.homeConnectionShelf{padding-inline:16px}.homeConnectionHeading{align-items:flex-start;flex-direction:column;gap:10px}.homeConnectionGrid{gap:8px}.homeConnectionChip{min-height:44px;padding:8px 11px}}
 @media(prefers-reduced-motion:reduce){.homeConnectionChip{transition:none}.homeConnectionChip:hover{transform:none}}
+
+/* Primary navigation: compact journey-first desktop hierarchy. */
+.navlinks{gap:2px;min-width:0}
+.navlinks a{padding:9px 9px;font-size:11.5px;white-space:nowrap}
+.navlinks a[aria-current="page"]{color:var(--in-brand);background:var(--in-brand-soft);border-color:rgba(106,13,173,.16)}
+@media(max-width:1180px) and (min-width:761px){.nav{gap:8px}.brand{min-width:160px}.navlinks a{padding-inline:7px;font-size:10.5px}.navright{gap:4px}.navright .iconbtn,.navright .menuToggle{width:36px;min-width:36px;height:38px}.languageControl select{max-width:54px!important}}
