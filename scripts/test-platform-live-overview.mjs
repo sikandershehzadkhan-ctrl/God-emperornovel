@@ -13,6 +13,10 @@ assert.ok(start>=0&&end>start,"Worker must expose the public platform overview e
 const route=source.slice(start,end);
 for(const field of ["publishedNovels","publishedChapters","publicAuthors","catalogViews","readersInLast24Hours","chapterViewsInLast24Hours"])assert.ok(route.includes(field),`Overview must expose the real ${field} metric`);
 assert.ok(route.includes("new Date().toISOString()"),"Overview must expose the actual response timestamp");
+assert.ok(route.includes("await ensurePublishingSchema(env)"),"Overview must safely ensure its chapter-view and update timestamp schema before querying");
+assert.ok(source.includes("ALTER TABLE chapters ADD COLUMN updated_at TEXT"),"Runtime compatibility must add chapter update timestamps to existing databases");
+assert.ok(source.includes("chapters_set_updated_at_after_insert"),"New chapters must receive an actual update timestamp");
+
 assert.ok(route.includes("datetime('now','-24 hours')"),"Recent reader and chapter-view activity must use a rolling 24-hour window");
 assert.ok(route.includes("datetime('now','-7 days')"),"Trending must use a rolling seven-day unlock window");
 assert.ok(route.includes("publication_status='published' AND rights_status IN ('original','public_domain','licensed','authorized')"),"Every overview query must restrict results to published, rights-eligible catalog works");
