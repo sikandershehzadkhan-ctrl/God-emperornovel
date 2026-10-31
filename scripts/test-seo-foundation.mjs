@@ -51,7 +51,7 @@ assert.doesNotMatch(sitemap,/\/novel\/bad/);
 assert.match(sitemap,/<loc>https:\/\/imperial\.example\/formats<\/loc>/);
 assert.match(sitemap,/\/format\/original/);
 assert.match(sitemap,/become-an-author/);
-assert.doesNotMatch(sitemap,/\\/author<\\/loc>/);
+assert.ok(!sitemap.includes("<loc>https://imperial.example/author</loc>"));
 assert.match(sitemap,/\/format\/audiobook/);
 assert.equal((sitemap.match(/\/format\//g)||[]).length,15);
 assert.match(sitemap,/\/author\/Sikander%20Khan/);
