@@ -24,6 +24,7 @@ assert.match(searchDisabled,/User-agent: OAI-SearchBot\nDisallow: \/\n/);
 
 assert.match(getPageSeo("/catalog").title,/Discover Novels/);
 assert.match(getPageSeo("/search").title,/Search Stories/);
+assert.match(getPageSeo("/format/manhwa").title,/Manhwa/);
 assert.equal(robotsForPath("/search"),"noindex,nofollow");
 assert.equal(robotsForPath("/account"),"noindex,nofollow");
 assert.equal(robotsForPath("/author"),"noindex,nofollow");
@@ -36,6 +37,9 @@ assert.match(sitemap,/<loc>https:\/\/imperial\.example\/novel\/12<\/loc><lastmod
 assert.match(sitemap,/<loc>https:\/\/imperial\.example\/novel\/13<\/loc>/);
 assert.equal((sitemap.match(/\/novel\/12/g)||[]).length,1);
 assert.doesNotMatch(sitemap,/\/novel\/bad/);
+assert.match(sitemap,/\/format\/original/);
+assert.match(sitemap,/\/format\/audiobook/);
+assert.equal((sitemap.match(/\/format\//g)||[]).length,15);
 assert.match(sitemap,/\/author\/Sikander%20Khan/);
 assert.match(sitemap,/\/author\/Sikander%20%26%20Co\./);
 assert.equal((sitemap.match(/\/author\/Sikander%20Khan/g)||[]).length,1);
