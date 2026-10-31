@@ -101,8 +101,8 @@ async function home(){
    <div id="homeConnections" class="homeConnectionGrid" aria-live="polite"><span class="homeConnectionLoading">Mapping the published library…</span></div>
   </section>
   <section class="platformPulse" aria-labelledby="platformPulseTitle">
-   <div class="platformPulseHead"><div><div class="eyebrow"><span class="eyebrowDot"></span> REAL-TIME FROM THE IMPERIAL DATABASE</div><h2 id="platformPulseTitle">The realm, right now.</h2><p>Real catalog totals, recent reading activity and chapter updates. No estimated online-user counter.</p></div><div class="platformPulseActions"><span id="platformPulseHealth" class="platformPulseHealth" role="status" aria-live="polite">Checking service health…</span><span id="platformPulseUpdated" class="platformPulseUpdated" role="status" aria-live="polite">Loading real-time data…</span><button id="platformPulseRefresh" class="ghost" type="button">Refresh ↻</button></div></div>
-   <div id="platformPulseMetrics" class="platformPulseMetrics" aria-busy="true"><div class="platformPulseMetric skeletonPulse"></div><div class="platformPulseMetric skeletonPulse"></div><div class="platformPulseMetric skeletonPulse"></div><div class="platformPulseMetric skeletonPulse"></div></div>
+   <div class="platformPulseHead"><div><div class="eyebrow"><span class="eyebrowDot"></span> REAL-TIME FROM THE IMPERIAL DATABASE</div><h2 id="platformPulseTitle">The realm, right now.</h2><p>Novel and chapter views, reader activity, reactions, comments, ratings and saves, measured from recorded platform events. No invented online-user counter.</p></div><div class="platformPulseActions"><span id="platformPulseHealth" class="platformPulseHealth" role="status" aria-live="polite">Checking service health…</span><span id="platformPulseUpdated" class="platformPulseUpdated" role="status" aria-live="polite">Loading real-time data…</span><button id="platformPulseRefresh" class="ghost" type="button">Refresh ↻</button></div></div>
+   <div id="platformPulseMetrics" class="platformPulseMetrics" aria-busy="true"><div class="platformPulseMetric skeletonPulse"></div><div class="platformPulseMetric skeletonPulse"></div><div class="platformPulseMetric skeletonPulse"></div><div class="platformPulseMetric skeletonPulse"></div><div class="platformPulseMetric skeletonPulse"></div><div class="platformPulseMetric skeletonPulse"></div></div>
    <div class="platformPulseDetails"><section class="platformPulsePanel" aria-labelledby="platformPulseUpdatesTitle"><h3 id="platformPulseUpdatesTitle">Latest chapter updates</h3><div id="platformPulseUpdates" aria-live="polite"><p class="muted">Checking the publication feed…</p></div></section><section class="platformPulsePanel" aria-labelledby="platformPulseTrendingTitle"><h3 id="platformPulseTrendingTitle">Reader momentum · 7 days</h3><div id="platformPulseTrending" aria-live="polite"><p class="muted">Calculating from recorded unlocks…</p></div></section></div>
   </section>
   <section class="section nextShelf">
@@ -169,7 +169,23 @@ async function home(){
     const stamp=new Date(generatedAt);
     if(Number.isNaN(stamp.getTime()))throw new Error('The real-time overview timestamp is invalid.');
     platformPulseLastUpdated=stamp.toLocaleString([], {year:'numeric',month:'short',day:'numeric',hour:'2-digit',minute:'2-digit',second:'2-digit',timeZoneName:'short'});
-    metrics.innerHTML=[['Published novels',m.publishedNovels],['Published chapters',m.publishedChapters],['Credited authors',m.creditedAuthors],['Catalog views',m.catalogViews],['Signed-in readers · 24h',m.readersInLast24Hours],['Chapter updates · 24h',m.chapterUpdatesLast24Hours]].map(([label,value])=>'<div class="platformPulseMetric"><b>'+number(value)+'</b><span>'+label+'</span></div>').join('');
+    const metricCards=[
+     ['Published novels',m.publishedNovels,'Eligible published novels in the catalog.'],
+     ['Published chapters',m.publishedChapters,'Eligible published chapters in the catalog.'],
+     ['Credited authors',m.creditedAuthors,'Distinct credited author names, not verified author accounts.'],
+     ['Novel views · all-time',m.catalogViews,'Cumulative novel detail-page view counter. Repeat visits may count.'],
+     ['Chapter views · all-time',m.chapterViews,'Cumulative chapter-reader requests. Repeat visits may count; not unique readers.'],
+     ['Signed-in readers · 24h',m.readersInLast24Hours,'Distinct signed-in accounts with a reading-history update in the last 24 hours. Not current online users.'],
+     ['Chapter updates · 24h',m.chapterUpdatesLast24Hours,'Published chapters edited or published in the last 24 hours.'],
+     ['Visible comments',m.visibleComments,'Comments currently visible across eligible published novels.'],
+     ['New comments · 24h',m.commentsLast24Hours,'Visible comments created in the last 24 hours.'],
+     ['Comment likes',m.commentLikes,'Current likes on visible comments.'],
+     ['Novel reactions',m.novelReactions,'Current reader reactions on novels.'],
+     ['Reader ratings',m.ratings,'Current ratings recorded on published novels.'],
+     ['Bookmarks',m.bookmarks,'Current chapter bookmarks recorded by readers.'],
+     ['Novel follows',m.follows,'Current reader follows across published novels.']
+    ];
+    metrics.innerHTML=metricCards.map(([label,value,definition])=>'<div class="platformPulseMetric" title="'+esc(definition)+'"><b>'+number(value)+'</b><span>'+label+'</span></div>').join('');
     const rows=Array.isArray(data.recentUpdates)?data.recentUpdates:[];
     const validUpdates=rows.filter(row=>Number.isSafeInteger(Number(row.novel_id))&&Number(row.novel_id)>0&&Number.isSafeInteger(Number(row.chapter_number))&&Number(row.chapter_number)>0);
     updates.innerHTML=validUpdates.length?validUpdates.slice(0,6).map(row=>{const changedAt=row.updated_at?new Date(String(row.updated_at).replace(' ','T')+'Z'):null;const changedLabel=changedAt&&!Number.isNaN(changedAt.getTime())?changedAt.toLocaleString([], {dateStyle:'medium',timeStyle:'short',timeZone:'UTC'}):'Timestamp unavailable';return '<a class="platformPulseRow" href="/read/'+Number(row.novel_id)+'/'+Number(row.chapter_number)+'"><span><b>'+esc(row.novel_title)+'</b><small>Chapter '+Number(row.chapter_number)+' · '+esc(row.chapter_title)+' · Updated '+esc(changedLabel)+' UTC</small></span><span aria-hidden="true">↗</span></a>'}).join():'<p class="muted">No published chapter updates are recorded yet.</p>';
