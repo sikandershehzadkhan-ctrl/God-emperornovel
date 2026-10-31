@@ -89,7 +89,7 @@ export function applySeoMetadata(html,{title,description,canonical,robots="index
       {"@type":"WebPage","name":safeTitle,"description":safeDescription,"url":canonical},
       ...(structuredData&&typeof structuredData==="object"&&!Array.isArray(structuredData)?[structuredData]:[])
     ]};
-    if(entity&&typeof entity==="object")graph["@graph"].push(entity);
+    if(structuredData&&typeof structuredData==="object")graph["@graph"].push(structuredData);
     const jsonLd=JSON.stringify(graph).replaceAll("<","\\u003c");
     output=output.replace(/<script\s+type=["']application\/ld\+json["'][^>]*>[\s\S]*?<\/script>/gi,"");
     output=output.replace(/<\/head>/i,'<script type="application/ld+json">'+jsonLd+'</script>\n</head>');
