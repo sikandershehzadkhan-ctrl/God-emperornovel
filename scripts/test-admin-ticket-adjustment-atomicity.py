@@ -46,6 +46,7 @@ route = source[start:end]
 checks = {
     "admin-only endpoint and rate limit": "const e=admin(u);if(e)return e;" in route and 'consumeAuthRateLimit(env,"admin-ticket-credit"' in route,
     "idempotency key and required reason validated": "idempotency_key" in route and "if(!note||note.length>500)" in route,
+    "target account existence is checked before posting": "SELECT id FROM users WHERE id=?" in route and "if(!target)return json" in route,
     "duplicate request returns an idempotent replay": "idempotent_replay:true" in route,
     "balance and ledger are not separately written in route": "UPDATE users SET tickets=tickets+" not in route and "INSERT INTO ticket_ledger" not in route,
     "admin adjustment history endpoint is protected": 'if(p==="/api/admin/ticket-adjustments"&&m==="GET"){const e=admin(u);if(e)return e;' in route,
