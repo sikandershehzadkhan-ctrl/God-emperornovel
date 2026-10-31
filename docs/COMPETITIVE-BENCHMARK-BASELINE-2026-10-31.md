@@ -177,3 +177,29 @@ A competitor-inspired feature is not complete until:
 
 ---
 **Status:** Baseline reconnaissance recorded. Full competitor workflow testing, weighted score and overall percentage remain pending. This document does not certify that Imperial Novel is complete or competitive yet.
+
+
+## Production browser smoke-test addendum (2026-10-31)
+
+A read-only TinyFish browser session completed against production. This is an observed smoke test, not a full QA certification.
+
+| Flow | Result | Finding |
+|---|---|---|
+| Homepage | Pass | Hero/navigation render; dynamic story shelves remained in skeleton/loading state |
+| Discover `/catalog` | Partial | Search/filter interface renders, but catalog stayed on “Loading catalog…” with no cards |
+| Novel `/novel/1` | Pass | The Imperial Ascendant, cover, author, rating and two chapters displayed |
+| Reader `/read/1/1` | Pass | Chapter text, font-size controls, bookmark, theme toggle, progress and next/chapter navigation displayed |
+| Locked chapter | Pass (presentation only) | Chapter 2 showed as locked for 1 Imperial Crown; purchase/settlement was not tested |
+| Community | Pass (surface only) | Leaderboard, tier list, vote and random-novel entry points rendered; trending story displayed |
+| Trend Factory | Pass (surface only) | Rights-first metadata discovery page rendered |
+
+### Additional confirmed weaknesses
+
+- **Catalog hydration defect or data-fetch issue:** the public catalog API returned one novel, but the live catalog UI remained in a loading state and did not render that result. This is a P0/P1 user-facing defect until its cause is isolated. Test API success, client parsing, filtering, empty/error handling and JS console/network errors.
+- **Homepage shelf data gap:** story shelf skeletons remained visible in the browser session despite the published novel existing. Check the shelf endpoints, client hydration and timeout/error states.
+- **Test-quality content:** the only published first chapter currently displays “Test it / Test 2”. Replace with a properly edited, authorized production chapter before public acquisition campaigns. Do not inflate chapter count with filler.
+- **Paywall flow not certified:** the browser only observed the locked state. No purchase, unlock, refund, balance or ledger flow was executed in this smoke test.
+
+### Interpretation
+
+A route returning HTML or a page title is not enough to pass. The catalog API and rendered catalog disagree, so the catalog is not considered functionally passed. Reader rendering passed for the one sample chapter, but content quality and payment workflows remain unverified. Repeat this test after fixes and on a low-end Android device/network profile.
