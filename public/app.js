@@ -278,7 +278,55 @@ async function discoveryPage(kind){
  }
 }
 function simplePage(title='Page not found',sub='The page you requested does not exist.'){const root=$('#app');root.innerHTML=pageStart(title,sub)+`<section class="panel notFoundPanel"><div class="eyebrow">IMPERIAL GATEWAY</div><h2>We could not find that realm.</h2><p>Check the address or return to the Imperial Novel library.</p><div class="actions"><a class="primary" href="/">Return Home</a><a class="secondary" href="/catalog">Explore Catalog</a><a class="ghost" href="/search">Search Stories</a></div></section></div></div>`}
+async function authorApplicationPage(user){
+ const root=$('#app');
+ const formats=[['original','Original novels'],['fanfiction','Fanfiction'],['light_novel','Light novels'],['web_novel','Web novels'],['manga','Manga'],['manhwa','Manhwa'],['manhua','Manhua'],['webtoon','Webtoons'],['comic','Comics'],['graphic_novel','Graphic novels']];
+ root.innerHTML=pageStart('Become an Imperial Creator','Apply for author access. Every application is reviewed before publishing tools are unlocked.')+
+ '<section class="panel authorApplicationPanel"><div class="eyebrow">CREATOR ACCESS · APPLICATION</div><h2>Turn your story into a published world.</h2><p class="muted">Tell our editorial team what you want to create. You can apply with original writing or a sample you are authorized to share. Applying does not publish content or grant automatic access.</p><div id="authorApplicationState" class="notice" role="status" aria-live="polite">Checking your application…</div><form id="authorApplicationForm" hidden><label class="fieldLabel" for="authorApplicationName">Public author name</label><input id="authorApplicationName" name="display_name" minlength="2" maxlength="80" required value="'+esc(user.username||'')+'"><label class="fieldLabel" for="authorApplicationBio">About you and your creative goals</label><textarea id="authorApplicationBio" name="bio" minlength="50" maxlength="1500" rows="4" required placeholder="Tell us about your writing interests, themes, experience and what you want to build."></textarea><label class="fieldLabel" for="authorApplicationExperience">Previous writing or publishing experience (optional)</label><textarea id="authorApplicationExperience" name="experience" maxlength="1000" rows="2" placeholder="Independent writing, communities, publications, or learning goals."></textarea><label class="fieldLabel" for="authorApplicationPortfolio">Portfolio link (optional, HTTPS)</label><input id="authorApplicationPortfolio" name="portfolio_url" type="url" maxlength="500" placeholder="https://example.com/your-work"><fieldset class="authorApplicationFormats"><legend>What would you like to create? Choose 1 to 5.</legend>'+formats.map(([value,label])=>'<label class="checkRow"><input type="checkbox" name="preferred_formats" value="'+value+'"><span>'+label+'</span></label>').join('')+'</fieldset><label class="fieldLabel" for="authorApplicationSample">Writing sample (250 to 6,000 characters)</label><textarea id="authorApplicationSample" name="sample_work" minlength="250" maxlength="6000" rows="8" required placeholder="Share a short original sample or a sample you are authorized to submit."></textarea><label class="checkRow"><input type="checkbox" name="rights_confirmed" required><span><b>Rights confirmation</b><small>I confirm this sample is my original work or I have permission to submit it for review.</small></span></label><div class="notice">Applications are private to the review team. Approval grants author access; each novel and chapter still goes through its own rights and publication review.</div><button class="primary" type="submit">Submit creator application</button></form><div class="actions"><a class="ghost" href="/catalog">Return to Discover</a><a class="ghost" href="/account">Account settings</a></div></section></div></div>';
+ const state=$('#authorApplicationState'),form=$('#authorApplicationForm');
+ async function refresh(){
+  try{
+   const d=await api('/api/author/applications/me');
+   if(d.role==='author'||d.role==='admin'){location.reload();return}
+   const application=d.application;
+   if(application?.status==='pending'){
+    state.innerHTML='<b>Application received.</b><br>Your application is in the editorial review queue. You can return here to check its status.';
+    form.hidden=true;return;
+   }
+   if(application?.status==='approved'){
+    state.innerHTML='<b>Application approved.</b><br>Your author access is being refreshed. Reload this page to open Author Studio.';
+    form.hidden=true;return;
+   }
+   if(application?.status==='rejected'){
+    state.innerHTML='<b>More work is needed before approval.</b><br>'+esc(application.review_notes||'Please revise your application and submit again.');
+   }else{
+    state.textContent='No application is on file yet. Complete the form below to request author access.';
+   }
+   form.hidden=false;
+  }catch(e){state.textContent=e.message||'Unable to check your application status.';form.hidden=true}
+ }
+ form.onsubmit=async event=>{
+  event.preventDefault();
+  const fd=new FormData(form),button=form.querySelector('button[type="submit"]');
+  const payload={
+   display_name:String(fd.get('display_name')||'').trim(),
+   bio:String(fd.get('bio')||'').trim(),
+   experience:String(fd.get('experience')||'').trim(),
+   portfolio_url:String(fd.get('portfolio_url')||'').trim(),
+   sample_work:String(fd.get('sample_work')||'').trim(),
+   preferred_formats:fd.getAll('preferred_formats'),
+   rights_confirmed:fd.get('rights_confirmed')==='on'
+  };
+  if(payload.preferred_formats.length<1||payload.preferred_formats.length>5){state.textContent='Choose between one and five formats.';return}
+  button.disabled=true;state.textContent='Submitting your application…';
+  try{const result=await api('/api/author/applications',{method:'POST',body:JSON.stringify(payload)});state.textContent=result.message||'Application submitted.';form.hidden=true;await refresh()}
+  catch(e){state.textContent=e.message||'Unable to submit the application.'}
+  finally{button.disabled=false}
+ };
+ await refresh();
+}
 async function authorStudio(){
+ const me=await api('/api/me');if(!me.user){const root=$('#app');root.innerHTML=pageStart('Author Studio','Sign in to apply for creator access.')+'<section class="panel"><p class="muted">An Imperial Novel account is required before you can apply.</p><div class="actions"><a class="primary" href="/login">Sign in</a><a class="secondary" href="/register">Create account</a></div></section></div></div>';return}if(me.user.role!=='author'&&me.user.role!=='admin'){await authorApplicationPage(me.user);return}
  let CONTENT_FORMAT_OPTIONS=[['original','Original novel'],['fanfiction','Fanfiction'],['light_novel','Light novel'],['web_novel','Web novel'],['manga','Manga'],['manhwa','Manhwa'],['manhua','Manhua'],['webtoon','Webtoon'],['comic','Comic'],['graphic_novel','Graphic novel'],['anime','Anime catalog entry'],['cartoon','Cartoon catalog entry'],['audiobook','Audiobook catalog entry'],['drama','Drama catalog entry'],['game','Game catalog entry']];
  try{const registry=await api('/api/formats');if(Array.isArray(registry.formats)&&registry.formats.length){CONTENT_FORMAT_OPTIONS=registry.formats.map(f=>[String(f.id),String(f.label)]);}}catch(e){/* Keep the safe local fallback if the registry is temporarily unavailable. */}
  const root=$('#app');
