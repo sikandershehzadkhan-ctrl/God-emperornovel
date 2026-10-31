@@ -28,7 +28,7 @@ export function deduplicateConnectorRows(rows){
 export function summarizeConnectorRows(rows){
   const sources=deduplicateConnectorRows(rows);
   const authorized=sources.filter(row=>String(row.rights_status||"").toLowerCase()==="authorized");
-  const searchReady=sources.filter(row=>numericFlag(row.enabled)&&String(row.rights_status||"").toLowerCase()==="authorized"&&Boolean(String(row.search_url||"").trim()));
+  const searchReady=sources.filter(row=>numericFlag(row.enabled)&&String(row.rights_status||"").toLowerCase()==="authorized"&&(typeof row.search_ready==="boolean"?row.search_ready:Boolean(String(row.search_url||"").trim())));
   const online=searchReady.filter(row=>String(row.last_status||"").toLowerCase()==="online");
   return {registered:sources.length,authorized:authorized.length,enabled:sources.filter(row=>numericFlag(row.enabled)).length,search_ready:searchReady.length,online:online.length};
 }
