@@ -917,7 +917,7 @@ async function api(req,env){
   }
   if(normalized.length){
    const ids=normalized.map(x=>x.assetId),placeholders=ids.map(()=>"?").join(",");
-   const eligible=await env.DB.prepare("SELECT id FROM media_assets WHERE owner_user_id=? AND status='ready' AND rights_status='approved' AND id IN ("+placeholders+")").bind(u.id,...ids).all();
+   const eligible=await env.DB.prepare("SELECT id FROM media_assets WHERE owner_user_id=? AND status='ready' AND rights_status='approved' AND id IN ("+placeholders+")").bind(chapter.owner_user_id,...ids).all();
    if((eligible.results||[]).length!==ids.length)return json({error:"Every page must use your own image with completed processing and approved rights."},409);
   }
   try{
