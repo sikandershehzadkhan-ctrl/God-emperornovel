@@ -522,6 +522,13 @@ async function api(req,env){
    "content-security-policy":"default-src 'none'; sandbox"
   }});
  }
+ if(p==="/api/admin/media/storage"&&m==="GET"){
+  const e=admin(u);if(e)return e;
+  const usage=await env.DB.prepare("SELECT COALESCE(SUM(size_bytes),0) AS used_bytes,COUNT(*) AS asset_count FROM media_assets WHERE status!='deleted'").first();
+  const statuses=(await env.DB.prepare("SELECT status,COUNT(*) AS asset_count,COALESCE(SUM(size_bytes),0) AS used_bytes FROM media_assets WHERE status!='deleted' GROUP BY status ORDER BY status").all()).results||[];
+  const used=Number(usage?.used_bytes||0),limit=1073741824;
+  return json({used_bytes:used,limit_bytes:limit,remaining_bytes:Math.max(0,limit-used),asset_count:Number(usage?.asset_count||0),storage_configured:!!(env.MEDIA_BUCKET&&typeof env.MEDIA_BUCKET.get==="function"&&typeof env.MEDIA_BUCKET.put==="function"&&typeof env.MEDIA_BUCKET.delete==="function"),statuses});
+ }
  if(p==="/api/admin/media/review-queue"&&m==="GET"){
   const e=admin(u);if(e)return e;
   return json((await env.DB.prepare(`SELECT a.id,a.owner_user_id,u.username AS owner_username,a.mime_type,a.size_bytes,a.status,a.rights_status,a.rights_holder,a.license_name,a.rights_evidence,a.created_at,a.uploaded_at,a.reviewed_at,a.reviewed_by_user_id,r.decision AS last_decision,r.note AS last_review_note,r.created_at AS last_review_at
