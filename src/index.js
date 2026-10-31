@@ -826,15 +826,15 @@ async function api(req,env){
   const rows=(await env.DB.prepare(`SELECT n.id,n.title,n.publication_status,n.rights_status,n.views,
    (SELECT COUNT(*) FROM chapters c WHERE c.novel_id=n.id AND c.publication_status='published') publishedChapters,
    (SELECT COALESCE(SUM(cv.views),0) FROM chapter_views cv JOIN chapters c ON c.id=cv.chapter_id WHERE c.novel_id=n.id AND c.publication_status='published' AND n.publication_status='published' AND n.rights_status IN ('original','public_domain','licensed','authorized')) chapterViews,
-   (SELECT COUNT(*) FROM unlocks x JOIN chapters c ON c.id=x.chapter_id WHERE c.novel_id=n.id AND x.unlocked_at>=datetime('now','-'||?||' days')) unlocksInPeriod,
-   (SELECT COALESCE(SUM(x.cost),0) FROM unlocks x JOIN chapters c ON c.id=x.chapter_id WHERE c.novel_id=n.id AND x.unlocked_at>=datetime('now','-'||?||' days')) readerTicketSpendInPeriod,
-   (SELECT COUNT(*) FROM comments cm WHERE cm.novel_id=n.id AND cm.status='visible' AND cm.created_at>=datetime('now','-'||?||' days')) commentsInPeriod,
-   (SELECT COUNT(*) FROM comment_likes cl JOIN comments cm ON cm.id=cl.comment_id WHERE cm.novel_id=n.id AND cm.status='visible' AND cl.created_at>=datetime('now','-'||?||' days')) commentLikesInPeriod,
-   (SELECT COUNT(*) FROM novel_reactions nr WHERE nr.novel_id=n.id AND nr.created_at>=datetime('now','-'||?||' days')) reactionsInPeriod,
-   (SELECT COUNT(*) FROM ratings r WHERE r.novel_id=n.id) currentRatings,
-   (SELECT ROUND(AVG(r.rating),2) FROM ratings r WHERE r.novel_id=n.id) averageRating,
-   (SELECT COUNT(*) FROM bookmarks b WHERE b.novel_id=n.id) currentBookmarks,
-   (SELECT COUNT(*) FROM follows f WHERE f.novel_id=n.id) currentFollows
+   (SELECT COUNT(*) FROM unlocks x JOIN chapters c ON c.id=x.chapter_id WHERE c.novel_id=n.id AND n.publication_status='published' AND n.rights_status IN ('original','public_domain','licensed','authorized') AND x.unlocked_at>=datetime('now','-'||?||' days')) unlocksInPeriod,
+   (SELECT COALESCE(SUM(x.cost),0) FROM unlocks x JOIN chapters c ON c.id=x.chapter_id WHERE c.novel_id=n.id AND n.publication_status='published' AND n.rights_status IN ('original','public_domain','licensed','authorized') AND x.unlocked_at>=datetime('now','-'||?||' days')) readerTicketSpendInPeriod,
+   (SELECT COUNT(*) FROM comments cm WHERE cm.novel_id=n.id AND n.publication_status='published' AND n.rights_status IN ('original','public_domain','licensed','authorized') AND cm.status='visible' AND cm.created_at>=datetime('now','-'||?||' days')) commentsInPeriod,
+   (SELECT COUNT(*) FROM comment_likes cl JOIN comments cm ON cm.id=cl.comment_id WHERE cm.novel_id=n.id AND n.publication_status='published' AND n.rights_status IN ('original','public_domain','licensed','authorized') AND cm.status='visible' AND cl.created_at>=datetime('now','-'||?||' days')) commentLikesInPeriod,
+   (SELECT COUNT(*) FROM novel_reactions nr WHERE nr.novel_id=n.id AND n.publication_status='published' AND n.rights_status IN ('original','public_domain','licensed','authorized') AND nr.created_at>=datetime('now','-'||?||' days')) reactionsInPeriod,
+   (SELECT COUNT(*) FROM ratings r WHERE r.novel_id=n.id AND n.publication_status='published' AND n.rights_status IN ('original','public_domain','licensed','authorized')) currentRatings,
+   (SELECT ROUND(AVG(r.rating),2) FROM ratings r WHERE r.novel_id=n.id AND n.publication_status='published' AND n.rights_status IN ('original','public_domain','licensed','authorized')) averageRating,
+   (SELECT COUNT(*) FROM bookmarks b WHERE b.novel_id=n.id AND n.publication_status='published' AND n.rights_status IN ('original','public_domain','licensed','authorized')) currentBookmarks,
+   (SELECT COUNT(*) FROM follows f WHERE f.novel_id=n.id AND n.publication_status='published' AND n.rights_status IN ('original','public_domain','licensed','authorized')) currentFollows
    FROM novels n WHERE n.owner_user_id=? ORDER BY n.updated_at DESC,n.id DESC`).bind(requested,requested,requested,requested,requested,u.id).all()).results||[];
   const eligible=rows.filter(n=>n.publication_status==="published"&&["original","public_domain","licensed","authorized"].includes(n.rights_status));
   const sum=key=>eligible.reduce((total,row)=>total+Number(row[key]||0),0);
