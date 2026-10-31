@@ -180,5 +180,8 @@ jobs:
       - name: Test atomic novel request charging
         run: python3 scripts/test-novel-request-charge-atomic.py
 
+      - name: Test atomic novel request refunds
+        run: node scripts/test-novel-request-refund-atomic.mjs
+
       - name: Confirm validation only
         run: echo "Validation passed. This workflow does not deploy or modify production D1.";
