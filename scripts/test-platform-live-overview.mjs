@@ -89,6 +89,21 @@ assert.ok(css.includes(".novelLivePulseMetrics{display:grid;grid-template-column
 
 
 assert.ok(app.includes("Credited authors")&&!app.includes("Public authors"),"The author metric must describe distinct credited author names, not imply verified profile accounts");
+const authorAnalyticsStart=source.indexOf('if(p==="/api/author/analytics"&&m==="GET"){');
+const authorAnalyticsEnd=source.indexOf('if(p==="/api/author/novels"&&m==="GET"){',authorAnalyticsStart);
+assert.ok(authorAnalyticsStart>=0&&authorAnalyticsEnd>authorAnalyticsStart,"A dedicated Author Studio analytics endpoint must exist.");
+const authorAnalyticsRoute=source.slice(authorAnalyticsStart,authorAnalyticsEnd);
+assert.ok(authorAnalyticsRoute.includes("const e=author(u);")&&authorAnalyticsRoute.includes("n.owner_user_id=?"),"Author analytics must require author access and scope stories to the signed-in owner.");
+assert.ok(authorAnalyticsRoute.includes("[7,30,90]")&&authorAnalyticsRoute.includes("datetime('now','-'||?||' days')"),"Author analytics must support validated 7, 30 and 90-day windows.");
+for(const field of ["novelViews","chapterReaderRequests","unlocks","readerTicketSpend","comments","commentLikes","reactions","currentRatings","currentBookmarks","currentFollows"])assert.ok(authorAnalyticsRoute.includes(field),`Author analytics must define ${field}.`);
+assert.ok(authorAnalyticsRoute.includes("n.publication_status='published'")&&authorAnalyticsRoute.includes("n.rights_status IN ('original','public_domain','licensed','authorized')"),"Public engagement analytics must exclude unpublished and rights-ineligible works.");
+assert.ok(authorAnalyticsRoute.includes("reader ticket spend")&&authorAnalyticsRoute.includes("not author earnings"),"Reader ticket spending must not be presented as author income.");
+assert.ok(authorAnalyticsRoute.includes("current schema does not retain historical daily novel-view events")&&authorAnalyticsRoute.includes("Views are lifetime counters"),"The API must disclose that historical view trends are not currently recorded.");
+assert.ok(authorAnalyticsRoute.includes("clientRefreshSeconds:60")&&authorAnalyticsRoute.includes('cache:"no-store"'),"Author analytics must declare its request-time, no-store, 60-second refresh contract.");
+assert.ok(app.includes('id="authorAnalyticsMetrics"')&&app.includes('id="authorAnalyticsStories"')&&app.includes('id="authorAnalyticsTimeline"'),"Author Studio must render summary, story performance and daily activity regions.");
+assert.ok(app.includes("/api/author/analytics?days=")&&app.includes("setInterval(()=>{if(document.visibilityState==='visible')loadAuthorAnalytics()},60000)"),"Author analytics must fetch the selected range and poll only while the page is visible.");
+assert.ok(app.includes("Reader spend, not author earnings")&&app.includes("How these numbers are calculated"),"Author analytics UI must disclose reader spend and measurement limits.");
+assert.ok(css.includes(".authorAnalyticsMetrics{display:grid;grid-template-columns:repeat(4")&&css.includes("@media(max-width:480px){.authorAnalyticsMetrics{grid-template-columns:repeat(2"),"Author analytics must have responsive desktop and phone layouts.");
 assert.equal(app,bundle,"Editable and versioned browser entry points must remain byte-for-byte synchronized");
 assert.ok(css.includes(".platformPulseMetrics{display:grid;grid-template-columns:repeat(6"),"Live metrics must use a six-column desktop layout");
 assert.ok(css.includes("@media(max-width:980px)")&&css.includes("@media(max-width:760px)"),"Live intelligence must adapt to tablet and phone layouts");
