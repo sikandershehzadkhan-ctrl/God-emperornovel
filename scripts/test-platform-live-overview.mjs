@@ -100,6 +100,10 @@ assert.ok(authorAnalyticsRoute.includes("n.publication_status='published'")&&aut
 assert.ok(authorAnalyticsRoute.includes("readerTicketSpend:")&&authorAnalyticsRoute.includes("not author earnings"),"Reader ticket spending must not be presented as author income.");
 assert.ok(authorAnalyticsRoute.includes("current schema does not retain historical daily novel-view events")&&authorAnalyticsRoute.includes("Views are lifetime counters"),"The API must disclose that historical view trends are not currently recorded.");
 assert.ok(authorAnalyticsRoute.includes("clientRefreshSeconds:60")&&authorAnalyticsRoute.includes('cache:"no-store"'),"Author analytics must declare its request-time, no-store, 60-second refresh contract.");
+assert.ok(authorAnalyticsRoute.includes("stories:eligible.map")&&authorAnalyticsRoute.includes("publishedNovels:eligible.length"),"The story breakdown and summary must include only published, rights-eligible novels owned by this author.");
+assert.ok(authorAnalyticsRoute.includes("currentAverageRating")&&authorAnalyticsRoute.includes("timeline"),"The author summary must include a weighted rating average and timestamped activity timeline.");
+assert.ok(app.includes("Published stories")&&app.includes("No published, rights-eligible stories have analytics yet"),"The Author Studio must distinguish an empty published analytics catalog from an empty draft library.");
+
 assert.ok(app.includes('id="authorAnalyticsMetrics"')&&app.includes('id="authorAnalyticsStories"')&&app.includes('id="authorAnalyticsTimeline"'),"Author Studio must render summary, story performance and daily activity regions.");
 assert.ok(app.includes("/api/author/analytics?days=")&&app.includes("setInterval(()=>{if(document.visibilityState==='visible')loadAuthorAnalytics()},60000)"),"Author analytics must fetch the selected range and poll only while the page is visible.");
 assert.ok(app.includes("Reader spend, not author earnings")&&app.includes("How these numbers are calculated"),"Author analytics UI must disclose reader spend and measurement limits.");
