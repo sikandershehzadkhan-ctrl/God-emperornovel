@@ -1,0 +1,96 @@
+name: Imperial Novel Browser QA
+
+on:
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: imperial-novel-browser-qa-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  chromium-smoke:
+    name: Local Worker and mobile browser smoke tests
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Check whether this branch contains browser smoke tests
+        id: smoke
+        shell: bash
+        run: |
+          if [ -f scripts/browser-smoke.mjs ]; then
+            echo "enabled=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "enabled=false" >> "$GITHUB_OUTPUT"
+            echo "Skipping browser QA for this older branch because it does not contain the smoke-test source."
+          fi
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - name: Install locked project dependencies
+        if: steps.smoke.outputs.enabled == 'true'
+        run: npm ci
+
+      - name: Install pinned Playwright runner without changing project lockfiles
+        if: steps.smoke.outputs.enabled == 'true'
+        run: npm install --no-save --package-lock=false playwright@1.64.1
+
+      - name: Install Chromium and system dependencies
+        if: steps.smoke.outputs.enabled == 'true'
+        run: npx playwright install --with-deps chromium
+
+      - name: Start local Cloudflare Worker with local D1 only
+        if: steps.smoke.outputs.enabled == 'true'
+        shell: bash
+        env:
+          CI: "true"
+          WRANGLER_SEND_METRICS: "false"
+        run: |
+          set -euo pipefail
+          npx --yes wrangler@4 dev --port 8787 --ip 127.0.0.1 > /tmp/imperial-novel-worker.log 2>&1 &
+          echo $! > /tmp/imperial-novel-worker.pid
+          for attempt in $(seq 1 90); do
+            if curl --fail --silent --show-error http://127.0.0.1:8787/api/health > /tmp/imperial-novel-health.json 2>/dev/null; then
+              node -e "const h=require('/tmp/imperial-novel-health.json'); if(!h.ok || !h.database) process.exit(1); console.log('Local Worker and local D1 are healthy:', h.version)"
+              exit 0
+            fi
+            sleep 2
+          done
+          echo "Local Worker did not become healthy. Diagnostic log follows:"
+          tail -n 160 /tmp/imperial-novel-worker.log
+          exit 1
+
+      - name: Run real Chromium route and provider smoke tests
+        if: steps.smoke.outputs.enabled == 'true'
+        env:
+          IMPERIAL_BASE_URL: http://127.0.0.1:8787
+        run: node scripts/browser-smoke.mjs
+
+      - name: Run non-blocking read-only production browser smoke
+        if: steps.smoke.outputs.enabled == 'true'
+        continue-on-error: true
+        env:
+          IMPERIAL_PRODUCTION_URL: https://god-emperornovel.sikandershehzadkhan.workers.dev
+        run: node scripts/production-readonly-smoke.mjs
+
+      - name: Stop local Worker
+        if: always() && steps.smoke.outputs.enabled == 'true'
+        shell: bash
+        run: |
+          if [ -f /tmp/imperial-novel-worker.pid ]; then
+            kill "$(cat /tmp/imperial-novel-worker.pid)" 2>/dev/null || true
+          fi
+          if [ -f /tmp/imperial-novel-worker.log ]; then
+            tail -n 80 /tmp/imperial-novel-worker.log
+          fi

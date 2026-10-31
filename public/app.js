@@ -192,9 +192,41 @@ async function history(){const root=$('#app');try{const d=await api('/api/histor
 async function following(){await library('following')}
 async function tickets(){const root=$('#app');try{const [p,l]=await Promise.all([api('/api/profile'),api('/api/tickets/ledger')]);root.innerHTML=pageStart('Imperial Crown Vault','Your Imperial Crown balance and complete transaction ledger.')+`<div class="panel"><div class="metricGrid"><div class="metric"><b>${p.user.tickets}</b><div class="muted">Current balance</div></div><div class="metric"><b>${p.stats.ticketFlow}</b><div class="muted">Net Crown flow</div></div></div><div class="section"><h2 style="font:600 25px Georgia,serif">Ledger</h2><div class="chapterList">${l.length?l.map(x=>`<div class="chapter"><span class="chapterNo">${x.delta>0?'+':''}${x.delta}</span><span><b>${esc(x.reason)}</b><br><span class="muted">${esc(x.created_at)} · ${esc(x.reference||'')}</span></span><span>${x.delta>0?'Credit':'Debit'}</span></div>`).join(''):`<div class="empty">No Imperial Crown transactions yet.</div>`}</div></div><div class="notice" style="margin-top:18px">Batch unlock sizes supported: 10, 25, 50 and 100 chapters.</div></div></div>`}catch(e){root.innerHTML=pageStart('Imperial Crown Vault')+`<div class="notice">${esc(e.message)} <a href="/login" style="color:var(--gold2)">Sign in</a></div></div></div>`}}
 async function requests(){const root=$('#app');let r;try{r=await api('/api/requests')}catch(e){root.innerHTML=pageStart('Request a New Novel','Three free requests each week, then Imperial Crown pricing applies.')+`<div class="notice">${esc(e.message)} <a href="/login" style="color:var(--gold2)">Sign in</a></div></div></div>`;return}root.innerHTML=pageStart('Request a New Novel','Three free requests each week, then Imperial Crown pricing applies.')+`<div class="panel" style="max-width:720px"><div class="stats"><div class="stat"><b>${r.used}/${r.limit}</b>Free requests used</div></div><form id="req"><div class="field"><label>Novel URL</label><input name="url" placeholder="https://example.com/novel/..." required></div><button class="primary">Submit Request</button></form><div id="reqMsg" style="margin-top:12px"></div></div></div></div>`;$('#req').onsubmit=async e=>{e.preventDefault();try{const d=await api('/api/requests',{method:'POST',body:JSON.stringify(Object.fromEntries(new FormData(e.target)))});$('#reqMsg').innerHTML=`<div class="notice">${esc(d.message)} Cost: ${d.cost} Imperial Crowns.</div>`;e.target.reset()}catch(x){$('#reqMsg').innerHTML=`<div class="notice">${esc(x.message)}</div>`}}}
+function initTvmazeSearch(){
+ const form=$('#tvmazeSearch');if(!form)return;
+ const input=form.elements.q,button=form.querySelector('button'),output=$('#tvmazeResults'),status=$('#tvmazeStatus');
+ let lastRequestAt=0;
+ form.onsubmit=async event=>{
+  event.preventDefault();
+  const q=String(input.value||'').trim().slice(0,100);
+  if(q.length<2){status.textContent='Enter at least two characters.';return}
+  if(Date.now()-lastRequestAt<1000){status.textContent='Please wait a moment before searching again.';return}
+  lastRequestAt=Date.now();button.disabled=true;status.textContent='Searching TVmaze metadata…';output.replaceChildren();
+  const controller=new AbortController(),timeout=setTimeout(()=>controller.abort(),10000);
+  try{
+   const response=await fetch('https://api.tvmaze.com/search/shows?q='+encodeURIComponent(q),{method:'GET',mode:'cors',credentials:'omit',headers:{Accept:'application/json'},cache:'default',signal:controller.signal});
+   if(response.status===429){const retry=Number(response.headers.get('Retry-After')||0);status.textContent='TVmaze is rate-limiting requests. '+(retry>0?'Wait '+retry+' seconds.':'Please wait a few seconds before trying again.');return}
+   if(!response.ok)throw new Error('TVmaze returned HTTP '+response.status);
+   const data=await response.json(),rows=Array.isArray(data)?data.slice(0,12):[];
+   if(!rows.length){status.textContent='No matching screen titles were found.';return}
+   output.innerHTML=rows.map(item=>{
+    const show=item?.show||{},url=String(show.url||'');
+    const safeUrl=/^https:\/\/www\.tvmaze\.com\/shows\/\d+\/[a-z0-9-]+\/?$/i.test(url);
+    const summary=String(show.summary||'').replace(/<[^>]*>/g,' ').replace(/\s+/g,' ').trim().slice(0,360);
+    const genres=Array.isArray(show.genres)?show.genres.slice(0,4).join(' · '):'';
+    const details=[show.type,show.language,show.status,show.premiered].filter(Boolean).join(' · ');
+    return '<article class="panel tvmazeResult"><div class="eyebrow">TVmaze screen metadata</div><h3>'+esc(show.name||'Untitled')+'</h3><p class="muted">'+esc(details)+'</p>'+(genres?'<p class="muted">'+esc(genres)+'</p>':'')+(summary?'<p>'+esc(summary)+'</p>':'')+'<div class="actions"><a class="secondary" href="'+(safeUrl?esc(url):'https://www.tvmaze.com/')+'" target="_blank" rel="noopener noreferrer">Open TVmaze source ↗</a></div><p class="tvmazeAttribution">Data from <a href="https://www.tvmaze.com/" target="_blank" rel="noopener noreferrer">TVmaze</a>, licensed under <a href="https://creativecommons.org/licenses/by-sa/" target="_blank" rel="noopener noreferrer">CC BY-SA</a>. The summary is shortened and HTML formatting removed; this provider data remains under CC BY-SA. No episodes or artwork are hosted here.</p></article>';
+   }).join('');
+   status.textContent='Showing '+rows.length+' TVmaze metadata results. Results are not a licence to stream or republish episodes.';
+  }catch(error){status.textContent='TVmaze search is temporarily unavailable: '+String(error?.message||'Network error')}
+  finally{clearTimeout(timeout);button.disabled=false}
+ };
+}
 async function omni(){
  const root=$('#app');
  root.innerHTML=pageStart('OmniPortal','Rights-first discovery across Imperial Novel and authorized provider connectors.')+`<div class="panel"><form id="omni" class="toolbar"><div class="search" style="display:flex"><span>✦</span><input name="q" placeholder="Search titles, authors and worlds..."></div><button class="primary">Search</button></form><div class="notice"><b>Legal mode:</b> only authorized connectors are queried. Imports are metadata-only by default. Imperial Novel does not bypass paywalls, DRM, logins or access controls, and does not copy source chapters.</div><div id="omniRes" class="grid" style="margin-top:18px"></div></div></div></div>`;
+ const screenSection=document.createElement('section');screenSection.className='section';screenSection.innerHTML='<div class="panel tvmazePanel"><div class="eyebrow">SCREEN & ADAPTATION DISCOVERY</div><h2>TVmaze metadata guide</h2><p class="muted">Search TV and drama metadata with a free public API. This is a discovery directory, not a streaming service. Anime coverage depends on TVmaze catalogue entries.</p><form id="tvmazeSearch" class="toolbar"><div class="search" style="display:flex"><span>⌕</span><input name="q" maxlength="100" placeholder="Search a show or adaptation…" autocomplete="off"></div><button class="primary" type="submit">Search TVmaze</button></form><p id="tvmazeStatus" class="muted" role="status" aria-live="polite">Search runs only when you submit. Requests go directly from your browser to TVmaze, without an Imperial Novel proxy.</p><div id="tvmazeResults" class="grid" style="margin-top:14px"></div><p class="tvmazePolicy">TVmaze API data is licensed under CC BY-SA. Imperial Novel credits the source and links to each TVmaze record. Displayed provider data remains under CC BY-SA; the surrounding Imperial Novel interface is separate. Artwork, episodes and other media are not embedded or rehosted.</p></div>';
+ root.querySelector('.page .wrap')?.append(screenSection);initTvmazeSearch();
  $('#omni').onsubmit=async e=>{
   e.preventDefault();
   const q=String(new FormData(e.target).get('q')||'');
