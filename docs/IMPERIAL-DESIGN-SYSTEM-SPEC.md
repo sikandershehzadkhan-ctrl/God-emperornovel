@@ -151,3 +151,12 @@ Each component must have documented states: default, hover, focus, active, disab
 - Are loading, empty, error and disabled states designed?
 - Are labels and content localized without overflow?
 - Are visual assets original or properly licensed?
+
+
+## Implemented foundation and automated checks — 31 October 2026
+
+The first shared design-foundation stylesheet is now linked after the existing global styles in the review branch. It introduces the Imperial Purple, Sapphire Blue, White and Obsidian token set; shared surface, spacing, radius and content-width tokens; responsive global shell, drawer, mobile navigation and footer refinements; card/control/reader surface alignment; visible keyboard focus; and reduced-motion handling. The homepage receives an editorial hero and restrained imperial seal treatment, followed by clearer format, story, creator and feature shelves.
+
+The editable and versioned browser bundles are kept synchronized where shared page-title metadata is updated. Browser/PWA theme colors now use the same Imperial Purple accent. A build-integrated design test checks stylesheet structure, key brand tokens, responsive and accessibility hooks, stylesheet load order, absence of remote runtime imports, bundle parity and PWA/browser theme-color consistency.
+
+This is the foundation pass, not final visual sign-off. Device screenshots, contrast sampling, interaction checks and Core Web Vitals still need a browser-connected QA pass before merge/deployment.
