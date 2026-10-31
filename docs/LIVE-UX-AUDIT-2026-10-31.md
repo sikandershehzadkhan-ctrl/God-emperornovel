@@ -23,7 +23,7 @@ At the time of this report, source `main` is release 17.21.0, while production h
 
 ### Catalog and Discover
 
-- `/catalog` rendered the catalog filters and search UI, but the Fish session continued to see “Loading catalog…” and no story cards before its audit window ended.
+- Initial partial Fish audit: `/catalog` rendered filters but remained at “Loading catalog…” until that run's time budget ended. **Follow-up Fish browser retest (run `6fc1aa4e-2979-427e-be26-3e9d0247b8e5`, completed 2026-10-31) settled successfully, showed “Showing 1 story · Page 1”, and rendered The Imperial Ascendant with no visible loading indicator or error.** This supersedes the earlier incomplete observation as the latest browser state. The run did not expose DevTools console/network timing, so it does not prove the absence of JS errors or provide Core Web Vitals.
 - Direct `/discover` returned the branded not-found page in production.
 - The header's Discover link pointed to `/catalog`, which explains why clicking the label could work while a direct `/discover` URL failed.
 - This is a genuine production route inconsistency, not proof that the source fix is absent. PR #69 added a `/discover` alias and timeout/retry behavior to source release 17.21.0; it is not production-verified until the Worker is deployed and retested.
@@ -77,7 +77,12 @@ This sample is not a complete product audit and does not justify an overall comp
 
 ## Graphify and architecture mapping
 
-Graphify's official project describes a local CLI that requires Python 3.10+ and `uv` or `pipx`, and produces `graph.json`, `graph.html` and `GRAPH_REPORT.md`. This execution environment exposes GitHub and browser connectors, not a local Python/uv CLI session attached to the repository. Therefore Graphify has **not** been executed and no Graphify output is claimed. The correct next step is to run the official Graphify CLI in a repository-capable environment, then commit its generated graph/report as versioned architecture evidence. Do not substitute a hand-written diagram and label it Graphify output.
+Graphify's current official README describes it as a Claude Code skill, requiring Claude Code and Python 3.10+, installed via `pip install graphifyy && graphify install`; its `/graphify` workflow creates `graph.json`, `graph.html` and `GRAPH_REPORT.md`. The available execution environment exposes GitHub and browser connectors, not a repository-attached Claude Code session or local Python runtime. Therefore Graphify has **not** been executed and no Graphify output is claimed. A generic GitHub Actions job without the required Claude Code execution/authentication would not honestly run the documented workflow, so no pretend Graphify job is being added. The correct next step is to run the official skill in a repository-capable Claude Code environment, then commit its generated graph/report as versioned architecture evidence. Do not substitute a hand-written diagram and label it Graphify output.
 
 Official reference: https://github.com/Graphify-Labs/graphify
 
+
+
+## Follow-up live catalog check (2026-10-31)
+
+A subsequent Fish browser run (`6fc1aa4e-2979-427e-be26-3e9d0247b8e5`) completed the `/catalog` visit and observed a settled page with one story card, The Imperial Ascendant, showing two chapters, 137 views and 5.0 rating. No visible loading state or error remained. Browser DevTools network and console data were not available, and this run did not measure LCP/INP/CLS/TTFB. Direct `/discover` was separately fetched again and still returned the branded 404 on production, while `/api/health` continued to report healthy DB and version 17.20.0. API response extraction reported fetch-service durations around 0.83–1.35 seconds for two `/api/novels` requests; these are tool-side fetch durations, not authoritative Worker TTFB or production performance metrics.
