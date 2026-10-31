@@ -34,6 +34,7 @@ Admin publication now runs a deterministic quality gate: valid title, author, me
 - Formats
 - Community
 - Search
+- Become an Author (public onboarding; application and studio require account access)
 
 Global utilities: Library, Notifications, Language, Appearance and Account. Library and notifications are account-aware. Secondary destinations belong in the three-line navigation drawer.
 
@@ -81,6 +82,7 @@ Keep existing numeric routes stable until a tested slug/redirect migration is ex
 | /novel/:id/chapters | Public chapter directory | Index if useful and populated |
 | /read/:id/:chapter | Public chapter | Index only when publicly readable and substantive |
 | /author/:username | Public author profile | Index when profile has public works or useful biography |
+| /become-an-author | Public author onboarding, rights and application journey | Index |
 | /community | Public community entry point | Index if it has substantive public content |
 | /fandom/:slug | Rights-cleared topic landing | Index only when useful, authorized and non-thin |
 
@@ -88,7 +90,7 @@ Keep existing numeric routes stable until a tested slug/redirect migration is ex
 
 - /login, /register, /account, /settings
 - /library, /history, /following, /notifications
-- /author and private creator workspace routes
+- /author (private Author Studio entry/application flow) and private creator workspace routes
 - /admin and all admin routes
 - /tickets, payment submission, transaction and unlock flows
 - /requests, private reports and moderation queues
@@ -149,6 +151,8 @@ Do not put every feature on the homepage. Give each major domain a clear destina
 - No intrusive advertising or unnecessary scripts in the reading flow
 
 ### Creator Studio
+- Public /become-an-author landing page: program benefits, supported formats, creator rights, application steps and FAQs.
+- Private /author entry: sign-in, application form/status and approved-author routing.
 - Overview and work list
 - Work creation and metadata
 - Chapter editor and draft/publish workflow
