@@ -59,7 +59,7 @@ function upsertMeta(html,attribute,key,content){
   }
   return html.replace(/<\/head>/i,'<meta '+attribute+'="'+attr(key)+'" content="'+attr(content)+'">\n</head>');
 }
-export function canonicalPath(path){return path==="/discover"?"/catalog":path}
+export function canonicalPath(path){const normalized=String(path||"/").replace(/\/+$/,"")||"/";return normalized==="/discover"?"/catalog":normalized}
 export function robotsForPath(path,status=200,forceNoindex=false){if(forceNoindex||status!==200||/^\/(admin|account|login|register|search|library|history|following|settings|notifications|tickets|requests)(\/|$)/.test(path)||/^\/author\/?$/.test(path))return "noindex,nofollow";return "index,follow"}
 export function applySeoMetadata(html,{title,description,canonical,robots="index,follow",image,structuredData}={}){
   const safeTitle=String(title||"Imperial Novel | Read • Create • Conquer").slice(0,180);
