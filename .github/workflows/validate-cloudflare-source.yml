@@ -138,6 +138,9 @@ jobs:
       - name: Test private comic reader rendering
         run: python3 scripts/test-comic-reader-rendering.py
 
+      - name: Test chapter publishing lifecycle security gates
+        run: python3 scripts/test-chapter-publishing-guards.py
+
       - name: Test media upload byte and metadata policy
         run: node scripts/test-media-upload-policy.mjs
 
