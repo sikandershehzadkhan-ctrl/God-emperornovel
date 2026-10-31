@@ -640,3 +640,46 @@ html[data-theme="dark"] .homeFormatPrimary{background:var(--in-brand-soft)}
  .authorLandingActions>a{width:100%;justify-content:center;text-align:center}
 }
 @media(prefers-reduced-motion:reduce){.authorLandingHero *{scroll-behavior:auto!important;transition:none!important;animation:none!important}}
+
+
+/* OmniPortal provider intelligence and federated result surfaces. */
+.omniIntroPanel{
+  display:grid;grid-template-columns:minmax(0,1fr) minmax(220px,.45fr);gap:24px;align-items:center;
+  margin:0 0 18px;padding:clamp(20px,4vw,34px);
+  border:1px solid var(--in-line);border-radius:20px;
+  background:linear-gradient(125deg,var(--in-brand-soft),var(--in-discovery-soft));
+}
+.omniIntroPanel h2{margin:10px 0;font-size:clamp(24px,3.4vw,38px);letter-spacing:-.045em}
+.omniIntroPanel p{max-width:680px;color:var(--in-muted);line-height:1.7}
+.omniTrustNote{padding:14px;border:1px solid var(--in-line);border-radius:13px;background:var(--in-surface);color:var(--in-muted);font-size:12px;line-height:1.6}
+.omniStatusPanel{margin:18px 0 22px;padding:20px;border:1px solid var(--in-line);border-radius:18px;background:var(--in-surface)}
+.omniStatusHead{display:flex;justify-content:space-between;align-items:flex-start;gap:14px;margin-bottom:14px}
+.omniStatusHead h2{margin:6px 0;font-size:21px}
+.omniStatusHead p{margin:0;font-size:12px}
+.omniStatusMetrics{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:9px}
+.omniMetric{display:grid;gap:5px;min-width:0;padding:13px;border:1px solid var(--in-line);border-radius:12px;background:var(--in-canvas)}
+.omniMetric b{font-size:clamp(21px,3vw,30px);font-weight:800;letter-spacing:-.04em;font-variant-numeric:tabular-nums}
+.omniMetric span{color:var(--in-muted);font-size:11px;font-weight:650}
+.omniSourceList{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;margin-top:14px}
+.omniSourceRow{display:flex;justify-content:space-between;align-items:center;gap:12px;min-width:0;padding:11px 12px;border:1px solid var(--in-line);border-radius:11px}
+.omniSourceRow>span:first-child{display:grid;gap:3px;min-width:0}
+.omniSourceRow b{font-size:12px}
+.omniSourceRow small{color:var(--in-muted);font-size:10px;overflow-wrap:anywhere}
+.omniSourceState{color:var(--in-muted);font-size:10px;font-weight:700;text-align:right}
+.omniStatusFoot{margin:12px 0 0;color:var(--in-muted);font-size:10px;line-height:1.5}
+.omniSearchPanel{padding:clamp(14px,3vw,22px)}
+.omniResultCard{min-width:0}
+.omniResultCard .cardTitle{margin:10px 0 5px;overflow-wrap:anywhere}
+.omniResultCard .actions{display:flex;flex-wrap:wrap;gap:8px}
+@media(max-width:760px){
+ .omniIntroPanel{grid-template-columns:1fr;gap:10px}
+ .omniStatusMetrics{grid-template-columns:repeat(2,minmax(0,1fr))}
+ .omniSourceList{grid-template-columns:1fr}
+ .omniStatusHead{align-items:center}
+}
+@media(max-width:380px){
+ .omniStatusPanel{padding:14px}
+ .omniStatusHead{align-items:flex-start;flex-direction:column}
+ .omniSourceRow{align-items:flex-start;flex-direction:column}
+ .omniSourceState{text-align:left}
+}
