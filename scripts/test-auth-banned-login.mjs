@@ -10,4 +10,7 @@ assert.notEqual(bannedCheck, -1, "login must reject banned accounts");
 assert.notEqual(sessionIssue, -1, "login session issuance must exist");
 assert.ok(passwordCheck < bannedCheck, "password must be verified before account status response");
 assert.ok(bannedCheck < sessionIssue, "banned-account rejection must happen before session issuance");
-console.log("Banned-account login regression check passed.");
+const cookieParser = source.match(/const cookies=h=>[\\s\\S]*?;\\n/);
+assert.ok(cookieParser, "cookie parser must exist");
+assert.match(cookieParser[0], /try\\s*\\{\\s*decoded=decodeURIComponent\\(value\\)\\s*\\}catch/, "malformed cookie percent-encoding must not throw out of request handling");
+console.log("Authentication input-hardening regression checks passed.");
