@@ -1,5 +1,5 @@
 import assert from "node:assert/strict";
-import { applySeoMetadata, buildRobotsTxt, buildSitemapXml, canonicalOrigin, canonicalPath, getPageSeo } from "../src/seo.mjs";
+import { applySeoMetadata, buildRobotsTxt, buildSitemapXml, canonicalOrigin, canonicalPath, getPageSeo, robotsForPath } from "../src/seo.mjs";
 
 const origin="https://imperial.example";
 assert.equal(canonicalOrigin(origin),origin);
@@ -24,6 +24,11 @@ assert.match(searchDisabled,/User-agent: OAI-SearchBot\nDisallow: \/\n/);
 
 assert.match(getPageSeo("/catalog").title,/Discover Novels/);
 assert.match(getPageSeo("/search").title,/Search Stories/);
+assert.equal(robotsForPath("/search"),"noindex,nofollow");
+assert.equal(robotsForPath("/account"),"noindex,nofollow");
+assert.equal(robotsForPath("/author"),"noindex,nofollow");
+assert.equal(robotsForPath("/author/some-writer"),"index,follow");
+assert.equal(robotsForPath("/catalog",404),"noindex,nofollow");
 assert.match(getPageSeo("/author/some-writer").title,/Imperial Novel/);
 
 const sitemap=buildSitemapXml(origin,[{id:12,updated_at:"2026-10-30T12:00:00Z"},{id:"13"},{id:"bad"},{id:0},{id:12}],[{author:"Sikander Khan"},{author:"Sikander & Co."},{author:"Sikander Khan"},{author:""}]);
