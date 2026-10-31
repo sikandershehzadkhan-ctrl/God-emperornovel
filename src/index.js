@@ -456,6 +456,35 @@ async function api(req,env){
    return json({error:"Private image upload could not be completed."},500);
   }
  }
+ let mediaMatch=p.match(/^\/api\/media\/(\d+)$/);
+ if(mediaMatch&&m==="GET"){
+  if(!env.MEDIA_BUCKET||typeof env.MEDIA_BUCKET.get!=="function")return json({error:"Private media storage is not configured."},503);
+  const assetId=Number(mediaMatch[1]);
+  if(!Number.isSafeInteger(assetId)||assetId<1)return json({error:"Media asset not found."},404);
+  const published=await env.DB.prepare(`SELECT a.id,a.owner_user_id,a.object_key,a.mime_type,a.size_bytes,c.id AS chapter_id,c.is_locked
+   FROM media_assets a
+   JOIN comic_chapter_pages cp ON cp.media_asset_id=a.id
+   JOIN chapters c ON c.id=cp.chapter_id
+   JOIN novels n ON n.id=c.novel_id
+   WHERE a.id=? AND a.status='ready' AND a.rights_status='approved'
+    AND c.publication_status='published' AND n.publication_status='published'
+   LIMIT 1`).bind(assetId).first();
+  if(!published)return json({error:"Media asset not found."},404);
+  if(published.is_locked&&u?.role!=="admin"){
+   if(!u)return json({error:"Authentication required to view this chapter."},401);
+   const unlocked=await env.DB.prepare("SELECT 1 FROM unlocks WHERE user_id=? AND chapter_id=?").bind(u.id,published.chapter_id).first();
+   if(!unlocked)return json({error:"Chapter unlock required."},403);
+  }
+  const object=await env.MEDIA_BUCKET.get(published.object_key);
+  if(!object)return json({error:"Media asset not found."},404);
+  return new Response(object.body,{status:200,headers:{
+   "content-type":published.mime_type,
+   "content-length":String(published.size_bytes),
+   "cache-control":"private, no-store",
+   "x-content-type-options":"nosniff",
+   "content-security-policy":"default-src 'none'; sandbox"
+  }});
+ }
  if(p==="/api/admin/media/review-queue"&&m==="GET"){
   const e=admin(u);if(e)return e;
   return json((await env.DB.prepare(`SELECT a.id,a.owner_user_id,u.username AS owner_username,a.mime_type,a.size_bytes,a.status,a.rights_status,a.rights_holder,a.license_name,a.rights_evidence,a.created_at,a.uploaded_at,a.reviewed_at,a.reviewed_by_user_id,r.decision AS last_decision,r.note AS last_review_note,r.created_at AS last_review_at
