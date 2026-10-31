@@ -1,13 +1,14 @@
 import assert from "node:assert/strict";
 import { readFile } from "node:fs/promises";
 
-const [source,app,bundle,css,migration,engagementMigration]=await Promise.all([
+const [source,app,bundle,css,migration,engagementMigration,viewAnalyticsMigration]=await Promise.all([
  readFile(new URL("../src/index.js",import.meta.url),"utf8"),
  readFile(new URL("../public/app.js",import.meta.url),"utf8"),
  readFile(new URL("../public/app-17.23.0.js",import.meta.url),"utf8"),
  readFile(new URL("../public/imperial-design-foundation.css",import.meta.url),"utf8"),
  readFile(new URL("../migrations/0012_chapter_update_timestamps.sql",import.meta.url),"utf8"),
- readFile(new URL("../migrations/0013_reader_engagement_metrics.sql",import.meta.url),"utf8")
+ readFile(new URL("../migrations/0013_reader_engagement_metrics.sql",import.meta.url),"utf8"),
+ readFile(new URL("../migrations/0014_daily_view_analytics.sql",import.meta.url),"utf8")
 ]);
 const start=source.indexOf('if(p==="/api/platform/overview"&&m==="GET"){');
 const end=source.indexOf('if(p==="/api/discovery/graph"&&m==="GET"){',start);
@@ -45,6 +46,14 @@ assert.ok(css.includes(".chapterLivePulseMetrics{display:grid;grid-template-colu
 
 assert.ok(engagementMigration.includes("CREATE TABLE IF NOT EXISTS comment_likes")&&engagementMigration.includes("CREATE TABLE IF NOT EXISTS novel_reactions"),"Fresh database installations must receive the engagement tables through migration 0013.");
 assert.ok(engagementMigration.includes("PRIMARY KEY(user_id,comment_id)")&&engagementMigration.includes("PRIMARY KEY(user_id,novel_id)"),"Engagement tables must prevent duplicate likes and multiple active reactions per user and content.");
+assert.ok(viewAnalyticsMigration.includes("CREATE TABLE IF NOT EXISTS novel_view_daily")&&viewAnalyticsMigration.includes("CREATE TABLE IF NOT EXISTS chapter_view_daily"),"Migration 0014 must add daily aggregate counters for novel and chapter views.");
+assert.ok(viewAnalyticsMigration.includes("PRIMARY KEY(novel_id, view_date)")&&viewAnalyticsMigration.includes("PRIMARY KEY(chapter_id, view_date)"),"Daily view aggregates must be uniquely keyed per content item and date.");
+assert.ok(source.includes("async function ensureViewAnalyticsSchema(env)")&&source.includes("CREATE TABLE IF NOT EXISTS novel_view_daily")&&source.includes("CREATE TABLE IF NOT EXISTS chapter_view_daily"),"Existing D1 databases must receive daily view tables through idempotent runtime schema readiness.");
+assert.ok(source.includes("INSERT INTO novel_view_daily(novel_id,view_date,view_requests)")&&source.includes("INSERT INTO chapter_view_daily(chapter_id,view_date,view_requests)"),"Novel and chapter page requests must increment their daily aggregate counters.");
+assert.ok(source.includes("novelViewsInPeriod")&&source.includes("chapterReaderRequestsInPeriod")&&source.includes("chapterViewsInPeriod"),"Author analytics must expose selected-period novel and chapter view counts.");
+assert.ok(source.includes("View history starts when daily view tracking is enabled; earlier counters are not backfilled"),"The API must disclose that daily view history starts at instrumentation rollout and is not backfilled.");
+assert.ok(app.includes("Novel views · period")&&app.includes("Chapter requests · period")&&app.includes("period views"),"Author Studio must display selected-period view totals alongside lifetime request counters.");
+
 
 
 assert.ok(route.includes("new Date().toISOString()"),"Overview must expose the actual response timestamp");
