@@ -463,6 +463,23 @@ async function api(req,env){
  if(p==="/api/omni/smart-unlock"){const e=need(u);if(e)return e;const novelId=Number(url.searchParams.get('novel_id'));const n=await env.DB.prepare(`SELECT COUNT(*) n FROM chapters WHERE novel_id=? AND publication_status='published' AND is_locked=1 AND id NOT IN(SELECT chapter_id FROM unlocks WHERE user_id=?)`).bind(novelId,u.id).first();const bal=Number(u.tickets);const packs=[10,25,50,100],options=[];for(const psize of packs){const rows=(await env.DB.prepare(`SELECT ticket_cost FROM chapters c WHERE c.novel_id=? AND c.publication_status='published' AND c.is_locked=1 AND c.id NOT IN(SELECT chapter_id FROM unlocks WHERE user_id=?) ORDER BY chapter_number LIMIT ?`).bind(novelId,u.id,psize).all()).results;const cost=rows.reduce((a,x)=>a+Number(x.ticket_cost),0);options.push({count:psize,cost,affordable:bal>=cost,chapters:rows.length})}return json({balance:bal,remaining:Number(n),recommended:options.find(x=>x.affordable&&x.chapters>0)?.count||0,options})}
 
  if(p==="/api/formats"&&m==="GET")return json({formats:CONTENT_FORMATS,groups:["text","comics","screen","audio","interactive"],version:1});
+ if(p==="/api/novel-engagement"&&m==="GET"){
+  await ensurePublishingSchema(env);
+  await ensureEngagementSchema(env);
+  const novelId=Number(url.searchParams.get("novel_id"));
+  if(!Number.isSafeInteger(novelId)||novelId<1)return json({error:"Novel id required"},400);
+  const novel=await env.DB.prepare("SELECT id,views FROM novels WHERE id=? AND publication_status='published' AND rights_status IN ('original','public_domain','licensed','authorized')").bind(novelId).first();
+  if(!novel)return json({error:"Novel not found"},404);
+  const stats=await env.DB.prepare("SELECT "+
+   "(SELECT COALESCE(SUM(cv.views),0) FROM chapter_views cv JOIN chapters c ON c.id=cv.chapter_id WHERE c.novel_id=? AND c.publication_status='published') chapterViews,"+
+   "(SELECT COUNT(*) FROM comments cm WHERE cm.novel_id=? AND cm.status='visible') visibleComments,"+
+   "(SELECT COUNT(*) FROM comment_likes cl JOIN comments cm ON cm.id=cl.comment_id WHERE cm.novel_id=? AND cm.status='visible') commentLikes,"+
+   "(SELECT COUNT(*) FROM novel_reactions nr WHERE nr.novel_id=?) novelReactions,"+
+   "(SELECT COUNT(*) FROM ratings r WHERE r.novel_id=?) ratings,"+
+   "(SELECT MAX(activity_at) FROM (SELECT created_at activity_at FROM comments WHERE novel_id=? AND status='visible' UNION ALL SELECT cl.created_at FROM comment_likes cl JOIN comments cm ON cm.id=cl.comment_id WHERE cm.novel_id=? AND cm.status='visible' UNION ALL SELECT created_at FROM novel_reactions WHERE novel_id=? UNION ALL SELECT updated_at FROM ratings WHERE novel_id=? UNION ALL SELECT cv.updated_at FROM chapter_views cv JOIN chapters c ON c.id=cv.chapter_id WHERE c.novel_id=?)) lastActivityAt").bind(novelId,novelId,novelId,novelId,novelId,novelId,novelId,novelId,novelId,novelId).first();
+  const generatedAt=new Date().toISOString();
+  return json({novelId,generated_at:generatedAt,freshness:{mode:"request-time-d1-query",cache:"no-store",clientRefreshSeconds:30,automaticRefreshRequiresVisiblePage:true},metrics:{novelViews:Number(novel.views||0),chapterViews:Number(stats?.chapterViews||0),visibleComments:Number(stats?.visibleComments||0),commentLikes:Number(stats?.commentLikes||0),novelReactions:Number(stats?.novelReactions||0),ratings:Number(stats?.ratings||0)},lastActivityAt:stats?.lastActivityAt||null,definitions:{novelViews:"Cumulative novel detail-page requests; repeat visits may count.",chapterViews:"Cumulative chapter-reader requests; repeat visits may count and this is not a unique-reader count.",visibleComments:"Comments currently visible on this novel.",commentLikes:"Current likes on visible comments.",novelReactions:"Current reactions on this novel.",ratings:"Current reader ratings on this novel."}});
+ }
  if(p==="/api/platform/overview"&&m==="GET"){
   await ensurePublishingSchema(env);
   await ensureEngagementSchema(env);
