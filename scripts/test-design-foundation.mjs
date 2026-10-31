@@ -47,6 +47,11 @@ assert.ok(css.includes("@media(max-width:760px){"),"Phone layout must have a sep
 assert.ok(sourceApp.includes("id=\"imperialMenuToggle\"")&&sourceApp.includes("id=\"imperialMenuDrawer\""),"Tablet navigation must have a working menu trigger and drawer");
   assert.ok(css.includes(token),"Missing design foundation requirement: "+token);
 }
+assert.ok(css.includes("Homepage story cards: editorial hierarchy"),"Homepage story-card refinement must remain in the design foundation");
+assert.ok(css.includes("-webkit-line-clamp:2"),"Story titles must wrap to two readable lines instead of truncating after one");
+assert.ok(css.includes(".homeStoryGrid.multiStory{grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}"),"Phone story shelves must use a stable two-column grid");
+assert.ok(css.includes("@media(max-width:360px)"),"Very narrow phones must switch story cards to a readable horizontal layout");
+assert.ok(css.includes(".homeStoryGrid .card:focus-visible"),"Story cards must have a visible keyboard focus treatment");
 assert.equal((html.match(/imperial-design-foundation\.css/g)||[]).length,1,"Design foundation must be linked exactly once");
 assert.ok(html.indexOf("imperial-glass.css")<html.indexOf("imperial-design-foundation.css"),"Foundation must load after legacy global styles");
 assert.equal(sourceApp,releaseApp,"Editable and versioned browser bundles must remain synchronized");
