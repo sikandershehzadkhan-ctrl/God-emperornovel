@@ -1,0 +1,578 @@
+/* Imperial Novel identity refresh: restrained purple, sapphire, white and obsidian.
+   Kept separate from the legacy stylesheet so the release can be reviewed and rolled back cleanly. */
+:root{
+  color-scheme:dark;
+  --in-obsidian:#080a12;
+  --in-panel:#101421;
+  --in-panel-raised:#151b2b;
+  --in-line:rgba(174,185,221,.16);
+  --in-purple:#8b5cf6;
+  --in-purple-bright:#a78bfa;
+  --in-sapphire:#4f8cff;
+  --in-white:#f5f7ff;
+  --in-muted:#a3abc2;
+}
+html[data-theme="dark"]{color-scheme:dark}
+html[data-theme="dark"] body{
+  color:var(--in-white);
+  background:radial-gradient(ellipse at 82% -12%,rgba(79,140,255,.12),transparent 36%),
+    radial-gradient(ellipse at 8% 4%,rgba(139,92,246,.12),transparent 32%),var(--in-obsidian);
+}
+html[data-theme="dark"] body:before{
+  background-image:linear-gradient(rgba(167,139,250,.022) 1px,transparent 1px),linear-gradient(90deg,rgba(167,139,250,.022) 1px,transparent 1px);
+  background-size:64px 64px;opacity:.35;
+}
+html[data-theme="dark"] .top{
+  background:rgba(8,10,18,.88);border-bottom-color:var(--in-line);
+  -webkit-backdrop-filter:blur(16px);backdrop-filter:blur(16px);
+}
+html[data-theme="dark"] .brand b,
+html[data-theme="dark"] .footerBrand{color:var(--in-white);text-shadow:none}
+html[data-theme="dark"] .brand small{color:#a8b4d2}
+html[data-theme="dark"] .mark{border-color:rgba(139,92,246,.5);box-shadow:0 0 0 1px rgba(139,92,246,.08)}
+html[data-theme="dark"] .navlinks a{color:#b3bbd2}
+html[data-theme="dark"] .navlinks a:hover,
+html[data-theme="dark"] .navlinks a.active{color:#fff;background:rgba(139,92,246,.13);border-color:rgba(167,139,250,.2);box-shadow:none}
+html[data-theme="dark"] .iconbtn,
+html[data-theme="dark"] .menuToggle{color:#dfe5ff;border-color:var(--in-line);background:#101421}
+html[data-theme="dark"] .page{color:var(--in-white)}
+html[data-theme="dark"] .hero.nextHero{
+  isolation:isolate;min-height:470px;overflow:hidden;
+  border:1px solid rgba(139,92,246,.3);border-radius:26px;
+  background:radial-gradient(ellipse at 78% 40%,rgba(79,140,255,.2),transparent 29%),
+    radial-gradient(ellipse at 82% 65%,rgba(139,92,246,.18),transparent 37%),
+    linear-gradient(112deg,#0c0e19 0%,#111326 55%,#0b1020 100%);
+  box-shadow:0 24px 70px rgba(0,0,0,.22);
+}
+html[data-theme="dark"] .hero.nextHero:before{
+  content:"";position:absolute;inset:0;z-index:-1;pointer-events:none;
+  background:linear-gradient(115deg,transparent 0 57%,rgba(167,139,250,.055) 57.2%,transparent 57.6%),
+    radial-gradient(circle at 78% 48%,transparent 0 105px,rgba(79,140,255,.12) 106px 107px,transparent 108px 142px,rgba(167,139,250,.1) 143px 144px,transparent 145px);
+}
+html[data-theme="dark"] .hero.nextHero:after{background:linear-gradient(transparent,rgba(8,10,18,.38));}
+html[data-theme="dark"] .nextHeroCopy{color:var(--in-white)}
+html[data-theme="dark"] .heroKicker,
+html[data-theme="dark"] .nextHero .eyebrow{color:#b9a8ff}
+html[data-theme="dark"] .nextHero h1{color:#f8f8ff;text-shadow:none;letter-spacing:-.045em}
+html[data-theme="dark"] .nextHeroLead{color:#b7c0d8}
+html[data-theme="dark"] .heroSearch{background:#f7f8ff;border-color:rgba(167,139,250,.35);box-shadow:0 12px 38px rgba(0,0,0,.18)}
+html[data-theme="dark"] .heroSearch input{color:#171a2a}
+html[data-theme="dark"] .heroSearch button,
+html[data-theme="dark"] .primary{background:linear-gradient(120deg,#7650dc,#4b75e8);color:white;border-color:transparent;box-shadow:0 7px 22px rgba(91,79,219,.22)}
+html[data-theme="dark"] .heroTags a{border-color:var(--in-line);background:rgba(255,255,255,.035);color:#d9def2}
+html[data-theme="dark"] .heroPromise{color:#dfe4f7}
+html[data-theme="dark"] .heroSideCard{background:rgba(13,17,31,.82);border-color:rgba(167,139,250,.22);box-shadow:0 18px 55px rgba(0,0,0,.2)}
+html[data-theme="dark"] .heroSideTop b,
+html[data-theme="dark"] .heroSideTop small{color:#f0f2ff}
+html[data-theme="dark"] .heroSideRule{background:var(--in-line)}
+html[data-theme="dark"] .heroOrbitLabel{color:#b7c6f4}
+html[data-theme="dark"] .sectionHead h2,
+html[data-theme="dark"] .sectionHead h3,
+html[data-theme="dark"] .page h1,
+html[data-theme="dark"] .page h2,
+html[data-theme="dark"] .page h3{color:var(--in-white)}
+html[data-theme="dark"] .sectionHead p,
+html[data-theme="dark"] .muted{color:var(--in-muted)}
+html[data-theme="dark"] .card,
+html[data-theme="dark"] .catalogCard,
+html[data-theme="dark"] .panel,
+html[data-theme="dark"] .settingsPanel,
+html[data-theme="dark"] .novelHero,
+html[data-theme="dark"] .catalogTop{
+  color:var(--in-white);background:linear-gradient(155deg,rgba(20,25,41,.96),rgba(13,17,29,.98));
+  border-color:var(--in-line);box-shadow:0 12px 34px rgba(0,0,0,.13);
+}
+html[data-theme="dark"] .cardTitle,
+html[data-theme="dark"] .catalogTitle{color:#f3f5ff}
+html[data-theme="dark"] .cover,
+html[data-theme="dark"] .catalogCover{background:#0c1020}
+html[data-theme="dark"] .pill,
+html[data-theme="dark"] .rankBadge{background:rgba(139,92,246,.12);border-color:rgba(167,139,250,.2);color:#d9ceff}
+html[data-theme="dark"] .ghost,
+html[data-theme="dark"] .secondary{background:#151b2b;color:#e2e7fb;border-color:var(--in-line)}
+html[data-theme="dark"] input,
+html[data-theme="dark"] select,
+html[data-theme="dark"] textarea{color:var(--in-white);background:#0d1220;border-color:var(--in-line)}
+html[data-theme="dark"] .mobileNav{
+  background:rgba(8,10,18,.94);border-top-color:var(--in-line);
+  -webkit-backdrop-filter:blur(18px);backdrop-filter:blur(18px);
+}
+html[data-theme="dark"] .mobileNav a{color:#9fa9c4}
+html[data-theme="dark"] .mobileNav a.active{color:#d6c7ff;background:rgba(139,92,246,.14)}
+html[data-theme="dark"] .menuDrawer{background:#0e1220;border-color:var(--in-line)}
+html[data-theme="dark"] .menuDrawer a{color:#e2e7fb}
+html[data-theme="dark"] .footer{border-color:var(--in-line);background:#090b13;color:#a6afc8}
+html[data-theme="dark"] .footer a{color:#c8d0e8}
+html[data-theme="dark"] .bootFallback{background:var(--in-obsidian);color:var(--in-white)}
+html[data-theme="dark"] .bootFallback p{color:var(--in-muted)}
+html[data-theme="light"]{color-scheme:light}
+html[data-theme="light"] body{background:#fbfcff;color:#171629}
+@media(max-width:760px){
+ html[data-theme="dark"] .hero.nextHero{min-height:0;border-radius:20px;background:radial-gradient(ellipse at 80% 12%,rgba(79,140,255,.19),transparent 34%),linear-gradient(150deg,#101326,#090b14 75%)}
+ html[data-theme="dark"] .hero.nextHero:before{background:radial-gradient(circle at 85% 18%,transparent 0 54px,rgba(79,140,255,.16) 55px 56px,transparent 57px 78px,rgba(167,139,250,.12) 79px 80px,transparent 81px)}
+ html[data-theme="dark"] .heroInner,html[data-theme="dark"] .nextHeroCopy{padding-top:36px}
+ html[data-theme="dark"] .heroSideCard{margin-top:18px}
+ html[data-theme="dark"] .wrap{width:calc(100% - 24px)}
+}
+@media(prefers-reduced-motion:reduce){
+ *,*::before,*::after{scroll-behavior:auto!important;animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important}
+}
+
+/* Low-end mobile performance: preserve the visual identity without costly blur layers. */
+@media (max-width:760px){
+  html[data-theme="dark"] .top,
+  html[data-theme="dark"] .mobileNav{
+    -webkit-backdrop-filter:none;
+    backdrop-filter:none;
+    background:#080a12;
+  }
+  html[data-theme="dark"] body:before{
+    background-image:none;
+    opacity:0;
+  }
+  html[data-theme="dark"] .hero.nextHero,
+  html[data-theme="dark"] .heroSideCard,
+  html[data-theme="dark"] .card,
+  html[data-theme="dark"] .catalogCard,
+  html[data-theme="dark"] .panel,
+  html[data-theme="dark"] .settingsPanel,
+  html[data-theme="dark"] .novelHero,
+  html[data-theme="dark"] .catalogTop,
+  html[data-theme="dark"] .heroSearch,
+  html[data-theme="dark"] .primary{
+    box-shadow:none;
+  }
+}
+
+/* Taste Skill direction: the Imperial Archive.
+   One strong reading surface, a quiet frame, purple for authorship and sapphire for discovery.
+   No decorative orbit, gradient haze, glass blur or resting drop shadows. */
+html[data-theme="dark"] body{
+  background:var(--in-obsidian);
+}
+html[data-theme="dark"] body:before{
+  display:none;
+}
+html[data-theme="dark"] .hero.nextHero{
+  min-height:0;
+  border:1px solid #292d40;
+  border-radius:20px;
+  background:#0e111c;
+  box-shadow:none;
+}
+html[data-theme="dark"] .hero.nextHero:before,
+html[data-theme="dark"] .hero.nextHero:after,
+html[data-theme="dark"] .nextHeroGlow,
+html[data-theme="dark"] .heroOrbitLabel{
+  display:none!important;
+}
+html[data-theme="dark"] .nextHeroCopy{
+  max-width:720px;
+}
+html[data-theme="dark"] .nextHero h1{
+  max-width:16ch;
+  margin-block:0 22px;
+  font-size:clamp(2.65rem,5.6vw,5.25rem);
+  line-height:.99;
+  letter-spacing:-.055em;
+  font-weight:760;
+}
+html[data-theme="dark"] .nextHero h1 span{
+  color:var(--in-purple-bright);
+}
+html[data-theme="dark"] .nextHeroLead{
+  max-width:52ch;
+  color:#c0c6d8;
+  line-height:1.65;
+}
+html[data-theme="dark"] .heroSearch{
+  border:1px solid #343950;
+  border-radius:12px;
+  box-shadow:none;
+}
+html[data-theme="dark"] .heroSearch button,
+html[data-theme="dark"] .primary{
+  background:#7552d8;
+  border:1px solid #8c6ce9;
+  box-shadow:none;
+}
+html[data-theme="dark"] .heroSearch button:hover,
+html[data-theme="dark"] .primary:hover{
+  background:#8665e8;
+}
+html[data-theme="dark"] .heroSideCard{
+  background:#111522;
+  border:1px solid #292e42;
+  border-radius:16px;
+  box-shadow:none;
+}
+html[data-theme="dark"] .portalLink{
+  border-color:#292e42;
+}
+html[data-theme="dark"] .portalLink:hover{
+  background:#171c2b;
+}
+html[data-theme="dark"] .card,
+html[data-theme="dark"] .catalogCard,
+html[data-theme="dark"] .panel,
+html[data-theme="dark"] .settingsPanel,
+html[data-theme="dark"] .novelHero,
+html[data-theme="dark"] .catalogTop{
+  background:#101421;
+  border:1px solid #282d40;
+  box-shadow:none;
+}
+html[data-theme="dark"] .pill,
+html[data-theme="dark"] .rankBadge{
+  background:#1a1830;
+  border-color:#3a315d;
+}
+html[data-theme="dark"] a:focus-visible,
+html[data-theme="dark"] button:focus-visible,
+html[data-theme="dark"] input:focus-visible,
+html[data-theme="dark"] select:focus-visible,
+html[data-theme="dark"] textarea:focus-visible{
+  outline:2px solid #a78bfa;
+  outline-offset:3px;
+}
+@media(max-width:760px){
+  html[data-theme="dark"] .hero.nextHero{
+    border-radius:16px;
+    background:#0e111c;
+  }
+  html[data-theme="dark"] .nextHero h1{
+    max-width:16ch;
+    font-size:clamp(2.25rem,9.2vw,3.2rem);
+    line-height:1.03;
+    letter-spacing:-.045em;
+  }
+  html[data-theme="dark"] .nextHeroCopy{
+    padding:28px 20px 22px;
+  }
+  html[data-theme="dark"] .heroSideCard{
+    margin-top:14px;
+  }
+}
+
+
+/* Imperial Archive 17.13.0: a decisive, single-column editorial homepage.
+   No portal-card hero, no quick-link tile row, no decorative image dependency. */
+html[data-theme="dark"] body{
+  background:radial-gradient(ellipse at 82% 8%,rgba(79,140,255,.10),transparent 32%),#080a12;
+}
+html[data-theme="dark"] body:before{display:none}
+html[data-theme="dark"] .hero.imperialArchiveHero{
+  display:grid;grid-template-columns:minmax(0,1fr);align-items:center;
+  min-height:clamp(430px,66vh,650px);padding:clamp(30px,6vw,78px);
+  position:relative;isolation:isolate;overflow:hidden;
+  border:1px solid rgba(167,139,250,.24);border-radius:28px;
+  background:linear-gradient(112deg,#090b14 0%,#101426 58%,#0a1020 100%);
+  box-shadow:none;
+}
+html[data-theme="dark"] .hero.imperialArchiveHero:before{
+  content:"";position:absolute;z-index:-1;pointer-events:none;
+  width:clamp(250px,38vw,500px);aspect-ratio:1;border-radius:50%;
+  right:-7%;top:50%;transform:translateY(-50%);
+  border:1px solid rgba(139,92,246,.25);
+  background:radial-gradient(circle,rgba(79,140,255,.10) 0 15%,transparent 15.5% 31%,rgba(139,92,246,.12) 31.5% 32%,transparent 32.5% 49%,rgba(167,139,250,.12) 49.5% 50%,transparent 50.5%);
+  box-shadow:inset 0 0 0 22px rgba(139,92,246,.025),0 0 100px rgba(79,140,255,.07);
+}
+html[data-theme="dark"] .hero.imperialArchiveHero:after{
+  content:"";position:absolute;z-index:-1;pointer-events:none;
+  width:clamp(90px,14vw,170px);aspect-ratio:1;right:calc(clamp(250px,38vw,500px)*.43);top:50%;
+  transform:translateY(-50%) rotate(45deg);
+  border:1px solid rgba(245,247,255,.22);
+  background:linear-gradient(135deg,rgba(139,92,246,.22),rgba(79,140,255,.08));
+}
+html[data-theme="dark"] .hero.imperialArchiveHero .nextHeroCopy{max-width:900px;padding:0;position:relative;z-index:1}
+html[data-theme="dark"] .hero.imperialArchiveHero h1{
+  max-width:10ch;font-size:clamp(3.1rem,7.8vw,7.4rem);line-height:.94;
+  letter-spacing:-.065em;font-weight:760;margin:22px 0 24px;
+}
+html[data-theme="dark"] .hero.imperialArchiveHero h1 span{
+  color:#b9a4ff;background:none;-webkit-text-fill-color:#b9a4ff;
+}
+html[data-theme="dark"] .hero.imperialArchiveHero .nextHeroLead{max-width:540px;font-size:clamp(1rem,1.5vw,1.2rem);line-height:1.7;color:#b9c2d9}
+html[data-theme="dark"] .hero.imperialArchiveHero .heroSearch{max-width:620px;box-shadow:none;border:1px solid rgba(167,139,250,.3)}
+html[data-theme="dark"] .hero.imperialArchiveHero .heroTags{gap:8px;margin-top:20px}
+html[data-theme="dark"] .hero.imperialArchiveHero .heroTags a{border-radius:999px;padding:8px 13px}
+html[data-theme="dark"] .hero.imperialArchiveHero .heroPromise{margin-top:24px;color:#f5f7ff;letter-spacing:.03em}
+html[data-theme="dark"] .hero.imperialArchiveHero .promiseText{display:block;margin-top:8px;color:#929bb5;font-size:.84rem;letter-spacing:0}
+html[data-theme="dark"] .nextQuickGrid{display:none!important}
+@media(max-width:760px){
+ html[data-theme="dark"] .hero.imperialArchiveHero{min-height:0;padding:26px 20px 30px;border-radius:20px}
+ html[data-theme="dark"] .hero.imperialArchiveHero:before{width:210px;right:-95px;top:20%;transform:none;opacity:.8}
+ html[data-theme="dark"] .hero.imperialArchiveHero:after{width:74px;right:36px;top:25%;transform:rotate(45deg);opacity:.6}
+ html[data-theme="dark"] .hero.imperialArchiveHero .nextHeroCopy{padding-top:20px}
+ html[data-theme="dark"] .hero.imperialArchiveHero h1{max-width:9ch;font-size:clamp(3rem,14vw,4.6rem);margin:22px 0 18px}
+ html[data-theme="dark"] .hero.imperialArchiveHero .nextHeroLead{max-width:34ch;font-size:1rem}
+ html[data-theme="dark"] .hero.imperialArchiveHero .heroSearch{display:grid;grid-template-columns:auto minmax(0,1fr);gap:8px;padding:8px}
+ html[data-theme="dark"] .hero.imperialArchiveHero .heroSearch button{grid-column:1/-1;width:100%;min-height:44px}
+}
+@media(prefers-reduced-motion:reduce){html[data-theme="dark"] .hero.imperialArchiveHero:before{animation:none}}
+
+/* International accessibility baseline: visible keyboard focus, motion sensitivity, and readable controls. */
+:where(a,button,input,select,textarea,[role="button"],[tabindex]):focus-visible{
+  outline:3px solid #83a9ff;
+  outline-offset:3px;
+  scroll-margin-block:6rem;
+}
+:where(button,input,select,textarea,[role="button"]){touch-action:manipulation}
+:where(button,a,[role="button"]){-webkit-tap-highlight-color:rgba(131,169,255,.22)}
+@media(prefers-reduced-motion:reduce){
+  html:focus-within{scroll-behavior:auto!important}
+  *,*::before,*::after{
+    animation-duration:.01ms!important;
+    animation-iteration-count:1!important;
+    background-attachment:initial!important;
+    scroll-behavior:auto!important;
+    transition-duration:.01ms!important;
+  }
+}
+@media(forced-colors:active){
+  :where(a,button,input,select,textarea,[role="button"],[tabindex]):focus-visible{outline:2px solid Highlight}
+  :where(button,a,[role="button"]){forced-color-adjust:auto}
+}
+
+/* Skip navigation stays invisible until keyboard users need it. */
+.skipLink{
+  position:fixed;
+  z-index:10000;
+  inset-block-start:8px;
+  inset-inline-start:8px;
+  transform:translateY(calc(-100% - 12px));
+  padding:12px 16px;
+  border:2px solid #83a9ff;
+  border-radius:10px;
+  background:#080a12;
+  color:#fff;
+  font-weight:700;
+  text-decoration:none;
+}
+.skipLink:focus,
+.skipLink:focus-visible{
+  transform:translateY(0);
+}
+#app:focus{outline:none}
+
+
+/* Final art direction: editorial authority, not decorative dashboard chrome.
+   The crest carries the emblem; the hero stays quiet, fast, and readable. */
+html[data-theme="dark"] body{
+  background:#080a12;
+}
+html[data-theme="dark"] .hero.imperialArchiveHero{
+  background:#0e111c;
+  border:1px solid #292d40;
+  border-top:2px solid #8b5cf6;
+  border-radius:20px;
+  box-shadow:none;
+}
+html[data-theme="dark"] .hero.imperialArchiveHero:before,
+html[data-theme="dark"] .hero.imperialArchiveHero:after{
+  display:none!important;
+  content:none!important;
+}
+html[data-theme="dark"] .hero.imperialArchiveHero h1 span{
+  color:#a78bfa;
+  -webkit-text-fill-color:#a78bfa;
+}
+html[data-theme="dark"] .hero.imperialArchiveHero .nextHeroLead{
+  color:#c0c6d8;
+}
+@media(max-width:760px){
+  html[data-theme="dark"] .hero.imperialArchiveHero{
+    border-radius:16px;
+    padding:24px 18px 26px;
+  }
+}
+
+
+/* Mobile resilience: prevent the global shell from creating a clipped, sideways canvas. */
+html,body{max-width:100%;overflow-x:clip}
+@supports not (overflow:clip){html,body{overflow-x:hidden}}
+#app,.top,.top>.wrap,.page,.footer{min-width:0;max-width:100%}
+@media(max-width:760px){
+  .top{width:100%;overflow:visible}
+  .top .nav{width:100%;max-width:100%;box-sizing:border-box;padding-inline:10px;gap:7px;min-width:0}
+  .top .brand{flex:0 1 auto;min-width:0;max-width:42%;gap:7px}
+  .top .brand .mark{flex:0 0 36px;width:36px;height:36px}
+  .top .brandText{min-width:0;overflow:hidden}
+  .top .brandText b{font-size:12px;letter-spacing:.055em;overflow-wrap:anywhere}
+  .top .brandText small{display:none}
+  .top .navright{flex:0 0 auto;min-width:0;gap:5px}
+  .top .navright .iconbtn,.top .navright .menuToggle{width:38px;min-width:38px;height:40px;padding:0;display:inline-flex;align-items:center;justify-content:center}
+  .top .navright .languageControl select{width:54px;max-width:54px!important;height:40px;min-height:40px;padding:0 3px!important}
+  .top .navright .iconbtn[aria-label="Notifications"],.top .navright .iconbtn[aria-label="Account"]{display:none}
+  .hero.nextHero{min-height:0!important}
+  .hero.nextHero .nextHeroInner,.hero.nextHero .heroInner{padding:38px 20px 26px!important}
+  .hero.nextHero h1,.hero.imperialArchiveHero h1{font-size:clamp(38px,10.2vw,58px)!important;line-height:.98!important;letter-spacing:-.045em;overflow-wrap:normal}
+  .hero.nextHero p,.hero.nextHero .nextHeroLead{font-size:15px;line-height:1.65}
+  .footer{padding:24px 0 34px!important}
+  .footerInner{gap:14px!important}
+  .footerLinks{gap:10px 16px!important}
+}
+@media(max-width:390px){
+  .top .brand{max-width:35%}
+  .top .brandText b{font-size:11px}
+  .top .navright{gap:4px}
+  .top .navright .iconbtn,.top .navright .menuToggle{width:34px;min-width:34px}
+  .top .navright .languageControl select{width:48px;max-width:48px!important}
+}
+
+
+/* Clean core palette pass: purple + sapphire accents, white surfaces, obsidian foundation.
+   Avoid legacy cyan/teal accents and excessive decorative glow. */
+:root{
+  --in-obsidian:#080a12;
+  --in-panel:#101421;
+  --in-panel-raised:#151b2b;
+  --in-line:rgba(174,185,221,.16);
+  --in-purple:#8b5cf6;
+  --in-purple-bright:#a78bfa;
+  --in-sapphire:#4f8cff;
+  --in-white:#f5f7ff;
+  --in-muted:#a3abc2;
+}
+html[data-theme="dark"] a:not(.primary):not(.secondary):not(.pill):not(.brand),
+html[data-theme="dark"] .footer a,
+html[data-theme="dark"] .unlockBanner a{color:#a78bfa}
+html[data-theme="dark"] a:not(.primary):not(.secondary):not(.pill):not(.brand):hover,
+html[data-theme="dark"] .footer a:hover{color:#8fb5ff}
+html[data-theme="dark"] .primary,
+html[data-theme="dark"] button.primary,
+html[data-theme="dark"] .actions .primary{
+  color:#fff;background:linear-gradient(135deg,#7045d8,#8b5cf6);
+  border:1px solid rgba(196,181,253,.42);box-shadow:none
+}
+html[data-theme="dark"] .primary:hover,
+html[data-theme="dark"] button.primary:hover{background:linear-gradient(135deg,#7950e6,#966df8);box-shadow:0 8px 24px rgba(79,140,255,.12)}
+html[data-theme="dark"] .pill,
+html[data-theme="dark"] .tag,
+html[data-theme="dark"] .chip{border-color:var(--in-line);box-shadow:none}
+html[data-theme="dark"] .hero.nextHero,
+html[data-theme="dark"] .hero.imperialArchiveHero{box-shadow:none}
+html[data-theme="dark"] .hero.nextHero:before{opacity:.55}
+html[data-theme="dark"] .top,
+html[data-theme="dark"] .footer,
+html[data-theme="dark"] .mobileNav{box-shadow:none}
+html[data-theme="dark"] :focus-visible{outline:2px solid #4f8cff;outline-offset:3px}
+@media(prefers-reduced-motion:reduce){
+  html:focus-within{scroll-behavior:auto!important}
+  *,*::before,*::after{animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important;scroll-behavior:auto!important}
+}
+
+
+/* Approved Imperial Novel palette v2: 60% white, 20% obsidian, 12% purple, 8% sapphire.
+   Light mode is the primary reading experience; dark mode retains the same brand roles. */
+:root{
+  --white:#FFFFFF;
+  --black:#0B1215;
+  --purple:#6A0DAD;
+  --blue:#0F52BA;
+  --purple-light:#F3E9FF;
+  --blue-light:#E6EFFF;
+  --in-obsidian:#0B1215;
+  --in-panel:#FFFFFF;
+  --in-panel-raised:#FFFFFF;
+  --in-line:rgba(11,18,21,.10);
+  --in-purple:#6A0DAD;
+  --in-purple-bright:#6A0DAD;
+  --in-sapphire:#0F52BA;
+  --in-white:#0B1215;
+  --in-muted:#4C5960;
+}
+html[data-theme="light"]{color-scheme:light}
+html[data-theme="light"] body{background:#FFFFFF;color:#0B1215}
+html[data-theme="light"] body:before{display:none!important}
+html[data-theme="light"] .top{background:rgba(255,255,255,.96);border-bottom:1px solid rgba(11,18,21,.10);box-shadow:none}
+html[data-theme="light"] .brand b,
+html[data-theme="light"] .footerBrand{color:#0B1215;text-shadow:none}
+html[data-theme="light"] .brand small,
+html[data-theme="light"] .muted,
+html[data-theme="light"] .footer{color:#4C5960}
+html[data-theme="light"] .navlinks a{color:#26343A}
+html[data-theme="light"] .navlinks a:hover,
+html[data-theme="light"] .navlinks a.active{color:#6A0DAD;background:#F3E9FF;border-color:rgba(106,13,173,.16);box-shadow:none}
+html[data-theme="light"] .iconbtn,
+html[data-theme="light"] .menuToggle{color:#0B1215;background:#FFFFFF;border-color:rgba(11,18,21,.12);box-shadow:none}
+html[data-theme="light"] .page{color:#0B1215}
+html[data-theme="light"] .card,
+html[data-theme="light"] .catalogCard,
+html[data-theme="light"] .panel,
+html[data-theme="light"] .settingsPanel,
+html[data-theme="light"] .novelHero,
+html[data-theme="light"] .catalogTop,
+html[data-theme="light"] .heroSideCard{
+  color:#0B1215;background:#FFFFFF;border:1px solid rgba(11,18,21,.10);box-shadow:0 4px 18px rgba(11,18,21,.035)
+}
+html[data-theme="light"] .cardTitle,
+html[data-theme="light"] .catalogTitle,
+html[data-theme="light"] h1,
+html[data-theme="light"] h2,
+html[data-theme="light"] h3{color:#0B1215}
+html[data-theme="light"] .hero.nextHero,
+html[data-theme="light"] .hero.imperialArchiveHero{
+  color:#0B1215;background:#FFFFFF;border:1px solid rgba(11,18,21,.10);border-top:3px solid #6A0DAD;border-radius:24px;box-shadow:none
+}
+html[data-theme="light"] .hero.nextHero:before,
+html[data-theme="light"] .hero.nextHero:after,
+html[data-theme="light"] .hero.imperialArchiveHero:before,
+html[data-theme="light"] .hero.imperialArchiveHero:after{display:none!important;content:none!important}
+html[data-theme="light"] .hero.nextHero h1 span,
+html[data-theme="light"] .hero.imperialArchiveHero h1 span{color:#6A0DAD;-webkit-text-fill-color:#6A0DAD}
+html[data-theme="light"] .hero.nextHero p,
+html[data-theme="light"] .hero.imperialArchiveHero p,
+html[data-theme="light"] .heroPromise{color:#34434A}
+html[data-theme="light"] .primary,
+html[data-theme="light"] button.primary,
+html[data-theme="light"] .actions .primary{
+  background:#6A0DAD;color:#FFFFFF;border:1px solid #6A0DAD;box-shadow:none
+}
+html[data-theme="light"] .primary:hover,
+html[data-theme="light"] button.primary:hover,
+html[data-theme="light"] .actions .primary:hover{background:#0F52BA;border-color:#0F52BA;color:#FFFFFF}
+html[data-theme="light"] a:not(.primary):not(.secondary):not(.pill):not(.brand),
+html[data-theme="light"] .footer a,
+html[data-theme="light"] .unlockBanner a{color:#0F52BA}
+html[data-theme="light"] a:not(.primary):not(.secondary):not(.pill):not(.brand):hover,
+html[data-theme="light"] .footer a:hover{color:#6A0DAD}
+html[data-theme="light"] .pill,
+html[data-theme="light"] .tag,
+html[data-theme="light"] .chip{background:#FFFFFF;border-color:rgba(11,18,21,.12);color:#0B1215;box-shadow:none}
+html[data-theme="light"] .footer{background:#FFFFFF;border-top:1px solid rgba(11,18,21,.10);box-shadow:none}
+html[data-theme="light"] .mobileNav{background:rgba(255,255,255,.97);border-top:1px solid rgba(11,18,21,.10);box-shadow:none}
+html[data-theme="light"] .mobileNav a{color:#4C5960}
+html[data-theme="light"] .mobileNav a.active{color:#6A0DAD;background:#F3E9FF}
+html[data-theme="light"] .menuDrawer{background:#FFFFFF;border-color:rgba(11,18,21,.12);box-shadow:0 18px 50px rgba(11,18,21,.12)}
+html[data-theme="light"] .menuDrawer a{color:#0B1215}
+html[data-theme="light"] :focus-visible{outline:2px solid #0F52BA;outline-offset:3px}
+html[data-theme="light"] input,
+html[data-theme="light"] select,
+html[data-theme="light"] textarea{background:#FFFFFF;color:#0B1215;border-color:rgba(11,18,21,.18)}
+html[data-theme="dark"]{
+  --in-obsidian:#0B1215;--in-panel:#111A1F;--in-panel-raised:#162127;
+  --in-line:rgba(255,255,255,.13);--in-purple:#6A0DAD;
+  --in-purple-bright:#B78AE2;--in-sapphire:#0F52BA;
+  --in-white:#FFFFFF;--in-muted:#C0C9CE;
+}
+html[data-theme="dark"] body{background:#0B1215;color:#FFFFFF}
+html[data-theme="dark"] body:before{display:none!important}
+html[data-theme="dark"] .primary,
+html[data-theme="dark"] button.primary,
+html[data-theme="dark"] .actions .primary{background:#6A0DAD;color:#FFFFFF;border-color:#6A0DAD;box-shadow:none}
+html[data-theme="dark"] .primary:hover,
+html[data-theme="dark"] button.primary:hover,
+html[data-theme="dark"] .actions .primary:hover{background:#0F52BA;border-color:#0F52BA}
+html[data-theme="dark"] .hero.nextHero,
+html[data-theme="dark"] .hero.imperialArchiveHero{background:#111A1F;border-color:rgba(106,13,173,.35);box-shadow:none}
+html[data-theme="dark"] .hero.nextHero:before,
+html[data-theme="dark"] .hero.nextHero:after,
+html[data-theme="dark"] .hero.imperialArchiveHero:before,
+html[data-theme="dark"] .hero.imperialArchiveHero:after{display:none!important;content:none!important}
+html[data-theme="dark"] .hero.nextHero h1 span,
+html[data-theme="dark"] .hero.imperialArchiveHero h1 span{color:#B78AE2;-webkit-text-fill-color:#B78AE2}
+html[data-theme="dark"] .navlinks a.active,
+html[data-theme="dark"] .mobileNav a.active{color:#FFFFFF;background:rgba(106,13,173,.22)}
+html[data-theme="dark"] a:not(.primary):not(.secondary):not(.pill):not(.brand){color:#8DB8FF}
+html[data-theme="dark"] a:not(.primary):not(.secondary):not(.pill):not(.brand):hover{color:#B78AE2}
