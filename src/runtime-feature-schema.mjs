@@ -18,7 +18,23 @@ export function createRuntimeFeatureSchemaEnsurer() {
         "INSERT OR IGNORE INTO comment_reports_legacy_duplicates(id,user_id,comment_id,reason,details,status,created_at) SELECT id,user_id,comment_id,reason,details,status,created_at FROM comment_reports WHERE rowid NOT IN (SELECT MIN(rowid) FROM comment_reports GROUP BY user_id,comment_id)",
         "DELETE FROM comment_reports WHERE rowid NOT IN (SELECT MIN(rowid) FROM comment_reports GROUP BY user_id,comment_id)",
         "CREATE UNIQUE INDEX IF NOT EXISTS idx_comment_reports_user_comment ON comment_reports(user_id,comment_id)",
-        "CREATE INDEX IF NOT EXISTS idx_comment_reports_status_created ON comment_reports(status,created_at)"
+        "CREATE INDEX IF NOT EXISTS idx_comment_reports_status_created ON comment_reports(status,created_at)",
+"CREATE TRIGGER IF NOT EXISTS trg_comment_likes_validate_insert\nBEFORE INSERT ON comment_likes\nWHEN NOT EXISTS (SELECT 1 FROM users WHERE id=NEW.user_id)\n  OR NOT EXISTS (SELECT 1 FROM comments WHERE id=NEW.comment_id)\nBEGIN SELECT RAISE(ABORT,'comment_likes parent missing'); END;",
+"CREATE TRIGGER IF NOT EXISTS trg_comment_likes_validate_update\nBEFORE UPDATE OF user_id,comment_id ON comment_likes\nWHEN NOT EXISTS (SELECT 1 FROM users WHERE id=NEW.user_id)\n  OR NOT EXISTS (SELECT 1 FROM comments WHERE id=NEW.comment_id)\nBEGIN SELECT RAISE(ABORT,'comment_likes parent missing'); END;",
+"CREATE TRIGGER IF NOT EXISTS trg_comment_likes_user_cascade\nAFTER DELETE ON users\nBEGIN DELETE FROM comment_likes WHERE user_id=OLD.id; END;",
+"CREATE TRIGGER IF NOT EXISTS trg_comment_likes_comment_cascade\nAFTER DELETE ON comments\nBEGIN DELETE FROM comment_likes WHERE comment_id=OLD.id; END;",
+"CREATE TRIGGER IF NOT EXISTS trg_comment_reports_validate_insert\nBEFORE INSERT ON comment_reports\nWHEN NOT EXISTS (SELECT 1 FROM users WHERE id=NEW.user_id)\n  OR NOT EXISTS (SELECT 1 FROM comments WHERE id=NEW.comment_id)\nBEGIN SELECT RAISE(ABORT,'comment_reports parent missing'); END;",
+"CREATE TRIGGER IF NOT EXISTS trg_comment_reports_validate_update\nBEFORE UPDATE OF user_id,comment_id ON comment_reports\nWHEN NOT EXISTS (SELECT 1 FROM users WHERE id=NEW.user_id)\n  OR NOT EXISTS (SELECT 1 FROM comments WHERE id=NEW.comment_id)\nBEGIN SELECT RAISE(ABORT,'comment_reports parent missing'); END;",
+"CREATE TRIGGER IF NOT EXISTS trg_comment_reports_user_cascade\nAFTER DELETE ON users\nBEGIN DELETE FROM comment_reports WHERE user_id=OLD.id; END;",
+"CREATE TRIGGER IF NOT EXISTS trg_comment_reports_comment_cascade\nAFTER DELETE ON comments\nBEGIN DELETE FROM comment_reports WHERE comment_id=OLD.id; END;",
+"CREATE TRIGGER IF NOT EXISTS trg_novel_reactions_validate_insert\nBEFORE INSERT ON novel_reactions\nWHEN NOT EXISTS (SELECT 1 FROM users WHERE id=NEW.user_id)\n  OR NOT EXISTS (SELECT 1 FROM novels WHERE id=NEW.novel_id)\nBEGIN SELECT RAISE(ABORT,'novel_reactions parent missing'); END;",
+"CREATE TRIGGER IF NOT EXISTS trg_novel_reactions_validate_update\nBEFORE UPDATE OF user_id,novel_id ON novel_reactions\nWHEN NOT EXISTS (SELECT 1 FROM users WHERE id=NEW.user_id)\n  OR NOT EXISTS (SELECT 1 FROM novels WHERE id=NEW.novel_id)\nBEGIN SELECT RAISE(ABORT,'novel_reactions parent missing'); END;",
+"CREATE TRIGGER IF NOT EXISTS trg_novel_reactions_user_cascade\nAFTER DELETE ON users\nBEGIN DELETE FROM novel_reactions WHERE user_id=OLD.id; END;",
+"CREATE TRIGGER IF NOT EXISTS trg_novel_reactions_novel_cascade\nAFTER DELETE ON novels\nBEGIN DELETE FROM novel_reactions WHERE novel_id=OLD.id; END;",
+"CREATE TRIGGER IF NOT EXISTS trg_request_votes_validate_insert\nBEFORE INSERT ON request_votes\nWHEN NOT EXISTS (SELECT 1 FROM users WHERE id=NEW.user_id)\n  OR NOT EXISTS (SELECT 1 FROM novel_requests WHERE id=NEW.request_id)\nBEGIN SELECT RAISE(ABORT,'request_votes parent missing'); END;",
+"CREATE TRIGGER IF NOT EXISTS trg_request_votes_validate_update\nBEFORE UPDATE OF user_id,request_id ON request_votes\nWHEN NOT EXISTS (SELECT 1 FROM users WHERE id=NEW.user_id)\n  OR NOT EXISTS (SELECT 1 FROM novel_requests WHERE id=NEW.request_id)\nBEGIN SELECT RAISE(ABORT,'request_votes parent missing'); END;",
+"CREATE TRIGGER IF NOT EXISTS trg_request_votes_user_cascade\nAFTER DELETE ON users\nBEGIN DELETE FROM request_votes WHERE user_id=OLD.id; END;",
+"CREATE TRIGGER IF NOT EXISTS trg_request_votes_request_cascade\nAFTER DELETE ON novel_requests\nBEGIN DELETE FROM request_votes WHERE request_id=OLD.id; END;"
       ];
       for (const sql of statements) await env.DB.prepare(sql).run();
 
