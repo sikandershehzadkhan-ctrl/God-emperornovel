@@ -215,3 +215,24 @@ Read-only public-page comparison was performed against the current Imperial Nove
 - Make author profiles and author onboarding distinct routes; public profiles are indexable only when they have published, rights-cleared works.
 - Keep internal search, private libraries, account settings, payment and author/admin tools out of search indexes.
 - Preserve the existing numeric novel and chapter identifiers until a tested slug-and-redirect migration is designed.
+
+
+## Real-time reader and community engagement metrics
+
+The public platform overview is a request-time D1 snapshot refreshed by the homepage every 60 seconds while visible, with a manual refresh control. It is near-real-time polling, not a WebSocket or instant event stream. Every response carries a generation timestamp and metric definitions.
+
+The overview may report:
+- Novel detail views: cumulative novels.views counter.
+- Chapter views: cumulative chapter-reader requests in chapter_views; repeat visits may count and this is not a unique-reader metric.
+- Signed-in readers in the previous 24 hours: distinct accounts with a reading-history update in that rolling window. This is not a current-online count and does not include anonymous readers.
+- Visible comments and comments created in the previous 24 hours: comments with visible moderation status only.
+- Comment likes: current likes on visible comments.
+- Novel reactions: current reaction state, with at most one active reaction per account per novel.
+- Reader ratings, bookmarks and follows: current recorded database state, not lifetime action-event totals.
+- Chapter updates and unlock-based trending: timestamped chapter edits/publications and unlock events in their stated rolling windows.
+
+All public overview engagement queries are restricted to published novels with original, public-domain, licensed or authorized rights status. Hidden/deleted comments are excluded. No metric may be described as online now, unique views, reading minutes, live active readers, or engagement rate unless the platform adds the necessary event instrumentation and deduplication model.
+
+The comment-like and novel-reaction tables are created idempotently at runtime for existing installations and by migration 0013_reader_engagement_metrics.sql for fresh installations. The runtime path exists because older production databases may already have the core-schema marker and skip the original bootstrap statements.
+
+Before introducing unique readers, reading sessions, online presence, or per-minute activity charts, add a deliberate privacy-aware event model with retention limits, deduplication rules and abuse controls. Do not infer these metrics from page requests or current history rows.
