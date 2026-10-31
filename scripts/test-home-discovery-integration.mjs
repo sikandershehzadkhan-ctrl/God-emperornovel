@@ -1,10 +1,11 @@
 import assert from "node:assert/strict";
 import { readFile } from "node:fs/promises";
 
-const [html,app,css]=await Promise.all([
+const [html,app,css,worker]=await Promise.all([
  readFile(new URL("../public/index.html",import.meta.url),"utf8"),
  readFile(new URL("../public/app-17.23.0.js",import.meta.url),"utf8"),
- readFile(new URL("../public/imperial-design-foundation.css",import.meta.url),"utf8")
+ readFile(new URL("../public/imperial-design-foundation.css",import.meta.url),"utf8"),
+ readFile(new URL("../src/index.js",import.meta.url),"utf8")
 ]);
 assert.ok(html.includes("/app-17.23.0.js"),"HTML must load the refreshed client bundle");
 assert.equal(html.split("/app-17.23.0.js").length-1,1,"HTML must reference the current versioned client bundle exactly once");
@@ -21,4 +22,18 @@ assert.ok(storyCardRenderer.includes("metadata?\x60<div class=\"meta\">"),"Story
 assert.ok(!storyCardRenderer.includes("Number(n.rating||0).toFixed(1)"),"Missing ratings must never be presented as a fabricated zero-star score");
 assert.ok(!storyCardRenderer.includes("n.chapter_count||n.latest_chapter||0"),"Missing chapter counts must never be presented as zero chapters");
 assert.ok(css.includes(".homeConnectionShelf")&&css.includes("@media(max-width:640px)"),"Connected discovery shelf needs responsive styling");
+
+const pulse=app.slice(app.indexOf(" let platformPulseRequest="),app.indexOf("async function trendFactory"));
+assert.ok(pulse.includes("setInterval(()=>{if(document.visibilityState==='visible')refreshPlatformPulse()},60000)"),"Live overview must refresh once per minute while the page is visible");
+assert.ok(pulse.includes("if(platformPulseRequest)return platformPulseRequest"),"Manual and scheduled refreshes must not overlap");
+assert.ok(pulse.includes("last successful update"),"A failed refresh must preserve the last successful snapshot and disclose its age");
+assert.ok(pulse.includes("second:'2-digit',timeZoneName:'short'"),"The refresh timestamp must show seconds and the visitor's local timezone");
+assert.ok(pulse.includes("refreshes every 60 seconds"),"The live panel must disclose its refresh cadence");
+assert.ok(pulse.includes("Number.isSafeInteger(Number(row.novel_id))"),"Update-feed links must reject invalid record identifiers");
+assert.ok(worker.includes('if(p==="/api/platform/overview"&&m==="GET")'),"Worker must expose the real platform overview endpoint");
+assert.ok(worker.includes("readersInLast24Hours"),"Reader activity must be sourced from the recorded 24-hour history window");
+assert.ok(worker.includes("FROM history h JOIN novels n"),"Reader activity must use actual signed-in reading history, not an invented online counter");
+assert.ok(worker.includes("unlocked_at>=datetime('now','-7 days')"),"Trending momentum must use recorded seven-day chapter unlocks");
+assert.ok(worker.includes("c.updated_at DESC,c.id DESC LIMIT 8"),"Latest updates must come from published chapter update timestamps");
+
 console.log("Homepage connected-discovery integration tests passed: versioned entry, live bounded graph, safe taxonomy links, escaped labels and graceful fallback.");
