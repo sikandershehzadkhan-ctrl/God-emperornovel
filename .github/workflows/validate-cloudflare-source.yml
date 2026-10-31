@@ -114,6 +114,9 @@ jobs:
           print(f'PASS: {len(paths)} migrations applied to fresh SQLite.')
           PY
 
+      - name: Test catalog query aggregation parity
+        run: python3 scripts/test-catalog-query.py
+
       - name: Test atomic novel request charging
         run: python3 scripts/test-novel-request-charge-atomic.py
 
