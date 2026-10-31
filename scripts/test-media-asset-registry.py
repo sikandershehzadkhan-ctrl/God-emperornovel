@@ -8,7 +8,7 @@ for path in sorted(Path("migrations").glob("*.sql")):
 
 db.execute("INSERT INTO users(username,email,password_hash) VALUES('creator','creator@example.test','hash')")
 db.execute("INSERT INTO novels(title,author,owner_user_id) VALUES('Test comic','creator',1)")
-db.execute("INSERT INTO chapters(novel_id,chapter_number,title,content) VALUES(1,1,'Chapter 1','')")
+db.execute("INSERT INTO chapters(novel_id,chapter_number,title,content,publication_status) VALUES(1,1,'Chapter 1','','draft')")
 db.execute("""INSERT INTO media_assets(owner_user_id,object_key,mime_type,size_bytes)
               VALUES(1,'private/creator/asset-1.webp','image/webp',1024)""")
 # The registry test checks asset constraints and page uniqueness. The
