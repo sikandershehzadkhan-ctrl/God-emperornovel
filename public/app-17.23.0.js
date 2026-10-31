@@ -95,7 +95,7 @@ async function home(){
    <div id="homeConnections" class="homeConnectionGrid" aria-live="polite"><span class="homeConnectionLoading">Mapping the published library…</span></div>
   </section>
   <section class="platformPulse" aria-labelledby="platformPulseTitle">
-   <div class="platformPulseHead"><div><div class="eyebrow"><span class="eyebrowDot"></span> LIVE FROM THE IMPERIAL DATABASE</div><h2 id="platformPulseTitle">The realm, right now.</h2><p>Real catalog totals, recent reading activity and chapter updates. No estimated online-user counter.</p></div><div class="platformPulseActions"><span id="platformPulseHealth" class="platformPulseHealth" role="status" aria-live="polite">Checking service health…</span><span id="platformPulseUpdated" class="platformPulseUpdated" role="status" aria-live="polite">Loading live data…</span><button id="platformPulseRefresh" class="ghost" type="button">Refresh ↻</button></div></div>
+   <div class="platformPulseHead"><div><div class="eyebrow"><span class="eyebrowDot"></span> LIVE FROM THE IMPERIAL DATABASE</div><h2 id="platformPulseTitle">The realm, right now.</h2><p>Real catalog totals, recent reading activity and chapter updates. No estimated online-user counter.</p></div><div class="platformPulseActions"><span id="platformPulseHealth" class="platformPulseHealth" role="status" aria-live="polite">Checking service health…</span><span id="platformPulseUpdated" class="platformPulseUpdated" role="status" aria-live="polite">Loading real-time data…</span><button id="platformPulseRefresh" class="ghost" type="button">Refresh ↻</button></div></div>
    <div id="platformPulseMetrics" class="platformPulseMetrics" aria-busy="true"><div class="platformPulseMetric skeletonPulse"></div><div class="platformPulseMetric skeletonPulse"></div><div class="platformPulseMetric skeletonPulse"></div><div class="platformPulseMetric skeletonPulse"></div></div>
    <div class="platformPulseDetails"><section class="platformPulsePanel" aria-labelledby="platformPulseUpdatesTitle"><h3 id="platformPulseUpdatesTitle">Latest chapter updates</h3><div id="platformPulseUpdates" aria-live="polite"><p class="muted">Checking the publication feed…</p></div></section><section class="platformPulsePanel" aria-labelledby="platformPulseTrendingTitle"><h3 id="platformPulseTrendingTitle">Reader momentum · 7 days</h3><div id="platformPulseTrending" aria-live="polite"><p class="muted">Calculating from recorded unlocks…</p></div></section></div>
   </section>
@@ -144,7 +144,7 @@ async function home(){
   if(!metrics||!updates||!trending)return;
   if(platformPulseRequest)return platformPulseRequest;
   if(refreshButton){refreshButton.disabled=true;refreshButton.textContent='Refreshing…'}
-  if(updated)updated.textContent=platformPulseHasData?'Refreshing · last successful update '+platformPulseLastUpdated:'Refreshing live data…';
+  if(updated)updated.textContent=platformPulseHasData?'Refreshing · last successful update '+platformPulseLastUpdated:'Refreshing real-time data…';
   if(!platformPulseHasData)metrics.setAttribute('aria-busy','true');
   platformPulseRequest=(async()=>{
    try{
@@ -158,28 +158,28 @@ async function home(){
     }else if(health){health.textContent='Health status unavailable';health.dataset.state='unknown'}
     if(overviewResult.status!=='fulfilled')throw overviewResult.reason||new Error('The live overview could not be loaded.');
     const data=overviewResult.value,m=data?.metrics;
-    if(!m||!data.asOf)throw new Error('The live overview response is incomplete.');
+    const generatedAt=data.generated_at||data.asOf;if(!m||!generatedAt)throw new Error('The real-time overview response is incomplete.');
     const number=v=>{const n=Number(v);return Number.isFinite(n)&&n>=0?n.toLocaleString():'—'};
-    const stamp=new Date(data.asOf);
+    const stamp=new Date(generatedAt);
     if(Number.isNaN(stamp.getTime()))throw new Error('The live overview timestamp is invalid.');
-    platformPulseLastUpdated=stamp.toLocaleTimeString([], {hour:'2-digit',minute:'2-digit',second:'2-digit',timeZoneName:'short'});
+    platformPulseLastUpdated=stamp.toLocaleString([], {dateStyle:'medium',timeStyle:'medium'});
     metrics.innerHTML=[['Published novels',m.publishedNovels],['Published chapters',m.publishedChapters],['Credited authors',m.creditedAuthors],['Catalog views',m.catalogViews],['Signed-in readers · 24h',m.readersInLast24Hours],['Chapter updates · 24h',m.chapterUpdatesLast24Hours]].map(([label,value])=>'<div class="platformPulseMetric"><b>'+number(value)+'</b><span>'+label+'</span></div>').join('');
     const rows=Array.isArray(data.recentUpdates)?data.recentUpdates:[];
     const validUpdates=rows.filter(row=>Number.isSafeInteger(Number(row.novel_id))&&Number(row.novel_id)>0&&Number.isSafeInteger(Number(row.chapter_number))&&Number(row.chapter_number)>0);
-    updates.innerHTML=validUpdates.length?validUpdates.slice(0,6).map(row=>'<a class="platformPulseRow" href="/read/'+Number(row.novel_id)+'/'+Number(row.chapter_number)+'"><span><b>'+esc(row.novel_title)+'</b><small>Chapter '+Number(row.chapter_number)+' · '+esc(row.chapter_title)+'</small></span><span aria-hidden="true">↗</span></a>').join():'<p class="muted">No published chapter updates are recorded yet.</p>';
+    updates.innerHTML=validUpdates.length?validUpdates.slice(0,6).map(row=>{const changedAt=row.updated_at?new Date(String(row.updated_at).replace(' ','T')+'Z'):null;const changedLabel=changedAt&&!Number.isNaN(changedAt.getTime())?changedAt.toLocaleString([], {dateStyle:'medium',timeStyle:'short',timeZone:'UTC'}):'Timestamp unavailable';return '<a class="platformPulseRow" href="/read/'+Number(row.novel_id)+'/'+Number(row.chapter_number)+'"><span><b>'+esc(row.novel_title)+'</b><small>Chapter '+Number(row.chapter_number)+' · '+esc(row.chapter_title)+' · Updated '+esc(changedLabel)+' UTC</small></span><span aria-hidden="true">↗</span></a>'}).join():'<p class="muted">No published chapter updates are recorded yet.</p>';
     const hot=Array.isArray(data.trending)?data.trending:[];
     const validHot=hot.filter(row=>Number.isSafeInteger(Number(row.id))&&Number(row.id)>0);
     trending.innerHTML=validHot.length?validHot.slice(0,5).map(row=>'<a class="platformPulseRow" href="/novel/'+Number(row.id)+'"><span><b>'+esc(row.title)+'</b><small>'+esc(row.author||'Imperial author')+'</small></span><span class="platformPulseCount">'+number(row.unlocksLast7Days)+' unlocks</span></a>').join():'<p class="muted">No chapter unlock activity in the last seven days yet.</p>';
     platformPulseHasData=true;
     metrics.setAttribute('aria-busy','false');
-    if(updated)updated.textContent='Updated '+platformPulseLastUpdated+' · refreshes every 60 seconds';
+    if(updated)updated.textContent='Data generated '+platformPulseLastUpdated+' · refreshes every 60 seconds while this page is visible';
    }catch(error){
     metrics.setAttribute('aria-busy','false');
     if(platformPulseHasData){
      if(updated)updated.textContent='Refresh failed · showing last successful update '+platformPulseLastUpdated;
     }else{
-     if(updated)updated.textContent='Live data temporarily unavailable';
-     metrics.innerHTML='<div class="platformPulseError" role="status">Live platform figures could not be loaded. Your catalog remains available.</div>';
+     if(updated)updated.textContent='Real-time data temporarily unavailable';
+     metrics.innerHTML='<div class="platformPulseError" role="status">Real-time platform figures could not be loaded. Your catalog remains available.</div>';
      updates.innerHTML='<p class="muted">Update feed unavailable right now.</p>';
      trending.innerHTML='<p class="muted">Trend data unavailable right now.</p>';
     }
@@ -303,7 +303,7 @@ async function omni(){
  const root=$('#app');
  root.innerHTML=pageStart('OmniPortal','One discovery gateway for Imperial Novel and providers that have passed rights and connection checks.')+
  '<section class="omniIntroPanel"><div><div class="eyebrow">FEDERATED DISCOVERY · RIGHTS FIRST</div><h2>Explore connected reading worlds.</h2><p>Search the Imperial catalog and approved external provider APIs in one place. External results remain attributed to their source.</p></div><div class="omniTrustNote">No paywall bypass. No DRM circumvention. No unauthorized chapter copying.</div></section>'+
- '<section class="omniStatusPanel" aria-labelledby="omniStatusTitle"><div class="omniStatusHead"><div><div class="eyebrow">LIVE PROVIDER STATUS</div><h2 id="omniStatusTitle">Connection directory</h2><p class="muted">A registered source is not necessarily authorized, connected or online.</p></div><button id="omniStatusRefresh" class="ghost" type="button">Refresh status ↻</button></div><div id="omniStatus" role="status" aria-live="polite"><p class="muted">Checking provider registry…</p></div></section>'+
+ '<section class="omniStatusPanel" aria-labelledby="omniStatusTitle"><div class="omniStatusHead"><div><div class="eyebrow">REAL-TIME PROVIDER SNAPSHOT</div><h2 id="omniStatusTitle">Connection directory</h2><p class="muted">A registered source is not necessarily authorized, connected or online.</p></div><button id="omniStatusRefresh" class="ghost" type="button">Refresh status ↻</button></div><div id="omniStatus" role="status" aria-live="polite"><p class="muted">Checking provider registry…</p></div></section>'+
  '<section class="panel omniSearchPanel"><form id="omni" class="toolbar" role="search"><div class="search" style="display:flex"><span aria-hidden="true">✦</span><input name="q" minlength="2" maxlength="120" aria-label="Search connected catalogs" placeholder="Search titles, authors and worlds..." required></div><button class="primary" type="submit">Search sources</button></form><p class="notice"><b>Import policy:</b> metadata import appears only when the provider has explicitly enabled it. Reading external works stays on the provider unless a written agreement allows another arrangement.</p><div id="omniMessage" class="muted" role="status" aria-live="polite"></div><div id="omniRes" class="grid" style="margin-top:18px"></div></section></div></div>';
  const statusRoot=$('#omniStatus');
  async function loadStatus(){
