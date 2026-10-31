@@ -5,7 +5,7 @@ compatibility_date = "2026-09-08"
 [assets]
 directory = "./public"
 binding = "ASSETS"
-run_worker_first = ["/", "/api/*", "/novel/*", "/read/*", "/fandom/*", "/author/*", "/catalog", "/formats", "/format/*", "/genres", "/tags", "/search", "/library", "/history", "/following", "/tickets", "/requests", "/omniportal", "/community", "/leaderboard", "/tier-list", "/random", "/made-for-you", "/settings", "/for-you", "/trending", "/vote", "/notifications", "/account", "/login", "/register", "/admin", "/author", "/trend-factory", "/community-taxonomy", "/privacy", "/terms", "/copyright"]
+run_worker_first = ["/", "/api/*", "/novel/*", "/read/*", "/fandom/*", "/author/*", "/catalog", "/discover", "/formats", "/format/*", "/genres", "/tags", "/search", "/library", "/history", "/following", "/tickets", "/requests", "/omniportal", "/community", "/leaderboard", "/tier-list", "/random", "/made-for-you", "/settings", "/for-you", "/trending", "/vote", "/notifications", "/account", "/login", "/register", "/admin", "/author", "/trend-factory", "/community-taxonomy", "/privacy", "/terms", "/copyright"]
 
 [[d1_databases]]
 binding = "DB"
@@ -15,7 +15,7 @@ migrations_dir = "migrations"
 
 [vars]
 SITE_NAME = "Imperial Novel"
-APP_VERSION = "17.20.0"
+APP_VERSION = "17.21.0"
 APP_ICON_PATH = "/imperial-novel-app-icon.svg"
 OPENAI_MODEL = "gpt-5-mini"
 OPENAI_BASE_URL = "https://api.openai.com/v1/responses"
