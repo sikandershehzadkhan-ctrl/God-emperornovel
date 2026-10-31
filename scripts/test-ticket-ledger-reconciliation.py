@@ -15,6 +15,8 @@ checks = {
     "per-account comparison groups ledger entries by account": "LEFT JOIN ticket_ledger l ON l.user_id=u.id" in route and "GROUP BY u.id" in route,
     "only meaningful discrepancies are reported": "ABS(u.tickets-COALESCE(SUM(l.delta),0))>0.000001" in route,
     "mismatch output is bounded": "LIMIT 200" in route,
+    "total mismatch count is independent of the 200-row display cap": "mismatch_count:Number(mismatchSummary?.count||0)" in route and "returned_count:mismatches.results.length" in route,
+    "orphan ledger entries are counted for investigation": "orphan_ledger_entries" in route and "u.id IS NULL" in route,
     "response identifies read-only output and includes summary plus mismatches": "summary:summary" in route and "mismatches:mismatches.results" in route,
 }
 for label, ok in checks.items():
