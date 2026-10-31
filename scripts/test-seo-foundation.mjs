@@ -5,6 +5,10 @@ const origin="https://imperial.example";
 assert.equal(canonicalOrigin(origin),origin);
 assert.equal(canonicalPath("/discover"),"/catalog");
 assert.equal(canonicalPath("/formats"),"/formats");
+assert.equal(canonicalPath("/discover/"),"/catalog");
+assert.equal(canonicalPath("/format/manhwa/"),"/format/manhwa");
+assert.equal(canonicalPath("/novel/12/"),"/novel/12");
+assert.equal(canonicalPath("/"),"/");
 assert.equal(canonicalOrigin("http://evil.example"),"https://god-emperornovel.sikandershehzadkhan.workers.dev");
 
 const robots=buildRobotsTxt(origin);
