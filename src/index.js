@@ -561,7 +561,11 @@ async function api(req,env){
    if(!Number(results?.[1]?.meta?.changes||0))return json({error:"Media asset changed during review. Refresh and review again."},409);
    await audit(env,u,"media_asset_rights_reviewed",`asset=${assetId};decision=${decision}`);
    return json({ok:true,asset_id:assetId,rights_status:decision,reviewer_user_id:u.id});
-  }catch(err){console.error("media rights review failed",err);return json({error:"Media rights review could not be recorded."},500)}
+  }catch(err){
+   const attached=await env.DB.prepare("SELECT COUNT(*) AS page_count FROM comic_chapter_pages WHERE media_asset_id=?").bind(assetId).first();
+   if(decision!=="approved"&&Number(attached?.page_count||0)>0)return json({error:"This asset became attached to a comic chapter during review. Its rights state was not changed."},409);
+   console.error("media rights review failed",err);return json({error:"Media rights review could not be recorded."},500)
+  }
  }
  if(p==="/api/agents"&&m==="GET"){return json((await env.DB.prepare(`SELECT slug,name,role,icon,mode,status,last_run_at FROM agents WHERE enabled=1 ORDER BY id`).all()).results)}
  if(p==="/api/admin/agents"&&m==="GET"){const e=admin(u);if(e)return e;return json((await env.DB.prepare(`SELECT id,slug,name,role,icon,mode,status,enabled,last_run_at,last_result FROM agents ORDER BY id`).all()).results)}
