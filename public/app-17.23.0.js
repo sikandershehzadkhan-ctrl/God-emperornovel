@@ -144,7 +144,7 @@ async function home(){
    const data=await apiWithTimeout('/api/platform/overview',{},10000),m=data.metrics||{};
    const number=v=>Number(v||0).toLocaleString();
    metrics.setAttribute('aria-busy','false');
-   metrics.innerHTML=[['Published novels',m.publishedNovels],['Published chapters',m.publishedChapters],['Public authors',m.publicAuthors],['Catalog views',m.catalogViews],['Signed-in readers · 24h',m.readersInLast24Hours],['Chapter updates · 24h',m.chapterUpdatesLast24Hours]].map(([label,value])=>'<div class="platformPulseMetric"><b>'+number(value)+'</b><span>'+label+'</span></div>').join('');
+   metrics.innerHTML=[['Published novels',m.publishedNovels],['Published chapters',m.publishedChapters],['Credited authors',m.creditedAuthors],['Catalog views',m.catalogViews],['Signed-in readers · 24h',m.readersInLast24Hours],['Chapter updates · 24h',m.chapterUpdatesLast24Hours]].map(([label,value])=>'<div class="platformPulseMetric"><b>'+number(value)+'</b><span>'+label+'</span></div>').join('');
    const stamp=new Date(data.asOf);
    updated.textContent='Updated '+(Number.isNaN(stamp.getTime())?'just now':stamp.toLocaleTimeString([], {hour:'2-digit',minute:'2-digit'}));
    const rows=Array.isArray(data.recentUpdates)?data.recentUpdates:[];
