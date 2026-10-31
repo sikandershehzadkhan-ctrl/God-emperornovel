@@ -457,7 +457,7 @@ async function api(req,env){
    env.DB.prepare(`SELECT
     (SELECT COUNT(*) FROM chapters c JOIN novels n ON n.id=c.novel_id WHERE c.publication_status='published' AND n.${eligible}) publishedChapters,
     (SELECT COUNT(DISTINCT h.user_id) FROM history h JOIN novels n ON n.id=h.novel_id WHERE n.${eligible} AND h.updated_at>=datetime('now','-24 hours')) readersInLast24Hours,
-    (SELECT COALESCE(SUM(v.views),0) FROM chapter_views v JOIN chapters c ON c.id=v.chapter_id JOIN novels n ON n.id=c.novel_id WHERE c.publication_status='published' AND n.${eligible} AND v.updated_at>=datetime('now','-24 hours')) chapterViewsInLast24Hours`).first(),
+    (SELECT COUNT(*) FROM chapters c JOIN novels n ON n.id=c.novel_id WHERE c.publication_status='published' AND n.${eligible} AND c.updated_at>=datetime('now','-24 hours')) chapterUpdatesLast24Hours`).first(),
    env.DB.prepare(`SELECT c.novel_id,n.title novel_title,n.author,n.cover_url,c.chapter_number,c.title chapter_title,c.updated_at FROM chapters c JOIN novels n ON n.id=c.novel_id WHERE c.publication_status='published' AND n.${eligible} ORDER BY c.updated_at DESC,c.id DESC LIMIT 8`).all(),
    env.DB.prepare(`SELECT n.id,n.title,n.author,n.cover_url,COUNT(u.chapter_id) unlocksLast7Days FROM novels n JOIN chapters c ON c.novel_id=n.id AND c.publication_status='published' JOIN unlocks u ON u.chapter_id=c.id AND u.unlocked_at>=datetime('now','-7 days') WHERE n.${eligible} GROUP BY n.id ORDER BY unlocksLast7Days DESC,n.updated_at DESC LIMIT 5`).all()
   ]);
@@ -470,7 +470,7 @@ async function api(req,env){
     publicAuthors:Number(catalog?.publicAuthors||0),
     catalogViews:Number(catalog?.catalogViews||0),
     readersInLast24Hours:Number(activity?.readersInLast24Hours||0),
-    chapterViewsInLast24Hours:Number(activity?.chapterViewsInLast24Hours||0)
+    chapterUpdatesLast24Hours:Number(activity?.chapterUpdatesLast24Hours||0)
    },
    recentUpdates:updates.results||[],
    trending:trending.results||[]
