@@ -43,6 +43,13 @@ Signature checks do not decode or sanitize images. Production readiness still re
 
 Run the repository's Cloudflare source validation workflow. It builds the Worker and runs the SQLite migration and security regression tests. This validation workflow does not deploy the Worker or modify production D1.
 
+## Creator media library API
+
+- `GET /api/author/media` returns the authenticated creator's own asset metadata and usage against the 100 MiB creator quota. It never returns private object keys.
+- `DELETE /api/author/media/:assetId` is same-origin and owner-scoped. It refuses deletion while an asset is attached to a comic page.
+- Deletion first reserves the asset in a non-publishable state, then deletes the private R2 object, and only then marks the database record `deleted`. If object deletion fails, the prior state is restored and quota remains charged. If the final database write fails after storage deletion, the reservation remains charged and the endpoint can safely retry.
+- The Author Studio shows asset status, rights state, and quota usage. Upload and deletion controls remain disabled while private storage is unconfigured.
+
 ## Rights review and reader delivery routes
 
 - `GET /api/admin/media/review-queue` is administrator-only and returns the pending rights-review queue.
