@@ -12,13 +12,15 @@ media_delete = section('const assetId=Number(p.split("/").pop());', 'if(p==="/ap
 upload = section('if(p==="/api/author/media/upload"&&m==="POST"){', 'let mediaMatch=p.match(')
 review = section('if(p==="/api/admin/media/review-queue"&&m==="GET"){', 'if(p==="/api/agents"&&m==="GET"){')
 delivery = section('if(mediaMatch&&m==="GET"){', 'if(p==="/api/admin/media/review-queue"&&m==="GET"){')
+delete_origin = source.index('if(req.headers.get("origin")!==url.origin)return json({error:"Cross-origin media deletion is not allowed."},403);')
+delete_auth = source.rfind("const e=author(u);if(e)return e;", 0, delete_origin)
 
 checks = {
     "creator media library requires author access": "author(u)" in media_list,
     "creator media library scopes assets to the authenticated owner": "WHERE owner_user_id=?" in media_list,
     "creator media library reports bounded storage usage": "SUM(size_bytes)" in media_list and "limit=104857600" in media_list,
     "creator media library does not expose private object keys": "object_key" not in media_list,
-    "asset deletion requires author access and same-origin request": "author(u)" in media_delete and 'req.headers.get("origin")!==url.origin' in media_delete,
+    "asset deletion requires author access and same-origin request": delete_auth >= 0 and delete_origin > delete_auth and 'req.headers.get("origin")!==url.origin' in media_delete,
     "asset deletion checks creator ownership": "WHERE id=? AND owner_user_id=?" in media_delete,
     "asset deletion atomically refuses attached comic pages": "NOT EXISTS (SELECT 1 FROM comic_chapter_pages WHERE media_asset_id=?)" in media_delete,
     "asset deletion reserves quota before removing private storage": "status='processing',deleted_at=COALESCE(deleted_at,CURRENT_TIMESTAMP)" in media_delete,
