@@ -1,6 +1,6 @@
 -- Imperial Novel 17.26.0: bind every comic page asset to the owner of its novel.
--- Existing installations add novels.owner_user_id through the publishing-schema
--- bootstrap before applying this migration. Fresh installs define it in 0001.
+-- Migration 0004 introduces novels.owner_user_id on fresh installs. Existing
+-- installations already receive it through the publishing-schema bootstrap.
 CREATE TRIGGER IF NOT EXISTS trg_comic_page_asset_must_match_novel_owner_insert
 BEFORE INSERT ON comic_chapter_pages
 FOR EACH ROW
