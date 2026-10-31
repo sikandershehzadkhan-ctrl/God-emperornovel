@@ -450,6 +450,7 @@ async function api(req,env){
 
  if(p==="/api/formats"&&m==="GET")return json({formats:CONTENT_FORMATS,groups:["text","comics","screen","audio","interactive"],version:1});
  if(p==="/api/platform/overview"&&m==="GET"){
+  await ensurePublishingSchema(env);
   const eligible="publication_status='published' AND rights_status IN ('original','public_domain','licensed','authorized')";
   const [catalog,activity,updates,trending]=await Promise.all([
    env.DB.prepare(`SELECT COUNT(*) publishedNovels,COALESCE(SUM(views),0) catalogViews,COUNT(DISTINCT NULLIF(TRIM(author),'')) publicAuthors FROM novels WHERE ${eligible}`).first(),
