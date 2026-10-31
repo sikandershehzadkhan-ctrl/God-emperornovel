@@ -4,8 +4,9 @@ import assert from 'node:assert/strict';
 const version = JSON.parse(fs.readFileSync('package.json', 'utf8')).version;
 const source = fs.readFileSync('src/index.js', 'utf8');
 const index = fs.readFileSync('public/index.html', 'utf8');
-const registryMatch = source.match(/const CONTENT_FORMATS=(\[[\s\S]*?\n\];)/);
-assert.ok(registryMatch, 'Server-owned content format registry exists');
+const registrySource = fs.readFileSync('src/content-formats.mjs', 'utf8');
+const registryMatch = registrySource.match(/export const CONTENT_FORMATS=(\[[\s\S]*?\n\];)/);
+assert.ok(registryMatch, 'Server-owned content format registry exists in its domain module');
 const formats = [...registryMatch[1].matchAll(/\{id:"([a-z_]+)",label:"([^"]+)",group:"([a-z]+)"[^}]*\}/g)].map(([, id, label, group]) => ({ id, label, group }));
 assert.ok(formats.length >= 12, 'Registry includes a broad set of formats');
 assert.equal(new Set(formats.map(x => x.id)).size, formats.length, 'Format IDs are unique');
@@ -25,7 +26,7 @@ assert.ok(adminAgentRoute && adminAgentRoute[1].includes('admin(u)'), 'Private a
 assert.ok(taxonomyHandler.includes("console.error('taxonomy submission write failed',e)"), 'Taxonomy write failures remain available to private server logs');
 assert.ok(source.includes('CONTENT_FORMAT_IDS.has(kind)'), 'Publishing validates format IDs');
 assert.ok(source.includes('supported_formats:CONTENT_FORMATS.map'), 'Invalid formats return accepted IDs');
-assert.ok(source.includes('originHint:') && source.includes('experience:'), 'Format registry documents origin traditions and reader experiences');
+assert.ok(registrySource.includes('originHint:') && registrySource.includes('experience:'), 'Format registry documents origin traditions and reader experiences');
 for (const path of ['public/app.js', `public/app-${version}.js`]) {
  const app = fs.readFileSync(path, 'utf8');
  assert.ok(app.includes('aria-labelledby="homeFormatTitle"'), path + ' makes format discovery visible from the homepage');
