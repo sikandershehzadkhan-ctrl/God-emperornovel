@@ -18,7 +18,10 @@ const sitemap=buildSitemapXml(origin,[{id:12,updated_at:"2026-10-30T12:00:00Z"},
 assert.match(sitemap,/<loc>https:\/\/imperial\.example\/novel\/12<\/loc><lastmod>2026-10-30<\/lastmod>/);
 assert.match(sitemap,/<loc>https:\/\/imperial\.example\/novel\/13<\/loc>/);
 assert.equal((sitemap.match(/\/novel\/12/g)||[]).length,1);
-assert.doesNotMatch(sitemap,/\/novel\/bad/);\nassert.match(sitemap,/\/author\/Sikander%20Khan/);\nassert.match(sitemap,/\/author\/Sikander%20%26%20Co\./);\nassert.equal((sitemap.match(/\/author\/Sikander%20Khan/g)||[]).length,1);
+assert.doesNotMatch(sitemap,/\/novel\/bad/);
+assert.match(sitemap,/\/author\/Sikander%20Khan/);
+assert.match(sitemap,/\/author\/Sikander%20%26%20Co\./);
+assert.equal((sitemap.match(/\/author\/Sikander%20Khan/g)||[]).length,1);
 const page=applySeoMetadata('<html><head><title>Old</title><meta name="description" content="old"><meta property="og:title" content="old"></head></html>',{
  title:'A <Story> & More',description:'A useful story description.',canonical:origin+'/novel/12',robots:'index,follow'
 });
@@ -31,4 +34,4 @@ assert.match(page,/schema\.org/);
 assert.equal((page.match(/name="description"/g)||[]).length,1);
 const privatePage=applySeoMetadata('<html><head><title>Account</title></head></html>',{title:"Account",robots:"noindex,nofollow"});
 assert.match(privatePage,/name="robots" content="noindex,nofollow"/);
-console.log("SEO metadata, robots policy, canonical URL and dynamic sitemap tests passed.");
+console.log("SEO metadata, robots policy, canonical URL, JSON-LD, novel and author sitemap tests passed.");
