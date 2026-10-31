@@ -921,7 +921,8 @@ async function api(req,env){
    if((eligible.results||[]).length!==ids.length)return json({error:"Every page must use your own image with completed processing and approved rights."},409);
   }
   try{
-   const statements=[env.DB.prepare("DELETE FROM comic_chapter_pages WHERE chapter_id=?").bind(chapterId),...normalized.map((x,i)=>env.DB.prepare("INSERT INTO comic_chapter_pages(chapter_id,media_asset_id,page_number,alt_text,caption) VALUES(?,?,?,?,?)").bind(chapterId,x.assetId,i+1,x.alt,x.caption)),env.DB.prepare("UPDATE chapters SET updated_at=CURRENT_TIMESTAMP WHERE id=?").bind(chapterId),env.DB.prepare("UPDATE novels SET updated_at=CURRENT_TIMESTAMP WHERE id=?").bind(chapter.novel_id)];
+   const comicContent=JSON.stringify({type:"imperial_comic_chapter",version:1,pages:normalized.map(x=>({src:"/api/media/"+x.assetId,alt:x.alt,caption:x.caption}))});
+   const statements=[env.DB.prepare("DELETE FROM comic_chapter_pages WHERE chapter_id=?").bind(chapterId),...normalized.map((x,i)=>env.DB.prepare("INSERT INTO comic_chapter_pages(chapter_id,media_asset_id,page_number,alt_text,caption) VALUES(?,?,?,?,?)").bind(chapterId,x.assetId,i+1,x.alt,x.caption)),env.DB.prepare("UPDATE chapters SET content=?,updated_at=CURRENT_TIMESTAMP WHERE id=? AND publication_status='draft'").bind(comicContent,chapterId),env.DB.prepare("UPDATE novels SET updated_at=CURRENT_TIMESTAMP WHERE id=?").bind(chapter.novel_id)];
    await env.DB.batch(statements);
   }catch(err){console.error("comic page save failed",err);return json({error:"Comic pages could not be saved. Existing page order was preserved."},409)}
   try{await audit(env,u,"comic_chapter_pages_saved",`chapter=${chapterId};pages=${normalized.length}`)}catch(err){console.error("comic page audit event failed",err)}
