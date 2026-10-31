@@ -19,6 +19,7 @@ checks = {
     "upload validates image metadata and bytes": "validateMediaUploadMetadata" in upload and "validateImageBytes" in upload,
     "upload requires private R2 binding": 'env.MEDIA_BUCKET.put' in upload,
     "upload does not self-approve or mark media ready": "rights_status='approved'" not in upload and "status='ready'" not in upload,
+    "failed upload cleanup rejects pending and uploaded records": "status IN ('pending_upload','uploaded')" in upload and "MEDIA_BUCKET.delete(objectKey)" in upload,
     "rights review requires administrator role": "admin(u)" in review,
     "rights review rejects cross-origin requests": 'req.headers.get("origin")!==url.origin' in review,
     "rights approval records reviewer and decision atomically": "media_asset_reviews" in review and "reviewed_by_user_id" in review and "env.DB.batch" in review,
