@@ -3,7 +3,8 @@ import { chromium } from "playwright";
 
 const baseURL = (process.env.IMPERIAL_BASE_URL || "http://127.0.0.1:8787").replace(/\/$/, "");
 const browser = await chromium.launch({ headless: true });
-const page = await browser.newPage({ viewport: { width: 390, height: 844 }, deviceScaleFactor: 1 });
+const mobileContext = await browser.newContext({ viewport: { width: 360, height: 780 }, deviceScaleFactor: 3, isMobile: true, hasTouch: true });
+const page = await mobileContext.newPage();
 const pageErrors = [];
 page.on("pageerror", error => pageErrors.push(error.message));
 
@@ -68,8 +69,20 @@ try {
   assert.ok(await tvmazeResult.locator('a[href^="https://www.tvmaze.com/"]').count() >= 1, "screen metadata must link to the source record");
   await assertNoMobileOverflow("OmniPortal");
 
+  const desktopContext = await browser.newContext({ viewport: { width: 1440, height: 900 }, deviceScaleFactor: 1 });
+  const desktopPage = await desktopContext.newPage();
+  desktopPage.on("pageerror", error => pageErrors.push(error.message));
+  await desktopPage.goto(baseURL + "/", { waitUntil: "domcontentloaded", timeout: 30000 });
+  await desktopPage.locator(".nextHero h1").waitFor({ timeout: 20000 });
+  const desktopHomeOverflow = await desktopPage.evaluate(() => document.documentElement.scrollWidth > window.innerWidth + 2);
+  assert.equal(desktopHomeOverflow, false, "desktop homepage must not create horizontal overflow at 1440px");
+  await desktopPage.goto(baseURL + "/formats", { waitUntil: "domcontentloaded", timeout: 30000 });
+  await desktopPage.getByRole("heading", { name: "Explore by Format" }).waitFor({ timeout: 20000 });
+  const desktopFormatsOverflow = await desktopPage.evaluate(() => document.documentElement.scrollWidth > window.innerWidth + 2);
+  assert.equal(desktopFormatsOverflow, false, "desktop Formats page must not create horizontal overflow at 1440px");
+
   assert.deepEqual(pageErrors, [], "browser routes must not emit uncaught JavaScript page errors");
-  console.log("PASS: local Worker/D1 health, 15+ format registry, homepage, formats directory, format landing, catalog filters, mobile overflow and live TVmaze browser search.");
+  console.log("PASS: local Worker/D1 health, 15+ format registry, mobile (360px Android emulation), desktop (1440px), homepage, formats directory, format landing, catalog filters, overflow checks and live TVmaze browser search.");
 } finally {
   await browser.close();
 }
