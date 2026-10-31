@@ -251,3 +251,43 @@ A separate read-only browser session inspected Search, Formats, Genres, Author S
 ### Interpretation
 
 Public discovery is broader than the published catalog: 158 genre links and multiple format families exist, but only one published story appeared in the live catalog query. This is taxonomy breadth, not catalog depth. A visible Author Studio form is not proof that the full author publishing lifecycle works; that requires an authorized test account and end-to-end tests.
+
+
+## Second live public-page comparison: WebNovel and WTR-LAB (2026-10-31)
+
+A separate TinyFish browser session inspected Imperial Novel, WebNovel and WTR-LAB public surfaces in one read-only session. No sign-in, registration, form submission, purchases or data changes were performed. This is a small public-page sample, not a full competitor audit.
+
+### Observed comparison
+
+| Area | Imperial Novel | WebNovel | WTR-LAB |
+|---|---|---|---|
+| Homepage | Imperial brand hero, search, genre chips, two primary story shelves and feature deck | Featured carousel, awards/author-benefit section and multiple editorial shelves | Minimal search-first landing page |
+| Navigation | Discover, Formats, Genres, Community, Rankings, OmniPortal, Library; 14 language choices and theme toggle | Browse, Rankings, Create; genre trees for male/female/comic/fanfiction and social links | Library, Novels, Ranking, Leaderboard; Discord/Patreon links |
+| Discovery | Catalog filters/sorts, but one published novel returned | Weekly featured, reader picks, rising, new arrivals, editor picks, fanfiction and completed shelves | Novel list and search; limited homepage curation visible |
+| Novel detail | Metadata, synopsis, start reading, library/follow/share, chapter list, rating/reaction/comment surfaces | Rich details, tags, chapter counts, reviews and read CTAs | Basic novel pages and translation/community notes |
+| Reader | Sample text chapter rendered; locked chapter showed 1 Crown | Reader and chapter navigation visible | Translation-focused reader surfaced in public product description/sample |
+| Creator | Author Studio route and form visible; authenticated lifecycle not tested | Dedicated Inkstone creator portal and author onboarding links | No creator tooling verified in this public sample |
+| Community/ranking | Leaderboard, tier list, vote and random-novel entry points; detail page had no visible discussion activity in this sample | Multiple ranking families and reviews/social channels | Ranking/leaderboard and Discord/community voting surfaces |
+| Formats/localization | 18 sub-formats across 5 groups; 14 locale choices; five media families still catalog-only | Novel/comic/fanfiction categories | Primarily novel/MTL positioning |
+
+### High-priority competitive gaps
+
+1. **Content depth and editorial quality:** live public catalog exposed one novel and two chapters. The sampled chapter content was test-quality, not launch-quality. This is a critical supply and trust issue.
+2. **Discovery depth:** WebNovel exposes substantially more curated shelves and ranking families. Imperial Novel's discovery controls are a useful base, but need enough authorized works and meaningful signals to make them useful.
+3. **Community activity and creator lifecycle:** Imperial Novel exposes community/creator entry points, but the browser did not verify authenticated publishing or a lively discussion ecosystem. Build complete, moderated workflows before marketing these as mature features.
+
+### Limits and confidence
+
+- Browser-native performance timing was unavailable; no LCP, TTFB or controlled time-to-content claims are made.
+- Mobile quality was not assessed; the session used a desktop viewport.
+- Login-gated creator, payment, personalized recommendation and moderation actions were not tested.
+- Competitor features are observations of public surfaces, not proof of backend behavior or service quality.
+- The 14 visible locale choices and 18 format subtypes are taxonomy/UI breadth, not proof of complete translation coverage or working playback for every format.
+
+### Follow-up actions
+
+1. Prioritize a rights-cleared, editorially reviewed content acquisition and author onboarding pipeline.
+2. Audit every ranking and recommendation query for real signals, anti-manipulation and honest empty states.
+3. Complete authenticated author, review, discussion, report and moderation flows with role-based regression tests.
+4. Run same-device mobile testing and controlled performance measurements before changing Worker/D1 architecture.
+5. Revisit WTR-LAB's actual reader translation flow and WebNovel's ranking/creator flows only through public or authorized test access.
