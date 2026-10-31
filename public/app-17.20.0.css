@@ -17,3 +17,13 @@
 .reactReactionList{display:flex;flex-wrap:wrap;gap:8px;align-items:center}.reactReactionList .novelReaction{min-height:42px;min-width:54px;padding:8px 12px;border-radius:999px;display:inline-flex;align-items:center;justify-content:center;gap:7px}.reactReactionList .novelReaction[aria-pressed=true]{border-color:#6A0DAD;background:rgba(106,13,173,.12);color:var(--text,#171321)}.reactReactionList .novelReaction:disabled{opacity:.65;cursor:wait}.reactReactionError{flex-basis:100%;font-size:.85rem;color:var(--danger,#a33)}
 
 .ratingIslandSummary{margin:0;color:var(--muted,#687080);font-size:.92rem}.ratingIslandSummary strong{color:var(--text,#171321);font-variant-numeric:tabular-nums}.ratingIsland .ratingStars{margin:10px 0 6px}.ratingIsland .ratingStar:disabled{opacity:.65;cursor:wait}
+
+/* TVmaze metadata-only discovery panel */
+.tvmazePanel{display:grid;gap:12px}
+.tvmazePanel h2{margin:0}
+.tvmazeResult{min-width:0}
+.tvmazeResult h3{margin:8px 0}
+.tvmazeResult .tvmazeAttribution{margin:12px 0 0;padding-top:9px;border-top:1px solid var(--line);font-size:.78rem;line-height:1.45;color:var(--muted)}
+.tvmazeAttribution a,.tvmazePolicy a{color:var(--brand-sapphire,var(--brand-purple));text-decoration:underline;text-underline-offset:2px}
+.tvmazePolicy{margin:0;color:var(--muted);font-size:.82rem;line-height:1.5}
+@media(max-width:640px){.tvmazePanel .toolbar{align-items:stretch;flex-direction:column}.tvmazePanel .toolbar button{width:100%}}
