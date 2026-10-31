@@ -23,15 +23,20 @@ assert.match(sitemap,/\/author\/Sikander%20Khan/);
 assert.match(sitemap,/\/author\/Sikander%20%26%20Co\./);
 assert.equal((sitemap.match(/\/author\/Sikander%20Khan/g)||[]).length,1);
 const page=applySeoMetadata('<html><head><title>Old</title><meta name="description" content="old"><meta property="og:title" content="old"></head></html>',{
- title:'A <Story> & More',description:'A useful story description.',canonical:origin+'/novel/12',robots:'index,follow'
+ title:'A <Story> & More',description:'A useful story description.',canonical:origin+'/novel/12',robots:'index,follow',image:'/covers/novel-12.webp'
 });
 assert.match(page,/<title>A &lt;Story&gt; &amp; More<\/title>/);
 assert.match(page,/name="description" content="A useful story description\."/);
 assert.match(page,/property="og:title" content="A &lt;Story&gt; &amp; More"/);
 assert.match(page,/rel="canonical" href="https:\/\/imperial\.example\/novel\/12"/);
+assert.match(page,/property="og:url" content="https:\/\/imperial\.example\/novel\/12"/);
+assert.match(page,/property="og:image" content="https:\/\/imperial\.example\/covers\/novel-12\.webp"/);
+assert.match(page,/name="twitter:image" content="https:\/\/imperial\.example\/covers\/novel-12\.webp"/);
 assert.match(page,/application\/ld\+json/);
 assert.match(page,/schema\.org/);
 assert.equal((page.match(/name="description"/g)||[]).length,1);
+const unsafeImage=applySeoMetadata('<html><head></head></html>',{title:"Test",canonical:origin+"/test",image:"javascript:alert(1)"});
+assert.match(unsafeImage,/og:image" content="https:\/\/imperial\.example\/imperial-novel-app-icon\.svg"/);
 const privatePage=applySeoMetadata('<html><head><title>Account</title></head></html>',{title:"Account",robots:"noindex,nofollow"});
 assert.match(privatePage,/name="robots" content="noindex,nofollow"/);
-console.log("SEO metadata, robots policy, canonical URL, JSON-LD, novel and author sitemap tests passed.");
+console.log("SEO metadata, safe cover previews, robots policy, canonical URL, JSON-LD, novel and author sitemap tests passed.");
