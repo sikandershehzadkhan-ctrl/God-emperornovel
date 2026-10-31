@@ -33,6 +33,7 @@ assert.match(getPageSeo("/format/manhwa").title,/Manhwa/);
 assert.equal(robotsForPath("/search"),"noindex,nofollow");
 assert.equal(robotsForPath("/account"),"noindex,nofollow");
 assert.equal(robotsForPath("/author"),"noindex,nofollow");
+assert.equal(robotsForPath("/fandom/unknown"),"noindex,nofollow");
 assert.equal(robotsForPath("/author/some-writer"),"index,follow");
 assert.equal(robotsForPath("/catalog",404),"noindex,nofollow");
 assert.equal(robotsForPath("/read/12/5",200,true),"noindex,nofollow");
