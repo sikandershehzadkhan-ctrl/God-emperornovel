@@ -64,7 +64,9 @@ BEGIN
   SELECT RAISE(ABORT, 'donation review history is immutable');
 END;
 
--- Payment credits must have one ledger row per donation.
-CREATE UNIQUE INDEX IF NOT EXISTS idx_ticket_ledger_payment_reference
-  ON ticket_ledger(reason, reference)
+-- Non-unique lookup index supports reconciliation of legacy payment references.
+-- Do not impose a new unique constraint on historical ledger rows without a
+-- production duplicate audit; the donation status trigger provides one-time posting.
+CREATE INDEX IF NOT EXISTS idx_ticket_ledger_payment_reference
+  ON ticket_ledger(reference)
   WHERE reason = 'payment' AND reference <> '';
