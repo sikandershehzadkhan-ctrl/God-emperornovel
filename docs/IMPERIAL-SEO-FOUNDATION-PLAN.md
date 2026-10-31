@@ -143,7 +143,7 @@ This document is a plan and audit record. It does not modify production, D1, Clo
 ### Live production observations
 - The live robots.txt allowed all paths and declared the sitemap.
 - The live sitemap contained only five static URLs: homepage, catalog, OmniPortal, community and leaderboard. It did not include published novel or author URLs, genres or tags.
-- The live catalog had a page-specific title and description and exposed sorting, status, format, rating, genre, tag and language controls.
+- The catalog had a page-specific title and description and exposed sorting, status, format, rating, genre, tag and language controls. Catalog content is refreshed from the platform API; it is not described as a streaming real-time feed.
 - The homepage exposed the editorial hero, format shelf, story shelves, Creator Studio, Trend Factory, community and OmniPortal.
 - The live homepage's Open Graph and Twitter descriptions were generic and differed from the fuller visible homepage positioning.
 
