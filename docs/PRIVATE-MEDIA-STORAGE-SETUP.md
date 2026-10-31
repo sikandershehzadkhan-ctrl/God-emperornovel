@@ -72,3 +72,12 @@ These routes are not a substitute for image processing. No upload path currently
 - Each page must use a distinct media asset owned by the novel owner, with status `ready` and rights status `approved`. Alt text is limited to 300 characters, captions to 500, and a chapter can contain at most 300 pages.
 - Migration `0017_comic_page_draft_guards.sql` enforces draft-only page insertion, updates and deletion directly in D1. A chapter must be moved back to draft before its page composition can change.
 - This is the secure backend foundation for the Comic Studio page-ordering interface. Uploads remain blocked until private R2 storage and trusted image processing are configured.
+
+## Comic Studio and chapter publication gates
+
+- Author Studio's Comic Page Manager loads the creator's comic chapters and only offers media assets in `ready` state with `approved` rights. Creators can order pages, remove pages, and supply alt text and captions.
+- Saving the page sequence updates both `comic_chapter_pages` and the chapter's structured reader content in one D1 batch. Reader content references only `/api/media/:assetId` paths for managed pages.
+- The comic reader already supports vertical-scroll and single-page modes. The private media route independently checks publication, rights and chapter unlock state before returning image bytes.
+- Chapter PATCH now rejects edits unless the chapter is a draft. For chapters with managed private pages, content must remain byte-for-byte consistent with the page records; use Comic Page Manager to change the sequence.
+- Comic chapter publication now requires at least one attached media asset that is both `ready` and rights-approved. This intentionally keeps new comic publication blocked until private storage and trusted image processing are operational.
+- Legacy public HTTPS comic URLs remain readable for existing content, but they do not satisfy the new private-media publication gate.
