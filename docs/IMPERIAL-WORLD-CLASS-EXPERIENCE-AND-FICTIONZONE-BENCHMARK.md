@@ -179,7 +179,7 @@ A provider becomes searchable only when all are true:
 - No external smart-unlock unless a real provider contract, entitlement check and payment flow exist.
 
 ### Admin connector operations
-Show separate counts for registered, authorization-pending, authorized, enabled, healthy, degraded and disabled providers. Deduplicate by normalized base URL. Every metric is live and timestamped. Never label a registered source as connected.
+Show separate counts for registered, authorization-pending, authorized, enabled, healthy, degraded and disabled providers. Deduplicate by normalized base URL. Every metric is real-time request data or a timestamped health observation, with freshness shown explicitly. Never label a registered source as connected.
 
 ## 7. Real-time platform intelligence
 
@@ -191,7 +191,7 @@ The public overview must be backed by real D1 records and expose:
 - Recent chapter updates with actual timestamps.
 - Trending based on a named, reproducible event window such as chapter unlocks over seven days, with minimum-volume rules and transparent fallback.
 
-Every response includes generated_at, measurement windows and metric definitions. Cache according to the freshness target; client polling pauses when the page is hidden and offers manual refresh. No fake counts, placeholder data, fabricated earnings or inferred provider activity.
+Every response includes generated_at, measurement windows and metric definitions. The public overview uses request-time D1 queries and no-store response headers; the browser refreshes every 60 seconds while visible and supports manual refresh. This is near-real-time polling, not a WebSocket or instant-push guarantee. Display the exact data-generation time and per-record event timestamps. Provider health is a timestamped observation from the last health check, not proof of continuous availability. No fake counts, placeholder data, fabricated earnings or inferred provider activity.
 
 ## 8. SEO, AEO and GEO
 
