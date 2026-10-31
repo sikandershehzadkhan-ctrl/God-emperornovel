@@ -53,10 +53,13 @@ jobs:
           enable-cache: true
 
       - name: Install official Graphify CLI
-        run: uv tool install graphifyy
+        run: uv tool install 'graphifyy[sql]'
 
       - name: Extract repository code graph without an LLM
         run: graphify extract . --code-only
+
+      - name: Cluster graph and generate architecture report
+        run: graphify cluster-only .
 
       - name: Verify graph outputs
         run: |
