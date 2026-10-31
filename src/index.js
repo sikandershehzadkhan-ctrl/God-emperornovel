@@ -417,6 +417,8 @@ async function api(req,env){
   const e=author(u);if(e)return e;
   if(!env.MEDIA_BUCKET||typeof env.MEDIA_BUCKET.put!=="function")return json({error:"Private media storage is not configured. Uploads are not enabled yet."},503);
   const contentType=String(req.headers.get("content-type")||"").toLowerCase();
+  const requestBytes=Number(req.headers.get("content-length")||0);
+  if(requestBytes>20*1024*1024+65536)return json({error:"Upload request exceeds the 20 MiB image limit."},413);
   if(!contentType.startsWith("multipart/form-data;"))return json({error:"Send an image using multipart/form-data."},415);
   let form;try{form=await req.formData()}catch{return json({error:"Invalid multipart upload."},400)}
   const file=form.get("file");
