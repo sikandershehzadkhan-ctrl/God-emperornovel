@@ -129,6 +129,9 @@ jobs:
       - name: Test private media API security boundaries
         run: python3 scripts/test-media-api-security.py
 
+      - name: Test administrator media review interface
+        run: python3 scripts/test-admin-media-review-ui.py
+
       - name: Test catalog query aggregation parity
         run: python3 scripts/test-catalog-query.py
 
