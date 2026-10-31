@@ -6,10 +6,17 @@
 @media(max-width:700px){.communityGrid{grid-template-columns:1fr}.commentReply{margin-left:12px}.ratingStar{font-size:29px}}
 
 
-/* 16.63.0 brand palette enforcement */
-:root{--brand-purple:#7c3aed;--brand-cyan:#22d3ee;--brand-black:#050507}
+/* Imperial Novel: shared interaction polish, aligned with the purple / sapphire / white / obsidian system. */
+:root{--brand-purple:var(--in-purple,#8b5cf6);--brand-sapphire:var(--in-sapphire,#4f8cff);--brand-black:var(--in-obsidian,#080a12)}
 .themeToggle{accent-color:var(--brand-purple)}
-.themeToggle:hover{border-color:var(--brand-cyan);box-shadow:0 0 0 1px rgba(34,211,238,.22)}
+.themeToggle:hover{border-color:var(--brand-sapphire);box-shadow:0 0 0 1px rgba(79,140,255,.2)}
+.ratingStar.selected,.ratingStar:hover{color:var(--brand-sapphire,#4f8cff)}
+.ratingStar:focus-visible,.commentActions button:focus-visible{outline:3px solid var(--brand-sapphire,#4f8cff);outline-offset:3px}
+@media(prefers-reduced-motion:reduce){*,*::before,*::after{scroll-behavior:auto!important;animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important}}
+
+.reactReactionList{display:flex;flex-wrap:wrap;gap:8px;align-items:center}.reactReactionList .novelReaction{min-height:42px;min-width:54px;padding:8px 12px;border-radius:999px;display:inline-flex;align-items:center;justify-content:center;gap:7px}.reactReactionList .novelReaction[aria-pressed=true]{border-color:#6A0DAD;background:rgba(106,13,173,.12);color:var(--text,#171321)}.reactReactionList .novelReaction:disabled{opacity:.65;cursor:wait}.reactReactionError{flex-basis:100%;font-size:.85rem;color:var(--danger,#a33)}
+
+.ratingIslandSummary{margin:0;color:var(--muted,#687080);font-size:.92rem}.ratingIslandSummary strong{color:var(--text,#171321);font-variant-numeric:tabular-nums}.ratingIsland .ratingStars{margin:10px 0 6px}.ratingIsland .ratingStar:disabled{opacity:.65;cursor:wait}
 
 /* Creator application layout: compact, readable and phone-first. */
 .authorApplicationPanel{max-width:760px;margin:20px auto}
