@@ -63,10 +63,10 @@ assert db.execute("SELECT tickets FROM users WHERE id=7").fetchone()[0] == 40
 assert db.execute("SELECT COUNT(*) FROM ticket_ledger WHERE reference='42'").fetchone()[0] == 0
 print("PASS: rejection records a decision without crediting Crowns")
 
-expect_integrity_error(
-    lambda: db.execute("INSERT INTO ticket_ledger(user_id,delta,reason,reference) VALUES(7,25,'payment','41')"),
-    "payment ledger references cannot be credited twice"
-)
+db.execute("UPDATE donations SET status='approved' WHERE id=41")
+assert db.execute("SELECT tickets FROM users WHERE id=7").fetchone()[0] == 40
+assert db.execute("SELECT COUNT(*) FROM ticket_ledger WHERE reason='payment' AND reference='41'").fetchone()[0] == 1
+print("PASS: repeating an already-approved status does not post a second credit")
 
 checks = {
     "admin authentication protects donation review": 'const e=admin(u);if(e)return e;' in route,
