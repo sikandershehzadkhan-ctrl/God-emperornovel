@@ -7,7 +7,7 @@ def section(start, end):
     b = source.index(end, a)
     return source[a:b]
 
-upload = section('if(p==="/api/author/media/upload"&&m==="POST"){', 'if(p==="/api/media/')
+upload = section('if(p==="/api/author/media/upload"&&m==="POST"){', 'let mediaMatch=p.match(')
 review = section('if(/^\\/api\\/admin\\/media\\/\\d+\\/review$/.test(p)&&m==="POST"){', 'if(p==="/api/agents"&&m==="GET"){')
 delivery = section('if(mediaMatch&&m==="GET"){', 'if(p==="/api/admin/media/review-queue"&&m==="GET"){')
 
