@@ -68,15 +68,20 @@ async function home(){
   <section class="hero nextHero imperialArchiveHero">
    <div class="nextHeroGlow" aria-hidden="true"></div>
    <div class="nextHeroCopy">
-    
+    <div class="imperialHeroKicker"><span aria-hidden="true"></span> A NEW ERA OF STORYTELLING</div>
     <h1>Open a world.<br><span>Shape an empire.</span></h1>
     <p class="nextHeroLead">Discover stories worth staying up for, then create the worlds only you can imagine.</p>
     <form class="heroSearch" action="/search" method="get" role="search"><span aria-hidden="true">${iconSvg("search")}</span><input name="q" type="search" placeholder="Search titles, tropes, worlds..." aria-label="Search novels, genres and authors"><button type="submit">Find your story <span aria-hidden="true">↗</span></button></form>
     <div class="heroTags"><a href="/catalog?genre=fantasy">Fantasy</a><a href="/catalog?genre=progression">Progression</a><a href="/catalog?genre=romance">Romance</a><a href="/catalog?genre=isekai">Isekai</a></div>
     <div class="heroPromise">Read • Create • Conquer <span class="promiseText">Original. Authorized. Reader-first.</span></div>
    </div>
-   
-   
+   <div class="imperialHeroVisual" aria-hidden="true">
+    <div class="imperialHeroOrbit imperialHeroOrbitOne"></div>
+    <div class="imperialHeroOrbit imperialHeroOrbitTwo"></div>
+    <div class="imperialHeroSeal"><img src="/imperial-novel-app-icon.svg" alt="" width="184" height="184" decoding="async"></div>
+    <div class="imperialHeroCaption"><span>THE IMPERIAL CREST</span><b>Read. Create. Conquer.</b></div>
+    <div class="imperialHeroAxes"><span>READ</span><span>CREATE</span><span>CONNECT</span></div>
+   </div>
   </section>
   
   <section class="homeFormatShelf" aria-labelledby="homeFormatTitle">
