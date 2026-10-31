@@ -112,6 +112,10 @@ assert.ok(authorAnalyticsRoute.includes("clientRefreshSeconds:60")&&authorAnalyt
 assert.ok(authorAnalyticsRoute.includes("stories:eligible.map")&&authorAnalyticsRoute.includes("publishedNovels:eligible.length"),"The story breakdown and summary must include only published, rights-eligible novels owned by this author.");
 assert.ok(authorAnalyticsRoute.includes("currentAverageRating")&&authorAnalyticsRoute.includes("timeline"),"The author summary must include a weighted rating average and timestamped activity timeline.");
 assert.ok(authorAnalyticsRoute.includes("chapterRows")&&authorAnalyticsRoute.includes("chapterReaderRequests")&&authorAnalyticsRoute.includes("readerTicketSpendInPeriod"),"Author analytics must return individual chapter request, unlock and reader ticket-spend metrics.");
+assert.ok(authorAnalyticsRoute.includes("SUM(v.view_requests)")&&authorAnalyticsRoute.includes("SUM(novelViews) novelViews")&&authorAnalyticsRoute.includes("SUM(chapterViews) chapterViews"),"Daily view timelines must sum aggregate request counters rather than count aggregate rows.");
+assert.ok(authorAnalyticsRoute.includes("SUM(follows) follows"),"Adding daily view series must preserve follow activity in the author timeline.");
+assert.ok(source.includes("ensureViewAnalyticsSchema(env);await env.DB.prepare(\"INSERT INTO novel_view_daily")&&source.includes("ensureViewAnalyticsSchema(env);await env.DB.prepare(\"INSERT INTO chapter_view_daily"),"Both public detail routes must record daily views without blocking their existing lifetime counters.");
+
 assert.ok(authorAnalyticsRoute.includes("LIMIT 100"),"Chapter performance must be bounded to avoid unbounded dashboard queries.");
 assert.ok(app.includes('id="authorAnalyticsChapters"')&&app.includes("Chapter performance"),"Author Studio must render a per-chapter performance breakdown.");
 assert.ok(app.includes("No published chapters have activity data yet"),"The chapter performance section must have a truthful empty state.");
