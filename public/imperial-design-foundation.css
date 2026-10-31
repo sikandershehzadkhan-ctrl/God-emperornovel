@@ -753,3 +753,12 @@ html[data-theme="dark"] .imperialHeroSeal{box-shadow:0 24px 70px rgba(0,0,0,.4),
 @media(prefers-reduced-motion:reduce){
   .imperialHeroSeal{transform:none}
 }
+
+.imperialHeroActions{display:flex;align-items:center;flex-wrap:wrap;gap:17px;margin-top:15px}
+.imperialHeroAuthor{display:inline-flex;align-items:center;justify-content:center;gap:12px;min-height:42px;padding:0 15px;border:1px solid var(--in-brand);border-radius:10px;background:var(--in-brand);color:#fff;font-size:12px;font-weight:800;text-decoration:none;transition:background var(--in-motion),transform var(--in-motion)}
+.imperialHeroAuthor:hover{background:var(--in-brand-hover);transform:translateY(-1px)}
+.imperialHeroAuthor span{font-size:15px}
+.imperialHeroBrowse{color:var(--in-discovery);font-size:12px;font-weight:750;text-decoration:none}
+.imperialHeroBrowse:hover{text-decoration:underline;text-underline-offset:4px}
+@media(max-width:390px){.imperialHeroActions{gap:12px}.imperialHeroAuthor{min-height:40px;padding-inline:12px;font-size:11px}.imperialHeroBrowse{font-size:11px}}
+@media(prefers-reduced-motion:reduce){.imperialHeroAuthor{transition:none}.imperialHeroAuthor:hover{transform:none}}
