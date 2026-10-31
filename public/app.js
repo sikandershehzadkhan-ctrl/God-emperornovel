@@ -219,7 +219,7 @@ function initTvmazeSearch(){
    }).join('');
    status.textContent='Showing '+rows.length+' TVmaze metadata results. Results are not a licence to stream or republish episodes.';
   }catch(error){status.textContent='TVmaze search is temporarily unavailable: '+String(error?.message||'Network error')}
-  finally{button.disabled=false}
+  finally{clearTimeout(timeout);button.disabled=false}
  };
 }
 async function omni(){
