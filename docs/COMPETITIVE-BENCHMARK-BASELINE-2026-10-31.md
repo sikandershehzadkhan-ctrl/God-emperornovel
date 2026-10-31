@@ -291,3 +291,40 @@ A separate TinyFish browser session inspected Imperial Novel, WebNovel and WTR-L
 3. Complete authenticated author, review, discussion, report and moderation flows with role-based regression tests.
 4. Run same-device mobile testing and controlled performance measurements before changing Worker/D1 architecture.
 5. Revisit WTR-LAB's actual reader translation flow and WebNovel's ranking/creator flows only through public or authorized test access.
+
+
+## Follow-up production evidence and engineering changes (2026-10-31)
+
+### Authenticated read-only production D1 results
+
+The detailed output from audit workflow run #25 (commit \`850c6b8b760ac19e95b98b921bfe35f18f0a5ca7\`) was subsequently retrieved through the authenticated GitHub Actions connector. This supersedes the earlier statement that the counts were unknown.
+
+| Audit | Actual production result |
+|---|---:|
+| Donation rows | 0 |
+| Blank donation references | 0 |
+| Distinct nonblank donation references | 0 |
+| Duplicate normalized reference groups | 0 |
+| Extra duplicate reference rows | 0 |
+| Published novels | 1 |
+| Published novels with unusual rights status | 0 |
+| Published novels missing rights evidence | 0 |
+| Published novels missing owner | 0 |
+| Published chapters | 2 |
+| Published chapters without a novel | 0 |
+
+The audit used SELECT/PRAGMA statements only. It did not change data or deploy code. The D1 SQL timing reported by the audit for the aggregate rights and chapter checks was below 1 ms; these are individual SQL execution timings, not end-to-end page timings.
+
+The same workflow reported the production Worker at version **17.20.0**, matching the repository's pre-follow-up target at that time. The public homepage returned HTTP 200 in approximately 0.087 seconds from the GitHub runner. Neither result certifies mobile performance or reader/API response time.
+
+### Source changes merged to main, not yet deployed
+
+- **PR #64 — catalog relationship pre-aggregation:** replaced the genre × tag × chapter join fan-out with separate correlated aggregates. Added SQLite parity tests for all sort modes and representative filters. Pull-request validation passed. A separate in-memory synthetic test (300 novels, 100 chapters, 5 genres and 20 tags per novel) measured a median of 752.8 ms for the previous query and 3.16 ms for the pre-aggregated query. This is a synthetic query-shape benchmark, not a Cloudflare production measurement.
+- **PR #65 — donation reference uniqueness:** validates whole-number PKR amounts and bounded transaction references, creates a unique normalized-reference index on first donation submission, and adds a duplicate guard with conflict handling. The index was supported by the clean production audit above. CI passed. The automated payment webhook remains disabled.
+- **PR #66 — runtime schema bootstrap:** consolidates auth-rate-limit, community and discovery runtime DDL behind one schema-version marker. Initialized Worker isolates now need one marker SELECT instead of repeatedly issuing the full DDL/cleanup sequence. Added a mocked-D1 fast-path regression test. CI passed.
+
+All three PRs were merged to \`main\`. **None of these source changes has been deployed to the live Worker in this follow-up.** No production schema mutation was made by these PRs. Production performance improvements remain unverified until the code is deliberately deployed and measured.
+
+### Current status
+
+The immediate catalog, donation-integrity and cold-isolate schema-bootstrap source changes have passed CI. The platform is still not certified as competitive or launch-ready: the live catalog remains critically sparse, content quality needs editorial remediation, authenticated author/community/payment flows remain incompletely tested, and mobile/performance QA remains pending.
