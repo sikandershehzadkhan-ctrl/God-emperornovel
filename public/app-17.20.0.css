@@ -17,3 +17,13 @@
 .reactReactionList{display:flex;flex-wrap:wrap;gap:8px;align-items:center}.reactReactionList .novelReaction{min-height:42px;min-width:54px;padding:8px 12px;border-radius:999px;display:inline-flex;align-items:center;justify-content:center;gap:7px}.reactReactionList .novelReaction[aria-pressed=true]{border-color:#6A0DAD;background:rgba(106,13,173,.12);color:var(--text,#171321)}.reactReactionList .novelReaction:disabled{opacity:.65;cursor:wait}.reactReactionError{flex-basis:100%;font-size:.85rem;color:var(--danger,#a33)}
 
 .ratingIslandSummary{margin:0;color:var(--muted,#687080);font-size:.92rem}.ratingIslandSummary strong{color:var(--text,#171321);font-variant-numeric:tabular-nums}.ratingIsland .ratingStars{margin:10px 0 6px}.ratingIsland .ratingStar:disabled{opacity:.65;cursor:wait}
+
+/* Device-native narration controls for the prose reader */
+.readerNarration{display:flex;flex-wrap:wrap;align-items:center;gap:10px;margin:12px 0 18px;padding:12px 14px;border:1px solid var(--line);border-radius:14px;background:var(--panel2)}
+.readerNarrationControls{display:flex;flex-wrap:wrap;gap:7px}
+.readerNarration button{min-height:40px;padding:8px 12px}
+.readerNarration button:disabled{opacity:.45;cursor:not-allowed}
+.readerVoiceLabel{display:flex;align-items:center;gap:8px;color:var(--muted);font-size:13px}
+.readerVoiceLabel select{max-width:min(260px,55vw);min-height:38px;padding:6px 9px;border:1px solid var(--line);border-radius:9px;background:var(--panel);color:var(--text)}
+.readerSpeechStatus{flex-basis:100%;margin:0;color:var(--muted);font-size:.82rem;line-height:1.45}
+@media(max-width:560px){.readerVoiceLabel{width:100%;justify-content:space-between}.readerVoiceLabel select{flex:1;min-width:0;max-width:none}}
