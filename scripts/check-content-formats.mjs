@@ -61,7 +61,7 @@ for (const path of ['public/app.js', `public/app-${version}.js`]) {
  assert.ok(app.includes("api('/api/author/novels/'+Number(f.dataset.id),{method:'PATCH'"), path + ' saves story metadata through the authenticated update endpoint');
  assert.ok(app.includes("$$('.authorAddChapter',list).forEach"), path + ' binds all chapter controls as a collection');
  assert.ok(app.includes("$$('.authorCancelChapter',list).forEach"), path + ' binds all chapter cancel controls as a collection');
- assert.ok(app.includes("$$('.authorChapterForm',list).forEach"), path + ' binds all chapter forms as a collection');
+ assert.ok(app.includes("$('.authorChapterForm',list).forEach(f=>{initComicPageComposer(f);f.onsubmit="), path + ' initializes the comic page builder and binds chapter forms');
  assert.ok(app.includes("$$('.authorSubmitStory',list).forEach"), path + ' binds all review submission controls as a collection');
  assert.ok(app.includes("$$('.authorEditToggle',list).forEach"), path + ' binds story edit toggles');
  assert.ok(app.includes("$$('.authorCancelEdit',list).forEach"), path + ' binds story edit cancel controls');
