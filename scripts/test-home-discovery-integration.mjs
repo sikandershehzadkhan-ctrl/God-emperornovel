@@ -12,6 +12,7 @@ assert.equal(html.split("/app-17.23.0.js").length-1,1,"HTML must reference the c
 assert.ok(app.includes("id=\"homeConnections\""),"Homepage must expose the connected discovery region");
 assert.ok(app.includes("imperialHeroVisual")&&app.includes("/imperial-novel-app-icon.svg"),"Homepage hero must feature the approved Imperial black-sun and empty-throne crest.");
 assert.ok(app.includes("A NEW ERA OF STORYTELLING")&&app.includes("THE IMPERIAL CREST"),"Homepage hero must establish a distinct editorial identity.");
+assert.ok(app.includes("class=\"imperialHeroAuthor\" href=\"/become-an-author\"")&&app.includes("class=\"imperialHeroBrowse\" href=\"/catalog\""),"Homepage hero must provide direct creator onboarding and library discovery actions.");
 assert.ok(css.includes(".imperialHeroVisual")&&css.includes("@media(max-width:760px)"),"Imperial crest composition must have responsive mobile behavior.");
 assert.ok(css.includes("prefers-reduced-motion:reduce")&&css.includes(".imperialHeroSeal{transform:none}"),"Hero crest must respect reduced-motion preferences.");
 assert.ok(app.includes("/api/discovery/graph?limit=60"),"Homepage must use the bounded live graph endpoint");
