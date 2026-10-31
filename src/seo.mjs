@@ -1,6 +1,6 @@
 import { CONTENT_FORMATS } from "./content-formats.mjs";
 const DEFAULT_ORIGIN="https://god-emperornovel.sikandershehzadkhan.workers.dev";
-const STATIC_PUBLIC_PATHS=["/","/catalog","/formats","/genres","/tags","/community","/leaderboard","/omniportal","/privacy","/terms","/copyright",...CONTENT_FORMATS.map(format=>"/format/"+format.id)];
+const STATIC_PUBLIC_PATHS=["/","/catalog","/formats","/genres","/tags","/community","/leaderboard","/omniportal","/become-an-author","/privacy","/terms","/copyright",...CONTENT_FORMATS.map(format=>"/format/"+format.id)];
 const PRIVATE_PREFIXES=["/api/","/admin","/account","/login","/register","/library","/history","/following","/settings","/notifications","/tickets","/requests","/author$"];
 
 export function canonicalOrigin(value){
@@ -119,6 +119,7 @@ const PAGE_SEO={
   "/vote":{title:"Community Story Voting | Imperial Novel",description:"Take part in community story voting on Imperial Novel."},
   "/trend-factory":{title:"Trend Factory | Imperial Novel",description:"Explore story signals and authorized catalog metadata in Imperial Novel Trend Factory."},
   "/admin":{title:"Command Center | Imperial Novel",description:"Imperial Novel administration."},
+  "/become-an-author":{title:"Become an Author | Publish Your Stories on Imperial Novel",description:"Apply to publish original and authorized fiction on Imperial Novel. Explore creator tools, editorial review, ownership principles and supported story formats."},
   "/author":{title:"Author Studio | Imperial Novel",description:"Create and manage original, licensed and authorized stories on Imperial Novel."},
   "/settings":{title:"Settings | Imperial Novel",description:"Manage your Imperial Novel account and reading preferences."},
   "/notifications":{title:"Notifications | Imperial Novel",description:"View your Imperial Novel account notifications."}
