@@ -42,6 +42,9 @@ assert.equal(quote,"","CSS strings must be terminated");
 assert.equal(comment,false,"CSS comments must be terminated");
 assert.doesNotMatch(css,/@import\s+url|url\(\s*["']?https?:/i,"Design foundation must not add remote runtime assets");
 for(const token of ["--in-brand:#6A0DAD","--in-discovery:#0F52BA","--in-ink:#0B1215","--in-surface:#FFFFFF","@media(max-width:760px)","@media(prefers-reduced-motion:reduce)",":focus-visible"]){
+assert.ok(css.includes("@media(max-width:1180px) and (min-width:761px){.nav{gap:12px}.brand{min-width:205px}.navlinks{display:none!important}"),"Tablet header must use the menu drawer instead of compressing desktop navigation");
+assert.ok(css.includes("@media(max-width:760px){"),"Phone layout must have a separate responsive breakpoint");
+assert.ok(sourceApp.includes("id=\"imperialMenuToggle\"")&&sourceApp.includes("id=\"imperialMenuDrawer\""),"Tablet navigation must have a working menu trigger and drawer");
   assert.ok(css.includes(token),"Missing design foundation requirement: "+token);
 }
 assert.equal((html.match(/imperial-design-foundation\.css/g)||[]).length,1,"Design foundation must be linked exactly once");
