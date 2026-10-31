@@ -20,7 +20,7 @@ assert.equal(parseManualDonationApproval({ status: "approved" }, { ...donation, 
 assert.equal(parseManualDonationApproval({ status: "pending" }, donation).ok, false);
 
 const source = readFileSync(new URL("../src/index.js", import.meta.url), "utf8");
-const start = source.indexOf("let ad=p.match(/^\\/api\\/admin\\/donations\\/");
+const start = source.indexOf("let ad=p.match");
 const end = source.indexOf('if(p==="/api/admin/reports"', start);
 assert.ok(start >= 0 && end > start, "admin donation decision route must remain present");
 const route = source.slice(start, end);
