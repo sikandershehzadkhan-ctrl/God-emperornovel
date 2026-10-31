@@ -36,6 +36,25 @@ must_fail("DELETE FROM media_asset_reviews WHERE media_asset_id=1")
 db.execute("""INSERT INTO comic_chapter_pages(chapter_id,media_asset_id,page_number)
               VALUES(1,1,1)""")
 
+# Reader delivery is eligible only through a published novel and chapter.
+db.execute("UPDATE novels SET publication_status='published' WHERE id=1")
+db.execute("UPDATE chapters SET publication_status='published' WHERE id=1")
+delivery = db.execute("""SELECT a.id FROM media_assets a
+    JOIN comic_chapter_pages cp ON cp.media_asset_id=a.id
+    JOIN chapters c ON c.id=cp.chapter_id
+    JOIN novels n ON n.id=c.novel_id
+    WHERE a.id=1 AND a.status='ready' AND a.rights_status='approved'
+      AND c.publication_status='published' AND n.publication_status='published'""").fetchone()
+assert delivery == (1,)
+db.execute("UPDATE novels SET publication_status='draft' WHERE id=1")
+assert db.execute("""SELECT COUNT(*) FROM media_assets a
+    JOIN comic_chapter_pages cp ON cp.media_asset_id=a.id
+    JOIN chapters c ON c.id=cp.chapter_id
+    JOIN novels n ON n.id=c.novel_id
+    WHERE a.id=1 AND a.status='ready' AND a.rights_status='approved'
+      AND c.publication_status='published' AND n.publication_status='published'""").fetchone()[0] == 0
+db.execute("UPDATE novels SET publication_status='published' WHERE id=1")
+
 # Rights withdrawal, rejection, deletion or reprocessing cannot silently break a live page.
 must_fail("UPDATE media_assets SET rights_status='withdrawn' WHERE id=1")
 must_fail("UPDATE media_assets SET status='deleted' WHERE id=1")
