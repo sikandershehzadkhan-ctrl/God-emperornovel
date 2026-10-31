@@ -417,6 +417,7 @@ async function api(req,env){
   const e=author(u);if(e)return e;
   const requestOrigin=req.headers.get("origin");
   if(!requestOrigin||requestOrigin!==url.origin)return json({error:"Cross-origin media uploads are not allowed."},403);
+  const uploadLimit=await consumeAuthRateLimit(env,"media-upload",String(u.id),10,3600);if(uploadLimit)return uploadLimit;
   if(!env.MEDIA_BUCKET||typeof env.MEDIA_BUCKET.put!=="function")return json({error:"Private media storage is not configured. Uploads are not enabled yet."},503);
   const contentType=String(req.headers.get("content-type")||"").toLowerCase();
   const requestLength=req.headers.get("content-length");
