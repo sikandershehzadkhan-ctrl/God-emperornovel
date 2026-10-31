@@ -942,7 +942,7 @@ async function api(req,env){
   await env.DB.prepare(`UPDATE chapters SET chapter_number=?,title=?,content=?,is_locked=?,ticket_cost=?,updated_at=CURRENT_TIMESTAMP WHERE id=?`).bind(num,title,content,b.is_locked?1:0,cost,id).run();await env.DB.prepare('UPDATE novels SET updated_at=CURRENT_TIMESTAMP WHERE id=?').bind(c.novel_id).run();await audit(env,u,'author_chapter_updated',`chapter=${id}`);return json({ok:true,message:'Chapter saved.'})
  }
  if(/^\/api\/author\/chapters\/\d+\/publish$/.test(p)&&m==="POST"){
-  const e=author(u);if(e)return e;const id=Number(p.split('/')[3]),b=await body(req);const c=await env.DB.prepare(`SELECT c.*,n.owner_user_id,n.rights_status FROM chapters c JOIN novels n ON n.id=c.novel_id WHERE c.id=?`).bind(id).first();if(!c)return json({error:'Chapter not found'},404);if(u.role!=="admin"&&Number(c.owner_user_id)!==Number(u.id))return json({error:'You do not own this chapter'},403);
+  const e=author(u);if(e)return e;const id=Number(p.split('/')[3]),b=await body(req);const c=await env.DB.prepare(`SELECT c.*,n.owner_user_id,n.rights_status,n.kind FROM chapters c JOIN novels n ON n.id=c.novel_id WHERE c.id=?`).bind(id).first();if(!c)return json({error:'Chapter not found'},404);if(u.role!=="admin"&&Number(c.owner_user_id)!==Number(u.id))return json({error:'You do not own this chapter'},403);
   const status=String(b.publication_status||'published');if(!['draft','published'].includes(status))return json({error:'Invalid publication status'},400);if(status==='published'&&!['original','public_domain','licensed','authorized'].includes(String(c.rights_status)))return json({error:'Novel rights are not eligible for publication'},403);
   if(status==='published'&&["manga","manhwa","manhua","webtoon","comic","graphic_novel"].includes(String(c.kind||"").toLowerCase())){
    const pageCount=await env.DB.prepare("SELECT COUNT(*) AS page_count FROM comic_chapter_pages cp JOIN media_assets a ON a.id=cp.media_asset_id WHERE cp.chapter_id=? AND a.status='ready' AND a.rights_status='approved'").bind(id).first();
@@ -978,13 +978,23 @@ async function api(req,env){
  if(acm && m==="PATCH"){
   const e=admin(u);if(e)return e;await ensurePublishingSchema(env);
   const id=Number(acm[1]),b=await body(req);
-  const row=await env.DB.prepare("SELECT * FROM chapters WHERE id=?").bind(id).first();
+  const row=await env.DB.prepare("SELECT c.*,n.kind,n.rights_status FROM chapters c JOIN novels n ON n.id=c.novel_id WHERE c.id=?").bind(id).first();
   if(!row)return json({error:"Chapter not found"},404);
   const num=Number(b.chapter_number??row.chapter_number);
   if(!Number.isInteger(num)||num<1)return json({error:"Valid chapter number is required"},400);
   const title=String(b.title??row.title).trim();
   const content=String(b.content??row.content).trim();
   if(!title||!content)return json({error:"Chapter title and content are required"},400);
+  const isComic=["manga","manhwa","manhua","webtoon","comic","graphic_novel"].includes(String(row.kind||"").toLowerCase());
+  if(isComic){
+   const check=validateComicChapterContent(content);if(!check.ok)return json({error:check.error},400);
+   const linked=(await env.DB.prepare("SELECT media_asset_id,alt_text,caption FROM comic_chapter_pages WHERE chapter_id=? ORDER BY page_number").bind(id).all()).results||[];
+   if(linked.length){const canonical=JSON.stringify({type:"imperial_comic_chapter",version:1,pages:linked.map(x=>({src:"/api/media/"+x.media_asset_id,alt:x.alt_text||"",caption:x.caption||""}))});if(content!==canonical)return json({error:"This chapter uses private managed pages. Edit its page sequence through Comic Page Manager."},409)}
+   if(pub==="published"){
+    const ready=await env.DB.prepare("SELECT COUNT(*) AS page_count FROM comic_chapter_pages cp JOIN media_assets a ON a.id=cp.media_asset_id WHERE cp.chapter_id=? AND a.status='ready' AND a.rights_status='approved'").bind(id).first();
+    if(Number(ready?.page_count||0)<1)return json({error:"Comic chapters require at least one processed, rights-approved private page before publication."},409);
+   }
+  }
   const locked=b.is_locked===undefined?Number(row.is_locked):b.is_locked?1:0;
   const cost=b.ticket_cost===undefined?Number(row.ticket_cost):Math.max(0,Number(b.ticket_cost));
   if(!Number.isFinite(cost))return json({error:"Invalid ticket cost"},400);
