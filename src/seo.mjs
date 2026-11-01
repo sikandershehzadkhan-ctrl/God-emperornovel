@@ -31,7 +31,7 @@ export function buildRobotsTxt(origin,{allowOaiSearch=true,allowModelTraining=fa
 export function buildSitemapIndexXml(origin,shards=[]){
   const base=canonicalOrigin(origin);
   const entries=shards.map(path=>"  <sitemap><loc>"+xml(base+path)+"</loc></sitemap>").join("\n");
-  return '<?xml version="1.0" encoding="UTF-8"?>\\n<sitemapindex xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\\n'+entries+"\\n</sitemapindex>\\n";
+  return '<?xml version="1.0" encoding="UTF-8"?>\n<sitemapindex xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n'+entries+"\n</sitemapindex>\n";
 }
 export function buildSitemapXml(origin,novels=[],authors=[],chapters=[],includeStatic=true){
   const base=canonicalOrigin(origin),paths=(includeStatic?STATIC_PUBLIC_PATHS:[]).map(path=>({loc:base+path}));
