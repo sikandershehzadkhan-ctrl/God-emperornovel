@@ -353,3 +353,8 @@ The screen blueprint is being maintained as a set of domain-specific architectur
 - [01M.5 — Administration, Security and Operations](IMPERIAL-NOVEL-PHASE-01M-5-ADMIN-SECURITY-OPERATIONS-BLUEPRINT.md)
 
 Each document is a specification. A listed route or logical API contract is not asserted to exist until independently reconciled with the current router and Worker implementation. The next architecture increments must cover OmniPortal, Trend Factory, commerce/payments, administration/agents, AI workspace as a distinct product area, localization, legal/trust, developer/system screens, and cross-domain route/permission reconciliation.
+
+
+## Phase 01N architecture evidence
+
+- [01N — Repository Evidence Audit](IMPERIAL-NOVEL-PHASE-01N-REPOSITORY-EVIDENCE-AUDIT.md)
