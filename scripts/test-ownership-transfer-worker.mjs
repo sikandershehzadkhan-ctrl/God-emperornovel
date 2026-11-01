@@ -309,7 +309,7 @@ try {
   assert.ok(staleOwnerRow.data.some(row => Number(row.id) === staleCase.novelId), "A stale invitation must not overwrite the newer owner");
 
   const expiredCase = await inviteNovel("Ownership Integration Expired");
-  executeLocalSql("UPDATE novel_ownership_transfers SET expires_at=unixepoch()-1 WHERE id=" + expiredCase.transferId);
+  executeLocalSql("UPDATE novel_ownership_transfers SET requested_at=unixepoch()-3600,expires_at=unixepoch()-1 WHERE id=" + expiredCase.transferId);
   const expiredAccept = await request(baseUrl, "/api/author/ownership-transfers/" + expiredCase.transferId + "/decision", {
     method: "POST", cookie: recipient.cookie, body: { decision: "accept" }
   });
