@@ -52,6 +52,10 @@ assert.ok(commentsUi.includes("const [reporting, setReporting] = useState(false)
 assert.ok(commentsUi.includes("if (reporting) return") && commentsUi.includes("disabled={reporting}"), "comment report form must prevent duplicate clicks while submitting");
 assert.ok(commentsUi.includes("aria-controls={`comment-report-${comment.id}`}") && commentsUi.includes("id={`comment-report-${comment.id}`}"), "comment report toggle must be programmatically associated with its form");
 assert.ok(commentsUi.includes("{details.length}/500 characters"), "comment report details must show the 500-character limit");
+assert.ok(commentsUi.includes("window.setInterval(refreshWhenVisible, 30000)"), "novel discussions must refresh on a bounded 30-second interval");
+assert.ok(commentsUi.includes('document.visibilityState === "visible"'), "discussion polling must pause while the page is hidden");
+assert.ok(commentsUi.includes('document.addEventListener("visibilitychange", refreshWhenVisible)'), "discussion updates must refresh when the reader returns to the page");
+assert.ok(commentsUi.includes("window.clearInterval(timer)") && commentsUi.includes('document.removeEventListener("visibilitychange", refreshWhenVisible)'), "discussion polling must clean up timers and listeners");
 assert.ok(adminUi.includes("commentReportsBody"), "admin community moderation must render a dedicated comment-report queue");
 assert.ok(adminUi.includes("/api/admin/community/reports"), "admin UI must load comment reports from the dedicated moderation API");
 assert.ok(adminUi.includes("updateCommentReport") && adminUi.includes("Resolve") && adminUi.includes("Dismiss"), "admin UI must provide explicit report resolution and dismissal actions");
