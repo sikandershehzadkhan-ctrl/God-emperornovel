@@ -68,6 +68,9 @@ assert.ok(moderationRoute[1].includes("admin(u)"), "comment moderation must requ
 assert.ok(moderationRoute[1].includes("Number.isSafeInteger(cid)||cid<1"), "comment moderation must validate a positive safe comment id");
 assert.ok(moderationRoute[1].includes("SELECT id,status FROM comments WHERE id=?"), "comment moderation must verify the target exists");
 assert.ok(moderationRoute[1].includes("community_comment_"), "comment moderation actions must be written to the audit log");
+assert.ok(moderationRoute[1].includes("env.DB.batch("), "comment status update and audit event must be committed atomically");
+assert.ok(moderationRoute[1].includes("WHERE changes()=1"), "comment audit event must only be written when the guarded status update changes a row");
+assert.ok(moderationRoute[1].includes("409"), "stale concurrent comment moderation updates must return a conflict");
 const reportModeration = worker.match(/if\(p==="\/api\/admin\/community\/reports"&&m==="PATCH"\)\{([\s\S]*?)\n\s*if\(p==="\/api\/donations"&&m==="POST"/);
 assert.ok(reportModeration, "admin report moderation route must exist");
 assert.ok(reportModeration[1].includes("admin(u)"), "report moderation must require administrator access");
