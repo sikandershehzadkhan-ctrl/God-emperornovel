@@ -45,6 +45,16 @@ assert.ok(ratingPost, "rating write route must exist");
 assert.ok(ratingPost[1].includes("Number.isInteger(rating)"), "ratings must reject fractional scores instead of silently rounding");
 assert.ok(ratingPost[1].includes("rating<1||rating>5"), "ratings must stay within the 1-5 range");
 assert.ok(ratingPost[1].includes("publication_status='published'"), "users may only rate published novels");
+const reactionGet = worker.match(/if\(p==="\/api\/novel-reactions"&&m==="GET"\)\{([\s\S]*?)\n\s*if\(p==="\/api\/novel-reactions"&&m==="POST"/);
+assert.ok(reactionGet, "novel reaction read route must exist");
+assert.ok(reactionGet[1].includes("Number.isSafeInteger(nid)"), "reaction reads must validate positive safe novel ids");
+assert.ok(reactionGet[1].includes("publication_status='published'"), "reaction reads must be limited to published novels");
+const reactionPost = worker.match(/if\(p==="\/api\/novel-reactions"&&m==="POST"\)\{([\s\S]*?)\n\s*if\(p==="\/api\/comments"&&m==="GET"/);
+assert.ok(reactionPost, "novel reaction write route must exist");
+assert.ok(reactionPost[1].includes("Number.isSafeInteger(nid)"), "reaction writes must validate positive safe novel ids");
+assert.ok(reactionPost[1].includes('["love","fire","laugh","sad","clap"]'), "reaction writes must allow only the defined reaction vocabulary");
+assert.ok(reactionPost[1].includes("publication_status='published'"), "users may only react to published novels");
+
 
 
 
