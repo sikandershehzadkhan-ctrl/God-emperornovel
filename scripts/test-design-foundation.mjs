@@ -201,3 +201,7 @@ assert.ok(sourceApp.includes("e.key==='Escape'"),"Navigation drawer must close o
 assert.ok(sourceApp.includes("e.key==='Tab'"),"Navigation drawer must manage keyboard focus");
 assert.ok(sourceApp.includes('aria-label="Primary mobile navigation"'),"Mobile navigation must have an accessible name");
 assert.ok(sourceApp.includes('aria-label="Language"'),"Language selector must have an accessible name");
+
+assert.ok(sourceApp.includes('aria-current="page"'),"Navigation must expose the current page to assistive technology");
+assert.ok((sourceApp.match(/aria-current="page"/g)||[]).length>=7,"Desktop and mobile primary navigation must expose current-page state");
+assert.ok(html.includes('<main id="app" class="appBootRoot" tabindex="-1">'),"Skip navigation target must be programmatically focusable");
