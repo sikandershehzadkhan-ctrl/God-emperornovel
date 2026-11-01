@@ -461,6 +461,7 @@ try {
   // for both test accounts and prove neither export crosses the ownership boundary.
   const accountBId=Number(JSON.parse((await getAs(accountB,'/api/profile')).body).user.id);
   execFileSync('npx',['--yes','wrangler@4','d1','execute','god-emperornovel-db','--local','--persist-to','.wrangler/test-runtime','--command',`DELETE FROM reading_positions WHERE user_id IN (${accountAId},${accountBId}) AND novel_id=2147483998; INSERT INTO reading_positions(user_id,novel_id,chapter_number,progress_percent) VALUES(${accountAId},2147483998,7,37),(${accountBId},2147483998,8,82)`],{stdio:'pipe',env:{...process.env,NO_COLOR:'1'}});
+  execFileSync('npx',['--yes','wrangler@4','d1','execute','god-emperornovel-db','--local','--persist-to','.wrangler/test-runtime','--command',`INSERT INTO content_rights(content_type,content_id,source_type,source_url,rights_status,license_name,rights_holder,attribution_required,evidence_note,reviewed_by,created_by) VALUES('novel',2147483004,'author_submission','https://rights.example/a','authorized','Creator License','Account A Rights Holder',1,'Account A private evidence note',${accountBId},${accountAId}),('novel',2147483005,'author_submission','https://rights.example/b','authorized','Creator License','Account B Rights Holder',1,'Account B private evidence note',${accountAId},${accountBId}); INSERT INTO comment_reports_legacy_duplicates(id,user_id,comment_id,reason,details,status,created_at,archive_reason) VALUES(2147483991,${accountAId},2147483001,'spam','Account A archived report','open',CURRENT_TIMESTAMP,'duplicate'),(2147483992,${accountBId},2147483002,'abuse','Account B archived report','open',CURRENT_TIMESTAMP,'duplicate')`],{stdio:'pipe',env:{...process.env,NO_COLOR:'1'}});
   const exportA=await request('/api/privacy/export',{headers:{cookie:accountA.cookie}});
   assert.equal(exportA.response.status,200,`Authenticated account data export must succeed: ${exportA.body}`);
   assert.match(exportA.response.headers.get('content-disposition')||'',/attachment; filename="imperial-novel-account-data.json"/,'Account export must download as a JSON attachment');
@@ -475,6 +476,11 @@ try {
   assert.deepEqual(exportAData.collections.reading_positions.filter(x=>x.novel_id===2147483998).map(x=>x.progress_percent),[37],'Account A export must contain Account A reading progress only for the isolated fixture');
   assert.ok(!exportAData.collections.reading_positions.some(x=>x.novel_id===2147483998&&x.progress_percent===82),'Account A export must not include Account B reading progress');
   assert.ok(!exportA.body.includes(accountB.email),'Account A export must not disclose Account B email');
+  assert.deepEqual(exportAData.collections.content_rights_created.map(x=>x.rights_holder),['Account A Rights Holder'],'Account A export must include only rights records created by Account A');
+  assert.ok(!exportA.body.includes('Account B private evidence note'),'Account A export must not disclose Account B rights evidence');
+  assert.ok(!exportA.body.includes('reviewed_by'),'Account export must exclude internal rights reviewer identity');
+  assert.deepEqual(exportAData.collections.comment_reports_legacy_duplicates.map(x=>x.id),[2147483991],'Account A export must include only its own archived legacy moderation reports');
+
   assert.ok(!exportA.body.includes('password_hash')&&!exportA.body.includes('token_hash'),'Account export must never include password hashes or session token hashes');
   const exportASecond=await request('/api/privacy/export',{headers:{cookie:accountA.cookie}});
   assert.equal(exportASecond.response.status,200,'Second account export within the hourly allowance must succeed');
@@ -486,6 +492,10 @@ try {
   const exportB=await request('/api/privacy/export',{headers:{cookie:accountB.cookie}});
   assert.equal(exportB.response.status,200,'Account B must be able to export its own data');
   assert.deepEqual(JSON.parse(exportB.body).collections.reading_positions.map(x=>x.progress_percent),[82],'Account B export must contain Account B reading progress only');
+  const exportBData=JSON.parse(exportB.body);
+  assert.deepEqual(exportBData.collections.content_rights_created.map(x=>x.rights_holder),['Account B Rights Holder'],'Account B export must include only rights records created by Account B');
+  assert.deepEqual(exportBData.collections.comment_reports_legacy_duplicates.map(x=>x.id),[2147483992],'Account B export must include only its own archived legacy moderation reports');
+
   const badClosure=await request('/api/account/closure-request',{method:'POST',headers:{cookie:accountB.cookie,'content-type':'application/json'},body:JSON.stringify({password:'definitely-not-the-account-password'})});
   assert.equal(badClosure.response.status,403,'Account closure must require the correct current password');
   const closure=await request('/api/account/closure-request',{method:'POST',headers:{cookie:accountB.cookie,'content-type':'application/json'},body:JSON.stringify({password:accountB.password})});
