@@ -42,6 +42,8 @@ const reportSubmission = worker.match(/if\(p==="\/api\/comments\/report"&&m==="P
 assert.ok(reportSubmission, "comment report submission route must exist");
 assert.ok(reportSubmission[1].includes("JOIN novels n ON n.id=c.novel_id"), "reports must only target comments on published novels");
 assert.ok(reportSubmission[1].includes("rights_status IN ('original','public_domain','licensed','authorized')"), "reports must enforce publication rights clearance");
+assert.ok(reportSubmission[1].includes("INSERT OR IGNORE INTO comment_reports"), "duplicate comment reports must be race-safe at the database write");
+assert.ok(reportSubmission[1].includes("inserted?.meta?.changes") && reportSubmission[1].includes("409"), "a concurrent duplicate report must return a conflict instead of a server error");
 const moderationRoute = worker.match(/if\(p==="\/api\/admin\/community\/comments"&&m==="PATCH"\)\{([\s\S]*?)\n\s*if\(p==="\/api\/admin\/community\/reports"&&m==="GET"/);
 assert.ok(moderationRoute, "admin comment moderation route must exist");
 assert.ok(moderationRoute[1].includes("admin(u)"), "comment moderation must require administrator access");
