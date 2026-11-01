@@ -90,3 +90,14 @@ At integration head `f084c8dd319f0200d2e6b35c230954fb046124d0`, the real Wrangle
 Verification: [Cloudflare Source Validation run 41321912657](https://github.com/sikandershehzadkhan-ctrl/God-emperornovel/actions/runs/41321912657) passed. Its logs confirm the real local Worker+D1 test and all 18 fresh SQLite migrations passed. [Graphify run 41321912718](https://github.com/sikandershehzadkhan-ctrl/God-emperornovel/actions/runs/41321912718) passed.
 
 These are local runtime tests for the listed endpoints and seeded fixtures. They are not proof of all financial, payment, connector, taxonomy moderation or production security behaviors.
+
+## Owner/admin privilege-boundary runtime extension
+
+At integration head `20543161071e28d2927369eb7ebef85fd940bb83`, the local Worker+D1 suite promotes Account A to a generic administrator only inside the disposable test database, while leaving `IMPERIAL_OWNER_USER_ID` unconfigured. It verifies:
+
+- The generic administrator cannot read `GET /api/admin/users`; the endpoint returns HTTP 403 because sensitive account records are owner-only.
+- The generic administrator cannot grant administrator role to Account B; the endpoint fails closed with HTTP 503 while platform-owner identity is unconfigured.
+
+Verification: [Cloudflare Source Validation run 41322115977](https://github.com/sikandershehzadkhan-ctrl/God-emperornovel/actions/runs/41322115977) passed, including the real Wrangler local Worker+D1 suite and all 18 fresh SQLite migrations. [Graphify run 41322115937](https://github.com/sikandershehzadkhan-ctrl/God-emperornovel/actions/runs/41322115937) passed.
+
+This verifies the unconfigured-owner fail-closed path and generic-admin boundary. It does not verify configured owner recovery, owner step-up authentication, or the complete moderator/admin permission matrix.
