@@ -3,7 +3,8 @@ import { deliverSecurityEmail } from "../src/security-email-delivery.mjs";
 
 const idempotencyKey=crypto.randomUUID();
 const publicOrigin="https://imperialnovel.example";
-const token="A".repeat(43);\nconst actionUrl=publicOrigin+"/verify-email#token="+token;
+const token="A".repeat(43);
+const actionUrl=publicOrigin+"/verify-email#token="+token;
 let received=null, calls=0;
 const env={SECURITY_EMAIL:{async fetch(request){
  calls++;
@@ -22,7 +23,10 @@ assert.deepEqual(await deliverSecurityEmail({},message),{ok:false,reason:"unavai
 assert.deepEqual(await deliverSecurityEmail(env,{...message,template:"arbitrary"}),{ok:false,reason:"invalid_message"});
 assert.deepEqual(await deliverSecurityEmail(env,{...message,recipient:"not-an-email"}),{ok:false,reason:"invalid_message"});
 assert.deepEqual(await deliverSecurityEmail(env,{...message,actionUrl:"http://imperialnovel.example/verify"}),{ok:false,reason:"invalid_message"});
-assert.deepEqual(await deliverSecurityEmail(env,{...message,actionUrl:"https://attacker.example/verify-email#token="+token}),{ok:false,reason:"invalid_message"});\nassert.deepEqual(await deliverSecurityEmail(env,{...message,actionUrl:publicOrigin+"/admin#token="+token}),{ok:false,reason:"invalid_message"});\nassert.deepEqual(await deliverSecurityEmail(env,{...message,actionUrl:publicOrigin+"/verify-email"}),{ok:false,reason:"invalid_message"});\nassert.deepEqual(await deliverSecurityEmail(env,{...message,template:"reset_password",actionUrl:publicOrigin+"/verify-email#token="+token}),{ok:false,reason:"invalid_message"});
+assert.deepEqual(await deliverSecurityEmail(env,{...message,actionUrl:"https://attacker.example/verify-email#token="+token}),{ok:false,reason:"invalid_message"});
+assert.deepEqual(await deliverSecurityEmail(env,{...message,actionUrl:publicOrigin+"/admin#token="+token}),{ok:false,reason:"invalid_message"});
+assert.deepEqual(await deliverSecurityEmail(env,{...message,actionUrl:publicOrigin+"/verify-email"}),{ok:false,reason:"invalid_message"});
+assert.deepEqual(await deliverSecurityEmail(env,{...message,template:"reset_password",actionUrl:publicOrigin+"/verify-email#token="+token}),{ok:false,reason:"invalid_message"});
 assert.deepEqual(await deliverSecurityEmail(env,{...message,publicOrigin:"https://imperialnovel.example/path"}),{ok:false,reason:"invalid_message"});
 assert.deepEqual(await deliverSecurityEmail(env,{...message,idempotencyKey:"not-a-uuid"}),{ok:false,reason:"invalid_message"});
 assert.equal(calls,1,"invalid messages must not reach the delivery binding");
