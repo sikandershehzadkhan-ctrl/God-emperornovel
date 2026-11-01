@@ -1,3 +1,4 @@
+import { createEmailVerificationToken, hashEmailVerificationToken } from "../src/email-verification-token.mjs";
 import assert from "node:assert/strict";
 import { spawn, spawnSync } from "node:child_process";
 import { mkdtemp, rm } from "node:fs/promises";
@@ -105,6 +106,24 @@ try {
   const spectator = await account(baseUrl, "reader" + suffix, "reader" + suffix + "@example.test");
   const moderator = await account(baseUrl, "moderator" + suffix, "moderator" + suffix + "@example.test");
   const administrator = await account(baseUrl, "administrator" + suffix, "administrator" + suffix + "@example.test");
+  // Verify the public confirmation endpoint consumes a real D1 token exactly once.
+  const verificationToken = createEmailVerificationToken();
+  const verificationHash = await hashEmailVerificationToken(verificationToken);
+  const verificationNow = new Date();
+  const verificationExpiry = new Date(verificationNow.getTime() + 30 * 60 * 1000).toISOString();
+  const verificationCreated = verificationNow.toISOString();
+  const seedVerification = "INSERT INTO email_verification_tokens(user_id,email_snapshot,token_hash,purpose,created_at,expires_at) VALUES(" +
+    Number(spectator.user.id) + ",'" + spectator.user.email + "','" + verificationHash + "','email_verification','" +
+    verificationCreated + "','" + verificationExpiry + "')";
+  wrangler(["d1","execute",database,"--local","--persist-to",persist,"--command",seedVerification]);
+  const verified = await request(baseUrl,"/api/auth/verify-email",{method:"POST",body:{token:verificationToken}});
+  assert.equal(verified.response.status,200,JSON.stringify(verified.data));
+  assert.equal(verified.data.ok,true);
+  const replay = await request(baseUrl,"/api/auth/verify-email",{method:"POST",body:{token:verificationToken}});
+  assert.equal(replay.response.status,400,"A consumed verification token must not be replayable");
+  const verifiedAccount = await request(baseUrl,"/api/me",{cookie:spectator.cookie});
+  assert.equal(verifiedAccount.data.user.email_verified_at,verificationNow.toISOString(),"Confirmation must set email_verified_at on the token owner");
+
   const promote = "UPDATE users SET role='author' WHERE id IN (" + Number(owner.user.id) + "," + Number(recipient.user.id) + "); UPDATE users SET role='moderator' WHERE id=" + Number(moderator.user.id) + "; UPDATE users SET role='admin' WHERE id=" + Number(administrator.user.id);
   wrangler(["d1", "execute", database, "--local", "--persist-to", persist, "--command", promote]);
 
