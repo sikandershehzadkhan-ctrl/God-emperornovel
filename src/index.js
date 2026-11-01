@@ -555,8 +555,9 @@ async function api(req,env){
   const b=await body(req),decision=String(b.decision||"").trim().toLowerCase();
   const note=String(b.note||"").trim().slice(0,2000);
   if(!["approved","rejected","withdrawn"].includes(decision))return json({error:"Decision must be approved, rejected or withdrawn."},400);
-  const asset=await env.DB.prepare("SELECT id,status,rights_status,rights_holder,license_name,rights_evidence FROM media_assets WHERE id=?").bind(assetId).first();
+  const asset=await env.DB.prepare("SELECT id,owner_user_id,status,rights_status,rights_holder,license_name,rights_evidence FROM media_assets WHERE id=?").bind(assetId).first();
   if(!asset)return json({error:"Media asset not found."},404);
+  if(Number(asset.owner_user_id)===Number(u.id))return json({error:"Administrators cannot review their own media assets."},403);
   if(!["uploaded","processing","ready"].includes(asset.status))return json({error:"Only uploaded or processed assets can be reviewed."},409);
   if(decision==="approved"&&(!String(asset.rights_holder||"").trim()||!String(asset.license_name||"").trim()||!String(asset.rights_evidence||"").trim()))return json({error:"Rights holder, license and evidence are required before approval."},409);
   if(decision!=="approved"){
