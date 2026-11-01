@@ -15,7 +15,7 @@ await assert.rejects(()=>issuePasswordResetToken(fake,{...valid,expiresAt:"2026-
 assert.deepEqual(await invalidatePasswordResetToken(fake,{tokenHash:valid.tokenHash,now:valid.now}),{ok:true});
 assert.equal(PASSWORD_RESET_ISSUANCE_SQL.length,2);
 
-const python=String.raw\`
+const python=String.raw`
 import json,sqlite3,sys
 p=json.loads(sys.stdin.read()); db=sqlite3.connect(":memory:")
 db.executescript("CREATE TABLE users(id INTEGER PRIMARY KEY,email TEXT NOT NULL);")
@@ -36,7 +36,7 @@ assert db.execute("SELECT invalidated_at FROM password_reset_tokens WHERE token_
 row=db.execute("UPDATE password_reset_tokens SET consumed_at=?,consumption_id=? WHERE token_hash=? AND purpose='password_reset' AND consumed_at IS NULL AND invalidated_at IS NULL AND expires_at>? AND EXISTS (SELECT 1 FROM users WHERE id=password_reset_tokens.user_id AND lower(trim(email))=lower(trim(password_reset_tokens.email_snapshot))) RETURNING user_id",(now,"consume-old","A"*43,now)).fetchone()
 assert row is None
 print("PASS: SQLite password reset issuance binds mailbox snapshots and preserves old tokens on stale-email requests.")
-\`;
+`;
 const migration=readFileSync(new URL("../migrations/0009_password_reset_tokens.sql",import.meta.url),"utf8")+readFileSync(new URL("../migrations/0011_password_reset_email_snapshot.sql",import.meta.url),"utf8");
 const result=spawnSync("python3",["-c",python],{input:JSON.stringify({migration,sql:PASSWORD_RESET_ISSUANCE_SQL}),encoding:"utf8"});
 if(result.error)throw result.error;
