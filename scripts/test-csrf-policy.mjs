@@ -1,0 +1,11 @@
+import { readFileSync } from "node:fs";
+import assert from "node:assert/strict";
+const source=readFileSync(new URL("../src/index.js",import.meta.url),"utf8");
+const start=source.indexOf("// Browser state-changing API requests must originate from this exact site.");
+const end=source.indexOf("// Health checks must not trigger schema bootstrap",start);
+assert.ok(start>=0&&end>start,"CSRF guard must run before API side effects");
+const guard=source.slice(start,end);
+assert.ok(guard.includes('origin!==url.origin'),"foreign Origin must be rejected");
+assert.ok(guard.includes('fetchSite==="cross-site"'),"cross-site Fetch Metadata must be rejected");
+assert.ok(guard.includes('!origin&&fetchSite!=="same-origin"'),"missing Origin must require explicit same-origin Fetch Metadata");
+console.log("PASS: mutation routes reject foreign Origin, cross-site Fetch Metadata, and missing origin metadata unless same-origin is explicit.");
