@@ -33,4 +33,12 @@ const historyGet = lines.find(line => line.includes('if(p==="/api/history"&&m===
 const progressPost = lines.find(line => line.includes('if(p==="/api/reading-position"&&m==="POST"')) || '';
 for (const [name, line] of Object.entries({libraryGet,bookmarksGet,historyGet,progressPost})) assert.ok(line.includes("rights_status IN ('original','public_domain','licensed','authorized')"), name + ' must hide ineligible novels');
 const omniLocal = source.split('\n').find(line => line.includes('async function omniLocal')) || ''; assert.ok(omniLocal.includes("rights_status IN ('original','public_domain','licensed','authorized') AND (LOWER(title) LIKE ?"), 'OmniPortal local search must enforce eligible rights before search predicates');
-console.log('PASS: reader-facing discovery, ratings, engagement, follow, library, bookmark, history, progress and OmniPortal search enforce eligible rights.');
+const taxonomyHandler = source.split('\n').find(line => line.includes('async function communityTaxonomy')) || '';
+const taxonomyDispatch = source.split('\n').find(line => line.includes('if(p==="/api/taxonomy")')) || '';
+const adminUsers = source.split('\n').find(line => line.includes('if(p==="/api/admin/users"&&m==="GET")')) || '';
+assert.ok(taxonomyHandler.includes('const auth=need(user);if(auth)return auth;'), 'taxonomy submissions must require a session');
+assert.ok(taxonomyHandler.includes('user.id') && taxonomyHandler.includes('user.username'), 'taxonomy attribution must come from the authenticated session');
+assert.ok(!taxonomyHandler.includes('b.creator_id') && !taxonomyHandler.includes('b.creator_name'), 'taxonomy submitters must not be spoofable from request JSON');
+assert.ok(taxonomyDispatch.includes('communityTaxonomy(req,env,u)'), 'taxonomy handler must receive the authenticated principal');
+assert.ok(adminUsers.includes('if(!isPlatformOwner(u,env))'), 'sensitive account listing must be owner-only');
+console.log('PASS: rights gates, taxonomy session attribution and owner-only sensitive account listing.');
