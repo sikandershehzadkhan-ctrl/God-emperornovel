@@ -368,3 +368,4 @@ Each document is a specification. A listed route or logical API contract is not 
 - [01O.3 — Numbered Migration Inventory and Test Matrix](IMPERIAL-NOVEL-PHASE-01O-3-NUMBERED-MIGRATION-INVENTORY-AND-TEST-MATRIX.md)
 - [01O.4 — Clean Install, Upgrade and Schema Verification Plan](IMPERIAL-NOVEL-PHASE-01O-4-CLEAN-INSTALL-UPGRADE-AND-SCHEMA-VERIFICATION-PLAN.md)
 - [01P — Roles, Permissions and Staff Boundaries](IMPERIAL-NOVEL-PHASE-01P-ROLES-PERMISSIONS-AND-STAFF-BOUNDARIES.md)
+- [01P.1 — API-to-Permission and Ownership Matrix](IMPERIAL-NOVEL-PHASE-01P-1-API-TO-PERMISSION-AND-OWNERSHIP-MATRIX.md)
