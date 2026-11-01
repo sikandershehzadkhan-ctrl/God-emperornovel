@@ -282,6 +282,12 @@ try {
   execFileSync('npx',['--yes','wrangler@4','d1','execute','god-emperornovel-db','--local','--persist-to','.wrangler/test-runtime','--command',"INSERT INTO chapters(id,novel_id,chapter_number,title,content,is_locked,ticket_cost,publication_status) VALUES(2147483990,2147483005,999999,'B private chapter','Account B private chapter content',0,0,'draft')"],{stdio:'pipe',env:{...process.env,NO_COLOR:'1'}});
   const authorCrossChapterPublish = await request('/api/author/chapters/2147483990/publish', {method:'POST',headers:{...jsonHeaders,cookie:accountA.cookie},body:JSON.stringify({publication_status:'published'})});
   assert.equal(authorCrossChapterPublish.response.status,403,'Author A must not publish a chapter owned by Author B');
+  const ownerChapterPublish = await request('/api/author/chapters/2147483990/publish', {method:'POST',headers:{...jsonHeaders,cookie:accountB.cookie},body:JSON.stringify({publication_status:'published'})});
+  assert.equal(ownerChapterPublish.response.status,200,`Author B must be able to publish their own chapter: ${ownerChapterPublish.body}`);
+  const unpublishedParentChapter = await request('/api/chapters/2147483990');
+  assert.equal(unpublishedParentChapter.response.status,404,'A published chapter must remain private while its parent novel is not published');
+  const unpublishedParentNovel = await request('/api/novels/2147483005');
+  assert.equal(unpublishedParentNovel.response.status,404,'Draft novels must remain absent from the public catalog');
   const authorSpoofCreate = await request('/api/author/novels', {method:'POST',headers:{...jsonHeaders,cookie:accountA.cookie},body:JSON.stringify({title:'Session-Owned Novel',author:'Author A',kind:'original',rights_status:'original',owner_user_id:dataB.user.id})});
   assert.equal(authorSpoofCreate.response.status,201,`Author A should be able to create a novel: ${authorSpoofCreate.body}`);
   const spoofCreatedId=Number(JSON.parse(authorSpoofCreate.body).id);
