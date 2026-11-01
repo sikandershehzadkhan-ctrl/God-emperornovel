@@ -186,3 +186,18 @@ assert.ok(sourceApp.includes('class="tagTile"'),"Tag directory must render linke
 assert.ok(sourceApp.includes('class="formatDirectoryGrid"'),"Format directory must render grouped format navigation");
 assert.ok(sourceApp.includes('id="lbNovels"')&&sourceApp.includes('id="lbAuthors"'),"Leaderboard must render novel and author rankings");
 assert.ok(sourceApp.includes('id="sf"'),"Search must expose its semantic search form");
+
+
+for(const selector of [".skipLink:focus",".menuDrawer.is-open",".menuDrawer:not(.is-open)",".menuDrawerHead",".menuDrawer>a:not(.menuDrawerBrand) svg",".menuToggle[aria-expanded=\"true\"]",".navlinks a:focus-visible",".languageControl select",".mobileNav a span svg",".footerLinks a:focus-visible"]){
+ assert.ok(css.includes(selector),"Navigation shell must include "+selector);
+}
+assert.ok(css.includes("env(safe-area-inset-bottom)"),"Mobile navigation must respect device safe areas");
+assert.ok(css.includes("overscroll-behavior:contain"),"Open navigation drawer must contain scroll chaining");
+assert.ok(css.includes("@media(forced-colors:active)"),"Navigation must preserve affordances in forced-colors mode");
+assert.ok(sourceApp.includes('href="#app"'),"Shell must provide a skip-to-main-content link");
+assert.ok(sourceApp.includes('aria-controls="imperialMenuDrawer"'),"Menu toggle must identify its controlled drawer");
+assert.ok(sourceApp.includes('aria-expanded="false"'),"Menu toggle must expose its collapsed state");
+assert.ok(sourceApp.includes("e.key==='Escape'"),"Navigation drawer must close on Escape");
+assert.ok(sourceApp.includes("e.key==='Tab'"),"Navigation drawer must manage keyboard focus");
+assert.ok(sourceApp.includes('aria-label="Primary mobile navigation"'),"Mobile navigation must have an accessible name");
+assert.ok(sourceApp.includes('aria-label="Language"'),"Language selector must have an accessible name");
