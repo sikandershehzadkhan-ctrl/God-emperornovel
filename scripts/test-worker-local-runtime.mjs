@@ -279,22 +279,22 @@ try {
     assert.equal(ordinaryAuthor.response.status, 403, `Ordinary author must not access ${route}: ${ordinaryAuthor.body}`);
   }
   const adminWriteRoutes = [
-    ['/api/admin/agents/run', {slug:'security-sentinel'}],
-    ['/api/admin/taxonomy', {action:'approve',id:2147483999}],
-    ['/api/admin/community/comments', {comment_id:2147483999,status:'hidden'}],
-    ['/api/admin/community/reports', {report_id:2147483999,status:'resolved'}],
-    ['/api/admin/donations/2147483999', {status:'approved'}],
-    ['/api/admin/reports/2147483999', {status:'resolved'}],
-    ['/api/admin/tickets', {user_id:dataB.user.id,amount:1,reason:'runtime probe'}],
-    ['/api/admin/connectors', {id:2147483999,enabled:false}],
-    ['/api/admin/connectors/cleanup', {}],
-    ['/api/admin/requests/2147483999', {status:'rejected'}],
-    ['/api/admin/connector-authorization-requests/2147483999', {status:'rejected'}]
+    ['/api/admin/agents/run','POST',{slug:'security-sentinel'}],
+    ['/api/admin/taxonomy','POST',{action:'approve',id:2147483999}],
+    ['/api/admin/community/comments','PATCH',{comment_id:2147483999,status:'hidden'}],
+    ['/api/admin/community/reports','PATCH',{report_id:2147483999,status:'resolved'}],
+    ['/api/admin/donations/2147483999','PATCH',{status:'approved'}],
+    ['/api/admin/reports/2147483999','PATCH',{status:'resolved'}],
+    ['/api/admin/tickets','POST',{user_id:dataB.user.id,amount:1,reason:'runtime probe'}],
+    ['/api/admin/connectors','PATCH',{id:2147483999,enabled:false}],
+    ['/api/admin/connectors/cleanup','POST',{}],
+    ['/api/admin/requests/2147483999','PATCH',{status:'rejected'}],
+    ['/api/admin/connector-authorization-requests/2147483999','PATCH',{status:'rejected'}]
   ];
-  for (const [route,payload] of adminWriteRoutes) {
-    const anonymous = await request(route,{method:'POST',headers:jsonHeaders,body:JSON.stringify(payload)});
+  for (const [route,method,payload] of adminWriteRoutes) {
+    const anonymous = await request(route,{method,headers:jsonHeaders,body:JSON.stringify(payload)});
     assert.ok([401,403].includes(anonymous.response.status), `Anonymous visitor must be denied admin write ${route}: ${anonymous.response.status} ${anonymous.body}`);
-    const ordinaryAuthor = await request(route,{method:route.endsWith('/2147483999')&&route.includes('/donations/')||route.includes('/reports/')||route.includes('/connector-authorization-requests/')||route.includes('/requests/') ? 'PATCH':'POST',headers:{...jsonHeaders,cookie:accountB.cookie},body:JSON.stringify(payload)});
+    const ordinaryAuthor = await request(route,{method,headers:{...jsonHeaders,cookie:accountB.cookie},body:JSON.stringify(payload)});
     assert.equal(ordinaryAuthor.response.status,403, `Ordinary author must be denied admin write ${route}: ${ordinaryAuthor.response.status} ${ordinaryAuthor.body}`);
   }
 
