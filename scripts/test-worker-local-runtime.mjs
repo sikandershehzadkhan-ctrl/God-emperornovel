@@ -71,7 +71,7 @@ try {
     const setCookie = login.response.headers.get('set-cookie') || '';
     const cookiePair = setCookie.split(';', 1)[0];
     assert.match(cookiePair, /^session=.+$/, 'Login must issue an HttpOnly session cookie');
-    return { username, email, cookie: cookiePair };
+    return { username, email, password, cookie: cookiePair };
   }
   const accountA = await createRuntimeAccount('a');
   const accountB = await createRuntimeAccount('b');
@@ -360,6 +360,18 @@ try {
   assert.match(logout.response.headers.get('set-cookie')||'', /Max-Age=0/, 'Logout must expire the browser session cookie');
   const revokedSession = await getAs(accountA, '/api/me');
   assert.equal(JSON.parse(revokedSession.body).user, null, 'A logged-out session token must no longer authenticate subsequent requests');
+  const secondLogin = await request('/api/auth/login', {method:'POST',headers:jsonHeaders,body:JSON.stringify({email:accountA.email,password:accountA.password})});
+  assert.equal(secondLogin.response.status,200,'Second-device login must succeed for the session revocation test');
+  const secondCookie = (secondLogin.response.headers.get('set-cookie')||'').split(';',1)[0];
+  assert.match(secondCookie,/^session=.+$/,'Second-device login must issue a separate session');
+  const logoutAll = await request('/api/auth/logout-all',{method:'POST',headers:{cookie:secondCookie}});
+  assert.equal(logoutAll.response.status,200,'Authenticated logout-all must revoke every account session');
+  assert.match(logoutAll.response.headers.get('set-cookie')||'',/Max-Age=0/,'Logout-all must expire the current browser cookie');
+  const firstDeviceAfterRevoke = await getAs(accountA,'/api/me');
+  assert.equal(JSON.parse(firstDeviceAfterRevoke.body).user,null,'Logout-all must revoke the first device session');
+  const secondDeviceAfterRevoke = await request('/api/me',{headers:{cookie:secondCookie}});
+  assert.equal(JSON.parse(secondDeviceAfterRevoke.body).user,null,'Logout-all must revoke the second device session');
+
   console.log('PASS: real Wrangler local Worker handled health, D1-backed catalog, live overview, authenticated taxonomy submission identity boundary and unauthenticated taxonomy rejection, missing chapter, two independent account registrations/logins, session-bound profile isolation, cross-account library/history/bookmark/reading-position/notification, ticket-ledger, OmniPortal-import and author-owned novel/chapter/AI-project isolation, hostile user_id write/query handling, owner/admin privilege-boundary rejection and anonymous private-resource rejection and homepage requests.');
 } finally {
   try { process.kill(-child.pid, 'SIGTERM'); } catch { child.kill('SIGTERM'); }
