@@ -52,3 +52,14 @@ At integration head `91d6bfbe7ca172a64c4f5e47c7581a4b7bb34a0c`, the Wrangler loc
 Verification: [Cloudflare Source Validation run 41320963686](https://github.com/sikandershehzadkhan-ctrl/God-emperornovel/actions/runs/41320963686) passed, including the real Wrangler local Worker+D1 test and all 18 fresh SQLite migrations. [Graphify run 41320963623](https://github.com/sikandershehzadkhan-ctrl/God-emperornovel/actions/runs/41320963623) passed.
 
 These tests establish ownership isolation for the tested author novel/chapter routes. They do not establish every author route or AI Author Studio project isolation.
+## AI Author Studio project isolation extension
+
+At integration head `9fc757292ae2d63b6f904deaeb88858ee8f9133c`, the local Worker+D1 test initializes the AI Author Studio schema, seeds one project for each author, and verifies:
+
+- Each author lists only their own AI project.
+- Author A receives HTTP 403 when attempting to read Author B's AI project detail.
+- Author A receives HTTP 403 when attempting to modify Author B's AI project.
+
+Verification: [Cloudflare Source Validation run 41321216441](https://github.com/sikandershehzadkhan-ctrl/God-emperornovel/actions/runs/41321216441) passed, including the real local Worker+D1 test and all 18 fresh SQLite migrations. [Graphify run 41321216436](https://github.com/sikandershehzadkhan-ctrl/God-emperornovel/actions/runs/41321216436) passed.
+
+AI Author Studio generation/provider operations and all related chapter-job endpoints still require separate authorization and runtime coverage.
