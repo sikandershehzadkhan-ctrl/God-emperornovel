@@ -5,6 +5,7 @@ const worker = readFileSync(new URL("../src/index.js", import.meta.url), "utf8")
 const app = readFileSync(new URL("../public/app-17.23.0.js", import.meta.url), "utf8");
 const adminUi = readFileSync(new URL("../public/admin.html", import.meta.url), "utf8");
 const commentsUi = readFileSync(new URL("../src/react/NovelComments.jsx", import.meta.url), "utf8");
+const communityCss = readFileSync(new URL("../public/app.css", import.meta.url), "utf8");
 
 const listRoute = worker.match(/if\(p==="\/api\/notifications"&&m==="GET"\)\{([\s\S]*?)\n\s*if\(p==="\/api\/notifications\/read"/);
 assert.ok(listRoute, "notification list route must exist");
@@ -57,6 +58,9 @@ assert.ok(commentsUi.includes("const [reporting, setReporting] = useState(false)
 assert.ok(commentsUi.includes("if (reporting) return") && commentsUi.includes("disabled={reporting}"), "comment report form must prevent duplicate clicks while submitting");
 assert.ok(commentsUi.includes("aria-controls={`comment-report-${comment.id}`}") && commentsUi.includes("id={`comment-report-${comment.id}`}"), "comment report toggle must be programmatically associated with its form");
 assert.ok(commentsUi.includes("{details.length}/500 characters"), "comment report details must show the 500-character limit");
+assert.ok(communityCss.includes(".commentReportForm") && communityCss.includes("min-height:40px"), "comment report controls must have readable styling and touch-friendly actions");
+assert.ok(communityCss.includes("@media(max-width:520px)") && communityCss.includes(".novelCommentComposerFooter button{width:100%}"), "community composer actions must adapt to narrow mobile screens");
+assert.ok(communityCss.includes(".commentReportForm textarea:focus-visible") && communityCss.includes("outline:3px"), "community report fields must expose visible keyboard focus");
 assert.ok(commentsUi.includes("window.setInterval(refreshWhenVisible, 30000)"), "novel discussions must refresh on a bounded 30-second interval");
 assert.ok(commentsUi.includes('document.visibilityState === "visible"'), "discussion polling must pause while the page is hidden");
 assert.ok(commentsUi.includes('document.addEventListener("visibilitychange", refreshWhenVisible)'), "discussion updates must refresh when the reader returns to the page");
