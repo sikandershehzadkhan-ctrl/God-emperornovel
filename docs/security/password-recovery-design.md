@@ -19,7 +19,7 @@ Because no verified email delivery channel is configured, the application must n
 2. Apply independent IP and normalized-email rate limits. Do not reveal whether the account exists, is verified, suspended, or eligible.
 3. For an eligible account with a verified email address, create a cryptographically random token with at least 256 bits of entropy.
 4. Store only a keyed or cryptographic digest of the token, never the raw token. Bind the record to one user, one purpose, and a short expiry (recommended 20 minutes).
-5. Deliver the raw token only through the verified email address using a configured provider. Never put it in logs or return it to the browser.
+5. Deliver the raw token only through the verified email address using a configured provider. Never put it in logs or return it in an API response. The user agent receives it only through the email link's fragment, and the reset page must not load third-party resources that could read or leak that fragment.
 6. `POST /api/auth/password-reset/complete` accepts token and new password, validates the token in constant time, and consumes it exactly once.
 7. Update the password and revoke all sessions in one guarded database transaction/batch. Expire all outstanding reset tokens for that account.
 8. Return a generic result and send a separate security notification after a successful change.
@@ -80,6 +80,7 @@ If delivery is unavailable, return the same generic response but do not create a
 - Added `scripts/test-password-reset-migration-policy.mjs` to the standard build test chain.
 - Added `src/password-reset-store.mjs` with a D1 batch primitive that conditionally consumes an unexpired token, changes only its bound account's password, revokes that account's sessions, and invalidates its other outstanding reset tokens.
 - Added `scripts/test-password-reset-store.mjs` to exercise account isolation, replay, expiry, purpose constraints, sibling-token invalidation, and rollback behavior using SQLite, plus the D1 binding contract.
+- Added `src/password-reset-link.mjs` and `scripts/test-password-reset-link.mjs`. Reset links require an explicitly configured canonical HTTPS origin, reject credentials/path/query/fragment origin tricks, and place the token in the URL fragment rather than the request path or query.
 - These primitives do not create live reset requests, send email, expose a reset endpoint, or enable password recovery. The raw token must be delivered only through a verified provider channel; only the digest is intended for persistence.
 - CI must pass before this primitive is treated as validated.
 
