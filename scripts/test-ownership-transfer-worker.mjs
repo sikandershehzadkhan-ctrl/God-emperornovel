@@ -185,7 +185,64 @@ try {
   const ownerStillHasCancelled = await request(baseUrl, "/api/author/novels", { cookie: owner.cookie });
   assert.ok(ownerStillHasCancelled.data.some(row => Number(row.id) === cancelledNovel));
 
-  console.log("Two-account local Worker/D1 integration passed: registration/login, recipient privacy, invitation, concurrent acceptance, former-owner novel/chapter access revocation, recipient write access, wrong-actor denial, rejection, and cancellation.");
+
+  async function inviteNovel(title) {
+    const novelId = await createNovel(baseUrl, owner.cookie, title);
+    const invited = await request(baseUrl, "/api/author/novels/" + novelId + "/ownership-transfer", {
+      method: "POST", cookie: owner.cookie, body: { recipient_user_id: recipient.user.id }
+    });
+    assert.equal(invited.response.status, 201, JSON.stringify(invited.data));
+    return { novelId, transferId: Number(invited.data.transfer_id) };
+  }
+  function executeLocalSql(sql) {
+    wrangler(["d1", "execute", database, "--local", "--persist-to", persist, "--command", sql]);
+  }
+
+  // Eligibility is rechecked at acceptance, not merely when the invitation is sent.
+  const bannedCase = await inviteNovel("Ownership Integration Banned Recipient");
+  executeLocalSql("UPDATE users SET banned=1 WHERE id=" + Number(recipient.user.id));
+  const bannedAccept = await request(baseUrl, "/api/author/ownership-transfers/" + bannedCase.transferId + "/decision", {
+    method: "POST", cookie: recipient.cookie, body: { decision: "accept" }
+  });
+  assert.equal(bannedAccept.response.status, 409, JSON.stringify(bannedAccept.data));
+  executeLocalSql("UPDATE users SET banned=0 WHERE id=" + Number(recipient.user.id));
+  assert.ok((await request(baseUrl, "/api/author/novels", { cookie: owner.cookie })).data.some(row => Number(row.id) === bannedCase.novelId));
+
+  const revokedCase = await inviteNovel("Ownership Integration Revoked Author");
+  executeLocalSql("UPDATE users SET role='user' WHERE id=" + Number(recipient.user.id));
+  const revokedAccept = await request(baseUrl, "/api/author/ownership-transfers/" + revokedCase.transferId + "/decision", {
+    method: "POST", cookie: recipient.cookie, body: { decision: "accept" }
+  });
+  assert.equal(revokedAccept.response.status, 409, JSON.stringify(revokedAccept.data));
+  executeLocalSql("UPDATE users SET role='author' WHERE id=" + Number(recipient.user.id));
+  assert.ok((await request(baseUrl, "/api/author/novels", { cookie: owner.cookie })).data.some(row => Number(row.id) === revokedCase.novelId));
+
+  const staleCase = await inviteNovel("Ownership Integration Stale Owner");
+  executeLocalSql("UPDATE novels SET owner_user_id=" + Number(recipient.user.id) + " WHERE id=" + staleCase.novelId);
+  const staleAccept = await request(baseUrl, "/api/author/ownership-transfers/" + staleCase.transferId + "/decision", {
+    method: "POST", cookie: recipient.cookie, body: { decision: "accept" }
+  });
+  assert.equal(staleAccept.response.status, 409, JSON.stringify(staleAccept.data));
+  const staleOwnerRow = await request(baseUrl, "/api/author/novels", { cookie: recipient.cookie });
+  assert.ok(staleOwnerRow.data.some(row => Number(row.id) === staleCase.novelId), "A stale invitation must not overwrite the newer owner");
+
+  const expiredCase = await inviteNovel("Ownership Integration Expired");
+  executeLocalSql("UPDATE novel_ownership_transfers SET expires_at=unixepoch()-1 WHERE id=" + expiredCase.transferId);
+  const expiredAccept = await request(baseUrl, "/api/author/ownership-transfers/" + expiredCase.transferId + "/decision", {
+    method: "POST", cookie: recipient.cookie, body: { decision: "accept" }
+  });
+  assert.equal(expiredAccept.response.status, 409, JSON.stringify(expiredAccept.data));
+  assert.equal((await transferStatus(baseUrl, owner.cookie, expiredCase.transferId)).status, "expired");
+
+  const rightsCase = await createNovel(baseUrl, owner.cookie, "Ownership Integration Rights Evidence");
+  executeLocalSql("UPDATE novels SET rights_status='licensed',rights_evidence='' WHERE id=" + rightsCase);
+  const rightsInvite = await request(baseUrl, "/api/author/novels/" + rightsCase + "/ownership-transfer", {
+    method: "POST", cookie: owner.cookie, body: { recipient_user_id: recipient.user.id }
+  });
+  assert.equal(rightsInvite.response.status, 409, JSON.stringify(rightsInvite.data));
+
+  console.log("Two-account local Worker/D1 integration passed: registration/login, recipient privacy, concurrent acceptance, ownership and chapter access control, rejection/cancellation, and HTTP rejection of banned/revoked/expired/stale-owner/rights-ineligible transfers.");
+
 } catch (error) {
   console.error(error);
   if (workerOutput) console.error(workerOutput);
