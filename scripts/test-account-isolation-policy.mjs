@@ -32,8 +32,9 @@ for (const [needle, label] of [
   assert.match(line, /\.bind\(u\.id/, label + " must derive account identity from the authenticated session");
   assert.doesNotMatch(line, /b\.user_id|b\.owner_user_id|body\.user_id/, label + " must not trust a client-supplied account ID");
 }
-const aiDetailIndex = lines.findIndex(line => line.includes('if(aip&&m==="GET")'));
-const aiDetail = aiDetailIndex >= 0 ? lines.slice(aiDetailIndex, aiDetailIndex + 2).join("\\n") : "";
+const aiDetailStart = source.indexOf('if(aip&&m==="GET")');
+const aiDetailEnd = source.indexOf('if(aip&&m==="PATCH")', aiDetailStart);
+const aiDetail = aiDetailStart >= 0 && aiDetailEnd > aiDetailStart ? source.slice(aiDetailStart, aiDetailEnd) : "";
 assert.ok(aiDetail, "AI project detail route must exist");
 assert.match(aiDetail, /owner_user_id/);
 assert.match(aiDetail, /Number\\(row\\.owner_user_id\\)!==Number\\(u\\.id\\)/, "AI project detail must enforce owner isolation");
