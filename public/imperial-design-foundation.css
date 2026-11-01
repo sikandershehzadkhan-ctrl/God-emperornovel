@@ -1709,3 +1709,39 @@ html[data-theme="dark"] #lbNovels>.panel,html[data-theme="dark"] #lbAuthors>.pan
  .catalogCard,.genreCard,.tagTile,.formatLink{transition:none!important}
  .catalogCard:hover,.genreCard:hover,.tagTile:hover,.formatLink:hover{transform:none!important}
 }
+
+
+/* Author Studio refinement 17.29: a calm, focused publishing workspace. */
+.authorStudioLayout{align-items:start;gap:clamp(14px,2vw,22px)}
+.authorStudioIntro{position:relative;overflow:hidden;border-radius:var(--in-radius-lg);box-shadow:var(--in-shadow)}
+.authorStudioIntro::after{content:"";position:absolute;right:-66px;top:-108px;width:270px;aspect-ratio:1;border:1px solid color-mix(in srgb,var(--in-brand) 24%,transparent);border-radius:50%;box-shadow:0 0 0 22px color-mix(in srgb,var(--in-brand) 5%,transparent),0 0 0 48px color-mix(in srgb,var(--in-brand) 3%,transparent);pointer-events:none}
+.authorStudioIntro>*{position:relative;z-index:1}
+.authorAnalyticsPanel,.authorCreateForm,.authorWorksPanel{min-width:0;border:1px solid var(--in-line);border-radius:var(--in-radius-lg);background:var(--in-surface);box-shadow:var(--in-shadow)}
+.authorAnalyticsPanel{padding:clamp(14px,2.2vw,22px)}
+.authorCreateForm,.authorWorksPanel{padding:clamp(14px,2vw,20px)}
+.authorCreateForm h2,.authorWorksPanel h2{letter-spacing:-.025em}
+.authorCreateForm .fieldLabel{line-height:1.4}
+.authorCreateForm :is(input,select,textarea),.authorEditForm :is(input,select,textarea),.authorChapterForm :is(input,select,textarea){min-height:46px;border-radius:10px;transition:border-color 150ms ease,box-shadow 150ms ease}
+.authorCreateForm textarea,.authorEditForm textarea,.authorChapterForm textarea{min-height:116px}
+.authorCreateForm :is(input,select,textarea):focus-visible,.authorEditForm :is(input,select,textarea):focus-visible,.authorChapterForm :is(input,select,textarea):focus-visible{border-color:var(--in-focus);box-shadow:0 0 0 3px color-mix(in srgb,var(--in-focus) 14%,transparent)}
+.authorFormGrid{gap:13px}
+.authorWork{gap:12px;border-radius:13px;transition:border-color 160ms ease,box-shadow 160ms ease}
+.authorWork:hover{border-color:color-mix(in srgb,var(--in-brand) 30%,var(--in-line));box-shadow:0 7px 20px rgba(12,18,32,.045)}
+.authorStatus{white-space:nowrap}
+.authorWorkActions>*{min-height:40px;border-radius:9px}
+.authorEditForm,.authorChapterForm{padding:14px;border-radius:12px}
+.authorAnalyticsTools select{min-height:42px}
+.authorAnalyticsUpdated{line-height:1.5}
+html[data-theme="dark"] .authorStudioIntro{background:radial-gradient(circle at 100% 0%,rgba(133,91,218,.18),transparent 45%),linear-gradient(125deg,#171326,#151E32)}
+html[data-theme="dark"] .authorAnalyticsPanel,html[data-theme="dark"] .authorCreateForm,html[data-theme="dark"] .authorWorksPanel{background:var(--in-surface);border-color:var(--in-line)}
+html[data-theme="dark"] .authorWork{background:var(--in-canvas)}
+@media(max-width:640px){
+ .authorAnalyticsPanel,.authorCreateForm,.authorWorksPanel{border-radius:13px}
+ .authorCreateForm :is(input,select,textarea),.authorEditForm :is(input,select,textarea),.authorChapterForm :is(input,select,textarea){min-height:46px;font-size:16px}
+ .authorCreateForm textarea,.authorEditForm textarea,.authorChapterForm textarea{min-height:110px}
+ .authorWorkActions{display:grid;grid-template-columns:repeat(2,minmax(0,1fr))}
+ .authorWorkActions>*{width:100%;min-width:0}
+}
+@media(prefers-reduced-motion:reduce){
+ .authorCreateForm :is(input,select,textarea),.authorEditForm :is(input,select,textarea),.authorChapterForm :is(input,select,textarea),.authorWork{transition:none!important}
+}
