@@ -14,9 +14,9 @@ for (const [name, line] of Object.entries({catalog, detail, chapter, unlock, bat
 const publicAuthors = source.split('\n').filter(line => line.includes('SELECT author,COUNT(*) novel_count')) ;
 assert.equal(publicAuthors.length, 2, 'both public author discovery queries must exist');
 for (const query of publicAuthors) assert.ok(query.includes("rights_status IN ('original','public_domain','licensed','authorized')"), 'public author discovery must exclude ineligible rights');
-const ratingQueries = source.split('\n').filter(line => line.includes("SELECT id FROM novels WHERE id=? AND publication_status='published'"));
-assert.ok(ratingQueries.length >= 2, 'rating GET and POST must verify novel eligibility');
-for (const query of ratingQueries) assert.ok(query.includes("rights_status IN ('original','public_domain','licensed','authorized')"), 'rating endpoints must exclude ineligible rights');
+const ratingRoutes = source.split('\n').filter(line => line.includes('if(p==="/api/rating"'));
+assert.equal(ratingRoutes.length, 2, 'rating GET and POST routes must exist');
+for (const route of ratingRoutes) assert.ok(route.includes("rights_status IN ('original','public_domain','licensed','authorized')"), 'rating endpoints must exclude ineligible rights');
 assert.ok(source.includes("WHERE r.user_id=? AND n.publication_status='published' AND n.rights_status IN ('original','public_domain','licensed','authorized') GROUP BY n.id,r.id"), 'personalized recommendations must enforce rights');
 assert.ok(source.includes("WHERE n.publication_status='published' AND n.rights_status IN ('original','public_domain','licensed','authorized') AND n.id NOT IN(SELECT novel_id FROM follows WHERE user_id=?)"), 'fallback recommendations must enforce rights');
 const leaderboard = source.split('\n').find(line => line.includes('unlocks DESC,n.views DESC,n.rating DESC')) || '';
