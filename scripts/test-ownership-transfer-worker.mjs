@@ -102,6 +102,7 @@ try {
   const suffix = (String(process.pid) + String(Date.now())).slice(-8);
   const owner = await account(baseUrl, "owner" + suffix, "owner" + suffix + "@example.test");
   const recipient = await account(baseUrl, "author" + suffix, "author" + suffix + "@example.test");
+  const spectator = await account(baseUrl, "reader" + suffix, "reader" + suffix + "@example.test");
   const promote = "UPDATE users SET role='author' WHERE id IN (" + Number(owner.user.id) + "," + Number(recipient.user.id) + ")";
   wrangler(["d1", "execute", database, "--local", "--persist-to", persist, "--command", promote]);
 
@@ -109,11 +110,20 @@ try {
   const lookup = await request(baseUrl, "/api/author/eligible-recipients?username=" + encodeURIComponent(recipient.user.username), { cookie: owner.cookie });
   assert.equal(lookup.response.status, 200, JSON.stringify(lookup.data));
   assert.equal(Number(lookup.data.id), Number(recipient.user.id));
+  assert.deepEqual(Object.keys(lookup.data).sort(), ["id", "username"], "Recipient lookup must not disclose email or profile fields");
   const invitation = await request(baseUrl, "/api/author/novels/" + acceptedNovel + "/ownership-transfer", {
     method: "POST", cookie: owner.cookie, body: { recipient_user_id: recipient.user.id, request_note: "Local integration test" }
   });
   assert.equal(invitation.response.status, 201, JSON.stringify(invitation.data));
   const transferId = Number(invitation.data.transfer_id);
+  const spectatorTransferList = await request(baseUrl, "/api/author/ownership-transfers", { cookie: spectator.cookie });
+  assert.equal(spectatorTransferList.response.status, 403, JSON.stringify(spectatorTransferList.data));
+  const spectatorCannotAccept = await request(baseUrl, "/api/author/ownership-transfers/" + transferId + "/decision", {
+    method: "POST", cookie: spectator.cookie, body: { decision: "accept" }
+  });
+  assert.equal(spectatorCannotAccept.response.status, 403, JSON.stringify(spectatorCannotAccept.data));
+  const spectatorCannotLookup = await request(baseUrl, "/api/author/eligible-recipients?username=" + encodeURIComponent(recipient.user.username), { cookie: spectator.cookie });
+  assert.equal(spectatorCannotLookup.response.status, 403, JSON.stringify(spectatorCannotLookup.data));
 
   const ownerCannotAcceptOwnInvitation = await request(baseUrl, "/api/author/ownership-transfers/" + transferId + "/decision", {
     method: "POST", cookie: owner.cookie, body: { decision: "accept" }
