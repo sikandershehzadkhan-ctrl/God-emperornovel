@@ -150,6 +150,9 @@ try {
   assert.equal(dataA.user.email, accountA.email, 'Account A profile must expose only Account A identity');
   assert.equal(dataB.user.username, accountB.username, 'Account B session must resolve to Account B');
   assert.equal(dataB.user.email, accountB.email, 'Account B profile must expose only Account B identity');
+  const malformedSession = await request('/api/me', {headers:{cookie:'session=%E0%A4%A'}});
+  assert.equal(malformedSession.response.status, 200, 'Malformed percent-encoded session cookie must not crash the Worker');
+  assert.equal(JSON.parse(malformedSession.body).user, null, 'Malformed session cookie must be treated as unauthenticated');
   const novelId = 2147483001;
   const chapterNumber = 1;
   const jsonHeaders = { 'content-type': 'application/json' };
