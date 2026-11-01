@@ -103,8 +103,35 @@ try {
   const owner = await account(baseUrl, "owner" + suffix, "owner" + suffix + "@example.test");
   const recipient = await account(baseUrl, "author" + suffix, "author" + suffix + "@example.test");
   const spectator = await account(baseUrl, "reader" + suffix, "reader" + suffix + "@example.test");
-  const promote = "UPDATE users SET role='author' WHERE id IN (" + Number(owner.user.id) + "," + Number(recipient.user.id) + ")";
+  const moderator = await account(baseUrl, "moderator" + suffix, "moderator" + suffix + "@example.test");
+  const administrator = await account(baseUrl, "administrator" + suffix, "administrator" + suffix + "@example.test");
+  const promote = "UPDATE users SET role='author' WHERE id IN (" + Number(owner.user.id) + "," + Number(recipient.user.id) + "); UPDATE users SET role='moderator' WHERE id=" + Number(moderator.user.id) + "; UPDATE users SET role='admin' WHERE id=" + Number(administrator.user.id);
   wrangler(["d1", "execute", database, "--local", "--persist-to", persist, "--command", promote]);
+
+  // Every sampled administrator read surface must reject all non-admin roles.
+  const adminReadRoutes = [
+    "/api/admin/stats",
+    "/api/admin/users",
+    "/api/admin/agents",
+    "/api/admin/taxonomy",
+    "/api/admin/community/comments",
+    "/api/admin/community/reports",
+    "/api/admin/author-applications",
+    "/api/admin/publishing",
+    "/api/admin/donations",
+    "/api/admin/reports",
+    "/api/admin/connectors"
+  ];
+  for (const route of adminReadRoutes) {
+    for (const [role, session] of [["user", spectator.cookie], ["author", owner.cookie], ["moderator", moderator.cookie]]) {
+      const denied = await request(baseUrl, route, { cookie: session });
+      assert.equal(denied.response.status, 403, role + " must not access " + route + ": " + JSON.stringify(denied.data));
+    }
+  }
+  for (const route of ["/api/admin/stats", "/api/admin/users", "/api/admin/agents", "/api/admin/publishing"]) {
+    const allowed = await request(baseUrl, route, { cookie: administrator.cookie });
+    assert.equal(allowed.response.status, 200, "Admin must access " + route + ": " + JSON.stringify(allowed.data));
+  }
 
   const acceptedNovel = await createNovel(baseUrl, owner.cookie, "Ownership Integration Accepted");
   const lookup = await request(baseUrl, "/api/author/eligible-recipients?username=" + encodeURIComponent(recipient.user.username), { cookie: owner.cookie });
@@ -251,7 +278,7 @@ try {
   });
   assert.equal(rightsInvite.response.status, 409, JSON.stringify(rightsInvite.data));
 
-  console.log("Two-account local Worker/D1 integration passed: registration/login, recipient privacy, concurrent acceptance, ownership and chapter access control, rejection/cancellation, and HTTP rejection of banned/revoked/expired/stale-owner/rights-ineligible transfers.");
+  console.log("Local Worker/D1 authorization integration passed: reader/author/moderator denial across 11 admin read routes, admin access checks, recipient privacy, ownership and chapter isolation, concurrent acceptance, rejection/cancellation, and banned/revoked/expired/stale-owner/rights-ineligible transfer rejection.");
 
 } catch (error) {
   console.error(error);
