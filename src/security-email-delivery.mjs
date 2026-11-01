@@ -34,7 +34,12 @@ export async function deliverSecurityEmail(env, {
   let origin;
   try { origin = new URL(publicOrigin); } catch { return { ok: false, reason: "invalid_message" }; }
   if (origin.protocol !== "https:" || origin.username || origin.password || origin.pathname !== "/" || origin.search || origin.hash || origin.origin !== publicOrigin) return { ok: false, reason: "invalid_message" };
-  if (link.protocol !== "https:" || link.username || link.password || link.search || link.origin !== origin.origin) {
+  const expectedPath = template === "verify_email" ? "/verify-email" : "/reset-password";
+  if (
+    link.protocol !== "https:" || link.username || link.password ||
+    link.search || link.origin !== origin.origin || link.pathname !== expectedPath ||
+    !/^#token=[A-Za-z0-9_-]{43}$/.test(link.hash)
+  ) {
     return { ok: false, reason: "invalid_message" };
   }
   if (!env?.SECURITY_EMAIL || typeof env.SECURITY_EMAIL.fetch !== "function") {
