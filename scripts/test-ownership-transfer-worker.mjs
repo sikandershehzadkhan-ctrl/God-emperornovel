@@ -115,6 +115,10 @@ try {
   assert.equal(invitation.response.status, 201, JSON.stringify(invitation.data));
   const transferId = Number(invitation.data.transfer_id);
 
+  const ownerCannotAcceptOwnInvitation = await request(baseUrl, "/api/author/ownership-transfers/" + transferId + "/decision", {
+    method: "POST", cookie: owner.cookie, body: { decision: "accept" }
+  });
+  assert.equal(ownerCannotAcceptOwnInvitation.response.status, 403, JSON.stringify(ownerCannotAcceptOwnInvitation.data));
   const decisions = await Promise.all([
     request(baseUrl, "/api/author/ownership-transfers/" + transferId + "/decision", { method: "POST", cookie: recipient.cookie, body: { decision: "accept" } }),
     request(baseUrl, "/api/author/ownership-transfers/" + transferId + "/decision", { method: "POST", cookie: recipient.cookie, body: { decision: "accept" } })
@@ -133,6 +137,23 @@ try {
     method: "PATCH", cookie: owner.cookie, body: { title: "Unauthorized former-owner edit" }
   });
   assert.equal(formerOwnerEdit.response.status, 403, JSON.stringify(formerOwnerEdit.data));
+  const recipientEdit = await request(baseUrl, "/api/author/novels/" + acceptedNovel, {
+    method: "PATCH", cookie: recipient.cookie, body: { title: "Recipient Ownership Confirmed" }
+  });
+  assert.equal(recipientEdit.response.status, 200, JSON.stringify(recipientEdit.data));
+  const chapterCreated = await request(baseUrl, "/api/author/chapters", {
+    method: "POST", cookie: recipient.cookie,
+    body: { novel_id: acceptedNovel, chapter_number: 1, title: "Transferred Chapter", content: "Local integration fixture content", is_locked: false, ticket_cost: 0 }
+  });
+  assert.equal(chapterCreated.response.status, 201, JSON.stringify(chapterCreated.data));
+  const formerOwnerChapterEdit = await request(baseUrl, "/api/author/chapters/" + chapterCreated.data.id, {
+    method: "PATCH", cookie: owner.cookie, body: { title: "Unauthorized chapter edit" }
+  });
+  assert.equal(formerOwnerChapterEdit.response.status, 403, JSON.stringify(formerOwnerChapterEdit.data));
+  const recipientChapterEdit = await request(baseUrl, "/api/author/chapters/" + chapterCreated.data.id, {
+    method: "PATCH", cookie: recipient.cookie, body: { title: "Recipient chapter edit" }
+  });
+  assert.equal(recipientChapterEdit.response.status, 200, JSON.stringify(recipientChapterEdit.data));
 
   const rejectedNovel = await createNovel(baseUrl, owner.cookie, "Ownership Integration Rejected");
   const rejectedInvite = await request(baseUrl, "/api/author/novels/" + rejectedNovel + "/ownership-transfer", {
@@ -152,6 +173,10 @@ try {
     method: "POST", cookie: owner.cookie, body: { recipient_user_id: recipient.user.id }
   });
   assert.equal(cancelledInvite.response.status, 201, JSON.stringify(cancelledInvite.data));
+  const recipientCannotCancel = await request(baseUrl, "/api/author/ownership-transfers/" + cancelledInvite.data.transfer_id + "/cancel", {
+    method: "POST", cookie: recipient.cookie
+  });
+  assert.equal(recipientCannotCancel.response.status, 409, JSON.stringify(recipientCannotCancel.data));
   const cancelled = await request(baseUrl, "/api/author/ownership-transfers/" + cancelledInvite.data.transfer_id + "/cancel", {
     method: "POST", cookie: owner.cookie
   });
@@ -160,7 +185,7 @@ try {
   const ownerStillHasCancelled = await request(baseUrl, "/api/author/novels", { cookie: owner.cookie });
   assert.ok(ownerStillHasCancelled.data.some(row => Number(row.id) === cancelledNovel));
 
-  console.log("Two-account local Worker/D1 integration passed: registration/login, recipient privacy, invitation, concurrent acceptance, former-owner access revocation, rejection, and cancellation.");
+  console.log("Two-account local Worker/D1 integration passed: registration/login, recipient privacy, invitation, concurrent acceptance, former-owner novel/chapter access revocation, recipient write access, wrong-actor denial, rejection, and cancellation.");
 } catch (error) {
   console.error(error);
   if (workerOutput) console.error(workerOutput);
