@@ -1106,3 +1106,59 @@ html[data-theme="dark"] .novelLivePulseMetric{background:var(--in-surface-raised
  .catalogTags{max-height:40px;overflow:hidden}
 }
 @media(prefers-reduced-motion:reduce){.catalogCover img{transition:none!important}.catalogCard:hover .catalogCover img{transform:none}}
+
+
+/* Story detail: editorial hierarchy, clear reading actions and a calm chapter archive. */
+.novelHero{
+  display:grid;grid-template-columns:minmax(190px,260px) minmax(0,1fr);
+  align-items:start;gap:clamp(20px,4vw,42px);padding:clamp(17px,3vw,30px);
+  border:1px solid var(--in-line);border-radius:var(--in-radius-lg);
+  background:var(--in-surface);box-shadow:var(--in-shadow);
+}
+.novelCover{min-width:0;overflow:hidden;aspect-ratio:.72;border:1px solid var(--in-line);border-radius:13px;background:var(--in-canvas)}
+.novelCover img{display:block;width:100%;height:100%;object-fit:cover}
+.novelInfo{display:flex;flex-direction:column;align-items:flex-start;min-width:0}
+.novelInfo>.eyebrow{margin:2px 0 9px;text-transform:uppercase}
+.novelInfo h1{margin:0;color:var(--in-ink);font-size:clamp(30px,4.4vw,48px);font-weight:820;line-height:1.06;letter-spacing:-.055em;overflow-wrap:anywhere}
+.novelInfo>.muted{margin-top:9px;color:var(--in-muted);font-size:13px}
+.novelInfo .meta{display:flex;gap:6px;flex-wrap:wrap;margin-top:14px}
+.novelInfo>p{max-width:72ch;margin:16px 0;color:var(--in-muted);font-size:14px;line-height:1.8;overflow-wrap:anywhere}
+.novelInfo .stats{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));width:100%;gap:8px;margin:6px 0 14px}
+.novelInfo .stat{min-width:0;padding:11px;border:1px solid var(--in-line);border-radius:10px;background:var(--in-canvas);color:var(--in-muted);font-size:10px}
+.novelInfo .stat b{display:block;margin-bottom:4px;color:var(--in-ink);font-size:clamp(17px,2vw,22px);font-variant-numeric:tabular-nums;overflow-wrap:anywhere}
+.novelInfo .actions{display:flex;align-items:center;gap:8px;flex-wrap:wrap;width:100%;margin-top:14px}
+.novelInfo .actions>*{min-height:42px;padding:10px 13px;font-size:12px;text-decoration:none}
+.tabs{display:flex;gap:5px;overflow-x:auto;margin:18px 0 4px;padding:5px;border-bottom:1px solid var(--in-line);scrollbar-width:thin}
+.tabs a{flex:0 0 auto;padding:10px 13px;border-radius:9px;color:var(--in-muted);font-size:12px;font-weight:700;text-decoration:none}
+.tabs a.active,.tabs a:hover{background:var(--in-brand-soft);color:var(--in-brand)}
+.chapterList{display:grid;gap:7px;min-width:0}
+.chapterList .chapter{display:grid;grid-template-columns:42px minmax(0,1fr) auto;align-items:center;gap:11px;min-width:0;padding:12px;border:1px solid var(--in-line);border-radius:11px;background:var(--in-surface);color:var(--in-ink);text-decoration:none}
+.chapterList .chapter:hover{border-color:var(--in-brand);background:var(--in-brand-soft)}
+.chapterNo{display:grid;place-items:center;min-width:34px;min-height:34px;border-radius:9px;background:var(--in-canvas);color:var(--in-brand);font-size:11px;font-weight:800;font-variant-numeric:tabular-nums}
+.chapterList .chapter b{display:block;color:var(--in-ink);font-size:12px;overflow-wrap:anywhere}
+.chapterList .chapter .muted{display:inline-block;margin-top:4px;color:var(--in-muted);font-size:10px}
+.chapterList .chapter .lock{color:var(--in-muted)}
+#community{scroll-margin-top:92px}
+@media(max-width:760px){
+ .novelHero{grid-template-columns:minmax(104px,30%) minmax(0,1fr);gap:14px;padding:14px;border-radius:15px}
+ .novelInfo h1{font-size:clamp(23px,6vw,34px)}
+ .novelInfo>.muted{font-size:11px}
+ .novelInfo>p{font-size:12px;line-height:1.65}
+ .novelInfo .stats{grid-template-columns:repeat(2,minmax(0,1fr));gap:6px}
+ .novelInfo .stat{padding:8px}
+ .novelInfo .stat b{font-size:17px}
+ .novelInfo .actions{grid-column:1/-1;gap:6px}
+ .novelInfo .actions>*{flex:1 1 auto;justify-content:center;padding-inline:9px;font-size:11px}
+}
+@media(max-width:420px){
+ .novelHero{grid-template-columns:88px minmax(0,1fr);gap:11px;padding:11px}
+ .novelCover{border-radius:9px}
+ .novelInfo h1{font-size:22px}
+ .novelInfo .meta .pill{padding:4px 6px;font-size:9px}
+ .novelInfo>p{font-size:11px}
+ .novelInfo .stats{grid-template-columns:repeat(2,minmax(0,1fr))}
+ .novelInfo .actions{grid-column:1/-1}
+ .novelInfo .actions>*{min-height:38px;padding:8px 7px;font-size:10px}
+ .chapterList .chapter{grid-template-columns:34px minmax(0,1fr) auto;gap:8px;padding:9px}
+}
+@media(prefers-reduced-motion:reduce){.chapterList .chapter{transition:none!important}}
