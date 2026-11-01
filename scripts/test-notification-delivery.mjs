@@ -37,6 +37,7 @@ assert.ok(publicCommentsRoute[1].includes("c.id IN (SELECT id FROM selected)"), 
 const commentRoute = worker.match(/if\(p==="\/api\/comments"&&m==="POST"\)\{([\s\S]*?)\n\s*if\(p==="\/api\/comments\/like"/);
 assert.ok(commentRoute, "comment creation route must exist");
 assert.ok(commentRoute[1].includes("await notifyUser(env,parentAuthor"), "comment replies must notify the parent comment author");
+assert.ok(commentRoute[1].includes("AND parent_id IS NULL"), "replies must target top-level comments so every accepted reply is visible in the one-level thread UI");
 assert.ok(commentRoute[1].includes("await notifyUser(env,owner"), "novel comments must notify the novel owner");
 assert.ok(commentRoute[1].includes("owner!==Number(u.id)"), "authors must not receive notifications for their own comments");
 assert.ok(commentRoute[1].includes("rights_status IN ('original','public_domain','licensed','authorized')"), "comment creation must enforce publication rights clearance");
