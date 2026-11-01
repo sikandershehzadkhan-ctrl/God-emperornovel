@@ -415,6 +415,38 @@ try {
   const rejectionAudit=execFileSync('npx',['--yes','wrangler@4','d1','execute','god-emperornovel-db','--local','--persist-to','.wrangler/test-runtime','--command',`SELECT action,details FROM audit_logs WHERE action='donation_rejected' AND details LIKE '%donation=${rejectedDonation.id}%' LIMIT 1`],{encoding:'utf8',stdio:['ignore','pipe','pipe'],env:{...process.env,NO_COLOR:'1'}});
   assert.match(rejectionAudit,/donation_rejected/,'Donation rejection must leave an administrator audit record');
 
+  // Exercise the paid request lifecycle against the real local Worker and local D1.
+  // The first three requests in a week are free; the fourth costs 100 Crowns.
+  const accountAId=Number(JSON.parse((await getAs(accountA,'/api/profile')).body).user.id);
+  execFileSync('npx',['--yes','wrangler@4','d1','execute','god-emperornovel-db','--local','--persist-to','.wrangler/test-runtime','--command',`UPDATE users SET tickets=250 WHERE id=${accountAId}; DELETE FROM novel_requests WHERE user_id=${accountAId} AND week_key=${Math.floor(Date.now()/604800000)}`],{stdio:'pipe',env:{...process.env,NO_COLOR:'1'}});
+  const requestIds=[];
+  for(let requestIndex=1;requestIndex<=4;requestIndex++){
+    const createdRequest=await request('/api/requests',{method:'POST',headers:{...jsonHeaders,cookie:accountA.cookie},body:JSON.stringify({url:`https://fanqienovel.com/page/runtime-${suffix}-${requestIndex}`})});
+    assert.equal(createdRequest.response.status,200,`Novel request ${requestIndex} must be created: ${createdRequest.body}`);
+    const createdData=JSON.parse(createdRequest.body);
+    assert.ok(Number.isSafeInteger(Number(createdData.request_id))&&Number(createdData.request_id)>0,'Novel request must return its persisted identifier');
+    assert.equal(Number(createdData.cost),requestIndex<=3?0:100,`Novel request ${requestIndex} must use server-calculated weekly pricing`);
+    requestIds.push(Number(createdData.request_id));
+  }
+  const requestLedger=await getAs(accountA,'/api/tickets/ledger');
+  assert.equal(JSON.parse(requestLedger.body).filter(x=>x.reason==='novel_request'&&x.reference===String(requestIds[3])&&Number(x.delta)===-100).length,1,'Fourth weekly novel request must create exactly one stable-ID debit ledger row');
+  const afterRequestCharge=Number(JSON.parse((await getAs(accountA,'/api/profile')).body).user.tickets);
+  assert.equal(afterRequestCharge,150,'Fourth weekly novel request must debit 100 Crowns exactly once');
+  const rejectPaidRequest=await request(`/api/admin/requests/${requestIds[3]}`,{method:'PATCH',headers:{...jsonHeaders,cookie:accountA.cookie},body:JSON.stringify({status:'rejected'})});
+  assert.equal(rejectPaidRequest.response.status,200,`Rejecting a paid novel request must refund it: ${rejectPaidRequest.body}`);
+  assert.equal(Number(JSON.parse(rejectPaidRequest.body).refunded),100,'Rejected paid request must report the exact refund');
+  const afterRequestRefund=Number(JSON.parse((await getAs(accountA,'/api/profile')).body).user.tickets);
+  assert.equal(afterRequestRefund,250,'Rejected paid request must restore the Crown balance exactly once');
+  const refundLedger=await getAs(accountA,'/api/tickets/ledger');
+  assert.equal(JSON.parse(refundLedger.body).filter(x=>x.reason==='novel_request_refund'&&x.reference===String(requestIds[3])&&Number(x.delta)===100).length,1,'Rejected paid request must create exactly one stable-ID refund ledger row');
+  const duplicateRefund=await request(`/api/admin/requests/${requestIds[3]}`,{method:'PATCH',headers:{...jsonHeaders,cookie:accountA.cookie},body:JSON.stringify({status:'rejected'})});
+  assert.equal(duplicateRefund.response.status,200,'Repeated rejection must be handled idempotently without another refund');
+  assert.equal(JSON.parse(duplicateRefund.body).refunded,undefined,'Repeated rejection must not report a second refund');
+  const afterDuplicateRefund=Number(JSON.parse((await getAs(accountA,'/api/profile')).body).user.tickets);
+  assert.equal(afterDuplicateRefund,250,'Repeated request rejection must never duplicate a refund');
+  const refundAudit=execFileSync('npx',['--yes','wrangler@4','d1','execute','god-emperornovel-db','--local','--persist-to','.wrangler/test-runtime','--command',`SELECT action,details FROM audit_logs WHERE action='admin_request_rejected' AND details LIKE '%request=${requestIds[3]};%' LIMIT 1`],{encoding:'utf8',stdio:['ignore','pipe','pipe'],env:{...process.env,NO_COLOR:'1'}});
+  assert.match(refundAudit,/admin_request_rejected/,'Paid request refund must leave an administrator audit record');
+
   const anonymousLibrary = await request('/api/library');
   assert.equal(anonymousLibrary.response.status, 401, 'Private library must reject anonymous requests');
   const anonymousHistory = await request('/api/history');
