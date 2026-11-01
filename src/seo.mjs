@@ -28,8 +28,13 @@ export function buildRobotsTxt(origin,{allowOaiSearch=true,allowModelTraining=fa
     "Sitemap: "+base+"/sitemap.xml",""
   ].join("\n");
 }
-export function buildSitemapXml(origin,novels=[],authors=[]){
-  const base=canonicalOrigin(origin),paths=STATIC_PUBLIC_PATHS.map(path=>({loc:base+path}));
+export function buildSitemapIndexXml(origin,shards=[]){
+  const base=canonicalOrigin(origin);
+  const entries=shards.map(path=>"  <sitemap><loc>"+xml(base+path)+"</loc></sitemap>").join("\n");
+  return '<?xml version="1.0" encoding="UTF-8"?>\\n<sitemapindex xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\\n'+entries+"\\n</sitemapindex>\\n";
+}
+export function buildSitemapXml(origin,novels=[],authors=[],chapters=[],includeStatic=true){
+  const base=canonicalOrigin(origin),paths=(includeStatic?STATIC_PUBLIC_PATHS:[]).map(path=>({loc:base+path}));
   const seen=new Set(paths.map(item=>item.loc));
   for(const novel of Array.isArray(novels)?novels:[]){
     const id=Number(novel?.id);
@@ -42,6 +47,16 @@ export function buildSitemapXml(origin,novels=[],authors=[]){
     paths.push(item);
   }
   for(const author of Array.isArray(authors)?authors:[]){const name=String(author?.author??author??"").trim();if(!name)continue;const loc=base+authorProfilePath(name);if(seen.has(loc))continue;seen.add(loc);paths.push({loc})}
+  for(const chapter of Array.isArray(chapters)?chapters:[]){
+    const novelId=Number(chapter?.novel_id),number=Number(chapter?.chapter_number);
+    if(!Number.isSafeInteger(novelId)||novelId<1||!Number.isSafeInteger(number)||number<1)continue;
+    const loc=base+"/read/"+novelId+"/"+number;
+    if(seen.has(loc))continue;
+    seen.add(loc);
+    const item={loc},date=chapter.updated_at?new Date(chapter.updated_at):null;
+    if(date&&!Number.isNaN(date.getTime()))item.lastmod=date.toISOString().slice(0,10);
+    paths.push(item);
+  }
   const entries=paths.map(item=>"  <url><loc>"+xml(item.loc)+"</loc>"+(item.lastmod?"<lastmod>"+item.lastmod+"</lastmod>":"")+"</url>").join("\n");
   return '<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n'+entries+"\n</urlset>\n";
 }
