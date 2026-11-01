@@ -691,6 +691,14 @@ async function api(req,env){
   const rows=(await env.DB.prepare("SELECT t.id,t.novel_id,n.title,t.from_user_id,fu.username from_username,t.to_user_id,tu.username to_username,t.status,t.request_note,t.requested_at,t.expires_at,t.decided_at,t.decision_note FROM novel_ownership_transfers t JOIN novels n ON n.id=t.novel_id JOIN users fu ON fu.id=t.from_user_id JOIN users tu ON tu.id=t.to_user_id WHERE t.from_user_id=? OR t.to_user_id=? ORDER BY CASE t.status WHEN 'pending' THEN 0 ELSE 1 END,t.requested_at DESC LIMIT 100").bind(u.id,u.id).all()).results||[];
   return json(rows);
  }
+ if(p==="/api/author/eligible-recipients"&&m==="GET"){
+  const e=author(u);if(e)return e;
+  const username=String(url.searchParams.get("username")||"").trim().slice(0,80);
+  if(username.length<2)return json({error:"Enter at least two characters of the exact author username."},400);
+  const recipient=await env.DB.prepare("SELECT id,username FROM users WHERE username=? COLLATE NOCASE AND role='author' AND banned=0 AND id<>? LIMIT 1").bind(username,u.id).first();
+  if(!recipient)return json({error:"No eligible author account matches that username."},404);
+  return json({id:Number(recipient.id),username:String(recipient.username)});
+ }
  let transferRequest=p.match(/^\/api\/author\/novels\/(\d+)\/ownership-transfer$/);
  if(transferRequest&&m==="POST"){
   const e=author(u);if(e)return e;
