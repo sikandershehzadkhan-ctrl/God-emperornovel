@@ -361,3 +361,4 @@ Each document is a specification. A listed route or logical API contract is not 
 - [01N.1 — Schema Authority and Migration Decision](IMPERIAL-NOVEL-PHASE-01N-1-SCHEMA-AUTHORITY-AND-MIGRATION-DECISION.md)
 - [01N.2 — API Authorization and Side-Effect Matrix](IMPERIAL-NOVEL-PHASE-01N-2-API-AUTHORIZATION-AND-SIDE-EFFECT-MATRIX.md)
 - [01N.3 — Canonical Route and SEO Registry](IMPERIAL-NOVEL-PHASE-01N-3-CANONICAL-ROUTE-AND-SEO-REGISTRY.md)
+- [01N.4 — Real-Time Events and Analytics Contract](IMPERIAL-NOVEL-PHASE-01N-4-REALTIME-EVENTS-AND-ANALYTICS-CONTRACT.md)
