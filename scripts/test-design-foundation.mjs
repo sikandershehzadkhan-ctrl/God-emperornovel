@@ -161,3 +161,16 @@ assert.ok(sourceApp.includes('class="authorStudioLayout"'),"Author route must re
 assert.ok(sourceApp.includes('id="createStoryForm"'),"Author route must render the create-story form");
 assert.ok(sourceApp.includes('id="authorWorksList"'),"Author route must render the creator's works list");
 assert.ok(sourceApp.includes('id="authorAnalyticsMetrics"'),"Author route must render live author analytics");
+
+
+for(const selector of [".readerPage",".readerBarInner",".readerBack",".readerBook",".readerTools",".readerTool:focus-visible",".readerMain",".readerArticle h1",".readerContent",".readerActions",".readerFooterCard",".chapterDrawer",".readerPrefs",".readerChapterItem.current",".readerLock",".comicPage img"]){
+  assert.ok(css.includes(selector),"Reader experience must include "+selector);
+}
+assert.ok(css.includes("max-width:68ch"),"Reader prose must preserve an editorially comfortable reading measure");
+assert.ok(css.includes("grid-template-columns:78px minmax(0,1fr)"),"Chapter drawer entries must retain clear chapter number and title hierarchy");
+assert.ok(css.includes("@media(max-width:640px){\n .readerBarInner"),"Reader toolbar and article must adapt to phone widths");
+assert.ok(css.includes("@media(max-width:360px)"),"Reader controls must remain usable on very narrow phones");
+assert.ok(sourceApp.includes('class="readerPage"'),"Chapter route must render the reader experience");
+assert.ok(sourceApp.includes('id="chapterDrawer"'),"Reader must expose its chapter and preference drawer");
+assert.ok(sourceApp.includes('class="readerChapterItem'),"Reader must render chapter navigation");
+assert.ok(sourceApp.includes('class="readerFooterCard"'),"Reader must provide a clear next-step footer");
