@@ -16,6 +16,7 @@ for (const required of [
   "purpose text not null check (purpose = 'password_reset')",
   "expires_at text not null",
   "consumed_at text",
+  "consumption_id text unique",
   "invalidated_at text",
   "foreign key(user_id) references users(id) on delete cascade",
   "idx_password_reset_tokens_user_created",
