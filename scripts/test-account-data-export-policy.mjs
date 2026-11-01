@@ -23,5 +23,7 @@ assert.doesNotMatch(route, /password_hash|token_hash|sessions\s|reset_tokens|aud
 assert.match(route, /cache-control":"no-store, private"/, "exports must not be cached");
 assert.match(route, /content-disposition/, "exports must download as a JSON attachment");
 assert.match(route, /format:"imperial-novel-account-export-v1"/, "exports must have a versioned format identifier");
+assert.match(route, /SELECT email_verified_at FROM users WHERE id=\?/ , "account export must include the mailbox verification timestamp");
+assert.match(route, /email_verified_at:emailVerification\?\.email_verified_at\|\|null/, "mailbox verification state must be explicit in the export");
 
 console.log("Account data export policy checks passed.");
