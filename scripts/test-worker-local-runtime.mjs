@@ -212,6 +212,14 @@ try {
   assert.ok(!JSON.parse(ledgerA.body).some(x=>x.reference==='B-only ledger'), 'Account A must not see Account B ticket ledger');
   assert.ok(JSON.parse(ledgerB.body).some(x=>x.reference==='B-only ledger'), 'Account B must see own ticket ledger');
   assert.ok(!JSON.parse(ledgerB.body).some(x=>x.reference==='A-only ledger'), 'Account B must not see Account A ticket ledger');
+  for(let attempt=0;attempt<5;attempt++){
+    const donation=await request('/api/donations',{method:'POST',headers:{...jsonHeaders,cookie:accountB.cookie},body:JSON.stringify({amount:10,reference_id:`runtime-donation-${suffix}-${attempt}`})});
+    assert.equal(donation.response.status,200,`Donation submission ${attempt+1} must be accepted within the account limit: ${donation.body}`);
+  }
+  const excessDonation=await request('/api/donations',{method:'POST',headers:{...jsonHeaders,cookie:accountB.cookie},body:JSON.stringify({amount:10,reference_id:`runtime-donation-${suffix}-excess`})});
+  assert.equal(excessDonation.response.status,429,'Excess donation submissions must be throttled per account');
+  assert.ok(Number(excessDonation.response.headers.get('retry-after'))>0,'Donation throttling must provide Retry-After');
+
 
   // Initialize OmniPortal tables through the real authenticated API before inserting local-only fixtures.
   const omniInitA = await getAs(accountA, '/api/omni/jobs');
