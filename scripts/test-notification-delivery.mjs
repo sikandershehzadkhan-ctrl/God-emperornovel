@@ -94,7 +94,7 @@ assert.ok(commentsUi.includes("/api/comments/report") && commentsUi.includes("co
 assert.ok(commentsUi.includes("Sign in to report a comment."), "comment reporting must require an authenticated account");
 const moderationRoute = worker.match(/if\(p==="\/api\/admin\/community\/comments"&&m==="PATCH"\)\{([\s\S]*?)\n\s*if\(p==="\/api\/admin\/community\/reports"&&m==="GET"/);
 assert.ok(moderationRoute, "admin comment moderation route must exist");
-assert.ok(moderationRoute[1].includes("admin(u)"), "comment moderation must require administrator access");
+assert.ok(moderationRoute[1].includes("moderator(u)"), "comment moderation must require moderator or administrator access");
 assert.ok(moderationRoute[1].includes("Number.isSafeInteger(cid)||cid<1"), "comment moderation must validate a positive safe comment id");
 assert.ok(moderationRoute[1].includes("SELECT id,status FROM comments WHERE id=?"), "comment moderation must verify the target exists");
 assert.ok(moderationRoute[1].includes("community_comment_"), "comment moderation actions must be written to the audit log");
@@ -102,7 +102,7 @@ assert.ok(moderationRoute[1].includes("env.DB.batch("), "comment status update a
 assert.ok(moderationRoute[1].includes("WHERE changes()=1"), "comment audit event must only be written when the guarded status update changes a row");
 assert.ok(moderationRoute[1].includes("409"), "stale concurrent comment moderation updates must return a conflict");
 assert.ok(reportModeration, "admin report moderation route must exist");
-assert.ok(reportModeration.includes("admin(u)"), "report moderation must require administrator access");
+assert.ok(reportModeration.includes("moderator(u)"), "report moderation must require moderator or administrator access");
 assert.ok(reportModeration.includes("Number.isSafeInteger(id)||id<1"), "report moderation must validate a positive safe report id");
 assert.ok(reportModeration.includes("SELECT id,status,user_id FROM comment_reports WHERE id=?"), "report moderation must verify and read the prior report status");
 assert.ok(reportModeration.includes("previous_status="), "report moderation audit must preserve the prior status");
