@@ -11,6 +11,7 @@ for (const [fragment, description] of [
   ["Number.isSafeInteger(id)", "request ID must be a positive safe integer"],
   ['consumeAuthRateLimit(env,"admin-novel-request-review",String(u.id),30,300)', "administrator request reviews must be rate-limited"],
   ["Number.isSafeInteger(refund)", "refund must be a whole number"],
+  ['userId===Number(u.id)', "administrator cannot refund their own request"],
   ["refund>100000", "refund must have a protective upper bound"],
   ["status='pending' AND EXISTS (SELECT 1 FROM users", "refund must only transition a pending request with a valid account"],
   ["INSERT INTO novel_request_refunds(request_id,admin_user_id,user_id,amount,note) SELECT ?,?,?,?,? WHERE changes()=1", "refund record must depend on the one-time request transition"],
