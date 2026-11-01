@@ -82,16 +82,18 @@ If delivery is unavailable, return the same generic response but do not create a
 - Added a unique random `consumption_id` for each completion attempt. Every follow-up statement is bound to that exact operation, preventing a replay from matching an earlier consumption merely because both requests share the same timestamp.
 - Added `scripts/test-password-reset-store.mjs` to exercise account isolation, replay, expiry, purpose constraints, sibling-token invalidation, and rollback behavior using SQLite, plus the D1 binding contract.
 - Added `src/password-reset-link.mjs` and `scripts/test-password-reset-link.mjs`. Reset links require an explicitly configured canonical HTTPS origin, reject credentials/path/query/fragment origin tricks, and place the token in the URL fragment rather than the request path or query.
+- Added `migrations/0010_email_verification.sql` with a separate `email_verified_at` timestamp and purpose-bound email verification token table. The legacy `users.verified` field is an admin/creator badge and is explicitly not treated as proof of mailbox ownership.
+- Added `scripts/test-email-verification-migration.mjs` to the build test chain. It checks the migration, token purpose constraint, and that existing badge state remains separate from mailbox verification.
 - These primitives do not create live reset requests, send email, expose a reset endpoint, or enable password recovery. The raw token must be delivered only through a verified provider channel; only the digest is intended for persistence.
 - CI must pass before this primitive is treated as validated.
 
 ## Implementation sequence
 
-1. Choose and configure a transactional email provider and verified sender domain.
-2. Add the reset-token D1 migration and cryptographic token helper.
+1. Implement email ownership verification using the dedicated `email_verified_at` field and verification-token table. Do not reuse the creator/admin badge.
+2. Choose and configure a transactional email provider and verified sender domain.
 3. Add request and completion endpoints with generic responses and rate limits.
 4. Add two-account local Worker + D1 tests, including concurrency and failure cases.
 5. Run the full Cloudflare validation workflow.
-6. Keep the feature disabled until provider delivery and the full test suite pass.
+6. Keep password recovery disabled until provider delivery and the full test suite pass.
 
 Password recovery is not considered complete until all six steps pass. No production secret, email, or deployment change is made by this design.
