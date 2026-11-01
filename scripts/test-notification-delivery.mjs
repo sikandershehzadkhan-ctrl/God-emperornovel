@@ -44,6 +44,12 @@ const ratingPost = worker.match(/if\(p==="\/api\/rating"&&m==="POST"\)\{([\s\S]*
 assert.ok(ratingPost, "rating write route must exist");
 assert.ok(ratingPost[1].includes("Number.isInteger(rating)"), "ratings must reject fractional scores instead of silently rounding");
 assert.ok(ratingPost[1].includes("rating<1||rating>10"), "ratings must stay within the 1-10 range");
+assert.ok(worker.includes("CHECK(rating BETWEEN 1 AND 10)"), "fresh engagement schemas must enforce the 1-10 rating constraint");
+const ratingMigration = readFileSync(new URL("../migrations/0016_ten_point_ratings.sql", import.meta.url), "utf8");
+assert.ok(ratingMigration.includes("CHECK(rating BETWEEN 1 AND 10)"), "existing databases must receive the 1-10 rating constraint migration");
+assert.ok(ratingMigration.includes("SELECT user_id,novel_id,rating,created_at,updated_at FROM ratings"), "rating migration must preserve existing ratings and timestamps");
+assert.ok(ratingMigration.includes("DROP TABLE ratings;") && ratingMigration.includes("ALTER TABLE ratings_ten_point RENAME TO ratings;"), "rating migration must replace the old constrained table with the ten-point table");
+
 assert.ok(ratingPost[1].includes("whole-number rating from 1-10"), "rating validation message must describe the 1-10 whole-number scale");
 assert.ok(ratingPost[1].includes("publication_status='published'"), "users may only rate published novels");
 const ratingUi = readFileSync(new URL("../src/react/NovelRating.jsx", import.meta.url), "utf8");
