@@ -350,7 +350,6 @@ The screen blueprint is being maintained as a set of domain-specific architectur
 - [01M.6 — Localization, Accessibility and Legal Experience](IMPERIAL-NOVEL-PHASE-01M-6-LOCALIZATION-ACCESSIBILITY-LEGAL-BLUEPRINT.md)
 - [01M.7 — Account, Identity, Library, Notifications and Support](IMPERIAL-NOVEL-PHASE-01M-7-ACCOUNT-IDENTITY-LIBRARY-NOTIFICATIONS-SUPPORT-BLUEPRINT.md)
 - [01M.8 — Cross-Domain Journeys and Route Reconciliation](IMPERIAL-NOVEL-PHASE-01M-8-CROSS-DOMAIN-JOURNEYS-AND-ROUTE-RECONCILIATION.md)
-- [01M.5 — Administration, Security and Operations](IMPERIAL-NOVEL-PHASE-01M-5-ADMIN-SECURITY-OPERATIONS-BLUEPRINT.md)
 
 Each document is a specification. A listed route or logical API contract is not asserted to exist until independently reconciled with the current router and Worker implementation. The next architecture increments must cover OmniPortal, Trend Factory, commerce/payments, administration/agents, AI workspace as a distinct product area, localization, legal/trust, developer/system screens, and cross-domain route/permission reconciliation.
 
@@ -363,3 +362,4 @@ Each document is a specification. A listed route or logical API contract is not 
 - [01N.3 — Canonical Route and SEO Registry](IMPERIAL-NOVEL-PHASE-01N-3-CANONICAL-ROUTE-AND-SEO-REGISTRY.md)
 - [01N.4 — Real-Time Events and Analytics Contract](IMPERIAL-NOVEL-PHASE-01N-4-REALTIME-EVENTS-AND-ANALYTICS-CONTRACT.md)
 - [01N.5 — Release and Production Verification Contract](IMPERIAL-NOVEL-PHASE-01N-5-RELEASE-AND-PRODUCTION-VERIFICATION-CONTRACT.md)
+- [01N.6 — Architecture Conflict Review and Exit Gates](IMPERIAL-NOVEL-PHASE-01N-6-ARCHITECTURE-CONFLICT-REVIEW-AND-EXIT-GATES.md)
