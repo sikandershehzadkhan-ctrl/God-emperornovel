@@ -45,6 +45,13 @@ CREATE TRIGGER IF NOT EXISTS trg_novel_ownership_transfer_accept
 BEFORE UPDATE OF status ON novel_ownership_transfers
 WHEN NEW.status = 'accepted' AND OLD.status = 'pending'
 BEGIN
+  SELECT CASE WHEN NEW.novel_id <> OLD.novel_id
+    OR NEW.from_user_id <> OLD.from_user_id
+    OR NEW.to_user_id <> OLD.to_user_id
+    OR NEW.expires_at <> OLD.expires_at
+    THEN RAISE(ABORT, 'ownership transfer identity is immutable') END;
+  SELECT CASE WHEN OLD.expires_at <= CAST(strftime('%s','now') AS INTEGER)
+    THEN RAISE(ABORT, 'ownership transfer expired') END;
   SELECT CASE WHEN NOT EXISTS (
     SELECT 1 FROM novels n
     JOIN users recipient ON recipient.id = NEW.to_user_id
