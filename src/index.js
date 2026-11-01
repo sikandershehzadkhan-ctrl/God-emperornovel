@@ -437,6 +437,7 @@ async function api(req,env){
   if(accountLimited)return accountLimited;
   const account=await env.DB.prepare("SELECT id,email,email_verified_at FROM users WHERE id=?").bind(u.id).first();
   if(!account)return json({error:"Email verification is currently unavailable."},503);
+  if(account.email_verified_at)return json({ok:true,message:"If your address requires verification, a confirmation email has been sent."},202);
   const result=await requestEmailVerification({db:env.DB,env,user:account,publicOrigin:env.PUBLIC_ORIGIN});
   if(!result.ok)return json({error:"Email verification is currently unavailable. Please try again later."},503);
   return json({ok:true,message:"If your address requires verification, a confirmation email has been sent."},202);
