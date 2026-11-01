@@ -291,3 +291,12 @@ for(const selector of [".accountMenu a.active{box-shadow:inset 3px 0 0 var(--in-
 assert.ok(css.includes(".accountMenu{overflow-x:auto;overscroll-behavior-inline:contain;scrollbar-width:thin}"),"Mobile account navigation must scroll without breaking page width");
 assert.ok(css.includes("html[data-theme=\"dark\"] .accountMenu"),"Personal Library must support dark theme surfaces");
 assert.ok(css.includes("@media(prefers-reduced-motion:reduce){\n .accountMenu a,.accountMenu button,.accountGrid .card,.accountGrid .card .cover img{transition:none!important}"),"Library motion must respect reduced-motion preferences");
+
+
+/* Six-destination mobile navigation regression checks. */
+assert.ok(sourceApp.includes('href="/become-an-author"')&&sourceApp.includes("active('/become-an-author')"),"Mobile Create navigation must lead to public author onboarding and expose the correct active route.");
+assert.ok(sourceApp.includes('href="/account"')&&sourceApp.includes('iconSvg("user")')&&sourceApp.includes(">Profile</a>"),"Mobile primary navigation must include the Profile destination.");
+assert.ok(css.includes('body .mobileNav a[href="/account"]{')&&css.includes("display:flex!important"),"Mobile Profile must not be hidden by legacy navigation rules.");
+assert.ok(css.includes("body .mobileNav{")&&css.includes("position:fixed!important")&&css.includes("inset:auto 0 0 0!important"),"Mobile navigation must remain fixed to the viewport bottom.");
+assert.ok(css.includes("env(safe-area-inset-bottom)"),"Mobile navigation must respect device safe-area insets.");
+assert.ok(css.includes("body .footerInner{padding-bottom:calc(76px + env(safe-area-inset-bottom))}"),"Footer content must remain reachable above the fixed mobile navigation.");
