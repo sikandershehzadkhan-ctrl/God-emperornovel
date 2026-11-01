@@ -133,3 +133,11 @@ Before adding a user-facing route, the receiving delivery service must be separa
 - `invalidateEmailVerificationToken` revokes only the exact unconsumed token digest. If delivery of a newly issued token fails, cleanup cannot accidentally invalidate a newer request's token.
 - Issuance and cleanup have separate regression tests, including account/mailbox binding, replacing previous active tokens, no insert for mismatched or already-verified accounts, and stale delivery-failure cleanup.
 - These are storage primitives only. No request route is enabled, and no provider binding is configured. Route activation remains blocked until a real delivery service is configured and tested.
+### Email-verification request orchestration
+
+- `requestEmailVerification` coordinates token creation, digest-only persistence, and the provider-independent security-mail binding.
+- It fails closed before token issuance when the `SECURITY_EMAIL` binding or canonical HTTPS origin is missing. Therefore an unavailable provider cannot invalidate a previously issued usable link.
+- The bearer token is included only in the exact same-origin `/verify-email` URL fragment sent to the delivery binding. It is never returned to the caller or written to logs.
+- New links expire after 30 minutes. If delivery fails, the helper attempts to invalidate only that exact token digest.
+- Tests cover no-provider behavior, invalid origins, verified accounts, failed issuance, successful delivery, token privacy, and delivery-failure cleanup.
+- This is an orchestration helper, not an active HTTP endpoint. No route is exposed, no `SECURITY_EMAIL` service binding is configured, and no real email provider has been connected or tested.
