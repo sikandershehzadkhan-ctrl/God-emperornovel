@@ -93,11 +93,27 @@ function NovelComments({ novelId }) {
 
   useEffect(() => {
     let active = true;
-    request(`/api/comments?novel_id=${encodeURIComponent(novelId)}`)
+    let initial = true;
+    const loadComments = () => request(`/api/comments?novel_id=${encodeURIComponent(novelId)}`)
       .then(rows => { if (active) setComments(Array.isArray(rows) ? rows : []); })
-      .catch(cause => { if (active) setError(cause.message || "Community comments are temporarily unavailable."); })
-      .finally(() => { if (active) setLoading(false); });
-    return () => { active = false; };
+      .catch(cause => {
+        if (active && initial) setError(cause.message || "Community comments are temporarily unavailable.");
+      })
+      .finally(() => {
+        if (active && initial) setLoading(false);
+        initial = false;
+      });
+    const refreshWhenVisible = () => {
+      if (document.visibilityState === "visible") loadComments();
+    };
+    loadComments();
+    const timer = window.setInterval(refreshWhenVisible, 30000);
+    document.addEventListener("visibilitychange", refreshWhenVisible);
+    return () => {
+      active = false;
+      window.clearInterval(timer);
+      document.removeEventListener("visibilitychange", refreshWhenVisible);
+    };
   }, [novelId]);
 
   async function requireAccount() {
