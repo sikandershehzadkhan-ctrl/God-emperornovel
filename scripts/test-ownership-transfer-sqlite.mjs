@@ -26,8 +26,9 @@ INSERT INTO novels(id, owner_user_id, publication_status, rights_status, rights_
 db.executescript(payload["migration"])
 now = int(time.time())
 def invite(novel, recipient, expiry=None):
+    requested_at = now if expiry is None or expiry > now else expiry - 100
     db.execute("INSERT INTO novel_ownership_transfers(novel_id,from_user_id,to_user_id,status,requested_at,expires_at) VALUES(?,?,?,'pending',?,?)",
-               (novel, 1, recipient, now, expiry if expiry is not None else now + 3600))
+               (novel, 1, recipient, requested_at, expiry if expiry is not None else now + 3600))
 def accept(transfer_id, **changes):
     if changes:
         assignments = ",".join(k + "=?" for k in changes)
