@@ -168,6 +168,31 @@ try {
   });
   assert.equal(duplicateApproval.response.status, 409, "A donation must not be credited twice");
 
+  const spectatorBeforeCredit = await request(baseUrl, "/api/me", { cookie: spectator.cookie });
+  // Administrative Crown adjustments are restricted to administrators and recorded against the selected account.
+  const readerCredit = await request(baseUrl, "/api/admin/tickets", {
+    method: "POST", cookie: spectator.cookie, body: { user_id: owner.user.id, amount: 23 }
+  });
+  assert.equal(readerCredit.response.status, 403, "Readers must not issue Crown credits");
+  const moderatorCredit = await request(baseUrl, "/api/admin/tickets", {
+    method: "POST", cookie: moderator.cookie, body: { user_id: owner.user.id, amount: 23 }
+  });
+  assert.equal(moderatorCredit.response.status, 403, "Moderators must not issue Crown credits");
+  const ownerBeforeCredit = await request(baseUrl, "/api/me", { cookie: owner.cookie });
+  const adminCredit = await request(baseUrl, "/api/admin/tickets", {
+    method: "POST", cookie: administrator.cookie, body: { user_id: owner.user.id, amount: 23 }
+  });
+  assert.equal(adminCredit.response.status, 200, JSON.stringify(adminCredit.data));
+  const ownerAfterCredit = await request(baseUrl, "/api/me", { cookie: owner.cookie });
+  assert.equal(Number(ownerAfterCredit.data.user.tickets), Number(ownerBeforeCredit.data.user.tickets) + 23,
+    "Administrator credit must update the explicitly selected account");
+  const creditedLedger = await request(baseUrl, "/api/tickets/ledger", { cookie: owner.cookie });
+  assert.ok(creditedLedger.data.some(row => row.reason === "admin_adjustment" && Number(row.delta) === 23),
+    "Administrator credit must create a matching ledger entry");
+  const spectatorAfterCredit = await request(baseUrl, "/api/me", { cookie: spectator.cookie });
+  assert.equal(Number(spectatorAfterCredit.data.user.tickets), Number(spectatorBeforeCredit.data.user.tickets),
+    "Administrative credit must not alter another account's balance");
+
   // Moderators cannot change account roles or ban state. Admin status changes revoke every existing session.
   const moderatorEscalation = await request(baseUrl, "/api/admin/users/" + spectator.user.id, {
     method: "PATCH", cookie: moderator.cookie, body: { role: "admin", verified: true, banned: false }
