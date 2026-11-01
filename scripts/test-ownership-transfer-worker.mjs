@@ -99,6 +99,13 @@ try {
   const baseUrl = "http://127.0.0.1:" + port;
   await waitForWorker(baseUrl);
   console.log("Local Worker healthy. Creating two isolated author accounts...");
+  const verificationPage = await fetch(baseUrl + "/verify-email");
+  assert.equal(verificationPage.status,200,"Verification URL must resolve to the dedicated landing page");
+  const verificationHtml = await verificationPage.text();
+  assert.match(verificationHtml,/\/api\/auth\/verify-email/);
+  assert.match(verificationHtml,/location\.hash/);
+  assert.match(verificationHtml,/history\.replaceState/);
+
 
   const suffix = (String(process.pid) + String(Date.now())).slice(-8);
   const owner = await account(baseUrl, "owner" + suffix, "owner" + suffix + "@example.test");
