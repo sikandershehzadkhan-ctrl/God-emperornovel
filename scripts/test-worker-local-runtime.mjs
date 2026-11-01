@@ -450,7 +450,7 @@ try {
   // Account export is a private, account-scoped download. Seed distinct progress rows
   // for both test accounts and prove neither export crosses the ownership boundary.
   const accountBId=Number(JSON.parse((await getAs(accountB,'/api/profile')).body).user.id);
-  execFileSync('npx',['--yes','wrangler@4','d1','execute','god-emperornovel-db','--local','--persist-to','.wrangler/test-runtime','--command',`DELETE FROM reading_positions WHERE user_id IN (${accountAId},${accountBId}) AND novel_id=2147483004; INSERT INTO reading_positions(user_id,novel_id,chapter_number,progress_percent) VALUES(${accountAId},2147483004,7,37),(${accountBId},2147483004,8,82)`],{stdio:'pipe',env:{...process.env,NO_COLOR:'1'}});
+  execFileSync('npx',['--yes','wrangler@4','d1','execute','god-emperornovel-db','--local','--persist-to','.wrangler/test-runtime','--command',`DELETE FROM reading_positions WHERE user_id IN (${accountAId},${accountBId}) AND novel_id=2147483998; INSERT INTO reading_positions(user_id,novel_id,chapter_number,progress_percent) VALUES(${accountAId},2147483998,7,37),(${accountBId},2147483998,8,82)`],{stdio:'pipe',env:{...process.env,NO_COLOR:'1'}});
   const exportA=await request('/api/privacy/export',{headers:{cookie:accountA.cookie}});
   assert.equal(exportA.response.status,200,`Authenticated account data export must succeed: ${exportA.body}`);
   assert.match(exportA.response.headers.get('content-disposition')||'',/attachment; filename="imperial-novel-account-data.json"/,'Account export must download as a JSON attachment');
