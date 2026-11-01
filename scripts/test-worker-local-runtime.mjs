@@ -498,8 +498,9 @@ try {
   assert.equal(JSON.parse(afterCancel.body).request.status,'cancelled','Closure status must show the cancellation');
   const accountAfterCancel=await request('/api/profile',{headers:{cookie:accountB.cookie}});
   assert.equal(accountAfterCancel.response.status,200,'Cancelling closure must preserve the account and its active session');
-  const closureAudit=await request('/api/admin/audit',{headers:{cookie:accountA.cookie}});
-  assert.ok(closureAudit.response.status===200||closureAudit.response.status===404,'Admin audit endpoint must remain available without changing account closure state');
+  const closureAudit=execFileSync('npx',['--yes','wrangler@4','d1','execute','god-emperornovel-db','--local','--persist-to','.wrangler/test-runtime','--command',`SELECT action FROM audit_logs WHERE user_id=${accountBId} AND action IN ('account_closure_requested','account_closure_cancelled') ORDER BY id DESC LIMIT 2`],{encoding:'utf8',stdio:['ignore','pipe','pipe'],env:{...process.env,NO_COLOR:'1'}});
+  assert.match(closureAudit,/account_closure_requested/,'Closure request must create an audit event');
+  assert.match(closureAudit,/account_closure_cancelled/,'Closure cancellation must create an audit event');
 
   const anonymousExport=await request('/api/privacy/export');
   assert.equal(anonymousExport.response.status,401,'Anonymous visitors must not export account data');
