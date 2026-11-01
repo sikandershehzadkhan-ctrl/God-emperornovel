@@ -46,6 +46,8 @@ assert.ok(reportSubmission[1].includes("JOIN novels n ON n.id=c.novel_id"), "rep
 assert.ok(reportSubmission[1].includes("rights_status IN ('original','public_domain','licensed','authorized')"), "reports must enforce publication rights clearance");
 assert.ok(reportSubmission[1].includes("INSERT OR IGNORE INTO comment_reports"), "duplicate comment reports must be race-safe at the database write");
 assert.ok(reportSubmission[1].includes("inserted?.meta?.changes") && reportSubmission[1].includes("409"), "a concurrent duplicate report must return a conflict instead of a server error");
+assert.ok(reportSubmission[1].includes("SELECT ?,?,?,? WHERE (SELECT COUNT(*) FROM comment_reports"), "the per-user hourly report limit must be enforced inside the atomic insert");
+assert.ok(reportSubmission[1].includes("429"), "report submissions beyond the hourly limit must receive a rate-limit response");
 assert.ok(adminUi.includes("commentReportsBody"), "admin community moderation must render a dedicated comment-report queue");
 assert.ok(adminUi.includes("/api/admin/community/reports"), "admin UI must load comment reports from the dedicated moderation API");
 assert.ok(adminUi.includes("updateCommentReport") && adminUi.includes("Resolve") && adminUi.includes("Dismiss"), "admin UI must provide explicit report resolution and dismissal actions");
