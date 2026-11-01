@@ -4,6 +4,11 @@ import { readFileSync } from "node:fs";
 const css=readFileSync("public/imperial-design-foundation.css","utf8");
 const html=readFileSync("public/index.html","utf8");
 const sourceApp=readFileSync("public/app.js","utf8");
+const readerHtml=readFileSync("public/read.html","utf8");
+assert.ok(readerHtml.includes('href="/imperial-design-foundation.css"'),"Reader page must load the shared accessible design foundation");
+assert.ok(readerHtml.includes('href="/imperial-design-system-17.25.0.css"'),"Reader page must load the current shared design-system overrides");
+assert.ok(readerHtml.includes('href="/imperial-comic-reader-17.23.0.css"'),"Reader page must load the comic reader stylesheet");
+
 const releaseApp=readFileSync("public/app-17.23.0.js","utf8");
 const manifest=JSON.parse(readFileSync("public/manifest-17.23.0.webmanifest","utf8"));
 
