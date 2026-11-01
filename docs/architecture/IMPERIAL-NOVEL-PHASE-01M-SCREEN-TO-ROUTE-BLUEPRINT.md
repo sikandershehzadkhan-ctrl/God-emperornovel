@@ -363,3 +363,5 @@ Each document is a specification. A listed route or logical API contract is not 
 - [01N.4 — Real-Time Events and Analytics Contract](IMPERIAL-NOVEL-PHASE-01N-4-REALTIME-EVENTS-AND-ANALYTICS-CONTRACT.md)
 - [01N.5 — Release and Production Verification Contract](IMPERIAL-NOVEL-PHASE-01N-5-RELEASE-AND-PRODUCTION-VERIFICATION-CONTRACT.md)
 - [01N.6 — Architecture Conflict Review and Exit Gates](IMPERIAL-NOVEL-PHASE-01N-6-ARCHITECTURE-CONFLICT-REVIEW-AND-EXIT-GATES.md)
+- [01O.1 — Database Schema Authority and Migration Reconciliation](IMPERIAL-NOVEL-PHASE-01O-1-DATABASE-SCHEMA-AUTHORITY-AND-MIGRATION-RECONCILIATION.md)
+- [01O.2 — Runtime DDL Ownership and Migration Dependency Map](IMPERIAL-NOVEL-PHASE-01O-2-RUNTIME-DDL-OWNERSHIP-AND-MIGRATION-DEPENDENCY-MAP.md)
