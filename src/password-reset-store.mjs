@@ -77,7 +77,7 @@ export async function issuePasswordResetToken(db, { userId, emailSnapshot, token
   if (!db || typeof db.prepare !== "function" || typeof db.batch !== "function") throw new Error("A D1 database binding is required");
   if (!Number.isSafeInteger(userId) || userId <= 0) throw new Error("A valid user id is required");
   const email=typeof emailSnapshot==="string"?emailSnapshot.trim().toLowerCase():"";
-  if(email.length>254||!/^\\S+@\\S+\\.\\S+$/.test(email))throw new Error("A valid email snapshot is required");
+  if(email.length>254||!/^\S+@\S+\.\S+$/.test(email))throw new Error("A valid email snapshot is required");
   if (typeof tokenHash !== "string" || !HASH_PATTERN.test(tokenHash)) throw new Error("Invalid password-reset token digest");
   if (typeof now !== "string" || !ISO_UTC.test(now) || typeof expiresAt !== "string" || !ISO_UTC.test(expiresAt)) throw new Error("Normalized UTC timestamps are required");
   const start=Date.parse(now), expiry=Date.parse(expiresAt);
