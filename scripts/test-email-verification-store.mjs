@@ -31,7 +31,7 @@ const migration=readFileSync(new URL("../migrations/0010_email_verification.sql"
 const python=String.raw`
 import json,sqlite3,sys
 p=json.loads(sys.stdin.read()); db=sqlite3.connect(":memory:"); db.execute("PRAGMA foreign_keys=ON")
-db.execute("CREATE TABLE users(id INTEGER PRIMARY KEY,email TEXT NOT NULL,verified INTEGER NOT NULL DEFAULT 0,email_verified_at TEXT)")
+db.execute("CREATE TABLE users(id INTEGER PRIMARY KEY,email TEXT NOT NULL,verified INTEGER NOT NULL DEFAULT 0)")
 db.executemany("INSERT INTO users(id,email,verified) VALUES(?,?,?)",[(1,"a@example.test",1),(2,"b@example.test",0)])
 db.executescript(p["migration"])
 db.execute("INSERT INTO email_verification_tokens(user_id,email_snapshot,token_hash,purpose,expires_at) VALUES(1,?,?,?,?)",("a@example.test","A"*43,"email_verification","2026-11-02T12:30:00.000Z"))
