@@ -935,3 +935,50 @@ html[data-theme="dark"] .novelLivePulseMetric{background:var(--in-surface-raised
 .authorAnalyticsChapter small{margin-top:3px;color:var(--in-muted);font-size:10px}
 .authorAnalyticsChapterStats{display:flex;gap:6px;flex-wrap:wrap}
 .authorAnalyticsChapterStats span{padding:4px 7px;border-radius:7px;background:var(--in-canvas);color:var(--in-muted);font-size:10px}
+
+
+/* Community surfaces: replace legacy translucent-white panels with theme-aware editorial surfaces. */
+.communityGrid{align-items:start;gap:16px}
+.communityGrid>.panel{
+  min-width:0;padding:clamp(15px,2vw,22px);
+  border:1px solid var(--in-line);border-radius:var(--in-radius-lg);
+  background:var(--in-surface);color:var(--in-ink);
+  box-shadow:var(--in-shadow);
+}
+.communityGrid>.panel h3{margin:0 0 12px;color:var(--in-ink);font-size:16px;font-weight:760;letter-spacing:-.02em}
+#novelRatingIsland,#novelComments{min-width:0;color:var(--in-ink)}
+.communityGrid .commentItem{
+  min-width:0;margin:10px 0;padding:13px;
+  border:1px solid var(--in-line);border-radius:12px;
+  background:var(--in-canvas);color:var(--in-ink);
+}
+.communityGrid .commentItem p{color:var(--in-ink);line-height:1.65;overflow-wrap:anywhere}
+.communityGrid .commentReply{
+  margin-inline-start:clamp(10px,3vw,28px);
+  border-inline-start:2px solid var(--in-brand-soft);
+}
+.communityGrid .commentHead{color:var(--in-ink)}
+.communityGrid .commentActions{gap:7px}
+.communityGrid .commentActions .ghost{
+  min-height:34px;padding:6px 10px;border:1px solid var(--in-line);
+  border-radius:9px;background:var(--in-surface);color:var(--in-muted);
+}
+.communityGrid .commentActions .ghost:hover{
+  border-color:var(--in-brand);background:var(--in-brand-soft);color:var(--in-brand);
+}
+.communityGrid .ratingStar{color:var(--in-muted);border-radius:8px}
+.communityGrid .ratingStar.selected,.communityGrid .ratingStar:hover{color:var(--in-discovery)}
+.communityGrid .ratingStar:focus-visible,.communityGrid .commentActions .ghost:focus-visible{
+  outline:2px solid var(--in-focus);outline-offset:3px
+}
+.communityGrid :is(input,textarea,select){
+  max-width:100%;border-color:var(--in-line);background:var(--in-surface);color:var(--in-ink)
+}
+@media(max-width:700px){
+  .communityGrid{grid-template-columns:minmax(0,1fr);gap:12px}
+  .communityGrid>.panel{padding:14px;border-radius:15px}
+  .communityGrid .commentReply{margin-inline-start:10px}
+}
+@media(prefers-reduced-motion:reduce){
+  .communityGrid .commentActions .ghost{transition:none!important}
+}
