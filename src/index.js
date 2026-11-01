@@ -18,7 +18,7 @@ const b64=a=>btoa(String.fromCharCode(...new Uint8Array(a))).replaceAll("+","-")
 const digest=async s=>b64(await crypto.subtle.digest("SHA-256",new TextEncoder().encode(s)));
 const rnd=n=>{const a=new Uint8Array(n);crypto.getRandomValues(a);return b64(a)};
 const slug=s=>String(s||"").toLowerCase().trim().replace(/[^a-z0-9]+/g,"-").replace(/^-|-$/g,"");
-const cookies=h=>Object.fromEntries((h||"").split(";").map(x=>x.trim()).filter(Boolean).map(x=>{const i=x.indexOf("=");return[i<0?x:x.slice(0,i),decodeURIComponent(i<0?"":x.slice(i+1))]}));
+const cookies=h=>Object.fromEntries((h||"").split(";").map(x=>x.trim()).filter(Boolean).map(x=>{const i=x.indexOf("=");let value=i<0?"":x.slice(i+1);try{value=decodeURIComponent(value)}catch{}return[i<0?x:x.slice(0,i),value]}));
 const body=async r=>await r.json().catch(()=>({}));
 
 
