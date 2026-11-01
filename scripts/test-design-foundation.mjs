@@ -91,4 +91,12 @@ const theme=html.match(/<meta name="theme-color" content="([^"]+)"/);
 assert.ok(theme,"HTML theme color meta must exist");
 assert.equal(theme[1],manifest.theme_color,"HTML and PWA theme colors must match");
 assert.equal(manifest.name,"Imperial Novel");
+
+for(const selector of [".communityGrid>.panel",".communityGrid .commentItem",".communityGrid .commentReply",".communityGrid .commentActions .ghost",".communityGrid .ratingStar",".communityGrid :is(input,textarea,select)"]){
+  assert.ok(css.includes(selector),"Community visual foundation must include "+selector);
+}
+assert.ok(css.includes("background:var(--in-surface);color:var(--in-ink)"),"Community panels must use semantic theme-aware surfaces and text");
+assert.ok(css.includes("grid-template-columns:minmax(0,1fr);gap:12px"),"Community panels must stack without overflow on narrow screens");
+assert.ok(css.includes("margin-inline-start:clamp(10px,3vw,28px)"),"Nested discussion replies must respect logical direction and mobile sizing");
+
 console.log("Imperial design foundation syntax, responsive, accessibility, asset and brand consistency checks passed.");
