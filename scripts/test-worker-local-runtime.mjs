@@ -299,6 +299,30 @@ try {
     assert.equal(ordinaryAuthor.response.status,403, `Ordinary author must be denied admin write ${route}: ${ordinaryAuthor.response.status} ${ordinaryAuthor.body}`);
   }
 
+  // Promote the second test account to moderator and verify least-privilege moderation access.
+  execFileSync('npx', ['--yes','wrangler@4','d1','execute','god-emperornovel-db','--local','--persist-to','.wrangler/test-runtime','--command',`UPDATE users SET role='moderator' WHERE id=${dataB.user.id}`], {stdio:'pipe',env:{...process.env,NO_COLOR:'1'}});
+  for (const route of ['/api/admin/taxonomy','/api/admin/community/comments','/api/admin/community/reports']) {
+    const moderationRead = await getAs(accountB, route);
+    assert.equal(moderationRead.response.status, 200, `Moderator must access scoped moderation queue ${route}: ${moderationRead.body}`);
+  }
+  const moderatorTaxonomy = await getAs(accountB, '/api/admin/taxonomy');
+  const moderatorTaxonomyRows = JSON.parse(moderatorTaxonomy.body);
+  assert.ok(moderatorTaxonomyRows.every(row => !('creator_id' in row) && !('reviewer_id' in row)), 'Moderator taxonomy queue must not expose internal creator or reviewer account IDs');
+  const moderatorReports = await getAs(accountB, '/api/admin/community/reports');
+  assert.ok(JSON.parse(moderatorReports.body).every(row => !('user_id' in row)), 'Moderator report queue must not expose reporter account IDs');
+  const moderatorStats = await getAs(accountB, '/api/admin/stats');
+  assert.equal(moderatorStats.response.status, 403, 'Moderator must not access administrator analytics');
+  const moderatorAgents = await getAs(accountB, '/api/admin/agents');
+  assert.equal(moderatorAgents.response.status, 403, 'Moderator must not access administrator agent controls');
+  const moderatorDirectory = await getAs(accountB, '/api/admin/users');
+  assert.equal(moderatorDirectory.response.status, 403, 'Moderator must not access sensitive account directory');
+  const moderatorTaxonomyWrite = await request('/api/admin/taxonomy', {method:'POST',headers:{...jsonHeaders,cookie:accountB.cookie},body:JSON.stringify({id:2147483999,decision:'approve'})});
+  assert.equal(moderatorTaxonomyWrite.response.status, 404, 'Moderator taxonomy decision must pass authorization and safely report missing submission');
+  const moderatorCommentWrite = await request('/api/admin/community/comments', {method:'PATCH',headers:{...jsonHeaders,cookie:accountB.cookie},body:JSON.stringify({comment_id:2147483999,status:'hidden'})});
+  assert.equal(moderatorCommentWrite.response.status, 404, 'Moderator comment action must pass authorization and safely report missing comment');
+  const moderatorReportWrite = await request('/api/admin/community/reports', {method:'PATCH',headers:{...jsonHeaders,cookie:accountB.cookie},body:JSON.stringify({report_id:2147483999,status:'resolved'})});
+  assert.equal(moderatorReportWrite.response.status, 404, 'Moderator report action must pass authorization and safely report missing report');
+
   // In this isolated test environment the platform-owner identity is intentionally unset.
   const promoteAdminSql = `UPDATE users SET role='admin' WHERE id=${dataA.user.id}`;
   execFileSync('npx', ['--yes','wrangler@4','d1','execute','god-emperornovel-db','--local','--persist-to','.wrangler/test-runtime','--command',promoteAdminSql], {stdio:'pipe',env:{...process.env,NO_COLOR:'1'}});
