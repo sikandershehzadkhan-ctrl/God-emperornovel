@@ -12,7 +12,7 @@ The route:
 - caps each collection at 5,000 rows and lists any collection that exceeded the cap in `export_limits.truncated_collections`.
 - excludes password hashes, session tokens, authentication rate-limit keys, internal audit logs, rights-review audit records, and private reviewer identity fields.
 
-The export includes the account profile and its own reading progress, bookmarks, follows, ratings, unlock history, ticket ledger, donation references, novel requests, notifications, comments, reports, reactions, request votes, connector import jobs, account closure request history, author applications, AI author projects, AI chapter jobs, AI generation summaries, and creator-owned novels and chapters.
+The export includes the account profile and its own reading progress, bookmarks, follows, ratings, unlock history, ticket ledger, donation references, novel requests, notifications, comments, reports, reactions, request votes, connector import jobs, account closure request history, archived legacy moderation reports, creator-submitted content-rights records, author applications, AI author projects, AI chapter jobs, AI generation summaries, and creator-owned novels and chapters.
 
 Because export data can include private writing, reading activity, payment references, and personal details, users should keep the downloaded file private and delete unnecessary copies securely.
 
@@ -27,7 +27,7 @@ Retention must be based on purpose and legal obligations, not arbitrary deletion
 | Financial ledgers and donation records | No automatic expiry is configured. Preserve records needed for balance reconciliation, disputes, and fraud investigation. |
 | Administrator and rights audit logs | No automatic expiry is configured. These are intentionally excluded from user exports because they contain internal operational/security records. |
 | Reading activity and user-generated content | No general automatic expiry is configured. These records remain account-scoped and are included in the export where supported. |
-| Connector import jobs and AI authoring records | No general automatic expiry is configured. User-owned records are included in the export where supported. |
+| Connector import jobs and AI authoring records | No general automatic expiry is configured. User-owned records are included in the export where supported. |\n| Creator rights evidence and archived moderation reports | No general automatic expiry is configured. Creator-submitted rights records and a user's own archived reports are included in the export; internal reviewer and rights-audit records remain excluded. |\n| Aggregate view analytics and provider benchmarks | These are not account-level personal history exports. Daily view tables store aggregate counts without reader identity; chapter view totals and provider benchmarks are operational aggregates. |
 
 ## Important limitations
 
