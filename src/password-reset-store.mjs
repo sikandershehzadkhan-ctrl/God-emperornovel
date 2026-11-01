@@ -6,6 +6,8 @@ export const PASSWORD_RESET_COMPLETION_SQL = [
     SET consumed_at=?, consumption_id=?
     WHERE token_hash=? AND purpose='password_reset'
       AND consumed_at IS NULL AND invalidated_at IS NULL AND expires_at>?
+      AND EXISTS (SELECT 1 FROM users WHERE id=password_reset_tokens.user_id
+        AND lower(trim(email))=lower(trim(password_reset_tokens.email_snapshot)))
     RETURNING user_id`,
   `UPDATE users SET password_hash=?
     WHERE id=(SELECT user_id FROM password_reset_tokens
@@ -60,10 +62,10 @@ const ISO_UTC = /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.\d{3}Z$/;
 export const PASSWORD_RESET_ISSUANCE_SQL = [
   `UPDATE password_reset_tokens SET invalidated_at=?
     WHERE user_id=? AND consumed_at IS NULL AND invalidated_at IS NULL
-      AND EXISTS (SELECT 1 FROM users WHERE id=?)`,
-  `INSERT INTO password_reset_tokens(user_id,token_hash,purpose,created_at,expires_at)
-    SELECT ?,?,'password_reset',?,?
-    WHERE EXISTS (SELECT 1 FROM users WHERE id=?)`
+      AND EXISTS (SELECT 1 FROM users WHERE id=? AND lower(trim(email))=lower(trim(?)))`,
+  `INSERT INTO password_reset_tokens(user_id,email_snapshot,token_hash,purpose,created_at,expires_at)
+    SELECT ?,?,?,'password_reset',?,?
+    WHERE EXISTS (SELECT 1 FROM users WHERE id=? AND lower(trim(email))=lower(trim(?)))`
 ];
 export const PASSWORD_RESET_INVALIDATION_SQL = `UPDATE password_reset_tokens
   SET invalidated_at=?
