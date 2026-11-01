@@ -735,6 +735,17 @@ async function api(req,env){
   if(changedA!==1||changedB!==1)return json({error:"Ownership or invitation state changed. The transfer was not completed."},409);
   return json({ok:true,status:"accepted",ownership_changed:true,novel_id:transfer.novel_id});
  }
+
+ let transferCancel=p.match(/^\/api\/author\/ownership-transfers\/(\d+)\/cancel$/);
+ if(transferCancel&&m==="POST"){
+  const e=author(u);if(e)return e;
+  const id=Number(transferCancel[1]),timestamp=now();
+  if(!Number.isSafeInteger(id)||id<1)return json({error:"A valid transfer id is required."},400);
+  const result=await env.DB.prepare("UPDATE novel_ownership_transfers SET status='cancelled',decided_at=?,updated_at=CURRENT_TIMESTAMP WHERE id=? AND from_user_id=? AND status='pending' AND expires_at>?").bind(timestamp,id,u.id,timestamp).run();
+  if(Number(result?.meta?.changes??result?.changes??0)!==1)return json({error:"Only the requesting owner can cancel a pending, unexpired invitation."},409);
+  await env.DB.prepare("INSERT INTO audit_logs(user_id,action,details) VALUES(?,?,?)").bind(u.id,"novel_ownership_transfer_cancelled","transfer="+id).run();
+  return json({ok:true,status:"cancelled",ownership_changed:false});
+ }
  if(p==="/api/author/novels"&&m==="GET"){
   const e=author(u);if(e)return e;
   return json((await env.DB.prepare(`SELECT n.id,n.title,n.alt_titles,n.author,n.description,n.status,n.kind,n.language,n.cover_url,n.source_url,n.rights_status,n.rights_evidence,n.rights_notes,n.review_feedback,n.reviewed_by,n.reviewed_at,n.publication_status,n.views,n.rating,n.created_at,n.updated_at,(SELECT COUNT(*) FROM chapters c WHERE c.novel_id=n.id) chapter_count,(SELECT COUNT(*) FROM chapters c WHERE c.novel_id=n.id AND c.publication_status='published') published_chapters FROM novels n WHERE n.owner_user_id=? ORDER BY n.updated_at DESC`).bind(u.id).all()).results||[])
