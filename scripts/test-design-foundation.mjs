@@ -248,3 +248,13 @@ assert.ok(css.includes("min-height:46px;border-radius:10px"),"Author Studio fiel
 assert.ok(css.includes("font-size:16px"),"Mobile author form inputs must avoid small default text sizing");
 assert.ok(css.includes("html[data-theme=\"dark\"] .authorStudioIntro"),"Author Studio must have dedicated dark art direction");
 assert.ok(css.includes(".authorCreateForm :is(input,select,textarea),.authorEditForm :is(input,select,textarea),.authorChapterForm :is(input,select,textarea),.authorWork{transition:none!important}"),"Author Studio must respect reduced-motion settings");
+
+
+/* Community conversation and participation regression checks. */
+for(const selector of [".communityGrid>.panel:focus-within",".communityGrid .commentItem:hover",".communityGrid .commentActions .ghost{min-height:38px",".communityGrid .ratingStar{min-width:38px;min-height:38px}"]){
+  assert.ok(css.includes(selector),"Community interaction refinement must include "+selector);
+}
+assert.ok(css.includes("line-height:1.72"),"Community comments must remain comfortably readable");
+assert.ok(css.includes("html[data-theme=\"dark\"] .communityGrid>.panel"),"Community panels must be theme-aware");
+assert.ok(css.includes(".communityGrid :is(input,textarea,select){font-size:16px}"),"Mobile community inputs must avoid small text sizing");
+assert.ok(css.includes("@media(prefers-reduced-motion:reduce){\n .communityGrid>.panel,.communityGrid .commentItem{transition:none!important}"),"Community interactions must respect reduced-motion preferences");
