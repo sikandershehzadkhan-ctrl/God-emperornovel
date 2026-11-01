@@ -88,7 +88,7 @@ try:
     db.execute("INSERT INTO password_reset_tokens(user_id,token_hash,purpose,expires_at) VALUES(2,?,?,?)", ("F"*43,"other_purpose","2026-11-02T12:20:00.000Z"))
     raise AssertionError("wrong-purpose token was accepted by schema")
 except sqlite3.IntegrityError:
-    pass
+    db.rollback()
 assert complete("F"*43, "wrong-purpose", now) is None
 assert db.execute("SELECT password_hash FROM users WHERE id=2").fetchone()[0] == "old-b"
 # Simulate a D1 batch failure after token consumption: the enclosing transaction rolls back.
