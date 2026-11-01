@@ -18,6 +18,11 @@ assert.ok(readRoute[1].includes("WHERE user_id=? AND read_at IS NULL"), "mark-re
 assert.ok(worker.includes("INSERT INTO notifications(user_id,title,body)"), "notification creation must persist to the account notification table");
 assert.ok(worker.includes("WHERE NOT EXISTS (SELECT 1 FROM notifications WHERE user_id=? AND title=? AND body=? AND created_at>=datetime('now','-10 minutes'))"), "identical notification events must be deduplicated within a ten-minute cooldown");
 
+const commentsRead = worker.match(/if\\(p==="\\/api\\/comments"&&m==="GET"\\)\\{([\\s\\S]*?)\\n\\s*if\\(p==="\\/api\\/comments"&&m==="POST"/);
+assert.ok(commentsRead, "public comment read route must exist");
+assert.ok(commentsRead[1].includes("Number.isSafeInteger(novel)"), "comment reads must validate a positive safe novel id");
+assert.ok(commentsRead[1].includes("publication_status='published'"), "comment reads must be restricted to published novels");
+assert.ok(commentsRead[1].includes("rights_status IN ('original','public_domain','licensed','authorized')"), "comment reads must enforce publication rights clearance");
 const commentRoute = worker.match(/if\(p==="\/api\/comments"&&m==="POST"\)\{([\s\S]*?)\n\s*if\(p==="\/api\/comments\/like"/);
 assert.ok(commentRoute, "comment creation route must exist");
 assert.ok(commentRoute[1].includes("await notifyUser(env,parentAuthor"), "comment replies must notify the parent comment author");
