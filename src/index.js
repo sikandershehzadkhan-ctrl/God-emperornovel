@@ -6,6 +6,7 @@ import { parseDonationSubmission } from "./donation-reference-policy.mjs";
 import { createRuntimeFeatureSchemaEnsurer } from "./runtime-feature-schema.mjs";
 import { createDonationReferenceIndexEnsurer } from "./donation-reference-index.mjs";
 import { validateAuthorApplication, validateAuthorApplicationDecision } from "./author-application-policy.mjs";
+import { canPublishChapter } from "./creator-ownership-policy.mjs";
 import { CONTENT_FORMATS, CONTENT_FORMAT_IDS } from "./content-formats.mjs";
 const json=(d,s=200,h={})=>new Response(JSON.stringify(d),{status:s,headers:{"content-type":"application/json;charset=UTF-8","cache-control":"no-store",...h}});
 const now=()=>Math.floor(Date.now()/1000);
@@ -736,8 +737,8 @@ async function api(req,env){
   await env.DB.prepare(`UPDATE chapters SET chapter_number=?,title=?,content=?,is_locked=?,ticket_cost=?,updated_at=CURRENT_TIMESTAMP WHERE id=?`).bind(num,title,content,b.is_locked?1:0,cost,id).run();await env.DB.prepare('UPDATE novels SET updated_at=CURRENT_TIMESTAMP WHERE id=?').bind(c.novel_id).run();await audit(env,u,'author_chapter_updated',`chapter=${id}`);return json({ok:true,message:'Chapter saved.'})
  }
  if(/^\/api\/author\/chapters\/\d+\/publish$/.test(p)&&m==="POST"){
-  const e=author(u);if(e)return e;const id=Number(p.split('/')[3]),b=await body(req);const c=await env.DB.prepare(`SELECT c.*,n.owner_user_id,n.rights_status FROM chapters c JOIN novels n ON n.id=c.novel_id WHERE c.id=?`).bind(id).first();if(!c)return json({error:'Chapter not found'},404);if(u.role!=="admin"&&Number(c.owner_user_id)!==Number(u.id))return json({error:'You do not own this chapter'},403);
-  const status=String(b.publication_status||'published');if(!['draft','published'].includes(status))return json({error:'Invalid publication status'},400);if(status==='published'&&!['original','public_domain','licensed','authorized'].includes(String(c.rights_status)))return json({error:'Novel rights are not eligible for publication'},403);
+  const e=author(u);if(e)return e;const id=Number(p.split('/')[3]),b=await body(req);const c=await env.DB.prepare(`SELECT c.*,n.owner_user_id,n.rights_status,n.publication_status AS novel_publication_status,n.rights_evidence FROM chapters c JOIN novels n ON n.id=c.novel_id WHERE c.id=?`).bind(id).first();if(!c)return json({error:'Chapter not found'},404);if(u.role!=="admin"&&Number(c.owner_user_id)!==Number(u.id))return json({error:'You do not own this chapter'},403);
+  const status=String(b.publication_status||'published');if(!['draft','published'].includes(status))return json({error:'Invalid publication status'},400);if(status==='published'&&!canPublishChapter({novelPublicationStatus:c.novel_publication_status,rightsStatus:c.rights_status,rightsEvidence:c.rights_evidence}))return json({error:'The parent novel must be published and its rights declaration must be eligible and verified before a chapter can be published.'},403);
   await env.DB.prepare('UPDATE chapters SET publication_status=?,updated_at=CURRENT_TIMESTAMP WHERE id=?').bind(status,id).run();await env.DB.prepare('UPDATE novels SET updated_at=CURRENT_TIMESTAMP WHERE id=?').bind(c.novel_id).run();await audit(env,u,status==='published'?'author_chapter_published':'author_chapter_unpublished',`chapter=${id}`);return json({ok:true,message:status==='published'?'Chapter published.':'Chapter moved to draft.'})
  }
  if(p==="/api/admin/publishing"&&m==="GET"){const e=admin(u);if(e)return e;await ensurePublishingSchema(env);return json((await env.DB.prepare(`SELECT n.*,COALESCE(u.username,'') owner_username,(SELECT COUNT(*) FROM chapters c WHERE c.novel_id=n.id) chapter_count FROM novels n LEFT JOIN users u ON u.id=n.owner_user_id ORDER BY CASE n.publication_status WHEN 'review' THEN 0 WHEN 'draft' THEN 1 WHEN 'published' THEN 2 ELSE 3 END,n.updated_at DESC LIMIT 300`).all()).results)}
@@ -749,8 +750,14 @@ async function api(req,env){
   if(!['original','public_domain','licensed','authorized'].includes(rights))return json({error:'Invalid rights status'},400);
   const kind=String(b.kind||'original').trim().toLowerCase();if(!CONTENT_FORMAT_IDS.has(kind))return json({error:'Unsupported content format. Fetch /api/formats for the supported format registry.',supported_formats:CONTENT_FORMATS.map(x=>x.id)},400);
   const status=['ongoing','completed'].includes(String(b.status||'ongoing'))?String(b.status):'ongoing';
+  const requestedOwner=b.owner_user_id===undefined||b.owner_user_id===null||b.owner_user_id===''?u.id:Number(b.owner_user_id);
+  if(!Number.isSafeInteger(requestedOwner)||requestedOwner<1)return json({error:'A valid creator account is required for ownership assignment.'},400);
+  if(requestedOwner!==Number(u.id)){
+   const target=await env.DB.prepare("SELECT id FROM users WHERE id=? AND role='author' AND banned=0").bind(requestedOwner).first();
+   if(!target)return json({error:'Ownership can only be assigned to an active, approved author account.'},400);
+  }
   try{
-   const r=await env.DB.prepare(`INSERT INTO novels(title,alt_titles,author,description,status,kind,language,cover_url,source_url,rights_status,owner_user_id,publication_status,rights_evidence,rights_notes) VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,?)`).bind(title,String(b.alt_titles||''),author,description,status,kind,String(b.language||'English'),String(b.cover_url||''),String(b.source_url||''),rights,Number(b.owner_user_id||u.id),'draft',String(b.rights_evidence||''),String(b.rights_notes||'')).run();
+   const r=await env.DB.prepare(`INSERT INTO novels(title,alt_titles,author,description,status,kind,language,cover_url,source_url,rights_status,owner_user_id,publication_status,rights_evidence,rights_notes) VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,?)`).bind(title,String(b.alt_titles||''),author,description,status,kind,String(b.language||'English'),String(b.cover_url||''),String(b.source_url||''),rights,requestedOwner,'draft',String(b.rights_evidence||''),String(b.rights_notes||'')).run();
    const id=Number(r.meta.last_row_id);await audit(env,u,'admin_novel_created',`novel=${id};rights=${rights}`);
    return json({ok:true,id,status:'draft',message:`Novel saved as draft. Novel ID: ${id}. Rights review is required before publication.`});
   }catch(err){console.error('admin novel create',err);return json({error:'Unable to save draft: '+String(err?.message||err).slice(0,240)},500)}
@@ -780,7 +787,7 @@ async function api(req,env){
   if(!Number.isFinite(cost))return json({error:"Invalid ticket cost"},400);
   const pub=String(b.publication_status??row.publication_status??'draft').toLowerCase();
   if(!['draft','published'].includes(pub))return json({error:"Invalid chapter publication status"},400);
-  if(pub==='published'){const novel=await env.DB.prepare('SELECT rights_status FROM novels WHERE id=?').bind(row.novel_id).first();if(!novel||!['original','public_domain','licensed','authorized'].includes(String(novel.rights_status)))return json({error:"Novel rights are not eligible for publication"},403);}
+  if(pub==='published'){const novel=await env.DB.prepare('SELECT publication_status,rights_status,rights_evidence FROM novels WHERE id=?').bind(row.novel_id).first();if(!novel||!canPublishChapter({novelPublicationStatus:novel.publication_status,rightsStatus:novel.rights_status,rightsEvidence:novel.rights_evidence}))return json({error:"The parent novel must be published and its rights declaration must be eligible and verified before a chapter can be published."},403);}
   const duplicate=await env.DB.prepare("SELECT id FROM chapters WHERE novel_id=? AND chapter_number=? AND id<>?").bind(row.novel_id,num,id).first();
   if(duplicate)return json({error:"Chapter number already exists for this novel."},409);
   await env.DB.prepare("UPDATE chapters SET chapter_number=?,title=?,content=?,is_locked=?,ticket_cost=?,publication_status=? WHERE id=?").bind(num,title,content,locked,cost,pub,id).run();
