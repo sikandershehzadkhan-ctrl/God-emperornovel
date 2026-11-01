@@ -228,7 +228,7 @@ try {
       const foreignPublish = await request(baseUrl, "/api/author/chapters/" + foreignChapterId + "/publish", {
         method: "POST", cookie: recipient.cookie, body: { publication_status: "published" }
       });
-      assert.equal(foreignPublish.response.status, 403, "A different author must not publish another author's chapter");
+      assert.ok([403, 404].includes(foreignPublish.response.status), "A different author must not publish another author's chapter; 404 is acceptable anti-enumeration behavior");
       const preservedChapter = await request(baseUrl, "/api/author/chapters?novel_id=" + novelId, { cookie: owner.cookie });
       assert.equal(preservedChapter.response.status, 200);
       const preserved = preservedChapter.data.find(row => Number(row.id) === foreignChapterId);
