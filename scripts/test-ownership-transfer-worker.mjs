@@ -168,7 +168,6 @@ try {
   });
   assert.equal(duplicateApproval.response.status, 409, "A donation must not be credited twice");
 
-  const spectatorBeforeCredit = await request(baseUrl, "/api/me", { cookie: spectator.cookie });
   // Administrative Crown adjustments are restricted to administrators and recorded against the selected account.
   const readerCredit = await request(baseUrl, "/api/admin/tickets", {
     method: "POST", cookie: spectator.cookie, body: { user_id: owner.user.id, amount: 23 }
@@ -267,6 +266,7 @@ try {
     method: "POST", cookie: spectator.cookie, body: { url: "https://untrusted.example/book/123" }
   });
   assert.equal(unsupportedRequest.response.status, 400, "Novel requests must reject unregistered source domains");
+  const spectatorBeforeCredit = await request(baseUrl, "/api/me", { cookie: spectator.cookie });
 
   const adminCredit = await request(baseUrl, "/api/admin/tickets", {
     method: "POST", cookie: administrator.cookie, body: { user_id: owner.user.id, amount: 23 }
