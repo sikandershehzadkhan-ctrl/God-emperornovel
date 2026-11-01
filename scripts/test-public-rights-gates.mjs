@@ -19,4 +19,12 @@ assert.ok(ratingQueries.length >= 2, 'rating GET and POST must verify novel elig
 for (const query of ratingQueries) assert.ok(query.includes("rights_status IN ('original','public_domain','licensed','authorized')"), 'rating endpoints must exclude ineligible rights');
 assert.ok(source.includes("WHERE r.user_id=? AND n.publication_status='published' AND n.rights_status IN ('original','public_domain','licensed','authorized') GROUP BY n.id,r.id"), 'personalized recommendations must enforce rights');
 assert.ok(source.includes("WHERE n.publication_status='published' AND n.rights_status IN ('original','public_domain','licensed','authorized') AND n.id NOT IN(SELECT novel_id FROM follows WHERE user_id=?)"), 'fallback recommendations must enforce rights');
-console.log('PASS: catalog, detail, chapter, unlock, author discovery, ratings and recommendations enforce the eligible rights allowlist.');
+const leaderboard = source.split('\n').find(line => line.includes('unlocks DESC,n.views DESC,n.rating DESC')) || '';
+const tierList = source.split('\n').find(line => line.includes('ORDER BY n.rating DESC,n.views DESC LIMIT 60')) || '';
+const randomNovel = source.split('\n').find(line => line.includes('ORDER BY RANDOM() LIMIT 1')) || '';
+const anonymousFeed = source.split('\n').find(line => line.includes('personalized:false,results:rows')) || '';
+const followWrite = source.split('\n').find(line => line.includes('let novel=await env.DB.prepare')) || '';
+for (const [name, line] of Object.entries({leaderboard,tierList,randomNovel,anonymousFeed,followWrite})) assert.ok(line.includes("rights_status IN ('original','public_domain','licensed','authorized')"), name + ' must enforce eligible rights');
+assert.ok(source.includes("WHERE n.publication_status='published' AND n.rights_status IN ('original','public_domain','licensed','authorized') AND n.id NOT IN(SELECT novel_id FROM follows WHERE user_id=?) GROUP BY n.id ORDER BY n.rating DESC,n.views DESC LIMIT 12"), 'recommendation fallback must enforce eligible rights');
+assert.ok(source.includes("WHERE f.user_id=? AND n.publication_status='published' AND n.rights_status IN ('original','public_domain','licensed','authorized') ORDER BY f.created_at DESC"), 'followed novel list must hide ineligible novels');
+console.log('PASS: catalog, reader, unlock, authors, ratings, recommendations, leaderboard, tier list, random, follow and feed routes enforce eligible rights.');
