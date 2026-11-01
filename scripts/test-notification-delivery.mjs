@@ -78,7 +78,7 @@ assert.ok(moderationRoute[1].includes("409"), "stale concurrent comment moderati
 assert.ok(reportModeration, "admin report moderation route must exist");
 assert.ok(reportModeration.includes("admin(u)"), "report moderation must require administrator access");
 assert.ok(reportModeration.includes("Number.isSafeInteger(id)||id<1"), "report moderation must validate a positive safe report id");
-assert.ok(reportModeration.includes("SELECT id,status FROM comment_reports WHERE id=?"), "report moderation must verify and read the prior report status");
+assert.ok(reportModeration.includes("SELECT id,status,user_id FROM comment_reports WHERE id=?"), "report moderation must verify and read the prior report status");
 assert.ok(reportModeration.includes("previous_status="), "report moderation audit must preserve the prior status");
 assert.ok(reportModeration.includes("unchanged:true"), "repeating the same report status must be idempotent");
 assert.ok(reportModeration.includes("SELECT id,status,user_id FROM comment_reports"), "report moderation must identify the original reporter");
