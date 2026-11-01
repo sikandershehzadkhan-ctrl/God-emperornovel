@@ -1,5 +1,5 @@
 import assert from "node:assert/strict";
-import { applySeoMetadata, buildRobotsTxt, buildSitemapXml, canonicalOrigin, canonicalPath, getPageSeo, robotsForPath } from "../src/seo.mjs";
+import { applySeoMetadata, buildRobotsTxt, buildSitemapXml, buildSitemapIndexXml, canonicalOrigin, canonicalPath, getPageSeo, robotsForPath } from "../src/seo.mjs";
 
 const origin="https://imperial.example";
 assert.equal(canonicalOrigin(origin),origin);
@@ -43,9 +43,11 @@ assert.equal(robotsForPath("/catalog",404),"noindex,nofollow");
 assert.equal(robotsForPath("/read/12/5",200,true),"noindex,nofollow");
 assert.match(getPageSeo("/author/some-writer").title,/Imperial Novel/);
 
-const sitemap=buildSitemapXml(origin,[{id:12,updated_at:"2026-10-30T12:00:00Z"},{id:"13"},{id:"bad"},{id:0},{id:12}],[{author:"Sikander Khan"},{author:"Sikander & Co."},{author:"Sikander Khan"},{author:""}]);
+const sitemap=buildSitemapXml(origin,[{id:12,updated_at:"2026-10-30T12:00:00Z"},{id:"13"},{id:"bad"},{id:0},{id:12}],[{author:"Sikander Khan"},{author:"Sikander & Co."},{author:"Sikander Khan"},{author:""}],[{novel_id:12,chapter_number:3,updated_at:"2026-10-31T10:00:00Z"},{novel_id:"bad",chapter_number:2},{novel_id:12,chapter_number:0}]);
 assert.match(sitemap,/<loc>https:\/\/imperial\.example\/novel\/12<\/loc><lastmod>2026-10-30<\/lastmod>/);
 assert.match(sitemap,/<loc>https:\/\/imperial\.example\/novel\/13<\/loc>/);
+assert.match(sitemap,/<loc>https:\/\/imperial\.example\/read\/12\/3<\/loc><lastmod>2026-10-31<\/lastmod>/);
+assert.doesNotMatch(sitemap,/read\/12\/0/);
 assert.equal((sitemap.match(/\/novel\/12/g)||[]).length,1);
 assert.doesNotMatch(sitemap,/\/novel\/bad/);
 assert.match(sitemap,/<loc>https:\/\/imperial\.example\/formats<\/loc>/);
@@ -54,6 +56,9 @@ assert.match(sitemap,/become-an-author/);
 assert.ok(!sitemap.includes("<loc>https://imperial.example/author</loc>"));
 assert.match(sitemap,/\/format\/audiobook/);
 assert.equal((sitemap.match(/\/format\//g)||[]).length,15);
+const sitemapIndex=buildSitemapIndexXml(origin,["/sitemap-static.xml","/sitemap-novels-0.xml","/sitemap-authors-0.xml","/sitemap-chapters-0.xml"]);
+assert.match(sitemapIndex,/<sitemapindex/);
+assert.match(sitemapIndex,/sitemap-chapters-0\.xml/);
 assert.match(sitemap,/\/author\/Sikander%20Khan/);
 assert.match(sitemap,/\/author\/Sikander%20%26%20Co\./);
 assert.equal((sitemap.match(/\/author\/Sikander%20Khan/g)||[]).length,1);
