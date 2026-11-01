@@ -15,6 +15,17 @@ CREATE TABLE IF NOT EXISTS media_asset_reviews (
 CREATE INDEX IF NOT EXISTS idx_media_asset_reviews_asset_created
   ON media_asset_reviews(media_asset_id, created_at DESC, id DESC);
 
+-- A creator cannot review their own asset, even through direct database writes.
+CREATE TRIGGER IF NOT EXISTS trg_media_asset_reviews_require_independent_reviewer
+BEFORE INSERT ON media_asset_reviews
+FOR EACH ROW
+WHEN NEW.reviewer_user_id = (
+  SELECT owner_user_id FROM media_assets WHERE id = NEW.media_asset_id
+)
+BEGIN
+  SELECT RAISE(ABORT, 'media owners cannot review their own assets');
+END;
+
 -- Approval must have an attributable review record inserted in the same D1 batch.
 CREATE TRIGGER IF NOT EXISTS trg_media_asset_approval_requires_review
 BEFORE UPDATE OF rights_status ON media_assets
