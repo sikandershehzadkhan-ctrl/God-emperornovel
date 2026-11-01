@@ -133,6 +133,50 @@ try {
     assert.equal(allowed.response.status, 200, "Admin must access " + route + ": " + JSON.stringify(allowed.data));
   }
 
+  // Private reader data must remain scoped to the authenticated session, never a caller-supplied user ID.
+  const privateNovel = await createNovel(baseUrl, owner.cookie, "Private Data Isolation Fixture");
+  const privateChapter = await request(baseUrl, "/api/author/chapters", {
+    method: "POST", cookie: owner.cookie,
+    body: { novel_id: privateNovel, chapter_number: 1, title: "Private Fixture Chapter", content: "local only", is_locked: true, ticket_cost: 1 }
+  });
+  assert.equal(privateChapter.response.status, 201, JSON.stringify(privateChapter.data));
+  const ownerId = Number(owner.user.id), spectatorId = Number(spectator.user.id), chapterId = Number(privateChapter.data.id);
+  executeLocalSql("INSERT INTO history(user_id,novel_id,chapter_number) VALUES(" + ownerId + "," + privateNovel + ",1);"
+    + "INSERT INTO bookmarks(user_id,novel_id,chapter_number) VALUES(" + ownerId + "," + privateNovel + ",1);"
+    + "INSERT INTO user_library(user_id,novel_id) VALUES(" + ownerId + "," + privateNovel + ");"
+    + "INSERT INTO follows(user_id,novel_id) VALUES(" + ownerId + "," + privateNovel + ");"
+    + "INSERT INTO notifications(user_id,title,body) VALUES(" + ownerId + ",'Private fixture','owner-only notification');"
+    + "INSERT INTO ticket_ledger(user_id,delta,reason,reference) VALUES(" + ownerId + ",7,'isolation_fixture','owner-only-ledger');"
+    + "INSERT INTO unlocks(user_id,chapter_id,cost) VALUES(" + ownerId + "," + chapterId + ",1)");
+  for (const [route, fixtureField] of [
+    ["/api/history", "novel_id"], ["/api/library", "novel_id"], ["/api/bookmarks", "novel_id"],
+    ["/api/follows", "id"], ["/api/notifications", "title"], ["/api/tickets/ledger", "reference"]
+  ]) {
+    const own = await request(baseUrl, route, { cookie: owner.cookie });
+    const other = await request(baseUrl, route, { cookie: spectator.cookie });
+    assert.equal(own.response.status, 200, "Owner must read " + route);
+    assert.equal(other.response.status, 200, "Other account must read " + route);
+    assert.ok(own.data.some(row => String(row[fixtureField]) === String(
+      fixtureField === "novel_id" || fixtureField === "id" ? privateNovel : fixtureField === "title" ? "Private fixture" : "owner-only-ledger"
+    )), "Fixture must be visible to its owner at " + route);
+    assert.ok(!other.data.some(row => String(row[fixtureField]) === String(
+      fixtureField === "novel_id" || fixtureField === "id" ? privateNovel : fixtureField === "title" ? "Private fixture" : "owner-only-ledger"
+    )), "Private fixture leaked to another account at " + route);
+  }
+  const ownerProfile = await request(baseUrl, "/api/profile", { cookie: owner.cookie });
+  const spectatorProfile = await request(baseUrl, "/api/profile", { cookie: spectator.cookie });
+  assert.equal(ownerProfile.response.status, 200);
+  assert.equal(spectatorProfile.response.status, 200);
+  assert.ok(Number(ownerProfile.data.stats.history) >= 1);
+  assert.equal(Number(spectatorProfile.data.stats.history), 0, "Profile statistics must not include another account's history");
+
+  // Even if a client sends a foreign user_id, writes must be attributed to the signed-in account.
+  await request(baseUrl, "/api/history", { method: "POST", cookie: spectator.cookie, body: { user_id: ownerId, novel_id: privateNovel, chapter_number: 2 } });
+  const spectatorHistory = await request(baseUrl, "/api/history", { cookie: spectator.cookie });
+  const ownerHistory = await request(baseUrl, "/api/history", { cookie: owner.cookie });
+  assert.ok(spectatorHistory.data.some(row => Number(row.chapter_number) === 2));
+  assert.ok(ownerHistory.data.some(row => Number(row.chapter_number) === 1), "A supplied user_id must not overwrite the owner's history");
+
   const acceptedNovel = await createNovel(baseUrl, owner.cookie, "Ownership Integration Accepted");
   const lookup = await request(baseUrl, "/api/author/eligible-recipients?username=" + encodeURIComponent(recipient.user.username), { cookie: owner.cookie });
   assert.equal(lookup.response.status, 200, JSON.stringify(lookup.data));
@@ -278,7 +322,7 @@ try {
   });
   assert.equal(rightsInvite.response.status, 409, JSON.stringify(rightsInvite.data));
 
-  console.log("Local Worker/D1 authorization integration passed: reader/author/moderator denial across 11 admin read routes, admin access checks, recipient privacy, ownership and chapter isolation, concurrent acceptance, rejection/cancellation, and banned/revoked/expired/stale-owner/rights-ineligible transfer rejection.");
+  console.log("Local Worker/D1 authorization integration passed: administrator role boundaries, six private-data endpoint isolation, session-bound writes, ownership and chapter isolation, recipient privacy, concurrent acceptance, rejection/cancellation, and ineligible transfer rejection.");
 
 } catch (error) {
   console.error(error);
