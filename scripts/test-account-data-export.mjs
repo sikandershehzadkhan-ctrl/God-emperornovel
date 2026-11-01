@@ -28,3 +28,7 @@ for (const forbidden of ["password_hash", "token_hash", "sessions", "reviewed_by
   assert.ok(!route.includes(forbidden), `export must not disclose ${forbidden}`);
 
 console.log("PASS: account data export is authenticated, account-scoped, bounded, no-store, and excludes credentials and internal review/security records.");
+
+const privacyPage = readFileSync(new URL("../public/privacy.html", import.meta.url), "utf8");
+assert.ok(privacyPage.includes('href="/api/privacy/export"'), "privacy page must expose the account data download route");
+assert.ok(privacyPage.includes("You must be signed in"), "privacy page must explain the authentication requirement");
