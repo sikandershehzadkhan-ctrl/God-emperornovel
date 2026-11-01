@@ -202,6 +202,11 @@ try {
     "Rejected credit attempts must not create ledger entries");
 
   // Novel requests: first three are free, the fourth is charged once, and rejection refunds once.
+  // Fund the disposable local reader fixture so the paid-request path can be exercised.
+  const requestTestCredit = await request(baseUrl, "/api/admin/tickets", {
+    method: "POST", cookie: administrator.cookie, body: { user_id: spectator.user.id, amount: 100 }
+  });
+  assert.equal(requestTestCredit.response.status, 200, "Local test account must receive fixture Crowns");
   const requestBalanceBefore = await request(baseUrl, "/api/me", { cookie: spectator.cookie });
   const requestLedgerBefore = await request(baseUrl, "/api/tickets/ledger", { cookie: spectator.cookie });
   const requestUrls = [1, 2, 3, 4].map(n => "https://fanqienovel.com/page/LOCAL-SECURITY-" + suffix + "-" + n);
