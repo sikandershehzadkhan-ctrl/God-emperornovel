@@ -558,7 +558,13 @@ try {
   );
   const anonymousExport = await request(baseUrl, "/api/me/export");
   assert.equal(anonymousExport.response.status, 401, "Anonymous users must not export account data");
-  const ownerExport = await request(baseUrl, "/api/me/export", { cookie: owner.cookie });
+  let ownerExport = await request(baseUrl, "/api/me/export", { cookie: owner.cookie });
+  assert.equal(ownerExport.response.status, 200, JSON.stringify(ownerExport.data));
+  executeLocalSql(
+    "INSERT INTO ai_author_projects(owner_user_id,name,premise) VALUES(" + Number(owner.user.id) + ",'EXPORT_AI_OWNER_" + suffix + "','Owner AI project'),(" + Number(spectator.user.id) + ",'EXPORT_AI_READER_" + suffix + "','Reader AI project');" +
+    "INSERT INTO import_jobs(user_id,source_url,status) VALUES(" + Number(owner.user.id) + ",'https://example.test/owner-" + suffix + "','queued'),(" + Number(spectator.user.id) + ",'https://example.test/reader-" + suffix + "','queued');"
+  );
+  ownerExport = await request(baseUrl, "/api/me/export", { cookie: owner.cookie });
   assert.equal(ownerExport.response.status, 200, JSON.stringify(ownerExport.data));
   assert.match(ownerExport.response.headers.get("content-disposition") || "", /attachment; filename="imperial-novel-account-export\.json"/);
   assert.match(ownerExport.response.headers.get("cache-control") || "", /no-store/);
@@ -570,6 +576,10 @@ try {
   assert.ok(ownerExport.data.finance.ticket_ledger.some(row => row.reference === "OWNER_LEDGER_" + suffix), "Owner export must include the owner's ledger entry");
   assert.ok(!ownerExport.data.finance.ticket_ledger.some(row => row.reference === "READER_LEDGER_" + suffix), "Owner export must exclude another account's ledger entry");
   assert.ok(ownerExport.data.creator_content.novels.some(row => Number(row.id) === exportOwnerNovel), "Author export must include owned novels");
+  assert.ok(ownerExport.data.creator_content.ai_projects.some(row => row.name === "EXPORT_AI_OWNER_" + suffix), "Owner export must include the owner's AI Author Studio projects");
+  assert.ok(!ownerExport.data.creator_content.ai_projects.some(row => row.name === "EXPORT_AI_READER_" + suffix), "Owner export must exclude another account's AI projects");
+  assert.ok(ownerExport.data.omniportal.import_jobs.some(row => row.source_url.includes("owner-" + suffix)), "Owner export must include the owner's OmniPortal import jobs");
+  assert.ok(!ownerExport.data.omniportal.import_jobs.some(row => row.source_url.includes("reader-" + suffix)), "Owner export must exclude another account's import jobs");
   const ownerExportText = JSON.stringify(ownerExport.data);
   assert.ok(!ownerExportText.includes("password_hash") && !ownerExportText.includes("token_hash"), "Export must not disclose password or session hashes");
   assert.ok(!ownerExportText.includes(owner.cookie.slice("session=".length)), "Export must not disclose the active session token");
@@ -579,6 +589,10 @@ try {
   assert.equal(Number(readerExport.data.user.id), Number(spectator.user.id));
   assert.ok(readerExport.data.reading.history.some(row => Number(row.novel_id) === 990002), "Second account must receive its own history");
   assert.ok(!readerExport.data.reading.history.some(row => Number(row.novel_id) === 990001), "Second account must not receive the first account's history");
+  assert.ok(readerExport.data.creator_content.ai_projects.some(row => row.name === "EXPORT_AI_READER_" + suffix), "Second account must receive its own AI project");
+  assert.ok(!readerExport.data.creator_content.ai_projects.some(row => row.name === "EXPORT_AI_OWNER_" + suffix), "Second account must not receive the first account's AI project");
+  assert.ok(readerExport.data.omniportal.import_jobs.some(row => row.source_url.includes("reader-" + suffix)), "Second account must receive its own import job");
+  assert.ok(!readerExport.data.omniportal.import_jobs.some(row => row.source_url.includes("owner-" + suffix)), "Second account must not receive the first account's import job");
   const ownerExportSecond = await request(baseUrl, "/api/me/export", { cookie: owner.cookie });
   assert.equal(ownerExportSecond.response.status, 200, "The first three exports per account should be allowed");
   const ownerExportRateLimited = await request(baseUrl, "/api/me/export", { cookie: owner.cookie });
