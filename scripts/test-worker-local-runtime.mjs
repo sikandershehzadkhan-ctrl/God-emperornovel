@@ -530,6 +530,14 @@ try {
   assert.match(closureAudit,/account_closure_requested/,'Closure request must create an audit event');
   assert.match(closureAudit,/account_closure_cancelled/,'Closure cancellation must create an audit event');
 
+  const concurrentClosures=await Promise.all([1,2].map(()=>request('/api/account/closure-request',{method:'POST',headers:{cookie:accountA.cookie,'content-type':'application/json'},body:JSON.stringify({password:accountA.password})})));
+  assert.ok(concurrentClosures.every(x=>x.response.status===200),'Concurrent valid closure requests must both resolve safely');
+  const concurrentClosureData=concurrentClosures.map(x=>JSON.parse(x.body));
+  assert.equal(concurrentClosureData[0].request.id,concurrentClosureData[1].request.id,'Concurrent requests must converge on one pending closure record');
+  const pendingClosureCount=execFileSync('npx',['--yes','wrangler@4','d1','execute','god-emperornovel-db','--local','--persist-to','.wrangler/test-runtime','--command',`SELECT COUNT(*) n FROM account_closure_requests WHERE user_id=${accountAId} AND status='pending'`],{encoding:'utf8',stdio:['ignore','pipe','pipe'],env:{...process.env,NO_COLOR:'1'}});
+  assert.match(pendingClosureCount,/"n":\s*1/,'Database uniqueness must prevent duplicate pending closure records under concurrency');
+  const cancelConcurrentClosure=await request('/api/account/closure-cancel',{method:'POST',headers:{cookie:accountA.cookie}});
+  assert.equal(cancelConcurrentClosure.response.status,200,'The concurrent test closure request must remain cancellable');
   const anonymousExport=await request('/api/privacy/export');
   assert.equal(anonymousExport.response.status,401,'Anonymous visitors must not export account data');
 
