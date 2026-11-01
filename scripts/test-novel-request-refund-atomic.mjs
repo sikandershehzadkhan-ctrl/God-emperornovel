@@ -15,7 +15,9 @@ for (const [fragment, description] of [
   ["tickets=tickets+? WHERE id=? AND changes()=1", "account credit must depend on the one-time status transition"],
   ["SELECT ?,?,?,? WHERE changes()=1", "refund ledger entry must depend on successful credit"],
   ["transitioned!==1", "duplicate rejection must be rejected"],
-  ["credited!==1||ledger!==1", "partial accounting must not report success"]
+  ["credited!==1||ledger!==1||audited!==1", "partial accounting or audit must not report success"],
+  ['INSERT INTO audit_logs(user_id,action,details) SELECT ?,?,? WHERE changes()=1', 'refund audit event must be written in the same D1 batch'],
+  ['admin_request_rejected', 'refund audit event must identify the rejection action']
 ]) assert.ok(route.includes(fragment), description);
 
 console.log("PASS: paid novel request refunds validate IDs and amounts, transition pending requests once, and conditionally credit/ledger the refund.");
