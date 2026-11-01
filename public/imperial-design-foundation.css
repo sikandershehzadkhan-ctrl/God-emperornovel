@@ -1263,3 +1263,80 @@ html[data-theme="dark"] .novelLivePulseMetric{background:var(--in-surface-raised
  .authorAnalyticsTools{width:100%}
  .authorAnalyticsTools select{flex:1;max-width:none}
 }
+
+
+
+/* Reader experience: quiet chrome, a focused text measure and thumb-ready controls. */
+.readerPage{min-height:100vh;background:var(--in-canvas);color:var(--in-ink)}
+.readerBar{position:sticky;top:0;z-index:40;background:color-mix(in srgb,var(--in-surface) 96%,transparent);box-shadow:0 1px 0 var(--in-line)}
+.readerBarInner{width:min(1240px,calc(100% - 32px));gap:12px}
+.readerBack{display:inline-flex;align-items:center;min-height:40px;padding:8px 11px;border:1px solid var(--in-line);border-radius:9px;color:var(--in-muted);font-size:12px;font-weight:700;text-decoration:none}
+.readerBack:hover{border-color:var(--in-brand);color:var(--in-brand)}
+.readerBook{min-width:0}
+.readerBook b{display:block;overflow:hidden;color:var(--in-ink);font-size:12px;text-overflow:ellipsis;white-space:nowrap}
+.readerBook span{display:block;margin-top:3px;color:var(--in-muted);font-size:10px;font-variant-numeric:tabular-nums}
+.readerTools{display:flex;align-items:center;gap:6px}
+.readerTool{display:grid;place-items:center;width:38px;min-width:38px;height:38px;padding:0;border:1px solid var(--in-line);border-radius:9px;background:var(--in-canvas);color:var(--in-ink);font-size:13px;font-weight:750}
+.readerTool:hover,.readerTool.saved{border-color:var(--in-brand);background:var(--in-brand-soft);color:var(--in-brand)}
+.readerTool:focus-visible,.readerBack:focus-visible,.readerChapterItem:focus-visible{outline:2px solid var(--in-focus);outline-offset:2px}
+.readerProgress{height:3px;background:var(--in-line)}
+.readerProgress span{height:100%;transition:width .18s ease}
+.readerMain{width:min(100%,820px);margin-inline:auto;padding:clamp(22px,4vw,42px) 18px 48px}
+.readerMeta{display:flex;align-items:center;justify-content:space-between;gap:12px;margin:0 auto 18px;color:var(--in-muted);font-size:11px}
+.readerProgressText{font-variant-numeric:tabular-nums;text-align:end}
+.readerArticle{width:100%;max-width:100%;padding:clamp(22px,5vw,48px);border-radius:16px}
+.readerArticle h1{margin:0;font-size:clamp(25px,4vw,36px);line-height:1.2;letter-spacing:-.035em;overflow-wrap:anywhere}
+.readerDivider{height:1px;margin:22px 0;background:var(--in-line)}
+.readerContent{max-width:68ch;margin-inline:auto;font-size:18px;line-height:1.85;overflow-wrap:anywhere}
+.readerContent p{margin:0 0 1.35em}
+.readerActions{display:grid;grid-template-columns:1fr auto 1fr;align-items:center;gap:10px;margin-top:30px}
+.readerActions>div:last-child{text-align:end}
+.readerActions a,.readerFooterCard>a{min-height:40px}
+.readerFooterCard{display:flex;align-items:center;justify-content:space-between;gap:16px;margin-top:16px;padding:18px;border:1px solid var(--in-line);border-radius:14px;background:var(--in-surface)}
+.readerFooterCard h3{margin:5px 0;color:var(--in-ink);font-size:16px}
+.readerFooterCard p{margin:0;color:var(--in-muted);font-size:12px;line-height:1.6}
+.chapterDrawer{position:fixed;z-index:60;inset:64px 0 0 auto;width:min(390px,100%);padding:18px;overflow:auto;border-left:1px solid var(--in-line);background:var(--in-surface);box-shadow:-18px 20px 48px rgba(11,18,21,.14)}
+.chapterDrawer[hidden]{display:none}
+.chapterDrawerHead{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:14px}
+.chapterDrawerHead b{color:var(--in-ink);font-size:16px}
+.readerPrefs{display:grid;grid-template-columns:1fr 1fr;gap:10px;padding:12px;border:1px solid var(--in-line);border-radius:11px;background:var(--in-canvas)}
+.readerPrefs label{display:grid;gap:6px;color:var(--in-muted);font-size:10px;font-weight:750}
+.readerPrefs label:first-child{grid-column:1/-1}
+.readerPrefs select{width:100%;min-height:38px;padding:7px 9px;border:1px solid var(--in-line);border-radius:8px;background:var(--in-surface);color:var(--in-ink);font:inherit;font-size:12px}
+.readerChapterList{display:grid;gap:5px;margin-top:14px}
+.readerChapterItem{display:grid;grid-template-columns:78px minmax(0,1fr);gap:10px;align-items:center;min-height:43px;padding:9px 10px;border:1px solid transparent;border-radius:9px;color:var(--in-muted);font-size:11px;text-decoration:none}
+.readerChapterItem span:last-child{overflow:hidden;color:var(--in-ink);text-overflow:ellipsis;white-space:nowrap}
+.readerChapterItem.current{border-color:var(--in-brand);background:var(--in-brand-soft);color:var(--in-brand);font-weight:800}
+.readerChapterItem.current span:last-child{color:var(--in-brand)}
+.readerLock{max-width:480px;margin:20px auto;padding:clamp(20px,4vw,34px);border:1px solid var(--in-line);border-radius:14px;background:var(--in-canvas);text-align:center}
+.readerLock h2{margin:8px 0;color:var(--in-ink)}
+.readerLock p{color:var(--in-muted);font-size:13px;line-height:1.65}
+.comicPage{margin:0 auto 12px}
+.comicPage img{display:block;width:100%;height:auto;object-fit:contain}
+.comicPageUnavailable{padding:18px;border:1px dashed var(--in-line-strong);border-radius:10px;color:var(--in-muted);text-align:center}
+@media(max-width:640px){
+ .readerBarInner{width:calc(100% - 18px);height:58px;gap:6px}
+ .readerBack{min-height:36px;padding:6px 8px;font-size:10px;white-space:nowrap}
+ .readerBook{flex:1}
+ .readerBook b{font-size:10px}
+ .readerTools{gap:4px}
+ .readerTool{width:34px;min-width:34px;height:36px;border-radius:8px}
+ .readerMain{padding:18px 10px 34px}
+ .readerMeta{align-items:flex-start;font-size:10px}
+ .readerArticle{padding:20px 15px;border-radius:12px}
+ .readerArticle h1{font-size:25px}
+ .readerContent{font-size:17px;line-height:1.8}
+ .readerActions{grid-template-columns:1fr 1fr;gap:8px}
+ .readerChapterJump{grid-column:1/-1;grid-row:1;text-align:center}
+ .readerActions>div:last-child{text-align:end}
+ .readerFooterCard{align-items:flex-start;flex-direction:column;padding:14px}
+ .readerFooterCard>a{width:100%;justify-content:center}
+ .chapterDrawer{inset:58px 0 0;width:min(360px,100%);padding:14px}
+}
+@media(max-width:360px){
+ .readerBack{max-width:72px;overflow:hidden;text-overflow:ellipsis}
+ .readerTool{width:31px;min-width:31px}
+ .readerArticle{padding:17px 12px}
+ .readerContent{font-size:16px}
+}
+@media(prefers-reduced-motion:reduce){.readerProgress span{transition:none}}
