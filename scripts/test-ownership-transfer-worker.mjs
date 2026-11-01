@@ -549,6 +549,41 @@ try {
     wrangler(["d1", "execute", database, "--local", "--persist-to", persist, "--command", sql]);
   }
 
+  // Account export must be authenticated, private, read-only, and isolated across two users.
+  const exportOwnerNovel = await createNovel(baseUrl, owner.cookie, "Account Export Owner Fixture");
+  executeLocalSql(
+    "INSERT INTO history(user_id,novel_id,chapter_number) VALUES(" + Number(owner.user.id) + ",990001,3),(" + Number(spectator.user.id) + ",990002,7);" +
+    "INSERT INTO notifications(user_id,title,body) VALUES(" + Number(owner.user.id) + ",'EXPORT_OWNER_" + suffix + "','Owner-only export sentinel'),(" + Number(spectator.user.id) + ",'EXPORT_READER_" + suffix + "','Reader-only export sentinel');" +
+    "INSERT INTO ticket_ledger(user_id,delta,reason,reference) VALUES(" + Number(owner.user.id) + ",5,'export_test','OWNER_LEDGER_" + suffix + "'),(" + Number(spectator.user.id) + ",9,'export_test','READER_LEDGER_" + suffix + "');"
+  );
+  const anonymousExport = await request(baseUrl, "/api/me/export");
+  assert.equal(anonymousExport.response.status, 401, "Anonymous users must not export account data");
+  const ownerExport = await request(baseUrl, "/api/me/export", { cookie: owner.cookie });
+  assert.equal(ownerExport.response.status, 200, JSON.stringify(ownerExport.data));
+  assert.match(ownerExport.response.headers.get("content-disposition") || "", /attachment; filename="imperial-novel-account-export\.json"/);
+  assert.match(ownerExport.response.headers.get("cache-control") || "", /no-store/);
+  assert.equal(Number(ownerExport.data.user.id), Number(owner.user.id));
+  assert.ok(ownerExport.data.reading.history.some(row => Number(row.novel_id) === 990001), "Owner export must include the owner's history");
+  assert.ok(!ownerExport.data.reading.history.some(row => Number(row.novel_id) === 990002), "Owner export must not include another account's history");
+  assert.ok(ownerExport.data.notifications.some(row => row.title === "EXPORT_OWNER_" + suffix), "Owner export must include the owner's notification");
+  assert.ok(!ownerExport.data.notifications.some(row => row.title === "EXPORT_READER_" + suffix), "Owner export must exclude another account's notification");
+  assert.ok(ownerExport.data.finance.ticket_ledger.some(row => row.reference === "OWNER_LEDGER_" + suffix), "Owner export must include the owner's ledger entry");
+  assert.ok(!ownerExport.data.finance.ticket_ledger.some(row => row.reference === "READER_LEDGER_" + suffix), "Owner export must exclude another account's ledger entry");
+  assert.ok(ownerExport.data.creator_content.novels.some(row => Number(row.id) === exportOwnerNovel), "Author export must include owned novels");
+  const ownerExportText = JSON.stringify(ownerExport.data);
+  assert.ok(!ownerExportText.includes("password_hash") && !ownerExportText.includes("token_hash"), "Export must not disclose password or session hashes");
+  assert.ok(!ownerExportText.includes(owner.cookie.slice("session=".length)), "Export must not disclose the active session token");
+  assert.ok(!("review_notes" in ownerExport.data) && !("reviewed_by" in ownerExport.data), "Export must not disclose internal reviewer data");
+  const readerExport = await request(baseUrl, "/api/me/export", { cookie: spectator.cookie });
+  assert.equal(readerExport.response.status, 200, JSON.stringify(readerExport.data));
+  assert.equal(Number(readerExport.data.user.id), Number(spectator.user.id));
+  assert.ok(readerExport.data.reading.history.some(row => Number(row.novel_id) === 990002), "Second account must receive its own history");
+  assert.ok(!readerExport.data.reading.history.some(row => Number(row.novel_id) === 990001), "Second account must not receive the first account's history");
+  const ownerExportSecond = await request(baseUrl, "/api/me/export", { cookie: owner.cookie });
+  assert.equal(ownerExportSecond.response.status, 200, "The first three exports per account should be allowed");
+  const ownerExportRateLimited = await request(baseUrl, "/api/me/export", { cookie: owner.cookie });
+  assert.equal(ownerExportRateLimited.response.status, 429, "Repeated export generation must be rate limited per account");
+
   // Eligibility is rechecked at acceptance, not merely when the invitation is sent.
   const bannedCase = await inviteNovel("Ownership Integration Banned Recipient");
   executeLocalSql("UPDATE users SET banned=1 WHERE id=" + Number(recipient.user.id));
