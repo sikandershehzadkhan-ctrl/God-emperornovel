@@ -752,7 +752,7 @@ async function api(req,env){
   const status=['ongoing','completed'].includes(String(b.status||'ongoing'))?String(b.status):'ongoing';
   const requestedOwnerRaw=b.owner_user_id===undefined||b.owner_user_id===null||b.owner_user_id===''?u.id:b.owner_user_id;
   const requestedOwnerId=Number(requestedOwnerRaw);
-  const target=requestedOwnerId===Number(u.id)?{id:u.id,role:u.role,banned:0}:await env.DB.prepare("SELECT id,role,banned FROM users WHERE id=?").bind(requestedOwnerId).first();
+  const target=!Number.isSafeInteger(requestedOwnerId)||requestedOwnerId<1?null:requestedOwnerId===Number(u.id)?{id:u.id,role:u.role,banned:0}:await env.DB.prepare("SELECT id,role,banned FROM users WHERE id=?").bind(requestedOwnerId).first();
   const ownerDecision=validateNovelOwnerAssignment({actorUserId:u.id,requestedOwnerId:requestedOwnerRaw,targetUser:target});
   if(!ownerDecision.ok)return json({error:ownerDecision.error},400);
   const requestedOwner=ownerDecision.value;
