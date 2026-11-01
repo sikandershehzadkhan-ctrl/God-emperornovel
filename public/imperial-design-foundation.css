@@ -1162,3 +1162,54 @@ html[data-theme="dark"] .novelLivePulseMetric{background:var(--in-surface-raised
  .chapterList .chapter{grid-template-columns:34px minmax(0,1fr) auto;gap:8px;padding:9px}
 }
 @media(prefers-reduced-motion:reduce){.chapterList .chapter{transition:none!important}}
+
+
+/* Account and personal library: private workspace clarity and low-friction navigation. */
+.accountGrid{display:grid;grid-template-columns:210px minmax(0,1fr);align-items:start;gap:16px;min-width:0}
+.accountGrid>main{display:grid;gap:14px;min-width:0}
+.accountMenu{
+  position:sticky;top:84px;display:grid;gap:4px;padding:10px;
+  border:1px solid var(--in-line);border-radius:var(--in-radius-lg);
+  background:var(--in-surface);box-shadow:var(--in-shadow);
+}
+.accountMenu a,.accountMenu button{
+  display:flex;align-items:center;min-height:42px;padding:9px 11px;
+  border:0;border-radius:9px;background:transparent;color:var(--in-muted);
+  font-size:12px;font-weight:700;text-align:start;text-decoration:none;
+}
+.accountMenu a:hover,.accountMenu a.active,.accountMenu button:hover{
+  background:var(--in-brand-soft);color:var(--in-brand)
+}
+.profileTop{display:flex;align-items:center;gap:13px;min-width:0;margin-bottom:18px}
+.profileTop .avatar{width:54px;height:54px;flex:0 0 54px;border:1px solid var(--in-line);border-radius:16px;object-fit:cover;background:var(--in-canvas)}
+.profileTop h2{overflow-wrap:anywhere;color:var(--in-ink);font-size:20px}
+.profileTop .muted{overflow-wrap:anywhere;font-size:12px}
+.metricGrid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:9px}
+.metric{min-width:0;padding:13px;border:1px solid var(--in-line);border-radius:11px;background:var(--in-canvas);color:var(--in-muted);font-size:11px}
+.metric b{display:block;margin-bottom:5px;color:var(--in-ink);font-size:clamp(19px,2.5vw,26px);font-variant-numeric:tabular-nums;overflow-wrap:anywhere}
+.accountGrid .panel,.accountGrid .card{min-width:0}
+.accountGrid .section{min-width:0}
+.accountGrid .grid{grid-template-columns:repeat(3,minmax(0,1fr))}
+.accountGrid .card{overflow:hidden;border:1px solid var(--in-line);border-radius:12px;background:var(--in-surface)}
+.accountGrid .card>a{display:block;color:inherit;text-decoration:none}
+.accountGrid .card .cover{aspect-ratio:.78;overflow:hidden;background:var(--in-canvas)}
+.accountGrid .card .cover img{width:100%;height:100%;object-fit:cover}
+.accountGrid .cardBody{padding:10px}
+.accountGrid .removeLibrary{max-width:100%;font-size:11px}
+.accountGrid .statline{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:11px 0;border-bottom:1px solid var(--in-line);font-size:12px}
+.accountGrid .statline:last-child{border-bottom:0}
+.accountGrid .statline span{min-width:0;overflow-wrap:anywhere}
+.accountGrid .statline a{flex:0 0 auto}
+@media(max-width:760px){
+ .accountGrid{grid-template-columns:minmax(0,1fr);gap:11px}
+ .accountMenu{position:static;display:flex;gap:5px;overflow-x:auto;padding:7px;scrollbar-width:thin}
+ .accountMenu a,.accountMenu button{flex:0 0 auto;min-height:38px;padding:8px 10px;white-space:nowrap}
+ .accountMenu button{width:auto!important;margin:0!important}
+ .accountGrid .grid{grid-template-columns:repeat(2,minmax(0,1fr))}
+ .metricGrid{grid-template-columns:repeat(2,minmax(0,1fr))}
+}
+@media(max-width:360px){
+ .accountGrid .grid{grid-template-columns:minmax(0,1fr)}
+ .profileTop .avatar{width:46px;height:46px;flex-basis:46px}
+ .metric{padding:10px}
+}
