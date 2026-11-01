@@ -38,7 +38,7 @@ export async function completePasswordReset(db, { tokenHash, passwordHash, now }
   if (typeof passwordHash !== "string" || !PASSWORD_HASH_PATTERN.test(passwordHash)) {
     throw new Error("Invalid password hash");
   }
-  if (typeof now !== "string" || !/^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}\\.\\d{3}Z$/.test(now)) {
+  if (typeof now !== "string" || !/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.\d{3}Z$/.test(now)) {
     throw new Error("A normalized UTC timestamp is required");
   }
 
