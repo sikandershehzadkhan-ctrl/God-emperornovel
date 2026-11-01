@@ -1,6 +1,5 @@
 const HASH_PATTERN = /^[A-Za-z0-9_-]{43}$/;
 const PASSWORD_HASH_PATTERN = /^pbkdf2-sha256\$\d+\$[A-Za-z0-9_-]{20,32}\$[A-Za-z0-9_-]{40,64}$/;
-const OPERATION_ID_PATTERN = /^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
 
 export const PASSWORD_RESET_COMPLETION_SQL = [
   `UPDATE password_reset_tokens
