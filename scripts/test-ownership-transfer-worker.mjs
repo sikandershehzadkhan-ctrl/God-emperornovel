@@ -193,6 +193,56 @@ try {
   assert.equal(Number(spectatorAfterCredit.data.user.tickets), Number(spectatorBeforeCredit.data.user.tickets),
     "Administrative credit must not alter another account's balance");
 
+  // Chapter unlocks must debit once under concurrent requests and keep the account ledger consistent.
+  wrangler(["d1", "execute", database, "--local", "--persist-to", persist, "--command",
+    "UPDATE users SET tickets=500 WHERE id=" + Number(spectator.user.id)]);
+  async function createPublishedLockedNovel(title, chapters) {
+    const novelId = await createNovel(baseUrl, owner.cookie, title + " " + suffix);
+    executeLocalSql("UPDATE novels SET publication_status='published',rights_status='original',rights_evidence='local-original-work-attestation' WHERE id=" + novelId);
+    const chapterIds = [];
+    for (const chapter of chapters) {
+      const created = await request(baseUrl, "/api/author/chapters", {
+        method: "POST", cookie: owner.cookie,
+        body: { novel_id: novelId, chapter_number: chapter.number, title: chapter.title, content: "Local integration test chapter body.", is_locked: true, ticket_cost: chapter.cost }
+      });
+      assert.equal(created.response.status, 201, JSON.stringify(created.data));
+      chapterIds.push(Number(created.data.id));
+    }
+    executeLocalSql("UPDATE chapters SET publication_status='published' WHERE novel_id=" + novelId);
+    return { novelId, chapterIds };
+  }
+  const singleUnlockFixture = await createPublishedLockedNovel("Concurrent Single Unlock", [
+    { number: 1, title: "Locked Chapter One", cost: 10 }
+  ]);
+  const singleUnlocks = await Promise.all([
+    request(baseUrl, "/api/chapters/" + singleUnlockFixture.chapterIds[0] + "/unlock", { method: "POST", cookie: spectator.cookie }),
+    request(baseUrl, "/api/chapters/" + singleUnlockFixture.chapterIds[0] + "/unlock", { method: "POST", cookie: spectator.cookie })
+  ]);
+  assert.equal(singleUnlocks.filter(x => x.response.status === 200).length, 1, "Concurrent single unlock must charge only one request");
+  assert.equal(singleUnlocks.filter(x => x.response.status === 409).length, 1, "The competing duplicate unlock must be rejected");
+  const afterSingleUnlock = await request(baseUrl, "/api/me", { cookie: spectator.cookie });
+  assert.equal(Number(afterSingleUnlock.data.user.tickets), 490, "Single chapter unlock must debit exactly one chapter price");
+  const singleLedger = await request(baseUrl, "/api/tickets/ledger", { cookie: spectator.cookie });
+  assert.equal(singleLedger.data.filter(row => row.reason === "chapter_unlock" && row.reference === String(singleUnlockFixture.chapterIds[0]) && Number(row.delta) === -10).length, 1,
+    "Single unlock must create exactly one matching ledger debit");
+
+  const batchUnlockFixture = await createPublishedLockedNovel("Concurrent Batch Unlock", [
+    { number: 1, title: "Batch Chapter One", cost: 5 },
+    { number: 2, title: "Batch Chapter Two", cost: 7 }
+  ]);
+  const batchUnlocks = await Promise.all([
+    request(baseUrl, "/api/novels/" + batchUnlockFixture.novelId + "/batch-unlock", { method: "POST", cookie: spectator.cookie, body: { count: 10, start_chapter: 1 } }),
+    request(baseUrl, "/api/novels/" + batchUnlockFixture.novelId + "/batch-unlock", { method: "POST", cookie: spectator.cookie, body: { count: 10, start_chapter: 1 } })
+  ]);
+  assert.ok(batchUnlocks.every(x => x.response.status === 200), "Batch unlock should safely handle a simultaneous duplicate request");
+  assert.equal(batchUnlocks.reduce((sum, x) => sum + Number(x.data.unlocked || 0), 0), 2, "Concurrent batch requests must unlock each chapter only once");
+  assert.equal(batchUnlocks.reduce((sum, x) => sum + Number(x.data.cost || 0), 0), 12, "Concurrent batch requests must charge the combined chapter cost only once");
+  const afterBatchUnlock = await request(baseUrl, "/api/me", { cookie: spectator.cookie });
+  assert.equal(Number(afterBatchUnlock.data.user.tickets), 478, "Batch unlock must debit exactly the combined chapter price");
+  const batchLedger = await request(baseUrl, "/api/tickets/ledger", { cookie: spectator.cookie });
+  assert.equal(batchLedger.data.filter(row => row.reason === "batch_unlock" && Number(row.delta) === -12).length, 1,
+    "Batch unlock must create exactly one matching ledger debit");
+
   // Moderators cannot change account roles or ban state. Admin status changes revoke every existing session.
   const moderatorEscalation = await request(baseUrl, "/api/admin/users/" + spectator.user.id, {
     method: "PATCH", cookie: moderator.cookie, body: { role: "admin", verified: true, banned: false }
