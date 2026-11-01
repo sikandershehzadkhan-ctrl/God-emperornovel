@@ -27,4 +27,9 @@ const followWrite = source.split('\n').find(line => line.includes('if(p==="/api/
 for (const [name, line] of Object.entries({leaderboard,tierList,randomNovel,anonymousFeed,followWrite})) assert.ok(line.includes("rights_status IN ('original','public_domain','licensed','authorized')"), name + ' must enforce eligible rights');
 assert.ok(source.includes("WHERE n.publication_status='published' AND n.rights_status IN ('original','public_domain','licensed','authorized') AND n.id NOT IN(SELECT novel_id FROM follows WHERE user_id=?) GROUP BY n.id ORDER BY n.rating DESC,n.views DESC LIMIT 12"), 'recommendation fallback must enforce eligible rights');
 assert.ok(source.includes("WHERE f.user_id=? AND n.publication_status='published' AND n.rights_status IN ('original','public_domain','licensed','authorized') ORDER BY f.created_at DESC"), 'followed novel list must hide ineligible novels');
-console.log('PASS: catalog, reader, unlock, authors, ratings, recommendations, leaderboard, tier list, random, follow and feed routes enforce eligible rights.');
+const libraryGet = lines.find(line => line.includes('if(p==="/api/library"&&m==="GET"')) || '';
+const bookmarksGet = lines.find(line => line.includes('if(p==="/api/bookmarks"')) || '';
+const historyGet = lines.find(line => line.includes('if(p==="/api/history"&&m==="GET"')) || '';
+const progressPost = lines.find(line => line.includes('if(p==="/api/reading-position"&&m==="POST"')) || '';
+for (const [name, line] of Object.entries({libraryGet,bookmarksGet,historyGet,progressPost})) assert.ok(line.includes("rights_status IN ('original','public_domain','licensed','authorized')"), name + ' must hide ineligible novels');
+console.log('PASS: reader-facing discovery, ratings, engagement, follow, library, bookmark, history and reading-position routes enforce eligible rights.');
