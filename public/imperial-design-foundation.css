@@ -982,3 +982,30 @@ html[data-theme="dark"] .novelLivePulseMetric{background:var(--in-surface-raised
 @media(prefers-reduced-motion:reduce){
   .communityGrid .commentActions .ghost{transition:none!important}
 }
+
+
+.communityGrid .novelCommentsComposer{display:grid;gap:10px;margin-bottom:16px}
+.communityGrid .novelCommentsComposer textarea,
+.communityGrid .commentReportForm textarea,
+.communityGrid .commentReportForm select{
+  width:100%;min-height:104px;padding:11px 12px;
+  border:1px solid var(--in-line);border-radius:10px;
+  background:var(--in-canvas);color:var(--in-ink);line-height:1.55;
+}
+.communityGrid .commentReportForm select{min-height:40px}
+.communityGrid .novelCommentsComposer textarea::placeholder,
+.communityGrid .commentReportForm textarea::placeholder{color:var(--in-muted);opacity:1}
+.novelCommentComposerFooter{display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap}
+.novelCommentComposerFooter .muted{font-size:11px}
+.communityGrid .replyContext{
+  display:flex;align-items:center;justify-content:space-between;gap:8px;flex-wrap:wrap;
+  padding:9px 11px;border:1px solid var(--in-line);border-radius:9px;
+  background:var(--in-brand-soft);color:var(--in-ink);font-size:12px;
+}
+.communityGrid .commentReportForm{display:grid;gap:9px;margin-top:10px;padding:11px;border:1px solid var(--in-line);border-radius:10px;background:var(--in-surface)}
+.communityGrid .commentReportForm label{display:grid;gap:5px;color:var(--in-muted);font-size:12px;font-weight:650}
+.communityGrid .commentReportForm textarea{min-height:72px}
+.communityGrid .commentStatus{padding:9px 11px;border:1px solid var(--in-line);border-radius:9px;background:var(--in-canvas);color:var(--in-ink);font-size:12px;line-height:1.5}
+.communityGrid .ratingIslandSummary{display:flex;gap:5px;flex-wrap:wrap;color:var(--in-muted);font-size:12px;line-height:1.5}
+.communityGrid .ratingIslandSummary strong{color:var(--in-ink);font-variant-numeric:tabular-nums}
+.communityGrid .commentItem button:disabled{cursor:not-allowed;opacity:.55}
