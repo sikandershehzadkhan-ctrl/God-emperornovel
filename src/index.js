@@ -1,4 +1,5 @@
 import { validateComicChapterContent } from "./comic-chapter-policy.mjs";
+import { isSameOriginMutationAllowed } from "./request-origin-policy.mjs";
 import { hashPassword, verifyPassword } from "./auth-password.mjs";
 import { isAllowedConnectorSearchUrl } from "./connector-url-policy.mjs";
 import { parseManualDonationApproval } from "./donation-approval-policy.mjs";
@@ -406,6 +407,7 @@ async function seed(env){
 }
 async function api(req,env){
  const url=new URL(req.url),p=url.pathname,m=req.method;
+ if(p.startsWith("/api/")&&!isSameOriginMutationAllowed(req,url))return json({error:"Cross-origin or origin-less API mutation blocked."},403);
  // Health checks must not trigger schema bootstrap, rate-limit DDL, community setup,
  // or session reads. Keep this path fast and side-effect-free for platform probes.
  if(p==="/api/health"&&m==="GET"){let db=true;try{await env.DB.prepare("SELECT 1").first()}catch{db=false}return json({ok:db,service:env.SITE_NAME||"Imperial Novel",version:env.APP_VERSION||"5.0.0",database:db,time:new Date().toISOString()})}
