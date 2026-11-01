@@ -163,3 +163,5 @@ Before adding a user-facing route, the receiving delivery service must be separa
 - `GET /reset-password` serves a dedicated noindex page with no third-party assets. It reads the token from the URL fragment, removes the fragment from browser history, and sends the token only in a JSON POST body.
 - Local Worker/D1 integration covers generic request responses, successful reset, old-password rejection, session revocation, token replay rejection, and cross-account session isolation.
 - The email provider and canonical public origin are not configured in this repository's Worker variables. Real reset emails therefore remain unavailable until the service binding and origin are explicitly configured and independently tested.
+
+- Migration `0011_password_reset_email_snapshot.sql` adds the mailbox snapshot to recovery-token records. Both issuance statements check the account's current normalized email before invalidating an older link or inserting a new digest; completion rechecks that the current mailbox still matches the stored snapshot before consuming the token. Legacy rows with no snapshot cannot be used.
