@@ -60,6 +60,7 @@ db.executemany("""INSERT INTO password_reset_tokens(user_id,token_hash,purpose,e
   (2,"B"*43,"password_reset","2026-11-02T12:20:00.000Z"),
   (2,"E"*43,"password_reset","2026-11-02T11:59:00.000Z")
 ])
+db.commit()
 sql = payload["sql"]
 def complete(token, password, timestamp):
     db.execute("BEGIN IMMEDIATE")
