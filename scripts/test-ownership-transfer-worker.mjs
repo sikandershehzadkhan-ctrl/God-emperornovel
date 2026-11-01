@@ -204,7 +204,7 @@ try {
   const bannedAccept = await request(baseUrl, "/api/author/ownership-transfers/" + bannedCase.transferId + "/decision", {
     method: "POST", cookie: recipient.cookie, body: { decision: "accept" }
   });
-  assert.equal(bannedAccept.response.status, 409, JSON.stringify(bannedAccept.data));
+  assert.equal(bannedAccept.response.status, 403, JSON.stringify(bannedAccept.data));
   executeLocalSql("UPDATE users SET banned=0 WHERE id=" + Number(recipient.user.id));
   assert.ok((await request(baseUrl, "/api/author/novels", { cookie: owner.cookie })).data.some(row => Number(row.id) === bannedCase.novelId));
 
@@ -213,7 +213,7 @@ try {
   const revokedAccept = await request(baseUrl, "/api/author/ownership-transfers/" + revokedCase.transferId + "/decision", {
     method: "POST", cookie: recipient.cookie, body: { decision: "accept" }
   });
-  assert.equal(revokedAccept.response.status, 409, JSON.stringify(revokedAccept.data));
+  assert.equal(revokedAccept.response.status, 403, JSON.stringify(revokedAccept.data));
   executeLocalSql("UPDATE users SET role='author' WHERE id=" + Number(recipient.user.id));
   assert.ok((await request(baseUrl, "/api/author/novels", { cookie: owner.cookie })).data.some(row => Number(row.id) === revokedCase.novelId));
 
