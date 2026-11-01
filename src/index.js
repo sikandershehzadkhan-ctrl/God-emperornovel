@@ -644,6 +644,7 @@ async function api(req,env){
 
  if(p==="/api/donations"&&m==="POST"){
   const e=need(u);if(e)return e;
+  const limited=await consumeAuthRateLimit(env,"donation-user",String(u.id),5,3600);if(limited)return limited;
   const parsed=parseDonationSubmission(await body(req));
   if(!parsed.ok)return json({error:parsed.error},400);
   try{
