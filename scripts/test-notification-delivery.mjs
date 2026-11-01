@@ -46,6 +46,12 @@ assert.ok(ratingPost[1].includes("Number.isInteger(rating)"), "ratings must reje
 assert.ok(ratingPost[1].includes("rating<1||rating>10"), "ratings must stay within the 1-10 range");
 assert.ok(ratingPost[1].includes("whole-number rating from 1-10"), "rating validation message must describe the 1-10 whole-number scale");
 assert.ok(ratingPost[1].includes("publication_status='published'"), "users may only rate published novels");
+const ratingUi = readFileSync(new URL("../src/react/NovelRating.jsx", import.meta.url), "utf8");
+assert.ok(ratingUi.includes("Array.from({ length: 10 }"), "reader rating UI must offer exactly ten selectable whole-number scores");
+assert.ok(ratingUi.includes("Rate \u0024{value} out of 10"), "reader rating controls must announce the 1-10 scale accessibly");
+assert.ok(ratingUi.includes("{average.toFixed(1)} / 10"), "reader rating summary must display averages out of ten");
+assert.ok(ratingUi.includes("Your rating: {selected}/10"), "reader rating summary must display the user's score out of ten");
+
 const reactionGet = worker.match(/if\(p==="\/api\/novel-reactions"&&m==="GET"\)\{([\s\S]*?)\n\s*if\(p==="\/api\/novel-reactions"&&m==="POST"/);
 assert.ok(reactionGet, "novel reaction read route must exist");
 assert.ok(reactionGet[1].includes("Number.isSafeInteger(nid)"), "reaction reads must validate positive safe novel ids");
