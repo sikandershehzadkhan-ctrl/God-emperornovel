@@ -58,12 +58,16 @@ jobs:
         run: |
           node --check src/index.js
           node --check public/app.js
+          node --check scripts/test-ownership-transfer-worker.mjs
 
       - name: Build application
         run: npm run build
 
       - name: Validate Cloudflare Worker bundle without deploying
         run: npx --yes wrangler@4 deploy --dry-run
+
+      - name: Test two-account local Worker and D1 ownership transfers
+        run: node scripts/test-ownership-transfer-worker.mjs
 
       - name: Check production safety invariants
         shell: bash
