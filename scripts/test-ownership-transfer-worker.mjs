@@ -132,8 +132,8 @@ try {
   const resetNow = new Date();
   const resetCreated = resetNow.toISOString();
   const resetExpiry = new Date(resetNow.getTime()+30*60*1000).toISOString();
-  const seedReset = "INSERT INTO password_reset_tokens(user_id,token_hash,purpose,created_at,expires_at) VALUES("+
-    Number(recovery.user.id)+",'" + resetHash + "','password_reset','" + resetCreated + "','" + resetExpiry + "')";
+  const seedReset = "INSERT INTO password_reset_tokens(user_id,email_snapshot,token_hash,purpose,created_at,expires_at) VALUES("+
+    Number(recovery.user.id)+",'" + recovery.user.email + "','" + resetHash + "','password_reset','" + resetCreated + "','" + resetExpiry + "')"
   wrangler(["d1","execute",database,"--local","--persist-to",persist,"--command",seedReset]);
   const newPassword = "New-Recovery-Password-2026!";
   const resetComplete = await request(baseUrl,"/api/auth/password-reset/complete",{method:"POST",body:{token:resetToken,password:newPassword}});
