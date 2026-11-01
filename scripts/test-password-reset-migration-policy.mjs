@@ -28,4 +28,9 @@ for (const required of [
 assert.ok(!normalized.includes("raw_token"), "Raw reset tokens must not be persisted");
 assert.ok(!normalized.includes("password text"), "Plaintext passwords must not be persisted");
 
+
+const snapshotMigration = fs.readFileSync(new URL("../migrations/0011_password_reset_email_snapshot.sql", import.meta.url), "utf8").toLowerCase();
+assert.match(snapshotMigration,/alter table password_reset_tokens add column email_snapshot text/);
+assert.ok(!snapshotMigration.includes("default"),"Mailbox snapshots must not be fabricated for old recovery tokens");
+
 console.log("PASS: password reset D1 migration stores only purpose-bound token digests.");
