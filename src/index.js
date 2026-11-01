@@ -714,7 +714,7 @@ async function api(req,env){
    const result=await env.DB.prepare("INSERT INTO novel_ownership_transfers(novel_id,from_user_id,to_user_id,status,request_note,requested_at,expires_at) SELECT n.id,n.owner_user_id,?,'pending',?,?,? FROM novels n JOIN users recipient ON recipient.id=? AND recipient.role='author' AND recipient.banned=0 WHERE n.id=? AND n.owner_user_id=? AND n.publication_status NOT IN ('review','archived','deleted') AND n.rights_status IN ('original','public_domain','licensed','authorized') AND (n.rights_status='original' OR LENGTH(TRIM(COALESCE(n.rights_evidence,'')))>0) AND NOT EXISTS(SELECT 1 FROM novel_ownership_transfers x WHERE x.novel_id=n.id AND x.status='pending')").bind(recipientId,note,requestedAt,expiresAt,recipientId,novelId,u.id).run();
    const id=Number(result?.meta?.last_row_id||0),changed=Number(result?.meta?.changes??result?.changes??0);
    if(changed!==1||!id)return json({error:"Transfer request could not be created. Check recipient eligibility, rights status, and pending invitations."},409);
-   await env.DB.prepare("INSERT INTO audit_logs(user_id,action,details) VALUES(?,?,?)").bind(u.id,"novel_ownership_transfer_requested","transfer="+id+";novel="+novelId+";recipient="+recipientId).run();
+   await audit(env,u,"novel_ownership_transfer_requested","transfer="+id+";novel="+novelId+";recipient="+recipientId);
    return json({ok:true,transfer_id:id,status:"pending",expires_at:expiresAt,message:"Invitation sent. Ownership remains unchanged until acceptance."},201);
   }catch(err){if(/unique|constraint/i.test(String(err?.message||"")))return json({error:"A pending ownership transfer already exists."},409);console.error("ownership transfer request failed",err);return json({error:"Unable to create transfer invitation."},500)}
  }
@@ -731,13 +731,13 @@ async function api(req,env){
   if(decision==="reject"){
    const result=await env.DB.prepare("UPDATE novel_ownership_transfers SET status='rejected',decided_at=?,decision_note=?,updated_at=CURRENT_TIMESTAMP WHERE id=? AND to_user_id=? AND status='pending' AND expires_at>?").bind(timestamp,note,id,u.id,timestamp).run();
    if(Number(result?.meta?.changes??result?.changes??0)!==1)return json({error:"Invitation state changed. Refresh and retry."},409);
-   await env.DB.prepare("INSERT INTO audit_logs(user_id,action,details) VALUES(?,?,?)").bind(u.id,"novel_ownership_transfer_rejected","transfer="+id+";novel="+transfer.novel_id).run();
+   await audit(env,u,"novel_ownership_transfer_rejected","transfer="+id+";novel="+transfer.novel_id);
    return json({ok:true,status:"rejected",ownership_changed:false});
   }
   try{
    const result=await env.DB.prepare("UPDATE novel_ownership_transfers SET status='accepted',decided_at=?,decision_note=?,updated_at=CURRENT_TIMESTAMP WHERE id=? AND to_user_id=? AND status='pending' AND expires_at>?").bind(timestamp,note,id,u.id,timestamp).run();
    if(Number(result?.meta?.changes??result?.changes??0)!==1)return json({error:"Invitation state changed. Refresh and retry."},409);
-   await env.DB.prepare("INSERT INTO audit_logs(user_id,action,details) VALUES(?,?,?)").bind(u.id,"novel_ownership_transfer_accepted","transfer="+id+";novel="+transfer.novel_id+";previous_owner="+transfer.from_user_id).run();
+   await audit(env,u,"novel_ownership_transfer_accepted","transfer="+id+";novel="+transfer.novel_id+";previous_owner="+transfer.from_user_id);
    return json({ok:true,status:"accepted",ownership_changed:true,novel_id:transfer.novel_id});
   }catch(err){
    if(/ownership transfer eligibility changed|novel ownership changed/i.test(String(err?.message||"")))return json({error:"Ownership, recipient eligibility, or rights status changed. Transfer was not completed."},409);
@@ -753,7 +753,7 @@ async function api(req,env){
   if(!Number.isSafeInteger(id)||id<1)return json({error:"A valid transfer id is required."},400);
   const result=await env.DB.prepare("UPDATE novel_ownership_transfers SET status='cancelled',decided_at=?,updated_at=CURRENT_TIMESTAMP WHERE id=? AND from_user_id=? AND status='pending' AND expires_at>?").bind(timestamp,id,u.id,timestamp).run();
   if(Number(result?.meta?.changes??result?.changes??0)!==1)return json({error:"Only the requesting owner can cancel a pending, unexpired invitation."},409);
-  await env.DB.prepare("INSERT INTO audit_logs(user_id,action,details) VALUES(?,?,?)").bind(u.id,"novel_ownership_transfer_cancelled","transfer="+id).run();
+  await audit(env,u,"novel_ownership_transfer_cancelled","transfer="+id);
   return json({ok:true,status:"cancelled",ownership_changed:false});
  }
  if(p==="/api/author/novels"&&m==="GET"){
