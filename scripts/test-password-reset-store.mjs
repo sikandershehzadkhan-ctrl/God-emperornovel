@@ -49,7 +49,7 @@ assert db.execute("SELECT password_hash FROM users WHERE id=1").fetchone()[0]=="
 assert complete("A"*43,"replay","op-unique-2") is None
 assert db.execute("SELECT password_hash FROM users WHERE id=1").fetchone()[0]=="new-a"
 assert complete("E"*43,"expired","op-expired") is None
-try: db.execute("INSERT INTO password_reset_tokens(user_id,token_hash,purpose,expires_at) VALUES(2,?,?,?,?)",("b@example.test","F"*43,"other_purpose","2026-11-02T12:20:00.000Z")); raise AssertionError("purpose accepted")
+try: db.execute("INSERT INTO password_reset_tokens(user_id,email_snapshot,token_hash,purpose,expires_at) VALUES(2,?,?,?,?)",("b@example.test","F"*43,"other_purpose","2026-11-02T12:20:00.000Z")); raise AssertionError("purpose accepted")
 except sqlite3.IntegrityError: db.rollback()
 assert complete("F"*43,"wrong-purpose","op-purpose") is None
 db.execute("BEGIN IMMEDIATE"); db.execute(s[0],(now,"op-failure","B"*43,now))
