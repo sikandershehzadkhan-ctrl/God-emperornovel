@@ -431,7 +431,8 @@ async function api(req,env){
   const limited=await consumeAuthRateLimit(env,"account-data-export",String(u.id),3,3600);if(limited)return limited;
   try{
    await ensureOmniTables(env);await ensureAuthorAISchema(env);
-   const user={id:u.id,username:u.username,email:u.email,role:u.role,tickets:u.tickets,verified:u.verified};
+   const emailVerification=await env.DB.prepare("SELECT email_verified_at FROM users WHERE id=?").bind(u.id).first();
+   const user={id:u.id,username:u.username,email:u.email,role:u.role,tickets:u.tickets,verified:u.verified,email_verified_at:emailVerification?.email_verified_at||null};
    const [history,bookmarks,follows,library,ratings,unlocks,unlockBatches,ticketLedger,donations,novelRequests,comments,reports,notifications,ownedNovels,ownedChapters,importJobs,connectorRequests,aiProjects,aiJobs,aiRuns,ownershipTransfers]=await Promise.all([
     env.DB.prepare("SELECT novel_id,chapter_number,updated_at FROM history WHERE user_id=? ORDER BY updated_at DESC").bind(u.id).all(),
     env.DB.prepare("SELECT novel_id,chapter_number,updated_at FROM bookmarks WHERE user_id=? ORDER BY updated_at DESC").bind(u.id).all(),
