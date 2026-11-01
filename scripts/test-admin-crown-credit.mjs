@@ -10,12 +10,18 @@ for (const fragment of [
   "Number.isSafeInteger(userId)",
   "Number.isSafeInteger(amount)",
   "amount<1||amount>1000000",
-  "UPDATE users SET tickets=tickets+? WHERE id=?",
+  "idempotency_key",
+  "A valid credit operation key is required.",
+  "AND NOT EXISTS (SELECT 1 FROM ticket_ledger WHERE reason='admin_adjustment' AND reference=?)",
   "INSERT INTO ticket_ledger(user_id,delta,reason,reference) SELECT ?,?,?,? WHERE changes()=1",
-  "changed(results?.[0])!==1",
-  "changed(results?.[1])!==1"
+  "credited=changed(results?.[0])",
+  "ledger=changed(results?.[1])",
+  "already_applied:true",
+  "prior&&Number(prior.user_id)===userId&&Number(prior.delta)===amount"
 ]) assert.ok(route.includes(fragment), `missing administrator Crown accounting invariant: ${fragment}`);
 
 const admin = readFileSync(new URL("../public/admin.html", import.meta.url), "utf8");
 assert.ok(admin.includes("Number.isSafeInteger(n)") && admin.includes("n>1000000"), "admin UI must reject fractional and excessive credits");
-console.log("PASS: administrator Crown credits require a valid account, bounded whole-number amount and a matching ledger entry.");
+assert.ok(admin.includes("localStorage.getItem(storageKey)") && admin.includes("localStorage.setItem(storageKey,idempotencyKey)") && admin.includes("localStorage.removeItem(storageKey)"), "admin UI must retain pending operation keys across network retries");
+assert.ok(admin.includes("idempotency_key:idempotencyKey"), "admin UI must send the operation key to the server");
+console.log("PASS: administrator Crown credits are bounded, idempotent across retries and paired with one ledger entry.");
