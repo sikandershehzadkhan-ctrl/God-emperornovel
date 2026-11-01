@@ -37,6 +37,7 @@ const taxonomyHandler = source.slice(source.indexOf("async function communityTax
 const taxonomyDispatch = source.split('\n').find(line => line.includes('if(p==="/api/taxonomy")')) || '';
 const adminUsers = source.split('\n').find(line => line.includes('if(p==="/api/admin/users"&&m==="GET")')) || '';
 assert.ok(taxonomyHandler.includes('const auth=need(user);if(auth)return auth;'), 'taxonomy submissions must require a session');
+assert.ok(taxonomyHandler.includes('consumeAuthRateLimit(env,"taxonomy-user",String(user.id),10,3600)'), 'taxonomy submissions must be rate limited per authenticated account');
 assert.ok(taxonomyHandler.includes('user.id') && taxonomyHandler.includes('user.username'), 'taxonomy attribution must come from the authenticated session');
 assert.ok(!taxonomyHandler.includes('b.creator_id') && !taxonomyHandler.includes('b.creator_name'), 'taxonomy submitters must not be spoofable from request JSON');
 assert.ok(taxonomyDispatch.includes('communityTaxonomy(req,env,u)'), 'taxonomy handler must receive the authenticated principal');
