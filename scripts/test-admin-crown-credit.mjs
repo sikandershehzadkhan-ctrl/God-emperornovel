@@ -17,7 +17,9 @@ for (const fragment of [
   "credited=changed(results?.[0])",
   "ledger=changed(results?.[1])",
   "already_applied:true",
-  "prior&&Number(prior.user_id)===userId&&Number(prior.delta)===amount"
+  "prior&&Number(prior.user_id)===userId&&Number(prior.delta)===amount",
+  'admin_ticket_credit',
+  'reference=${reference}'
 ]) assert.ok(route.includes(fragment), `missing administrator Crown accounting invariant: ${fragment}`);
 
 const admin = readFileSync(new URL("../public/admin.html", import.meta.url), "utf8");
