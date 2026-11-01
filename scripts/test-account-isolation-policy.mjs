@@ -37,7 +37,7 @@ const aiDetailEnd = source.indexOf('if(aip&&m==="PATCH")', aiDetailStart);
 const aiDetail = aiDetailStart >= 0 && aiDetailEnd > aiDetailStart ? source.slice(aiDetailStart, aiDetailEnd) : "";
 assert.ok(aiDetail, "AI project detail route must exist");
 assert.match(aiDetail, /owner_user_id/);
-assert.match(aiDetail, /Number\\(row\\.owner_user_id\\)!==Number\\(u\\.id\\)/, "AI project detail must enforce owner isolation");
+assert.match(aiDetail, /Number\(row\.owner_user_id\)!==Number\(u\.id\)/, "AI project detail must enforce owner isolation");
 const authorNovelEdit = route("if(/^\\/api\\/author\\/novels\\/\\d+$/");
 assert.ok(authorNovelEdit);
 assert.match(authorNovelEdit, /Number\(n\.owner_user_id\)!==Number\(u\.id\)/, "author novel edit must enforce ownership");
