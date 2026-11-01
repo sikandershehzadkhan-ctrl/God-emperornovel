@@ -40,3 +40,15 @@ Remaining tests include cross-account OmniPortal import history and ticket-ledge
 - PR #123 remains draft and unmerged.
 - No changes merged to main.
 - No production D1 migration or Cloudflare Worker deployment.
+## Author A versus Author B runtime isolation extension
+
+At integration head `91d6bfbe7ca172a64c4f5e47c7581a4b7bb34a0c`, the Wrangler local Worker test also seeds two separate author accounts, each with a distinct draft novel and chapter. It verifies:
+
+- Each author lists their own novel but cannot see the other author's novel in `/api/author/novels`.
+- Author A receives HTTP 403 when attempting to edit Author B's novel.
+- Author A receives HTTP 403 when attempting to list Author B's chapters.
+- Author A receives HTTP 403 when attempting to edit Author B's chapter.
+
+Verification: [Cloudflare Source Validation run 41320963686](https://github.com/sikandershehzadkhan-ctrl/God-emperornovel/actions/runs/41320963686) passed, including the real Wrangler local Worker+D1 test and all 18 fresh SQLite migrations. [Graphify run 41320963623](https://github.com/sikandershehzadkhan-ctrl/God-emperornovel/actions/runs/41320963623) passed.
+
+These tests establish ownership isolation for the tested author novel/chapter routes. They do not establish every author route or AI Author Studio project isolation.
