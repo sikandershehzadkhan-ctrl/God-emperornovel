@@ -94,15 +94,21 @@ function NovelComments({ novelId }) {
   useEffect(() => {
     let active = true;
     let initial = true;
-    const loadComments = () => request(`/api/comments?novel_id=${encodeURIComponent(novelId)}`)
-      .then(rows => { if (active) setComments(Array.isArray(rows) ? rows : []); })
-      .catch(cause => {
-        if (active && initial) setError(cause.message || "Community comments are temporarily unavailable.");
-      })
-      .finally(() => {
-        if (active && initial) setLoading(false);
-        initial = false;
-      });
+    let requestInFlight = false;
+    const loadComments = () => {
+      if (!active || requestInFlight) return;
+      requestInFlight = true;
+      request(`/api/comments?novel_id=${encodeURIComponent(novelId)}`)
+        .then(rows => { if (active) setComments(Array.isArray(rows) ? rows : []); })
+        .catch(cause => {
+          if (active && initial) setError(cause.message || "Community comments are temporarily unavailable.");
+        })
+        .finally(() => {
+          requestInFlight = false;
+          if (active && initial) setLoading(false);
+          initial = false;
+        });
+    };
     const refreshWhenVisible = () => {
       if (document.visibilityState === "visible") loadComments();
     };
