@@ -14,7 +14,7 @@ for (const [fragment, description] of [
   ["WHERE id=(SELECT id FROM novel_requests WHERE user_id=? AND week_key=? ORDER BY id DESC LIMIT 1)", "debit must bind to the latest request created within the atomic batch"],
   ["AND changes()=1", "debit and ledger must depend on successful preceding writes"],
   ["results?.[0]?.meta?.last_row_id", "request identity must be confirmed from D1"],
-  ["debited!==1||(cost>0&&ledger!==1)||audited!==1", "debit, ledger and audit results must be checked before success"],
+  ["audited!==1||debited!==1||(cost>0&&ledger!==1)", "audit, debit and ledger results must be checked before success"],
   ["CAST(id AS TEXT)", "ledger references must use stable request IDs instead of potentially duplicated URLs"],
   ["novel_request_created", "request creation must be audited in the same D1 batch"],
   ["request='||(SELECT id FROM novel_requests WHERE user_id=? AND week_key=? ORDER BY id DESC LIMIT 1)", "audit record must carry the stable request ID"]
