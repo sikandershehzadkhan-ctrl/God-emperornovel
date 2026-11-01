@@ -16,6 +16,12 @@ assert.ok(readRoute[1].includes("need(u)"), "mark-read action must require authe
 assert.ok(readRoute[1].includes("WHERE user_id=? AND read_at IS NULL"), "mark-read action must only affect the signed-in user's unread notifications");
 
 assert.ok(worker.includes("INSERT INTO notifications(user_id,title,body)"), "notification creation must persist to the account notification table");
+const commentRoute = worker.match(/if\(p==="\/api\/comments"&&m==="POST"\)\{([\s\S]*?)\n\s*if\(p==="\/api\/comments\/like"/);
+assert.ok(commentRoute, "comment creation route must exist");
+assert.ok(commentRoute[1].includes("await notifyUser(env,parentAuthor"), "comment replies must notify the parent comment author");
+assert.ok(commentRoute[1].includes("await notifyUser(env,owner"), "novel comments must notify the novel owner");
+assert.ok(commentRoute[1].includes("owner!==Number(u.id)"), "authors must not receive notifications for their own comments");
+
 assert.ok(app.includes("apiWithTimeout('/api/notifications',{},10000)"), "notification UI must use a bounded request");
 assert.ok(app.includes("setInterval(()=>{if(location.pathname!=='/notifications')"), "notification refresh must stop after leaving the notifications page");
 assert.ok(app.includes("document.visibilityState==='visible'"), "notification polling must pause while the page is hidden");
