@@ -109,7 +109,7 @@ assert.ok(reportModeration.includes("previous_status="), "report moderation audi
 assert.ok(reportModeration.includes("unchanged:true"), "repeating the same report status must be idempotent");
 assert.ok(reportModeration.includes("SELECT id,status,user_id FROM comment_reports"), "report moderation must identify the original reporter");
 assert.ok(reportModeration.includes("notifyUser(env,report.user_id"), "reporters must receive an account notification when their report status changes");
-const followRoute = worker.match(/if\(p==="\/api\/follow"&&m==="POST"\)\{([\s\S]*?)\n\s*if\(p==="\/api\/rating"/);
+const followRoute = worker.match(/if\(p==="\/api\/follow"&&m==="POST"\)\{([\s\S]*?)\n\s*if\(p==="\/api\/leaderboard"/);
 assert.ok(followRoute, "follow toggle route must exist");
 assert.ok(followRoute[1].includes("Number.isSafeInteger(nid)"), "follow route must validate a positive safe novel id");
 assert.ok(followRoute[1].includes("publication_status='published'"), "users may only follow published novels");
