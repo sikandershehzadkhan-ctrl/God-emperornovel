@@ -36,6 +36,16 @@ assert.ok(likeRoute[1].includes("Number.isSafeInteger(cid)"), "comment like rout
 assert.ok(likeRoute[1].includes("await notifyUser(env,Number(c.user_id)"), "new comment likes must notify the comment author");
 assert.ok(likeRoute[1].includes("Number(c.user_id)!==Number(u.id)"), "users must not be notified when liking their own comment");
 assert.ok(likeRoute[1].includes("if(x){") && likeRoute[1].indexOf("if(x){") < likeRoute[1].indexOf("await notifyUser(env,Number(c.user_id)"), "unlikes must not generate notifications");
+const ratingGet = worker.match(/if\(p==="\/api\/rating"&&m==="GET"\)\{([\s\S]*?)\n\s*if\(p==="\/api\/rating"&&m==="POST"/);
+assert.ok(ratingGet, "rating read route must exist");
+assert.ok(ratingGet[1].includes("Number.isSafeInteger(nid)"), "rating reads must validate a positive safe novel id");
+assert.ok(ratingGet[1].includes("publication_status='published'"), "rating reads must only expose published novels");
+const ratingPost = worker.match(/if\(p==="\/api\/rating"&&m==="POST"\)\{([\s\S]*?)\n\s*if\(p==="\/api\/admin\/community\/comments"/);
+assert.ok(ratingPost, "rating write route must exist");
+assert.ok(ratingPost[1].includes("Number.isInteger(rating)"), "ratings must reject fractional scores instead of silently rounding");
+assert.ok(ratingPost[1].includes("rating<1||rating>5"), "ratings must stay within the 1-5 range");
+assert.ok(ratingPost[1].includes("publication_status='published'"), "users may only rate published novels");
+
 
 
 
