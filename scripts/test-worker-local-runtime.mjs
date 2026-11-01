@@ -129,7 +129,7 @@ try {
   assert.ok(!JSON.parse(bookmarksB.body).some(x=>Number(x.novel_id)===novelId), 'Account B must not see Account A bookmark');
 
   const positionWrite = await postAs(accountA, '/api/reading-position', { novel_id:novelId, chapter_number:chapterNumber, progress_percent:73, user_id:dataB.user.id });
-  assert.equal(positionWrite.response.status, 200, `Account A reading-position write failed: ${positionWrite.body}`);
+  assert.equal(positionWrite.response.status, 200, `Account A reading-position write failed: ${positionWrite.body}\\nWorker diagnostics: ${output.slice(-12000)}`);
   const positionA = await getAs(accountA, `/api/reading-position?novel_id=${novelId}&chapter_number=${chapterNumber}&user_id=${dataB.user.id}`);
   const positionB = await getAs(accountB, `/api/reading-position?novel_id=${novelId}&chapter_number=${chapterNumber}&user_id=${dataA.user.id}`);
   assert.equal(JSON.parse(positionA.body).progress_percent, 73, 'Account A must read its own saved position despite hostile user_id query');
