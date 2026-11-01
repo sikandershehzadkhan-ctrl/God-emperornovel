@@ -181,7 +181,7 @@ for(const selector of [".genreGrid",".genreCard",".genreGlyph",".tagGrid",".tagT
 }
 assert.ok(css.includes("@media(max-width:640px){\n .genreGrid"),"Genre and format discovery must adapt to mobile screens");
 assert.ok(css.includes("@media(max-width:360px)"),"Discovery tiles must fit narrow phone screens");
-assert.ok(sourceApp.includes('class="genreCard"'),"Genre directory must render linked genre cards");
+assert.match(sourceApp,/class="[^"]*\\bgenreCard\\b/,"Genre directory must render linked genre cards");
 assert.ok(sourceApp.includes('class="tagTile"'),"Tag directory must render linked tag tiles");
 assert.ok(sourceApp.includes('class="formatDirectoryGrid"'),"Format directory must render grouped format navigation");
 assert.ok(sourceApp.includes('id="lbNovels"')&&sourceApp.includes('id="lbAuthors"'),"Leaderboard must render novel and author rankings");
