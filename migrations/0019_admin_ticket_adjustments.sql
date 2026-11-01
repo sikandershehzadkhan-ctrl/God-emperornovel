@@ -8,7 +8,8 @@ CREATE TABLE IF NOT EXISTS admin_ticket_adjustments (
   note TEXT NOT NULL CHECK (length(trim(note)) BETWEEN 1 AND 500),
   created_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,
   FOREIGN KEY (admin_user_id) REFERENCES users(id) ON DELETE RESTRICT,
-  FOREIGN KEY (target_user_id) REFERENCES users(id) ON DELETE RESTRICT
+  FOREIGN KEY (target_user_id) REFERENCES users(id) ON DELETE RESTRICT,
+  CHECK (admin_user_id <> target_user_id)
 );
 
 CREATE INDEX IF NOT EXISTS idx_admin_ticket_adjustments_created
