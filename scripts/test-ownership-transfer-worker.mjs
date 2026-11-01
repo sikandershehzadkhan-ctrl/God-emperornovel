@@ -91,7 +91,7 @@ try {
     "--port", String(port), "--persist-to", persist, "--inspector-port", "0"
   ], {
     cwd: root, env: { ...process.env, WRANGLER_SEND_METRICS: "false" },
-    stdio: ["ignore", "pipe", "pipe"]
+    detached: process.platform !== "win32", stdio: ["ignore", "pipe", "pipe"]
   });
   worker.stdout.on("data", chunk => { workerOutput += chunk.toString(); });
   worker.stderr.on("data", chunk => { workerOutput += chunk.toString(); });
@@ -167,11 +167,16 @@ try {
   process.exitCode = 1;
 } finally {
   if (worker && worker.exitCode === null) {
-    worker.kill("SIGTERM");
+    try {
+      if (process.platform !== "win32" && worker.pid) process.kill(-worker.pid, "SIGTERM");
+      else worker.kill("SIGTERM");
+    } catch {}
     await new Promise(resolve => {
       const timeout = setTimeout(resolve, 5000);
       worker.once("exit", () => { clearTimeout(timeout); resolve(); });
     });
+    worker.stdout?.destroy();
+    worker.stderr?.destroy();
   }
   await rm(temp, { recursive: true, force: true });
 }
