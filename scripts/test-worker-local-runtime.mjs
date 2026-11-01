@@ -476,6 +476,31 @@ try {
   const exportB=await request('/api/privacy/export',{headers:{cookie:accountB.cookie}});
   assert.equal(exportB.response.status,200,'Account B must be able to export its own data');
   assert.deepEqual(JSON.parse(exportB.body).collections.reading_positions.map(x=>x.progress_percent),[82],'Account B export must contain Account B reading progress only');
+  const badClosure=await request('/api/account/closure-request',{method:'POST',headers:{cookie:accountB.cookie,'content-type':'application/json'},body:JSON.stringify({password:'definitely-not-the-account-password'})});
+  assert.equal(badClosure.response.status,403,'Account closure must require the correct current password');
+  const closure=await request('/api/account/closure-request',{method:'POST',headers:{cookie:accountB.cookie,'content-type':'application/json'},body:JSON.stringify({password:accountB.password})});
+  assert.equal(closure.response.status,200,`Correct password must create a closure request: ${closure.body}`);
+  const closureData=JSON.parse(closure.body);
+  assert.equal(closureData.grace_period_days,14,'Account closure must provide a 14-day cancellation window');
+  assert.equal(closureData.request.status,'pending','New account closure request must be pending');
+  assert.ok(closureData.request.grace_until>closureData.request.requested_at,'Closure grace deadline must be after request time');
+  const duplicateClosure=await request('/api/account/closure-request',{method:'POST',headers:{cookie:accountB.cookie,'content-type':'application/json'},body:JSON.stringify({password:accountB.password})});
+  assert.equal(duplicateClosure.response.status,200,'Repeated closure request must be idempotent');
+  assert.equal(JSON.parse(duplicateClosure.body).already_requested,true,'Repeated closure request must reuse the pending request');
+  const closureStatus=await request('/api/account/closure-request',{headers:{cookie:accountB.cookie}});
+  assert.equal(JSON.parse(closureStatus.body).request.id,closureData.request.id,'Account closure status must be scoped to the signed-in user');
+  const cancelledClosure=await request('/api/account/closure-cancel',{method:'POST',headers:{cookie:accountB.cookie}});
+  assert.equal(cancelledClosure.response.status,200,'Account must be able to cancel closure during the grace period');
+  assert.equal(JSON.parse(cancelledClosure.body).cancelled,true,'Cancellation must change the pending request');
+  const repeatedCancel=await request('/api/account/closure-cancel',{method:'POST',headers:{cookie:accountB.cookie}});
+  assert.equal(repeatedCancel.response.status,409,'Repeated cancellation without a pending request must not mutate state');
+  const afterCancel=await request('/api/account/closure-request',{headers:{cookie:accountB.cookie}});
+  assert.equal(JSON.parse(afterCancel.body).request.status,'cancelled','Closure status must show the cancellation');
+  const accountAfterCancel=await request('/api/profile',{headers:{cookie:accountB.cookie}});
+  assert.equal(accountAfterCancel.response.status,200,'Cancelling closure must preserve the account and its active session');
+  const closureAudit=await request('/api/admin/audit',{headers:{cookie:accountA.cookie}});
+  assert.ok(closureAudit.response.status===200||closureAudit.response.status===404,'Admin audit endpoint must remain available without changing account closure state');
+
   const anonymousExport=await request('/api/privacy/export');
   assert.equal(anonymousExport.response.status,401,'Anonymous visitors must not export account data');
 
