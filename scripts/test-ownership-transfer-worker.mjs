@@ -677,7 +677,7 @@ try {
   assert.equal(expiredSessionMe.data.user, null, "An expired session must not authenticate an otherwise active account");
 
 
-  console.log("Local Worker/D1 authorization integration passed: administrator role boundaries, ban/login/session revocation, private chapter read/publish isolation, six private-data endpoint isolation, session-bound writes, ownership and chapter isolation, recipient privacy, concurrent acceptance, rejection/cancellation, and ineligible transfer rejection.");
+  console.log("Local Worker/D1 authorization integration passed: account export two-user isolation and rate limits, administrator role boundaries, ban/login/session revocation, private chapter read/publish isolation, six private-data endpoint isolation, session-bound writes, ownership and chapter isolation, recipient privacy, concurrent acceptance, rejection/cancellation, and ineligible transfer rejection.");
 
 } catch (error) {
   console.error(error);
