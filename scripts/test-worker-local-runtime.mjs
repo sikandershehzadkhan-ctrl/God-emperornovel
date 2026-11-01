@@ -437,6 +437,25 @@ try {
   const throttledLogin=await request('/api/auth/login',{method:'POST',headers:jsonHeaders,body:JSON.stringify({email:accountB.email,password:accountB.password})});
   assert.equal(throttledLogin.response.status,429,'Repeated failed login attempts must trigger account-keyed throttling');
   assert.ok(Number(throttledLogin.response.headers.get('retry-after'))>0,'Login throttling must provide a positive Retry-After interval');
+  execFileSync('npx',['--yes','wrangler@4','d1','execute','god-emperornovel-db','--local','--persist-to','.wrangler/test-runtime','--command',"DELETE FROM auth_rate_limits WHERE scope='login-email'"],{stdio:'pipe',env:{...process.env,NO_COLOR:'1'}});
+  const secondBLogin=await request('/api/auth/login',{method:'POST',headers:jsonHeaders,body:JSON.stringify({email:accountB.email,password:accountB.password})});
+  assert.equal(secondBLogin.response.status,200,'An active account must be able to create a second device session before ban testing');
+  const secondBCookie=(secondBLogin.response.headers.get('set-cookie')||'').split(';',1)[0];
+  assert.match(secondBCookie,/^session=.+$/,'Second account device must receive a session');
+  const adminRelogin=await request('/api/auth/login',{method:'POST',headers:jsonHeaders,body:JSON.stringify({email:accountA.email,password:accountA.password})});
+  assert.equal(adminRelogin.response.status,200,'Administrator must be able to sign in before the ban test');
+  const adminCookie=(adminRelogin.response.headers.get('set-cookie')||'').split(';',1)[0];
+  const banAccount=await request(`/api/admin/users/${dataB.user.id}`,{method:'PATCH',headers:{...jsonHeaders,cookie:adminCookie},body:JSON.stringify({banned:true,verified:true})});
+  assert.equal(banAccount.response.status,200,`Administrator ban action must succeed: ${banAccount.body}`);
+  assert.equal(JSON.parse(banAccount.body).sessions_revoked,true,'Ban response must confirm immediate session revocation');
+  const firstBDevice=await request('/api/me',{headers:{cookie:accountB.cookie}});
+  const secondBDevice=await request('/api/me',{headers:{cookie:secondBCookie}});
+  assert.equal(JSON.parse(firstBDevice.body).user,null,'Banning an account must revoke its original device session');
+  assert.equal(JSON.parse(secondBDevice.body).user,null,'Banning an account must revoke every additional device session');
+  const bannedLogin=await request('/api/auth/login',{method:'POST',headers:jsonHeaders,body:JSON.stringify({email:accountB.email,password:accountB.password})});
+  assert.equal(bannedLogin.response.status,403,'A banned account with a correct password must not receive a new session');
+  assert.match(bannedLogin.body,/disabled/i,'Banned login response must explain that the account is disabled');
+
 
 
   console.log('PASS: real Wrangler local Worker handled health, D1-backed catalog, live overview, authenticated taxonomy submission identity boundary and unauthenticated taxonomy rejection, missing chapter, two independent account registrations/logins, session-bound profile isolation, cross-account library/history/bookmark/reading-position/notification, ticket-ledger, OmniPortal-import and author-owned novel/chapter/AI-project isolation, hostile user_id write/query handling, owner/admin privilege-boundary rejection and anonymous private-resource rejection and homepage requests.');
