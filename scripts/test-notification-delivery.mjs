@@ -136,7 +136,8 @@ assert.ok(ratingMigration.includes("CHECK(rating BETWEEN 1 AND 10)"), "existing 
 assert.ok(/SELECT\s+user_id,novel_id,rating,created_at,updated_at\s+FROM\s+ratings/.test(ratingMigration), "rating migration must preserve existing ratings and timestamps");
 assert.ok(ratingMigration.includes("DROP TABLE ratings;") && ratingMigration.includes("ALTER TABLE ratings_ten_point RENAME TO ratings;"), "rating migration must replace the old constrained table with the ten-point table");
 
-assert.ok(worker.includes("Rating must be a whole number from 1 to 10."), "rating validation message must describe the 1-10 whole-number scale");
+const ratingPolicy = readFileSync(new URL("../src/rating-policy.mjs", import.meta.url), "utf8");
+assert.ok(ratingPolicy.includes("Rating must be a whole number from 1 to 10."), "rating validation message must describe the 1-10 whole-number scale");
 assert.ok(ratingPost[1].includes("publication_status='published'"), "users may only rate published novels");
 const ratingUi = readFileSync(new URL("../src/react/NovelRating.jsx", import.meta.url), "utf8");
 assert.ok(ratingUi.includes("Array.from({ length: 10 }"), "reader rating UI must offer exactly ten selectable whole-number scores");
