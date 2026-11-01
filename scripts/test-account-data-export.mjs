@@ -17,6 +17,7 @@ for (const [fragment, description] of [
   ['author_applications', "account export must include the user's author application"],
   ['ticket_ledger', "account export must include the user's financial ledger"],
   ['reading_positions', "account export must include reading progress"],
+  ['tickets:Number(u.tickets||0)', "account export must include the account's current Crown balance"],
   ['authored_novels', "creator export must include owned novels"],
   ['authored_chapters', "creator export must include owned chapter content"],
   ['JOIN novels n ON n.id=c.novel_id WHERE n.owner_user_id=?', "chapter export must be scoped through novel ownership"],
