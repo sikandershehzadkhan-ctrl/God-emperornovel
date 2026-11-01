@@ -8,7 +8,7 @@ assert.equal(canonicalPath("/formats"),"/formats");
 assert.equal(canonicalPath("/discover/"),"/catalog");
 assert.equal(canonicalPath("/format/manhwa/"),"/format/manhwa");
 assert.equal(canonicalPath("/novel/12/"),"/novel/12");
-assert.equal(canonicalPath("/"),"/");
+assert.equal(canonicalPath("/"),"/");\nassert.equal(authorProfilePath("Sikander Khan"),"/author/Sikander%20Khan");\nassert.equal(authorProfilePath("Sikander & Co."),"/author/Sikander%20%26%20Co.");\nassert.equal(authorProfilePath("  "), "");
 assert.equal(canonicalOrigin("http://evil.example"),"https://god-emperornovel.sikandershehzadkhan.workers.dev");
 
 const robots=buildRobotsTxt(origin);
