@@ -373,3 +373,4 @@ Each document is a specification. A listed route or logical API contract is not 
 - [01P.3 — Authorization, Ownership and IDOR Security Test Matrix](IMPERIAL-NOVEL-PHASE-01P-3-AUTHORIZATION-AND-IDOR-SECURITY-TEST-MATRIX.md)
 - [01P.4 — Security Implementation Dependency Map](IMPERIAL-NOVEL-PHASE-01P-4-SECURITY-IMPLEMENTATION-DEPENDENCY-MAP.md)
 - [01P.5 — Normalized API Operation Registry](IMPERIAL-NOVEL-PHASE-01P-5-NORMALIZED-API-OPERATION-REGISTRY.md)
+- [01P.6 — Delegated Handler and Helper Audit](IMPERIAL-NOVEL-PHASE-01P-6-DELEGATED-HANDLER-AND-HELPER-AUDIT.md)
