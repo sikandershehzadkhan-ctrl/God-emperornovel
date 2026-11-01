@@ -38,7 +38,7 @@ const aiDetail = aiDetailStart >= 0 && aiDetailEnd > aiDetailStart ? source.slic
 assert.ok(aiDetail, "AI project detail route must exist");
 assert.match(aiDetail, /owner_user_id/);
 assert.match(aiDetail, /Number\(row\.owner_user_id\)!==Number\(u\.id\)/, "AI project detail must enforce owner isolation");
-const authorNovelIndex = lines.findIndex(line => line.includes("/api/author/novels/") && line.includes('m==="PATCH"'));
+const authorNovelIndex = lines.findIndex(line => line.includes("SELECT id,owner_user_id,title,alt_titles") && line.includes("FROM novels WHERE id=?"));
 const authorNovelEdit = authorNovelIndex >= 0 ? lines.slice(authorNovelIndex, authorNovelIndex + 3).join(" ") : "";
 assert.ok(authorNovelEdit);
 assert.match(authorNovelEdit, /Number\(n\.owner_user_id\)!==Number\(u\.id\)/, "author novel edit must enforce ownership");
