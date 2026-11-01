@@ -142,6 +142,10 @@ try {
   assert.equal(verifiedExport.response.status,200,JSON.stringify(verifiedExport.data));
   assert.ok(verifiedExport.data.user.email_verified_at,"Confirmation must set email_verified_at on the token owner");
   assert.ok(Number.isFinite(Date.parse(verifiedExport.data.user.email_verified_at)),"Verification timestamp must be valid ISO date text");
+  const unaffectedAccountExport = await request(baseUrl,"/api/me/export",{cookie:recipient.cookie});
+  assert.equal(unaffectedAccountExport.response.status,200,JSON.stringify(unaffectedAccountExport.data));
+  assert.equal(unaffectedAccountExport.data.user.email_verified_at,null,"Verifying one account must not verify another account");
+
 
   const promote = "UPDATE users SET role='author' WHERE id IN (" + Number(owner.user.id) + "," + Number(recipient.user.id) + "); UPDATE users SET role='moderator' WHERE id=" + Number(moderator.user.id) + "; UPDATE users SET role='admin' WHERE id=" + Number(administrator.user.id);
   wrangler(["d1", "execute", database, "--local", "--persist-to", persist, "--command", promote]);
