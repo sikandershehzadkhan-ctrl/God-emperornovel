@@ -239,10 +239,10 @@ try {
     request(baseUrl, "/api/admin/requests/" + paidRequest.id, { method: "PATCH", cookie: administrator.cookie, body: { status: "rejected" } }),
     request(baseUrl, "/api/admin/requests/" + paidRequest.id, { method: "PATCH", cookie: administrator.cookie, body: { status: "rejected" } })
   ]);
-  assert.equal(rejectPaidRequest.filter(row => row.response.status === 200).length, 1,
-    "Only one concurrent administrator rejection may refund a paid novel request");
-  assert.equal(rejectPaidRequest.filter(row => row.response.status === 409).length, 1,
-    "The duplicate concurrent rejection must be rejected as already processed");
+  assert.equal(rejectPaidRequest.filter(row => row.response.status === 200).length, 2,
+    "Concurrent duplicate rejection may return the same idempotent final state to both callers");
+  assert.ok(rejectPaidRequest.every(row => row.data.status === "rejected"),
+    "Both concurrent responses must report the same final rejected state");
   const requestBalanceRefunded = await request(baseUrl, "/api/me", { cookie: spectator.cookie });
   assert.equal(Number(requestBalanceRefunded.data.user.tickets), Number(requestBalanceBefore.data.user.tickets),
     "A rejected paid request must refund exactly the original debit");
