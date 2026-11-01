@@ -456,7 +456,12 @@ async function discoveryPage(kind){
   root.innerHTML=pageStart('Notifications','Updates about chapters, follows, requests and your Imperial account.')+`<div class="panel"><div class="actions"><button id="markRead" class="ghost">Mark all as read</button><span id="noticeUpdated" class="muted" role="status" aria-live="polite">Loading notifications…</span></div><div id="noticeList" class="chapterList" aria-live="polite" aria-busy="true"></div></div></div></div>`;
   const list=$('#noticeList'),updated=$('#noticeUpdated');
   const renderNotifications=rows=>{list.innerHTML=rows.length?rows.map(x=>`<div class="chapter ${x.read_at?'':'unreadNotice'}"><span class="chapterNo">${x.read_at?'✓':'●'}</span><span><b>${esc(x.title)}</b><br><span class="muted">${esc(x.body)} · ${esc(x.created_at)}</span></span></div>`).join(''):'<div class="empty">No notifications yet.</div>';list.setAttribute('aria-busy','false')};
-  const loadNotifications=async()=>{try{const rows=await apiWithTimeout('/api/notifications',{},10000);if(location.pathname!=='/notifications')return;renderNotifications(Array.isArray(rows)?rows:[]);if(updated)updated.textContent='Updated '+new Date().toLocaleTimeString([], {hour:'2-digit',minute:'2-digit',second:'2-digit'})}catch(e){if(updated)updated.textContent='Refresh unavailable · '+esc(e.message);if(!list.children.length){list.innerHTML=`<div class="notice">${esc(e.message)} <a href="/login">Sign in</a></div>`;list.setAttribute('aria-busy','false')}}};
+  let notificationLoad=null;
+  const loadNotifications=()=>{
+   if(notificationLoad)return notificationLoad;
+   notificationLoad=(async()=>{try{const rows=await apiWithTimeout('/api/notifications',{},10000);if(location.pathname!=='/notifications')return;renderNotifications(Array.isArray(rows)?rows:[]);if(updated)updated.textContent='Updated '+new Date().toLocaleTimeString([], {hour:'2-digit',minute:'2-digit',second:'2-digit'})}catch(e){if(updated)updated.textContent='Refresh unavailable · '+esc(e.message);if(!list.children.length){list.innerHTML=`<div class="notice">${esc(e.message)} <a href="/login">Sign in</a></div>`;list.setAttribute('aria-busy','false')}}finally{notificationLoad=null}})();
+   return notificationLoad;
+  };
   if(notificationRefreshTimer)clearInterval(notificationRefreshTimer);
   await loadNotifications();
   notificationRefreshTimer=setInterval(()=>{if(location.pathname!=='/notifications'){clearInterval(notificationRefreshTimer);notificationRefreshTimer=null;return}if(document.visibilityState==='visible')loadNotifications()},30000);
