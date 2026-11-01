@@ -2,7 +2,7 @@
 
 **Phase:** 01N isolated P0 security implementation
 **Status:** Implemented and CI-verified on integration branch
-**Validated head:** `4a673103fcbbec4b74290879f63a2f658120f644`
+**Validated head:** `b2fad24156e92045cf661a2f81a0f330e4277092`
 **Production:** Not deployed
 
 ## 1. Taxonomy submission identity
@@ -14,6 +14,7 @@ Changes:
 - Public GET remains available for approved vocabulary only.
 - POST requires an authenticated session and returns the normal authentication error when absent.
 - `creator_id` and `creator_name` are derived from the session user; request-body identity fields are ignored.
+- Submission attempts are rate-limited to 10 per authenticated account per hour.
 - Existing input validation, duplicate checks and pending-review flow remain in place.
 
 ## 2. Sensitive account records
@@ -27,12 +28,12 @@ Changes:
 
 ## 3. Regression tests
 
-- Source regression tests assert authenticated taxonomy submission, session-derived attribution, ignored spoofable request fields, and owner-only account listing.
+- Source regression tests assert authenticated taxonomy submission, session-derived attribution, ignored spoofable request fields, per-account rate limiting and owner-only account listing.
 - The local Wrangler+D1 HTTP smoke test now sends an unauthenticated taxonomy POST with spoofed creator fields and requires HTTP 401.
 
 CI passed on the exact validated head:
-- [Cloudflare Source Validation run 41315381193](https://github.com/sikandershehzadkhan-ctrl/God-emperornovel/actions/runs/41315381193), including the local Worker+D1 HTTP smoke step.
-- [Graphify architecture map run 41315381113](https://github.com/sikandershehzadkhan-ctrl/God-emperornovel/actions/runs/41315381113).
+- [Cloudflare Source Validation run 41315671450](https://github.com/sikandershehzadkhan-ctrl/God-emperornovel/actions/runs/41315381193), including the local Worker+D1 HTTP smoke step.
+- [Graphify architecture map run 41315671466](https://github.com/sikandershehzadkhan-ctrl/God-emperornovel/actions/runs/41315381113).
 
 ## 4. Remaining controls
 
