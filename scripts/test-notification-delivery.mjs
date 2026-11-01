@@ -21,6 +21,14 @@ assert.ok(commentRoute, "comment creation route must exist");
 assert.ok(commentRoute[1].includes("await notifyUser(env,parentAuthor"), "comment replies must notify the parent comment author");
 assert.ok(commentRoute[1].includes("await notifyUser(env,owner"), "novel comments must notify the novel owner");
 assert.ok(commentRoute[1].includes("owner!==Number(u.id)"), "authors must not receive notifications for their own comments");
+const followRoute = worker.match(/if\(p==="\/api\/follow"&&m==="POST"\)\{([\s\S]*?)\n\s*if\(p==="\/api\/rating"/);
+assert.ok(followRoute, "follow toggle route must exist");
+assert.ok(followRoute[1].includes("Number.isSafeInteger(nid)"), "follow route must validate a positive safe novel id");
+assert.ok(followRoute[1].includes("publication_status='published'"), "users may only follow published novels");
+assert.ok(followRoute[1].includes("await notifyUser(env,owner"), "new follows must notify the novel owner");
+assert.ok(followRoute[1].includes("owner!==Number(u.id)"), "authors must not be notified when following their own novel");
+assert.ok(followRoute[1].indexOf("if(f){") < followRoute[1].indexOf("await notifyUser(env,owner"), "unfollow actions must not generate follow notifications");
+
 
 assert.ok(app.includes("apiWithTimeout('/api/notifications',{},10000)"), "notification UI must use a bounded request");
 assert.ok(app.includes("setInterval(()=>{if(location.pathname!=='/notifications')"), "notification refresh must stop after leaving the notifications page");
