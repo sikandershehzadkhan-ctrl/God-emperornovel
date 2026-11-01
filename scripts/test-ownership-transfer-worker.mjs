@@ -198,6 +198,18 @@ try {
     "UPDATE users SET tickets=500 WHERE id=" + Number(spectator.user.id)]);
   async function createPublishedLockedNovel(title, chapters) {
     const novelId = await createNovel(baseUrl, owner.cookie, title + " " + suffix);
+    const ownerNovelBefore = await request(baseUrl, "/api/author/novels", { cookie: owner.cookie });
+    const originalNovel = ownerNovelBefore.data.find(row => Number(row.id) === novelId);
+    assert.ok(originalNovel, "Owner must see the newly created novel");
+    const foreignNovelEdit = await request(baseUrl, "/api/author/novels/" + novelId, {
+      method: "PATCH", cookie: recipient.cookie,
+      body: { title: "Unauthorized foreign novel edit", description: "Must remain unchanged." }
+    });
+    assert.equal(foreignNovelEdit.response.status, 403, "A different author must not edit another author's novel");
+    const ownerNovelAfter = await request(baseUrl, "/api/author/novels", { cookie: owner.cookie });
+    const preservedNovel = ownerNovelAfter.data.find(row => Number(row.id) === novelId);
+    assert.equal(preservedNovel.title, originalNovel.title, "Foreign novel edit attempt must preserve the owner's title");
+    assert.equal(preservedNovel.description, originalNovel.description, "Foreign novel edit attempt must preserve the owner's description");
     executeLocalSql("UPDATE novels SET publication_status='published',rights_status='original',rights_evidence='local-original-work-attestation' WHERE id=" + novelId);
     const chapterIds = [];
     for (const chapter of chapters) {
