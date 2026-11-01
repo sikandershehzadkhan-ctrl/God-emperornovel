@@ -1009,3 +1009,100 @@ html[data-theme="dark"] .novelLivePulseMetric{background:var(--in-surface-raised
 .communityGrid .ratingIslandSummary{display:flex;gap:5px;flex-wrap:wrap;color:var(--in-muted);font-size:12px;line-height:1.5}
 .communityGrid .ratingIslandSummary strong{color:var(--in-ink);font-variant-numeric:tabular-nums}
 .communityGrid .commentItem button:disabled{cursor:not-allowed;opacity:.55}
+
+
+/* Catalog discovery: readable filters, stable cover cards and clear result states. */
+.catalogTop{
+  display:block;min-width:0;margin:0 0 16px;padding:clamp(14px,2.4vw,22px);
+  border:1px solid var(--in-line);border-radius:var(--in-radius-lg);
+  background:var(--in-surface);box-shadow:var(--in-shadow);
+}
+.catalogTop form{display:grid;gap:14px;min-width:0}
+.catalogSearch{min-width:0}
+.catalogSearch .search{
+  display:flex;align-items:center;gap:10px;min-height:50px;padding:0 13px;
+  border:1px solid var(--in-line-strong);border-radius:11px;
+  background:var(--in-canvas);color:var(--in-muted);
+}
+.catalogSearch .search input{
+  width:100%;min-width:0;min-height:48px;padding:0;border:0;outline:0;
+  background:transparent;color:var(--in-ink);box-shadow:none;
+}
+.catalogSearch .search input:focus{border:0;box-shadow:none}
+.filterRow{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px}
+.filterGroup{display:grid;gap:6px;min-width:0}
+.filterLabel{color:var(--in-muted);font-size:10px;font-weight:800;letter-spacing:.08em;text-transform:uppercase}
+.filterGroup :is(input,select){width:100%;min-width:0;min-height:42px;padding:8px 10px;background:var(--in-surface);color:var(--in-ink)}
+.catalogTop .actions{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.catalogTop .actions>*{min-height:40px;padding:9px 12px;font-size:12px;text-decoration:none}
+.catalogMeta{display:flex;align-items:center;justify-content:space-between;gap:10px;margin:18px 0 8px;color:var(--in-muted);font-size:12px}
+.catalogMeta b{color:var(--in-ink);font-variant-numeric:tabular-nums}
+.activeFilters{display:flex;align-items:center;gap:7px;flex-wrap:wrap;margin:8px 0 16px}
+.activeFiltersLabel{color:var(--in-muted);font-size:10px;font-weight:800;letter-spacing:.08em;text-transform:uppercase}
+.activeFilter,.clearFilters{
+  display:inline-flex;align-items:center;gap:7px;min-height:32px;padding:6px 9px;
+  border:1px solid var(--in-line);border-radius:999px;background:var(--in-surface);
+  color:var(--in-ink);font-size:11px;text-decoration:none;
+}
+.activeFilter:hover,.clearFilters:hover{border-color:var(--in-brand);background:var(--in-brand-soft);color:var(--in-brand)}
+.catalogGrid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:14px;min-width:0}
+.catalogCard{
+  display:flex;flex-direction:column;min-width:0;min-height:100%;
+  overflow:hidden;border:1px solid var(--in-line);border-radius:14px;
+  background:var(--in-surface);color:var(--in-ink);text-decoration:none;
+}
+.catalogCover{position:relative;overflow:hidden;aspect-ratio:.76;background:var(--in-canvas)}
+.catalogCover img{display:block;width:100%;height:100%;object-fit:cover;transition:transform 220ms ease}
+.catalogCard:hover .catalogCover img{transform:scale(1.025)}
+.catalogCover .statusBadge,.catalogCover .formatBadge{
+  position:absolute;bottom:9px;max-width:calc(50% - 13px);overflow:hidden;
+  padding:5px 7px;border:1px solid rgba(255,255,255,.24);border-radius:7px;
+  background:rgba(11,18,21,.84);color:#fff;font-size:9px;font-weight:750;
+  text-overflow:ellipsis;white-space:nowrap;
+}
+.catalogCover .statusBadge{left:9px}
+.catalogCover .formatBadge{right:9px}
+.catalogBody{display:flex;flex:1;flex-direction:column;gap:7px;min-width:0;padding:12px}
+.catalogTitle{
+  display:-webkit-box;overflow:hidden;-webkit-box-orient:vertical;-webkit-line-clamp:2;
+  color:var(--in-ink);font-size:13px;font-weight:780;line-height:1.4;overflow-wrap:anywhere;
+}
+.catalogBody>.muted{font-size:11px;line-height:1.4;overflow-wrap:anywhere}
+.catalogStats{display:flex;gap:8px;flex-wrap:wrap;color:var(--in-muted);font-size:10px;font-variant-numeric:tabular-nums}
+.catalogTags{display:flex;gap:5px;flex-wrap:wrap;margin-top:1px}
+.catalogTags .pill{max-width:100%;padding:4px 7px;font-size:9px;overflow-wrap:anywhere}
+.catalogBody .readMini{margin-top:auto;padding-top:10px;color:var(--in-discovery);font-size:11px;font-weight:800}
+.catalogCard:focus-visible{outline:2px solid var(--in-focus);outline-offset:3px}
+.catalogEmpty{
+  display:grid;justify-items:center;gap:10px;padding:clamp(24px,5vw,48px) 18px;
+  border:1px dashed var(--in-line-strong);border-radius:var(--in-radius-lg);
+  background:var(--in-surface);text-align:center;
+}
+.catalogEmptyIcon{display:grid;place-items:center;width:48px;height:48px;border-radius:14px;background:var(--in-brand-soft);color:var(--in-brand);font-size:24px}
+.catalogEmpty h2{margin:0;color:var(--in-ink);font-size:20px}
+.catalogEmpty p{max-width:48ch;margin:0;color:var(--in-muted);font-size:12px;line-height:1.65}
+.catalogEmptyActions{display:flex;justify-content:center;gap:8px;flex-wrap:wrap;margin-top:6px}
+.catalogEmptyActions>*{min-height:40px;padding:9px 12px;font-size:11px;text-decoration:none}
+.pager{display:flex;justify-content:center;gap:10px;margin:24px 0}
+.pager a{min-height:42px;padding:10px 16px;text-decoration:none}
+.catalogGrid[aria-busy="true"]{opacity:.72}
+@media(max-width:1050px){.catalogGrid{grid-template-columns:repeat(3,minmax(0,1fr))}.filterRow{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(max-width:640px){
+ .catalogTop{padding:13px;border-radius:15px}
+ .catalogGrid{grid-template-columns:repeat(2,minmax(0,1fr));gap:9px}
+ .catalogBody{gap:6px;padding:9px}
+ .catalogTitle{font-size:12px}
+ .catalogStats{gap:6px;font-size:9px}
+ .catalogTop .actions{gap:6px}
+ .catalogTop .actions>*{flex:1 1 auto;justify-content:center}
+ .catalogMeta{margin-top:14px}
+}
+@media(max-width:360px){
+ .catalogGrid{grid-template-columns:minmax(0,1fr)}
+ .catalogCard{display:grid;grid-template-columns:104px minmax(0,1fr);min-height:142px}
+ .catalogCover{height:100%;min-height:142px;aspect-ratio:auto}
+ .catalogBody{padding:10px}
+ .catalogTitle{-webkit-line-clamp:3}
+ .catalogTags{max-height:40px;overflow:hidden}
+}
+@media(prefers-reduced-motion:reduce){.catalogCover img{transition:none!important}.catalogCard:hover .catalogCover img{transform:none}}
