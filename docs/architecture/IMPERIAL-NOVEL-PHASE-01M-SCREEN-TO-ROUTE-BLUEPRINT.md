@@ -358,3 +358,4 @@ Each document is a specification. A listed route or logical API contract is not 
 ## Phase 01N architecture evidence
 
 - [01N — Repository Evidence Audit](IMPERIAL-NOVEL-PHASE-01N-REPOSITORY-EVIDENCE-AUDIT.md)
+- [01N.1 — Schema Authority and Migration Decision](IMPERIAL-NOVEL-PHASE-01N-1-SCHEMA-AUTHORITY-AND-MIGRATION-DECISION.md)
