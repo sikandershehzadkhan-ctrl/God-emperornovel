@@ -27,3 +27,24 @@
 .authorApplicationFormats legend{padding:0 6px;color:var(--muted);font-weight:700}
 .authorApplicationFormats .checkRow{margin:0}
 @media(max-width:640px){.authorApplicationFormats{grid-template-columns:1fr}}
+
+
+/* Community discussion and report controls: compact, accessible and mobile-first. */
+.novelComments{min-width:0}
+.novelCommentsComposer,.commentReportForm{display:grid;gap:10px}
+.novelCommentsComposer textarea,.commentReportForm textarea,.commentReportForm select{width:100%;max-width:100%;box-sizing:border-box;border:1px solid var(--line,rgba(139,92,246,.24));border-radius:10px;background:var(--surface,rgba(255,255,255,.035));color:var(--text,inherit);padding:11px 12px;font:inherit;line-height:1.5}
+.novelCommentsComposer textarea:focus-visible,.commentReportForm textarea:focus-visible,.commentReportForm select:focus-visible{outline:3px solid color-mix(in srgb,var(--brand-sapphire,#4f8cff) 45%,transparent);outline-offset:2px}
+.novelCommentComposerFooter{display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap}
+.novelCommentsList{display:grid;gap:8px;margin-top:16px;min-width:0}
+.commentItem{min-width:0;overflow-wrap:anywhere}
+.commentItem>p{line-height:1.65;margin:9px 0 12px}
+.commentActions{align-items:center}
+.commentActions button{min-height:38px}
+.commentReportForm{margin-top:12px;padding:12px;border:1px solid var(--line,rgba(139,92,246,.2));border-radius:12px;background:rgba(139,92,246,.045)}
+.commentReportForm label{display:grid;gap:6px;font-size:.88rem;font-weight:650}
+.commentReportForm .muted{font-size:.75rem;font-weight:400;text-align:right}
+.commentReportForm button{justify-self:start;min-height:40px}
+.commentReportForm button:disabled,.commentActions button:disabled{opacity:.6;cursor:wait}
+.commentStatus{overflow-wrap:anywhere;line-height:1.5}
+@media(max-width:520px){.commentItem{padding:12px}.commentReply{margin-left:8px}.novelCommentComposerFooter{align-items:stretch}.novelCommentComposerFooter button{width:100%}.commentReportForm{padding:10px}}
+@media(prefers-reduced-motion:reduce){.novelComments *{scroll-behavior:auto!important;transition:none!important}}
