@@ -152,3 +152,14 @@ Before adding a user-facing route, the receiving delivery service must be separa
 
 - The authenticated request route is idempotent for accounts whose `email_verified_at` is already set: it returns the same generic accepted response without issuing another token or contacting the mail service.
 - Worker integration coverage verifies that confirming one account leaves a second account's mailbox-verification timestamp unchanged, and that repeat requests after verification are harmless.
+
+### Password recovery request and confirmation API
+
+- `POST /api/auth/password-reset/request` applies IP and normalized-email rate limits and always returns the same generic accepted response for unknown accounts, known accounts, and unavailable delivery. It never confirms whether an email is registered.
+- Recovery issuance requires a configured `SECURITY_EMAIL` Service Binding and canonical HTTPS `PUBLIC_ORIGIN`. Missing configuration does not invalidate existing recovery links and does not claim that mail was sent.
+- Issuance atomically invalidates prior active reset links and inserts only the new SHA-256 token digest for the selected existing account. A failed delivery revokes only the exact newly issued digest.
+- `POST /api/auth/password-reset/complete` accepts the bearer token and new password in a JSON body, applies IP and token-digest rate limits, validates the password length, and uses the existing four-statement D1 completion batch.
+- Successful completion changes only the token owner's password, revokes that account's sessions, and invalidates sibling reset links. Replay, expiry, and wrong-purpose tokens fail.
+- `GET /reset-password` serves a dedicated noindex page with no third-party assets. It reads the token from the URL fragment, removes the fragment from browser history, and sends the token only in a JSON POST body.
+- Local Worker/D1 integration covers generic request responses, successful reset, old-password rejection, session revocation, token replay rejection, and cross-account session isolation.
+- The email provider and canonical public origin are not configured in this repository's Worker variables. Real reset emails therefore remain unavailable until the service binding and origin are explicitly configured and independently tested.
