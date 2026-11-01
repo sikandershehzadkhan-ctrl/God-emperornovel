@@ -27,12 +27,12 @@ function wrangler(args, timeout = 45000) {
   return result.stdout;
 }
 async function waitForWorker(baseUrl) {
-  const deadline = Date.now() + 60000;
+  const deadline = Date.now() + 30000;
   let lastError = "";
   while (Date.now() < deadline) {
     if (worker.exitCode !== null) throw new Error("Wrangler dev exited (" + worker.exitCode + "):\n" + workerOutput);
     try {
-      const response = await fetch(baseUrl + "/api/health", { signal: AbortSignal.timeout(10000) });
+      const response = await fetch(baseUrl + "/api/health", { signal: AbortSignal.timeout(5000) });
       if (response.ok && (await response.json()).ok) return;
     } catch (error) { lastError = String(error); }
     await new Promise(resolve => setTimeout(resolve, 500));
@@ -46,16 +46,18 @@ async function request(baseUrl, path, options = {}) {
   const response = await fetch(baseUrl + path, {
     method: options.method || "GET", headers,
     body: options.body === undefined ? undefined : JSON.stringify(options.body),
-    signal: AbortSignal.timeout(30000)
+    signal: AbortSignal.timeout(15000)
   });
   return { response, data: await response.json().catch(() => ({})) };
 }
 async function account(baseUrl, username, email) {
+  console.log("Registering local account " + username + "...");
   const password = "Integration-Test-Password-2026!";
   const registered = await request(baseUrl, "/api/auth/register", {
     method: "POST", body: { username, email, password }
   });
   assert.equal(registered.response.status, 200, JSON.stringify(registered.data));
+  console.log("Signing in local account " + username + "...");
   const loggedIn = await request(baseUrl, "/api/auth/login", {
     method: "POST", body: { email, password }
   });
