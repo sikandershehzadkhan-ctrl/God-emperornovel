@@ -26,8 +26,8 @@ must_fail("""INSERT INTO comic_chapter_pages(chapter_id,media_asset_id,page_numb
 
 # Approval without an attributable administrator review must fail.
 must_fail("UPDATE media_assets SET status='ready', rights_status='approved' WHERE id=1")
-db.execute("""INSERT INTO media_asset_reviews(media_asset_id,reviewer_user_id,decision,note)
-              VALUES(1,1,'approved','Owner attempted self-review')""")
+must_fail("""INSERT INTO media_asset_reviews(media_asset_id,reviewer_user_id,decision,note)
+             VALUES(1,1,'approved','Owner attempted self-review')""")
 must_fail("""UPDATE media_assets
              SET status='ready', rights_status='approved', reviewed_by_user_id=1
              WHERE id=1""")
