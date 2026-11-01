@@ -152,6 +152,29 @@ try {
   assert.ok(JSON.parse(notificationsB.body).some(x=>x.title==='B-only notification'), 'Account B must see its own notification');
   assert.ok(!JSON.parse(notificationsB.body).some(x=>x.title==='A-only notification'), 'Account B must not see Account A notification');
 
+  // Ticket balances and connector import history are private financial/account records.
+  const ticketFixtureSql = `INSERT INTO ticket_ledger(user_id,delta,reason,reference) VALUES(${dataA.user.id},1,'runtime_fixture','A-only ledger'),(${dataB.user.id},2,'runtime_fixture','B-only ledger')`;
+  execFileSync('npx', ['--yes','wrangler@4','d1','execute','god-emperornovel-db','--local','--persist-to','.wrangler/test-runtime','--command',ticketFixtureSql], {stdio:'pipe',env:{...process.env,NO_COLOR:'1'}});
+  const ledgerA = await getAs(accountA, '/api/tickets/ledger');
+  const ledgerB = await getAs(accountB, '/api/tickets/ledger');
+  assert.ok(JSON.parse(ledgerA.body).some(x=>x.reference==='A-only ledger'), 'Account A must see own ticket ledger');
+  assert.ok(!JSON.parse(ledgerA.body).some(x=>x.reference==='B-only ledger'), 'Account A must not see Account B ticket ledger');
+  assert.ok(JSON.parse(ledgerB.body).some(x=>x.reference==='B-only ledger'), 'Account B must see own ticket ledger');
+  assert.ok(!JSON.parse(ledgerB.body).some(x=>x.reference==='A-only ledger'), 'Account B must not see Account A ticket ledger');
+
+  // Initialize OmniPortal tables through the real authenticated API before inserting local-only fixtures.
+  const omniInitA = await getAs(accountA, '/api/omni/jobs');
+  const omniInitB = await getAs(accountB, '/api/omni/jobs');
+  assert.equal(omniInitA.response.status, 200, `Account A OmniPortal history failed: ${omniInitA.body}`);
+  assert.equal(omniInitB.response.status, 200, `Account B OmniPortal history failed: ${omniInitB.body}`);
+  const omniFixtureSql = `INSERT INTO import_jobs(user_id,source_url,status,message) VALUES(${dataA.user.id},'https://example.invalid/a','queued','A-only import'),(${dataB.user.id},'https://example.invalid/b','queued','B-only import')`;
+  execFileSync('npx', ['--yes','wrangler@4','d1','execute','god-emperornovel-db','--local','--persist-to','.wrangler/test-runtime','--command',omniFixtureSql], {stdio:'pipe',env:{...process.env,NO_COLOR:'1'}});
+  const omniA = await getAs(accountA, '/api/omni/jobs');
+  const omniB = await getAs(accountB, '/api/omni/jobs');
+  assert.ok(JSON.parse(omniA.body).some(x=>x.message==='A-only import'), 'Account A must see own OmniPortal import');
+  assert.ok(!JSON.parse(omniA.body).some(x=>x.message==='B-only import'), 'Account A must not see Account B OmniPortal import');
+  assert.ok(JSON.parse(omniB.body).some(x=>x.message==='B-only import'), 'Account B must see own OmniPortal import');
+  assert.ok(!JSON.parse(omniB.body).some(x=>x.message==='A-only import'), 'Account B must not see Account A OmniPortal import');
   const aiProjectsInitA = await getAs(accountA, '/api/author/ai/projects');
   const aiProjectsInitB = await getAs(accountB, '/api/author/ai/projects');
   assert.equal(aiProjectsInitA.response.status, 200, `Author A AI project list failed: ${aiProjectsInitA.body}`);
@@ -199,7 +222,7 @@ try {
   const home = await request('/');
   assert.equal(home.response.status, 200, 'Home page must be served by the Worker');
   assert.match(home.body, /Imperial Novel/, 'Home page must contain the platform brand');
-  console.log('PASS: real Wrangler local Worker handled health, D1-backed catalog, live overview, unauthenticated taxonomy rejection, missing chapter, two independent account registrations/logins, session-bound profile isolation, cross-account library/history/bookmark/reading-position/notification and author-owned novel/chapter/AI-project isolation, hostile user_id write/query handling, anonymous private-resource rejection and homepage requests.');
+  console.log('PASS: real Wrangler local Worker handled health, D1-backed catalog, live overview, unauthenticated taxonomy rejection, missing chapter, two independent account registrations/logins, session-bound profile isolation, cross-account library/history/bookmark/reading-position/notification, ticket-ledger, OmniPortal-import and author-owned novel/chapter/AI-project isolation, hostile user_id write/query handling, anonymous private-resource rejection and homepage requests.');
 } finally {
   try { process.kill(-child.pid, 'SIGTERM'); } catch { child.kill('SIGTERM'); }
   await Promise.race([new Promise(resolve => child.once('exit', resolve)), sleep(5000)]);
