@@ -21,7 +21,9 @@ INSERT INTO novels(id, owner_user_id, publication_status, rights_status, rights_
  (11, 1, 'published', 'original', ''),
  (12, 1, 'published', 'original', ''),
  (13, 1, 'published', 'original', ''),
- (14, 1, 'published', 'original', '');
+ (14, 1, 'published', 'original', ''),
+ (15, 1, 'published', 'original', ''),
+ (16, 1, 'published', 'licensed', '');
 """)
 db.executescript(payload["migration"])
 now = int(time.time())
@@ -68,7 +70,19 @@ invite(14, 2, now - 1); transfer = db.execute("SELECT last_insert_rowid()").fetc
 try: accept(transfer); raise AssertionError("expired invitation acceptance unexpectedly succeeded")
 except sqlite3.IntegrityError: pass
 assert state(14, transfer) == (1, "pending")
-print("Ownership transfer SQLite behavior tests passed: atomic success, banned/role revocation, stale owner, and expiry.")
+# A caller cannot mutate invitation identity fields while accepting it.
+invite(15, 2); transfer = db.execute("SELECT last_insert_rowid()").fetchone()[0]
+try:
+    db.execute("UPDATE novel_ownership_transfers SET to_user_id=5, status='accepted' WHERE id=?", (transfer,))
+    raise AssertionError("invitation identity mutation unexpectedly succeeded")
+except sqlite3.IntegrityError: pass
+assert state(15, transfer) == (1, "pending")
+# Licensed works without evidence are ineligible even if the recipient is valid.
+invite(16, 2); transfer = db.execute("SELECT last_insert_rowid()").fetchone()[0]
+try: accept(transfer); raise AssertionError("licensed work without evidence unexpectedly transferred")
+except sqlite3.IntegrityError: pass
+assert state(16, transfer) == (1, "pending")
+print("Ownership transfer SQLite behavior tests passed: atomic success, banned/role revocation, stale owner, expiry, immutable invitation identity, and rights evidence.")
 `;
 const result = spawnSync("python3", ["-c", python], {
   input: JSON.stringify({ migration }),
