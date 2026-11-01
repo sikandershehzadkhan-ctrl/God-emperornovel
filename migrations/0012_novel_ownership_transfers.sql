@@ -38,3 +38,24 @@ CREATE INDEX IF NOT EXISTS idx_ownership_transfer_novel_history
 
 CREATE INDEX IF NOT EXISTS idx_ownership_transfer_expiry
   ON novel_ownership_transfers(status, expires_at);
+
+-- Atomic guarded acceptance: ownership and invitation state share one SQLite statement.
+
+CREATE TRIGGER IF NOT EXISTS trg_novel_ownership_transfer_accept
+BEFORE UPDATE OF status ON novel_ownership_transfers
+WHEN NEW.status = 'accepted' AND OLD.status = 'pending'
+BEGIN
+  SELECT CASE WHEN NOT EXISTS (
+    SELECT 1 FROM novels n
+    JOIN users recipient ON recipient.id = NEW.to_user_id
+    WHERE n.id = NEW.novel_id
+      AND n.owner_user_id = NEW.from_user_id
+      AND n.publication_status NOT IN ('review','archived','deleted')
+      AND n.rights_status IN ('original','public_domain','licensed','authorized')
+      AND (n.rights_status = 'original' OR LENGTH(TRIM(COALESCE(n.rights_evidence,''))) > 0)
+      AND recipient.role = 'author' AND recipient.banned = 0
+  ) THEN RAISE(ABORT, 'ownership transfer eligibility changed') END;
+  UPDATE novels SET owner_user_id = NEW.to_user_id, updated_at = CURRENT_TIMESTAMP
+  WHERE id = NEW.novel_id AND owner_user_id = NEW.from_user_id;
+  SELECT CASE WHEN changes() <> 1 THEN RAISE(ABORT, 'novel ownership changed') END;
+END;

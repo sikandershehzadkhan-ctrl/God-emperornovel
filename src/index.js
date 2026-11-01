@@ -726,14 +726,16 @@ async function api(req,env){
    await env.DB.prepare("INSERT INTO audit_logs(user_id,action,details) VALUES(?,?,?)").bind(u.id,"novel_ownership_transfer_rejected","transfer="+id+";novel="+transfer.novel_id).run();
    return json({ok:true,status:"rejected",ownership_changed:false});
   }
-  const results=await env.DB.batch([
-   env.DB.prepare("UPDATE novels SET owner_user_id=?,updated_at=CURRENT_TIMESTAMP WHERE id=? AND owner_user_id=? AND publication_status NOT IN ('review','archived','deleted') AND rights_status IN ('original','public_domain','licensed','authorized') AND (rights_status='original' OR LENGTH(TRIM(COALESCE(rights_evidence,'')))>0) AND EXISTS(SELECT 1 FROM novel_ownership_transfers t JOIN users recipient ON recipient.id=t.to_user_id WHERE t.id=? AND t.status='pending' AND t.to_user_id=? AND t.expires_at>? AND recipient.role='author' AND recipient.banned=0)").bind(u.id,transfer.novel_id,transfer.from_user_id,id,u.id,timestamp),
-   env.DB.prepare("UPDATE novel_ownership_transfers SET status='accepted',decided_at=?,decision_note=?,updated_at=CURRENT_TIMESTAMP WHERE id=? AND to_user_id=? AND status='pending' AND expires_at>? AND changes()=1 AND EXISTS(SELECT 1 FROM novels n WHERE n.id=novel_ownership_transfers.novel_id AND n.owner_user_id=?)").bind(timestamp,note,id,u.id,timestamp,u.id),
-   env.DB.prepare("INSERT INTO audit_logs(user_id,action,details) SELECT ?,?,? WHERE changes()=1").bind(u.id,"novel_ownership_transfer_accepted","transfer="+id+";novel="+transfer.novel_id+";previous_owner="+transfer.from_user_id)
-  ]);
-  const changedA=Number(results?.[0]?.meta?.changes??results?.[0]?.changes??0),changedB=Number(results?.[1]?.meta?.changes??results?.[1]?.changes??0);
-  if(changedA!==1||changedB!==1)return json({error:"Ownership or invitation state changed. The transfer was not completed."},409);
-  return json({ok:true,status:"accepted",ownership_changed:true,novel_id:transfer.novel_id});
+  try{
+   const result=await env.DB.prepare("UPDATE novel_ownership_transfers SET status='accepted',decided_at=?,decision_note=?,updated_at=CURRENT_TIMESTAMP WHERE id=? AND to_user_id=? AND status='pending' AND expires_at>?").bind(timestamp,note,id,u.id,timestamp).run();
+   if(Number(result?.meta?.changes??result?.changes??0)!==1)return json({error:"Invitation state changed. Refresh and retry."},409);
+   await env.DB.prepare("INSERT INTO audit_logs(user_id,action,details) VALUES(?,?,?)").bind(u.id,"novel_ownership_transfer_accepted","transfer="+id+";novel="+transfer.novel_id+";previous_owner="+transfer.from_user_id).run();
+   return json({ok:true,status:"accepted",ownership_changed:true,novel_id:transfer.novel_id});
+  }catch(err){
+   if(/ownership transfer eligibility changed|novel ownership changed/i.test(String(err?.message||"")))return json({error:"Ownership, recipient eligibility, or rights status changed. Transfer was not completed."},409);
+   console.error("ownership transfer acceptance failed",err);
+   return json({error:"Unable to complete the ownership transfer."},500);
+  }
  }
 
  let transferCancel=p.match(/^\/api\/author\/ownership-transfers\/(\d+)\/cancel$/);
