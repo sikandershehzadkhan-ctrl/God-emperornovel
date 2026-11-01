@@ -35,3 +35,8 @@ console.log("PASS: account data export is authenticated, account-scoped, bounded
 const privacyPage = readFileSync(new URL("../public/privacy.html", import.meta.url), "utf8");
 assert.ok(privacyPage.includes('href="/api/privacy/export"'), "privacy page must expose the account data download route");
 assert.ok(privacyPage.includes("You must be signed in"), "privacy page must explain the authentication requirement");
+
+const retentionGuide = readFileSync(new URL("../docs/ACCOUNT-DATA-EXPORT.md", import.meta.url), "utf8");
+assert.ok(retentionGuide.includes("Account deletion and erasure workflows are not yet implemented"), "retention guide must not imply account deletion is available");
+assert.ok(retentionGuide.includes("5,000 rows"), "retention guide must document export collection limits");
+assert.ok(retentionGuide.includes("Production export and recovery have not been exercised"), "retention guide must distinguish local tests from production verification");
