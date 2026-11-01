@@ -349,7 +349,8 @@ try {
     request(baseUrl, "/api/novels/" + batchUnlockFixture.novelId + "/batch-unlock", { method: "POST", cookie: spectator.cookie, body: { count: 10, start_chapter: 1 } }),
     request(baseUrl, "/api/novels/" + batchUnlockFixture.novelId + "/batch-unlock", { method: "POST", cookie: spectator.cookie, body: { count: 10, start_chapter: 1 } })
   ]);
-  assert.ok(batchUnlocks.every(x => x.response.status === 200), "Batch unlock should safely handle a simultaneous duplicate request");
+  assert.ok(batchUnlocks.every(x => x.response.status === 200 || x.response.status === 409), "Concurrent duplicate batch unlocks may succeed once or safely reject the losing request");
+  assert.equal(batchUnlocks.filter(x => x.response.status === 200).length, 1, "Exactly one concurrent batch request should commit the unlock");
   assert.equal(batchUnlocks.reduce((sum, x) => sum + Number(x.data.unlocked || 0), 0), 2, "Concurrent batch requests must unlock each chapter only once");
   assert.equal(batchUnlocks.reduce((sum, x) => sum + Number(x.data.cost || 0), 0), 12, "Concurrent batch requests must charge the combined chapter cost only once");
   const afterBatchUnlock = await request(baseUrl, "/api/me", { cookie: spectator.cookie });
