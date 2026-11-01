@@ -58,8 +58,7 @@ db.executemany("""INSERT INTO password_reset_tokens(user_id,token_hash,purpose,e
   (1,"A"*43,"password_reset","2026-11-02T12:20:00.000Z"),
   (1,"D"*43,"password_reset","2026-11-02T12:20:00.000Z"),
   (2,"B"*43,"password_reset","2026-11-02T12:20:00.000Z"),
-  (2,"E"*43,"password_reset","2026-11-02T11:59:00.000Z"),
-  (2,"F"*43,"other_purpose","2026-11-02T12:20:00.000Z")
+  (2,"E"*43,"password_reset","2026-11-02T11:59:00.000Z")
 ])
 sql = payload["sql"]
 def complete(token, password, timestamp):
@@ -84,7 +83,7 @@ assert states["A"*43] == "consumed"
 assert states["D"*43] == "invalidated"
 assert complete("A"*43, "replay", now) is None
 assert complete("E"*43, "expired", now) is None
-assert complete("F"*43, "wrong-purpose", now) is None
+try:\n    db.execute("INSERT INTO password_reset_tokens(user_id,token_hash,purpose,expires_at) VALUES(2,?,?,?)", ("F"*43,"other_purpose","2026-11-02T12:20:00.000Z"))\n    raise AssertionError("wrong-purpose token was accepted by schema")\nexcept sqlite3.IntegrityError:\n    pass\nassert complete("F"*43, "wrong-purpose", now) is None
 assert db.execute("SELECT password_hash FROM users WHERE id=2").fetchone()[0] == "old-b"
 # Simulate a D1 batch failure after token consumption: the enclosing transaction rolls back.
 db.execute("BEGIN IMMEDIATE")
@@ -95,7 +94,7 @@ try:
 except sqlite3.OperationalError:
     db.rollback()
 assert db.execute("SELECT consumed_at FROM password_reset_tokens WHERE token_hash=?", ("B"*43,)).fetchone()[0] is None
-print("PASS: atomic reset updates only the bound account, consumes once, revokes only its sessions, invalidates sibling tokens, rejects expired/wrong-purpose tokens, and rolls back on batch failure.")
+print("PASS: atomic reset updates only the bound account, consumes once, revokes only its sessions, invalidates sibling tokens, rejects expired tokens and enforces purpose at schema level, and rolls back on batch failure.")
 `;
 const result = spawnSync("python3", ["-c", python], {
   input: JSON.stringify({ migration, sql: PASSWORD_RESET_COMPLETION_SQL }),
