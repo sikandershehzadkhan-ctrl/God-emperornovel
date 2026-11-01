@@ -43,6 +43,7 @@ assert db.execute("SELECT COUNT(*) FROM sessions WHERE user_id=2").fetchone()[0]
 assert db.execute("SELECT consumption_id FROM password_reset_tokens WHERE token_hash=?",("A"*43,)).fetchone()[0]=="op-unique-1"
 # Email changes after issuance must prevent consuming the stale recovery link.
 db.execute("INSERT INTO password_reset_tokens(user_id,email_snapshot,token_hash,purpose,expires_at) VALUES(1,?,?,?,?)",("old@example.test","G"*43,"password_reset","2026-11-02T12:20:00.000Z"))
+db.commit()
 assert complete("G"*43,"stale-email","op-stale-email") is None
 assert db.execute("SELECT password_hash FROM users WHERE id=1").fetchone()[0]=="new-a"
 # Replay with the exact same timestamp but a different operation ID must not update the password.
