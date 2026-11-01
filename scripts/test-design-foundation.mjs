@@ -174,3 +174,15 @@ assert.ok(sourceApp.includes('class="readerPage"'),"Chapter route must render th
 assert.ok(sourceApp.includes('id="chapterDrawer"'),"Reader must expose its chapter and preference drawer");
 assert.ok(sourceApp.includes('class="readerChapterItem'),"Reader must render chapter navigation");
 assert.ok(sourceApp.includes('class="readerFooterCard"'),"Reader must provide a clear next-step footer");
+
+
+for(const selector of [".genreGrid",".genreCard",".genreGlyph",".tagGrid",".tagTile",".formatDirectoryGrid",".formatGroup",".formatLinks",".formatLink",".tabs .period.active",".rankBadge","#lbNovels>.panel","#lbAuthors>.panel","#sf .search"]){
+  assert.ok(css.includes(selector),"Discovery and rankings must include "+selector);
+}
+assert.ok(css.includes("@media(max-width:640px){\n .genreGrid"),"Genre and format discovery must adapt to mobile screens");
+assert.ok(css.includes("@media(max-width:360px)"),"Discovery tiles must fit narrow phone screens");
+assert.ok(sourceApp.includes('class="genreCard"'),"Genre directory must render linked genre cards");
+assert.ok(sourceApp.includes('class="tagTile"'),"Tag directory must render linked tag tiles");
+assert.ok(sourceApp.includes('class="formatDirectoryGrid"'),"Format directory must render grouped format navigation");
+assert.ok(sourceApp.includes('id="lbNovels"')&&sourceApp.includes('id="lbAuthors"'),"Leaderboard must render novel and author rankings");
+assert.ok(sourceApp.includes('id="sf"'),"Search must expose its semantic search form");
