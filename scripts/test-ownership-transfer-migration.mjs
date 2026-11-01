@@ -16,5 +16,8 @@ const required = [
   "idx_ownership_transfer_expiry"
 ];
 for (const fragment of required) assert.ok(sql.includes(fragment), `ownership transfer migration must include: ${fragment}`);
-assert.ok(!/UPDATE\\s+novels\\s+SET\\s+owner_user_id/i.test(sql), "migration must never transfer novel ownership");
+assert.ok(sql.includes("BEFORE UPDATE OF status ON novel_ownership_transfers"), "ownership mutation must only run from accepted transfer transition");
+assert.ok(sql.includes("WHEN NEW.status = 'accepted' AND OLD.status = 'pending'"), "only pending invitations may trigger ownership mutation");
+assert.ok(sql.includes("RAISE(ABORT, 'ownership transfer eligibility changed')"), "invalid recipient or novel state must abort acceptance");
+assert.ok(sql.includes("recipient.role = 'author'") && sql.includes("recipient.banned = 0"), "recipient must remain an active approved author at acceptance");
 console.log("Novel ownership transfer migration guard tests passed.");
