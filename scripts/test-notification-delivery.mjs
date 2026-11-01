@@ -16,6 +16,8 @@ assert.ok(readRoute[1].includes("need(u)"), "mark-read action must require authe
 assert.ok(readRoute[1].includes("WHERE user_id=? AND read_at IS NULL"), "mark-read action must only affect the signed-in user's unread notifications");
 
 assert.ok(worker.includes("INSERT INTO notifications(user_id,title,body)"), "notification creation must persist to the account notification table");
+assert.ok(worker.includes("WHERE NOT EXISTS (SELECT 1 FROM notifications WHERE user_id=? AND title=? AND body=? AND created_at>=datetime('now','-10 minutes'))"), "identical notification events must be deduplicated within a ten-minute cooldown");
+
 const commentRoute = worker.match(/if\(p==="\/api\/comments"&&m==="POST"\)\{([\s\S]*?)\n\s*if\(p==="\/api\/comments\/like"/);
 assert.ok(commentRoute, "comment creation route must exist");
 assert.ok(commentRoute[1].includes("await notifyUser(env,parentAuthor"), "comment replies must notify the parent comment author");
