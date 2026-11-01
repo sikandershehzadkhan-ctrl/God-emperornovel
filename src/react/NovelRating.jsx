@@ -58,13 +58,13 @@ function RatingIsland({ novelId }) {
   return (
     <div className="ratingIsland">
       <div className="ratingStars" role="group" aria-label="Rate this novel">
-        {[1, 2, 3, 4, 5].map(value => (
+        {Array.from({ length: 10 }, (_, index) => index + 1).map(value => (
           <button
             key={value}
             className={`ratingStar${value <= selected ? " selected" : ""}`}
             type="button"
             disabled={busy}
-            aria-label={`Rate ${value} out of 5`}
+            aria-label={`Rate ${value} out of 10`}
             aria-pressed={selected === value}
             onClick={() => choose(value)}
           >
@@ -73,9 +73,9 @@ function RatingIsland({ novelId }) {
         ))}
       </div>
       <p className="ratingIslandSummary" aria-live="polite">
-        <strong>{average.toFixed(1)} / 5</strong>
+        <strong>{average.toFixed(1)} / 10</strong>
         <span> · {count.toLocaleString()} {count === 1 ? "rating" : "ratings"}</span>
-        {selected > 0 && <span> · Your rating: {selected}/5</span>}
+        {selected > 0 && <span> · Your rating: {selected}/10</span>}
       </p>
       {error && <p className="commentStatus" role="alert">{error}</p>}
     </div>
