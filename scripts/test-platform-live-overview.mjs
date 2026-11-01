@@ -57,6 +57,12 @@ assert.ok(app.includes("Novel views · period")&&app.includes("Chapter requests 
 
 
 
+const catalogRouteStart=source.indexOf('if(p==="/api/catalog"&&m==="GET"){');
+const catalogRouteEnd=source.indexOf('if(p==="/api/',catalogRouteStart+1);
+assert.ok(catalogRouteStart>=0&&catalogRouteEnd>catalogRouteStart,"Catalog API route must be present for rating-filter validation.");
+const catalogRoute=source.slice(catalogRouteStart,catalogRouteEnd);
+assert.ok(catalogRoute.includes("Math.min(10,minRating)"),"Catalog minimum-rating filtering must support the complete 1-10 rating scale.");
+
 assert.ok(route.includes("new Date().toISOString()"),"Overview must expose the actual response timestamp");
 assert.ok(route.includes("generated_at:generatedAt"),"The real-time response must expose a canonical generated_at timestamp.");
 assert.ok(route.includes('mode:"request-time-d1-query"')&&route.includes('cache:"no-store"'),"Real-time overview freshness must be explicit and avoid stale HTTP caching.");
