@@ -17,9 +17,12 @@ function CommentCard({ comment, reply = false, onLike, onReply, onReport, busyId
   const [reason, setReason] = useState("spam");
   const [details, setDetails] = useState("");
   const [reportMessage, setReportMessage] = useState("");
+  const [reporting, setReporting] = useState(false);
 
   async function submitReport(event) {
     event.preventDefault();
+    if (reporting) return;
+    setReporting(true);
     setReportMessage("");
     try {
       await onReport(comment.id, reason, details);
@@ -28,6 +31,8 @@ function CommentCard({ comment, reply = false, onLike, onReply, onReport, busyId
       setReportMessage("Report sent to the moderation team.");
     } catch (error) {
       setReportMessage(error.message || "Report could not be submitted.");
+    } finally {
+      setReporting(false);
     }
   }
 
@@ -43,14 +48,14 @@ function CommentCard({ comment, reply = false, onLike, onReply, onReport, busyId
           {comment.liked ? "♥" : "♡"} {Number(comment.likes || 0)}
         </button>
         <button className="ghost commentReplyBtn" type="button" onClick={() => onReply(comment)}>Reply</button>
-        <button className="ghost commentReport" type="button" aria-expanded={reportOpen} onClick={() => setReportOpen(value => !value)}>
+        <button className="ghost commentReport" type="button" aria-expanded={reportOpen} aria-controls={`comment-report-${comment.id}`} onClick={() => setReportOpen(value => !value)}>
           {reportOpen ? "Cancel report" : "Report"}
         </button>
       </div>
       {reportOpen && (
-        <form className="commentReportForm" onSubmit={submitReport}>
+        <form id={`comment-report-${comment.id}`} className="commentReportForm" onSubmit={submitReport}>
           <label>Reason
-            <select value={reason} onChange={event => setReason(event.target.value)}>
+            <select value={reason} disabled={reporting} onChange={event => setReason(event.target.value)}>
               <option value="spam">Spam or advertising</option>
               <option value="harassment">Harassment or abuse</option>
               <option value="copyright">Copyright concern</option>
@@ -59,9 +64,10 @@ function CommentCard({ comment, reply = false, onLike, onReply, onReport, busyId
             </select>
           </label>
           <label>Additional details
-            <textarea value={details} maxLength={500} rows={2} onChange={event => setDetails(event.target.value)} placeholder="Optional context for moderators" />
+            <textarea value={details} disabled={reporting} maxLength={500} rows={2} onChange={event => setDetails(event.target.value)} placeholder="Optional context for moderators" />
+            <span className="muted">{details.length}/500 characters</span>
           </label>
-          <button className="secondary" type="submit">Submit report</button>
+          <button className="secondary" type="submit" disabled={reporting}>{reporting ? "Submitting…" : "Submit report"}</button>
         </form>
       )}
       {reportMessage && <p className="commentStatus" role="status">{reportMessage}</p>}
