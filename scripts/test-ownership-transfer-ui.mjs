@@ -37,4 +37,7 @@ const lookupRoute = worker.slice(worker.indexOf('if(p==="/api/author/eligible-re
 assert.ok(lookupRoute.includes("username=? COLLATE NOCASE AND role='author' AND banned=0 AND id<>?"));
 assert.ok(lookupRoute.includes("username=? COLLATE NOCASE AND role='author' AND banned=0 AND id<>?"));
 assert.doesNotMatch(lookupRoute, /email|password_hash/);
+const transferRoutes = worker.slice(worker.indexOf('let transferRequest='), worker.indexOf('if(p==="/api/author/novels"&&m==="GET")'));
+assert.equal((transferRoutes.match(/await audit\\(env,u,"novel_ownership_transfer_/g)||[]).length, 4);
+assert.doesNotMatch(transferRoutes, /INSERT INTO audit_logs/);
 console.log("Author Studio ownership-transfer interface and API authorization wiring checks passed.");
