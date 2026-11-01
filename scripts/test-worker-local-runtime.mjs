@@ -166,6 +166,10 @@ try {
   // Every write deliberately supplies the OTHER account's ID. The server must ignore it.
   const libraryWrite = await postAs(accountA, '/api/library', { novel_id:novelId, user_id:dataB.user.id });
   assert.equal(libraryWrite.response.status, 200, `Account A library write failed: ${libraryWrite.body}`);
+  const csrfOriginProbe = await request('/api/library', {method:'POST',headers:{...jsonHeaders,cookie:accountA.cookie,origin:'https://attacker.example'},body:JSON.stringify({novel_id:novelId})});
+  assert.equal(csrfOriginProbe.response.status, 403, 'Cross-origin state-changing requests must be rejected');
+  const csrfFetchMetadataProbe = await request('/api/library', {method:'POST',headers:{...jsonHeaders,cookie:accountA.cookie,'sec-fetch-site':'cross-site'},body:JSON.stringify({novel_id:novelId})});
+  assert.equal(csrfFetchMetadataProbe.response.status, 403, 'Cross-site Fetch Metadata requests must be rejected');
   const libraryA = await getAs(accountA, '/api/library');
   const libraryB = await getAs(accountB, '/api/library');
   assert.ok(JSON.parse(libraryA.body).some(x=>Number(x.novel_id)===novelId), 'Account A must see its own library entry');
