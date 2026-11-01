@@ -8,7 +8,7 @@ assert.match(worker, /function xmlEscape\(value\)/, "Sitemap XML values must be 
 assert.match(worker, /async function publicSitemap\(req,env\)/, "Dynamic sitemap handler must exist");
 assert.match(worker, /new URL\(req\.url\)\.origin/, "Sitemap URLs must use the active request origin");
 assert.match(worker, /publication_status='published'/, "Only published novels may enter the sitemap");
-assert.match(worker, /rights_status IN \\('original','public_domain','licensed','authorized'\\)/, "Only rights-eligible works may enter the public sitemap");
+assert.match(worker, /rights_status IN \('original','public_domain','licensed','authorized'\)/, "Only rights-eligible works may enter the public sitemap");
 assert.match(worker, /SELECT id,updated_at FROM novels/, "Sitemap must use novel metadata, never chapter bodies");
 assert.match(worker, /LIMIT 49990/, "Sitemap must leave room for fixed public URLs under the 50,000 URL limit");
 assert.match(worker, /entry\.lastmod=stamp\.toISOString\(\)\.slice\(0,10\)/, "Valid update timestamps must be emitted as sitemap dates");
