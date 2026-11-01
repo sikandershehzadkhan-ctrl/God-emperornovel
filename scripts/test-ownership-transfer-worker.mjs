@@ -108,7 +108,7 @@ try {
   const administrator = await account(baseUrl, "administrator" + suffix, "administrator" + suffix + "@example.test");
   const malformedVerification = await request(baseUrl,"/api/auth/verify-email",{method:"POST",body:{token:"not-a-valid-token"}});
   assert.equal(malformedVerification.response.status,400);
-  assert.equal(JSON.stringify(malformedVerification.data).includes(verificationToken),false);
+  assert.equal(JSON.stringify(malformedVerification.data).includes("not-a-valid-token"),false);
 
   // Verify the public confirmation endpoint consumes a real D1 token exactly once.
   const verificationToken = createEmailVerificationToken();
