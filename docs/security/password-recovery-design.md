@@ -121,3 +121,8 @@ Password recovery is not considered complete until all six steps pass. No produc
 ### Activation requirements
 
 Before adding a user-facing route, the receiving delivery service must be separately reviewed and configured with a verified sender, provider secret, strict template rendering, recipient policy, provider-side idempotency, bounce handling, and a documented data-retention policy. Then configure the Cloudflare Service Binding and test it in an isolated environment. Do not return account-existence information or expose action URLs in API responses.
+### Action-link destination restrictions
+
+- The delivery boundary now permits only `/verify-email` for `verify_email` and `/reset-password` for `reset_password`.
+- Both actions must carry a 43-character base64url token exclusively in the URL fragment (`#token=...`). Query strings, off-origin links, other same-origin paths, and missing/malformed fragments are rejected before the service binding is called.
+- The delivery contract tests include wrong-path, wrong-template, missing-token, and off-origin cases.
