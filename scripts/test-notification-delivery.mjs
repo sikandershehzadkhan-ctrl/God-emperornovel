@@ -31,6 +31,8 @@ assert.ok(commentRoute[1].includes("await notifyUser(env,parentAuthor"), "commen
 assert.ok(commentRoute[1].includes("await notifyUser(env,owner"), "novel comments must notify the novel owner");
 assert.ok(commentRoute[1].includes("owner!==Number(u.id)"), "authors must not receive notifications for their own comments");
 assert.ok(commentRoute[1].includes("rights_status IN ('original','public_domain','licensed','authorized')"), "comment creation must enforce publication rights clearance");
+assert.ok(commentRoute[1].includes("INSERT INTO comments(user_id,novel_id,body,parent_id) SELECT ?,?,?,? WHERE (SELECT COUNT(*) FROM comments"), "the hourly comment limit must be enforced atomically with comment insertion");
+assert.ok(commentRoute[1].includes("inserted?.meta?.changes") && commentRoute[1].includes("429"), "comment posting beyond the hourly limit must be rejected with a rate-limit response");
 const commentLike = worker.match(/if\(p==="\/api\/comments\/like"&&m==="POST"\)\{([\s\S]*?)\n\s*if\(p==="\/api\/comments\/report"/);
 assert.ok(commentLike, "comment like route must exist");
 assert.ok(commentLike[1].includes("JOIN novels n ON n.id=c.novel_id"), "comment likes must verify the associated novel");
