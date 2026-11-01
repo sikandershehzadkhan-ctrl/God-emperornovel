@@ -134,3 +134,17 @@ assert.ok(css.includes("scroll-margin-top:92px"),"Community deep links must acco
 assert.ok(sourceApp.includes('class="novelHero"'),"Novel detail route must render the shared story hero");
 assert.ok(sourceApp.includes('class="tabs"'),"Novel detail route must render overview and chapter navigation");
 assert.ok(sourceApp.includes('class="chapterList"'),"Novel detail route must render the chapter archive");
+
+
+for(const selector of [".accountGrid",".accountMenu",".accountMenu a.active",".profileTop",".metricGrid",".metric",".accountGrid .card",".accountGrid .statline"]){
+  assert.ok(css.includes(selector),"Account and library design foundation must include "+selector);
+}
+assert.ok(css.includes("grid-template-columns:210px minmax(0,1fr)"),"Desktop account workspace must separate navigation and content");
+assert.ok(css.includes("@media(max-width:760px){\n .accountGrid"),"Account workspace must collapse cleanly on mobile");
+assert.ok(css.includes("overflow-x:auto"),"Account navigation must remain usable on narrow screens");
+assert.ok(css.includes("grid-template-columns:repeat(2,minmax(0,1fr))"),"Personal library must use a two-column mobile grid");
+assert.ok(sourceApp.includes('class="accountGrid"'),"Account route must render the account workspace");
+assert.ok(sourceApp.includes('class="accountMenu"'),"Account route must render account navigation");
+assert.ok(sourceApp.includes('class="metricGrid"'),"Account route must render account metrics");
+assert.ok(sourceApp.includes('id="savedList"'),"Library route must render saved stories");
+assert.ok(sourceApp.includes('id="continueList"'),"Library route must render reading progress");
