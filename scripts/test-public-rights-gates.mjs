@@ -32,4 +32,5 @@ const bookmarksGet = lines.find(line => line.includes('if(p==="/api/bookmarks"')
 const historyGet = lines.find(line => line.includes('if(p==="/api/history"&&m==="GET"')) || '';
 const progressPost = lines.find(line => line.includes('if(p==="/api/reading-position"&&m==="POST"')) || '';
 for (const [name, line] of Object.entries({libraryGet,bookmarksGet,historyGet,progressPost})) assert.ok(line.includes("rights_status IN ('original','public_domain','licensed','authorized')"), name + ' must hide ineligible novels');
-console.log('PASS: reader-facing discovery, ratings, engagement, follow, library, bookmark, history and reading-position routes enforce eligible rights.');
+const omniLocal = source.split('\n').find(line => line.includes('async function omniLocal')) || ''; assert.ok(omniLocal.includes("rights_status IN ('original','public_domain','licensed','authorized') AND (LOWER(title) LIKE ?"), 'OmniPortal local search must enforce eligible rights before search predicates');
+console.log('PASS: reader-facing discovery, ratings, engagement, follow, library, bookmark, history, progress and OmniPortal search enforce eligible rights.');
