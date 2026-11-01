@@ -62,6 +62,9 @@ jobs:
       - name: Build application
         run: npm run build
 
+      - name: Exercise Worker against isolated local D1
+        run: npm run test:worker-runtime
+
       - name: Validate Cloudflare Worker bundle without deploying
         run: npx --yes wrangler@4 deploy --dry-run
 
