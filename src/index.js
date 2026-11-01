@@ -415,6 +415,7 @@ async function communityTaxonomy(req,env,user){
  }
  if(method==='POST'){
   const auth=need(user);if(auth)return auth;
+  const limited=await consumeAuthRateLimit(env,"taxonomy-user",String(user.id),10,3600);if(limited)return limited;
   const b=await body(req),type=String(b.type||'').toLowerCase(),name=String(b.name||'').trim().replace(/\s+/g,' ');
   if(!['genre','tag'].includes(type)) return json({error:'type must be genre or tag'},400);
   if(name.length<2||name.length>80)return json({error:'Name must be 2-80 characters'},400);
