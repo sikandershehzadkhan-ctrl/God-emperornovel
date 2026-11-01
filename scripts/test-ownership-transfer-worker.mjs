@@ -179,7 +179,9 @@ try {
   const otherAuthorChapterPublish = await request(baseUrl, "/api/author/chapters/" + chapterId + "/publish", {
     method: "POST", cookie: recipient.cookie, body: { publication_status: "published" }
   });
-  assert.equal(otherAuthorChapterPublish.response.status, 403, "A different author must not publish another author's chapter");
+  assert.ok([403, 404].includes(otherAuthorChapterPublish.response.status), "A different author must not publish another author's chapter: " + JSON.stringify(otherAuthorChapterPublish.data));
+  const chapterAfterForeignPublish = await request(baseUrl, "/api/author/chapters?novel_id=" + privateNovel, { cookie: owner.cookie });
+  assert.equal(chapterAfterForeignPublish.data.find(row => Number(row.id) === chapterId)?.publication_status, "draft", "Foreign publish attempt must leave the chapter as a draft");
   executeLocalSql("INSERT INTO history(user_id,novel_id,chapter_number) VALUES(" + ownerId + "," + privateNovel + ",1);"
     + "INSERT INTO bookmarks(user_id,novel_id,chapter_number) VALUES(" + ownerId + "," + privateNovel + ",1);"
     + "INSERT INTO user_library(user_id,novel_id) VALUES(" + ownerId + "," + privateNovel + ");"
