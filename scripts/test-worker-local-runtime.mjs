@@ -351,6 +351,11 @@ try {
   const home = await request('/');
   assert.equal(home.response.status, 200, 'Home page must be served by the Worker');
   assert.match(home.body, /Imperial Novel/, 'Home page must contain the platform brand');
+  const logout = await request('/api/auth/logout', {method:'POST',headers:{cookie:accountA.cookie}});
+  assert.equal(logout.response.status, 200, 'Authenticated logout must complete successfully');
+  assert.match(logout.response.headers.get('set-cookie')||'', /Max-Age=0/, 'Logout must expire the browser session cookie');
+  const revokedSession = await getAs(accountA, '/api/me');
+  assert.equal(JSON.parse(revokedSession.body).user, null, 'A logged-out session token must no longer authenticate subsequent requests');
   console.log('PASS: real Wrangler local Worker handled health, D1-backed catalog, live overview, authenticated taxonomy submission identity boundary and unauthenticated taxonomy rejection, missing chapter, two independent account registrations/logins, session-bound profile isolation, cross-account library/history/bookmark/reading-position/notification, ticket-ledger, OmniPortal-import and author-owned novel/chapter/AI-project isolation, hostile user_id write/query handling, owner/admin privilege-boundary rejection and anonymous private-resource rejection and homepage requests.');
 } finally {
   try { process.kill(-child.pid, 'SIGTERM'); } catch { child.kill('SIGTERM'); }
