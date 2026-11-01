@@ -29,6 +29,10 @@ assert.ok(commentRoute[1].includes("await notifyUser(env,parentAuthor"), "commen
 assert.ok(commentRoute[1].includes("await notifyUser(env,owner"), "novel comments must notify the novel owner");
 assert.ok(commentRoute[1].includes("owner!==Number(u.id)"), "authors must not receive notifications for their own comments");
 assert.ok(commentRoute[1].includes("rights_status IN ('original','public_domain','licensed','authorized')"), "comment creation must enforce publication rights clearance");
+const commentLike = worker.match(/if\(p==="\/api\/comments\/like"&&m==="POST"\)\{([\s\S]*?)\n\s*if\(p==="\/api\/comments\/report"/);
+assert.ok(commentLike, "comment like route must exist");
+assert.ok(commentLike[1].includes("JOIN novels n ON n.id=c.novel_id"), "comment likes must verify the associated novel");
+assert.ok(commentLike[1].includes("rights_status IN ('original','public_domain','licensed','authorized')"), "comment likes must enforce publication rights clearance");
 const reportSubmission = worker.match(/if\(p==="\/api\/comments\/report"&&m==="POST"\)\{([\s\S]*?)\n\s*if\(p==="\/api\/rating"/);
 assert.ok(reportSubmission, "comment report submission route must exist");
 assert.ok(reportSubmission[1].includes("JOIN novels n ON n.id=c.novel_id"), "reports must only target comments on published novels");
