@@ -71,16 +71,18 @@ export const PASSWORD_RESET_INVALIDATION_SQL = `UPDATE password_reset_tokens
     AND consumed_at IS NULL AND invalidated_at IS NULL`;
 
 /** Atomically replace active reset links and issue a new digest for an existing account. */
-export async function issuePasswordResetToken(db, { userId, tokenHash, now, expiresAt } = {}) {
+export async function issuePasswordResetToken(db, { userId, emailSnapshot, tokenHash, now, expiresAt } = {}) {
   if (!db || typeof db.prepare !== "function" || typeof db.batch !== "function") throw new Error("A D1 database binding is required");
   if (!Number.isSafeInteger(userId) || userId <= 0) throw new Error("A valid user id is required");
+  const email=typeof emailSnapshot==="string"?emailSnapshot.trim().toLowerCase():"";
+  if(email.length>254||!/^\\S+@\\S+\\.\\S+$/.test(email))throw new Error("A valid email snapshot is required");
   if (typeof tokenHash !== "string" || !HASH_PATTERN.test(tokenHash)) throw new Error("Invalid password-reset token digest");
   if (typeof now !== "string" || !ISO_UTC.test(now) || typeof expiresAt !== "string" || !ISO_UTC.test(expiresAt)) throw new Error("Normalized UTC timestamps are required");
   const start=Date.parse(now), expiry=Date.parse(expiresAt);
   if (!Number.isFinite(start) || !Number.isFinite(expiry) || expiry<=start || expiry-start>60*60*1000) throw new Error("Password-reset expiry must be within one hour");
   const results=await db.batch([
-    db.prepare(PASSWORD_RESET_ISSUANCE_SQL[0]).bind(now,userId,userId),
-    db.prepare(PASSWORD_RESET_ISSUANCE_SQL[1]).bind(userId,tokenHash,now,expiresAt,userId)
+    db.prepare(PASSWORD_RESET_ISSUANCE_SQL[0]).bind(now,userId,userId,email),
+    db.prepare(PASSWORD_RESET_ISSUANCE_SQL[1]).bind(userId,email,tokenHash,now,expiresAt,userId,email)
   ]);
   return {ok:Number(results?.[1]?.meta?.changes||0)===1};
 }
