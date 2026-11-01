@@ -50,12 +50,12 @@ assert.ok(adminUi.includes("commentReportsBody"), "admin community moderation mu
 assert.ok(adminUi.includes("/api/admin/community/reports"), "admin UI must load comment reports from the dedicated moderation API");
 assert.ok(adminUi.includes("updateCommentReport") && adminUi.includes("Resolve") && adminUi.includes("Dismiss"), "admin UI must provide explicit report resolution and dismissal actions");
 assert.ok(adminUi.includes("Reopen"), "admin UI must allow resolved or dismissed reports to return to the open queue");
-const reportModeration = worker.match(/if\(p==="\\/api\\/admin\\/community\\/reports"&&m==="PATCH"\)\{([\\s\\S]*?)\\n\\s*if\(p==="\\/api\\/donations"/);
+const reportModeration = worker.match(/if\(p==="\\/api\\/admin\\/community\\/reports"&&m==="PATCH"\)\{([\s\S]*?)\n\s*if\(p==="\\/api\\/donations"/);
 assert.ok(reportModeration, "admin comment report moderation route must exist");
 assert.ok(reportModeration[1].includes("env.DB.batch("), "report status update and audit event must be committed atomically");
 assert.ok(reportModeration[1].includes("WHERE changes()=1"), "audit event must only be written when the guarded status update changes a row");
 assert.ok(reportModeration[1].includes("409"), "stale concurrent moderation updates must return a conflict");
-const reportListing = worker.match(/if\(p==="\\/api\\/admin\\/community\\/reports"&&m==="GET"\)\{([\\s\\S]*?)\\n\\s*if\(p==="\\/api\\/admin\\/community\\/reports"&&m==="PATCH"/);
+const reportListing = worker.match(/if\(p==="\\/api\\/admin\\/community\\/reports"&&m==="GET"\)\{([\s\S]*?)\n\s*if\(p==="\\/api\\/admin\\/community\\/reports"&&m==="PATCH"/);
 assert.ok(reportListing && reportListing[1].includes("LEFT JOIN"), "report queue must retain orphaned reports for moderator review");
 assert.ok(commentsUi.includes("Report") && commentsUi.includes("Submit report"), "reader comment cards must expose a report submission flow");
 assert.ok(commentsUi.includes("spam") && commentsUi.includes("harassment") && commentsUi.includes("copyright") && commentsUi.includes("inappropriate") && commentsUi.includes("other"), "reader report form must offer the supported reason categories");
