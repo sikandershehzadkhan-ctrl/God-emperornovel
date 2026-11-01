@@ -82,7 +82,7 @@ async function transferStatus(baseUrl, cookie, id) {
 try {
   const port = await freePort();
   console.log("Applying migrations to isolated local D1...");
-  wrangler(["d1", "migrations", "apply", database, "--local", "--persist-to", persist, "--yes"]);
+  wrangler(["d1", "migrations", "apply", database, "--local", "--persist-to", persist]);
   console.log("Starting local Worker...");
   worker = spawn("npx", [
     "--yes", "wrangler@4", "dev", "--local", "--ip", "127.0.0.1",
