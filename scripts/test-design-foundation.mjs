@@ -232,6 +232,12 @@ assert.ok(css.includes("font-size:18px;line-height:1.82"),"Phone reading typogra
 assert.ok(css.includes("min-height:42px;padding:9px 10px"),"Reader preference controls must have comfortable touch targets");
 assert.ok(sourceApp.includes("readerPage.dataset.readerTheme=chosen"),"Reader theme selector must apply the selected theme to the reading surface");
 assert.ok(sourceApp.includes("imperial_reader_theme"),"Reader theme choice must persist between visits");
+assert.ok(sourceApp.includes('aria-controls="chapterDrawer"'),"Reader settings trigger must identify its controlled drawer");
+assert.ok(sourceApp.includes('role="region" aria-label="Reader settings and chapter navigation"'),"Reader drawer must have an accessible region name");
+assert.ok(sourceApp.includes("if(opening)closeChapterMenu.focus()"),"Opening reader settings must move focus into the drawer");
+assert.ok(sourceApp.includes("if(event.key==='Escape')"),"Reader settings drawer must close with Escape");
+assert.ok(sourceApp.includes("chapterMenu.focus()"),"Closing reader settings must restore focus to its trigger");
+
 assert.ok(sourceApp.includes("Number.isInteger(savedSize)&&savedSize>=15&&savedSize<=30?savedSize:18"),"Reader font size must restore only valid whole-number sizes and fall back safely");
 assert.ok(sourceApp.includes("lineOptions.includes(savedLine)?savedLine:'1.85'"),"Reader line spacing must restore only supported saved values");
 assert.ok(sourceApp.includes("widthOptions.includes(savedWidth)?savedWidth:'600'"),"Reader text width must restore only supported saved values");
