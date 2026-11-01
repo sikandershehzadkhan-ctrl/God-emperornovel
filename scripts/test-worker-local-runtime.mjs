@@ -16,7 +16,10 @@ child.stdout.setEncoding('utf8').on('data', chunk => { output += chunk; });
 child.stderr.setEncoding('utf8').on('data', chunk => { output += chunk; });
 const sleep = ms => new Promise(resolve => setTimeout(resolve, ms));
 async function request(path, options = {}) {
-  const response = await fetch(origin + path, { ...options, signal: AbortSignal.timeout(2500) });
+  const { omitOrigin = false, ...fetchOptions } = options;
+  const headers = new Headers(fetchOptions.headers || {});
+  if (!omitOrigin && ["POST","PUT","PATCH","DELETE"].includes(String(fetchOptions.method || "GET").toUpperCase()) && !headers.has("origin")) headers.set("origin", origin);
+  const response = await fetch(origin + path, { ...fetchOptions, headers, signal: AbortSignal.timeout(2500) });
   return { response, body: await response.text() };
 }
 try {
@@ -185,6 +188,10 @@ try {
   assert.equal(csrfOriginProbe.response.status, 403, 'Cross-origin state-changing requests must be rejected');
   const csrfFetchMetadataProbe = await request('/api/library', {method:'POST',headers:{...jsonHeaders,cookie:accountA.cookie,'sec-fetch-site':'cross-site'},body:JSON.stringify({novel_id:novelId})});
   assert.equal(csrfFetchMetadataProbe.response.status, 403, 'Cross-site Fetch Metadata requests must be rejected');
+  const csrfMissingMetadataProbe = await request('/api/library', {method:'POST',headers:{...jsonHeaders,cookie:accountA.cookie},omitOrigin:true,body:JSON.stringify({novel_id:novelId})});
+  assert.equal(csrfMissingMetadataProbe.response.status, 403, 'State-changing requests without Origin or same-origin Fetch Metadata must fail closed');
+  const csrfSameOriginMetadataProbe = await request('/api/library', {method:'POST',headers:{...jsonHeaders,cookie:accountA.cookie,'sec-fetch-site':'same-origin'},omitOrigin:true,body:JSON.stringify({novel_id:novelId})});
+  assert.notEqual(csrfSameOriginMetadataProbe.response.status, 403, 'Explicit same-origin Fetch Metadata may authorize a same-origin browser mutation');
   const libraryA = await getAs(accountA, '/api/library');
   const libraryB = await getAs(accountB, '/api/library');
   assert.ok(JSON.parse(libraryA.body).some(x=>Number(x.novel_id)===novelId), 'Account A must see its own library entry');
