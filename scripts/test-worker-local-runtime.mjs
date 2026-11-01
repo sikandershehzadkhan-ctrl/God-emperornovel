@@ -79,7 +79,7 @@ try {
   // High fixed IDs avoid dependence on production-like catalog seed data.
   const fixtureSql = [
     'DELETE FROM notifications WHERE id IN (2147483002,2147483003)',
-    'DELETE FROM chapters WHERE id IN (2147483004,2147483005)',
+    'DELETE FROM chapters WHERE id IN (2147483004,2147483005,2147483006)',
     'DELETE FROM novels WHERE id IN (2147483004,2147483005)',
     `UPDATE users SET role='author' WHERE id IN (${Number((JSON.parse((await request('/api/profile',{headers:{cookie:accountA.cookie}})).body)).user.id)},${Number((JSON.parse((await request('/api/profile',{headers:{cookie:accountB.cookie}})).body)).user.id)})`,
     `INSERT INTO novels(id,title,author,rights_status,owner_user_id,publication_status) VALUES(2147483004,'Author A Private Novel','Author A','original',${Number((JSON.parse((await request('/api/profile',{headers:{cookie:accountA.cookie}})).body)).user.id)},'draft')`,
@@ -90,11 +90,25 @@ try {
     'DELETE FROM novels WHERE id=2147483001',
     "INSERT INTO novels(id,title,author,publication_status,rights_status) VALUES(2147483001,'Runtime Isolation Fixture','Runtime Test','published','original')",
     "INSERT INTO chapters(id,novel_id,chapter_number,title,content,is_locked,ticket_cost,publication_status) VALUES(2147483001,2147483001,1,'Runtime Isolation Chapter','Fixture body',0,0,'published')",
+    `UPDATE users SET tickets=10 WHERE email='rt_a_${suffix}@example.invalid'`,
+    "INSERT INTO chapters(id,novel_id,chapter_number,title,content,is_locked,ticket_cost,publication_status) VALUES(2147483006,2147483001,2,'Concurrent Unlock Fixture','Paid fixture body',1,3,'published')",
     `INSERT INTO notifications(id,user_id,title,body) VALUES(2147483002,${Number((JSON.parse((await request('/api/profile',{headers:{cookie:accountA.cookie}})).body)).user.id)},'A-only notification','Private to A')`,
     `INSERT INTO notifications(id,user_id,title,body) VALUES(2147483003,${Number((JSON.parse((await request('/api/profile',{headers:{cookie:accountB.cookie}})).body)).user.id)},'B-only notification','Private to B')`
   ].join('; ');
   execFileSync('npx', ['--yes','wrangler@4','d1','execute','god-emperornovel-db','--local','--persist-to','.wrangler/test-runtime','--command',fixtureSql], { stdio:'pipe', env:{...process.env,NO_COLOR:'1'} });
 
+  const concurrentUnlocks = await Promise.all([
+    request('/api/chapters/2147483006/unlock',{method:'POST',headers:{cookie:accountA.cookie}}),
+    request('/api/chapters/2147483006/unlock',{method:'POST',headers:{cookie:accountA.cookie}})
+  ]);
+  assert.equal(concurrentUnlocks.filter(x=>x.response.status===200).length,1,'Exactly one concurrent chapter unlock may succeed');
+  assert.equal(concurrentUnlocks.filter(x=>x.response.status===409).length,1,'The duplicate concurrent unlock must be rejected as a conflict');
+  const unlockAuditSql = `SELECT (SELECT tickets FROM users WHERE email='rt_a_${suffix}@example.invalid') balance,(SELECT COUNT(*) FROM unlocks WHERE user_id=(SELECT id FROM users WHERE email='rt_a_${suffix}@example.invalid') AND chapter_id=2147483006) unlock_count,(SELECT COUNT(*) FROM ticket_ledger WHERE user_id=(SELECT id FROM users WHERE email='rt_a_${suffix}@example.invalid') AND reason='chapter_unlock' AND reference='2147483006' AND delta=-3) ledger_count`;
+  const unlockAudit = JSON.parse(execFileSync('npx',['--yes','wrangler@4','d1','execute','god-emperornovel-db','--local','--persist-to','.wrangler/test-runtime','--command',unlockAuditSql,'--json'],{encoding:'utf8',env:{...process.env,NO_COLOR:'1'}}));
+  const unlockAuditRow = unlockAudit[0]?.results?.[0] || unlockAudit[0]?.result?.[0] || unlockAudit.results?.[0] || {};
+  assert.equal(Number(unlockAuditRow.balance),7,'Concurrent duplicate unlocks must debit tickets exactly once');
+  assert.equal(Number(unlockAuditRow.unlock_count),1,'Concurrent duplicate unlocks must create exactly one unlock record');
+  assert.equal(Number(unlockAuditRow.ledger_count),1,'Concurrent duplicate unlocks must create exactly one matching ledger entry');
   const profileA = await request('/api/profile', { headers: { cookie: accountA.cookie } });
   const profileB = await request('/api/profile', { headers: { cookie: accountB.cookie } });
   assert.equal(profileA.response.status, 200, `Account A profile failed: ${profileA.body}`);
