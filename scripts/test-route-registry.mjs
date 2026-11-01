@@ -25,5 +25,5 @@ assert.equal(routes.resolve('/not-a-real-page'),null);
 assert.equal(routes.resolve('/read/42/7/extra'),null);
 assert.equal(routes.resolve('/novel/%2F/chapters'),null);
 assert.equal(routes.resolve('/library/').canonical,'/library');
-assert.equal(routes.routes.length,34);
+assert.equal(routes.routes.length,35);
 console.log('Imperial Novel route registry: '+cases.length+' route cases and negative cases passed.');
