@@ -44,3 +44,11 @@ Retention must be based on purpose and legal obligations, not arbitrary deletion
 3. Never export password hashes, session token hashes, API keys, provider secrets, or internal security records.
 4. Test two-account isolation whenever export queries or schema ownership changes.
 5. Do not run account deletion, bulk retention, or production export operations without a reviewed migration, backup, and recovery plan.
+
+## Reversible account closure request
+
+The authenticated account closure request API is available at `POST /api/account/closure-request`. It requires the current password, applies a per-account request limit, and records a 14-day cancellation period. A user can inspect their own latest request with `GET /api/account/closure-request` and cancel an active request with `POST /api/account/closure-cancel`.
+
+Request and cancellation events are written to the audit log. Duplicate pending requests are idempotent. Cancelling preserves the account and active session.
+
+**This is a request and grace-period workflow only. It does not delete the account or erase personal data.** Completion requires a separately reviewed process for creator content, financial reconciliation, legal retention, ownership transfer, and dependent records. There is no automated account erasure job.
