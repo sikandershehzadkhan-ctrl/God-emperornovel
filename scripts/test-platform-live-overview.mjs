@@ -62,6 +62,7 @@ const catalogRouteEnd=source.indexOf('let nm=p.match(/^\\/api\\/novels\\/(\\d+)$
 assert.ok(catalogRouteStart>=0&&catalogRouteEnd>catalogRouteStart,"Catalog API route must be present for rating-filter validation.");
 const catalogRoute=source.slice(catalogRouteStart,catalogRouteEnd);
 assert.ok(catalogRoute.includes("Math.min(10,minRating)"),"Catalog minimum-rating filtering must support the complete 1-10 rating scale.");
+for(const value of [10,9,8,7,6,5,4,3,2,1])assert.ok(app.includes(`<option value="${value}">${value}+</option>`),`Catalog UI must offer the ${value}+ whole-number rating filter.`);
 
 assert.ok(route.includes("new Date().toISOString()"),"Overview must expose the actual response timestamp");
 assert.ok(route.includes("generated_at:generatedAt"),"The real-time response must expose a canonical generated_at timestamp.");
