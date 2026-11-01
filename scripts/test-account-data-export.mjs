@@ -9,6 +9,7 @@ const route = source.slice(start, end);
 
 for (const [fragment, description] of [
   ['const e=need(u);if(e)return e;', "export must require an authenticated session"],
+  ['consumeAuthRateLimit(env,"privacy-export-user",String(uid),3,3600)', "account export must be throttled per account"],
   ['WHERE user_id=?', "reader-owned records must be filtered by the authenticated account"],
   ['WHERE owner_user_id=?', "AI author projects must be filtered by their owner"],
   ['ai_chapter_jobs', "account export must include owned AI chapter jobs"],
