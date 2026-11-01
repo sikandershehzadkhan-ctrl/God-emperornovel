@@ -144,7 +144,7 @@ assert.ok(ratingUi.includes("Rate \u0024{value} out of 10"), "reader rating cont
 assert.ok(ratingUi.includes("{average.toFixed(1)} / 10"), "reader rating summary must display averages out of ten");
 assert.ok(ratingUi.includes("Your rating: {selected}/10"), "reader rating summary must display the user's score out of ten");
 assert.ok(app.includes("★ \u0024{rating.toFixed(1)} / 10"), "catalog cards must label rating averages as scores out of ten");
-assert.ok(app.includes('<option value="8">8+</option><option value="6">6+</option><option value="4">4+</option>'), "catalog minimum-rating filters must use ten-point thresholds");
+for (const value of [10,9,8,7,6,5,4,3,2,1]) assert.ok(app.includes(`<option value="${value}">${value}+</option>`), `catalog minimum-rating filters must include ${value}+`);
 const ratingCss = readFileSync(new URL("../public/app-17.23.0.css", import.meta.url), "utf8");
 assert.ok(ratingCss.includes(".ratingStars{display:flex;flex-wrap:wrap;"), "ten rating choices must wrap safely on narrow screens");
 assert.ok(ratingCss.includes("min-width:38px;min-height:38px"), "rating choices must retain comfortable touch targets");
