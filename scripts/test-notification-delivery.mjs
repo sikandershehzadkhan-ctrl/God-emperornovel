@@ -28,7 +28,9 @@ assert.ok(commentsRead[1].includes("publication_status='published'"), "comment r
 assert.ok(commentsRead[1].includes("rights_status IN ('original','public_domain','licensed','authorized')"), "comment reads must enforce publication rights clearance");
 const publicCommentsRoute = worker.match(/if\(p==="\/api\/comments"&&m==="GET"\)\{([\s\S]*?)\n\s*if\(p==="\/api\/comments"&&m==="POST"/);
 assert.ok(publicCommentsRoute, "public comment listing route must exist");
-assert.ok(publicCommentsRoute[1].includes("ORDER BY c.created_at DESC LIMIT 300"), "bounded discussion feeds must prioritize the newest comments");
+assert.ok(publicCommentsRoute[1].includes("WITH recent AS") && publicCommentsRoute[1].includes("ORDER BY created_at DESC LIMIT 300"), "bounded discussion feeds must prioritize the newest comments");
+assert.ok(publicCommentsRoute[1].includes("UNION SELECT parent_id FROM recent WHERE parent_id IS NOT NULL"), "bounded discussion feeds must retain parent comments for recent replies");
+assert.ok(publicCommentsRoute[1].includes("c.id IN (SELECT id FROM selected)"), "discussion feed must only include recent comments and their required parent context");
 const commentRoute = worker.match(/if\(p==="\/api\/comments"&&m==="POST"\)\{([\s\S]*?)\n\s*if\(p==="\/api\/comments\/like"/);
 assert.ok(commentRoute, "comment creation route must exist");
 assert.ok(commentRoute[1].includes("await notifyUser(env,parentAuthor"), "comment replies must notify the parent comment author");
@@ -62,6 +64,7 @@ assert.ok(communityCss.includes(".commentReportForm") && communityCss.includes("
 assert.ok(communityCss.includes("@media(max-width:520px)") && communityCss.includes(".novelCommentComposerFooter button{width:100%}"), "community composer actions must adapt to narrow mobile screens");
 assert.ok(communityCss.includes(".commentReportForm textarea:focus-visible") && communityCss.includes("outline:3px"), "community report fields must expose visible keyboard focus");
 assert.ok(commentsUi.includes("window.setInterval(refreshWhenVisible, 30000)"), "novel discussions must refresh on a bounded 30-second interval");
+assert.ok(commentsUi.includes("let requestInFlight = false") && commentsUi.includes("if (!active || requestInFlight) return"), "discussion polling must prevent overlapping requests and updates after unmount");
 assert.ok(commentsUi.includes('document.visibilityState === "visible"'), "discussion polling must pause while the page is hidden");
 assert.ok(commentsUi.includes('document.addEventListener("visibilitychange", refreshWhenVisible)'), "discussion updates must refresh when the reader returns to the page");
 assert.ok(commentsUi.includes("window.clearInterval(timer)") && commentsUi.includes('document.removeEventListener("visibilitychange", refreshWhenVisible)'), "discussion polling must clean up timers and listeners");
