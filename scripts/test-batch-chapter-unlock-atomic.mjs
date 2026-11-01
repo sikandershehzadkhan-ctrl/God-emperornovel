@@ -17,7 +17,9 @@ for (const [fragment, description] of [
   ["SELECT ?,?,? WHERE changes()=1", "each unlock must depend on a successful debit or prior unlock insert"],
   ["SELECT ?,?,?,? WHERE changes()=1", "ledger must depend on successful unlock insertion"],
   ["SELECT ?,?,?,?,?,? WHERE changes()=1", "batch receipt must depend on successful preceding accounting"],
-  ["debited!==1||!unlocked||!ledger||!batch", "D1 batch results must be checked before success"]
+  ["debited!==1||!unlocked||!ledger||!batch||!audited", "D1 accounting and audit results must be checked before success"],
+  ['INSERT INTO audit_logs(user_id,action,details) SELECT ?,?,? WHERE changes()=1', "batch unlock audit event must be part of the D1 transaction"],
+  ['batch=changed(results?.[results.length-2])===1', "batch receipt result must be checked separately from its audit event"]
 ]) assert.ok(route.includes(fragment), description);
 
 console.log("PASS: batch chapter unlock validates prices, excludes free chapters, prevents overlapping duplicate debits and gates ledger/receipt on successful D1 writes.");
