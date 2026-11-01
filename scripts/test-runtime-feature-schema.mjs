@@ -71,7 +71,9 @@ assert.match(migration, /CREATE TRIGGER IF NOT EXISTS trg_comment_reports_valida
 assert.match(worker, /INSERT OR IGNORE INTO comment_likes/,
   "concurrent duplicate likes must not surface as database errors");
 assert.match(worker, /You have already reported this comment/);
-assert.match(worker, /UNIQUE constraint failed/,
-  "duplicate report races must return a conflict instead of HTTP 500");
+assert.match(worker, /INSERT OR IGNORE INTO comment_reports/,
+  "concurrent duplicate reports must use an atomic conflict-safe insert");
+assert.match(worker, /You have already reported this comment/,
+  "duplicate report races must return HTTP 409 instead of HTTP 500");
 
 console.log("PASS: runtime feature schema upgrades legacy installations, constrains duplicate reports, and matches the forward migration.");
