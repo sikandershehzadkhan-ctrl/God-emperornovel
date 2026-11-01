@@ -18,7 +18,7 @@ async function freePort() {
   await new Promise(resolve => server.close(resolve));
   return value;
 }
-function wrangler(args, timeout = 120000) {
+function wrangler(args, timeout = 45000) {
   const result = spawnSync("npx", ["--yes", "wrangler@4", ...args], {
     cwd: root, encoding: "utf8", timeout, stdio: "inherit",
     env: { ...process.env, WRANGLER_SEND_METRICS: "false" }
@@ -82,7 +82,7 @@ async function transferStatus(baseUrl, cookie, id) {
 try {
   const port = await freePort();
   console.log("Applying migrations to isolated local D1...");
-  wrangler(["d1", "migrations", "apply", database, "--local", "--persist-to", persist]);
+  wrangler(["d1", "migrations", "apply", database, "--local", "--persist-to", persist, "--yes"]);
   console.log("Starting local Worker...");
   worker = spawn("npx", [
     "--yes", "wrangler@4", "dev", "--local", "--ip", "127.0.0.1",
