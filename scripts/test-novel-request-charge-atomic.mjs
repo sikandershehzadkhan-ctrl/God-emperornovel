@@ -14,6 +14,8 @@ for (const [fragment, description] of [
   ["WHERE id=last_insert_rowid() AND user_id=?", "debit and ledger must bind to the inserted request"],
   ["AND changes()=1", "debit and ledger must depend on successful preceding writes"],
   ["results?.[0]?.meta?.last_row_id", "request identity must be confirmed from D1"],
-  ["debited!==1||(cost>0&&ledger!==1)", "accounting results must be checked before success"]
+  ["debited!==1||(cost>0&&ledger!==1)||audited!==1", "debit, ledger and audit results must be checked before success"],
+  ["CAST(id AS TEXT)", "ledger references must use stable request IDs instead of potentially duplicated URLs"],
+  ["novel_request_created", "request creation must be audited in the same D1 batch"]
 ]) assert.ok(route.includes(fragment), description);
 console.log("PASS: novel request charging validates HTTPS, derives capped weekly pricing server-side and links request/debit/ledger writes.");
