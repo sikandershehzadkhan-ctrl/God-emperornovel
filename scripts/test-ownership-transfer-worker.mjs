@@ -135,6 +135,7 @@ try {
 
   // Private reader data must remain scoped to the authenticated session, never a caller-supplied user ID.
   const privateNovel = await createNovel(baseUrl, owner.cookie, "Private Data Isolation Fixture");
+  executeLocalSql("UPDATE novels SET publication_status='published' WHERE id=" + privateNovel);
   const privateChapter = await request(baseUrl, "/api/author/chapters", {
     method: "POST", cookie: owner.cookie,
     body: { novel_id: privateNovel, chapter_number: 1, title: "Private Fixture Chapter", content: "local only", is_locked: true, ticket_cost: 1 }
