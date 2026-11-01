@@ -28,6 +28,13 @@ assert.ok(followRoute[1].includes("publication_status='published'"), "users may 
 assert.ok(followRoute[1].includes("await notifyUser(env,owner"), "new follows must notify the novel owner");
 assert.ok(followRoute[1].includes("owner!==Number(u.id)"), "authors must not be notified when following their own novel");
 assert.ok(followRoute[1].indexOf("if(f){") < followRoute[1].indexOf("await notifyUser(env,owner"), "unfollow actions must not generate follow notifications");
+const likeRoute = worker.match(/if\(p==="\/api\/comments\/like"&&m==="POST"\)\{([\s\S]*?)\n\s*if\(p==="\/api\/comments\/report"/);
+assert.ok(likeRoute, "comment like toggle route must exist");
+assert.ok(likeRoute[1].includes("Number.isSafeInteger(cid)"), "comment like route must validate a positive safe comment id");
+assert.ok(likeRoute[1].includes("await notifyUser(env,Number(c.user_id)"), "new comment likes must notify the comment author");
+assert.ok(likeRoute[1].includes("Number(c.user_id)!==Number(u.id)"), "users must not be notified when liking their own comment");
+assert.ok(likeRoute[1].includes("if(x){") && likeRoute[1].indexOf("if(x){") < likeRoute[1].indexOf("await notifyUser(env,Number(c.user_id)"), "unlikes must not generate notifications");
+
 
 
 assert.ok(app.includes("apiWithTimeout('/api/notifications',{},10000)"), "notification UI must use a bounded request");
