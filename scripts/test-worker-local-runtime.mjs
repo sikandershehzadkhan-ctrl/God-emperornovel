@@ -214,6 +214,13 @@ try {
   assert.ok(!pendingTaxonomyPublic.body.includes('Runtime Isolation Security Probe'), 'Pending taxonomy proposal must not appear in public taxonomy');
   const pendingTaxonomyStatusProbe = await request('/api/taxonomy?type=tag&status=pending');
   assert.equal(pendingTaxonomyStatusProbe.response.status, 403, 'Public taxonomy endpoint must reject pending status queries');
+  // In this isolated test environment the platform-owner identity is intentionally unset.
+  const promoteAdminSql = `UPDATE users SET role='admin' WHERE id=${dataA.user.id}`;
+  execFileSync('npx', ['--yes','wrangler@4','d1','execute','god-emperornovel-db','--local','--persist-to','.wrangler/test-runtime','--command',promoteAdminSql], {stdio:'pipe',env:{...process.env,NO_COLOR:'1'}});
+  const adminUsersRead = await getAs(accountA, '/api/admin/users');
+  assert.equal(adminUsersRead.response.status, 403, 'Generic administrator must not read sensitive account directory without owner identity');
+  const adminEscalation = await request(`/api/admin/users/${dataB.user.id}`, {method:'PATCH',headers:{...jsonHeaders,cookie:accountA.cookie},body:JSON.stringify({role:'admin'})});
+  assert.equal(adminEscalation.response.status, 503, 'Administrator elevation must fail closed when platform-owner identity is unconfigured');
   const anonymousLibrary = await request('/api/library');
   assert.equal(anonymousLibrary.response.status, 401, 'Private library must reject anonymous requests');
   const anonymousHistory = await request('/api/history');
@@ -232,7 +239,7 @@ try {
   const home = await request('/');
   assert.equal(home.response.status, 200, 'Home page must be served by the Worker');
   assert.match(home.body, /Imperial Novel/, 'Home page must contain the platform brand');
-  console.log('PASS: real Wrangler local Worker handled health, D1-backed catalog, live overview, authenticated taxonomy submission identity boundary and unauthenticated taxonomy rejection, missing chapter, two independent account registrations/logins, session-bound profile isolation, cross-account library/history/bookmark/reading-position/notification, ticket-ledger, OmniPortal-import and author-owned novel/chapter/AI-project isolation, hostile user_id write/query handling, anonymous private-resource rejection and homepage requests.');
+  console.log('PASS: real Wrangler local Worker handled health, D1-backed catalog, live overview, authenticated taxonomy submission identity boundary and unauthenticated taxonomy rejection, missing chapter, two independent account registrations/logins, session-bound profile isolation, cross-account library/history/bookmark/reading-position/notification, ticket-ledger, OmniPortal-import and author-owned novel/chapter/AI-project isolation, hostile user_id write/query handling, owner/admin privilege-boundary rejection and anonymous private-resource rejection and homepage requests.');
 } finally {
   try { process.kill(-child.pid, 'SIGTERM'); } catch { child.kill('SIGTERM'); }
   await Promise.race([new Promise(resolve => child.once('exit', resolve)), sleep(5000)]);
