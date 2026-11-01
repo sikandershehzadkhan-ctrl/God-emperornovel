@@ -19,7 +19,7 @@ assert.deepEqual(await issueEmailVerificationToken(fake,{userId:7,emailSnapshot:
 assert.equal(batchStatements.length,2);
 assert.equal(batchStatements[0].sql,EMAIL_VERIFICATION_ISSUANCE_SQL[0]);
 assert.equal(batchStatements[1].sql,EMAIL_VERIFICATION_ISSUANCE_SQL[1]);
-assert.deepEqual(batchStatements.map(x=>x.values),[[now,7],[7,"user@example.test",tokenHash,now,expiresAt,7,"user@example.test"]]);
+assert.deepEqual(batchStatements.map(x=>x.values),[[now,7,7,"user@example.test"],[7,"user@example.test",tokenHash,now,expiresAt,7,"user@example.test"]]);
 assert.deepEqual(await issueEmailVerificationToken({...fake,async batch(){return [{meta:{changes:1}},{meta:{changes:0}}];}},{userId:7,emailSnapshot:"user@example.test",tokenHash,now,expiresAt}),{ok:false});
 assert.deepEqual(await invalidateEmailVerificationToken(fake,{tokenHash,now}),{ok:true});
 assert.equal(EMAIL_VERIFICATION_INVALIDATION_SQL.includes("token_hash=?"),true);
@@ -41,7 +41,7 @@ issue=p["issue"]; revoke=p["revoke"]
 def issue_token(uid,email,digest):
  db.execute("BEGIN IMMEDIATE")
  try:
-  db.execute(issue[0],(now,uid))
+  db.execute(issue[0],(now,uid,uid,email))
   db.execute(issue[1],(uid,email,digest,now,exp,uid,email))
   changed=db.execute("SELECT changes()").fetchone()[0]
   db.commit(); return changed
@@ -51,6 +51,8 @@ assert issue_token(1,"a@example.test","B"*43)==1
 rows=db.execute("SELECT token_hash,invalidated_at FROM email_verification_tokens WHERE user_id=1 ORDER BY id").fetchall()
 assert rows[0][0]=="A"*43 and rows[0][1] is not None
 assert rows[1][0]=="B"*43 and rows[1][1] is None
+assert issue_token(1,"wrong@example.test","D"*43)==0
+assert db.execute("SELECT invalidated_at FROM email_verification_tokens WHERE token_hash=?",("B"*43,)).fetchone()[0] is None
 assert issue_token(2,"wrong@example.test","C"*43)==0
 assert db.execute("SELECT COUNT(*) FROM email_verification_tokens WHERE user_id=2").fetchone()[0]==0
 db.execute(revoke,(now,"B"*43)); assert db.execute("SELECT invalidated_at FROM email_verification_tokens WHERE token_hash=?",("B"*43,)).fetchone()[0]==now
