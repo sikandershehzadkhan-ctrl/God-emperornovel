@@ -447,6 +447,27 @@ try {
   const refundAudit=execFileSync('npx',['--yes','wrangler@4','d1','execute','god-emperornovel-db','--local','--persist-to','.wrangler/test-runtime','--command',`SELECT action,details FROM audit_logs WHERE action='admin_request_rejected' AND details LIKE '%request=${requestIds[3]};%' LIMIT 1`],{encoding:'utf8',stdio:['ignore','pipe','pipe'],env:{...process.env,NO_COLOR:'1'}});
   assert.match(refundAudit,/admin_request_rejected/,'Paid request refund must leave an administrator audit record');
 
+  // Account export is a private, account-scoped download. Seed distinct progress rows
+  // for both test accounts and prove neither export crosses the ownership boundary.
+  const accountBId=Number(JSON.parse((await getAs(accountB,'/api/profile')).body).user.id);
+  execFileSync('npx',['--yes','wrangler@4','d1','execute','god-emperornovel-db','--local','--persist-to','.wrangler/test-runtime','--command',`DELETE FROM reading_positions WHERE user_id IN (${accountAId},${accountBId}) AND novel_id=2147483004; INSERT INTO reading_positions(user_id,novel_id,chapter_number,progress_percent) VALUES(${accountAId},2147483004,7,37),(${accountBId},2147483004,8,82)`],{stdio:'pipe',env:{...process.env,NO_COLOR:'1'}});
+  const exportA=await request('/api/privacy/export',{headers:{cookie:accountA.cookie}});
+  assert.equal(exportA.response.status,200,`Authenticated account data export must succeed: ${exportA.body}`);
+  assert.match(exportA.response.headers.get('content-disposition')||'',/attachment; filename="imperial-novel-account-data.json"/,'Account export must download as a JSON attachment');
+  assert.match(exportA.response.headers.get('cache-control')||'',/no-store/,'Account export must not be cached');
+  assert.equal(exportA.response.headers.get('vary'),'Cookie','Account export must vary by session cookie');
+  const exportAData=JSON.parse(exportA.body);
+  assert.equal(exportAData.account.username,accountA.username,'Export must identify only the signed-in account');
+  assert.ok(Number.isFinite(Date.parse(exportAData.generated_at)),'Export timestamp must be a valid ISO date');
+  assert.deepEqual(exportAData.collections.reading_positions.map(x=>x.progress_percent),[37],'Account A export must contain Account A reading progress only');
+  assert.ok(!exportA.body.includes(accountB.email),'Account A export must not disclose Account B email');
+  assert.ok(!exportA.body.includes('password_hash')&&!exportA.body.includes('token_hash'),'Account export must never include password hashes or session token hashes');
+  const exportB=await request('/api/privacy/export',{headers:{cookie:accountB.cookie}});
+  assert.equal(exportB.response.status,200,'Account B must be able to export its own data');
+  assert.deepEqual(JSON.parse(exportB.body).collections.reading_positions.map(x=>x.progress_percent),[82],'Account B export must contain Account B reading progress only');
+  const anonymousExport=await request('/api/privacy/export');
+  assert.equal(anonymousExport.response.status,401,'Anonymous visitors must not export account data');
+
   const anonymousLibrary = await request('/api/library');
   assert.equal(anonymousLibrary.response.status, 401, 'Private library must reject anonymous requests');
   const anonymousHistory = await request('/api/history');
