@@ -99,4 +99,11 @@ assert.ok(css.includes("background:var(--in-surface);color:var(--in-ink)"),"Comm
 assert.ok(css.includes("grid-template-columns:minmax(0,1fr);gap:12px"),"Community panels must stack without overflow on narrow screens");
 assert.ok(css.includes("margin-inline-start:clamp(10px,3vw,28px)"),"Nested discussion replies must respect logical direction and mobile sizing");
 
+
+for(const selector of [".novelCommentsComposer",".commentReportForm",".novelCommentComposerFooter",".replyContext",".commentStatus",".ratingIslandSummary"]){
+  assert.ok(css.includes(selector),"Community interaction styling must include "+selector);
+}
+assert.ok(css.includes("min-height:104px"),"Comment composer must have a comfortable touch and writing area");
+assert.ok(css.includes("background:var(--in-brand-soft)"),"Reply context must use the semantic brand surface");
+
 console.log("Imperial design foundation syntax, responsive, accessibility, asset and brand consistency checks passed.");
