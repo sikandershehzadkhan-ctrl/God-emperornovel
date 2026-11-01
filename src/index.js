@@ -685,6 +685,56 @@ async function api(req,env){
   await env.DB.prepare('INSERT INTO ai_provider_benchmarks(provider,chapters_delta,interval_seconds,source_url,access_mode,confidence) VALUES(?,?,?,?,?,?)').bind(provider,delta,interval,aiSafeText(b.source_url,500),'public-metadata',aiSafeText(b.confidence||'observed',40)).run();return json({ok:true});
  }
 
+
+ if(p==="/api/author/ownership-transfers"&&m==="GET"){
+  const e=author(u);if(e)return e;
+  const rows=(await env.DB.prepare("SELECT t.id,t.novel_id,n.title,t.from_user_id,fu.username from_username,t.to_user_id,tu.username to_username,t.status,t.request_note,t.requested_at,t.expires_at,t.decided_at,t.decision_note FROM novel_ownership_transfers t JOIN novels n ON n.id=t.novel_id JOIN users fu ON fu.id=t.from_user_id JOIN users tu ON tu.id=t.to_user_id WHERE t.from_user_id=? OR t.to_user_id=? ORDER BY CASE t.status WHEN 'pending' THEN 0 ELSE 1 END,t.requested_at DESC LIMIT 100").bind(u.id,u.id).all()).results||[];
+  return json(rows);
+ }
+ let transferRequest=p.match(/^\/api\/author\/novels\/(\d+)\/ownership-transfer$/);
+ if(transferRequest&&m==="POST"){
+  const e=author(u);if(e)return e;
+  const novelId=Number(transferRequest[1]),b=await body(req),recipientId=Number(b.recipient_user_id);
+  if(!Number.isSafeInteger(novelId)||novelId<1||!Number.isSafeInteger(recipientId)||recipientId<1)return json({error:"A valid novel and recipient account are required."},400);
+  if(recipientId===Number(u.id))return json({error:"A novel cannot be transferred to its current owner."},400);
+  const novel=await env.DB.prepare("SELECT id,owner_user_id,publication_status,rights_status,rights_evidence FROM novels WHERE id=?").bind(novelId).first();
+  if(!novel)return json({error:"Novel not found."},404);
+  if(Number(novel.owner_user_id)!==Number(u.id))return json({error:"Only the current novel owner can request a transfer."},403);
+  if(["review","archived","deleted"].includes(String(novel.publication_status||"").toLowerCase()))return json({error:"This novel is restricted from ownership changes."},409);
+  const note=String(b.request_note||"").trim().slice(0,500),requestedAt=now(),expiresAt=requestedAt+604800;
+  try{
+   const result=await env.DB.prepare("INSERT INTO novel_ownership_transfers(novel_id,from_user_id,to_user_id,status,request_note,requested_at,expires_at) SELECT n.id,n.owner_user_id,?,'pending',?,?,? FROM novels n JOIN users recipient ON recipient.id=? AND recipient.role='author' AND recipient.banned=0 WHERE n.id=? AND n.owner_user_id=? AND n.publication_status NOT IN ('review','archived','deleted') AND n.rights_status IN ('original','public_domain','licensed','authorized') AND (n.rights_status='original' OR LENGTH(TRIM(COALESCE(n.rights_evidence,'')))>0) AND NOT EXISTS(SELECT 1 FROM novel_ownership_transfers x WHERE x.novel_id=n.id AND x.status='pending')").bind(recipientId,note,requestedAt,expiresAt,recipientId,novelId,u.id).run();
+   const id=Number(result?.meta?.last_row_id||0),changed=Number(result?.meta?.changes??result?.changes??0);
+   if(changed!==1||!id)return json({error:"Transfer request could not be created. Check recipient eligibility, rights status, and pending invitations."},409);
+   await env.DB.prepare("INSERT INTO audit_logs(user_id,action,details) VALUES(?,?,?)").bind(u.id,"novel_ownership_transfer_requested","transfer="+id+";novel="+novelId+";recipient="+recipientId).run();
+   return json({ok:true,transfer_id:id,status:"pending",expires_at:expiresAt,message:"Invitation sent. Ownership remains unchanged until acceptance."},201);
+  }catch(err){if(/unique|constraint/i.test(String(err?.message||"")))return json({error:"A pending ownership transfer already exists."},409);console.error("ownership transfer request failed",err);return json({error:"Unable to create transfer invitation."},500)}
+ }
+ let transferDecision=p.match(/^\/api\/author\/ownership-transfers\/(\d+)\/decision$/);
+ if(transferDecision&&m==="POST"){
+  const e=author(u);if(e)return e;
+  const id=Number(transferDecision[1]),b=await body(req),decision=String(b.decision||"").toLowerCase(),note=String(b.decision_note||"").trim().slice(0,500),timestamp=now();
+  if(!Number.isSafeInteger(id)||id<1||!["accept","reject"].includes(decision))return json({error:"A valid transfer and accept/reject decision are required."},400);
+  const transfer=await env.DB.prepare("SELECT * FROM novel_ownership_transfers WHERE id=?").bind(id).first();
+  if(!transfer)return json({error:"Transfer invitation not found."},404);
+  if(Number(transfer.to_user_id)!==Number(u.id))return json({error:"Only the invited recipient can decide this transfer."},403);
+  if(transfer.status!=="pending")return json({error:"This invitation is no longer pending."},409);
+  if(Number(transfer.expires_at)<=timestamp){await env.DB.prepare("UPDATE novel_ownership_transfers SET status='expired',updated_at=CURRENT_TIMESTAMP WHERE id=? AND status='pending' AND expires_at<=?").bind(id,timestamp).run();return json({error:"This invitation has expired."},409)}
+  if(decision==="reject"){
+   const result=await env.DB.prepare("UPDATE novel_ownership_transfers SET status='rejected',decided_at=?,decision_note=?,updated_at=CURRENT_TIMESTAMP WHERE id=? AND to_user_id=? AND status='pending' AND expires_at>?").bind(timestamp,note,id,u.id,timestamp).run();
+   if(Number(result?.meta?.changes??result?.changes??0)!==1)return json({error:"Invitation state changed. Refresh and retry."},409);
+   await env.DB.prepare("INSERT INTO audit_logs(user_id,action,details) VALUES(?,?,?)").bind(u.id,"novel_ownership_transfer_rejected","transfer="+id+";novel="+transfer.novel_id).run();
+   return json({ok:true,status:"rejected",ownership_changed:false});
+  }
+  const results=await env.DB.batch([
+   env.DB.prepare("UPDATE novels SET owner_user_id=?,updated_at=CURRENT_TIMESTAMP WHERE id=? AND owner_user_id=? AND publication_status NOT IN ('review','archived','deleted') AND rights_status IN ('original','public_domain','licensed','authorized') AND (rights_status='original' OR LENGTH(TRIM(COALESCE(rights_evidence,'')))>0) AND EXISTS(SELECT 1 FROM novel_ownership_transfers t JOIN users recipient ON recipient.id=t.to_user_id WHERE t.id=? AND t.status='pending' AND t.to_user_id=? AND t.expires_at>? AND recipient.role='author' AND recipient.banned=0)").bind(u.id,transfer.novel_id,transfer.from_user_id,id,u.id,timestamp),
+   env.DB.prepare("UPDATE novel_ownership_transfers SET status='accepted',decided_at=?,decision_note=?,updated_at=CURRENT_TIMESTAMP WHERE id=? AND to_user_id=? AND status='pending' AND expires_at>? AND changes()=1 AND EXISTS(SELECT 1 FROM novels n WHERE n.id=novel_ownership_transfers.novel_id AND n.owner_user_id=?)").bind(timestamp,note,id,u.id,timestamp,u.id),
+   env.DB.prepare("INSERT INTO audit_logs(user_id,action,details) SELECT ?,?,?,? WHERE changes()=1").bind(u.id,"novel_ownership_transfer_accepted","transfer="+id+";novel="+transfer.novel_id+";previous_owner="+transfer.from_user_id)
+  ]);
+  const changedA=Number(results?.[0]?.meta?.changes??results?.[0]?.changes??0),changedB=Number(results?.[1]?.meta?.changes??results?.[1]?.changes??0);
+  if(changedA!==1||changedB!==1)return json({error:"Ownership or invitation state changed. The transfer was not completed."},409);
+  return json({ok:true,status:"accepted",ownership_changed:true,novel_id:transfer.novel_id});
+ }
  if(p==="/api/author/novels"&&m==="GET"){
   const e=author(u);if(e)return e;
   return json((await env.DB.prepare(`SELECT n.id,n.title,n.alt_titles,n.author,n.description,n.status,n.kind,n.language,n.cover_url,n.source_url,n.rights_status,n.rights_evidence,n.rights_notes,n.review_feedback,n.reviewed_by,n.reviewed_at,n.publication_status,n.views,n.rating,n.created_at,n.updated_at,(SELECT COUNT(*) FROM chapters c WHERE c.novel_id=n.id) chapter_count,(SELECT COUNT(*) FROM chapters c WHERE c.novel_id=n.id AND c.publication_status='published') published_chapters FROM novels n WHERE n.owner_user_id=? ORDER BY n.updated_at DESC`).bind(u.id).all()).results||[])
