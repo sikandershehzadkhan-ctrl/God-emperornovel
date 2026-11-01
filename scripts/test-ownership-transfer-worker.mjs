@@ -207,6 +207,21 @@ try {
       });
       assert.equal(created.response.status, 201, JSON.stringify(created.data));
       chapterIds.push(Number(created.data.id));
+      const foreignChapterId = Number(created.data.id);
+      const foreignEdit = await request(baseUrl, "/api/author/chapters/" + foreignChapterId, {
+        method: "PATCH", cookie: recipient.cookie,
+        body: { title: "Unauthorized foreign edit", content: "This must never replace the owner's chapter." }
+      });
+      assert.equal(foreignEdit.response.status, 403, "A different author must not edit another author's chapter");
+      const foreignPublish = await request(baseUrl, "/api/author/chapters/" + foreignChapterId + "/publish", {
+        method: "POST", cookie: recipient.cookie, body: { publication_status: "published" }
+      });
+      assert.equal(foreignPublish.response.status, 403, "A different author must not publish another author's chapter");
+      const preservedChapter = await request(baseUrl, "/api/author/chapters?novel_id=" + novelId, { cookie: owner.cookie });
+      assert.equal(preservedChapter.response.status, 200);
+      const preserved = preservedChapter.data.find(row => Number(row.id) === foreignChapterId);
+      assert.equal(preserved.title, chapter.title, "Foreign edit attempt must leave the owner's chapter title unchanged");
+      assert.equal(preserved.content, "Local integration test chapter body.", "Foreign edit attempt must leave chapter content unchanged");
     }
     executeLocalSql("UPDATE chapters SET publication_status='published' WHERE novel_id=" + novelId);
     return { novelId, chapterIds };
