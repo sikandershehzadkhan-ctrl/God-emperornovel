@@ -97,3 +97,13 @@ If delivery is unavailable, return the same generic response but do not create a
 6. Keep password recovery disabled until provider delivery and the full test suite pass.
 
 Password recovery is not considered complete until all six steps pass. No production secret, email, or deployment change is made by this design.
+
+
+## Email ownership verification implementation notes
+
+- `src/email-verification-token.mjs` creates 256-bit random verification tokens and exposes only SHA-256 base64url digests for persistence.
+- `src/email-verification-store.mjs` completes verification in a D1 batch. A fresh consumption UUID binds the user update and invalidation statements to the exact token consumption.
+- The email address stored in `email_snapshot` is compared against the account's current email at completion. If the address changed after token issuance, the token is consumed but the new address is not marked verified.
+- Successful verification invalidates the account's other active email-verification tokens.
+- `scripts/test-email-verification-store.mjs` covers token entropy and digest verification, one-time use, replay, account isolation, changed-email rejection, and preservation of the separate creator/admin badge.
+- These are tested primitives only. No endpoint issues tokens, no mail is sent, and password recovery remains disabled pending a verified delivery provider and complete route-level tests.
