@@ -21,7 +21,7 @@ FOR EACH ROW
 WHEN NOT EXISTS (
   SELECT 1
   FROM novel_requests r
-  JOIN users a ON a.id = NEW.admin_user_id AND a.role = 'admin'
+  JOIN users a ON a.id = NEW.admin_user_id AND a.role = 'admin' AND a.id <> NEW.user_id
   WHERE r.id = NEW.request_id
     AND r.user_id = NEW.user_id
     AND r.status = 'rejected'
