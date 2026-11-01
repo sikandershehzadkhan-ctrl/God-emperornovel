@@ -65,3 +65,29 @@ assert.match(foundation, /html\[dir="rtl"\] \.menuDrawer\.is-open\s*\{[^}]*trans
   "RTL drawer must return to view when opened");
 assert.ok(foundation.includes("env(safe-area-inset-bottom)"),
   "Mobile navigation must respect the device safe area");
+
+
+const libraryHtml = fs.readFileSync("public/library.html", "utf8");
+const accountHtml = fs.readFileSync("public/account.html", "utf8");
+const worker = fs.readFileSync("src/index.js", "utf8");
+const appBundle = fs.readFileSync("public/app-17.23.0.js", "utf8");
+const seoPolicy = fs.readFileSync("src/seo.mjs", "utf8");
+
+assert.ok(worker.includes('"\/library":"library.html"'),
+  "The Worker must serve the dedicated Library page template");
+assert.ok(worker.includes('"\/account":"account.html"'),
+  "The Worker must serve the dedicated Account page template");
+for (const [name, template] of [["Library", libraryHtml], ["Account", accountHtml]]) {
+  assert.ok(template.includes('src="/app.js'),
+    name + " template must load the shared application entry");
+  assert.ok(template.includes('href="/style.css'),
+    name + " template must load the shared application stylesheet");
+}
+assert.ok(appBundle.includes("if(p==='/library')await library()"),
+  "The shared application must render the Library route");
+assert.ok(appBundle.includes("if(p==='/account')await account()"),
+  "The shared application must render the Account route");
+assert.ok(seoPolicy.includes('"/library"') && seoPolicy.includes('"/account"'),
+  "Private Library and Account pages must be excluded from public indexing");
+assert.ok(seoPolicy.includes('"/library"') && seoPolicy.includes('"/account"'),
+  "Library and Account route privacy policy must remain explicit");
