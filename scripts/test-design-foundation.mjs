@@ -148,3 +148,16 @@ assert.ok(sourceApp.includes('class="accountMenu"'),"Account route must render a
 assert.ok(sourceApp.includes('class="metricGrid"'),"Account route must render account metrics");
 assert.ok(sourceApp.includes('id="savedList"'),"Library route must render saved stories");
 assert.ok(sourceApp.includes('id="continueList"'),"Library route must render reading progress");
+
+
+for(const selector of [".authorStudioLayout",".authorStudioIntro",".authorCreateForm",".authorFormGrid",".authorWorksPanel",".authorWorksList",".authorWork",".authorStatus",".authorWorkActions",".authorEditForm",".authorChapterForm"]){
+  assert.ok(css.includes(selector),"Author Studio design foundation must include "+selector);
+}
+assert.ok(css.includes("grid-template-columns:minmax(0,1fr) minmax(0,1fr)"),"Author Studio must use a balanced desktop workspace");
+assert.ok(css.includes(".authorEditForm[hidden],.authorChapterForm[hidden]"),"Hidden author editing forms must remain hidden");
+assert.ok(css.includes("@media(max-width:520px){\n .authorStudioIntro"),"Author Studio must have a dedicated narrow-phone layout");
+assert.ok(css.includes("background:var(--in-canvas);color:var(--in-ink)"),"Author forms must use accessible semantic theme colors");
+assert.ok(sourceApp.includes('class="authorStudioLayout"'),"Author route must render the Author Studio workspace");
+assert.ok(sourceApp.includes('id="createStoryForm"'),"Author route must render the create-story form");
+assert.ok(sourceApp.includes('id="authorWorksList"'),"Author route must render the creator's works list");
+assert.ok(sourceApp.includes('id="authorAnalyticsMetrics"'),"Author route must render live author analytics");
