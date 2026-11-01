@@ -227,3 +227,14 @@ assert.ok(css.includes("font-size:18px;line-height:1.82"),"Phone reading typogra
 assert.ok(css.includes("min-height:42px;padding:9px 10px"),"Reader preference controls must have comfortable touch targets");
 assert.ok(sourceApp.includes("readerPage.dataset.readerTheme=chosen"),"Reader theme selector must apply the selected theme to the reading surface");
 assert.ok(sourceApp.includes("imperial_reader_theme"),"Reader theme choice must persist between visits");
+
+
+/* Discovery cover and rankings presentation regression checks. */
+for(const selector of [".catalogCard:hover",".catalogCover::after",".catalogGrid{align-items:stretch",".catalogStats{align-items:center}","#lbNovels>.panel::before","#lbAuthors>.panel::before",".genreCard:hover,.tagTile:hover,.formatLink:hover"]){
+  assert.ok(css.includes(selector),"Discovery and ranking refinement must include "+selector);
+}
+assert.ok(css.includes("linear-gradient(180deg,transparent,rgba(5,9,18,.36))"),"Cover overlay must preserve title badge contrast without obscuring artwork");
+assert.ok(css.includes("min-height:44px"),"Catalog filter controls must retain comfortable touch height");
+assert.ok(css.includes("@media(prefers-reduced-motion:reduce){\n .catalogCard,.genreCard,.tagTile,.formatLink"),"Discovery interactions must respect reduced-motion preferences");
+assert.ok(css.includes("html[data-theme=\"dark\"] .catalogCard"),"Catalog cards must receive dedicated dark-theme depth");
+assert.ok(css.includes("#lbNovels>.panel,#lbAuthors>.panel{position:relative"),"Rankings must use a consistent editorial card treatment");
