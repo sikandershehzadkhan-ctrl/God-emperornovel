@@ -1,0 +1,51 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="robots" content="noindex,nofollow">
+<meta name="referrer" content="no-referrer">
+<title>Verify your email | Imperial Novel</title>
+<style>
+:root{color-scheme:dark;--bg:#080812;--panel:#111124;--line:#29294a;--ink:#f7f6ff;--muted:#a9a8c4;--purple:#a78bfa;--blue:#60a5fa}
+*{box-sizing:border-box}body{margin:0;min-height:100vh;display:grid;place-items:center;padding:24px;background:radial-gradient(ellipse at 50% 0%,#24204a 0,transparent 55%),var(--bg);color:var(--ink);font:16px/1.6 system-ui,-apple-system,Segoe UI,sans-serif}
+main{width:min(100%,460px);padding:36px 30px;border:1px solid var(--line);border-radius:24px;background:linear-gradient(145deg,rgba(255,255,255,.045),transparent 55%),var(--panel);box-shadow:0 24px 80px #0008;text-align:center}
+.crest{width:58px;height:58px;margin:0 auto 22px;border:1px solid #6253a3;border-radius:18px;display:grid;place-items:center;color:var(--purple);font-size:27px;background:#17152d}
+h1{font-size:25px;line-height:1.2;margin:0 0 12px;letter-spacing:-.035em}p{color:var(--muted);margin:0 0 22px}.status{min-height:52px;padding:14px;border-radius:12px;background:#090916;border:1px solid var(--line);color:var(--muted)}.status[data-state=success]{color:#a7f3d0;border-color:#23634c}.status[data-state=error]{color:#fecaca;border-color:#713b48}.status[data-state=loading]{color:#c4b5fd;border-color:#51417d}a{display:inline-block;margin-top:22px;color:#c4b5fd;text-decoration:none}a:hover{text-decoration:underline}
+</style>
+</head>
+<body>
+<main>
+<div class="crest" aria-hidden="true">✦</div>
+<h1>Verify your email</h1>
+<p>Confirm that this email address belongs to you to secure your Imperial Novel account.</p>
+<div id="status" class="status" role="status" aria-live="polite" data-state="loading">Checking your verification link…</div>
+<a href="/">Return to Imperial Novel</a>
+</main>
+<script>
+(async()=>{
+ const status=document.getElementById("status");
+ const set=(message,state)=>{status.textContent=message;status.dataset.state=state};
+ let token="";
+ try{
+  const fragment=new URLSearchParams(location.hash.slice(1));
+  token=fragment.get("token")||"";
+ }catch{}
+ history.replaceState(null,"",location.pathname+location.search);
+ if(!/^[A-Za-z0-9_-]{43}$/.test(token)){
+  set("This verification link is missing or invalid. Request a new link from your account.","error");
+  return;
+ }
+ try{
+  const response=await fetch("/api/auth/verify-email",{method:"POST",headers:{"content-type":"application/json"},body:JSON.stringify({token}),credentials:"same-origin",cache:"no-store"});
+  const result=await response.json().catch(()=>({}));
+  if(response.ok&&result.ok===true)set("Your email address has been verified successfully. You can now return to your account.","success");
+  else set(result.error||"This verification link is invalid or has expired. Request a new link.","error");
+ }catch{
+  set("Verification is temporarily unavailable. Please try again later.","error");
+ }
+ token="";
+})();
+</script>
+</body>
+</html>
