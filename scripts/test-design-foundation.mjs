@@ -232,6 +232,13 @@ assert.ok(css.includes("font-size:18px;line-height:1.82"),"Phone reading typogra
 assert.ok(css.includes("min-height:42px;padding:9px 10px"),"Reader preference controls must have comfortable touch targets");
 assert.ok(sourceApp.includes("readerPage.dataset.readerTheme=chosen"),"Reader theme selector must apply the selected theme to the reading surface");
 assert.ok(sourceApp.includes("imperial_reader_theme"),"Reader theme choice must persist between visits");
+assert.ok(sourceApp.includes("Number.isInteger(savedSize)&&savedSize>=15&&savedSize<=30?savedSize:18"),"Reader font size must restore only valid whole-number sizes and fall back safely");
+assert.ok(sourceApp.includes("lineOptions.includes(savedLine)?savedLine:'1.85'"),"Reader line spacing must restore only supported saved values");
+assert.ok(sourceApp.includes("widthOptions.includes(savedWidth)?savedWidth:'600'"),"Reader text width must restore only supported saved values");
+assert.ok(sourceApp.includes("if(!lineOptions.includes(lineSelect.value))lineSelect.value='1.85'"),"Reader line spacing must recover from invalid selector values");
+assert.ok(sourceApp.includes("if(!widthOptions.includes(widthSelect.value))widthSelect.value='600'"),"Reader width must recover from invalid selector values");
+assert.equal(sourceApp,releaseApp,"Reader preference validation must ship in the versioned browser bundle");
+
 
 
 /* Discovery cover and rankings presentation regression checks. */
