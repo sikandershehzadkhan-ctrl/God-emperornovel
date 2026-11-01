@@ -496,6 +496,9 @@ try {
   assert.equal(repeatedCancel.response.status,409,'Repeated cancellation without a pending request must not mutate state');
   const afterCancel=await request('/api/account/closure-request',{headers:{cookie:accountB.cookie}});
   assert.equal(JSON.parse(afterCancel.body).request.status,'cancelled','Closure status must show the cancellation');
+  const exportAfterClosure=await request('/api/privacy/export',{headers:{cookie:accountB.cookie}});
+  assert.equal(exportAfterClosure.response.status,200,'Account data export must remain available after a cancelled closure request');
+  assert.ok(JSON.parse(exportAfterClosure.body).collections.account_closure_requests.some(x=>x.id===closureData.request.id&&x.status==='cancelled'),'Account export must include only the account closure history belonging to that account');
   const accountAfterCancel=await request('/api/profile',{headers:{cookie:accountB.cookie}});
   assert.equal(accountAfterCancel.response.status,200,'Cancelling closure must preserve the account and its active session');
   const closureAudit=execFileSync('npx',['--yes','wrangler@4','d1','execute','god-emperornovel-db','--local','--persist-to','.wrangler/test-runtime','--command',`SELECT action FROM audit_logs WHERE user_id=${accountBId} AND action IN ('account_closure_requested','account_closure_cancelled') ORDER BY id DESC LIMIT 2`],{encoding:'utf8',stdio:['ignore','pipe','pipe'],env:{...process.env,NO_COLOR:'1'}});
