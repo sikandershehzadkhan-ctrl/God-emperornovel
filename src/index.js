@@ -399,7 +399,7 @@ async function ensureCommunityTaxonomySchema(env){
  created_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,reviewed_at TEXT,reviewer_id INTEGER,
  UNIQUE(type,slug))`).run();
 }
-async function communityTaxonomy(req,env){
+async function communityTaxonomy(req,env,user){
  const u=new URL(req.url), method=req.method;
  if(method==='GET'){
   const type=String(u.searchParams.get('type')||'').toLowerCase();
@@ -414,6 +414,7 @@ async function communityTaxonomy(req,env){
   return json(r.results||[]);
  }
  if(method==='POST'){
+  const auth=need(user);if(auth)return auth;
   const b=await body(req),type=String(b.type||'').toLowerCase(),name=String(b.name||'').trim().replace(/\s+/g,' ');
   if(!['genre','tag'].includes(type)) return json({error:'type must be genre or tag'},400);
   if(name.length<2||name.length>80)return json({error:'Name must be 2-80 characters'},400);
@@ -421,7 +422,7 @@ async function communityTaxonomy(req,env){
   if(await env.DB.prepare(`SELECT id FROM ${table} WHERE slug=? LIMIT 1`).bind(s).first())return json({error:'Already exists in official taxonomy'},409);
   const existing=await env.DB.prepare('SELECT id,status FROM taxonomy_submissions WHERE type=? AND slug=? LIMIT 1').bind(type,s).first();
   if(existing) return json({error:'Already submitted',id:existing.id,status:existing.status},409);
-  try{const r=await env.DB.prepare(`INSERT INTO taxonomy_submissions(type,name,slug,description,creator_id,creator_name,status) VALUES(?,?,?,?,?,?,?)`).bind(type,name,s,String(b.description||'').slice(0,500),b.creator_id||null,String(b.creator_name||'').slice(0,80),'pending').run();return json({ok:true,id:r.meta.last_row_id,status:'pending'})}catch(e){console.error('taxonomy submission write failed',e);return json({error:'Unable to save submission. Please try again later.'},500)}
+  try{const r=await env.DB.prepare(`INSERT INTO taxonomy_submissions(type,name,slug,description,creator_id,creator_name,status) VALUES(?,?,?,?,?,?,?)`).bind(type,name,s,String(b.description||'').slice(0,500),user.id,String(user.username||'').slice(0,80),'pending').run();return json({ok:true,id:r.meta.last_row_id,status:'pending'})}catch(e){console.error('taxonomy submission write failed',e);return json({error:'Unable to save submission. Please try again later.'},500)}
  }
  return json({error:'Method not allowed'},405);
 }
@@ -454,7 +455,7 @@ async function api(req,env){
  if(p==="/api/agents"&&m==="GET"){return json((await env.DB.prepare(`SELECT slug,name,role,icon,mode,status,last_run_at FROM agents WHERE enabled=1 ORDER BY id`).all()).results)}
  if(p==="/api/admin/agents"&&m==="GET"){const e=admin(u);if(e)return e;return json((await env.DB.prepare(`SELECT id,slug,name,role,icon,mode,status,enabled,last_run_at,last_result FROM agents ORDER BY id`).all()).results)}
  if(p==="/api/admin/agents/run"&&m==="POST"){const e=admin(u);if(e)return e;const b=await body(req);const slug=String(b.slug||'');if(slug)return json(await runAgent(env,slug,'admin'));return json(await runAutomation(env))}
- if(p==="/api/taxonomy")return communityTaxonomy(req,env);
+ if(p==="/api/taxonomy")return communityTaxonomy(req,env,u);
  if(p==="/api/admin/taxonomy"&&m==='GET'){const e=admin(u);if(e)return e;return json((await env.DB.prepare("SELECT * FROM taxonomy_submissions ORDER BY CASE status WHEN 'pending' THEN 0 ELSE 1 END,created_at DESC LIMIT 300").all()).results||[])}
  if(p==="/api/admin/taxonomy"&&m==='POST')return adminTaxonomy(req,env,u);
  if(p==="/api/health"){let db=true;try{await env.DB.prepare("SELECT 1").first()}catch{db=false}return json({ok:db,service:env.SITE_NAME||"Imperial Novel",version:env.APP_VERSION||"5.0.0",database:db,time:new Date().toISOString()})}
@@ -744,7 +745,7 @@ async function api(req,env){
   return json({ok:true,status:checked.value.status,message:checked.value.status==="approved"?"Application approved. Author access has been granted.":"Application rejected with feedback."});
  }
  if(p==="/api/admin/stats"){const e=admin(u);if(e)return e;const [a,b,c,d,r,t,rep,authorApps]=await Promise.all([env.DB.prepare("SELECT COUNT(*) n FROM users").first(),env.DB.prepare("SELECT COUNT(*) n FROM novels").first(),env.DB.prepare("SELECT COUNT(*) n FROM chapters").first(),env.DB.prepare("SELECT COUNT(*) n FROM donations WHERE status='pending'").first(),env.DB.prepare("SELECT COUNT(*) n FROM novel_requests WHERE status='pending'").first(),env.DB.prepare("SELECT COUNT(*) n FROM taxonomy_submissions WHERE status='pending'").first(),env.DB.prepare("SELECT COUNT(*) n FROM reports WHERE status IN ('open','reviewing')").first(),env.DB.prepare("SELECT COUNT(*) n FROM author_applications WHERE status='pending'").first()]);return json({users:a.n,novels:b.n,chapters:c.n,pendingDonations:d.n,pendingRequests:r.n,pendingTaxonomy:t.n,openReports:rep.n,pendingAuthorApplications:authorApps.n})}
- if(p==="/api/admin/users"&&m==="GET"){const e=admin(u);if(e)return e;return json((await env.DB.prepare("SELECT id,username,email,role,tickets,verified,banned,created_at FROM users ORDER BY id LIMIT 500").all()).results)}
+ if(p==="/api/admin/users"&&m==="GET"){if(!isPlatformOwner(u,env))return json({error:"Only the configured platform owner can access sensitive account records."},403);return json((await env.DB.prepare("SELECT id,username,email,role,tickets,verified,banned,created_at FROM users ORDER BY id LIMIT 500").all()).results)}
   let au=p.match(/^\/api\/admin\/users\/(\d+)$/);if(au&&m==="PATCH"){const e=admin(u);if(e)return e;const b=await body(req),id=Number(au[1]),target=await env.DB.prepare("SELECT id,role FROM users WHERE id=?").bind(id).first();if(!target)return json({error:"User not found"},404);const role=String(b.role||target.role);if(!['user','author','moderator','admin'].includes(role))return json({error:"Invalid role"},400);const owner=isPlatformOwner(u,env),verified=b.verified===true||b.verified===1||b.verified==="1"||String(b.verified).toLowerCase()==="true",banned=b.banned===true||b.banned===1||b.banned==="1"||String(b.banned).toLowerCase()==="true";if(role==="admin"&&!String(env.IMPERIAL_OWNER_USER_ID||"").trim())return json({error:"Platform owner identity is not configured. Administrator elevation is disabled."},503);if(role==="admin"&&!owner)return json({error:"Only the configured platform owner can grant administrator access."},403);const ownerId=Number(env.IMPERIAL_OWNER_USER_ID||0);if(id===ownerId&&(role!=="admin"||banned))return json({error:"The platform owner account cannot be demoted or banned through this endpoint."},409);if(target.role==="admin"&&id!==u.id&&!owner)return json({error:"Only the platform owner can change another administrator account."},403);if(id===u.id&&target.role==="admin"&&role!=="admin")return json({error:"The platform owner account cannot be demoted through this endpoint."},409);const result=await env.DB.prepare("UPDATE users SET role=?,verified=?,banned=? WHERE id=?").bind(role,verified?1:0,banned?1:0,id).run();if(Number(result.meta?.changes||0)!==1)return json({error:"User account was not updated."},409);await audit(env,u,"admin_user_updated",`target=${id};role=${role};verified=${b.verified?1:0};banned=${b.banned?1:0};owner_action=${owner?1:0}`);return json({ok:true})}
 
 
