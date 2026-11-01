@@ -103,6 +103,7 @@ try {
   ]);
   assert.ok(concurrentUnlocks.every(x=>[200,409].includes(x.response.status)),'Concurrent duplicate unlock requests must either succeed idempotently or return a conflict');
   assert.ok(concurrentUnlocks.some(x=>x.response.status===200),'At least one concurrent chapter unlock request must grant access');
+  for(const result of concurrentUnlocks.filter(x=>x.response.status===200))assert.equal(JSON.parse(result.body).tickets,7,'Every successful or idempotent unlock response must report the current balance, not a stale pre-charge value');
   const unlockedChapter = await getAs(accountA,'/api/chapters/2147483006');
   assert.equal(JSON.parse(unlockedChapter.body).unlocked,true,'Concurrent unlock requests must grant chapter access');
   const postUnlockProfile = await getAs(accountA,'/api/profile');
