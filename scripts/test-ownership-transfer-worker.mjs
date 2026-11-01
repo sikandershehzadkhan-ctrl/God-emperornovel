@@ -201,6 +201,66 @@ try {
   assert.equal(ledgerAfterRejectedCredits.data.length, ledgerBeforeRejectedCredits.data.length,
     "Rejected credit attempts must not create ledger entries");
 
+  // Novel requests: first three are free, the fourth is charged once, and rejection refunds once.
+  const requestBalanceBefore = await request(baseUrl, "/api/me", { cookie: spectator.cookie });
+  const requestLedgerBefore = await request(baseUrl, "/api/tickets/ledger", { cookie: spectator.cookie });
+  const requestUrls = [1, 2, 3, 4].map(n => "https://fanqienovel.com/page/LOCAL-SECURITY-" + suffix + "-" + n);
+  const novelRequests = [];
+  for (const requestUrl of requestUrls) {
+    const submitted = await request(baseUrl, "/api/requests", {
+      method: "POST", cookie: spectator.cookie, body: { url: requestUrl, user_id: owner.user.id }
+    });
+    assert.equal(submitted.response.status, 200, "Supported novel request should be accepted: " + JSON.stringify(submitted.data));
+    novelRequests.push(submitted.data);
+  }
+  assert.deepEqual(novelRequests.map(row => Number(row.cost)), [0, 0, 0, 100],
+    "Only requests beyond the three-per-week free allowance should cost Crowns");
+  const requestUsage = await request(baseUrl, "/api/requests", { cookie: spectator.cookie });
+  assert.equal(Number(requestUsage.data.used), 4, "Request usage must be scoped to the signed-in account");
+  const requestBalanceAfter = await request(baseUrl, "/api/me", { cookie: spectator.cookie });
+  assert.equal(Number(requestBalanceAfter.data.user.tickets), Number(requestBalanceBefore.data.user.tickets) - 100,
+    "The fourth novel request must debit exactly 100 Crowns");
+  const requestLedgerAfter = await request(baseUrl, "/api/tickets/ledger", { cookie: spectator.cookie });
+  const requestDebits = requestLedgerAfter.data.filter(row => row.reason === "novel_request");
+  assert.equal(requestDebits.length - requestLedgerBefore.data.filter(row => row.reason === "novel_request").length, 1,
+    "Only the paid novel request should create a debit ledger entry");
+  assert.equal(Number(requestDebits.at(-1).delta), -100, "Novel request ledger must record the exact debit");
+  const requestQueue = await request(baseUrl, "/api/admin/requests", { cookie: administrator.cookie });
+  const paidRequest = requestQueue.data.find(row => Number(row.id) === Number(novelRequests[3].request_id));
+  assert.ok(paidRequest, "Administrator request queue must contain the paid request");
+  assert.equal(Number(paidRequest.user_id), Number(spectator.user.id),
+    "Novel request owner must come from the authenticated session, not forged user_id");
+  const rejectPaidRequest = await Promise.all([
+    request(baseUrl, "/api/admin/requests/" + paidRequest.id, { method: "PATCH", cookie: administrator.cookie, body: { status: "rejected" } }),
+    request(baseUrl, "/api/admin/requests/" + paidRequest.id, { method: "PATCH", cookie: administrator.cookie, body: { status: "rejected" } })
+  ]);
+  assert.equal(rejectPaidRequest.filter(row => row.response.status === 200).length, 1,
+    "Only one concurrent administrator rejection may refund a paid novel request");
+  assert.equal(rejectPaidRequest.filter(row => row.response.status === 409).length, 1,
+    "The duplicate concurrent rejection must be rejected as already processed");
+  const requestBalanceRefunded = await request(baseUrl, "/api/me", { cookie: spectator.cookie });
+  assert.equal(Number(requestBalanceRefunded.data.user.tickets), Number(requestBalanceBefore.data.user.tickets),
+    "A rejected paid request must refund exactly the original debit");
+  const requestLedgerRefunded = await request(baseUrl, "/api/tickets/ledger", { cookie: spectator.cookie });
+  assert.equal(requestLedgerRefunded.data.filter(row => row.reason === "novel_request_refund" && Number(row.delta) === 100).length, 1,
+    "Concurrent duplicate rejection must create exactly one refund ledger entry");
+  const duplicateRequestReject = await request(baseUrl, "/api/admin/requests/" + paidRequest.id, {
+    method: "PATCH", cookie: administrator.cookie, body: { status: "rejected" }
+  });
+  assert.equal(duplicateRequestReject.response.status, 200,
+    "Repeated rejection should return the existing final state without issuing another refund");
+  const requestBalanceAfterRepeat = await request(baseUrl, "/api/me", { cookie: spectator.cookie });
+  assert.equal(Number(requestBalanceAfterRepeat.data.user.tickets), Number(requestBalanceBefore.data.user.tickets),
+    "Repeated rejection must never issue a second refund");
+  const insecureRequest = await request(baseUrl, "/api/requests", {
+    method: "POST", cookie: spectator.cookie, body: { url: "http://fanqienovel.com/page/123" }
+  });
+  assert.equal(insecureRequest.response.status, 400, "Novel request URLs must require HTTPS");
+  const unsupportedRequest = await request(baseUrl, "/api/requests", {
+    method: "POST", cookie: spectator.cookie, body: { url: "https://untrusted.example/book/123" }
+  });
+  assert.equal(unsupportedRequest.response.status, 400, "Novel requests must reject unregistered source domains");
+
   const adminCredit = await request(baseUrl, "/api/admin/tickets", {
     method: "POST", cookie: administrator.cookie, body: { user_id: owner.user.id, amount: 23 }
   });
