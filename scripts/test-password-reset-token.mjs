@@ -19,7 +19,7 @@ assert.equal(await verifyPasswordResetToken(first, firstHash), true);
 assert.equal(await verifyPasswordResetToken(second, firstHash), false);
 assert.equal(await verifyPasswordResetToken("malformed", firstHash), false);
 assert.equal(await verifyPasswordResetToken(first, "not-a-digest"), false);
-await assert.rejects(() => hashPasswordResetToken("x".repeat(43)), /Invalid password-reset token/);
+await assert.rejects(() => hashPasswordResetToken("!".repeat(43)), /Invalid password-reset token/);
 await assert.rejects(() => hashPasswordResetToken(""), /Invalid password-reset token/);
 
 console.log("PASS: 256-bit password-reset token generation, digest storage, and verification.");
