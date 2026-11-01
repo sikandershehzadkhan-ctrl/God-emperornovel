@@ -1846,3 +1846,42 @@ html[data-theme="dark"] .accountGrid .metric{background:var(--in-canvas)}
 @media(prefers-reduced-motion:reduce){
   .readerPage .readerProgress>span{transition:none!important;}
 }
+
+
+/* Reader mobile ergonomics: safe-area aware controls and contained drawer scrolling. */
+.readerPage .chapterDrawer{
+  box-sizing:border-box;
+  max-height:100dvh;
+  padding-top:max(16px,env(safe-area-inset-top));
+  padding-bottom:max(16px,env(safe-area-inset-bottom));
+  overscroll-behavior:contain;
+  -webkit-overflow-scrolling:touch;
+  scrollbar-gutter:stable;
+}
+.readerPage .readerPrefs{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px}
+.readerPage .readerPrefs label{display:grid;min-width:0;gap:6px;font-size:13px;line-height:1.4}
+.readerPage .readerPrefs select{box-sizing:border-box;width:100%;min-width:0;min-height:44px;font-size:16px}
+.readerPage .readerChapterItem{min-height:44px;align-items:center;gap:8px;overflow-wrap:anywhere}
+.readerPage .readerChapterItem span{min-width:0}
+.readerPage .chapterDrawerHead .ghost{min-height:44px;padding-inline:14px}
+@media(max-width:480px){
+  .readerPage .readerBarInner{
+    box-sizing:border-box;
+    height:auto!important;
+    min-height:60px;
+    flex-wrap:wrap;
+    gap:6px!important;
+    padding:8px 10px!important;
+  }
+  .readerPage .readerBack{flex:0 0 auto;min-height:44px;display:inline-flex;align-items:center}
+  .readerPage .readerBook{flex:1 1 110px;min-width:0}
+  .readerPage .readerBook b,.readerPage .readerBook span{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  .readerPage .readerTools{display:flex;flex:1 0 100%;justify-content:flex-end;flex-wrap:wrap;gap:6px!important}
+  .readerPage .readerTool{box-sizing:border-box;min-width:44px!important;min-height:44px;padding:8px!important}
+  .readerPage .chapterDrawer{width:100%;max-width:100%;padding-inline:14px}
+  .readerPage .readerPrefs{grid-template-columns:1fr;gap:8px}
+  .readerPage .readerChapterList{padding-bottom:8px}
+}
+@media(prefers-reduced-motion:reduce){
+  .readerPage .chapterDrawer,.readerPage .readerChapterItem{scroll-behavior:auto!important;transition:none!important}
+}
