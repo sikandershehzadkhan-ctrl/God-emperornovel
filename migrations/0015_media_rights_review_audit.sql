@@ -23,6 +23,7 @@ WHEN NEW.rights_status = 'approved'
  AND OLD.rights_status != 'approved'
  AND (
    NEW.reviewed_by_user_id IS NULL
+   OR NEW.reviewed_by_user_id = NEW.owner_user_id
    OR NOT EXISTS (
      SELECT 1 FROM media_asset_reviews r
      WHERE r.media_asset_id = NEW.id
