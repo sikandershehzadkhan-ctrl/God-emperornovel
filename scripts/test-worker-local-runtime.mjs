@@ -101,6 +101,50 @@ try {
   assert.equal(profileB.response.status, 200, `Account B profile failed: ${profileB.body}`);
   const dataA = JSON.parse(profileA.body);
   const dataB = JSON.parse(profileB.body);
+
+  // Seed unmistakable internal rights/reviewer values on a published novel in local D1.
+  // Public catalog and reader routes must never serialize these private columns.
+  const privateSentinels = [
+    'RIGHTS_EVIDENCE_PRIVATE_SENTINEL',
+    'RIGHTS_NOTES_PRIVATE_SENTINEL',
+    'REVIEW_FEEDBACK_PRIVATE_SENTINEL',
+    'OWNER_ID_PRIVATE_SENTINEL',
+    'REVIEWER_ID_PRIVATE_SENTINEL',
+    'RIGHTS_VERIFIER_ID_PRIVATE_SENTINEL'
+  ];
+  const privateNovelSql = `UPDATE novels SET owner_user_id=${dataA.user.id},rights_evidence='${privateSentinels[0]}',rights_notes='${privateSentinels[1]}',rights_verified_by=2147483091,rights_verified_at='RIGHTS_VERIFIED_AT_PRIVATE_SENTINEL',review_feedback='${privateSentinels[2]}',reviewed_by=2147483092,reviewed_at='REVIEWED_AT_PRIVATE_SENTINEL' WHERE id=2147483001`;
+  execFileSync('npx', ['--yes','wrangler@4','d1','execute','god-emperornovel-db','--local','--persist-to','.wrangler/test-runtime','--command',privateNovelSql], {stdio:'pipe',env:{...process.env,NO_COLOR:'1'}});
+  await getAs(accountA, '/api/omni/jobs'); // Ensure authenticated route state is initialized before recommendation routes.
+  execFileSync('npx', ['--yes','wrangler@4','d1','execute','god-emperornovel-db','--local','--persist-to','.wrangler/test-runtime','--command',`INSERT OR IGNORE INTO follows(user_id,novel_id) VALUES(${dataA.user.id},2147483001)`], {stdio:'pipe',env:{...process.env,NO_COLOR:'1'}});
+  function assertNoPrivateNovelData(label, payload) {
+    const serialized = typeof payload === 'string' ? payload : JSON.stringify(payload);
+    for (const field of ['owner_user_id','rights_evidence','rights_notes','rights_verified_by','rights_verified_at','rights_verified_at','review_feedback','reviewed_by','reviewed_at']) {
+      assert.ok(!serialized.includes(field), `${label} must not expose private field ${field}`);
+    }
+    for (const sentinel of [...privateSentinels,'RIGHTS_VERIFIED_AT_PRIVATE_SENTINEL','REVIEWED_AT_PRIVATE_SENTINEL']) {
+      assert.ok(!serialized.includes(sentinel), `${label} must not expose private sentinel ${sentinel}`);
+    }
+  }
+  const publicNovelRoutes = [
+    ['/api/novels', null],
+    ['/api/novels/2147483001', null],
+    ['/api/made-for-you', null],
+    ['/api/made-for-you', accountA],
+    ['/api/recommendations', accountA],
+    ['/api/follows', accountA]
+  ];
+  for (const [route, account] of publicNovelRoutes) {
+    const response = account ? await getAs(account, route) : await request(route);
+    assert.equal(response.response.status, 200, `${route} failed during private-data sentinel test: ${response.body}`);
+    assertNoPrivateNovelData(`${route} (${account ? 'authenticated' : 'anonymous'})`, response.body);
+  }
+  const publicDetailSentinel = await request('/api/novels/2147483001');
+  const publicDetailData = JSON.parse(publicDetailSentinel.body);
+  assert.equal(publicDetailData.title, 'Runtime Isolation Fixture', 'Public novel detail must retain approved reader-facing fields');
+  assert.ok(Array.isArray(publicDetailData.chapters), 'Public novel detail must retain published chapter data');
+  const publicCatalogData = JSON.parse((await request('/api/novels')).body);
+  assert.ok(publicCatalogData.results.some(row=>Number(row.id)===2147483001), 'Public catalog must retain eligible published novels');
+
   assert.notEqual(dataA.user.id, dataB.user.id, 'Two independent registrations must have distinct user IDs');
   assert.equal(dataA.user.username, accountA.username, 'Account A session must resolve to Account A');
   assert.equal(dataA.user.email, accountA.email, 'Account A profile must expose only Account A identity');
