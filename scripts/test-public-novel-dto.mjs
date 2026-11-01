@@ -42,4 +42,5 @@ assert.ok(source.includes("SELECT id,owner_user_id,novel_id,name,mode,status,gen
 assert.ok(!source.includes("SELECT * FROM novels WHERE id=?"), 'Author novel submit/edit routes must not fetch wildcard novel rows');
 assert.ok(source.includes("SELECT id,owner_user_id,title,alt_titles,author,description,status,kind,language,cover_url,source_url,rights_status,rights_evidence,rights_notes,publication_status,rights_verified_by,rights_verified_at,review_feedback,reviewed_by,reviewed_at,views,rating,created_at,updated_at FROM novels WHERE id=?"), 'Author novel submit/edit must use explicit fields needed for authorization and updates');
 assert.ok(!source.includes("SELECT c.*,n.owner_user_id FROM chapters c JOIN novels n"), 'Author chapter edit must not fetch wildcard chapter rows');
-assert.ok(!source.includes("SELECT c.*,n.owner_user_id,n.rights_status FROM chapters c JOIN novels n"), 'Author chapter publication must not fetch wildcard chapter rows');\nconsole.log('PASS: public, chapter, Author Studio, OmniPortal, admin and author mutation field allowlists.');
+assert.ok(!source.includes("SELECT c.*,n.owner_user_id,n.rights_status FROM chapters c JOIN novels n"), 'Author chapter publication must not fetch wildcard chapter rows');
+console.log('PASS: public, chapter, Author Studio, OmniPortal, admin and author mutation field allowlists.');
