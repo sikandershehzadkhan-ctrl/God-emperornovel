@@ -7,6 +7,7 @@ for path in sorted(Path("migrations").glob("*.sql")):
     db.executescript(path.read_text(encoding="utf-8"))
 
 db.execute("INSERT INTO users(username,email,password_hash) VALUES('creator','creator@example.test','hash')")
+db.execute("INSERT INTO users(username,email,password_hash,role) VALUES('admin','admin@example.test','hash','admin')")
 db.execute("INSERT INTO novels(title,author,owner_user_id) VALUES('Test comic','creator',1)")
 db.execute("INSERT INTO chapters(novel_id,chapter_number,title,content,publication_status) VALUES(1,1,'Chapter 1','','draft')")
 db.execute("""INSERT INTO media_assets(owner_user_id,object_key,mime_type,size_bytes)
@@ -26,9 +27,14 @@ must_fail("""INSERT INTO comic_chapter_pages(chapter_id,media_asset_id,page_numb
 # Approval without an attributable administrator review must fail.
 must_fail("UPDATE media_assets SET status='ready', rights_status='approved' WHERE id=1")
 db.execute("""INSERT INTO media_asset_reviews(media_asset_id,reviewer_user_id,decision,note)
-              VALUES(1,1,'approved','Rights evidence checked')""")
+              VALUES(1,1,'approved','Owner attempted self-review')""")
+must_fail("""UPDATE media_assets
+             SET status='ready', rights_status='approved', reviewed_by_user_id=1
+             WHERE id=1""")
+db.execute("""INSERT INTO media_asset_reviews(media_asset_id,reviewer_user_id,decision,note)
+              VALUES(1,2,'approved','Independent administrator review')""")
 db.execute("""UPDATE media_assets
-              SET status='ready', rights_status='approved', reviewed_by_user_id=1
+              SET status='ready', rights_status='approved', reviewed_by_user_id=2
               WHERE id=1""")
 # Review history is append-only.
 must_fail("UPDATE media_asset_reviews SET note='changed' WHERE media_asset_id=1")
@@ -65,4 +71,4 @@ db.execute("UPDATE chapters SET publication_status='draft' WHERE id=1")
 db.execute("DELETE FROM comic_chapter_pages WHERE chapter_id=1 AND media_asset_id=1")
 db.execute("UPDATE media_assets SET rights_status='withdrawn' WHERE id=1")
 assert db.execute("SELECT rights_status FROM media_assets WHERE id=1").fetchone()[0] == "withdrawn"
-print("PASS: publication requires ready + approved media; referenced assets cannot silently lose readiness or rights.")
+print("PASS: independent administrator review required; publication requires ready + approved media; referenced assets cannot silently lose readiness or rights.")
