@@ -829,7 +829,7 @@ async function publicSitemap(req,env){
  const entries=paths.map(path=>({loc:origin+path}));
  // Only publicly published novels belong in the index. Drafts, pending reviews,
  // chapters, accounts, author tools and administrative surfaces stay out.
- const rows=(await env.DB.prepare("SELECT id,updated_at FROM novels WHERE publication_status='published' ORDER BY updated_at DESC,id DESC LIMIT 49990").all()).results||[];
+ const rows=(await env.DB.prepare("SELECT id,updated_at FROM novels WHERE publication_status='published' AND rights_status IN ('original','public_domain','licensed','authorized') ORDER BY updated_at DESC,id DESC LIMIT 49990").all()).results||[];
  for(const row of rows){
   const id=Number(row.id);
   if(!Number.isSafeInteger(id)||id<1)continue;
