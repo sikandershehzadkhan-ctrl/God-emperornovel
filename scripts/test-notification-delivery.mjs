@@ -34,7 +34,7 @@ assert.ok(moderationRoute[1].includes("admin(u)"), "comment moderation must requ
 assert.ok(moderationRoute[1].includes("Number.isSafeInteger(cid)||cid<1"), "comment moderation must validate a positive safe comment id");
 assert.ok(moderationRoute[1].includes("SELECT id,status FROM comments WHERE id=?"), "comment moderation must verify the target exists");
 assert.ok(moderationRoute[1].includes("community_comment_"), "comment moderation actions must be written to the audit log");
-const reportModeration = worker.match(/if\(p==="\\/api\\/admin\\/community\\/reports"&&m==="PATCH"\\)\\{([\\s\\S]*?)\\n\\s*if\\(p==="\\/api\\/donations"&&m==="POST"/);
+const reportModeration = worker.match(/if\(p==="\/api\/admin\/community\/reports"&&m==="PATCH"\)\{([\s\S]*?)\n\s*if\(p==="\/api\/donations"&&m==="POST"/);
 assert.ok(reportModeration, "admin report moderation route must exist");
 assert.ok(reportModeration[1].includes("admin(u)"), "report moderation must require administrator access");
 assert.ok(reportModeration[1].includes("Number.isSafeInteger(id)||id<1"), "report moderation must validate a positive safe report id");
