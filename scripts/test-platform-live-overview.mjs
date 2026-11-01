@@ -44,7 +44,7 @@ assert.ok(app.includes("setInterval(()=>{if(document.visibilityState==='visible'
 assert.ok(css.includes(".chapterLivePulseMetrics{display:grid;grid-template-columns:repeat(3")&&css.includes("@media(max-width:560px)"),"Chapter activity must have responsive desktop and mobile layouts.");
 
 
-assert.ok(engagementMigration.includes("idx_comment_likes_comment")&&engagementMigration.includes("idx_comments_novel_status_created"),"Engagement migration must add query indexes while leaving canonical table definitions to the runtime-integrity migration.");
+assert.ok(!engagementMigration.includes("CREATE TABLE")&&!engagementMigration.includes("CREATE INDEX"),"Engagement migration slot must remain dependency-free; canonical community tables and query indexes are owned by migration 0012.");
 assert.ok(source.includes("CREATE TABLE IF NOT EXISTS comment_likes")&&source.includes("CREATE TABLE IF NOT EXISTS novel_reactions"),"Existing installations must receive idempotent engagement table readiness before querying.");
 assert.ok(!engagementMigration.includes("CREATE TABLE IF NOT EXISTS comment_likes")&&!engagementMigration.includes("CREATE TABLE IF NOT EXISTS novel_reactions"),"Engagement migration must not redefine canonical community tables.");
 assert.ok(viewAnalyticsMigration.includes("CREATE TABLE IF NOT EXISTS novel_view_daily")&&viewAnalyticsMigration.includes("CREATE TABLE IF NOT EXISTS chapter_view_daily"),"Migration 0014 must add daily aggregate counters for novel and chapter views.");
