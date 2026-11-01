@@ -36,7 +36,7 @@ assert.equal(validateOwnershipTransferRequest({ ...transfer, pendingTransfer: tr
 assert.equal(validateOwnershipTransferRequest({ ...transfer, rightsReviewLocked: true }).ok, false, "rights review lock blocks transfer");
 assert.equal(validateOwnershipTransferRequest({ ...transfer, moderationLocked: true }).ok, false, "moderation lock blocks transfer");
 
-const decision = { actorUserId: 12, recipientUserId: 12, transferStatus: "pending", expiresAt: 2000, now: 1000, decision: "accept", currentOwnerId: 7, recipientUser: recipient };
+const decision = { actorUserId: 12, recipientUserId: 12, transferStatus: "pending", expiresAt: 2000, now: 1000, decision: "accept", currentOwnerId: 7, expectedOwnerId: 7, recipientUser: recipient };
 assert.deepEqual(validateOwnershipTransferDecision(decision), { ok: true, value: "accept" });
 assert.deepEqual(validateOwnershipTransferDecision({ ...decision, decision: "reject" }), { ok: true, value: "reject" });
 assert.equal(validateOwnershipTransferDecision({ ...decision, actorUserId: 7 }).ok, false, "only recipient may decide");
@@ -44,5 +44,6 @@ assert.equal(validateOwnershipTransferDecision({ ...decision, transferStatus: "a
 assert.equal(validateOwnershipTransferDecision({ ...decision, expiresAt: 1000 }).ok, false, "expired invitation rejected");
 assert.equal(validateOwnershipTransferDecision({ ...decision, decision: "delete" }).ok, false, "unknown decision rejected");
 assert.equal(validateOwnershipTransferDecision({ ...decision, recipientUser: { ...recipient, banned: 1 } }).ok, false, "inactive recipient cannot accept");
+assert.equal(validateOwnershipTransferDecision({ ...decision, currentOwnerId: 99 }).ok, false, "stale ownership blocks acceptance");
 assert.equal(validateOwnershipTransferDecision({ ...decision, moderationLocked: true }).ok, false, "moderation lock blocks acceptance");
 console.log("Creator ownership, chapter publication, and ownership transfer policy tests passed.");

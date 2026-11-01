@@ -49,7 +49,7 @@ export function validateOwnershipTransferRequest({
 /** Only the invited recipient can accept or reject a live pending transfer. */
 export function validateOwnershipTransferDecision({
   actorUserId, recipientUserId, transferStatus, expiresAt, now = Math.floor(Date.now() / 1000),
-  decision, currentOwnerId, recipientUser, rightsReviewLocked = false, moderationLocked = false
+  decision, currentOwnerId, expectedOwnerId, recipientUser, rightsReviewLocked = false, moderationLocked = false
 } = {}) {
   if (!validId(actorUserId) || Number(actorUserId) !== Number(recipientUserId)) {
     return { ok: false, error: "Only the invited recipient may decide this transfer." };
@@ -64,7 +64,7 @@ export function validateOwnershipTransferDecision({
     return { ok: false, error: "A valid accept or reject decision is required." };
   }
   if (String(decision).toLowerCase() === "accept") {
-    if (!validId(currentOwnerId) || !activeAuthor(recipientUser) || Number(recipientUser.id) !== Number(recipientUserId)) {
+    if (!validId(currentOwnerId) || !validId(expectedOwnerId) || Number(currentOwnerId) !== Number(expectedOwnerId) || !activeAuthor(recipientUser) || Number(recipientUser.id) !== Number(recipientUserId)) {
       return { ok: false, error: "The ownership or recipient account is no longer eligible." };
     }
     if (rightsReviewLocked || moderationLocked) {
