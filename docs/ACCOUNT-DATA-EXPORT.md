@@ -12,7 +12,7 @@ The route:
 - caps each collection at 5,000 rows and lists any collection that exceeded the cap in `export_limits.truncated_collections`.
 - excludes password hashes, session tokens, authentication rate-limit keys, internal audit logs, rights-review audit records, and private reviewer identity fields.
 
-The export includes the account profile and its own reading progress, bookmarks, follows, ratings, unlock history, ticket ledger, donation references, novel requests, notifications, comments, reports, reactions, request votes, connector import jobs, author applications, AI author projects, AI chapter jobs, AI generation summaries, and creator-owned novels and chapters.
+The export includes the account profile and its own reading progress, bookmarks, follows, ratings, unlock history, ticket ledger, donation references, novel requests, notifications, comments, reports, reactions, request votes, connector import jobs, account closure request history, author applications, AI author projects, AI chapter jobs, AI generation summaries, and creator-owned novels and chapters.
 
 Because export data can include private writing, reading activity, payment references, and personal details, users should keep the downloaded file private and delete unnecessary copies securely.
 
