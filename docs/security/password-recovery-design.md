@@ -149,3 +149,6 @@ Before adding a user-facing route, the receiving delivery service must be separa
 - `GET /verify-email` serves a dedicated noindex landing page. The page reads the token from the URL fragment, removes it from browser history before sending the JSON request, and displays a generic result.
 - Local Worker/D1 coverage verifies the landing page, unauthenticated request denial, missing-provider fail-closed behavior, one-time confirmation, and replay rejection.
 - Neither endpoint implies that email delivery is live. Production configuration must explicitly add the approved Service Binding and canonical `PUBLIC_ORIGIN`, then validate the provider's idempotency, privacy, and failure semantics before launch.
+
+- The authenticated request route is idempotent for accounts whose `email_verified_at` is already set: it returns the same generic accepted response without issuing another token or contacting the mail service.
+- Worker integration coverage verifies that confirming one account leaves a second account's mailbox-verification timestamp unchanged, and that repeat requests after verification are harmless.
