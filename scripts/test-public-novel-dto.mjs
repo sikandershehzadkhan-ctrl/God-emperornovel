@@ -16,4 +16,7 @@ for (const line of source.split("\\n").filter(line => /SELECT n\\.id,n\\.title,n
 }
 for (const route of ["/api/made-for-you", "/api/recommendations", "/api/follows"]) assert.ok(source.includes(route), route + " route must remain present");
 assert.doesNotMatch(source.split("\\n").find(line => line.includes("if(p===\"/api/recommendations\"")) || "", /SELECT n\\.\\*/);
-console.log("PASS: public novel catalog/detail and reader discovery DTOs use explicit public fields.");
+assert.ok(source.includes('SELECT id,name,slug FROM genres ORDER BY name'), 'public genre endpoint must use an explicit DTO');
+assert.ok(source.includes('SELECT id,name,slug FROM tags ORDER BY name'), 'public tag endpoint must use an explicit DTO');
+assert.ok(source.includes('SELECT id,title,body,read_at,created_at FROM notifications WHERE user_id=?'), 'notification response must omit internal user_id and future private columns');
+console.log('PASS: novel, taxonomy, genre, tag and notification responses use explicit public DTO fields.');
