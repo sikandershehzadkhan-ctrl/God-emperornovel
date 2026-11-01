@@ -190,7 +190,7 @@ try {
   assert.equal(csrfFetchMetadataProbe.response.status, 403, 'Cross-site Fetch Metadata requests must be rejected');
   const csrfMissingMetadataProbe = await request('/api/library', {method:'POST',headers:{...jsonHeaders,cookie:accountA.cookie},omitOrigin:true,body:JSON.stringify({novel_id:novelId})});
   assert.equal(csrfMissingMetadataProbe.response.status, 403, 'State-changing requests without Origin or same-origin Fetch Metadata must fail closed');
-  const csrfSameOriginMetadataProbe = await request('/api/library', {method:'POST',headers:{...jsonHeaders,cookie:accountA.cookie,'sec-fetch-site':'same-origin'},omitOrigin:true,body:JSON.stringify({novel_id:novelId})});
+  const csrfSameOriginMetadataProbe = await request('/api/taxonomy', {method:'POST',headers:{...jsonHeaders,cookie:accountA.cookie,'sec-fetch-site':'same-origin'},omitOrigin:true,body:JSON.stringify({})});
   assert.notEqual(csrfSameOriginMetadataProbe.response.status, 403, 'Explicit same-origin Fetch Metadata may authorize a same-origin browser mutation');
   const libraryA = await getAs(accountA, '/api/library');
   const libraryB = await getAs(accountB, '/api/library');
