@@ -6,9 +6,9 @@ const [source,app,bundle,css,migration,engagementMigration,viewAnalyticsMigratio
  readFile(new URL("../public/app.js",import.meta.url),"utf8"),
  readFile(new URL("../public/app-17.23.0.js",import.meta.url),"utf8"),
  readFile(new URL("../public/imperial-design-foundation.css",import.meta.url),"utf8"),
- readFile(new URL("../migrations/0012_chapter_update_timestamps.sql",import.meta.url),"utf8"),
- readFile(new URL("../migrations/0013_reader_engagement_metrics.sql",import.meta.url),"utf8"),
- readFile(new URL("../migrations/0014_daily_view_analytics.sql",import.meta.url),"utf8")
+ readFile(new URL("../migrations/0013_chapter_update_timestamps.sql",import.meta.url),"utf8"),
+ readFile(new URL("../migrations/0014_reader_engagement_metrics.sql",import.meta.url),"utf8"),
+ readFile(new URL("../migrations/0015_daily_view_analytics.sql",import.meta.url),"utf8")
 ]);
 const start=source.indexOf('if(p==="/api/platform/overview"&&m==="GET"){');
 const end=source.indexOf('if(p==="/api/discovery/graph"&&m==="GET"){',start);
