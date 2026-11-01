@@ -430,8 +430,9 @@ async function api(req,env){
   const authError=need(u);if(authError)return authError;
   const limited=await consumeAuthRateLimit(env,"account-data-export",String(u.id),3,3600);if(limited)return limited;
   try{
+   await ensureOmniTables(env);await ensureAuthorAISchema(env);
    const user={id:u.id,username:u.username,email:u.email,role:u.role,tickets:u.tickets,verified:u.verified};
-   const [history,bookmarks,follows,library,ratings,unlocks,unlockBatches,ticketLedger,donations,novelRequests,comments,reports,notifications,ownedNovels,ownedChapters]=await Promise.all([
+   const [history,bookmarks,follows,library,ratings,unlocks,unlockBatches,ticketLedger,donations,novelRequests,comments,reports,notifications,ownedNovels,ownedChapters,importJobs,connectorRequests,aiProjects,aiJobs,aiRuns,ownershipTransfers]=await Promise.all([
     env.DB.prepare("SELECT novel_id,chapter_number,updated_at FROM history WHERE user_id=? ORDER BY updated_at DESC").bind(u.id).all(),
     env.DB.prepare("SELECT novel_id,chapter_number,updated_at FROM bookmarks WHERE user_id=? ORDER BY updated_at DESC").bind(u.id).all(),
     env.DB.prepare("SELECT novel_id,created_at FROM follows WHERE user_id=? ORDER BY created_at DESC").bind(u.id).all(),
@@ -446,11 +447,17 @@ async function api(req,env){
     env.DB.prepare("SELECT id,novel_id,chapter_id,reason,details,status,created_at FROM reports WHERE user_id=? ORDER BY created_at DESC").bind(u.id).all(),
     env.DB.prepare("SELECT id,title,body,read_at,created_at FROM notifications WHERE user_id=? ORDER BY created_at DESC").bind(u.id).all(),
     env.DB.prepare("SELECT id,title,alt_titles,author,description,status,kind,language,cover_url,source_url,rights_status,rights_evidence,rights_notes,publication_status,created_at,updated_at FROM novels WHERE owner_user_id=? ORDER BY id").bind(u.id).all(),
-    env.DB.prepare("SELECT c.id,c.novel_id,c.chapter_number,c.title,c.content,c.is_locked,c.ticket_cost,c.publication_status,c.created_at FROM chapters c JOIN novels n ON n.id=c.novel_id WHERE n.owner_user_id=? ORDER BY c.novel_id,c.chapter_number").bind(u.id).all()
+    env.DB.prepare("SELECT c.id,c.novel_id,c.chapter_number,c.title,c.content,c.is_locked,c.ticket_cost,c.publication_status,c.created_at FROM chapters c JOIN novels n ON n.id=c.novel_id WHERE n.owner_user_id=? ORDER BY c.novel_id,c.chapter_number").bind(u.id).all(),
+    env.DB.prepare("SELECT id,connector_id,source_url,status,message,created_at,updated_at FROM import_jobs WHERE user_id=? ORDER BY created_at DESC").bind(u.id).all(),
+    env.DB.prepare("SELECT id,connector_id,status,evidence_url,terms_url,notes,metadata_import_allowed,attribution_required,created_at FROM connector_authorization_requests WHERE user_id=? ORDER BY created_at DESC").bind(u.id).all(),
+    env.DB.prepare("SELECT id,novel_id,name,mode,status,genre,fandom,premise,protagonist,settings_json,bible_json,auto_publish,chapters_target,chapters_generated,created_at,updated_at FROM ai_author_projects WHERE owner_user_id=? ORDER BY updated_at DESC").bind(u.id).all(),
+    env.DB.prepare("SELECT id,project_id,chapter_number,job_type,status,prompt,result,error,attempts,created_at,started_at,finished_at FROM ai_chapter_jobs WHERE owner_user_id=? ORDER BY created_at DESC").bind(u.id).all(),
+    env.DB.prepare("SELECT id,project_id,agent,mode,status,input_summary,output_summary,provider,created_at FROM ai_generation_runs WHERE owner_user_id=? ORDER BY created_at DESC").bind(u.id).all(),
+    env.DB.prepare("SELECT id,novel_id,from_user_id,to_user_id,status,request_note,requested_at,expires_at,decided_at,decision_note,created_at,updated_at FROM novel_ownership_transfers WHERE from_user_id=? OR to_user_id=? ORDER BY requested_at DESC").bind(u.id,u.id).all()
    ]);
    const rows=x=>x?.results||[];
    const exportedAt=new Date().toISOString();
-   const payload={format:"imperial-novel-account-export-v1",exported_at:exportedAt,user,reading:{history:rows(history),bookmarks:rows(bookmarks)},library:{follows:rows(follows),saved_novels:rows(library)},community:{ratings:rows(ratings),comments:rows(comments),reports:rows(reports)},reading_access:{chapter_unlocks:rows(unlocks),batch_unlocks:rows(unlockBatches)},finance:{ticket_ledger:rows(ticketLedger),donations:rows(donations),novel_requests:rows(novelRequests)},notifications:rows(notifications),creator_content:{novels:rows(ownedNovels),chapters:rows(ownedChapters)},exclusions:["password hashes","session tokens and session records","password-reset tokens","internal reviewer identities and private reviewer notes","administrator audit logs"]};
+   const payload={format:"imperial-novel-account-export-v1",exported_at:exportedAt,user,reading:{history:rows(history),bookmarks:rows(bookmarks)},library:{follows:rows(follows),saved_novels:rows(library)},community:{ratings:rows(ratings),comments:rows(comments),reports:rows(reports)},reading_access:{chapter_unlocks:rows(unlocks),batch_unlocks:rows(unlockBatches)},finance:{ticket_ledger:rows(ticketLedger),donations:rows(donations),novel_requests:rows(novelRequests)},notifications:rows(notifications),creator_content:{novels:rows(ownedNovels),chapters:rows(ownedChapters),ai_projects:rows(aiProjects),ai_chapter_jobs:rows(aiJobs),ai_generation_runs:rows(aiRuns),ownership_transfers:rows(ownershipTransfers)},omniportal:{import_jobs:rows(importJobs),authorization_requests:rows(connectorRequests)},exclusions:["password hashes","session tokens and session records","password-reset tokens","internal reviewer identities and private reviewer notes","administrator audit logs"]};
    return new Response(JSON.stringify(payload),{status:200,headers:{"content-type":"application/json;charset=UTF-8","cache-control":"no-store, private","content-disposition":'attachment; filename="imperial-novel-account-export.json"',"x-content-type-options":"nosniff","vary":"Cookie"}});
   }catch(err){console.error("account data export failed",String(err?.message||err));return json({error:"Your data export could not be generated. Please try again later."},500)}
  }
