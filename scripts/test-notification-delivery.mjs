@@ -28,7 +28,7 @@ assert.ok(commentRoute, "comment creation route must exist");
 assert.ok(commentRoute[1].includes("await notifyUser(env,parentAuthor"), "comment replies must notify the parent comment author");
 assert.ok(commentRoute[1].includes("await notifyUser(env,owner"), "novel comments must notify the novel owner");
 assert.ok(commentRoute[1].includes("owner!==Number(u.id)"), "authors must not receive notifications for their own comments");
-const moderationRoute = worker.match(/if\\(p==="\\/api\\/admin\\/community\\/comments"&&m==="PATCH"\\)\\{([\\s\\S]*?)\\n\\s*if\\(p==="\\/api\\/admin\\/community\\/reports"&&m==="GET"/);
+const moderationRoute = worker.match(/if\(p==="\/api\/admin\/community\/comments"&&m==="PATCH"\)\{([\s\S]*?)\n\s*if\(p==="\/api\/admin\/community\/reports"&&m==="GET"/);
 assert.ok(moderationRoute, "admin comment moderation route must exist");
 assert.ok(moderationRoute[1].includes("admin(u)"), "comment moderation must require administrator access");
 assert.ok(moderationRoute[1].includes("Number.isSafeInteger(cid)||cid<1"), "comment moderation must validate a positive safe comment id");
