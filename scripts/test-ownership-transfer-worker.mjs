@@ -117,6 +117,12 @@ try {
   assert.equal(malformedVerification.response.status,400);
   assert.equal(JSON.stringify(malformedVerification.data).includes("not-a-valid-token"),false);
 
+  const unauthenticatedVerificationRequest = await request(baseUrl,"/api/me/email-verification/request",{method:"POST"});
+  assert.equal(unauthenticatedVerificationRequest.response.status,401,"Verification issuance must require an authenticated account");
+  const unavailableVerificationRequest = await request(baseUrl,"/api/me/email-verification/request",{method:"POST",cookie:spectator.cookie,body:{}});
+  assert.equal(unavailableVerificationRequest.response.status,503,"No configured email service must fail closed instead of claiming delivery");
+  assert.equal(unavailableVerificationRequest.data.ok,undefined,"Unavailable delivery must not be reported as sent");
+
   // Verify the public confirmation endpoint consumes a real D1 token exactly once.
   const verificationToken = createEmailVerificationToken();
   const verificationHash = await hashEmailVerificationToken(verificationToken);
