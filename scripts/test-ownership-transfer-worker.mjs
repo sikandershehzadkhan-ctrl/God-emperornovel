@@ -609,6 +609,20 @@ try {
     "The second session must also be revoked when explicitly logged out");
   const repeatedLogout = await request(baseUrl, "/api/auth/logout", { method: "POST", cookie: secondaryOwnerCookie });
   assert.equal(repeatedLogout.response.status, 200, "Repeated logout should remain safe and idempotent");
+  // Expired sessions must be rejected even when the account remains active.
+  const expiredSessionLogin = await request(baseUrl, "/api/auth/login", {
+    method: "POST",
+    body: { email: "owner" + suffix + "@example.test", password: "Integration-Test-Password-2026!" }
+  });
+  assert.equal(expiredSessionLogin.response.status, 200, JSON.stringify(expiredSessionLogin.data));
+  const expiredCookieMatch = (expiredSessionLogin.response.headers.get("set-cookie") || "").match(/(?:^|;\\s*)session=([^;]+)/);
+  assert.ok(expiredCookieMatch, "Expiry regression fixture must receive a session");
+  const expiredSessionCookie = "session=" + expiredCookieMatch[1];
+  executeLocalSql("UPDATE sessions SET expires_at=0 WHERE user_id=" + Number(owner.user.id));
+  const expiredSessionMe = await request(baseUrl, "/api/me", { cookie: expiredSessionCookie });
+  assert.equal(expiredSessionMe.response.status, 200);
+  assert.equal(expiredSessionMe.data.user, null, "An expired session must not authenticate an otherwise active account");
+
 
   console.log("Local Worker/D1 authorization integration passed: administrator role boundaries, ban/login/session revocation, private chapter read/publish isolation, six private-data endpoint isolation, session-bound writes, ownership and chapter isolation, recipient privacy, concurrent acceptance, rejection/cancellation, and ineligible transfer rejection.");
 
