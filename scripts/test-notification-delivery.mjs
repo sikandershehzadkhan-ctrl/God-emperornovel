@@ -33,6 +33,11 @@ const commentLike = worker.match(/if\(p==="\/api\/comments\/like"&&m==="POST"\)\
 assert.ok(commentLike, "comment like route must exist");
 assert.ok(commentLike[1].includes("JOIN novels n ON n.id=c.novel_id"), "comment likes must verify the associated novel");
 assert.ok(commentLike[1].includes("rights_status IN ('original','public_domain','licensed','authorized')"), "comment likes must enforce publication rights clearance");
+const runtimeCommentReportSchema = worker.match(/CREATE TABLE IF NOT EXISTS comment_reports \(([\s\S]*?)\)/);
+assert.ok(runtimeCommentReportSchema, "runtime bootstrap must create the dedicated comment_reports table");
+assert.ok(runtimeCommentReportSchema[1].includes("UNIQUE(user_id,comment_id)"), "runtime comment report schema must prevent duplicate reports per user and comment");
+assert.ok(worker.includes("idx_comment_reports_status_created"), "runtime comment report schema must index moderation queues");
+
 const reportSubmission = worker.match(/if\(p==="\/api\/comments\/report"&&m==="POST"\)\{([\s\S]*?)\n\s*if\(p==="\/api\/rating"/);
 assert.ok(reportSubmission, "comment report submission route must exist");
 assert.ok(reportSubmission[1].includes("JOIN novels n ON n.id=c.novel_id"), "reports must only target comments on published novels");
