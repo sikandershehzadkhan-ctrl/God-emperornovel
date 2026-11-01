@@ -6,7 +6,7 @@ import { parseDonationSubmission } from "./donation-reference-policy.mjs";
 import { createRuntimeFeatureSchemaEnsurer } from "./runtime-feature-schema.mjs";
 import { createDonationReferenceIndexEnsurer } from "./donation-reference-index.mjs";
 import { validateAuthorApplication, validateAuthorApplicationDecision } from "./author-application-policy.mjs";
-import { canPublishChapter } from "./creator-ownership-policy.mjs";
+import { canPublishChapter, validateNovelOwnerAssignment } from "./creator-ownership-policy.mjs";
 import { CONTENT_FORMATS, CONTENT_FORMAT_IDS } from "./content-formats.mjs";
 const json=(d,s=200,h={})=>new Response(JSON.stringify(d),{status:s,headers:{"content-type":"application/json;charset=UTF-8","cache-control":"no-store",...h}});
 const now=()=>Math.floor(Date.now()/1000);
@@ -750,12 +750,12 @@ async function api(req,env){
   if(!['original','public_domain','licensed','authorized'].includes(rights))return json({error:'Invalid rights status'},400);
   const kind=String(b.kind||'original').trim().toLowerCase();if(!CONTENT_FORMAT_IDS.has(kind))return json({error:'Unsupported content format. Fetch /api/formats for the supported format registry.',supported_formats:CONTENT_FORMATS.map(x=>x.id)},400);
   const status=['ongoing','completed'].includes(String(b.status||'ongoing'))?String(b.status):'ongoing';
-  const requestedOwner=b.owner_user_id===undefined||b.owner_user_id===null||b.owner_user_id===''?u.id:Number(b.owner_user_id);
-  if(!Number.isSafeInteger(requestedOwner)||requestedOwner<1)return json({error:'A valid creator account is required for ownership assignment.'},400);
-  if(requestedOwner!==Number(u.id)){
-   const target=await env.DB.prepare("SELECT id FROM users WHERE id=? AND role='author' AND banned=0").bind(requestedOwner).first();
-   if(!target)return json({error:'Ownership can only be assigned to an active, approved author account.'},400);
-  }
+  const requestedOwnerRaw=b.owner_user_id===undefined||b.owner_user_id===null||b.owner_user_id===''?u.id:b.owner_user_id;
+  const requestedOwnerId=Number(requestedOwnerRaw);
+  const target=requestedOwnerId===Number(u.id)?{id:u.id,role:u.role,banned:0}:await env.DB.prepare("SELECT id,role,banned FROM users WHERE id=?").bind(requestedOwnerId).first();
+  const ownerDecision=validateNovelOwnerAssignment({actorUserId:u.id,requestedOwnerId:requestedOwnerRaw,targetUser:target});
+  if(!ownerDecision.ok)return json({error:ownerDecision.error},400);
+  const requestedOwner=ownerDecision.value;
   try{
    const r=await env.DB.prepare(`INSERT INTO novels(title,alt_titles,author,description,status,kind,language,cover_url,source_url,rights_status,owner_user_id,publication_status,rights_evidence,rights_notes) VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,?)`).bind(title,String(b.alt_titles||''),author,description,status,kind,String(b.language||'English'),String(b.cover_url||''),String(b.source_url||''),rights,requestedOwner,'draft',String(b.rights_evidence||''),String(b.rights_notes||'')).run();
    const id=Number(r.meta.last_row_id);await audit(env,u,'admin_novel_created',`novel=${id};rights=${rights}`);
