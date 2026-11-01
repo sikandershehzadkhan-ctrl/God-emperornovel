@@ -122,3 +122,15 @@ assert.ok(css.includes("background:var(--in-surface);color:var(--in-ink)"),"Cata
 assert.ok(sourceApp.includes('class="catalogGrid"'),"Catalog page must render its story grid");
 assert.ok(sourceApp.includes('class="activeFilters"'),"Catalog page must expose removable active-filter chips");
 assert.ok(sourceApp.includes('class="catalogEmpty"'),"Catalog page must render a designed empty state");
+
+
+for(const selector of [".novelHero",".novelCover",".novelInfo h1",".novelInfo .stats",".novelInfo .actions",".tabs a.active",".chapterList .chapter","#community"]){
+  assert.ok(css.includes(selector),"Story detail design foundation must include "+selector);
+}
+assert.ok(css.includes("grid-template-columns:minmax(190px,260px) minmax(0,1fr)"),"Desktop story detail must separate cover art from editorial metadata");
+assert.ok(css.includes("@media(max-width:420px){\n .novelHero"),"Story detail must have a compact phone layout");
+assert.ok(css.includes("grid-template-columns:88px minmax(0,1fr)"),"Narrow phone story detail must preserve a readable cover and content column");
+assert.ok(css.includes("scroll-margin-top:92px"),"Community deep links must account for the sticky navigation");
+assert.ok(sourceApp.includes('class="novelHero"'),"Novel detail route must render the shared story hero");
+assert.ok(sourceApp.includes('class="tabs"'),"Novel detail route must render overview and chapter navigation");
+assert.ok(sourceApp.includes('class="chapterList"'),"Novel detail route must render the chapter archive");
