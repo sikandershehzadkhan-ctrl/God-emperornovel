@@ -456,7 +456,7 @@ async function api(req,env){
  if(["POST","PUT","PATCH","DELETE"].includes(m)){
   const origin=req.headers.get("origin");
   const fetchSite=String(req.headers.get("sec-fetch-site")||"").toLowerCase();
-  if((origin&&origin!==url.origin)||fetchSite==="cross-site")return json({error:"Cross-site request rejected"},403);
+  if((origin&&origin!==url.origin)||fetchSite==="cross-site"||(!origin&&fetchSite!=="same-origin"))return json({error:"Cross-site request rejected"},403);
  }
  // Health checks must not trigger schema bootstrap, rate-limit DDL, community setup,
  // or session reads. Keep this path fast and side-effect-free for platform probes.
