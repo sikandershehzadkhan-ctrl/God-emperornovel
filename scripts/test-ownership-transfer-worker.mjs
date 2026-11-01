@@ -159,7 +159,7 @@ try {
     method: "POST", body: { email: "reader" + suffix + "@example.test", password: "Integration-Test-Password-2026!" }
   });
   assert.equal(freshReaderLogin.response.status, 200, JSON.stringify(freshReaderLogin.data));
-  spectator.cookie = "session=" + (freshReaderLogin.response.headers.get("set-cookie") || "").match(/(?:^|;\\s*)session=([^;]+)/)?.[1];
+  spectator.cookie = "session=" + (freshReaderLogin.response.headers.get("set-cookie") || "").match(/(?:^|;\s*)session=([^;]+)/)?.[1];
   assert.ok(spectator.cookie && spectator.cookie !== "session=null", "Unbanned account must obtain a fresh session");
 
   // Private reader data must remain scoped to the authenticated session, never a caller-supplied user ID.
