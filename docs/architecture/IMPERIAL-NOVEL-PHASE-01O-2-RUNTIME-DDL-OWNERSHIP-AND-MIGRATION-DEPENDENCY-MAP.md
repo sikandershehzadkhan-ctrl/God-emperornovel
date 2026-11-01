@@ -28,13 +28,13 @@ The table is based on the inspected files and visible call sites. A complete sca
 ## 3. Specific ownership conflicts
 
 ### 3.1 Publication schema vs migrations 0010 and 0013
-The publishing helper adds `novels.publication_status` and `chapters.publication_status`. Migration 0010 indexes the novel column. Migration 0013 uses the chapter column in a trigger and index. The migration sequence must create those columns before either dependent migration.
+The publishing helper adds `novels.publication_status` and `chapters.publication_status`. Migration 0004 adds the novel column before 0010 indexes it. Migration 0005 adds the chapter column before 0013 uses it in a trigger and index. The numbered dependency order is present in the inspected chain; the problem is duplicated runtime ownership and lack of a proven clean/upgrade test, not a demonstrated missing publication prerequisite.
 
 ### 3.2 Chapter updated_at overlap
-The publishing helper adds and backfills `chapters.updated_at`, then creates update triggers and indexes. Migration 0013 also adds `updated_at`, backfills it and creates triggers/indexes. Running both without a carefully designed transition can fail on duplicate columns or leave inconsistent trigger definitions. One canonical migration must own the column, backfill, trigger and index.
+The publishing helper adds and backfills chapters.updated_at, then creates update triggers and indexes. Migration 0013 also adds updated_at, backfills it and creates triggers/indexes. Both are not safe to run independently against an already-upgraded schema without compatibility handling; migration ownership must be singular. Running both without a carefully designed transition can fail on duplicate columns or leave inconsistent trigger definitions. One canonical migration must own the column, backfill, trigger and index.
 
 ### 3.3 Ratings
-Core runtime schema creates `ratings` with integer CHECK 1–10. Migration 0017 rebuilds `ratings` by copying its existing columns, dropping the original and renaming the new table. Baseline migration 0001 does not create ratings. The bootstrap path must create the exact prior ratings table before 0017, or replace the migration plan with a reviewed baseline/upgrade strategy. Never apply 0017 blindly to a database where ratings does not exist.
+Migration 0003 creates ratings with CHECK 1–5. Runtime core bootstrap independently creates ratings with CHECK 1–10. Migration 0017 rebuilds the migration baseline by copying rows, dropping the original and renaming the new table. Thus a database initialized through runtime core may already have the target constraint while a database initialized through migrations expects the 0017 transition. Define one canonical baseline and an upgrade-safe path; never apply 0017 blindly without checking the actual table and data. Never apply 0017 blindly to a database where ratings does not exist.
 
 ### 3.4 Community engagement
 Runtime feature helper and engagement helper both create overlapping tables/indexes with differing constraints. The candidate 0012 migration adds foreign keys, uniqueness and legacy cleanup. A single canonical definition must be selected; runtime helper definitions cannot remain a second authority.
