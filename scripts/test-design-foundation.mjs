@@ -220,6 +220,12 @@ assert.ok(css.includes("@media(prefers-reduced-motion:reduce){\n  .homeFormatCar
 assert.ok(!/filter:\s*blur\(/i.test(css),"Visual refinement must not introduce expensive blur filters");
 
 
+
+/* Reader small-screen and safe-area regression checks. */
+for(const rule of ["max-height:100dvh","env(safe-area-inset-top)","env(safe-area-inset-bottom)","overscroll-behavior:contain","-webkit-overflow-scrolling:touch","min-height:44px","@media(max-width:480px)","flex:1 0 100%","grid-template-columns:1fr"]){
+  assert.ok(css.includes(rule),"Reader mobile ergonomics must include "+rule);
+}
+
 /* Reader eye-comfort and immersion regression checks. */
 for(const selector of ['.readerPage[data-reader-theme="sepia"]','.readerPage[data-reader-theme="midnight"]','.readerPage[data-reader-theme="imperial"]','.readerPage[data-reader-theme="cosmic"]','.readerPage[data-reader-theme="dark"]','.readerContent p','.readerContent blockquote','.readerContent a']){
   assert.ok(css.includes(selector),"Reader comfort system must include "+selector);
