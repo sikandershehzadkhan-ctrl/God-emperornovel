@@ -17,8 +17,8 @@ assert.match(worker, /p===\"\/sitemap\.xml\"&&req\.method===\"GET\"/, "Sitemap e
 assert.match(worker, /p===\"\/robots\.txt\"&&req\.method===\"GET\"/, "Robots endpoint must be GET-only");
 assert.match(worker, /Sitemap: \"\+origin\+\"\/sitemap\.xml/, "Robots must advertise the origin-aware sitemap");
 assert.match(worker, /noIndexExact=new Set/, "Private and account-specific routes must be marked noindex");
-assert.ok(worker.includes("read\/"), "Reader URLs must be excluded from indexing");
-assert.ok(worker.includes("novel\/") && worker.includes("chapters"), "Chapter-list URLs must be excluded from indexing");
+assert.ok(worker.includes("/read/"), "Reader URLs must be excluded from indexing");
+assert.ok(worker.includes("/novel/") && worker.includes("chapters"), "Chapter-list URLs must be excluded from indexing");
 assert.match(wrangler, /run_worker_first = \[[^\]]*\"\/sitemap\.xml\"[^\]]*\"\/robots\.txt\"/, "Cloudflare must route sitemap and robots requests through the Worker");
 
 console.log("PASS: dynamic sitemap, publication filtering, XML safety, crawler metadata and Cloudflare routing checks.");
