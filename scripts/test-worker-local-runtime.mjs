@@ -12,8 +12,8 @@ let output = '';
 child.stdout.setEncoding('utf8').on('data', chunk => { output += chunk; });
 child.stderr.setEncoding('utf8').on('data', chunk => { output += chunk; });
 const sleep = ms => new Promise(resolve => setTimeout(resolve, ms));
-async function request(path) {
-  const response = await fetch(origin + path, { signal: AbortSignal.timeout(2500) });
+async function request(path, options = {}) {
+  const response = await fetch(origin + path, { ...options, signal: AbortSignal.timeout(2500) });
   return { response, body: await response.text() };
 }
 try {
@@ -41,6 +41,9 @@ try {
   const overviewData = JSON.parse(overview.body);
   assert.equal(typeof overviewData.metrics?.publishedNovels, 'number', 'Overview must return numeric live metrics');
 
+  const taxonomySubmit = await request('/api/taxonomy', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ type: 'tag', name: 'Unauthenticated Runtime Probe', creator_id: 1, creator_name: 'Spoofed Owner' }) });
+  assert.equal(taxonomySubmit.response.status, 401, 'Taxonomy submissions must require an authenticated session');
+
   const missingChapter = await request('/api/chapters/2147483000');
   assert.equal(missingChapter.response.status, 404, 'Unknown chapter must return 404');
   assert.ok(JSON.parse(missingChapter.body).error, 'Unknown chapter response must be a structured error');
@@ -48,7 +51,7 @@ try {
   const home = await request('/');
   assert.equal(home.response.status, 200, 'Home page must be served by the Worker');
   assert.match(home.body, /Imperial Novel/, 'Home page must contain the platform brand');
-  console.log('PASS: real Wrangler local Worker handled health, D1-backed catalog, live overview, missing chapter and homepage requests.');
+  console.log('PASS: real Wrangler local Worker handled health, D1-backed catalog, live overview, unauthenticated taxonomy rejection, missing chapter and homepage requests.');
 } finally {
   try { process.kill(-child.pid, 'SIGTERM'); } catch { child.kill('SIGTERM'); }
   await Promise.race([new Promise(resolve => child.once('exit', resolve)), sleep(5000)]);
