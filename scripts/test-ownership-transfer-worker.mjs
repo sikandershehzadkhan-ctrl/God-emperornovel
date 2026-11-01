@@ -499,6 +499,28 @@ try {
   });
   assert.equal(rightsInvite.response.status, 409, JSON.stringify(rightsInvite.data));
 
+  // Logout revokes only the presented session, and repeated logout is safe.
+  const secondaryOwnerLogin = await request(baseUrl, "/api/auth/login", {
+    method: "POST",
+    body: { email: "owner" + suffix + "@example.test", password: "Integration-Test-Password-2026!" }
+  });
+  assert.equal(secondaryOwnerLogin.response.status, 200, JSON.stringify(secondaryOwnerLogin.data));
+  const secondaryCookieMatch = (secondaryOwnerLogin.response.headers.get("set-cookie") || "").match(/(?:^|;\\s*)session=([^;]+)/);
+  assert.ok(secondaryCookieMatch, "A second login must issue an independent session");
+  const secondaryOwnerCookie = "session=" + secondaryCookieMatch[1];
+  const logoutOriginal = await request(baseUrl, "/api/auth/logout", { method: "POST", cookie: owner.cookie });
+  assert.equal(logoutOriginal.response.status, 200);
+  assert.equal((await request(baseUrl, "/api/me", { cookie: owner.cookie })).data.user, null,
+    "Logging out must invalidate the presented session");
+  assert.ok((await request(baseUrl, "/api/me", { cookie: secondaryOwnerCookie })).data.user,
+    "Logging out one device must not revoke a different active session");
+  const logoutSecondary = await request(baseUrl, "/api/auth/logout", { method: "POST", cookie: secondaryOwnerCookie });
+  assert.equal(logoutSecondary.response.status, 200);
+  assert.equal((await request(baseUrl, "/api/me", { cookie: secondaryOwnerCookie })).data.user, null,
+    "The second session must also be revoked when explicitly logged out");
+  const repeatedLogout = await request(baseUrl, "/api/auth/logout", { method: "POST", cookie: secondaryOwnerCookie });
+  assert.equal(repeatedLogout.response.status, 200, "Repeated logout should remain safe and idempotent");
+
   console.log("Local Worker/D1 authorization integration passed: administrator role boundaries, ban/login/session revocation, private chapter read/publish isolation, six private-data endpoint isolation, session-bound writes, ownership and chapter isolation, recipient privacy, concurrent acceptance, rejection/cancellation, and ineligible transfer rejection.");
 
 } catch (error) {
