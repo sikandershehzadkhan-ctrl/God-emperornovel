@@ -17,7 +17,8 @@ for (const [fragment, description] of [
   ["transitioned!==1", "duplicate rejection must be rejected"],
   ["credited!==1||ledger!==1||audited!==1", "partial accounting or audit must not report success"],
   ['INSERT INTO audit_logs(user_id,action,details) SELECT ?,?,? WHERE changes()=1', 'refund audit event must be written in the same D1 batch'],
-  ['admin_request_rejected', 'refund audit event must identify the rejection action']
+  ['admin_request_rejected', 'refund audit event must identify the rejection action'],
+  ['String(id)', 'refund ledger reference must use the stable request ID']
 ]) assert.ok(route.includes(fragment), description);
 
 console.log("PASS: paid novel request refunds validate IDs and amounts, transition pending requests once, and conditionally credit/ledger the refund.");
