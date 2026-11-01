@@ -72,11 +72,13 @@ If delivery is unavailable, return the same generic response but do not create a
 - Provider outage does not expose tokens or create a false success state.
 - D1 partial failures do not leave a changed password with active old sessions.
 
-## Token primitive milestone (implemented)
+## Token and schema milestone (implemented)
 
 - Added `src/password-reset-token.mjs` with 256-bit Web Crypto token generation, SHA-256 digest generation, and digest verification.
 - Added `scripts/test-password-reset-token.mjs` and wired it into the standard build test chain.
-- The primitive does not create database records, send email, expose a reset endpoint, or enable password recovery. The raw token must be delivered only through a verified provider channel; only the digest is intended for persistence.
+- Added `migrations/0009_password_reset_tokens.sql` with a purpose-bound, unique token digest, expiry, consumption and invalidation fields, plus lookup indexes.
+- Added `scripts/test-password-reset-migration-policy.mjs` to the standard build test chain.
+- The primitive and migration do not create live reset requests, send email, expose a reset endpoint, or enable password recovery. The raw token must be delivered only through a verified provider channel; only the digest is intended for persistence.
 - CI must pass before this primitive is treated as validated.
 
 ## Implementation sequence
