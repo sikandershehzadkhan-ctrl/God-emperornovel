@@ -171,6 +171,15 @@ try {
   });
   assert.equal(privateChapter.response.status, 201, JSON.stringify(privateChapter.data));
   const ownerId = Number(owner.user.id), spectatorId = Number(spectator.user.id), chapterId = Number(privateChapter.data.id);
+  const ownerChapterList = await request(baseUrl, "/api/author/chapters?novel_id=" + privateNovel, { cookie: owner.cookie });
+  assert.equal(ownerChapterList.response.status, 200, JSON.stringify(ownerChapterList.data));
+  assert.ok(ownerChapterList.data.some(row => Number(row.id) === chapterId));
+  const otherAuthorChapterList = await request(baseUrl, "/api/author/chapters?novel_id=" + privateNovel, { cookie: recipient.cookie });
+  assert.equal(otherAuthorChapterList.response.status, 403, "A different author must not read private chapter drafts");
+  const otherAuthorChapterPublish = await request(baseUrl, "/api/author/chapters/" + chapterId + "/publish", {
+    method: "POST", cookie: recipient.cookie, body: { publication_status: "published" }
+  });
+  assert.equal(otherAuthorChapterPublish.response.status, 403, "A different author must not publish another author's chapter");
   executeLocalSql("INSERT INTO history(user_id,novel_id,chapter_number) VALUES(" + ownerId + "," + privateNovel + ",1);"
     + "INSERT INTO bookmarks(user_id,novel_id,chapter_number) VALUES(" + ownerId + "," + privateNovel + ",1);"
     + "INSERT INTO user_library(user_id,novel_id) VALUES(" + ownerId + "," + privateNovel + ");"
@@ -352,7 +361,7 @@ try {
   });
   assert.equal(rightsInvite.response.status, 409, JSON.stringify(rightsInvite.data));
 
-  console.log("Local Worker/D1 authorization integration passed: administrator role boundaries, ban/login/session revocation, six private-data endpoint isolation, session-bound writes, ownership and chapter isolation, recipient privacy, concurrent acceptance, rejection/cancellation, and ineligible transfer rejection.");
+  console.log("Local Worker/D1 authorization integration passed: administrator role boundaries, ban/login/session revocation, private chapter read/publish isolation, six private-data endpoint isolation, session-bound writes, ownership and chapter isolation, recipient privacy, concurrent acceptance, rejection/cancellation, and ineligible transfer rejection.");
 
 } catch (error) {
   console.error(error);
