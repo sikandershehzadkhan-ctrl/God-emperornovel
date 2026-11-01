@@ -23,7 +23,7 @@ Only content that Imperial Novel has the right to host or distribute may be publ
 
 A work being free to read, visible on another website, or discoverable through a search engine does **not** grant permission to copy, translate, mirror, hotlink, or monetize it. Manga, manhwa, webtoon pages, covers, and other visual material require the same rights checks as written chapters. Record provenance, licence terms, attribution, and any restrictions before adding third-party assets or content.
 
-See [Free Asset Policy](docs/FREE-ASSET-POLICY.md). See [Account Data Export and Retention Inventory](docs/ACCOUNT-DATA-EXPORT.md). See [Sustainable Revenue Model](docs/SUSTAINABLE-REVENUE-MODEL.md) for the staged, rights-first business plan. See [Secure D1 Recovery Runbook](docs/SECURE-D1-RECOVERY.md) for backup, recovery, and financial reconciliation procedures.
+See [Free Asset Policy](docs/FREE-ASSET-POLICY.md). See [Account Data Export and Retention Inventory](docs/ACCOUNT-DATA-EXPORT.md) and the [Schema-Wide Privacy Data Inventory](docs/PRIVACY-DATA-INVENTORY.md). See [Sustainable Revenue Model](docs/SUSTAINABLE-REVENUE-MODEL.md) for the staged, rights-first business plan. See [Secure D1 Recovery Runbook](docs/SECURE-D1-RECOVERY.md) for backup, recovery, and financial reconciliation procedures.
 
 ## Technology and operating constraints
 
