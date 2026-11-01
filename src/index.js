@@ -735,8 +735,8 @@ async function api(req,env){
    return json({ok:true,status:"rejected",ownership_changed:false});
   }
   try{
-   const result=await env.DB.prepare("UPDATE novel_ownership_transfers SET status='accepted',decided_at=?,decision_note=?,updated_at=CURRENT_TIMESTAMP WHERE id=? AND to_user_id=? AND status='pending' AND expires_at>?").bind(timestamp,note,id,u.id,timestamp).run();
-   if(Number(result?.meta?.changes??result?.changes??0)!==1)return json({error:"Invitation state changed. Refresh and retry."},409);
+   const accepted=await env.DB.prepare("UPDATE novel_ownership_transfers SET status='accepted',decided_at=?,decision_note=?,updated_at=CURRENT_TIMESTAMP WHERE id=? AND to_user_id=? AND status='pending' AND expires_at>? RETURNING id").bind(timestamp,note,id,u.id,timestamp).first();
+   if(!accepted)return json({error:"Invitation state changed. Refresh and retry."},409);
    await audit(env,u,"novel_ownership_transfer_accepted","transfer="+id+";novel="+transfer.novel_id+";previous_owner="+transfer.from_user_id);
    return json({ok:true,status:"accepted",ownership_changed:true,novel_id:transfer.novel_id});
   }catch(err){
