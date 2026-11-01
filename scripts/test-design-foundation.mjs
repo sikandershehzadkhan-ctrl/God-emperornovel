@@ -107,3 +107,18 @@ assert.ok(css.includes("min-height:104px"),"Comment composer must have a comfort
 assert.ok(css.includes("background:var(--in-brand-soft)"),"Reply context must use the semantic brand surface");
 
 console.log("Imperial design foundation syntax, responsive, accessibility, asset and brand consistency checks passed.");
+
+
+for(const selector of [".catalogTop form",".catalogSearch .search",".filterRow",".filterGroup",".catalogGrid",".catalogCover",".catalogBody",".catalogStats",".activeFilters",".catalogEmpty",".pager"]){
+  assert.ok(css.includes(selector),"Catalog visual foundation must include "+selector);
+}
+assert.ok(css.includes("grid-template-columns:repeat(4,minmax(0,1fr))"),"Desktop catalog must use a balanced four-column card grid");
+assert.ok(css.includes("@media(max-width:640px){\n .catalogTop"),"Catalog filters and cards must have a dedicated mobile layout");
+assert.ok(css.includes("@media(max-width:360px)"),"Very narrow phones must use compact horizontal catalog cards");
+assert.ok(css.includes("grid-template-columns:104px minmax(0,1fr)"),"Compact catalog cards must preserve readable cover and title space");
+assert.ok(css.includes(".catalogGrid[aria-busy=\"true\"]"),"Catalog loading state must remain visibly distinct");
+assert.ok(css.includes(".catalogCard:focus-visible"),"Catalog story links must have a visible keyboard focus treatment");
+assert.ok(css.includes("background:var(--in-surface);color:var(--in-ink)"),"Catalog controls and cards must use theme-aware semantic surfaces");
+assert.ok(sourceApp.includes('class="catalogGrid"'),"Catalog page must render its story grid");
+assert.ok(sourceApp.includes('class="activeFilters"'),"Catalog page must expose removable active-filter chips");
+assert.ok(sourceApp.includes('class="catalogEmpty"'),"Catalog page must render a designed empty state");
