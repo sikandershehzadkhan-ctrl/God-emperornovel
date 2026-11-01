@@ -25,8 +25,11 @@ const body=async r=>await r.json().catch(()=>({}));
 const ensureRuntimeFeatureSchema=createRuntimeFeatureSchemaEnsurer();
 const ensureDonationReferenceIndex=createDonationReferenceIndexEnsurer();
 async function consumeAuthRateLimit(env,scope,key,limit,windowSeconds){
+ const timestamp=now();
+ // Bound retention for attacker-controlled email keys and inactive client identifiers.
+ await env.DB.prepare("DELETE FROM auth_rate_limits WHERE window_start<?").bind(timestamp-86400).run();
  const keyHash=await digest(`imperial-auth-rate-v1:${scope}:${key}`);
- const windowStart=Math.floor(now()/windowSeconds)*windowSeconds;
+ const windowStart=Math.floor(timestamp/windowSeconds)*windowSeconds;
  const row=await env.DB.prepare(`INSERT INTO auth_rate_limits(scope,key_hash,window_start,attempts)
  VALUES(?,?,?,1)
  ON CONFLICT(scope,key_hash) DO UPDATE SET
