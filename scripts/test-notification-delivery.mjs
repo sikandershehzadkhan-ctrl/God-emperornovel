@@ -5,7 +5,7 @@ const worker = readFileSync(new URL("../src/index.js", import.meta.url), "utf8")
 const app = readFileSync(new URL("../public/app-17.23.0.js", import.meta.url), "utf8");
 const adminUi = readFileSync(new URL("../public/admin.html", import.meta.url), "utf8");
 const commentsUi = readFileSync(new URL("../src/react/NovelComments.jsx", import.meta.url), "utf8");
-const communityCss = readFileSync(new URL("../public/app.css", import.meta.url), "utf8");
+const communityCss = readFileSync(new URL("../public/style.css", import.meta.url), "utf8");
 
 const listRoute = worker.match(/if\(p==="\/api\/notifications"&&m==="GET"\)\{([\s\S]*?)\n\s*if\(p==="\/api\/notifications\/read"/);
 assert.ok(listRoute, "notification list route must exist");
