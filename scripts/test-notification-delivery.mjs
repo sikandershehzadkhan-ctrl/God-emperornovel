@@ -131,7 +131,7 @@ assert.ok(ratingPost, "rating write route must exist");
 assert.ok(ratingPost[1].includes("Number.isInteger(rating)"), "ratings must reject fractional scores instead of silently rounding");
 assert.ok(ratingPost[1].includes("rating<1||rating>10"), "ratings must stay within the 1-10 range");
 assert.ok(worker.includes("CHECK(rating BETWEEN 1 AND 10)"), "fresh engagement schemas must enforce the 1-10 rating constraint");
-const ratingMigration = readFileSync(new URL("../migrations/0016_ten_point_ratings.sql", import.meta.url), "utf8");
+const ratingMigration = readFileSync(new URL("../migrations/0017_ten_point_ratings.sql", import.meta.url), "utf8");
 assert.ok(ratingMigration.includes("CHECK(rating BETWEEN 1 AND 10)"), "existing databases must receive the 1-10 rating constraint migration");
 assert.ok(/SELECT\s+user_id,novel_id,rating,created_at,updated_at\s+FROM\s+ratings/.test(ratingMigration), "rating migration must preserve existing ratings and timestamps");
 assert.ok(ratingMigration.includes("DROP TABLE ratings;") && ratingMigration.includes("ALTER TABLE ratings_ten_point RENAME TO ratings;"), "rating migration must replace the old constrained table with the ten-point table");
