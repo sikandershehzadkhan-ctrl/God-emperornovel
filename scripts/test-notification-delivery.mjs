@@ -3,6 +3,7 @@ import assert from "node:assert/strict";
 
 const worker = readFileSync(new URL("../src/index.js", import.meta.url), "utf8");
 const app = readFileSync(new URL("../public/app-17.23.0.js", import.meta.url), "utf8");
+const adminUi = readFileSync(new URL("../public/admin.html", import.meta.url), "utf8");
 
 const listRoute = worker.match(/if\(p==="\/api\/notifications"&&m==="GET"\)\{([\s\S]*?)\n\s*if\(p==="\/api\/notifications\/read"/);
 assert.ok(listRoute, "notification list route must exist");
@@ -44,6 +45,9 @@ assert.ok(reportSubmission[1].includes("JOIN novels n ON n.id=c.novel_id"), "rep
 assert.ok(reportSubmission[1].includes("rights_status IN ('original','public_domain','licensed','authorized')"), "reports must enforce publication rights clearance");
 assert.ok(reportSubmission[1].includes("INSERT OR IGNORE INTO comment_reports"), "duplicate comment reports must be race-safe at the database write");
 assert.ok(reportSubmission[1].includes("inserted?.meta?.changes") && reportSubmission[1].includes("409"), "a concurrent duplicate report must return a conflict instead of a server error");
+assert.ok(adminUi.includes("commentReportsBody"), "admin community moderation must render a dedicated comment-report queue");
+assert.ok(adminUi.includes("/api/admin/community/reports"), "admin UI must load comment reports from the dedicated moderation API");
+assert.ok(adminUi.includes("updateCommentReport") && adminUi.includes("Resolve") && adminUi.includes("Dismiss"), "admin UI must provide explicit report resolution and dismissal actions");
 const moderationRoute = worker.match(/if\(p==="\/api\/admin\/community\/comments"&&m==="PATCH"\)\{([\s\S]*?)\n\s*if\(p==="\/api\/admin\/community\/reports"&&m==="GET"/);
 assert.ok(moderationRoute, "admin comment moderation route must exist");
 assert.ok(moderationRoute[1].includes("admin(u)"), "comment moderation must require administrator access");
