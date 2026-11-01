@@ -12,7 +12,7 @@ assert.match(normalized, /purpose text not null check \(purpose = 'password_rese
 assert.match(normalized, /expires_at text not null/);
 assert.match(normalized, /consumed_at text/);
 assert.match(normalized, /invalidated_at text/);
-assert.match(normalized, /foreign key\\(user_id\\) references users\\(id\\) on delete cascade/);
+assert.match(normalized, /foreign key\(user_id\) references users\(id\) on delete cascade/);
 assert.match(normalized, /idx_password_reset_tokens_user_created/);
 assert.match(normalized, /idx_password_reset_tokens_expiry/);
 assert.match(normalized, /where consumed_at is null and invalidated_at is null/);
