@@ -374,3 +374,12 @@ Each document is a specification. A listed route or logical API contract is not 
 - [01P.4 — Security Implementation Dependency Map](IMPERIAL-NOVEL-PHASE-01P-4-SECURITY-IMPLEMENTATION-DEPENDENCY-MAP.md)
 - [01P.5 — Normalized API Operation Registry](IMPERIAL-NOVEL-PHASE-01P-5-NORMALIZED-API-OPERATION-REGISTRY.md)
 - [01P.6 — Delegated Handler and Helper Audit](IMPERIAL-NOVEL-PHASE-01P-6-DELEGATED-HANDLER-AND-HELPER-AUDIT.md)
+
+## 18. Complete URL and screen route atlas
+
+The screen-to-route blueprint is now complemented by the Phase 01Q.4 route atlas. The atlas defines dedicated canonical destinations for public screens, every genre/tag/category, each novel and chapter, each user's private account/library/workspace, Author Studio, Community, Commerce, OmniPortal, Trend Factory, every Admin module, and system/recovery screens.
+
+- **Complete URL and screen route atlas:** [Phase 01Q.4](IMPERIAL-NOVEL-PHASE-01Q-4-COMPLETE-URL-AND-SCREEN-ROUTE-ATLAS.md)
+- **API contract catalogue:** [Phase 01Q.3](IMPERIAL-NOVEL-PHASE-01Q-3-COMPLETE-API-CONTRACT-CATALOGUE.md)
+
+The route atlas is a target architecture, not a claim that all destinations currently exist in the live application. It requires source/production compatibility review, machine-readable registry implementation, route-to-API/action traceability and automated coverage tests before implementation or deployment.
