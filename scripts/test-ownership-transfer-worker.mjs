@@ -133,6 +133,35 @@ try {
     assert.equal(allowed.response.status, 200, "Admin must access " + route + ": " + JSON.stringify(allowed.data));
   }
 
+  // Moderators cannot change account roles or ban state. Admin status changes revoke every existing session.
+  const moderatorEscalation = await request(baseUrl, "/api/admin/users/" + spectator.user.id, {
+    method: "PATCH", cookie: moderator.cookie, body: { role: "admin", verified: true, banned: false }
+  });
+  assert.equal(moderatorEscalation.response.status, 403, "Moderator must not promote an account");
+  const banReader = await request(baseUrl, "/api/admin/users/" + spectator.user.id, {
+    method: "PATCH", cookie: administrator.cookie, body: { role: "user", verified: false, banned: true }
+  });
+  assert.equal(banReader.response.status, 200, JSON.stringify(banReader.data));
+  assert.equal(banReader.data.sessions_revoked, true);
+  const bannedSession = await request(baseUrl, "/api/me", { cookie: spectator.cookie });
+  assert.equal(bannedSession.data.user, null, "A banned user's existing session must be invalidated");
+  const bannedLogin = await request(baseUrl, "/api/auth/login", {
+    method: "POST", body: { email: "reader" + suffix + "@example.test", password: "Integration-Test-Password-2026!" }
+  });
+  assert.equal(bannedLogin.response.status, 403, "A banned account must not obtain a new session");
+  const unbanReader = await request(baseUrl, "/api/admin/users/" + spectator.user.id, {
+    method: "PATCH", cookie: administrator.cookie, body: { role: "user", verified: false, banned: false }
+  });
+  assert.equal(unbanReader.response.status, 200, JSON.stringify(unbanReader.data));
+  const oldSessionAfterUnban = await request(baseUrl, "/api/me", { cookie: spectator.cookie });
+  assert.equal(oldSessionAfterUnban.data.user, null, "Unbanning must not resurrect revoked sessions");
+  const freshReaderLogin = await request(baseUrl, "/api/auth/login", {
+    method: "POST", body: { email: "reader" + suffix + "@example.test", password: "Integration-Test-Password-2026!" }
+  });
+  assert.equal(freshReaderLogin.response.status, 200, JSON.stringify(freshReaderLogin.data));
+  spectator.cookie = "session=" + (freshReaderLogin.response.headers.get("set-cookie") || "").match(/(?:^|;\\s*)session=([^;]+)/)?.[1];
+  assert.ok(spectator.cookie && spectator.cookie !== "session=null", "Unbanned account must obtain a fresh session");
+
   // Private reader data must remain scoped to the authenticated session, never a caller-supplied user ID.
   const privateNovel = await createNovel(baseUrl, owner.cookie, "Private Data Isolation Fixture");
   executeLocalSql("UPDATE novels SET publication_status='published' WHERE id=" + privateNovel);
@@ -323,7 +352,7 @@ try {
   });
   assert.equal(rightsInvite.response.status, 409, JSON.stringify(rightsInvite.data));
 
-  console.log("Local Worker/D1 authorization integration passed: administrator role boundaries, six private-data endpoint isolation, session-bound writes, ownership and chapter isolation, recipient privacy, concurrent acceptance, rejection/cancellation, and ineligible transfer rejection.");
+  console.log("Local Worker/D1 authorization integration passed: administrator role boundaries, ban/login/session revocation, six private-data endpoint isolation, session-bound writes, ownership and chapter isolation, recipient privacy, concurrent acceptance, rejection/cancellation, and ineligible transfer rejection.");
 
 } catch (error) {
   console.error(error);
