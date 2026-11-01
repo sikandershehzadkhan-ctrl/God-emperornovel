@@ -43,7 +43,8 @@ assert.ok(ratingGet[1].includes("publication_status='published'"), "rating reads
 const ratingPost = worker.match(/if\(p==="\/api\/rating"&&m==="POST"\)\{([\s\S]*?)\n\s*if\(p==="\/api\/admin\/community\/comments"/);
 assert.ok(ratingPost, "rating write route must exist");
 assert.ok(ratingPost[1].includes("Number.isInteger(rating)"), "ratings must reject fractional scores instead of silently rounding");
-assert.ok(ratingPost[1].includes("rating<1||rating>5"), "ratings must stay within the 1-5 range");
+assert.ok(ratingPost[1].includes("rating<1||rating>10"), "ratings must stay within the 1-10 range");
+assert.ok(ratingPost[1].includes("whole-number rating from 1-10"), "rating validation message must describe the 1-10 whole-number scale");
 assert.ok(ratingPost[1].includes("publication_status='published'"), "users may only rate published novels");
 const reactionGet = worker.match(/if\(p==="\/api\/novel-reactions"&&m==="GET"\)\{([\s\S]*?)\n\s*if\(p==="\/api\/novel-reactions"&&m==="POST"/);
 assert.ok(reactionGet, "novel reaction read route must exist");
