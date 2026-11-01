@@ -28,7 +28,10 @@ for (const fragment of [
   "status='pending' AND user_id IS NOT NULL",
   "AND changes()=1",
   "SELECT ?,?,?,? WHERE changes()=1",
-  "transitioned!==1||credited!==1||ledger!==1",
+  "transitioned!==1||credited!==1||ledger!==1||audited!==1",
+  'INSERT INTO audit_logs(user_id,action,details) SELECT ?,?,? WHERE changes()=1',
+  'donation_approved',
+  'donation_rejected',
   "status='rejected' WHERE id=? AND status='pending'"
 ]) assert.ok(route.includes(fragment), `missing one-time donation accounting invariant: ${fragment}`);
 
