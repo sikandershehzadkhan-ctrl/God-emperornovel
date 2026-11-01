@@ -371,6 +371,14 @@ try {
   assert.equal(JSON.parse(firstDeviceAfterRevoke.body).user,null,'Logout-all must revoke the first device session');
   const secondDeviceAfterRevoke = await request('/api/me',{headers:{cookie:secondCookie}});
   assert.equal(JSON.parse(secondDeviceAfterRevoke.body).user,null,'Logout-all must revoke the second device session');
+  for(let attempt=0;attempt<10;attempt++){
+    const failedLogin=await request('/api/auth/login',{method:'POST',headers:jsonHeaders,body:JSON.stringify({email:accountB.email,password:'Definitely-Wrong-Password!'})});
+    assert.equal(failedLogin.response.status,401,`Invalid credentials must be rejected before the email threshold (attempt ${attempt+1})`);
+  }
+  const throttledLogin=await request('/api/auth/login',{method:'POST',headers:jsonHeaders,body:JSON.stringify({email:accountB.email,password:accountB.password})});
+  assert.equal(throttledLogin.response.status,429,'Repeated failed login attempts must trigger account-keyed throttling');
+  assert.ok(Number(throttledLogin.response.headers.get('retry-after'))>0,'Login throttling must provide a positive Retry-After interval');
+
 
   console.log('PASS: real Wrangler local Worker handled health, D1-backed catalog, live overview, authenticated taxonomy submission identity boundary and unauthenticated taxonomy rejection, missing chapter, two independent account registrations/logins, session-bound profile isolation, cross-account library/history/bookmark/reading-position/notification, ticket-ledger, OmniPortal-import and author-owned novel/chapter/AI-project isolation, hostile user_id write/query handling, owner/admin privilege-boundary rejection and anonymous private-resource rejection and homepage requests.');
 } finally {
