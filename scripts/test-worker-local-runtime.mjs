@@ -170,6 +170,16 @@ try {
   assert.equal(authorCrossChapterList.response.status, 403, 'Author A must not list Author B chapters');
   const authorCrossChapterPatch = await request('/api/author/chapters/2147483005', {method:'PATCH',headers:{...jsonHeaders,cookie:accountA.cookie},body:JSON.stringify({title:'Compromised chapter'})});
   assert.equal(authorCrossChapterPatch.response.status, 403, 'Author A must not modify Author B chapter');
+  const aiProjectsA = JSON.parse((await getAs(accountA, '/api/author/ai/projects')).body);
+  const aiProjectsB = JSON.parse((await getAs(accountB, '/api/author/ai/projects')).body);
+  assert.ok(aiProjectsA.some(x=>Number(x.id)===2147483004), 'Author A must see own AI project');
+  assert.ok(!aiProjectsA.some(x=>Number(x.id)===2147483005), 'Author A must not list Author B AI project');
+  assert.ok(aiProjectsB.some(x=>Number(x.id)===2147483005), 'Author B must see own AI project');
+  assert.ok(!aiProjectsB.some(x=>Number(x.id)===2147483004), 'Author B must not list Author A AI project');
+  const aiProjectDetail = await getAs(accountA, '/api/author/ai/projects/2147483005');
+  assert.equal(aiProjectDetail.response.status, 403, 'Author A must not read Author B AI project detail');
+  const aiProjectPatch = await request('/api/author/ai/projects/2147483005', {method:'PATCH',headers:{...jsonHeaders,cookie:accountA.cookie},body:JSON.stringify({name:'Compromised AI project'})});
+  assert.equal(aiProjectPatch.response.status, 403, 'Author A must not modify Author B AI project');
 
   const anonymousLibrary = await request('/api/library');
   assert.equal(anonymousLibrary.response.status, 401, 'Private library must reject anonymous requests');
@@ -189,7 +199,7 @@ try {
   const home = await request('/');
   assert.equal(home.response.status, 200, 'Home page must be served by the Worker');
   assert.match(home.body, /Imperial Novel/, 'Home page must contain the platform brand');
-  console.log('PASS: real Wrangler local Worker handled health, D1-backed catalog, live overview, unauthenticated taxonomy rejection, missing chapter, two independent account registrations/logins, session-bound profile isolation, cross-account library/history/bookmark/reading-position/notification and author-owned novel/chapter isolation, hostile user_id write/query handling, anonymous private-resource rejection and homepage requests.');
+  console.log('PASS: real Wrangler local Worker handled health, D1-backed catalog, live overview, unauthenticated taxonomy rejection, missing chapter, two independent account registrations/logins, session-bound profile isolation, cross-account library/history/bookmark/reading-position/notification and author-owned novel/chapter/AI-project isolation, hostile user_id write/query handling, anonymous private-resource rejection and homepage requests.');
 } finally {
   try { process.kill(-child.pid, 'SIGTERM'); } catch { child.kill('SIGTERM'); }
   await Promise.race([new Promise(resolve => child.once('exit', resolve)), sleep(5000)]);
