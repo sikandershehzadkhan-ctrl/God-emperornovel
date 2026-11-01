@@ -41,7 +41,7 @@ export function buildSitemapXml(origin,novels=[],authors=[]){
     if(date&&!Number.isNaN(date.getTime()))item.lastmod=date.toISOString().slice(0,10);
     paths.push(item);
   }
-  for(const author of Array.isArray(authors)?authors:[]){const name=String(author?.author??author??"").trim();if(!name)continue;const loc=base+"/author/"+encodeURIComponent(name);if(seen.has(loc))continue;seen.add(loc);paths.push({loc})}
+  for(const author of Array.isArray(authors)?authors:[]){const name=String(author?.author??author??"").trim();if(!name)continue;const loc=base+authorProfilePath(name);if(seen.has(loc))continue;seen.add(loc);paths.push({loc})}
   const entries=paths.map(item=>"  <url><loc>"+xml(item.loc)+"</loc>"+(item.lastmod?"<lastmod>"+item.lastmod+"</lastmod>":"")+"</url>").join("\n");
   return '<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n'+entries+"\n</urlset>\n";
 }
@@ -59,7 +59,7 @@ function upsertMeta(html,attribute,key,content){
   }
   return html.replace(/<\/head>/i,'<meta '+attribute+'="'+attr(key)+'" content="'+attr(content)+'">\n</head>');
 }
-export function canonicalPath(path){const normalized=String(path||"/").replace(/\/+$/,"")||"/";return normalized==="/discover"?"/catalog":normalized}
+export function canonicalPath(path){const normalized=String(path||"/").replace(/\/+$/,"")||"/";return normalized==="/discover"?"/catalog":normalized}\nexport function authorProfilePath(author){const name=String(author??"").trim();return name?"/author/"+encodeURIComponent(name):""}
 export function robotsForPath(path,status=200,forceNoindex=false){if(forceNoindex||status!==200||/^\/(admin|account|login|register|search|library|history|following|settings|notifications|tickets|requests|fandom)(\/|$)/.test(path)||/^\/author\/?$/.test(path))return "noindex,nofollow";return "index,follow"}
 export function applySeoMetadata(html,{title,description,canonical,robots="index,follow",image,structuredData}={}){
   const safeTitle=String(title||"Imperial Novel | Read • Create • Conquer").slice(0,180);
