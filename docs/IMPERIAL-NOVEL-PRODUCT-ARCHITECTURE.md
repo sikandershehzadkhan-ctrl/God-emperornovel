@@ -233,7 +233,7 @@ The overview may report:
 
 All public overview engagement queries are restricted to published novels with original, public-domain, licensed or authorized rights status. Hidden/deleted comments are excluded. No metric may be described as online now, unique views, reading minutes, live active readers, or engagement rate unless the platform adds the necessary event instrumentation and deduplication model.
 
-The comment-like and novel-reaction tables are created idempotently at runtime for existing installations and by migration 0013_reader_engagement_metrics.sql for fresh installations. The runtime path exists because older production databases may already have the core-schema marker and skip the original bootstrap statements.
+The comment-like and novel-reaction tables are created idempotently at runtime for existing installations and by migration 0014_reader_engagement_metrics.sql for fresh installations. The runtime path exists because older production databases may already have the core-schema marker and skip the original bootstrap statements.
 
 Before introducing unique readers, reading sessions, online presence, or per-minute activity charts, add a deliberate privacy-aware event model with retention limits, deduplication rules and abuse controls. Do not infer these metrics from page requests or current history rows.
 
@@ -255,7 +255,7 @@ The authenticated GET /api/author/analytics endpoint is restricted to author/adm
 
 The Author Studio dashboard separates measurement windows:
 - **Lifetime request counters:** novel detail-page views and chapter-content endpoint requests. These are cumulative counters; repeat requests can count and they are not unique readers.
-- **Selected-period view requests:** migration 0014_daily_view_analytics.sql and idempotent runtime schema readiness add privacy-minimized daily aggregates for novel and chapter page requests. Daily view trends begin when this instrumentation is deployed; earlier lifetime counters are not backfilled. These aggregates do not store reader identities and do not establish unique readers.
+- **Selected-period view requests:** migration 0015_daily_view_analytics.sql and idempotent runtime schema readiness add privacy-minimized daily aggregates for novel and chapter page requests. Daily view trends begin when this instrumentation is deployed; earlier lifetime counters are not backfilled. These aggregates do not store reader identities and do not establish unique readers.
 - **Selected-period events:** chapter unlock transactions and reader ticket spend, visible comments, visible-comment likes, novel reactions and follows. Daily activity is grouped from their stored event timestamps.
 - **Current state:** ratings and their weighted average, bookmarks and follows are current records, not lifetime event totals.
 
