@@ -51,6 +51,12 @@ assert.ok(ratingUi.includes("Array.from({ length: 10 }"), "reader rating UI must
 assert.ok(ratingUi.includes("Rate \u0024{value} out of 10"), "reader rating controls must announce the 1-10 scale accessibly");
 assert.ok(ratingUi.includes("{average.toFixed(1)} / 10"), "reader rating summary must display averages out of ten");
 assert.ok(ratingUi.includes("Your rating: {selected}/10"), "reader rating summary must display the user's score out of ten");
+assert.ok(app.includes("★ \u0024{rating.toFixed(1)} / 10"), "catalog cards must label rating averages as scores out of ten");
+assert.ok(app.includes('<option value="8">8+</option><option value="6">6+</option><option value="4">4+</option>'), "catalog minimum-rating filters must use ten-point thresholds");
+const ratingCss = readFileSync(new URL("../public/app-17.23.0.css", import.meta.url), "utf8");
+assert.ok(ratingCss.includes(".ratingStars{display:flex;flex-wrap:wrap;"), "ten rating choices must wrap safely on narrow screens");
+assert.ok(ratingCss.includes("min-width:38px;min-height:38px"), "rating choices must retain comfortable touch targets");
+
 
 const reactionGet = worker.match(/if\(p==="\/api\/novel-reactions"&&m==="GET"\)\{([\s\S]*?)\n\s*if\(p==="\/api\/novel-reactions"&&m==="POST"/);
 assert.ok(reactionGet, "novel reaction read route must exist");
