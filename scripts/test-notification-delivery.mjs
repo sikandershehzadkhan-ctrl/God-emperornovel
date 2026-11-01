@@ -3,6 +3,7 @@ import assert from "node:assert/strict";
 
 const worker = readFileSync(new URL("../src/index.js", import.meta.url), "utf8");
 const app = readFileSync(new URL("../public/app-17.23.0.js", import.meta.url), "utf8");
+const legacyApp = readFileSync(new URL("../public/app.js", import.meta.url), "utf8");
 const adminUi = readFileSync(new URL("../public/admin.html", import.meta.url), "utf8");
 const commentsUi = readFileSync(new URL("../src/react/NovelComments.jsx", import.meta.url), "utf8");
 const communityCss = readFileSync(new URL("../public/style.css", import.meta.url), "utf8");
@@ -18,6 +19,8 @@ assert.ok(readRoute, "mark-read route must exist");
 assert.ok(readRoute[1].includes("need(u)"), "mark-read action must require authentication");
 assert.ok(readRoute[1].includes("WHERE user_id=? AND read_at IS NULL"), "mark-read action must only affect the signed-in user's unread notifications");
 
+assert.ok(app.includes("let notificationLoad=null") && app.includes("if(notificationLoad)return notificationLoad"), "notification refreshes must share a single in-flight request");
+assert.equal(legacyApp, app, "the primary and versioned application bundles must remain synchronized");
 assert.ok(worker.includes("INSERT INTO notifications(user_id,title,body)"), "notification creation must persist to the account notification table");
 assert.ok(worker.includes("WHERE NOT EXISTS (SELECT 1 FROM notifications WHERE user_id=? AND title=? AND body=? AND created_at>=datetime('now','-10 minutes'))"), "identical notification events must be deduplicated within a ten-minute cooldown");
 
