@@ -48,10 +48,53 @@ try {
   assert.equal(missingChapter.response.status, 404, 'Unknown chapter must return 404');
   assert.ok(JSON.parse(missingChapter.body).error, 'Unknown chapter response must be a structured error');
 
+  const suffix = Date.now().toString(36);
+  async function createRuntimeAccount(label) {
+    const username = `rt_${label}_${suffix}`;
+    const email = `${username}@example.invalid`;
+    const password = `Runtime-Test-${suffix}-Only!`;
+    const registration = await request('/api/auth/register', {
+      method: 'POST',
+      headers: { 'content-type': 'application/json' },
+      body: JSON.stringify({ username, email, password }),
+    });
+    assert.equal(registration.response.status, 200, `Runtime account registration failed: ${registration.body}`);
+    const login = await request('/api/auth/login', {
+      method: 'POST',
+      headers: { 'content-type': 'application/json' },
+      body: JSON.stringify({ email, password }),
+    });
+    assert.equal(login.response.status, 200, `Runtime account login failed: ${login.body}`);
+    const setCookie = login.response.headers.get('set-cookie') || '';
+    const token = setCookie.match(/(?:^|;\\s*)session=([^;]+)/)?.[1];
+    assert.ok(token, 'Login must issue an HttpOnly session cookie');
+    return { username, email, cookie: `session=${token}` };
+  }
+  const accountA = await createRuntimeAccount('a');
+  const accountB = await createRuntimeAccount('b');
+  const profileA = await request('/api/profile', { headers: { cookie: accountA.cookie } });
+  const profileB = await request('/api/profile', { headers: { cookie: accountB.cookie } });
+  assert.equal(profileA.response.status, 200, `Account A profile failed: ${profileA.body}`);
+  assert.equal(profileB.response.status, 200, `Account B profile failed: ${profileB.body}`);
+  const dataA = JSON.parse(profileA.body);
+  const dataB = JSON.parse(profileB.body);
+  assert.notEqual(dataA.user.id, dataB.user.id, 'Two independent registrations must have distinct user IDs');
+  assert.equal(dataA.user.username, accountA.username, 'Account A session must resolve to Account A');
+  assert.equal(dataA.user.email, accountA.email, 'Account A profile must expose only Account A identity');
+  assert.equal(dataB.user.username, accountB.username, 'Account B session must resolve to Account B');
+  assert.equal(dataB.user.email, accountB.email, 'Account B profile must expose only Account B identity');
+  const crossAccountProbe = await request(`/api/profile?user_id=${dataB.user.id}`, { headers: { cookie: accountA.cookie } });
+  assert.equal(crossAccountProbe.response.status, 200, 'Authenticated profile request must remain valid with an untrusted user_id query');
+  const crossAccountData = JSON.parse(crossAccountProbe.body);
+  assert.equal(crossAccountData.user.id, dataA.user.id, 'Account A must never switch identity based on a client-supplied user_id');
+  assert.notEqual(crossAccountData.user.email, accountB.email, 'Account A response must not disclose Account B email');
+  const anonymousProfile = await request('/api/profile');
+  assert.equal(anonymousProfile.response.status, 401, 'Private profile must reject anonymous requests');
+
   const home = await request('/');
   assert.equal(home.response.status, 200, 'Home page must be served by the Worker');
   assert.match(home.body, /Imperial Novel/, 'Home page must contain the platform brand');
-  console.log('PASS: real Wrangler local Worker handled health, D1-backed catalog, live overview, unauthenticated taxonomy rejection, missing chapter and homepage requests.');
+  console.log('PASS: real Wrangler local Worker handled health, D1-backed catalog, live overview, unauthenticated taxonomy rejection, missing chapter, two independent account registrations/logins, session-bound profile isolation, hostile user_id query handling, anonymous profile rejection and homepage requests.');
 } finally {
   try { process.kill(-child.pid, 'SIGTERM'); } catch { child.kill('SIGTERM'); }
   await Promise.race([new Promise(resolve => child.once('exit', resolve)), sleep(5000)]);
