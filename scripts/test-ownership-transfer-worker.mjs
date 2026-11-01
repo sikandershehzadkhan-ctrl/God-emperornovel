@@ -218,8 +218,7 @@ try {
     request(baseUrl, "/api/chapters/" + singleUnlockFixture.chapterIds[0] + "/unlock", { method: "POST", cookie: spectator.cookie }),
     request(baseUrl, "/api/chapters/" + singleUnlockFixture.chapterIds[0] + "/unlock", { method: "POST", cookie: spectator.cookie })
   ]);
-  assert.equal(singleUnlocks.filter(x => x.response.status === 200).length, 1, "Concurrent single unlock must charge only one request");
-  assert.equal(singleUnlocks.filter(x => x.response.status === 409).length, 1, "The competing duplicate unlock must be rejected");
+  assert.ok(singleUnlocks.every(x => x.response.status === 200), "Concurrent duplicate unlock requests should be idempotently successful");
   const afterSingleUnlock = await request(baseUrl, "/api/me", { cookie: spectator.cookie });
   assert.equal(Number(afterSingleUnlock.data.user.tickets), 490, "Single chapter unlock must debit exactly one chapter price");
   const singleLedger = await request(baseUrl, "/api/tickets/ledger", { cookie: spectator.cookie });
