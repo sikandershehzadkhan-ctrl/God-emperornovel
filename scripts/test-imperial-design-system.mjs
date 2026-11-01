@@ -89,5 +89,3 @@ assert.ok(appBundle.includes("if(p==='/account')await account()"),
   "The shared application must render the Account route");
 assert.ok(seoPolicy.includes('"/library"') && seoPolicy.includes('"/account"'),
   "Private Library and Account pages must be excluded from public indexing");
-assert.ok(seoPolicy.includes('"/library"') && seoPolicy.includes('"/account"'),
-  "Library and Account route privacy policy must remain explicit");
