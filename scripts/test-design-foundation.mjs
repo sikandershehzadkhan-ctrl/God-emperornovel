@@ -258,3 +258,12 @@ assert.ok(css.includes("line-height:1.72"),"Community comments must remain comfo
 assert.ok(css.includes("html[data-theme=\"dark\"] .communityGrid>.panel"),"Community panels must be theme-aware");
 assert.ok(css.includes(".communityGrid :is(input,textarea,select){font-size:16px}"),"Mobile community inputs must avoid small text sizing");
 assert.ok(css.includes("@media(prefers-reduced-motion:reduce){\n .communityGrid>.panel,.communityGrid .commentItem{transition:none!important}"),"Community interactions must respect reduced-motion preferences");
+
+
+/* Personal Library and account workspace regression checks. */
+for(const selector of [".accountMenu a.active{box-shadow:inset 3px 0 0 var(--in-brand)}",".accountGrid .card:hover{transform:translateY(-2px)",".accountGrid .cardBody{display:grid;align-content:start;gap:7px;flex:1;padding:12px}",".accountGrid .grid{grid-template-columns:repeat(2,minmax(0,1fr))}"]){
+  assert.ok(css.includes(selector),"Personal Library refinement must include "+selector);
+}
+assert.ok(css.includes(".accountMenu{overflow-x:auto;overscroll-behavior-inline:contain;scrollbar-width:thin}"),"Mobile account navigation must scroll without breaking page width");
+assert.ok(css.includes("html[data-theme=\"dark\"] .accountMenu"),"Personal Library must support dark theme surfaces");
+assert.ok(css.includes("@media(prefers-reduced-motion:reduce){\n .accountMenu a,.accountMenu button,.accountGrid .card,.accountGrid .card .cover img{transition:none!important}"),"Library motion must respect reduced-motion preferences");
