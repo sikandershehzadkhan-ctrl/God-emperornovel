@@ -1,0 +1,53 @@
+import assert from "node:assert/strict";
+import fs from "node:fs";
+
+const cssPath = "public/imperial-design-system-17.25.0.css";
+const htmlPath = "public/index.html";
+const css = fs.readFileSync(cssPath, "utf8");
+const html = fs.readFileSync(htmlPath, "utf8");
+
+const requiredTokens = [
+  "--in-color-obsidian-950:",
+  "--in-color-white:",
+  "--in-color-purple-500:",
+  "--in-color-sapphire-500:",
+  "--in-font-ui:",
+  "--in-font-editorial:",
+  "--in-space-4:",
+  "--in-radius-lg:",
+  "--in-surface-canvas:",
+  "--in-text-primary:",
+  "--in-action-primary:",
+  "--in-focus:"
+];
+
+for (const token of requiredTokens) {
+  assert.ok(css.includes(token), `Missing design token: ${token}`);
+}
+
+for (const theme of ["light", "dark", "midnight", "sepia", "imperial", "cosmic"]) {
+  if (theme === "light") {
+    assert.match(css, /:root\s*\{/);
+  } else {
+    assert.ok(css.includes(`data-theme="${theme}"`), `Missing theme mapping: ${theme}`);
+  }
+}
+
+for (const component of [
+  ".in-btn-primary",
+  ".in-btn-secondary",
+  ".in-control",
+  ".in-card",
+  ".in-badge",
+  ".in-reading-column",
+  ".in-focus-ring"
+]) {
+  assert.ok(css.includes(component), `Missing component primitive: ${component}`);
+}
+
+assert.match(css, /prefers-reduced-motion\s*:\s*reduce/);
+assert.match(css, /:focus-visible/);
+assert.ok(html.includes('/imperial-design-system-17.25.0.css'),
+  "Design-system stylesheet must be linked from the application entry");
+
+console.log("Imperial design-system contract passed.");
