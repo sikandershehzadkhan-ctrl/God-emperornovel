@@ -105,6 +105,11 @@ assert.ok(reactionPost[1].includes("publication_status='published'"), "users may
 
 
 
+const engagementStats = worker.match(/if\(p==="\/api\/novel-engagement"&&m==="GET"\)\{([\s\S]*?)\n\s*if\(p==="\/api\/platform\/overview"/);
+assert.ok(engagementStats, "novel engagement statistics route must exist");
+assert.ok(engagementStats[1].includes("cm.status='visible'"), "public engagement counts must exclude hidden or deleted comments");
+assert.ok(engagementStats[1].includes("cm.status='visible') commentLikes"), "public like totals must exclude likes attached to hidden or deleted comments");
+assert.ok(engagementStats[1].includes("visibleComments:Number(stats?.visibleComments||0)"), "public metrics must label the visible comment count accurately");
 assert.ok(app.includes("apiWithTimeout('/api/notifications',{},10000)"), "notification UI must use a bounded request");
 assert.ok(app.includes("setInterval(()=>{if(location.pathname!=='/notifications')"), "notification refresh must stop after leaving the notifications page");
 assert.ok(app.includes("document.visibilityState==='visible'"), "notification polling must pause while the page is hidden");
