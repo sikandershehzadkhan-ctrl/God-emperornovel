@@ -78,7 +78,9 @@ If delivery is unavailable, return the same generic response but do not create a
 - Added `scripts/test-password-reset-token.mjs` and wired it into the standard build test chain.
 - Added `migrations/0009_password_reset_tokens.sql` with a purpose-bound, unique token digest, expiry, consumption and invalidation fields, plus lookup indexes.
 - Added `scripts/test-password-reset-migration-policy.mjs` to the standard build test chain.
-- The primitive and migration do not create live reset requests, send email, expose a reset endpoint, or enable password recovery. The raw token must be delivered only through a verified provider channel; only the digest is intended for persistence.
+- Added `src/password-reset-store.mjs` with a D1 batch primitive that conditionally consumes an unexpired token, changes only its bound account's password, revokes that account's sessions, and invalidates its other outstanding reset tokens.
+- Added `scripts/test-password-reset-store.mjs` to exercise account isolation, replay, expiry, purpose constraints, sibling-token invalidation, and rollback behavior using SQLite, plus the D1 binding contract.
+- These primitives do not create live reset requests, send email, expose a reset endpoint, or enable password recovery. The raw token must be delivered only through a verified provider channel; only the digest is intended for persistence.
 - CI must pass before this primitive is treated as validated.
 
 ## Implementation sequence
