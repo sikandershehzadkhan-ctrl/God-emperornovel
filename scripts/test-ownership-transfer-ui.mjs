@@ -1,0 +1,33 @@
+import assert from "node:assert/strict";
+import { readFileSync } from "node:fs";
+
+const app = readFileSync(new URL("../public/app.js", import.meta.url), "utf8");
+const worker = readFileSync(new URL("../src/index.js", import.meta.url), "utf8");
+
+for (const marker of [
+  "ownershipTransferPanel",
+  "ownershipTransferForm",
+  "ownershipTransferList",
+  "loadTransfers()",
+  "transferAccept",
+  "transferReject",
+  "transferCancel",
+  "recipient_user_id",
+  "ownership will not change until they accept"
+]) assert.ok(app.includes(marker), "Author Studio ownership UI is missing: " + marker);
+
+assert.match(app, /api\('\/api\/author\/ownership-transfers'\)/);
+assert.match(app, /\/api\/author\/novels\/['"]\+novelId\+['"]\/ownership-transfer/);
+assert.match(app, /\/api\/author\/ownership-transfers\/['"]\+Number\(btn\.dataset\.id\)\+['"]\/decision/);
+assert.match(app, /\/api\/author\/ownership-transfers\/['"]\+Number\(btn\.dataset\.id\)\+['"]\/cancel/);
+
+const decisionRoute = worker.slice(worker.indexOf('let transferDecision='), worker.indexOf('let transferCancel='));
+assert.match(decisionRoute, /transfer\.to_user_id\)!==Number\(u\.id\)/);
+assert.match(decisionRoute, /status='accepted'.*WHERE id=\? AND to_user_id=\? AND status='pending'/s);
+assert.match(decisionRoute, /status='rejected'.*WHERE id=\? AND to_user_id=\? AND status='pending'/s);
+assert.match(worker, /WHERE id=\? AND from_user_id=\? AND status='pending'/);
+assert.match(worker, /Only the requesting owner can cancel/);
+
+const listRoute = worker.slice(worker.indexOf('if(p==="/api/author/ownership-transfers"'), worker.indexOf('let transferRequest='));
+assert.match(listRoute, /WHERE t\.from_user_id=\? OR t\.to_user_id=\?/);
+console.log("Author Studio ownership-transfer interface and API authorization wiring checks passed.");
