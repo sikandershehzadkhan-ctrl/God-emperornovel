@@ -196,3 +196,37 @@ This is a dependency order, not an estimate of completion or a claim that any fe
 The next work must close the migration/schema blocker and reconcile the canonical branch. Once those are proven, the architecture can be signed off domain by domain and implementation can begin without guessing at production schema or merging incompatible branch histories.
 
 No application code, migration, production database, Worker setting, secret, branch protection rule, pull request or deployment was changed by this review.
+
+
+## 13. Follow-up branch inspection: community schema candidate
+
+A separate branch, `fix/community-schema-foundation-001`, contains a candidate `migrations/0012_runtime_feature_schema.sql` and `scripts/test-community-schema-integrity.py`. This explains why migrations 0014 and 0018 refer to migration 0012 even though that file is absent from the reviewed architecture branch.
+
+GitHub compare reports this candidate branch as divergent from the architecture branch (20 commits ahead and 534 behind in the comparison). It is therefore **not integrated evidence** and must not be copied or merged wholesale.
+
+The candidate migration has useful design work:
+- creates auth rate-limit, comment-like/report, novel-reaction and request-vote structures;
+- adds referential-integrity behavior for legacy tables;
+- archives duplicate/orphan comment reports before cleaning the active table;
+- provides an idempotency/integrity test for a legacy pre-existing community schema.
+
+Additional review is mandatory before adoption:
+1. Its test starts from a deliberately constructed legacy schema, not a fully clean database with every numbered migration applied.
+2. It performs data cleanup and archives rows. The archive mapping, retention, uniqueness and foreign-key semantics require explicit approval and fixture coverage.
+3. It still does not supply the missing publication-status prerequisite for migration 0010/0013.
+4. It does not establish that the `ratings` table exists before migration 0017.
+5. The runtime helper and SQL migration must not remain competing schema authorities after the transition.
+6. The candidate branch's source and workflow changes must be reconciled against the selected canonical release commit.
+
+**Decision:** Treat migration 0012 as a valuable candidate artifact requiring review, not as an approved fix. The full ordered migration set remains unproven.
+
+## 14. Updated migration blocker severity
+
+The schema blocker is now classified as **critical / release-blocking** rather than a single migration-order concern. At minimum, the migration sequence must account for:
+- publication columns before catalog and chapter timestamp indexes;
+- community runtime feature tables before dependent feature migrations;
+- ratings table creation and safe 1–10 constraint conversion;
+- all runtime-created core, OmniPortal, AI, analytics, taxonomy and donation objects;
+- legacy data preservation during deduplication and table rebuilds.
+
+No production D1 state was queried and no candidate branch was merged.
