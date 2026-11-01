@@ -20,7 +20,7 @@ async function freePort() {
 }
 function wrangler(args, timeout = 120000) {
   const result = spawnSync("npx", ["--yes", "wrangler@4", ...args], {
-    cwd: root, encoding: "utf8", timeout,
+    cwd: root, encoding: "utf8", timeout, stdio: "inherit",
     env: { ...process.env, WRANGLER_SEND_METRICS: "false" }
   });
   if (result.status !== 0) throw new Error("wrangler " + args.join(" ") + " failed:\n" + (result.stdout || "") + "\n" + (result.stderr || ""));
@@ -81,7 +81,9 @@ async function transferStatus(baseUrl, cookie, id) {
 
 try {
   const port = await freePort();
+  console.log("Applying migrations to isolated local D1...");
   wrangler(["d1", "migrations", "apply", database, "--local", "--persist-to", persist]);
+  console.log("Starting local Worker...");
   worker = spawn("npx", [
     "--yes", "wrangler@4", "dev", "--local", "--ip", "127.0.0.1",
     "--port", String(port), "--persist-to", persist, "--inspector-port", "0"
@@ -93,6 +95,7 @@ try {
   worker.stderr.on("data", chunk => { workerOutput += chunk.toString(); });
   const baseUrl = "http://127.0.0.1:" + port;
   await waitForWorker(baseUrl);
+  console.log("Local Worker healthy. Creating two isolated author accounts...");
 
   const suffix = (String(process.pid) + String(Date.now())).slice(-8);
   const owner = await account(baseUrl, "owner" + suffix, "owner" + suffix + "@example.test");
