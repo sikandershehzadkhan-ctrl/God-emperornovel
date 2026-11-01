@@ -29,6 +29,13 @@ assert db.execute("SELECT tickets FROM users WHERE id=2").fetchone()[0] == 175
 assert db.execute("SELECT COUNT(*) FROM ticket_ledger WHERE user_id=2 AND reason='admin_adjustment'").fetchone()[0] == 1
 print("PASS: duplicate idempotency key cannot double-credit")
 
+try:
+    db.execute("INSERT INTO admin_ticket_adjustments(idempotency_key,admin_user_id,target_user_id,amount,note) VALUES('admin-self-key-0001',1,1,10,'Self credit attempt')")
+except sqlite3.IntegrityError:
+    print("PASS: administrator cannot credit their own account")
+else:
+    raise AssertionError("administrator self-credit was accepted")
+
 for statement, label in [
     ("UPDATE admin_ticket_adjustments SET note='edited' WHERE id=1", "history cannot be edited"),
     ("DELETE FROM admin_ticket_adjustments WHERE id=1", "history cannot be deleted"),
@@ -47,6 +54,7 @@ checks = {
     "admin-only endpoint and rate limit": "const e=admin(u);if(e)return e;" in route and 'consumeAuthRateLimit(env,"admin-ticket-credit"' in route,
     "idempotency key and required reason validated": "idempotency_key" in route and "if(!note||note.length>500)" in route,
     "target account existence is checked before posting": "SELECT id FROM users WHERE id=?" in route and "if(!target)return json" in route,
+    "administrator cannot credit their own account": "userId===Number(u.id)" in route and "Administrators cannot credit their own accounts." in route,
     "duplicate request returns an idempotent replay": "idempotent_replay:true" in route,
     "balance and ledger are not separately written in route": "UPDATE users SET tickets=tickets+" not in route and "INSERT INTO ticket_ledger" not in route,
     "admin adjustment history endpoint is protected": 'if(p==="/api/admin/ticket-adjustments"&&m==="GET"){const e=admin(u);if(e)return e;' in route,
