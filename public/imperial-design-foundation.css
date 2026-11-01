@@ -1929,3 +1929,14 @@ html[data-theme="dark"] .accountGrid .metric{background:var(--in-canvas)}
   body .mobileNav a{font-size:8px}
   body .mobileNav a span svg{width:17px;height:17px}
 }
+
+
+/* RTL navigation: mirror the primary drawer without changing document flow. */
+html[dir="rtl"] .menuDrawer{
+  inset-inline-start:0;
+  inset-inline-end:auto;
+  transform:translateX(105%);
+}
+html[dir="rtl"] .menuDrawer.is-open{
+  transform:translateX(0);
+}
