@@ -1774,3 +1774,42 @@ html[data-theme="dark"] .communityGrid .commentItem{background:var(--in-canvas)}
 @media(prefers-reduced-motion:reduce){
  .communityGrid>.panel,.communityGrid .commentItem{transition:none!important}
 }
+
+
+/* Personal Library refinement 17.31: a composed, private reading collection. */
+.accountGrid{gap:clamp(14px,2vw,22px)}
+.accountMenu{gap:5px;padding:9px}
+.accountMenu a,.accountMenu button{min-height:44px;border-radius:10px;transition:background-color 140ms ease,color 140ms ease}
+.accountMenu a.active{box-shadow:inset 3px 0 0 var(--in-brand)}
+.accountGrid>main>.panel,.accountGrid>main>.section{min-width:0}
+.accountGrid .sectionHead{align-items:flex-end;gap:12px}
+.accountGrid .sectionHead h2{letter-spacing:-.025em}
+.accountGrid .grid{align-items:stretch;gap:clamp(10px,1.5vw,16px)}
+.accountGrid .card{display:flex;flex-direction:column;border-radius:14px;transition:transform 160ms ease,border-color 160ms ease,box-shadow 160ms ease}
+.accountGrid .card:hover{transform:translateY(-2px);border-color:color-mix(in srgb,var(--in-brand) 32%,var(--in-line));box-shadow:0 12px 28px rgba(10,16,30,.08)}
+.accountGrid .card .cover{position:relative}
+.accountGrid .card .cover img{transition:transform 220ms ease}
+.accountGrid .card:hover .cover img{transform:scale(1.025)}
+.accountGrid .cardBody{display:grid;align-content:start;gap:7px;flex:1;padding:12px}
+.accountGrid .cardBody :is(h3,.title){overflow-wrap:anywhere;line-height:1.35}
+.accountGrid .removeLibrary{min-height:38px;padding:8px 10px;border-radius:9px}
+.accountGrid .metricGrid{gap:10px}
+.accountGrid .metric{border-radius:12px}
+.accountGrid .statline{min-height:44px}
+html[data-theme="dark"] .accountMenu,html[data-theme="dark"] .accountGrid .card{background:var(--in-surface);border-color:var(--in-line)}
+html[data-theme="dark"] .accountGrid .metric{background:var(--in-canvas)}
+@media(max-width:760px){
+ .accountMenu{overflow-x:auto;overscroll-behavior-inline:contain;scrollbar-width:thin}
+ .accountMenu a,.accountMenu button{flex:0 0 auto;white-space:nowrap}
+ .accountGrid .grid{grid-template-columns:repeat(2,minmax(0,1fr))}
+ .accountGrid .metricGrid{grid-template-columns:repeat(2,minmax(0,1fr))}
+}
+@media(max-width:420px){
+ .accountGrid .grid{gap:9px}
+ .accountGrid .cardBody{padding:9px}
+ .accountGrid .removeLibrary{width:100%;font-size:10px}
+}
+@media(prefers-reduced-motion:reduce){
+ .accountMenu a,.accountMenu button,.accountGrid .card,.accountGrid .card .cover img{transition:none!important}
+ .accountGrid .card:hover,.accountGrid .card:hover .cover img{transform:none}
+}
