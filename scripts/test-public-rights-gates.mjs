@@ -5,7 +5,7 @@ const lines = source.split('\n');
 const catalog = lines.find(line => line.includes('let sql="SELECT n.*')) || '';
 const detail = lines.find(line => line.includes('let nm=p.match')) || '';
 const chapter = lines.find(line => line.includes('let cm=p.match')) || '';
-const unlock = lines.find(line => line.includes('/api/chapters/') && line.includes('unlock')) || '';
+const unlock = lines.find(line => line.includes('const id=p.split') && line.includes('unlock')) || '';
 const batch = lines.find(line => line.includes('let bu=p.match')) || '';
 for (const [name, line] of Object.entries({catalog, detail, chapter, unlock, batch})) {
   assert.ok(line.includes('rights_status IN'), name + ' must enforce rights allowlist');
