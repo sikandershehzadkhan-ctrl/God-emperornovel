@@ -58,7 +58,7 @@ assert.ok(app.includes("Novel views · period")&&app.includes("Chapter requests 
 
 
 const catalogRouteStart=source.indexOf('if(p==="/api/novels"){');
-const catalogRouteEnd=source.indexOf('let nm=p.match(/^\\/api\\/novels\\/(\\d+)$/)',catalogRouteStart);
+const catalogRouteEnd=source.indexOf(' let nm=p.match',catalogRouteStart);
 assert.ok(catalogRouteStart>=0&&catalogRouteEnd>catalogRouteStart,"Catalog API route must be present for rating-filter validation.");
 const catalogRoute=source.slice(catalogRouteStart,catalogRouteEnd);
 assert.ok(catalogRoute.includes("Math.min(10,minRating)"),"Catalog minimum-rating filtering must support the complete 1-10 rating scale.");
