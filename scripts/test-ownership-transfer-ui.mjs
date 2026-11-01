@@ -13,6 +13,9 @@ for (const marker of [
   "transferReject",
   "transferCancel",
   "recipient_user_id",
+  "transferRecipientUsername",
+  "lookupTransferRecipient",
+  "/api/author/eligible-recipients?username=",
   "Ownership will not change until they accept."
 ]) assert.ok(app.includes(marker), "Author Studio ownership UI is missing: " + marker);
 
@@ -30,4 +33,8 @@ assert.match(worker, /Only the requesting owner can cancel/);
 
 const listRoute = worker.slice(worker.indexOf('if(p==="/api/author/ownership-transfers"'), worker.indexOf('let transferRequest='));
 assert.match(listRoute, /WHERE t\.from_user_id=\? OR t\.to_user_id=\?/);
+const lookupRoute = worker.slice(worker.indexOf('if(p==="/api/author/eligible-recipients"'), worker.indexOf('let transferRequest='));
+assert.match(lookupRoute, /username=\\? COLLATE NOCASE AND role='author' AND banned=0 AND id<>\\?/);
+assert.match(lookupRoute, /SELECT id,username FROM users/);
+assert.doesNotMatch(lookupRoute, /email|password_hash/);
 console.log("Author Studio ownership-transfer interface and API authorization wiring checks passed.");
