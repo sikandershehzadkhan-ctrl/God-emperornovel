@@ -360,6 +360,25 @@ try {
   assert.equal(adminUsersRead.response.status, 403, 'Generic administrator must not read sensitive account directory without owner identity');
   const adminEscalation = await request(`/api/admin/users/${dataB.user.id}`, {method:'PATCH',headers:{...jsonHeaders,cookie:accountA.cookie},body:JSON.stringify({role:'admin'})});
   assert.equal(adminEscalation.response.status, 503, 'Administrator elevation must fail closed when platform-owner identity is unconfigured');
+  const creditBefore=await getAs(accountB,'/api/profile');
+  const startingCredits=Number(JSON.parse(creditBefore.body).user.tickets);
+  const creditKey=`runtime-credit-${suffix}-once`;
+  const repeatedAdminCredits=await Promise.all([
+    request('/api/admin/tickets',{method:'POST',headers:{...jsonHeaders,cookie:accountA.cookie},body:JSON.stringify({user_id:dataB.user.id,amount:4,idempotency_key:creditKey})}),
+    request('/api/admin/tickets',{method:'POST',headers:{...jsonHeaders,cookie:accountA.cookie},body:JSON.stringify({user_id:dataB.user.id,amount:4,idempotency_key:creditKey})})
+  ]);
+  assert.ok(repeatedAdminCredits.every(x=>x.response.status===200),`Repeated administrator credit operation must be safely idempotent: ${repeatedAdminCredits.map(x=>x.body).join(' | ')}`);
+  assert.equal(repeatedAdminCredits.filter(x=>JSON.parse(x.body).already_applied===false).length,1,'Exactly one administrator credit request may perform the balance mutation');
+  assert.equal(repeatedAdminCredits.filter(x=>JSON.parse(x.body).already_applied===true).length,1,'The repeated administrator credit request must report the existing operation');
+  const creditAfter=await getAs(accountB,'/api/profile');
+  assert.equal(Number(JSON.parse(creditAfter.body).user.tickets),startingCredits+4,'Repeated administrator credit requests must increase the target balance only once');
+  const creditLedger=await getAs(accountB,'/api/tickets/ledger');
+  assert.equal(JSON.parse(creditLedger.body).filter(x=>x.reason==='admin_adjustment'&&x.reference===`admin:${dataA.user.id}:${creditKey}`&&Number(x.delta)===4).length,1,'Repeated administrator credit requests must create exactly one matching ledger entry');
+  const reusedCreditKey=await request('/api/admin/tickets',{method:'POST',headers:{...jsonHeaders,cookie:accountA.cookie},body:JSON.stringify({user_id:dataB.user.id,amount:5,idempotency_key:creditKey})});
+  assert.equal(reusedCreditKey.response.status,409,'An operation key reused with a different credit amount must be rejected');
+  const afterMismatchedCredit=await getAs(accountB,'/api/profile');
+  assert.equal(Number(JSON.parse(afterMismatchedCredit.body).user.tickets),startingCredits+4,'Mismatched idempotency-key reuse must not change the balance');
+
   const approvalReference=`runtime-approval-${suffix}`;
   const paymentSubmission=await request('/api/donations',{method:'POST',headers:{...jsonHeaders,cookie:accountA.cookie},body:JSON.stringify({amount:10,reference_id:approvalReference})});
   assert.equal(paymentSubmission.response.status,200,`Admin account donation fixture must submit: ${paymentSubmission.body}`);
