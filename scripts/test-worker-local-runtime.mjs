@@ -359,6 +359,23 @@ try {
   assert.equal(adminUsersRead.response.status, 403, 'Generic administrator must not read sensitive account directory without owner identity');
   const adminEscalation = await request(`/api/admin/users/${dataB.user.id}`, {method:'PATCH',headers:{...jsonHeaders,cookie:accountA.cookie},body:JSON.stringify({role:'admin'})});
   assert.equal(adminEscalation.response.status, 503, 'Administrator elevation must fail closed when platform-owner identity is unconfigured');
+  const approvalReference=`runtime-approval-${suffix}`;
+  const paymentSubmission=await request('/api/donations',{method:'POST',headers:{...jsonHeaders,cookie:accountA.cookie},body:JSON.stringify({amount:10,reference_id:approvalReference})});
+  assert.equal(paymentSubmission.response.status,200,`Admin account donation fixture must submit: ${paymentSubmission.body}`);
+  const adminDonationQueue=await getAs(accountA,'/api/admin/donations');
+  const pendingDonation=JSON.parse(adminDonationQueue.body).find(x=>x.reference_id===approvalReference);
+  assert.ok(pendingDonation?.id,'Submitted payment must appear in the admin review queue');
+  const duplicateApprovals=await Promise.all([
+    request(`/api/admin/donations/${pendingDonation.id}`,{method:'PATCH',headers:{...jsonHeaders,cookie:accountA.cookie},body:JSON.stringify({status:'approved',tickets:10})}),
+    request(`/api/admin/donations/${pendingDonation.id}`,{method:'PATCH',headers:{...jsonHeaders,cookie:accountA.cookie},body:JSON.stringify({status:'approved',tickets:10})})
+  ]);
+  assert.equal(duplicateApprovals.filter(x=>x.response.status===200).length,1,'Exactly one concurrent donation approval may succeed');
+  assert.equal(duplicateApprovals.filter(x=>x.response.status===409).length,1,'Duplicate concurrent donation approval must be rejected');
+  const afterApprovalProfile=await getAs(accountA,'/api/profile');
+  assert.equal(Number(JSON.parse(afterApprovalProfile.body).user.tickets),17,'Concurrent duplicate donation approval must credit the account exactly once');
+  const afterApprovalLedger=await getAs(accountA,'/api/tickets/ledger');
+  assert.equal(JSON.parse(afterApprovalLedger.body).filter(x=>x.reason==='payment'&&x.reference===String(pendingDonation.id)&&Number(x.delta)===10).length,1,'Concurrent duplicate donation approval must create exactly one payment ledger entry');
+
   const anonymousLibrary = await request('/api/library');
   assert.equal(anonymousLibrary.response.status, 401, 'Private library must reject anonymous requests');
   const anonymousHistory = await request('/api/history');
