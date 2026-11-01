@@ -1,9 +1,7 @@
 import assert from "node:assert/strict";
 import { readFile } from "node:fs/promises";
 const source = await readFile(new URL("../src/index.js", import.meta.url), "utf8");
-const sourceLines = source.split("\n");
-const catalogIndex = sourceLines.findIndex(line => line.includes('if(p==="/api/novels")'));
-const catalog = catalogIndex >= 0 ? sourceLines[catalogIndex + 1] || "" : "";
+const catalog = source.split("\n").find(line => line.includes("let sql=")) || "";
 const detail = source.split("\n").find(line => line.includes("let nm=p.match")) || "";
 assert.ok(catalog); assert.ok(detail);
 assert.ok(catalog.includes("SELECT n.id,n.title,n.alt_titles,n.author,n.description,n.status,n.kind,n.language,n.cover_url,n.views,n.rating,n.created_at,n.updated_at"));
