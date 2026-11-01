@@ -19,4 +19,11 @@ assert.doesNotMatch(source.split("\\n").find(line => line.includes("if(p===\"/ap
 assert.ok(source.includes('SELECT id,name,slug FROM genres ORDER BY name'), 'public genre endpoint must use an explicit DTO');
 assert.ok(source.includes('SELECT id,name,slug FROM tags ORDER BY name'), 'public tag endpoint must use an explicit DTO');
 assert.ok(source.includes('SELECT id,title,body,read_at,created_at FROM notifications WHERE user_id=?'), 'notification response must omit internal user_id and future private columns');
-console.log('PASS: novel, taxonomy, genre, tag and notification responses use explicit public DTO fields.');
+const chapterRead = source.split('\n').find(line => line.includes('let cm=p.match(/^\\/api\\/chapters')) || '';
+const chapterUnlock = source.split('\n').find(line => line.includes('if(/^\\/api\\/chapters\\/\\d+\\/unlock')) || '';
+const batchUnlock = source.split('\n').find(line => line.includes('let bu=p.match(/^\\/api\\/novels')) || '';
+assert.ok(chapterRead.includes('SELECT c.id,c.novel_id,c.chapter_number,c.title,c.content,c.is_locked,c.ticket_cost,c.publication_status'), 'public chapter read must use an explicit reader DTO');
+assert.ok(chapterUnlock.includes('SELECT c.id,c.novel_id,c.chapter_number,c.title,c.is_locked,c.ticket_cost,c.publication_status'), 'single chapter unlock must select only transaction-required fields');
+assert.ok(batchUnlock.includes('SELECT c.id,c.chapter_number,c.ticket_cost FROM chapters'), 'batch unlock must select only transaction-required fields');
+assert.ok(!chapterRead.includes('SELECT c.*') && !chapterUnlock.includes('SELECT c.*') && !batchUnlock.includes('SELECT c.*'), 'chapter routes must not fetch entire database rows');
+console.log('PASS: public novel, taxonomy, notification and chapter DTO field allowlists.');
