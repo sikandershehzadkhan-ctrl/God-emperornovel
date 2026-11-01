@@ -107,3 +107,17 @@ Password recovery is not considered complete until all six steps pass. No produc
 - Successful verification invalidates the account's other active email-verification tokens.
 - `scripts/test-email-verification-store.mjs` covers token entropy and digest verification, one-time use, replay, account isolation, changed-email rejection, and preservation of the separate creator/admin badge.
 - These are tested primitives only. No endpoint issues tokens, no mail is sent, and password recovery remains disabled pending a verified delivery provider and complete route-level tests.
+
+## Provider-independent security email boundary
+
+- `src/security-email-delivery.mjs` defines a provider-neutral contract through an optional Cloudflare Service Binding named `SECURITY_EMAIL`.
+- The receiving service owns all provider-specific APIs and credentials. Provider secrets must not be placed in this application, source control, or ordinary Worker vars.
+- Only the fixed `verify_email` and `reset_password` templates are accepted. Recipients are normalized, links must be HTTPS and match the explicitly configured canonical public origin, and every send requires a UUID idempotency key.
+- The binding request is sent to the internal service URL with `cache-control: no-store`. The caller receives only `{ ok: true }` or a generic failure; provider response bodies and exception details are not exposed or logged.
+- Missing binding, provider error, malformed response, timeout, and invalid request all fail closed. The helper does not claim delivery merely because a request was attempted.
+- `scripts/test-security-email-delivery.mjs` tests missing binding, template allowlisting, recipient validation, canonical-origin binding, idempotency-key validation, provider failure, malformed response, and sanitized errors.
+- No `SECURITY_EMAIL` binding is configured in `wrangler.toml`, and no provider has been selected or connected. Therefore no mail can be sent by this application yet.
+
+### Activation requirements
+
+Before adding a user-facing route, the receiving delivery service must be separately reviewed and configured with a verified sender, provider secret, strict template rendering, recipient policy, provider-side idempotency, bounce handling, and a documented data-retention policy. Then configure the Cloudflare Service Binding and test it in an isolated environment. Do not return account-existence information or expose action URLs in API responses.
