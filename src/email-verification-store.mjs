@@ -41,7 +41,8 @@ const ISO_UTC = /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.\d{3}Z$/;
 
 export const EMAIL_VERIFICATION_ISSUANCE_SQL = [
   `UPDATE email_verification_tokens SET invalidated_at=?
-    WHERE user_id=? AND consumed_at IS NULL AND invalidated_at IS NULL`,
+    WHERE user_id=? AND consumed_at IS NULL AND invalidated_at IS NULL
+      AND EXISTS (SELECT 1 FROM users WHERE id=? AND lower(trim(email))=lower(trim(?)) AND email_verified_at IS NULL)`,
   `INSERT INTO email_verification_tokens
     (user_id,email_snapshot,token_hash,purpose,created_at,expires_at)
     SELECT ?,?,?,'email_verification',?,?
@@ -77,7 +78,7 @@ export async function issueEmailVerificationToken(db, {
     throw new Error("Email verification expiry must be within one hour");
   }
   const results = await db.batch([
-    db.prepare(EMAIL_VERIFICATION_ISSUANCE_SQL[0]).bind(now,userId),
+    db.prepare(EMAIL_VERIFICATION_ISSUANCE_SQL[0]).bind(now,userId,userId,email),
     db.prepare(EMAIL_VERIFICATION_ISSUANCE_SQL[1]).bind(userId,email,tokenHash,now,expiresAt,userId,email)
   ]);
   if (Number(results?.[1]?.meta?.changes || 0) !== 1) return { ok:false };
