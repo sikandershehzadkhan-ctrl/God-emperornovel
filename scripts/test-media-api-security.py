@@ -46,6 +46,7 @@ checks = {
     "rights rejection or withdrawal returns a safe conflict for attached pages": "Remove those references through the chapter editor" in review,
     "concurrent chapter attachment during rights review returns conflict": "became attached to a comic chapter during review" in review and 'return json({error:' in review,
     "rights approval records reviewer and decision atomically": "media_asset_reviews" in review and "reviewed_by_user_id" in review and "env.DB.batch" in review,
+    "media owners cannot independently approve their own assets": "owner_user_id" in review and "asset.owner_user_id" in review and "Administrators cannot review their own media assets." in review,
     "reader delivery requires ready and approved media": "a.status='ready' AND a.rights_status='approved'" in delivery,
     "reader delivery requires published chapter and novel": "c.publication_status='published' AND n.publication_status='published'" in delivery,
     "locked reader delivery checks unlocks": "unlocks WHERE user_id=? AND chapter_id=?" in delivery,
