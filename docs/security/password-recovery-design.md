@@ -141,3 +141,11 @@ Before adding a user-facing route, the receiving delivery service must be separa
 - New links expire after 30 minutes. If delivery fails, the helper attempts to invalidate only that exact token digest.
 - Tests cover no-provider behavior, invalid origins, verified accounts, failed issuance, successful delivery, token privacy, and delivery-failure cleanup.
 - This is an orchestration helper, not an active HTTP endpoint. No route is exposed, no `SECURITY_EMAIL` service binding is configured, and no real email provider has been connected or tested.
+
+### HTTP verification endpoints and browser flow
+
+- `POST /api/me/email-verification/request` requires an authenticated account and applies IP/account rate limits. It requires both a configured `SECURITY_EMAIL` service binding and canonical `PUBLIC_ORIGIN`; absent configuration fails closed with a generic unavailable response.
+- `POST /api/auth/verify-email` accepts the token in a JSON body, rate-limits by IP and token digest, and uses the atomic completion store.
+- `GET /verify-email` serves a dedicated noindex landing page. The page reads the token from the URL fragment, removes it from browser history before sending the JSON request, and displays a generic result.
+- Local Worker/D1 coverage verifies the landing page, unauthenticated request denial, missing-provider fail-closed behavior, one-time confirmation, and replay rejection.
+- Neither endpoint implies that email delivery is live. Production configuration must explicitly add the approved Service Binding and canonical `PUBLIC_ORIGIN`, then validate the provider's idempotency, privacy, and failure semantics before launch.
