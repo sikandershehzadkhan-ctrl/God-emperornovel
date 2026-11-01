@@ -1,5 +1,5 @@
 import assert from "node:assert/strict";
-import { applySeoMetadata, buildRobotsTxt, buildSitemapXml, buildSitemapIndexXml, canonicalOrigin, canonicalPath, getPageSeo, robotsForPath } from "../src/seo.mjs";
+import { applySeoMetadata, authorProfilePath, buildRobotsTxt, buildSitemapXml, buildSitemapIndexXml, canonicalOrigin, canonicalPath, getPageSeo, robotsForPath } from "../src/seo.mjs";
 
 const origin="https://imperial.example";
 assert.equal(canonicalOrigin(origin),origin);
