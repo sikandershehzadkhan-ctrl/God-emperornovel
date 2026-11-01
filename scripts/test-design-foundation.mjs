@@ -238,3 +238,13 @@ assert.ok(css.includes("min-height:44px"),"Catalog filter controls must retain c
 assert.ok(css.includes("@media(prefers-reduced-motion:reduce){\n .catalogCard,.genreCard,.tagTile,.formatLink"),"Discovery interactions must respect reduced-motion preferences");
 assert.ok(css.includes("html[data-theme=\"dark\"] .catalogCard"),"Catalog cards must receive dedicated dark-theme depth");
 assert.ok(css.includes("#lbNovels>.panel,#lbAuthors>.panel{position:relative"),"Rankings must use a consistent editorial card treatment");
+
+
+/* Author Studio publishing workspace regression checks. */
+for(const selector of [".authorStudioIntro::after",".authorAnalyticsPanel,.authorCreateForm,.authorWorksPanel",".authorWork:hover",".authorWorkActions{display:grid",".authorStudioIntro>*{position:relative;z-index:1}"]){
+  assert.ok(css.includes(selector),"Author Studio visual system must include "+selector);
+}
+assert.ok(css.includes("min-height:46px;border-radius:10px"),"Author Studio fields must have accessible touch height");
+assert.ok(css.includes("font-size:16px"),"Mobile author form inputs must avoid small default text sizing");
+assert.ok(css.includes("html[data-theme=\"dark\"] .authorStudioIntro"),"Author Studio must have dedicated dark art direction");
+assert.ok(css.includes(".authorCreateForm :is(input,select,textarea),.authorEditForm :is(input,select,textarea),.authorChapterForm :is(input,select,textarea),.authorWork{transition:none!important}"),"Author Studio must respect reduced-motion settings");
