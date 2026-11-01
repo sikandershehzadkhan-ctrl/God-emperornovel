@@ -16,6 +16,11 @@ assert.ok(app.includes("class=\"imperialHeroAuthor\" href=\"/become-an-author\""
 assert.ok(css.includes(".imperialHeroVisual")&&css.includes("@media(max-width:760px)"),"Imperial crest composition must have responsive mobile behavior.");
 assert.ok(css.includes("prefers-reduced-motion:reduce")&&css.includes(".imperialHeroSeal{transform:none}"),"Hero crest must respect reduced-motion preferences.");
 assert.ok(app.includes("/api/discovery/graph?limit=60"),"Homepage must use the bounded live graph endpoint");
+const homepageLoader=app.slice(app.indexOf("async function home(){"),app.indexOf("\\nasync function trendFactory"));
+assert.ok(homepageLoader.includes("const trendingNovelIds=new Set(trendRows.map(row=>Number(row.id))"),"Homepage must identify novels already displayed in the trending shelf.");
+assert.ok(homepageLoader.includes("const distinctLatestRows=latestRows.filter(row=>!trendingNovelIds.has(Number(row.id)))"),"Latest-updates shelf must not repeat novels already shown in trending.");
+assert.ok(homepageLoader.includes("renderHomeStories('#latest',distinctLatestRows"),"Latest-updates shelf must render the de-duplicated list.");
+
 assert.ok(app.includes("node.type==='genre'||node.type==='tag'"),"Only catalog genres and tags should become discovery links");
 assert.ok(app.includes("encodeURIComponent(node.slug)"),"Discovery slugs must be URL encoded");
 assert.ok(app.includes("esc(node.label)"),"Catalog labels must be HTML escaped before rendering");
