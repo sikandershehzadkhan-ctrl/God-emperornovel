@@ -97,7 +97,7 @@ async function ensureEngagementSchema(env){
 async function notifyAdmins(env,title,message){
  try{const admins=(await env.DB.prepare("SELECT id FROM users WHERE role='admin' AND banned=0").all()).results||[];for(const a of admins)await env.DB.prepare('INSERT INTO notifications(user_id,title,body) VALUES(?,?,?)').bind(a.id,title,message).run()}catch(e){console.error('admin notification',e)}}
 async function notifyUser(env,userId,title,message){
- try{if(userId)await env.DB.prepare('INSERT INTO notifications(user_id,title,body) VALUES(?,?,?)').bind(userId,title,message).run()}catch(e){console.error('user notification',e)}}
+ try{if(userId)await env.DB.prepare("INSERT INTO notifications(user_id,title,body) SELECT ?,?,? WHERE NOT EXISTS (SELECT 1 FROM notifications WHERE user_id=? AND title=? AND body=? AND created_at>=datetime('now','-10 minutes'))").bind(userId,title,message,userId,title,message).run()}catch(e){console.error('user notification',e)}}
 
 
 async function ensureAuthorAISchema(env){
