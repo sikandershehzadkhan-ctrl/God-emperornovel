@@ -26,8 +26,10 @@ for(const [fragment,reason] of [
   ["content_rights_created","creator-submitted rights records must be exportable"],
   ["WHERE created_by=?","rights evidence must be scoped to its creator"],
   ["WHERE user_id=?","archived reports must be scoped to their submitting account"],
-  ["rights_audit_log","internal rights review audit must remain excluded"],
-  ["reviewed_by","internal reviewer identity must remain excluded"]
+  ["WHERE created_by=?","rights evidence must be scoped to its creator"],
+  ["WHERE user_id=?","archived reports must be scoped to their submitting account"]
 ])assert.ok(route.includes(fragment),reason);
+for(const forbidden of ["rights_audit_log","reviewed_by"])
+  assert.ok(!route.includes(forbidden),`internal rights review data must remain excluded: ${forbidden}`);
 assert.ok(inventory.includes("No general automatic deletion schedule"),"Inventory must not imply retention automation exists");
 console.log(`PASS: privacy inventory covers all ${schemaTables.size} migrated tables and matches account export boundaries.`);
