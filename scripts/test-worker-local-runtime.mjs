@@ -458,6 +458,8 @@ try {
   assert.equal(exportA.response.headers.get('vary'),'Cookie','Account export must vary by session cookie');
   const exportAData=JSON.parse(exportA.body);
   assert.equal(exportAData.account.username,accountA.username,'Export must identify only the signed-in account');
+  assert.ok(exportAData.collections.authored_novels.some(x=>x.id===2147483004),'Author export must include the signed-in account\'s own draft novel');
+  assert.ok(!exportAData.collections.authored_novels.some(x=>x.id===2147483005),'Author export must not include another account\'s novel');
   assert.ok(Number.isFinite(Date.parse(exportAData.generated_at)),'Export timestamp must be a valid ISO date');
   assert.deepEqual(exportAData.collections.reading_positions.map(x=>x.progress_percent),[37],'Account A export must contain Account A reading progress only');
   assert.ok(!exportA.body.includes(accountB.email),'Account A export must not disclose Account B email');
