@@ -32,7 +32,7 @@ It does **not** create:
 - `follows` and `user_library`;
 - the broader notifications/agents/AI/OmniPortal/analytics feature schema.
 
-Those objects are introduced by the runtime core bootstrap in `src/index.js` (or by later runtime helpers/migrations where applicable).
+Those objects are not all absent from the full migration sequence: migration 0003 creates ticket_ledger, follows, ratings (initially constrained 1–5), reports, notifications and app_settings; migration 0004 adds novel publication/rights columns; migration 0005 adds chapter publication_status and chapter_views. Runtime core bootstrap duplicates many of these definitions and adds further objects.
 
 ### 2.2 Runtime core bootstrap
 
@@ -68,17 +68,17 @@ It uses `runtime_feature_schema_version=1` in `app_settings` as a fast-path mark
 |---|---|---|
 | 0001 | Initial core tables | Does not create app_settings, ratings or publication columns |
 | 0009 | Reverse lookup indexes | Depends on base genre/tag/unlock tables from 0001 |
-| 0010 | Published catalog sort indexes | Requires novels.publication_status |
+| 0010 | Published catalog sort indexes | Requires novels.publication_status, supplied by 0004 in the complete ordered chain |
 | 0011 | Author applications | Depends on users |
 | 0012 | Missing on architecture branch | Feature helper exists; candidate SQL exists on divergent branch |
-| 0013 | Chapter updated_at, trigger and index | Adds updated_at, but trigger/index also reference chapters.publication_status |
+| 0013 | Chapter updated_at, trigger and index | Adds updated_at; chapters.publication_status is supplied by 0005 in the complete ordered chain |
 | 0014 | No-op slot | Comment delegates community DDL to candidate 0012 |
 | 0015 | No-op slot | Inspect actual file before adoption; do not infer from filename |
 | 0016 | reading_positions | Depends on users |
-| 0017 | Rebuilds ratings for integer 1–10 | Requires ratings table and compatible columns before copy/drop |
+| 0017 | Rebuilds ratings for integer 1–10 | Requires ratings table from 0003 and compatible columns before copy/drop |
 | 0018 | No-op slot | Comment delegates comment_reports to candidate 0012 |
 
-The numbered sequence is not self-sufficient as a clean install. Migration 0010 cannot run immediately after 0001 because publication_status is absent. Migration 0013 has a similar dependency. Migration 0017 expects a ratings table that 0001 does not create.
+The full numbered sequence includes prerequisites in 0003, 0004 and 0005, so the evidence reviewed here does not prove that 0010, 0013 or 0017 fail when the available files are applied in order. The concrete sequence defect is the missing 0012 artifact, while 0014 and 0018 are no-op slots that delegate feature ownership to it. A clean-install run is still required to establish the behavior of the complete chain.
 
 ### 2.6 Community candidate branch
 
