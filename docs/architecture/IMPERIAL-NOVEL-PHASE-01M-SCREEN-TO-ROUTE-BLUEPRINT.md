@@ -345,5 +345,6 @@ The screen blueprint is being maintained as a set of domain-specific architectur
 - [01M.1 — Screen-to-route foundation, public discovery, catalog and reader](IMPERIAL-NOVEL-PHASE-01M-SCREEN-TO-ROUTE-BLUEPRINT.md)
 - [01M.2 — Creator, community, messaging and notifications](IMPERIAL-NOVEL-PHASE-01M-2-CREATOR-COMMUNITY-MESSAGING-BLUEPRINT.md)
 - [01M.3 — OmniPortal and Trend Factory](IMPERIAL-NOVEL-PHASE-01M-3-OMNIPORTAL-TREND-FACTORY-BLUEPRINT.md)
+- [01M.4 — Commerce, Crowns and Payments](IMPERIAL-NOVEL-PHASE-01M-4-COMMERCE-TICKETS-PAYMENTS-BLUEPRINT.md)
 
 Each document is a specification. A listed route or logical API contract is not asserted to exist until independently reconciled with the current router and Worker implementation. The next architecture increments must cover OmniPortal, Trend Factory, commerce/payments, administration/agents, AI workspace as a distinct product area, localization, legal/trust, developer/system screens, and cross-domain route/permission reconciliation.
