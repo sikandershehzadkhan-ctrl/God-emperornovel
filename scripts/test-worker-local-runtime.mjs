@@ -12,13 +12,13 @@ child.stdout.setEncoding('utf8').on('data', chunk => { output += chunk; });
 child.stderr.setEncoding('utf8').on('data', chunk => { output += chunk; });
 const sleep = ms => new Promise(resolve => setTimeout(resolve, ms));
 async function request(path) {
-  const response = await fetch(origin + path, { signal: AbortSignal.timeout(8000) });
+  const response = await fetch(origin + path, { signal: AbortSignal.timeout(2500) });
   return { response, body: await response.text() };
 }
 try {
   let ready = false;
   let lastError = null;
-  for (let attempt = 0; attempt < 60; attempt++) {
+  for (let attempt = 0; attempt < 30; attempt++) {
     if (child.exitCode !== null) throw new Error(`Wrangler exited early (${child.exitCode}).\n${output}`);
     try {
       const health = await request('/api/health');
