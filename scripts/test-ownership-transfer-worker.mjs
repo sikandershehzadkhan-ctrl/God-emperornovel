@@ -179,6 +179,7 @@ try {
   });
   assert.equal(moderatorCredit.response.status, 403, "Moderators must not issue Crown credits");
   const ownerBeforeCredit = await request(baseUrl, "/api/me", { cookie: owner.cookie });
+  const ledgerBeforeRejectedCredits = await request(baseUrl, "/api/tickets/ledger", { cookie: owner.cookie });
   const invalidCreditAmounts = [0, -1, 1.5, 1000001];
   for (const amount of invalidCreditAmounts) {
     const invalidCredit = await request(baseUrl, "/api/admin/tickets", {
@@ -197,8 +198,8 @@ try {
   assert.equal(Number(ownerAfterRejectedCredits.data.user.tickets), Number(ownerBeforeCredit.data.user.tickets),
     "Rejected credit requests must not change the account balance");
   const ledgerAfterRejectedCredits = await request(baseUrl, "/api/tickets/ledger", { cookie: owner.cookie });
-  assert.equal(ledgerAfterRejectedCredits.data.length, (await request(baseUrl, "/api/tickets/ledger", { cookie: owner.cookie })).data.length,
-    "Ledger reads must remain stable after rejected credit attempts");
+  assert.equal(ledgerAfterRejectedCredits.data.length, ledgerBeforeRejectedCredits.data.length,
+    "Rejected credit attempts must not create ledger entries");
 
   const adminCredit = await request(baseUrl, "/api/admin/tickets", {
     method: "POST", cookie: administrator.cookie, body: { user_id: owner.user.id, amount: 23 }
