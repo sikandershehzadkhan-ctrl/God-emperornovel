@@ -1,0 +1,30 @@
+import { readFileSync } from "node:fs";
+import assert from "node:assert/strict";
+
+const source = readFileSync(new URL("../src/index.js", import.meta.url), "utf8");
+const start = source.indexOf('if(p==="/api/privacy/export"&&m==="GET")');
+const end = source.indexOf('if(p==="/api/profile"&&m==="GET")', start);
+assert.ok(start >= 0 && end > start, "account export route must be present before profile route");
+const route = source.slice(start, end);
+
+for (const [fragment, description] of [
+  ['const e=need(u);if(e)return e;', "export must require an authenticated session"],
+  ['WHERE user_id=?', "reader-owned records must be filtered by the authenticated account"],
+  ['WHERE owner_user_id=?', "AI author projects must be filtered by their owner"],
+  ['ai_chapter_jobs', "account export must include owned AI chapter jobs"],
+  ['ai_generation_runs', "account export must include owned AI generation history"],
+  ['author_applications', "account export must include the user's author application"],
+  ['ticket_ledger', "account export must include the user's financial ledger"],
+  ['reading_positions', "account export must include reading progress"],
+  ['rows.slice(0,5000)', "each collection must have a bounded export size"],
+  ['truncated_collections', "the export must disclose collections that exceed the limit"],
+  ['content-disposition', "the response must be a downloadable JSON attachment"],
+  ['cache-control', "the export must disable caching"],
+  ['vary":"Cookie"', "caches must vary by session cookie"],
+  ['new Date(now()*1000).toISOString()', "the export timestamp must convert epoch seconds to UTC milliseconds"]
+]) assert.ok(route.includes(fragment), description);
+
+for (const forbidden of ["password_hash", "token_hash", "sessions", "reviewed_by", "rights_audit_log"])
+  assert.ok(!route.includes(forbidden), `export must not disclose ${forbidden}`);
+
+console.log("PASS: account data export is authenticated, account-scoped, bounded, no-store, and excludes credentials and internal review/security records.");
