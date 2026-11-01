@@ -205,3 +205,11 @@ assert.ok(sourceApp.includes('aria-label="Language"'),"Language selector must ha
 assert.ok(sourceApp.includes('aria-current="page"'),"Navigation must expose the current page to assistive technology");
 assert.ok((sourceApp.match(/aria-current="page"/g)||[]).length>=7,"Desktop and mobile primary navigation must expose current-page state");
 assert.ok(html.includes('<main id="app" class="appBootRoot" tabindex="-1">'),"Skip navigation target must be programmatically focusable");
+
+/* Imperial visual refinement regression checks. */
+for(const selector of [".homePage .hero.imperialArchiveHero","repeating-conic-gradient","--in-visual-glow","text-wrap:balance",".nextFeatureTile:hover",".readerContent{","@media(max-width:390px)"]){
+  assert.ok(css.includes(selector),"Imperial visual refinement must include "+selector);
+}
+assert.ok(css.includes("html[data-theme=\"dark\"] .homePage .hero.imperialArchiveHero"),"Signature homepage hero must have dedicated dark-theme art direction");
+assert.ok(css.includes("@media(prefers-reduced-motion:reduce){\n  .homeFormatCard"),"New visual hover transitions must respect reduced-motion preferences");
+assert.ok(!/filter:\s*blur\(/i.test(css),"Visual refinement must not introduce expensive blur filters");
