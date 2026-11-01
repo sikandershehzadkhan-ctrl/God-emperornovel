@@ -32,7 +32,7 @@ async function waitForWorker(baseUrl) {
   while (Date.now() < deadline) {
     if (worker.exitCode !== null) throw new Error("Wrangler dev exited (" + worker.exitCode + "):\n" + workerOutput);
     try {
-      const response = await fetch(baseUrl + "/api/health");
+      const response = await fetch(baseUrl + "/api/health", { signal: AbortSignal.timeout(10000) });
       if (response.ok && (await response.json()).ok) return;
     } catch (error) { lastError = String(error); }
     await new Promise(resolve => setTimeout(resolve, 500));
@@ -45,7 +45,8 @@ async function request(baseUrl, path, options = {}) {
   if (options.body !== undefined) headers["content-type"] = "application/json";
   const response = await fetch(baseUrl + path, {
     method: options.method || "GET", headers,
-    body: options.body === undefined ? undefined : JSON.stringify(options.body)
+    body: options.body === undefined ? undefined : JSON.stringify(options.body),
+    signal: AbortSignal.timeout(30000)
   });
   return { response, data: await response.json().catch(() => ({})) };
 }
