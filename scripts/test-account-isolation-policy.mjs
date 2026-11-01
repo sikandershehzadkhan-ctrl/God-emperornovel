@@ -42,7 +42,7 @@ const authorNovelIndex = lines.findIndex(line => line.includes("SELECT id,owner_
 const authorNovelEdit = authorNovelIndex >= 0 ? lines.slice(authorNovelIndex, authorNovelIndex + 3).join(" ") : "";
 assert.ok(authorNovelEdit);
 assert.match(authorNovelEdit, /Number\(n\.owner_user_id\)!==Number\(u\.id\)/, "author novel edit must enforce ownership");
-const authorChapterEdit = route("if(/^\\/api\\/author\\/chapters\\/\\d+$/");
+const authorChapterEdit = route("SELECT c.id,c.novel_id,c.chapter_number,c.title,c.content,c.is_locked,c.ticket_cost,c.publication_status,c.created_at,c.updated_at,n.owner_user_id FROM chapters c JOIN novels n ON n.id=c.novel_id WHERE c.id=?");
 assert.ok(authorChapterEdit);
 assert.match(authorChapterEdit, /Number\(c\.owner_user_id\)!==Number\(u\.id\)/, "author chapter edit must enforce ownership");
 const adminUsers = route("if(p===\"/api/admin/users\"&&m===\"GET\")");
