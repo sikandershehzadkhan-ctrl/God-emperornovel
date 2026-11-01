@@ -152,6 +152,19 @@ try {
   assert.ok(JSON.parse(notificationsB.body).some(x=>x.title==='B-only notification'), 'Account B must see its own notification');
   assert.ok(!JSON.parse(notificationsB.body).some(x=>x.title==='A-only notification'), 'Account B must not see Account A notification');
 
+  const authorNovelsA = await getAs(accountA, '/api/author/novels');
+  const authorNovelsB = await getAs(accountB, '/api/author/novels');
+  assert.ok(JSON.parse(authorNovelsA.body).some(x=>Number(x.id)===2147483004), 'Author A must see own novel');
+  assert.ok(!JSON.parse(authorNovelsA.body).some(x=>Number(x.id)===2147483005), 'Author A must not list Author B novel');
+  assert.ok(JSON.parse(authorNovelsB.body).some(x=>Number(x.id)===2147483005), 'Author B must see own novel');
+  assert.ok(!JSON.parse(authorNovelsB.body).some(x=>Number(x.id)===2147483004), 'Author B must not list Author A novel');
+  const authorCrossPatch = await request('/api/author/novels/2147483005', {method:'PATCH',headers:{...jsonHeaders,cookie:accountA.cookie},body:JSON.stringify({title:'Compromised by A'})});
+  assert.equal(authorCrossPatch.response.status, 403, 'Author A must not modify Author B novel');
+  const authorCrossChapterList = await getAs(accountA, '/api/author/chapters?novel_id=2147483005');
+  assert.equal(authorCrossChapterList.response.status, 403, 'Author A must not list Author B chapters');
+  const authorCrossChapterPatch = await request('/api/author/chapters/2147483005', {method:'PATCH',headers:{...jsonHeaders,cookie:accountA.cookie},body:JSON.stringify({title:'Compromised chapter'})});
+  assert.equal(authorCrossChapterPatch.response.status, 403, 'Author A must not modify Author B chapter');
+
   const anonymousLibrary = await request('/api/library');
   assert.equal(anonymousLibrary.response.status, 401, 'Private library must reject anonymous requests');
   const anonymousHistory = await request('/api/history');
@@ -170,7 +183,7 @@ try {
   const home = await request('/');
   assert.equal(home.response.status, 200, 'Home page must be served by the Worker');
   assert.match(home.body, /Imperial Novel/, 'Home page must contain the platform brand');
-  console.log('PASS: real Wrangler local Worker handled health, D1-backed catalog, live overview, unauthenticated taxonomy rejection, missing chapter, two independent account registrations/logins, session-bound profile isolation, cross-account library/history/bookmark/reading-position/notification isolation, hostile user_id write/query handling, anonymous private-resource rejection and homepage requests.');
+  console.log('PASS: real Wrangler local Worker handled health, D1-backed catalog, live overview, unauthenticated taxonomy rejection, missing chapter, two independent account registrations/logins, session-bound profile isolation, cross-account library/history/bookmark/reading-position/notification and author-owned novel/chapter isolation, hostile user_id write/query handling, anonymous private-resource rejection and homepage requests.');
 } finally {
   try { process.kill(-child.pid, 'SIGTERM'); } catch { child.kill('SIGTERM'); }
   await Promise.race([new Promise(resolve => child.once('exit', resolve)), sleep(5000)]);
