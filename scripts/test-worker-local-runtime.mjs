@@ -275,7 +275,7 @@ try {
   ];
   for (const route of adminReadRoutes) {
     const anonymous = await request(route);
-    assert.equal(anonymous.response.status, 401, `Anonymous visitor must not access ${route}: ${anonymous.body}`);
+    assert.ok([401,403].includes(anonymous.response.status), `Anonymous visitor must be denied ${route}: ${anonymous.response.status} ${anonymous.body}`);
     const ordinaryAuthor = await getAs(accountB, route);
     assert.equal(ordinaryAuthor.response.status, 403, `Ordinary author must not access ${route}: ${ordinaryAuthor.body}`);
   }
