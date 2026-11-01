@@ -35,3 +35,55 @@ export async function completeEmailVerification(db, { tokenHash, now }) {
   if (Number(results?.[1]?.meta?.changes || 0) !== 1) return { ok:false, reason:"email_changed" };
   return { ok:true, userId:Number(consumed.user_id) };
 }
+
+
+const EMAIL_PATTERN = /^[^\\s@]+@[^\\s@]+\\.[^\\s@]+$/;
+const ISO_UTC = /^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}\\.\\d{3}Z$/;
+
+/**
+ * Atomically invalidates previous outstanding links and issues one new digest
+ * for the exact current mailbox. D1 batch transactions make the invalidation
+ * and insert indivisible.
+ */
+export async function issueEmailVerificationToken(db, {
+  userId, emailSnapshot, tokenHash, now, expiresAt
+} = {}) {
+  if (!db || typeof db.prepare !== "function" || typeof db.batch !== "function") {
+    throw new Error("A D1 database binding is required");
+  }
+  if (!Number.isSafeInteger(userId) || userId <= 0) throw new Error("A valid user id is required");
+  const email = typeof emailSnapshot === "string" ? emailSnapshot.trim().toLowerCase() : "";
+  if (email.length > 254 || !EMAIL_PATTERN.test(email)) throw new Error("A valid email snapshot is required");
+  if (typeof tokenHash !== "string" || !HASH_PATTERN.test(tokenHash)) throw new Error("Invalid email-verification token digest");
+  if (typeof now !== "string" || !ISO_UTC.test(now) || typeof expiresAt !== "string" || !ISO_UTC.test(expiresAt)) {
+    throw new Error("Normalized UTC timestamps are required");
+  }
+  const start = Date.parse(now), expiry = Date.parse(expiresAt);
+  if (!Number.isFinite(start) || !Number.isFinite(expiry) || expiry <= start || expiry - start > 60 * 60 * 1000) {
+    throw new Error("Email verification expiry must be within one hour");
+  }
+  const results = await db.batch([
+    db.prepare(`UPDATE email_verification_tokens SET invalidated_at=?
+      WHERE user_id=? AND consumed_at IS NULL AND invalidated_at IS NULL`).bind(now,userId),
+    db.prepare(`INSERT INTO email_verification_tokens
+      (user_id,email_snapshot,token_hash,purpose,created_at,expires_at)
+      SELECT ?,?,?,'email_verification',?,?
+      WHERE EXISTS (
+        SELECT 1 FROM users WHERE id=? AND lower(trim(email))=? AND email_verified_at IS NULL
+      )`).bind(userId,email,tokenHash,now,expiresAt,userId,email)
+  ]);
+  if (Number(results?.[1]?.meta?.changes || 0) !== 1) return { ok:false };
+  return { ok:true };
+}
+
+/** Revoke a specific undelivered token without affecting a newer request. */
+export async function invalidateEmailVerificationToken(db, { tokenHash, now } = {}) {
+  if (!db || typeof db.prepare !== "function") throw new Error("A D1 database binding is required");
+  if (typeof tokenHash !== "string" || !HASH_PATTERN.test(tokenHash)) throw new Error("Invalid email-verification token digest");
+  if (typeof now !== "string" || !ISO_UTC.test(now)) throw new Error("A normalized UTC timestamp is required");
+  const result = await db.prepare(`UPDATE email_verification_tokens
+    SET invalidated_at=?
+    WHERE token_hash=? AND purpose='email_verification'
+      AND consumed_at IS NULL AND invalidated_at IS NULL`).bind(now,tokenHash).run();
+  return { ok:Number(result?.meta?.changes || 0) === 1 };
+}
