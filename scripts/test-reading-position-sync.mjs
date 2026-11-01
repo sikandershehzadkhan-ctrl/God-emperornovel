@@ -3,7 +3,7 @@ import assert from "node:assert/strict";
 
 const worker = readFileSync(new URL("../src/index.js", import.meta.url), "utf8");
 const app = readFileSync(new URL("../public/app-17.23.0.js", import.meta.url), "utf8");
-const migration = readFileSync(new URL("../migrations/0015_reading_positions.sql", import.meta.url), "utf8");
+const migration = readFileSync(new URL("../migrations/0016_reading_positions.sql", import.meta.url), "utf8");
 
 assert.ok(migration.includes("CREATE TABLE IF NOT EXISTS reading_positions"), "reading position table must be created idempotently");
 assert.ok(migration.includes("PRIMARY KEY(user_id, novel_id, chapter_number)"), "positions must be isolated per user, novel and chapter");
