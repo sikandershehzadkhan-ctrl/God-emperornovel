@@ -395,6 +395,25 @@ try {
   assert.equal(Number(JSON.parse(afterApprovalProfile.body).user.tickets),17,'Concurrent duplicate donation approval must credit the account exactly once');
   const afterApprovalLedger=await getAs(accountA,'/api/tickets/ledger');
   assert.equal(JSON.parse(afterApprovalLedger.body).filter(x=>x.reason==='payment'&&x.reference===String(pendingDonation.id)&&Number(x.delta)===10).length,1,'Concurrent duplicate donation approval must create exactly one payment ledger entry');
+  const approvalAudit=execFileSync('npx',['--yes','wrangler@4','d1','execute','god-emperornovel-db','--local','--persist-to','.wrangler/test-runtime','--command',`SELECT action,details FROM audit_logs WHERE action='donation_approved' AND details LIKE '%donation=${pendingDonation.id};%' LIMIT 1`],{encoding:'utf8',stdio:['ignore','pipe','pipe'],env:{...process.env,NO_COLOR:'1'}});
+  assert.match(approvalAudit,/donation_approved/,'Successful payment approval must leave an administrator audit record');
+  assert.match(approvalAudit,new RegExp('donation='+pendingDonation.id),'Payment audit record must identify the donation');
+
+  const rejectionReference=`runtime-rejection-${suffix}`;
+  const rejectionSubmission=await request('/api/donations',{method:'POST',headers:{...jsonHeaders,cookie:accountA.cookie},body:JSON.stringify({amount:5,reference_id:rejectionReference})});
+  assert.equal(rejectionSubmission.response.status,200,`Rejection fixture must submit: ${rejectionSubmission.body}`);
+  const rejectionQueue=await getAs(accountA,'/api/admin/donations');
+  const rejectedDonation=JSON.parse(rejectionQueue.body).find(x=>x.reference_id===rejectionReference);
+  assert.ok(rejectedDonation?.id,'Rejection fixture must appear in admin queue');
+  const balanceBeforeRejection=Number(JSON.parse((await getAs(accountA,'/api/profile')).body).user.tickets);
+  const rejectResult=await request(`/api/admin/donations/${rejectedDonation.id}`,{method:'PATCH',headers:{...jsonHeaders,cookie:accountA.cookie},body:JSON.stringify({status:'rejected'})});
+  assert.equal(rejectResult.response.status,200,`Pending donation rejection must succeed: ${rejectResult.body}`);
+  const balanceAfterRejection=Number(JSON.parse((await getAs(accountA,'/api/profile')).body).user.tickets);
+  assert.equal(balanceAfterRejection,balanceBeforeRejection,'Rejected donation must never credit Crowns');
+  const ledgerAfterRejection=await getAs(accountA,'/api/tickets/ledger');
+  assert.equal(JSON.parse(ledgerAfterRejection.body).filter(x=>x.reason==='payment'&&x.reference===String(rejectedDonation.id)).length,0,'Rejected donation must not create a payment ledger entry');
+  const rejectionAudit=execFileSync('npx',['--yes','wrangler@4','d1','execute','god-emperornovel-db','--local','--persist-to','.wrangler/test-runtime','--command',`SELECT action,details FROM audit_logs WHERE action='donation_rejected' AND details LIKE '%donation=${rejectedDonation.id}%' LIMIT 1`],{encoding:'utf8',stdio:['ignore','pipe','pipe'],env:{...process.env,NO_COLOR:'1'}});
+  assert.match(rejectionAudit,/donation_rejected/,'Donation rejection must leave an administrator audit record');
 
   const anonymousLibrary = await request('/api/library');
   assert.equal(anonymousLibrary.response.status, 401, 'Private library must reject anonymous requests');
