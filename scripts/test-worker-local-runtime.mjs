@@ -152,6 +152,12 @@ try {
   assert.ok(JSON.parse(notificationsB.body).some(x=>x.title==='B-only notification'), 'Account B must see its own notification');
   assert.ok(!JSON.parse(notificationsB.body).some(x=>x.title==='A-only notification'), 'Account B must not see Account A notification');
 
+  const aiProjectsInitA = await getAs(accountA, '/api/author/ai/projects');
+  const aiProjectsInitB = await getAs(accountB, '/api/author/ai/projects');
+  assert.equal(aiProjectsInitA.response.status, 200, `Author A AI project list failed: ${aiProjectsInitA.body}`);
+  assert.equal(aiProjectsInitB.response.status, 200, `Author B AI project list failed: ${aiProjectsInitB.body}`);
+  const aiProjectFixtureSql = `INSERT INTO ai_author_projects(id,owner_user_id,name,mode,status) VALUES(2147483004,${dataA.user.id},'A private AI project','manual','draft'),(2147483005,${dataB.user.id},'B private AI project','manual','draft')`;
+  execFileSync('npx', ['--yes','wrangler@4','d1','execute','god-emperornovel-db','--local','--persist-to','.wrangler/test-runtime','--command',aiProjectFixtureSql], {stdio:'pipe',env:{...process.env,NO_COLOR:'1'}});
   const authorNovelsA = await getAs(accountA, '/api/author/novels');
   const authorNovelsB = await getAs(accountB, '/api/author/novels');
   assert.ok(JSON.parse(authorNovelsA.body).some(x=>Number(x.id)===2147483004), 'Author A must see own novel');
