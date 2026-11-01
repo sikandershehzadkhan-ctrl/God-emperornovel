@@ -297,3 +297,42 @@ This increment defines the registry contract and the first connected public/disc
 - [ ] Complete remaining product-domain screen specifications.
 - [ ] Resolve route collisions and define backward-compatible redirects.
 - [ ] Obtain product architecture review before implementation begins.
+
+
+## 14. Repository and production reconciliation findings (read-only audit, 1 November 2026)
+
+The following facts were checked against the PR #120 feature branch source and public production endpoints. They are baseline evidence for architecture reconciliation, not approval to merge or deploy.
+
+### 14.1 Current route and API contract observations
+
+- The current client uses pathname-based rendering and hard-coded navigation links in `public/app.js`; this is not yet a central declarative route registry.
+- Current client links include `/`, `/catalog`, `/catalog?sort=trending`, `/leaderboard`, `/library`, `/community`, `/become-an-author`, `/author`, `/trend-factory`, `/genres`, `/formats`, `/format/:format`, `/tickets`, `/omniportal`, `/account`, `/search`, and `/notifications`.
+- Story cards currently link to `/novel/:id`; reader links use `/read/:novelId/:chapterNumber`. Preserve these numeric-ID routes and shared links until a tested slug/ID compatibility strategy exists.
+- Worker API routes observed include `/api/health`, `/api/auth/register`, `/api/auth/login`, `/api/auth/logout`, `/api/me`, `/api/config`, `/api/genres`, `/api/tags`, `/api/public-authors`, `/api/sources`, `/api/omni/status`, `/api/omni/search`, `/api/omni/resolve`, `/api/omni/import`, `/api/omni/jobs`, `/api/omni/smart-unlock`, `/api/formats`, `/api/chapter-engagement`, `/api/novel-engagement`, `/api/platform/overview`, `/api/discovery/graph`, `/api/novels`, `/api/novels/:id`, `/api/chapters/:id`, chapter unlock and batch-unlock routes, `/api/bookmark`, `/api/history`, and `/api/reading-position`.
+- The feature branch contains the `/api/platform/overview` handler and request-time D1 metric definitions. Public production returned 404 for this endpoint during the read-only check. Therefore the feature-branch handler is not evidence of production availability.
+- The feature branch OmniPortal status handler returns a deduplicated provider snapshot and explicit capability information. Public production still returned repeated provider records from an older response during the same audit. Treat this as a deployment gap, not a reason to mutate production records during architecture work.
+- Public production returned a Page Not Found response for `/become-an-author` at the time checked. The feature branch PR describes a public onboarding page. The architecture must distinguish public onboarding from authenticated author application and private Author Studio.
+
+### 14.2 Route decisions that must be resolved before implementation
+
+1. **Catalog route:** `/catalog` is the current discovery entry point. A future `/discover` route may be an alias or canonical migration only after redirects, sitemap, navigation, analytics, and shared links are specified.
+2. **Novel route:** `/novel/:id` is the current detail route. A slug route may be introduced only with stable ID resolution and permanent redirects that preserve old URLs.
+3. **Reader route:** `/read/:novelId/:chapterNumber` is the current client link shape. A chapter-ID route must not be substituted until numeric legacy links and chapter identity are reconciled.
+4. **Author routes:** `/become-an-author` is public onboarding; `/author` is a separate authenticated creator entry. The eventual route registry must define the exact post-login destination and role gates.
+5. **Trending:** currently represented by `/catalog?sort=trending`; a dedicated `/trending` page must have a canonical/redirect decision and a transparent ranking definition.
+6. **Rankings:** `/leaderboard` is the current public route; a future `/rankings` route must preserve old bookmarks and define ranking dimensions and time windows.
+
+### 14.3 Observed contract and product gaps to carry into later domain architecture
+
+- The Worker uses a large pathname/method conditional API dispatcher. The architecture should define domain groupings and a route registry without assuming the code has already been modularized.
+- Authentication currently exposes register/login/logout/me handlers. The full account-recovery, email verification, multi-factor, session-management, and staff step-up journeys still require explicit screen and API design.
+- `/api/config` reports payments disabled until an approved merchant integration is configured. Payment screens must display unavailable/pending configuration accurately; do not present EasyPaisa as operational until the merchant and verification workflow are genuinely configured.
+- The reader and catalog use existing numeric identifiers and D1 records. The future route model must not assume opaque UUIDs or a new normalized schema is already present.
+- The current catalog client has a compact `card()` renderer that omits missing rating/chapter metadata, while a separate `catalogCard()` renderer formats fallback values as zero. The screen contract must require one shared truthful metric-rendering policy and regression coverage across every card variant.
+- The current theme toggle is a light/dark switch. Six reader themes and full account-level appearance preferences are a product requirement to specify, not a claim about current implementation.
+- The client language selector includes English, Urdu, Hindi, Simplified/Traditional Chinese, Japanese, Indonesian, French, Korean, Brazilian Portuguese, Arabic, Spanish, Vietnamese, and Persian. This selector does not prove every page, content record, email, or RTL layout is fully localized.
+- The existing Worker API has request-time D1 engagement/overview handlers in the feature branch. Polling freshness and metric definitions must be preserved in UI labels; polling is not WebSocket push and reader activity is not online presence.
+
+### 14.4 Evidence boundary
+
+This audit read source files on the PR #120 feature branch and fetched selected public production URLs. It did not run the application locally, query the production D1 database, authenticate as a user, perform device screenshot testing, change source code, execute migrations, merge a PR, or deploy. Any such work must be recorded separately with exact test/deployment evidence.
