@@ -187,5 +187,4 @@ BEGIN DELETE FROM request_votes WHERE request_id=OLD.id; END;
 
 -- Query indexes used by the platform's reader-engagement and moderation summaries.
 CREATE INDEX IF NOT EXISTS idx_comment_likes_comment ON comment_likes(comment_id);
-CREATE INDEX IF NOT EXISTS idx_comments_novel_status_created ON comments(novel_id,status,created_at);
 CREATE INDEX IF NOT EXISTS idx_comment_reports_comment_status ON comment_reports(comment_id,status);
