@@ -1,0 +1,22 @@
+import { readFileSync } from "node:fs";
+import assert from "node:assert/strict";
+const inventory=readFileSync(new URL("../docs/PRIVACY-DATA-INVENTORY.md",import.meta.url),"utf8");
+const readiness=readFileSync(new URL("../docs/ACCOUNT-ERASURE-READINESS.md",import.meta.url),"utf8");
+const source=readFileSync(new URL("../src/index.js",import.meta.url),"utf8");
+const tableNames=(doc)=>new Set(doc.split("\n").filter(line=>line.startsWith("| ")&&!line.startsWith("| Table |")&&!line.startsWith("| ---")).map(line=>line.split("|")[1].trim()).filter(Boolean));
+const inventoried=tableNames(inventory);
+const mapped=tableNames(readiness);
+assert.ok(inventoried.size>=40,"privacy inventory should include the current full migration table set");
+for(const name of inventoried)assert.ok(mapped.has(name),`erasure readiness register must explicitly disposition ${name}`);
+for(const gate of ["Financial reconciliation","Creator ownership","Rights and licensing","Audit and legal hold","Dependent records","Recovery","Completion proof"])
+  assert.ok(readiness.includes(gate),`erasure readiness must include the ${gate} gate`);
+assert.ok(readiness.includes("No destructive account-deletion endpoint is authorized"),"readiness plan must not authorize deletion");
+const closureStart=source.indexOf('if(p==="/api/account/closure-request"&&m==="POST")');
+const cancelStart=source.indexOf('if(p==="/api/account/closure-cancel"&&m==="POST")');
+const exportStart=source.indexOf('if(p==="/api/privacy/export"&&m==="GET")');
+assert.ok(closureStart>=0&&cancelStart>closureStart&&exportStart>cancelStart,"reversible closure routes must remain registered");
+const closureRoutes=source.slice(closureStart,exportStart);
+assert.ok(!closureRoutes.includes("DELETE FROM users"),"closure routes must not delete user accounts");
+assert.ok(!closureRoutes.includes("DELETE FROM novels"),"closure routes must not delete creator novels");
+assert.ok(!source.includes('if(p==="/api/account/closure-complete"'),"no unreviewed closure-completion route may exist");
+console.log(`PASS: ${inventoried.size} privacy inventory tables each have an erasure disposition; closure remains reversible and non-destructive.`);
