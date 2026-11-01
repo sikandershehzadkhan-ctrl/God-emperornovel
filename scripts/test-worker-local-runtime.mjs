@@ -269,6 +269,10 @@ try {
   const authorNovelsB = await getAs(accountB, '/api/author/novels');
   assert.ok(JSON.parse(authorNovelsA.body).some(x=>Number(x.id)===2147483004), 'Author A must see own novel');
   assert.ok(!JSON.parse(authorNovelsA.body).some(x=>Number(x.id)===2147483005), 'Author A must not list Author B novel');
+  assert.ok(JSON.parse(authorNovelsA.body).every(x=>!Object.hasOwn(x,'reviewed_by')),'Author novel list must not disclose internal reviewer account IDs');
+  const authorNovelDetail = await getAs(accountA, '/api/author/novels/2147483004');
+  assert.equal(authorNovelDetail.response.status,200,'Author must be able to inspect their own novel details');
+  assert.ok(!Object.hasOwn(JSON.parse(authorNovelDetail.body),'reviewed_by')&&!Object.hasOwn(JSON.parse(authorNovelDetail.body),'rights_verified_by'),'Author novel details must not disclose internal reviewer or rights-verifier account IDs');
   assert.ok(JSON.parse(authorNovelsB.body).some(x=>Number(x.id)===2147483005), 'Author B must see own novel');
   assert.ok(!JSON.parse(authorNovelsB.body).some(x=>Number(x.id)===2147483004), 'Author B must not list Author A novel');
   const authorCrossPatch = await request('/api/author/novels/2147483005', {method:'PATCH',headers:{...jsonHeaders,cookie:accountA.cookie},body:JSON.stringify({title:'Compromised by A'})});
