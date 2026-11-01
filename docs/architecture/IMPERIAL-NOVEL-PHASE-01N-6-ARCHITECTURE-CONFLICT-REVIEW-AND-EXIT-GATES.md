@@ -10,15 +10,14 @@
 The architecture is **not ready to exit into broad implementation**. The domain blueprints are substantial, but the repository evidence exposes unresolved conflicts in migration ownership, branch integration, API permissions, route metadata, and release validation.
 
 The most serious blocker is the migration model:
-- The numbered SQL migration chain is not a complete standalone schema bootstrap.
-- Runtime schema helpers currently create objects that later numbered migrations assume already exist.
-- Migration 0012 is referenced by migration 0014 and 0018 comments as the owner of runtime feature tables, but `migrations/0012_runtime_feature_schema.sql` is absent on this audited branch.
-- Migration 0010 depends on `novels.publication_status`, which is not created by baseline migration 0001.
-- Migration 0013 also depends on publication-status columns added by runtime publishing bootstrap.
-- Migration 0017 rebuilds `ratings`, while the audited evidence places ratings table creation in runtime core schema, not baseline 0001.
-- The deployment workflow's clean SQLite preflight applies every numbered SQL file without executing runtime schema helpers.
+- The numbered migration directory contains an actual sequence gap: migration 0012 is absent on this branch, while migrations 0014 and 0018 explicitly delegate feature-table ownership to it.
+- Runtime schema helpers still create or alter many of the same objects as numbered SQL migrations, so there are competing schema authorities.
+- Migration 0004 adds novels.publication_status before migration 0010 creates published-catalog indexes.
+- Migration 0005 adds chapters.publication_status before migration 0013 creates chapter timestamp triggers and indexes.
+- Migration 0003 creates the initial ratings table with a 1–5 CHECK before migration 0017 rebuilds it for integer ratings 1–10.
+- The deployment workflow's production preflight assumes publication_status and other base structures already exist, then applies only migrations 0009–0011. It is not a clean-install test of the full migration directory.
 
-This means the clean-install migration path is structurally incomplete as currently represented. The exact failure order must be reproduced in CI, but it is unsafe to assume that fixing only migration 0010 resolves the full chain.
+The evidence does not establish that migrations 0010, 0013 or 0017 necessarily fail when the full available sequence is applied in order. The confirmed blockers are the missing 0012 migration artifact, runtime/migration schema divergence, and lack of a proven clean-install plus supported-upgrade test.
 
 **Decision:** Do not implement new schema-dependent features or run production migrations until one canonical schema bootstrap and supported upgrade path are proven.
 
@@ -44,8 +43,8 @@ Do not merge the architecture branch or any feature branch merely because its do
 
 | ID | Conflict | Evidence | Risk | Required resolution |
 |---|---|---|---|---|
-| C-01 | SQL migration chain relies on runtime schema bootstrap | 0001 lacks `publication_status`; 0010 indexes it; runtime publishing helper adds it | Fresh install fails before deploy | Consolidate schema authority and test full clean/upgrade paths |
-| C-02 | Runtime-created ratings table is assumed by migration 0017 | 0017 copies from `ratings`; baseline 0001 does not establish the runtime ratings schema | Fresh migration failure/data risk | Establish ratings table before migration or redesign migration sequence safely |
+| C-01 | Runtime and migration schema ownership overlap | Runtime helpers add publication, engagement, AI and other schema also represented in SQL; 0004/0005/0003 satisfy the later 0010/0013/0017 prerequisites in the numbered sequence | Schema drift and environment-dependent behavior | Consolidate schema authority and test full clean/upgrade paths |
+| C-02 | Ratings schema is defined in both migration and runtime bootstrap | Migration 0003 creates ratings with a 1–5 constraint; runtime core creates it with a 1–10 constraint; migration 0017 rebuilds the migration baseline to 1–10 | Different starting states may skip or repeat conversion assumptions | Define one canonical baseline and upgrade path; preserve existing rating rows |
 | C-03 | Runtime feature migration ownership is unresolved | 0014/0018 comments refer to 0012, but 0012 file is absent on audited branch | Missing community tables/indexes on clean install | Decide whether 0012 belongs in canonical migration history and restore/test exact artifact |
 | C-04 | Deployment workflow migration scope differs from repository migration inventory | Workflow confirmation text describes 0009–0011; preflight globs every SQL migration; later files 0013–0018 exist | Preflight/deploy semantics diverge | Make workflow migration inventory explicit and prove exactly what is applied |
 | C-05 | Runtime schema version and package version are independent but not fully governed | core marker observed at 16.64.0; package is 17.23.0 | False compatibility assumptions | Define DB schema version and app compatibility policy |
@@ -63,7 +62,8 @@ Do not patch the first failing SQL statement and stop. The full ordered set must
 
 ### 4.1 Inventory
 - List every migration filename and checksum on the canonical release branch.
-- Extract all `CREATE TABLE`, `ALTER TABLE`, indexes, triggers, foreign keys and CHECK constraints from migrations.
+- Confirm the sequence gap at 0012 and resolve its ownership before treating 0014/0018 as complete.
+- Extract all CREATE TABLE, ALTER TABLE, indexes, triggers, foreign keys and CHECK constraints from migrations.
 - Extract all runtime schema DDL and all call sites.
 - Compare the actual resulting schema objects with every SQL query's table/column references.
 - Compare migration history and schema structure in a non-production D1 fixture.
@@ -222,10 +222,10 @@ Additional review is mandatory before adoption:
 
 ## 14. Updated migration blocker severity
 
-The schema blocker is now classified as **critical / release-blocking** rather than a single migration-order concern. At minimum, the migration sequence must account for:
-- publication columns before catalog and chapter timestamp indexes;
-- community runtime feature tables before dependent feature migrations;
-- ratings table creation and safe 1–10 constraint conversion;
+The schema blocker is classified as **critical / release-blocking** because migration and runtime ownership diverge. The numbered chain already includes publication columns in 0004/0005 and a ratings baseline in 0003. At minimum, the migration sequence must account for:
+- the missing 0012 community feature migration referenced by 0014/0018;
+- equivalent runtime and migration definitions for publication, ratings and community features;
+- safe 1–10 rating constraint conversion with preservation of existing rows;
 - all runtime-created core, OmniPortal, AI, analytics, taxonomy and donation objects;
 - legacy data preservation during deduplication and table rebuilds.
 
