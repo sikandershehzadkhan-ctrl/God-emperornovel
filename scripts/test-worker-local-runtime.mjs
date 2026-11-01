@@ -489,6 +489,11 @@ try {
   assert.equal(JSON.parse(duplicateClosure.body).already_requested,true,'Repeated closure request must reuse the pending request');
   const closureStatus=await request('/api/account/closure-request',{headers:{cookie:accountB.cookie}});
   assert.equal(JSON.parse(closureStatus.body).request.id,closureData.request.id,'Account closure status must be scoped to the signed-in user');
+  const otherAccountClosureStatus=await request('/api/account/closure-request',{headers:{cookie:accountA.cookie}});
+  assert.equal(otherAccountClosureStatus.response.status,200,'Other signed-in accounts may inspect their own closure status');
+  assert.equal(JSON.parse(otherAccountClosureStatus.body).request,null,'An account must not see another account closure request');
+  const anonymousClosureStatus=await request('/api/account/closure-request');
+  assert.equal(anonymousClosureStatus.response.status,401,'Anonymous visitors must not inspect account closure status');
   const cancelledClosure=await request('/api/account/closure-cancel',{method:'POST',headers:{cookie:accountB.cookie}});
   assert.equal(cancelledClosure.response.status,200,'Account must be able to cancel closure during the grace period');
   assert.equal(JSON.parse(cancelledClosure.body).cancelled,true,'Cancellation must change the pending request');
