@@ -75,3 +75,18 @@ At integration head `9fc757292ae2d63b6f904deaeb88858ee8f9133c`, the local Worker
 Verification: [Cloudflare Source Validation run 41321216441](https://github.com/sikandershehzadkhan-ctrl/God-emperornovel/actions/runs/41321216441) passed, including the real local Worker+D1 test and all 18 fresh SQLite migrations. [Graphify run 41321216436](https://github.com/sikandershehzadkhan-ctrl/God-emperornovel/actions/runs/41321216436) passed.
 
 AI Author Studio generation/provider operations and all related chapter-job endpoints still require separate authorization and runtime coverage.
+
+## Financial ledger, OmniPortal and taxonomy identity extension
+
+At integration head `f084c8dd319f0200d2e6b35c230954fb046124d0`, the real Wrangler local Worker+D1 suite additionally verifies:
+
+- Account A sees only its own ticket-ledger row; Account B sees only its own ticket-ledger row.
+- Account A sees only its own OmniPortal import job; Account B sees only its own import job.
+- Anonymous taxonomy submissions receive HTTP 401.
+- An authenticated taxonomy proposal is accepted into `pending` moderation state.
+- Pending proposals do not appear in public taxonomy, and public requests for pending status receive HTTP 403.
+- The taxonomy request deliberately includes forged `creator_id` and `creator_name` fields. The handler derives creator identity from the authenticated session (`user.id` and `user.username`) rather than trusting those body fields; the test verifies the authentication and moderation boundary, while a direct persisted creator-column assertion remains a follow-up.
+
+Verification: [Cloudflare Source Validation run 41321912657](https://github.com/sikandershehzadkhan-ctrl/God-emperornovel/actions/runs/41321912657) passed. Its logs confirm the real local Worker+D1 test and all 18 fresh SQLite migrations passed. [Graphify run 41321912718](https://github.com/sikandershehzadkhan-ctrl/God-emperornovel/actions/runs/41321912718) passed.
+
+These are local runtime tests for the listed endpoints and seeded fixtures. They are not proof of all financial, payment, connector, taxonomy moderation or production security behaviors.
