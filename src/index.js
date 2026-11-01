@@ -10,7 +10,7 @@ import { validateAuthorApplication, validateAuthorApplicationDecision } from "./
 import { CONTENT_FORMATS, CONTENT_FORMAT_IDS } from "./content-formats.mjs";
 import { assessPublicationQuality } from "./content-quality-policy.mjs";
 import { buildDiscoveryGraph } from "./discovery-knowledge-graph.mjs";
-import { applySeoMetadata, buildRobotsTxt, buildSitemapXml, canonicalOrigin, canonicalPath, getPageSeo, robotsForPath } from "./seo.mjs";
+import { applySeoMetadata, buildRobotsTxt, buildSitemapXml, canonicalOrigin, canonicalPath, authorProfilePath, getPageSeo, robotsForPath } from "./seo.mjs";
 const json=(d,s=200,h={})=>new Response(JSON.stringify(d),{status:s,headers:{"content-type":"application/json;charset=UTF-8","cache-control":"no-store",...h}});
 const now=()=>Math.floor(Date.now()/1000);
 const b64=a=>btoa(String.fromCharCode(...new Uint8Array(a))).replaceAll("+","-").replaceAll("/","_").replaceAll("=","");
