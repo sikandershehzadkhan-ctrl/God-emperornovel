@@ -1,3 +1,5 @@
+import { hashEmailVerificationToken } from "./email-verification-token.mjs";
+import { completeEmailVerification } from "./email-verification-store.mjs";
 import { validateComicChapterContent } from "./comic-chapter-policy.mjs";
 import { hashPassword, verifyPassword } from "./auth-password.mjs";
 import { isAllowedConnectorSearchUrl } from "./connector-url-policy.mjs";
@@ -425,6 +427,24 @@ async function api(req,env){
  if(p==="/api/health"){let db=true;try{await env.DB.prepare("SELECT 1").first()}catch{db=false}return json({ok:db,service:env.SITE_NAME||"Imperial Novel",version:env.APP_VERSION||"5.0.0",database:db,time:new Date().toISOString()})}
  if(p==="/api/auth/register"&&m==="POST"){const ip=String(req.headers.get("cf-connecting-ip")||"unknown").trim().slice(0,128);const limited=await consumeAuthRateLimit(env,"register-ip",ip,5,3600);if(limited)return limited;const b=await body(req),username=String(b.username||"").trim(),email=String(b.email||"").trim().toLowerCase(),password=String(b.password||"");if(!/^[a-zA-Z0-9_]{3,24}$/.test(username))return json({error:"Username must be 3-24 letters, numbers or underscores"},400);if(!email.includes("@"))return json({error:"Enter a valid email"},400);if(password.length<8||password.length>1024)return json({error:"Password must be between 8 and 1024 characters"},400);const passwordHash=await hashPassword(password);try{await env.DB.prepare("INSERT INTO users(username,email,password_hash) VALUES(?,?,?)").bind(username,email,passwordHash).run()}catch{return json({error:"Username or email already exists"},409)}return json({ok:true,message:"Account created. You can now sign in."})}
  if(p==="/api/auth/login"&&m==="POST"){const ip=String(req.headers.get("cf-connecting-ip")||"unknown").trim().slice(0,128);const ipLimited=await consumeAuthRateLimit(env,"login-ip",ip,30,900);if(ipLimited)return ipLimited;const b=await body(req),email=String(b.email||"").trim().toLowerCase().slice(0,254);const emailLimited=await consumeAuthRateLimit(env,"login-email",email,10,900);if(emailLimited)return emailLimited;const x=await env.DB.prepare("SELECT * FROM users WHERE email=?").bind(email).first();if(!x)return json({error:"Invalid email or password"},401);const password=String(b.password||"");if(!await verifyPassword(password,x.password_hash))return json({error:"Invalid email or password"},401);if(Number(x.banned)===1)return json({error:"This account is suspended. Contact support if you believe this is a mistake."},403);if(!String(x.password_hash||"").startsWith("pbkdf2-sha256$")){try{const upgradedHash=await hashPassword(password);await env.DB.prepare("UPDATE users SET password_hash=? WHERE id=? AND password_hash=?").bind(upgradedHash,x.id,x.password_hash).run()}catch(error){console.error("legacy password hash upgrade failed",error)}}await env.DB.prepare("DELETE FROM auth_rate_limits WHERE scope=? AND key_hash=?").bind("login-email",await digest("imperial-auth-rate-v1:login-email:"+email)).run();const token=rnd(32);await env.DB.prepare("INSERT INTO sessions(token_hash,user_id,expires_at) VALUES(?,?,?)").bind(await digest(token),x.id,now()+2592000).run();return json({ok:true,user:{id:x.id,username:x.username,email:x.email,role:x.role,tickets:x.tickets}},200,{"set-cookie":`session=${encodeURIComponent(token)}; Path=/; HttpOnly; Secure; SameSite=Lax; Max-Age=2592000`})}
+ if(p==="/api/auth/verify-email"&&m==="POST"){
+  const ip=String(req.headers.get("cf-connecting-ip")||"unknown").trim().slice(0,128);
+  const ipLimited=await consumeAuthRateLimit(env,"email-verify-ip",ip,20,900);
+  if(ipLimited)return ipLimited;
+  const b=await body(req);
+  const token=typeof b.token==="string"?b.token:"";
+  let tokenHash;
+  try{tokenHash=await hashEmailVerificationToken(token)}catch{return json({ok:false,error:"This verification link is invalid or has expired."},400)}
+  const tokenLimited=await consumeAuthRateLimit(env,"email-verify-token",tokenHash,5,900);
+  if(tokenLimited)return tokenLimited;
+  try{
+   const result=await completeEmailVerification(env.DB,{tokenHash,now:new Date().toISOString()});
+   if(!result.ok)return json({ok:false,error:"This verification link is invalid, expired, or no longer matches the account email."},400);
+   return json({ok:true,message:"Email address verified."});
+  }catch{
+   return json({ok:false,error:"Email verification is temporarily unavailable. Please try again later."},503);
+  }
+ }
  if(p==="/api/auth/logout"&&m==="POST"){const c=cookies(req.headers.get("cookie"));if(c.session)await env.DB.prepare("DELETE FROM sessions WHERE token_hash=?").bind(await digest(c.session)).run();return json({ok:true},200,{"set-cookie":"session=; Path=/; HttpOnly; Secure; SameSite=Lax; Max-Age=0"})}
  if(p==="/api/me/export"&&m==="GET"){
   const authError=need(u);if(authError)return authError;
