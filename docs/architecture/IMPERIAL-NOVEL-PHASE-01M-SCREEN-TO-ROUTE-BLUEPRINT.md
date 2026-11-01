@@ -370,3 +370,4 @@ Each document is a specification. A listed route or logical API contract is not 
 - [01P — Roles, Permissions and Staff Boundaries](IMPERIAL-NOVEL-PHASE-01P-ROLES-PERMISSIONS-AND-STAFF-BOUNDARIES.md)
 - [01P.1 — API-to-Permission and Ownership Matrix](IMPERIAL-NOVEL-PHASE-01P-1-API-TO-PERMISSION-AND-OWNERSHIP-MATRIX.md)
 - [01P.2 — Worker API Route Inventory](IMPERIAL-NOVEL-PHASE-01P-2-WORKER-API-ROUTE-INVENTORY.md)
+- [01P.3 — Authorization, Ownership and IDOR Security Test Matrix](IMPERIAL-NOVEL-PHASE-01P-3-AUTHORIZATION-AND-IDOR-SECURITY-TEST-MATRIX.md)
