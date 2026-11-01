@@ -462,7 +462,8 @@ try {
   assert.ok(exportAData.collections.authored_novels.some(x=>x.id===2147483004),'Author export must include the signed-in account\'s own draft novel');
   assert.ok(!exportAData.collections.authored_novels.some(x=>x.id===2147483005),'Author export must not include another account\'s novel');
   assert.ok(Number.isFinite(Date.parse(exportAData.generated_at)),'Export timestamp must be a valid ISO date');
-  assert.deepEqual(exportAData.collections.reading_positions.map(x=>x.progress_percent),[37],'Account A export must contain Account A reading progress only');
+  assert.deepEqual(exportAData.collections.reading_positions.filter(x=>x.novel_id===2147483998).map(x=>x.progress_percent),[37],'Account A export must contain Account A reading progress only for the isolated fixture');
+  assert.ok(!exportAData.collections.reading_positions.some(x=>x.novel_id===2147483998&&x.progress_percent===82),'Account A export must not include Account B reading progress');
   assert.ok(!exportA.body.includes(accountB.email),'Account A export must not disclose Account B email');
   assert.ok(!exportA.body.includes('password_hash')&&!exportA.body.includes('token_hash'),'Account export must never include password hashes or session token hashes');
   const exportASecond=await request('/api/privacy/export',{headers:{cookie:accountA.cookie}});
