@@ -1,0 +1,10 @@
+import assert from 'node:assert/strict';
+import { readFile } from 'node:fs/promises';
+const source = await readFile(new URL('../src/index.js', import.meta.url), 'utf8');
+const novel = source.split('\n').find(line => line.includes('let nm=p.match')) || '';
+const chapter = source.split('\n').find(line => line.includes('let cm=p.match')) || '';
+assert.ok(novel.includes('try{await env.DB.prepare("UPDATE novels SET views=views+1')));
+assert.ok(novel.includes('catch(error){console.error("novel view counter unavailable",error)}'));
+assert.ok(chapter.includes('try{await env.DB.prepare("INSERT INTO chapter_views')));
+assert.ok(chapter.includes('catch(error){console.error("chapter view counter unavailable",error)}'));
+console.log('PASS: novel and chapter read handlers isolate primary view-counter write failures.');
