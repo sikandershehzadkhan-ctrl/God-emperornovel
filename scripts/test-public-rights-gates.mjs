@@ -33,7 +33,7 @@ const historyGet = lines.find(line => line.includes('if(p==="/api/history"&&m===
 const progressPost = lines.find(line => line.includes('if(p==="/api/reading-position"&&m==="POST"')) || '';
 for (const [name, line] of Object.entries({libraryGet,bookmarksGet,historyGet,progressPost})) assert.ok(line.includes("rights_status IN ('original','public_domain','licensed','authorized')"), name + ' must hide ineligible novels');
 const omniLocal = source.split('\n').find(line => line.includes('async function omniLocal')) || ''; assert.ok(omniLocal.includes("rights_status IN ('original','public_domain','licensed','authorized') AND (LOWER(title) LIKE ?"), 'OmniPortal local search must enforce eligible rights before search predicates');
-const taxonomyHandler = source.match(/async function communityTaxonomy[\\s\\S]*?\\n}\\nasync function adminTaxonomy/)?.[0] || '';
+const taxonomyHandler = source.slice(source.indexOf("async function communityTaxonomy"), source.indexOf("async function adminTaxonomy"));
 const taxonomyDispatch = source.split('\n').find(line => line.includes('if(p==="/api/taxonomy")')) || '';
 const adminUsers = source.split('\n').find(line => line.includes('if(p==="/api/admin/users"&&m==="GET")')) || '';
 assert.ok(taxonomyHandler.includes('const auth=need(user);if(auth)return auth;'), 'taxonomy submissions must require a session');
