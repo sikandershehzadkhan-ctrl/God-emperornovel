@@ -55,8 +55,8 @@ const reportModerationEnd = worker.indexOf('if(p==="/api/donations"&&m==="POST")
 const reportModeration = reportModerationStart >= 0 && reportModerationEnd > reportModerationStart ? worker.slice(reportModerationStart, reportModerationEnd) : "";
 assert.ok(reportModeration, "admin comment report moderation route must exist");
 assert.ok(reportModeration.includes("env.DB.batch("), "report status update and audit event must be committed atomically");
-assert.ok(reportModeration[1].includes("WHERE changes()=1"), "audit event must only be written when the guarded status update changes a row");
-assert.ok(reportModeration[1].includes("409"), "stale concurrent moderation updates must return a conflict");
+assert.ok(reportModeration.includes("WHERE changes()=1"), "audit event must only be written when the guarded status update changes a row");
+assert.ok(reportModeration.includes("409"), "stale concurrent moderation updates must return a conflict");
 const reportListingStart = worker.indexOf('if(p==="/api/admin/community/reports"&&m==="GET")');
 const reportListingEnd = worker.indexOf('if(p==="/api/admin/community/reports"&&m==="PATCH")', reportListingStart);
 const reportListing = reportListingStart >= 0 && reportListingEnd > reportListingStart ? worker.slice(reportListingStart, reportListingEnd) : "";
@@ -77,11 +77,11 @@ assert.ok(moderationRoute[1].includes("WHERE changes()=1"), "comment audit event
 assert.ok(moderationRoute[1].includes("409"), "stale concurrent comment moderation updates must return a conflict");
 const reportModeration = worker.match(/if\(p==="\/api\/admin\/community\/reports"&&m==="PATCH"\)\{([\s\S]*?)\n\s*if\(p==="\/api\/donations"&&m==="POST"/);
 assert.ok(reportModeration, "admin report moderation route must exist");
-assert.ok(reportModeration[1].includes("admin(u)"), "report moderation must require administrator access");
-assert.ok(reportModeration[1].includes("Number.isSafeInteger(id)||id<1"), "report moderation must validate a positive safe report id");
-assert.ok(reportModeration[1].includes("SELECT id,status FROM comment_reports WHERE id=?"), "report moderation must verify and read the prior report status");
-assert.ok(reportModeration[1].includes("previous_status="), "report moderation audit must preserve the prior status");
-assert.ok(reportModeration[1].includes("unchanged:true"), "repeating the same report status must be idempotent");
+assert.ok(reportModeration.includes("admin(u)"), "report moderation must require administrator access");
+assert.ok(reportModeration.includes("Number.isSafeInteger(id)||id<1"), "report moderation must validate a positive safe report id");
+assert.ok(reportModeration.includes("SELECT id,status FROM comment_reports WHERE id=?"), "report moderation must verify and read the prior report status");
+assert.ok(reportModeration.includes("previous_status="), "report moderation audit must preserve the prior status");
+assert.ok(reportModeration.includes("unchanged:true"), "repeating the same report status must be idempotent");
 const followRoute = worker.match(/if\(p==="\/api\/follow"&&m==="POST"\)\{([\s\S]*?)\n\s*if\(p==="\/api\/rating"/);
 assert.ok(followRoute, "follow toggle route must exist");
 assert.ok(followRoute[1].includes("Number.isSafeInteger(nid)"), "follow route must validate a positive safe novel id");
