@@ -19,7 +19,7 @@ export async function requestPasswordReset({db,env,user,publicOrigin,now=new Dat
     if(!Number.isFinite(issuedAt.getTime()))return {ok:false,reason:"unavailable"};
     const createdAt=issuedAt.toISOString();
     const expiresAt=new Date(issuedAt.getTime()+30*60*1000).toISOString();
-    const issued=await issuePasswordResetToken(db,{userId:Number(user.id),tokenHash,now:createdAt,expiresAt});
+    const issued=await issuePasswordResetToken(db,{userId:Number(user.id),emailSnapshot:user.email,tokenHash,now:createdAt,expiresAt});
     if(!issued.ok)return {ok:false,reason:"unavailable"};
     const delivered=await deliverSecurityEmail(env,{
       template:"reset_password",recipient:user.email,actionUrl:action,
