@@ -13,7 +13,7 @@ for (const marker of [
   "transferReject",
   "transferCancel",
   "recipient_user_id",
-  "ownership will not change until they accept"
+  "Ownership will not change until they accept."
 ]) assert.ok(app.includes(marker), "Author Studio ownership UI is missing: " + marker);
 
 assert.match(app, /api\('\/api\/author\/ownership-transfers'\)/);
