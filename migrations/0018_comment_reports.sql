@@ -1,5 +1,4 @@
--- PR #118 migration 0012 owns the canonical comment_reports table, including
--- uniqueness, foreign keys, legacy archival, validation triggers and status index.
--- Keep only the additional comment-first index used by moderation lookups.
-CREATE INDEX IF NOT EXISTS idx_comment_reports_comment_status
-  ON comment_reports(comment_id, status);
+-- Canonical comment_reports table and its moderation indexes are owned by
+-- PR #118 migration 0012_runtime_feature_schema.sql. This ordered migration slot
+-- is intentionally dependency-free so PR #120 can validate independently before
+-- PR #118 merges. Combined migration validation remains mandatory after integration.
