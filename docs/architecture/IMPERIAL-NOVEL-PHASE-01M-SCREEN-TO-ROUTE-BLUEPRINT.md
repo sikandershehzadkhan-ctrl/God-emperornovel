@@ -336,3 +336,13 @@ The following facts were checked against the PR #120 feature branch source and p
 ### 14.4 Evidence boundary
 
 This audit read source files on the PR #120 feature branch and fetched selected public production URLs. It did not run the application locally, query the production D1 database, authenticate as a user, perform device screenshot testing, change source code, execute migrations, merge a PR, or deploy. Any such work must be recorded separately with exact test/deployment evidence.
+
+
+## 15. Phase 01M continuation index
+
+The screen blueprint is being maintained as a set of domain-specific architecture documents on this branch:
+
+- [01M.1 — Screen-to-route foundation, public discovery, catalog and reader](IMPERIAL-NOVEL-PHASE-01M-SCREEN-TO-ROUTE-BLUEPRINT.md)
+- [01M.2 — Creator, community, messaging and notifications](IMPERIAL-NOVEL-PHASE-01M-2-CREATOR-COMMUNITY-MESSAGING-BLUEPRINT.md)
+
+Each document is a specification. A listed route or logical API contract is not asserted to exist until independently reconciled with the current router and Worker implementation. The next architecture increments must cover OmniPortal, Trend Factory, commerce/payments, administration/agents, AI workspace as a distinct product area, localization, legal/trust, developer/system screens, and cross-domain route/permission reconciliation.
