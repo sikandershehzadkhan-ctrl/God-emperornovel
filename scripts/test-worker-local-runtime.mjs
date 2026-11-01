@@ -4,6 +4,7 @@ import { spawn } from 'node:child_process';
 const port = 8787;
 const origin = `http://127.0.0.1:${port}`;
 const child = spawn('npx', ['--yes', 'wrangler@4', 'dev', '--local', '--ip', '127.0.0.1', '--port', String(port), '--persist-to', '.wrangler/test-runtime'], {
+  detached: true,
   stdio: ['ignore', 'pipe', 'pipe'],
   env: { ...process.env, NO_COLOR: '1' },
 });
@@ -49,6 +50,6 @@ try {
   assert.match(home.body, /Imperial Novel/, 'Home page must contain the platform brand');
   console.log('PASS: real Wrangler local Worker handled health, D1-backed catalog, live overview, missing chapter and homepage requests.');
 } finally {
-  child.kill('SIGTERM');
+  try { process.kill(-child.pid, 'SIGTERM'); } catch { child.kill('SIGTERM'); }
   await Promise.race([new Promise(resolve => child.once('exit', resolve)), sleep(5000)]);
 }
