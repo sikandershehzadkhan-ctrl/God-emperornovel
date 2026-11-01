@@ -23,7 +23,7 @@ const leaderboard = source.split('\n').find(line => line.includes('unlocks DESC,
 const tierList = source.split('\n').find(line => line.includes('ORDER BY n.rating DESC,n.views DESC LIMIT 60')) || '';
 const randomNovel = source.split('\n').find(line => line.includes('ORDER BY RANDOM() LIMIT 1')) || '';
 const anonymousFeed = source.split('\n').find(line => line.includes('LIMIT 18') && line.includes('WHERE n.publication_status') && !line.includes('follows WHERE user_id=?')) || '';
-const followWrite = source.split('\n').find(line => line.includes('let novel=await env.DB.prepare')) || '';
+const followWrite = source.split('\n').find(line => line.includes('if(p==="/api/follow"')) || '';
 for (const [name, line] of Object.entries({leaderboard,tierList,randomNovel,anonymousFeed,followWrite})) assert.ok(line.includes("rights_status IN ('original','public_domain','licensed','authorized')"), name + ' must enforce eligible rights');
 assert.ok(source.includes("WHERE n.publication_status='published' AND n.rights_status IN ('original','public_domain','licensed','authorized') AND n.id NOT IN(SELECT novel_id FROM follows WHERE user_id=?) GROUP BY n.id ORDER BY n.rating DESC,n.views DESC LIMIT 12"), 'recommendation fallback must enforce eligible rights');
 assert.ok(source.includes("WHERE f.user_id=? AND n.publication_status='published' AND n.rights_status IN ('original','public_domain','licensed','authorized') ORDER BY f.created_at DESC"), 'followed novel list must hide ineligible novels');
