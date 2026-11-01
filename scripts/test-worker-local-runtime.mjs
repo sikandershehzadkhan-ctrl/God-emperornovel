@@ -258,6 +258,46 @@ try {
   assert.ok(!pendingTaxonomyPublic.body.includes('Runtime Isolation Security Probe'), 'Pending taxonomy proposal must not appear in public taxonomy');
   const pendingTaxonomyStatusProbe = await request('/api/taxonomy?type=tag&status=pending');
   assert.equal(pendingTaxonomyStatusProbe.response.status, 403, 'Public taxonomy endpoint must reject pending status queries');
+  // Administrative APIs must reject both anonymous visitors and ordinary author accounts.
+  const adminReadRoutes = [
+    '/api/admin/agents',
+    '/api/admin/taxonomy',
+    '/api/admin/community/comments',
+    '/api/admin/community/reports',
+    '/api/admin/stats',
+    '/api/admin/publishing',
+    '/api/admin/donations',
+    '/api/admin/reports',
+    '/api/admin/connectors',
+    '/api/admin/requests',
+    '/api/admin/connector-authorization-requests'
+  ];
+  for (const route of adminReadRoutes) {
+    const anonymous = await request(route);
+    assert.equal(anonymous.response.status, 401, `Anonymous visitor must not access ${route}: ${anonymous.body}`);
+    const ordinaryAuthor = await getAs(accountB, route);
+    assert.equal(ordinaryAuthor.response.status, 403, `Ordinary author must not access ${route}: ${ordinaryAuthor.body}`);
+  }
+  const adminWriteRoutes = [
+    ['/api/admin/agents/run', {slug:'security-sentinel'}],
+    ['/api/admin/taxonomy', {action:'approve',id:2147483999}],
+    ['/api/admin/community/comments', {comment_id:2147483999,status:'hidden'}],
+    ['/api/admin/community/reports', {report_id:2147483999,status:'resolved'}],
+    ['/api/admin/donations/2147483999', {status:'approved'}],
+    ['/api/admin/reports/2147483999', {status:'resolved'}],
+    ['/api/admin/tickets', {user_id:dataB.user.id,amount:1,reason:'runtime probe'}],
+    ['/api/admin/connectors', {id:2147483999,enabled:false}],
+    ['/api/admin/connectors/cleanup', {}],
+    ['/api/admin/requests/2147483999', {status:'rejected'}],
+    ['/api/admin/connector-authorization-requests/2147483999', {status:'rejected'}]
+  ];
+  for (const [route,payload] of adminWriteRoutes) {
+    const anonymous = await request(route,{method:'POST',headers:jsonHeaders,body:JSON.stringify(payload)});
+    assert.ok([401,403].includes(anonymous.response.status), `Anonymous visitor must be denied admin write ${route}: ${anonymous.response.status} ${anonymous.body}`);
+    const ordinaryAuthor = await request(route,{method:route.endsWith('/2147483999')&&route.includes('/donations/')||route.includes('/reports/')||route.includes('/connector-authorization-requests/')||route.includes('/requests/') ? 'PATCH':'POST',headers:{...jsonHeaders,cookie:accountB.cookie},body:JSON.stringify(payload)});
+    assert.equal(ordinaryAuthor.response.status,403, `Ordinary author must be denied admin write ${route}: ${ordinaryAuthor.response.status} ${ordinaryAuthor.body}`);
+  }
+
   // In this isolated test environment the platform-owner identity is intentionally unset.
   const promoteAdminSql = `UPDATE users SET role='admin' WHERE id=${dataA.user.id}`;
   execFileSync('npx', ['--yes','wrangler@4','d1','execute','god-emperornovel-db','--local','--persist-to','.wrangler/test-runtime','--command',promoteAdminSql], {stdio:'pipe',env:{...process.env,NO_COLOR:'1'}});
