@@ -1745,3 +1745,32 @@ html[data-theme="dark"] .authorWork{background:var(--in-canvas)}
 @media(prefers-reduced-motion:reduce){
  .authorCreateForm :is(input,select,textarea),.authorEditForm :is(input,select,textarea),.authorChapterForm :is(input,select,textarea),.authorWork{transition:none!important}
 }
+
+
+/* Community interaction refinement 17.30: readable conversations and clear participation. */
+.communityGrid{gap:clamp(14px,2vw,20px)}
+.communityGrid>.panel{border-radius:var(--in-radius-lg);transition:border-color 160ms ease,box-shadow 160ms ease}
+.communityGrid>.panel:focus-within{border-color:color-mix(in srgb,var(--in-brand) 34%,var(--in-line))}
+.communityGrid>.panel h3{line-height:1.35}
+.communityGrid .commentItem{padding:clamp(12px,1.8vw,16px);border-radius:13px;transition:border-color 150ms ease,background-color 150ms ease}
+.communityGrid .commentItem:hover{border-color:color-mix(in srgb,var(--in-brand) 28%,var(--in-line))}
+.communityGrid .commentHead{display:flex;align-items:center;gap:8px;flex-wrap:wrap;font-size:12px;font-weight:750}
+.communityGrid .commentItem p{margin:8px 0;line-height:1.72}
+.communityGrid .commentReply{padding-inline-start:clamp(10px,2vw,16px)}
+.communityGrid .commentActions{display:flex;align-items:center;flex-wrap:wrap}
+.communityGrid .commentActions .ghost{min-height:38px;padding-inline:11px}
+.communityGrid :is(input,textarea,select){min-height:44px;border-radius:10px}
+.communityGrid textarea{line-height:1.6}
+.communityGrid :is(input,textarea,select):focus-visible{outline:2px solid var(--in-focus);outline-offset:2px;box-shadow:0 0 0 3px color-mix(in srgb,var(--in-focus) 12%,transparent)}
+.communityGrid .ratingStar{min-width:38px;min-height:38px}
+html[data-theme="dark"] .communityGrid>.panel{background:var(--in-surface);border-color:var(--in-line)}
+html[data-theme="dark"] .communityGrid .commentItem{background:var(--in-canvas)}
+@media(max-width:600px){
+ .communityGrid>.panel{padding:14px}
+ .communityGrid .commentItem{margin:9px 0}
+ .communityGrid .commentActions .ghost{flex:1 1 auto;justify-content:center}
+ .communityGrid :is(input,textarea,select){font-size:16px}
+}
+@media(prefers-reduced-motion:reduce){
+ .communityGrid>.panel,.communityGrid .commentItem{transition:none!important}
+}
