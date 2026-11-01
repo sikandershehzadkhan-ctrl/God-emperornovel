@@ -119,36 +119,7 @@ try {
   const recipient = await account(baseUrl, "author" + suffix, "author" + suffix + "@example.test");
   const spectator = await account(baseUrl, "reader" + suffix, "reader" + suffix + "@example.test");
   const moderator = await account(baseUrl, "moderator" + suffix, "moderator" + suffix + "@example.test");
-  const recovery = await account(baseUrl, "recovery" + suffix, "recovery" + suffix + "@example.test");
   const administrator = await account(baseUrl, "administrator" + suffix, "administrator" + suffix + "@example.test");
-  const resetRequestUnknown = await request(baseUrl,"/api/auth/password-reset/request",{method:"POST",body:{email:"missing" + suffix + "@example.test"}});
-  assert.equal(resetRequestUnknown.response.status,202,"Unknown email addresses must receive the same generic accepted response");
-  assert.equal(resetRequestUnknown.data.ok,true);
-  const resetRequestExisting = await request(baseUrl,"/api/auth/password-reset/request",{method:"POST",body:{email:recovery.user.email}});
-  assert.equal(resetRequestExisting.response.status,202,"A missing delivery provider must not disclose whether an account exists");
-
-  const resetToken = createPasswordResetToken();
-  const resetHash = await hashPasswordResetToken(resetToken);
-  const resetNow = new Date();
-  const resetCreated = resetNow.toISOString();
-  const resetExpiry = new Date(resetNow.getTime()+30*60*1000).toISOString();
-  const seedReset = "INSERT INTO password_reset_tokens(user_id,email_snapshot,token_hash,purpose,created_at,expires_at) VALUES("+
-    Number(recovery.user.id)+",'" + recovery.user.email + "','" + resetHash + "','password_reset','" + resetCreated + "','" + resetExpiry + "')";
-  wrangler(["d1","execute",database,"--local","--persist-to",persist,"--command",seedReset]);
-  const newPassword = "New-Recovery-Password-2026!";
-  const resetComplete = await request(baseUrl,"/api/auth/password-reset/complete",{method:"POST",body:{token:resetToken,password:newPassword}});
-  assert.equal(resetComplete.response.status,200,JSON.stringify(resetComplete.data));
-  assert.equal(resetComplete.data.ok,true);
-  const resetReplay = await request(baseUrl,"/api/auth/password-reset/complete",{method:"POST",body:{token:resetToken,password:"Another-Replay-Password-2026!"}});
-  assert.equal(resetReplay.response.status,400,"Password reset tokens must be single-use");
-  const oldSession = await request(baseUrl,"/api/me/export",{cookie:recovery.cookie});
-  assert.equal(oldSession.response.status,401,"Password reset must revoke all existing sessions for the account");
-  const oldPasswordLogin = await request(baseUrl,"/api/auth/login",{method:"POST",body:{email:recovery.user.email,password:"Integration-Test-Password-2026!"}});
-  assert.equal(oldPasswordLogin.response.status,401,"Old password must no longer authenticate");
-  const newPasswordLogin = await request(baseUrl,"/api/auth/login",{method:"POST",body:{email:recovery.user.email,password:newPassword}});
-  assert.equal(newPasswordLogin.response.status,200,"New password must authenticate after reset");
-  const otherAccountAfterReset = await request(baseUrl,"/api/me/export",{cookie:recipient.cookie});
-  assert.equal(otherAccountAfterReset.response.status,200,"Resetting one account must not revoke another account's session");
   const malformedVerification = await request(baseUrl,"/api/auth/verify-email",{method:"POST",body:{token:"not-a-valid-token"}});
   assert.equal(malformedVerification.response.status,400);
   assert.equal(JSON.stringify(malformedVerification.data).includes("not-a-valid-token"),false);
@@ -757,6 +728,35 @@ try {
   assert.equal(expiredSessionMe.response.status, 200);
   assert.equal(expiredSessionMe.data.user, null, "An expired session must not authenticate an otherwise active account");
 
+
+  const resetRequestUnknown = await request(baseUrl,"/api/auth/password-reset/request",{method:"POST",body:{email:"missing" + suffix + "@example.test"}});
+  assert.equal(resetRequestUnknown.response.status,202,"Unknown email addresses must receive the same generic accepted response");
+  assert.equal(resetRequestUnknown.data.ok,true);
+  const resetRequestExisting = await request(baseUrl,"/api/auth/password-reset/request",{method:"POST",body:{email:owner.user.email}});
+  assert.equal(resetRequestExisting.response.status,202,"A missing delivery provider must not disclose whether an account exists");
+
+  const resetToken = createPasswordResetToken();
+  const resetHash = await hashPasswordResetToken(resetToken);
+  const resetNow = new Date();
+  const resetCreated = resetNow.toISOString();
+  const resetExpiry = new Date(resetNow.getTime()+30*60*1000).toISOString();
+  const seedReset = "INSERT INTO password_reset_tokens(user_id,email_snapshot,token_hash,purpose,created_at,expires_at) VALUES("+
+    Number(owner.user.id)+",'" + owner.user.email + "','" + resetHash + "','password_reset','" + resetCreated + "','" + resetExpiry + "')";
+  wrangler(["d1","execute",database,"--local","--persist-to",persist,"--command",seedReset]);
+  const newPassword = "New-Recovery-Password-2026!";
+  const resetComplete = await request(baseUrl,"/api/auth/password-reset/complete",{method:"POST",body:{token:resetToken,password:newPassword}});
+  assert.equal(resetComplete.response.status,200,JSON.stringify(resetComplete.data));
+  assert.equal(resetComplete.data.ok,true);
+  const resetReplay = await request(baseUrl,"/api/auth/password-reset/complete",{method:"POST",body:{token:resetToken,password:"Another-Replay-Password-2026!"}});
+  assert.equal(resetReplay.response.status,400,"Password reset tokens must be single-use");
+  const oldSession = await request(baseUrl,"/api/me/export",{cookie:owner.cookie});
+  assert.equal(oldSession.response.status,401,"Password reset must revoke all existing sessions for the account");
+  const oldPasswordLogin = await request(baseUrl,"/api/auth/login",{method:"POST",body:{email:owner.user.email,password:"Integration-Test-Password-2026!"}});
+  assert.equal(oldPasswordLogin.response.status,401,"Old password must no longer authenticate");
+  const newPasswordLogin = await request(baseUrl,"/api/auth/login",{method:"POST",body:{email:owner.user.email,password:newPassword}});
+  assert.equal(newPasswordLogin.response.status,200,"New password must authenticate after reset");
+  const otherAccountAfterReset = await request(baseUrl,"/api/me/export",{cookie:recipient.cookie});
+  assert.equal(otherAccountAfterReset.response.status,200,"Resetting one account must not revoke another account's session");
 
   console.log("Local Worker/D1 authorization integration passed: account export two-user isolation and rate limits, administrator role boundaries, ban/login/session revocation, private chapter read/publish isolation, six private-data endpoint isolation, session-bound writes, ownership and chapter isolation, recipient privacy, concurrent acceptance, rejection/cancellation, and ineligible transfer rejection.");
 
