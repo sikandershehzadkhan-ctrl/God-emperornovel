@@ -126,3 +126,10 @@ Before adding a user-facing route, the receiving delivery service must be separa
 - The delivery boundary now permits only `/verify-email` for `verify_email` and `/reset-password` for `reset_password`.
 - Both actions must carry a 43-character base64url token exclusively in the URL fragment (`#token=...`). Query strings, off-origin links, other same-origin paths, and missing/malformed fragments are rejected before the service binding is called.
 - The delivery contract tests include wrong-path, wrong-template, missing-token, and off-origin cases.
+### Atomic email-verification issuance and delivery-failure cleanup
+
+- `issueEmailVerificationToken` invalidates earlier outstanding links and inserts the new token digest in one D1 batch transaction. It issues only when the exact current email snapshot still belongs to the account and `email_verified_at` is null.
+- Token lifetime is constrained to a normalized UTC expiry within one hour. The caller supplies only a digest; raw bearer tokens must never be stored.
+- `invalidateEmailVerificationToken` revokes only the exact unconsumed token digest. If delivery of a newly issued token fails, cleanup cannot accidentally invalidate a newer request's token.
+- Issuance and cleanup have separate regression tests, including account/mailbox binding, replacing previous active tokens, no insert for mismatched or already-verified accounts, and stale delivery-failure cleanup.
+- These are storage primitives only. No request route is enabled, and no provider binding is configured. Route activation remains blocked until a real delivery service is configured and tested.
