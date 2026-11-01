@@ -1,0 +1,299 @@
+# Imperial Novel — Phase 01M Screen-to-Route Product Blueprint
+
+**Product:** Imperial Novel  
+**Brand line:** Read • Create • Conquer  
+**Workstream:** Master architecture, Phase 01M  
+**Branch:** architecture/phase-01m-screen-blueprint  
+**Status:** Architecture work in progress. This document is a product contract, not evidence of implemented or deployed screens.
+
+## 1. Purpose and governing rule
+
+This blueprint turns the sitemap into a screen-by-screen product specification. Every route must resolve to a deliberate screen, and every visible control must resolve to a defined interaction, permission check, data contract, and user-visible result.
+
+Architecture is completed before implementation begins. This branch contains architecture documentation only. Do not merge application changes, execute D1 migrations, alter production data, or deploy from this workstream.
+
+## 2. Source-of-truth and compatibility rules
+
+1. The route registry is the authority for public URLs, aliases, access, canonical URLs, layouts, and page states.
+2. Preserve all working production URLs. A proposed route never silently replaces an existing route.
+3. Before implementation, reconcile the master sitemap with the actual router, current production URLs, API handlers, and D1 schema.
+4. Route aliases must use explicit redirects and preserve query parameters where meaningful.
+5. Static routes must be matched before dynamic route parameters. Reserve static keywords to prevent collisions.
+6. Public, private, staff-only, and machine endpoints have separate access and indexing policies.
+7. The interface may hide unavailable actions, but the server must independently enforce every permission and ownership rule.
+8. A metric is displayed only with a documented definition, source, time window, and freshness. Missing data is unavailable, never fabricated.
+9. “Real-time” must name the actual delivery method and freshness. Polling is not described as instant push.
+10. A screen is not complete until its normal, loading, empty, partial, error, offline, forbidden, and expired-session states are specified.
+
+## 3. Screen registry contract
+
+Every screen record must contain:
+
+- **Screen ID:** stable unique identifier.
+- **Canonical route:** exact path and parameter definitions.
+- **Aliases:** existing routes that must continue to work.
+- **Domain / parent:** sitemap ownership and breadcrumb hierarchy.
+- **Purpose / audience:** user need and intended roles.
+- **Layout shell:** public, reader, creator, community, commerce, admin, or system.
+- **Entry points / exit paths:** navigation links and next actions.
+- **Component inventory:** shared and screen-specific components.
+- **Interaction contract:** control, precondition, action, success, failure, retry, and cancellation.
+- **API contract:** method, path, authentication, request, response, errors, pagination, and idempotency where relevant.
+- **Data dependencies:** entities, ownership, freshness, and cache policy.
+- **Authorization:** role, permission, ownership, resource state, and account-state checks.
+- **Real-time contract:** event or polling source, refresh interval, visibility behavior, reconnection, and stale label.
+- **SEO / AEO / GEO:** indexability, canonical, metadata, structured data, and crawl policy.
+- **Localization:** locale fallback, translated content, RTL, number/date/currency formatting.
+- **Responsive rules:** mobile, tablet, desktop, touch, keyboard, and safe areas.
+- **Accessibility:** semantic landmarks, names, focus, contrast, zoom, motion, and screen-reader announcements.
+- **Page states:** loading through recovery.
+- **Analytics:** privacy-safe product events and explicit exclusions.
+- **Acceptance tests:** functional, security, accessibility, responsive, SEO, and performance checks.
+- **Release status:** Planned, Specified, Reviewed, Implemented, Integrated, Tested, Deployed, or Blocked. Documentation status must never be confused with software status.
+
+## 4. Shared shell and global navigation
+
+### 4.1 Public shell
+
+- Compact brand header with accessible logo/wordmark, primary navigation, search, language, and account entry.
+- Main landmark with a consistent content grid and deliberate full-width editorial sections.
+- Footer with About, Help, Contact, Terms, Privacy, Copyright, Content Policy, accessibility, and language controls.
+- Mobile bottom navigation: Home, Discover, Library, Create, Community, Profile.
+- Desktop navigation: Home, Discover, Trending, For You, Rankings, Library, Community, Author, More.
+- “Create” routes signed-out visitors to public author onboarding; signed-in users are routed according to their actual creator permissions.
+- Admin and financial controls never appear in public navigation.
+- Navigation active state must be conveyed by more than color alone.
+
+### 4.2 Specialized shells
+
+- **Reader shell:** chapter canvas takes priority; minimal chrome; controls never cover text.
+- **Creator shell:** workspace navigation, autosave state, contextual help, and clear publishing workflow.
+- **Community shell:** feed/discussion navigation and visible safety/report controls.
+- **Commerce shell:** clear amount, currency, order reference, status, and irreversible-action confirmation.
+- **Admin shell:** server-authorized navigation, role-scoped modules, audit context, and approval queues.
+- **System shell:** focused recovery action for errors, maintenance, restricted access, and offline states.
+
+### 4.3 Global overlays
+
+Search overlay, mobile navigation sheet, account menu, notification panel, language picker, theme picker, report dialog, share sheet, confirmation dialog, and contextual help are registered interactions. Each overlay needs an accessible name, focus entry, keyboard behavior, close behavior, focus restoration, mobile safe-area handling, and explicit failure feedback.
+
+## 5. Public homepage
+
+### HOM-001 — Home
+**Route:** `/`  
+**Shell:** Public  
+**Audience:** Everyone  
+**Indexing:** Index, follow, canonical to the homepage.
+
+**User outcome:** Understand what Imperial Novel offers and reach a useful reading or creation action quickly.
+
+**Composition order:**
+1. Global header and prominent search.
+2. Editorial hero with one real eligible featured work or a real platform announcement.
+3. Signed-in continuation shelf, omitted for anonymous visitors.
+4. Trending shelf with named metric and measurement window.
+5. Recently published / updated chapter shelf.
+6. Genre, language, format, and theme discovery.
+7. Author and community discovery.
+8. Creator onboarding / Creator Studio entry.
+9. Rights-first OmniPortal and sourced Trend Factory entry points, shown only with accurate capability/status copy.
+10. Trust, help, legal, and language footer.
+
+**Interactions:**
+- Hero primary action opens the referenced work or destination.
+- Search opens the search experience and preserves the entered query.
+- Story card opens its canonical detail route.
+- Continue reading opens the last accessible chapter and restores progress.
+- Shelf “View all” opens the matching filtered listing.
+- Save/follow/reaction actions require authentication and return a clear sign-in path.
+- Manual refresh refreshes only the affected data region and exposes last-updated time.
+
+**Data:** eligible published works, real chapter publication timestamps, ranking aggregates, signed-in user's progress, authorized public author profiles, community summaries, and platform capability flags. Every shelf has an independent empty and error state.
+
+**Freshness:** response timestamp and per-metric window are visible where metrics are shown. Polling frequency is specified by the endpoint contract; pause polling while the page is hidden. Do not imply online-now presence from 24-hour reader activity.
+
+**SEO:** unique title/description, canonical, Open Graph/Twitter metadata, one clear H1, descriptive links, and Organization/WebSite structured data where truthful. Do not emit fabricated aggregate ratings or counts.
+
+**Acceptance:** no horizontal overflow at 320px; no autoplay carousel; all CTAs resolve; no fabricated counters; content remains useful if any shelf API fails; keyboard and screen-reader navigation work.
+
+## 6. Discovery and search
+
+### DSC-001 — Discovery hub
+**Route:** `/discover`  
+**Shell:** Public  
+**Purpose:** Provide a browsable entry point into the catalog.
+
+**Components:** search entry, genre/category grid, language and format shortcuts, curated collections, new releases, completed/ongoing shelves, and editorial picks.
+
+**Interactions:** every taxonomy chip opens its canonical landing page; collection cards open collection detail; filters are URL-addressable; pagination preserves filters and sort.
+
+**Data:** published and rights-eligible catalog records only. Empty taxonomy groups are hidden or clearly marked unavailable.
+
+### DSC-002 — Advanced discovery
+**Route:** `/discover/advanced`  
+**Components:** query input, genre, tags, language, format, completion status, publication status, content warnings, date range, rating threshold, sort, applied-filter chips, result count, and result list.
+
+**Filter rules:** use allowlisted values; normalize and validate query parameters; provide Reset and Apply; mobile uses a filter sheet, desktop may use a filter rail. Shareable URL state is authoritative after navigation.
+
+**Sort rules:** every sort label explains its metric and time window. “Trending” must identify its underlying signal and window. User ratings are whole numbers from 1 to 10; averages may be derived from eligible ratings and must not be presented as individual ratings.
+
+### DSC-003 — Random discovery
+**Route:** `/discover/random`  
+**Behavior:** server-selected eligible work; optional user filters; avoid repeatedly returning the same work in one session where feasible. Provide “Show another” with loading and failure feedback. Do not use random placeholders.
+
+### DSC-004 — Hidden gems
+**Route:** `/discover/hidden-gems`  
+**Behavior:** transparent eligibility rule based on low exposure plus quality/engagement signals. Explain that “hidden gem” is a platform editorial/algorithmic label, not an objective guarantee. Suppress insufficient-data claims.
+
+### DSC-005 — Editor picks
+**Route:** `/discover/editor-picks`  
+**Behavior:** editorially curated collection with curator, selection date, short rationale, and removal/expiry policy. Do not imply editorial endorsement without a recorded selection.
+
+### DSC-006 — New releases
+**Route:** `/discover/new`  
+**Behavior:** sort by first publication timestamp, not last update. Distinguish newly published works from newly published chapters.
+
+### DSC-007 — Recently updated
+**Route:** `/discover/updated`  
+**Behavior:** sort by eligible chapter publication/update timestamp. Exclude draft-only edits and unpublished material.
+
+### DSC-008 — Completed works
+**Route:** `/discover/completed`  
+**Behavior:** only works whose authoritative publication status is completed. Preserve language, genre, format, and content-warning filters.
+
+### DSC-009 — Ongoing works
+**Route:** `/discover/ongoing`  
+**Behavior:** only works whose authoritative status is ongoing and which have at least one published chapter.
+
+### SEA-001 — Search
+**Route:** `/search`  
+**Components:** labelled search field, query suggestions, type tabs, recent searches (private to user), filters, result groups, and pagination.
+
+**Search behavior:** debounce input; cancel stale requests; escape rendered text; keyboard-navigate suggestions; preserve query in URL; never expose private drafts, private profiles, private messages, or unpublished content.
+
+**Subroutes:** `/search/novels`, `/search/authors`, `/search/users`, `/search/genres`, `/search/tags`, `/search/collections`, `/search/discussions`, `/search/reviews`, `/search/advanced`.
+
+**SEO:** search result pages are generally noindex to prevent thin/duplicated query URLs. Canonical taxonomy and curated collection pages are separately indexable under their own route policies.
+
+## 7. Taxonomy and editorial landing pages
+
+Routes: `/genres`, `/genre/:slug`, `/categories`, `/category/:slug`, `/tags`, `/tag/:slug`, `/themes`, `/theme/:slug`, `/tropes`, `/trope/:slug`, `/languages`, `/language/:code`.
+
+Each landing page requires:
+- Stable taxonomy identifier and unique slug.
+- Localized display name and optional editorial description.
+- Related taxonomy links without circular or duplicate link spam.
+- Eligible published-work list with pagination.
+- Empty, unavailable, and unknown-slug states.
+- Canonical URL and indexability rules based on useful, non-empty content.
+- Structured data only where semantically appropriate.
+- RTL-safe typography and locale-aware sorting.
+
+## 8. Novel detail and chapter catalog
+
+### NOV-001 — Novel detail
+**Canonical route decision:** preserve the currently deployed route contract. The proposed `/novel/:slug` and repository documentation's `/novels/:slug` must be reconciled against the real router before either is declared canonical. Existing working links must remain valid.
+
+**Above the fold:** cover, title, credited author, concise synopsis, language, format, publication status, content rating/warnings, rights/source label, primary Read/Continue action, and Add to Library.
+
+**Below the fold:** full synopsis, genre/tag/theme/trope metadata, chapter list, eligible ratings/reviews, author profile, series order, update history, related works, and report action.
+
+**Interactions:** start/resume reading; add/remove library entry; follow author; open chapter list; submit rating/review; report work; share canonical URL. Every mutation requires authentication, server authorization, rate limits, validation, and visible outcome.
+
+**Metrics:** only show metrics backed by records. A rating is displayed on a 1–10 scale. Missing values are omitted, not rendered as 0 or 0.0. Aggregates disclose sample size where appropriate.
+
+**Rights:** show factual rights/provenance status. A provider match or metadata record alone never proves permission to republish chapter text.
+
+### NOV-002 — Chapter list
+**Route proposal:** `/novel/:slug/chapters`  
+Show ordered published chapters, publication timestamps, access status, and pagination/cursor behavior. Never leak draft titles or scheduled chapters to unauthorized users.
+
+### NOV-003 — Reviews
+**Route proposal:** `/novel/:slug/reviews`  
+Show eligible reviews, whole-number 1–10 ratings, sort/filter, helpful reactions, report action, moderation state, and authenticated review submission. Enforce one review policy per user/work and safe edit history.
+
+### NOV-004 — Discussion
+**Route proposal:** `/novel/:slug/discussion`  
+Connect work-specific discussions to community moderation, notifications, and report workflows. Do not duplicate independent comment systems without a clear domain boundary.
+
+### Additional novel subpages
+Characters, world, glossary, updates, author, recommendations, and report pages are specified as child screens with the same work-level access, rights, localization, canonical, and state rules.
+
+## 9. Reader experience
+
+### RDR-001 — Chapter reader
+**Route decision:** preserve current production reader URLs and numeric identifiers. The proposed `/read/:chapterId` and nested `/novels/:slug/read/:chapter` forms must be reconciled with the actual router; do not break bookmarks or shared chapter links.
+
+**Primary objective:** comfortable, uninterrupted long-form reading.
+
+**Layout:** minimal reader header; work/chapter identity; chapter text canvas; previous/next navigation; settings panel; bookmark and report controls; optional progress affordance. Chapter text remains the dominant visual element.
+
+**Reader themes:** Light, Dark, Midnight, Sepia, Imperial, Cosmic. Theme previews must meet contrast requirements and not rely on decorative background art for text legibility.
+
+**Reader controls:** font family, font size, line height, content width, paragraph spacing, margins, alignment, theme, and optional reduced motion. Persist preferences per user; provide sensible local defaults for anonymous users.
+
+**Progress:** save chapter, position, completion state, and timestamp. Use idempotent upserts, offline pending state, conflict policy, retry, and last-saved time. Never overwrite a newer server position with an older delayed request.
+
+**Chapter access:** show access requirement and total price before any payment flow. Confirm entitlement on the server before delivering locked content. Payment UI must not obscure or corrupt chapter text.
+
+**Ads:** no ad overlays or injected interruptions inside chapter text. Any permitted ad placement must be outside the reading canvas, policy-compliant, and must not cause unexpected layout shifts.
+
+**Accessibility:** text zoom, screen-reader reading order, keyboard-accessible controls, high contrast, no forced gestures, no flashing, reduced-motion support.
+
+### RDR-002 — Reader settings
+**Route proposal:** `/reader/settings`  
+Provide theme, font, size, line height, width, paragraph spacing, alignment, and reset-to-default. Preview changes before saving; expose save state and restore previous preferences on failure.
+
+### RDR-003 — Bookmarks, highlights and notes
+Private to the owner. All APIs enforce user ownership. Provide create/edit/delete, chapter context, safe export policy, and clear behavior if a chapter becomes unavailable.
+
+### RDR-004 — Reading progress/history/statistics
+Show per-user progress and history only to that user. Statistics define the measurement window and timezone. Offline and delayed events must be reconciled without double counting.
+
+### RDR-005 — Offline library
+Only cache content that the platform is legally entitled to distribute and the user's entitlement permits. Explain expiry, storage, removal, and sync behavior. Do not promise offline availability where browser storage limits make it unreliable.
+
+## 10. Shared interaction and state contract
+
+Every control must specify:
+- Initial state and enabled/disabled conditions.
+- Required authentication and permission.
+- Validation and confirmation.
+- Request in flight and duplicate-submit prevention.
+- Success result and updated visible data.
+- Recoverable failure, retry, and cancellation.
+- Offline behavior and reconciliation.
+- Accessible status announcement.
+- Safe analytics event, if any.
+
+Every data region must support: initial loading, loaded, empty, partial, stale, error, offline, unauthorized, and retry. Skeletons must match the final layout and have a bounded timeout/fallback.
+
+## 11. Cross-cutting acceptance gates
+
+- **Route integrity:** direct-load, refresh, back/forward, canonical, aliases, query state, unknown slug, and redirect tests.
+- **Functional integrity:** every button, link, form, menu, filter, modal, and keyboard action has a defined result.
+- **Security:** direct API access, cross-account access, ownership, role escalation, CSRF, rate limit, session expiry, and private-cache isolation.
+- **Data truth:** no fabricated metrics, stale status disclosure, no duplicate mutations, and correct publication/rights filtering.
+- **Responsive:** 320, 360, 390, 768, 1024, and 1440 CSS px; portrait/landscape; safe areas; long localized strings.
+- **Accessibility:** WCAG 2.2 AA target, keyboard-only, screen reader, 200% zoom, visible focus, reduced motion, and contrast.
+- **Performance:** route-level budgets, image dimensions, lazy loading, bounded polling, no long main-thread tasks, and low-memory Android checks.
+- **SEO:** canonical, robots, metadata, sitemap consistency, structured-data validity, and noindex for private/search/locked content as appropriate.
+- **Localization:** Urdu/Arabic RTL, mixed-script content, locale dates, digits, and PKR formatting.
+- **Failure recovery:** slow network, offline, API 4xx/5xx, expired session, partial API failure, and stale cached data.
+
+## 12. Scope completed in this increment
+
+This increment defines the registry contract and the first connected public/discovery/search/taxonomy/novel/reader screen family. It does not claim that every sitemap route has been individually specified. Creator, community, messaging, OmniPortal, Trend Factory, AI, commerce, administration, localization, legal, developer, and system screens remain to be completed in subsequent architecture increments.
+
+## 13. Review checklist for this document
+
+- [ ] Reconcile every canonical route against the current production router.
+- [ ] Reconcile API names and response contracts against actual Worker handlers.
+- [ ] Reconcile data dependencies against existing D1 migrations and tables.
+- [ ] Review role/permission mapping against Phase 01I.
+- [ ] Review API consistency against Phase 01J.
+- [ ] Review database consistency against Phase 01K.
+- [ ] Review visual tokens and component contracts against Phase 01L.
+- [ ] Complete remaining product-domain screen specifications.
+- [ ] Resolve route collisions and define backward-compatible redirects.
+- [ ] Obtain product architecture review before implementation begins.
