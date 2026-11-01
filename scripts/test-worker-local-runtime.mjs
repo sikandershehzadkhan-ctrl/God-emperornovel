@@ -265,6 +265,7 @@ try {
     '/api/admin/community/comments',
     '/api/admin/community/reports',
     '/api/admin/stats',
+    '/api/admin/users',
     '/api/admin/publishing',
     '/api/admin/donations',
     '/api/admin/reports',
