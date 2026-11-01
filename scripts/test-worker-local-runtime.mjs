@@ -66,9 +66,9 @@ try {
     });
     assert.equal(login.response.status, 200, `Runtime account login failed: ${login.body}`);
     const setCookie = login.response.headers.get('set-cookie') || '';
-    const token = setCookie.match(/(?:^|;\\s*)session=([^;]+)/)?.[1];
-    assert.ok(token, 'Login must issue an HttpOnly session cookie');
-    return { username, email, cookie: `session=${token}` };
+    const cookiePair = setCookie.split(';', 1)[0];
+    assert.match(cookiePair, /^session=.+$/, 'Login must issue an HttpOnly session cookie');
+    return { username, email, cookie: cookiePair };
   }
   const accountA = await createRuntimeAccount('a');
   const accountB = await createRuntimeAccount('b');
