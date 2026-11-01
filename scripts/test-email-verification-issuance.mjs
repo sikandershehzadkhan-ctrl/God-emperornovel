@@ -12,7 +12,7 @@ const now="2026-11-02T12:00:00.000Z", expiresAt="2026-11-02T12:30:00.000Z";
 const tokenHash="A".repeat(43);
 let batchStatements=[];
 const fake={
- prepare(sql){return {sql,values:[],bind(...values){this.values=values;return this;},async run(){return {meta:{changes:1}}};}},
+ prepare(sql){return {sql,values:[],bind(...values){this.values=values;return this;},async run(){return {meta:{changes:1}}}}},
  async batch(statements){batchStatements=statements;return [{meta:{changes:1}},{meta:{changes:1}}];}
 };
 assert.deepEqual(await issueEmailVerificationToken(fake,{userId:7,emailSnapshot:" USER@example.test ",tokenHash,now,expiresAt}),{ok:true});
@@ -23,7 +23,7 @@ assert.deepEqual(batchStatements.map(x=>x.values),[[now,7],[7,"user@example.test
 assert.deepEqual(await issueEmailVerificationToken({...fake,async batch(){return [{meta:{changes:1}},{meta:{changes:0}}];}},{userId:7,emailSnapshot:"user@example.test",tokenHash,now,expiresAt}),{ok:false});
 assert.deepEqual(await invalidateEmailVerificationToken(fake,{tokenHash,now}),{ok:true});
 assert.equal(EMAIL_VERIFICATION_INVALIDATION_SQL.includes("token_hash=?"),true);
-assert.deepEqual(await invalidateEmailVerificationToken({...fake,prepare(sql){return {bind(){return {async run(){return {meta:{changes:0}}};}}};}},{tokenHash,now}),{ok:false});
+assert.deepEqual(await invalidateEmailVerificationToken({...fake,prepare(sql){return {bind(){return {async run(){return {meta:{changes:0}}}}}};}},{tokenHash,now}),{ok:false});
 await assert.rejects(()=>issueEmailVerificationToken(fake,{userId:0,emailSnapshot:"user@example.test",tokenHash,now,expiresAt}),/valid user id/);
 await assert.rejects(()=>issueEmailVerificationToken(fake,{userId:7,emailSnapshot:"user@example.test",tokenHash,now,expiresAt:"2026-11-02T14:00:00.000Z"}),/within one hour/);
 await assert.rejects(()=>issueEmailVerificationToken(fake,{userId:7,emailSnapshot:"user@example.test",tokenHash:"bad",now,expiresAt}),/token digest/);
