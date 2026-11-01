@@ -213,3 +213,17 @@ for(const selector of [".homePage .hero.imperialArchiveHero","repeating-conic-gr
 assert.ok(css.includes("html[data-theme=\"dark\"] .homePage .hero.imperialArchiveHero"),"Signature homepage hero must have dedicated dark-theme art direction");
 assert.ok(css.includes("@media(prefers-reduced-motion:reduce){\n  .homeFormatCard"),"New visual hover transitions must respect reduced-motion preferences");
 assert.ok(!/filter:\s*blur\(/i.test(css),"Visual refinement must not introduce expensive blur filters");
+
+
+/* Reader eye-comfort and immersion regression checks. */
+for(const selector of ['.readerPage[data-reader-theme="sepia"]','.readerPage[data-reader-theme="midnight"]','.readerPage[data-reader-theme="imperial"]','.readerPage[data-reader-theme="cosmic"]','.readerPage[data-reader-theme="dark"]','.readerContent p','.readerContent blockquote','.readerContent a']){
+  assert.ok(css.includes(selector),"Reader comfort system must include "+selector);
+}
+assert.ok(css.includes("line-height:1.85"),"Reader default typography must provide relaxed line spacing");
+assert.ok(css.includes("max-width:68ch"),"Reader text must retain a comfortable line length");
+assert.ok(css.includes("--reader-paper:#F7F0E3"),"Sepia reading mode must use a warm low-glare paper tone");
+assert.ok(css.includes("--reader-paper:#111B2B"),"Midnight reading mode must use a softened deep-blue surface");
+assert.ok(css.includes("font-size:18px;line-height:1.82"),"Phone reading typography must remain comfortably legible");
+assert.ok(css.includes("min-height:42px;padding:9px 10px"),"Reader preference controls must have comfortable touch targets");
+assert.ok(sourceApp.includes("readerPage.dataset.readerTheme=chosen"),"Reader theme selector must apply the selected theme to the reading surface");
+assert.ok(sourceApp.includes("imperial_reader_theme"),"Reader theme choice must persist between visits");
