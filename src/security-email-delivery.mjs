@@ -18,6 +18,7 @@ export async function deliverSecurityEmail(env, {
   template,
   recipient,
   actionUrl,
+  publicOrigin,
   idempotencyKey
 } = {}) {
   const email = typeof recipient === "string" ? recipient.trim().toLowerCase() : "";
@@ -30,9 +31,7 @@ export async function deliverSecurityEmail(env, {
 
   let link;
   try { link = new URL(actionUrl); } catch { return { ok: false, reason: "invalid_message" }; }
-  if (link.protocol !== "https:" || link.username || link.password || link.search) {
-    return { ok: false, reason: "invalid_message" };
-  }
+  let origin;\n  try { origin = new URL(publicOrigin); } catch { return { ok: false, reason: "invalid_message" }; }\n  if (origin.protocol !== "https:" || origin.username || origin.password || origin.pathname !== "/" || origin.search || origin.hash || origin.origin !== publicOrigin) return { ok: false, reason: "invalid_message" };\n  if (link.protocol !== "https:" || link.username || link.password || link.search || link.origin !== origin.origin) {\n    return { ok: false, reason: "invalid_message" };\n  }
   if (!env?.SECURITY_EMAIL || typeof env.SECURITY_EMAIL.fetch !== "function") {
     return { ok: false, reason: "unavailable" };
   }
