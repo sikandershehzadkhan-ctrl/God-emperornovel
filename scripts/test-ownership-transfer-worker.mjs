@@ -145,6 +145,9 @@ try {
   const unaffectedAccountExport = await request(baseUrl,"/api/me/export",{cookie:recipient.cookie});
   assert.equal(unaffectedAccountExport.response.status,200,JSON.stringify(unaffectedAccountExport.data));
   assert.equal(unaffectedAccountExport.data.user.email_verified_at,null,"Verifying one account must not verify another account");
+  const alreadyVerifiedRequest = await request(baseUrl,"/api/me/email-verification/request",{method:"POST",cookie:spectator.cookie,body:{}});
+  assert.equal(alreadyVerifiedRequest.response.status,202,"Repeated requests for an already verified mailbox should be harmless and idempotent");
+
 
 
   const promote = "UPDATE users SET role='author' WHERE id IN (" + Number(owner.user.id) + "," + Number(recipient.user.id) + "); UPDATE users SET role='moderator' WHERE id=" + Number(moderator.user.id) + "; UPDATE users SET role='admin' WHERE id=" + Number(administrator.user.id);
