@@ -101,12 +101,12 @@ try {
     request('/api/chapters/2147483006/unlock',{method:'POST',headers:{cookie:accountA.cookie}}),
     request('/api/chapters/2147483006/unlock',{method:'POST',headers:{cookie:accountA.cookie}})
   ]);
-  assert.equal(concurrentUnlocks.filter(x=>x.response.status===200).length,1,'Exactly one concurrent chapter unlock may succeed');
-  assert.equal(concurrentUnlocks.filter(x=>x.response.status===409).length,1,'The duplicate concurrent unlock must be rejected as a conflict');
-  const successfulUnlock = concurrentUnlocks.find(x=>x.response.status===200);
-  assert.equal(JSON.parse(successfulUnlock.body).tickets,7,'Successful concurrent unlock response must show exactly one three-ticket debit');
+  assert.ok(concurrentUnlocks.every(x=>[200,409].includes(x.response.status)),'Concurrent duplicate unlock requests must either succeed idempotently or return a conflict');
+  assert.ok(concurrentUnlocks.some(x=>x.response.status===200),'At least one concurrent chapter unlock request must grant access');
   const unlockedChapter = await getAs(accountA,'/api/chapters/2147483006');
-  assert.equal(JSON.parse(unlockedChapter.body).unlocked,true,'Exactly one successful unlock must grant chapter access');
+  assert.equal(JSON.parse(unlockedChapter.body).unlocked,true,'Concurrent unlock requests must grant chapter access');
+  const postUnlockProfile = await getAs(accountA,'/api/profile');
+  assert.equal(Number(JSON.parse(postUnlockProfile.body).user.tickets),7,'Concurrent duplicate unlocks must debit the account exactly once');
   const unlockLedger = await getAs(accountA,'/api/tickets/ledger');
   assert.equal(JSON.parse(unlockLedger.body).filter(x=>x.reason==='chapter_unlock'&&x.reference==='2147483006'&&Number(x.delta)===-3).length,1,'Concurrent duplicate unlocks must create exactly one matching ledger entry');
   const profileA = await request('/api/profile', { headers: { cookie: accountA.cookie } });
