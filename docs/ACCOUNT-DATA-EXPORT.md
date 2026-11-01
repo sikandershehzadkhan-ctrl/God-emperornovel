@@ -27,7 +27,9 @@ Retention must be based on purpose and legal obligations, not arbitrary deletion
 | Financial ledgers and donation records | No automatic expiry is configured. Preserve records needed for balance reconciliation, disputes, and fraud investigation. |
 | Administrator and rights audit logs | No automatic expiry is configured. These are intentionally excluded from user exports because they contain internal operational/security records. |
 | Reading activity and user-generated content | No general automatic expiry is configured. These records remain account-scoped and are included in the export where supported. |
-| Connector import jobs and AI authoring records | No general automatic expiry is configured. User-owned records are included in the export where supported. |\n| Creator rights evidence and archived moderation reports | No general automatic expiry is configured. Creator-submitted rights records and a user's own archived reports are included in the export; internal reviewer and rights-audit records remain excluded. |\n| Aggregate view analytics and provider benchmarks | These are not account-level personal history exports. Daily view tables store aggregate counts without reader identity; chapter view totals and provider benchmarks are operational aggregates. |
+| Connector import jobs and AI authoring records | No general automatic expiry is configured. User-owned records are included in the export where supported. |
+| Creator rights evidence and archived moderation reports | No general automatic expiry is configured. Creator-submitted rights records and a user's own archived reports are included in the export; internal reviewer and rights-audit records remain excluded. |
+| Aggregate view analytics and provider benchmarks | These are not account-level personal history exports. Daily view tables store aggregate counts without reader identity; chapter view totals and provider benchmarks are operational aggregates. |
 
 ## Important limitations
 
