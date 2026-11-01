@@ -15,6 +15,8 @@ for (const [fragment, description] of [
   ["INSERT INTO ticket_ledger(user_id,delta,reason,reference) SELECT ?,?,?,? WHERE changes()=1", "ledger entry must depend on successful unlock"],
   ["changed(results?.[0])!==1", "route must verify D1 debit result"],
   ["changed(results?.[1])!==1", "route must verify D1 unlock result"],
+  ['INSERT INTO audit_logs(user_id,action,details) SELECT ?,?,? WHERE changes()=1', "unlock audit event must be written in the same D1 batch"],
+  ['changed(results?.[auditIndex])!==1', "route must verify D1 audit result"],
   ['u.role==="admin"', "administrator access must not be charged"]
 ]) assert.ok(route.includes(fragment), description);
 
