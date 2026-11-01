@@ -22,7 +22,7 @@ assert.ok(source.includes("WHERE n.publication_status='published' AND n.rights_s
 const leaderboard = source.split('\n').find(line => line.includes('unlocks DESC,n.views DESC,n.rating DESC')) || '';
 const tierList = source.split('\n').find(line => line.includes('ORDER BY n.rating DESC,n.views DESC LIMIT 60')) || '';
 const randomNovel = source.split('\n').find(line => line.includes('ORDER BY RANDOM() LIMIT 1')) || '';
-const anonymousFeed = source.split('\n').find(line => line.includes('personalized:false,results:rows')) || '';
+const anonymousFeed = source.split('\n').find(line => line.includes('LIMIT 18') && line.includes('WHERE n.publication_status') && !line.includes('follows WHERE user_id=?')) || '';
 const followWrite = source.split('\n').find(line => line.includes('let novel=await env.DB.prepare')) || '';
 for (const [name, line] of Object.entries({leaderboard,tierList,randomNovel,anonymousFeed,followWrite})) assert.ok(line.includes("rights_status IN ('original','public_domain','licensed','authorized')"), name + ' must enforce eligible rights');
 assert.ok(source.includes("WHERE n.publication_status='published' AND n.rights_status IN ('original','public_domain','licensed','authorized') AND n.id NOT IN(SELECT novel_id FROM follows WHERE user_id=?) GROUP BY n.id ORDER BY n.rating DESC,n.views DESC LIMIT 12"), 'recommendation fallback must enforce eligible rights');
