@@ -79,6 +79,13 @@ try {
   // High fixed IDs avoid dependence on production-like catalog seed data.
   const fixtureSql = [
     'DELETE FROM notifications WHERE id IN (2147483002,2147483003)',
+    'DELETE FROM chapters WHERE id IN (2147483004,2147483005)',
+    'DELETE FROM novels WHERE id IN (2147483004,2147483005)',
+    `UPDATE users SET role='author' WHERE id IN (${Number((JSON.parse((await request('/api/profile',{headers:{cookie:accountA.cookie}})).body)).user.id)},${Number((JSON.parse((await request('/api/profile',{headers:{cookie:accountB.cookie}})).body)).user.id)})`,
+    `INSERT INTO novels(id,title,author,rights_status,owner_user_id,publication_status) VALUES(2147483004,'Author A Private Novel','Author A','original',${Number((JSON.parse((await request('/api/profile',{headers:{cookie:accountA.cookie}})).body)).user.id)},'draft')`,
+    `INSERT INTO novels(id,title,author,rights_status,owner_user_id,publication_status) VALUES(2147483005,'Author B Private Novel','Author B','original',${Number((JSON.parse((await request('/api/profile',{headers:{cookie:accountB.cookie}})).body)).user.id)},'draft')`,
+    "INSERT INTO chapters(id,novel_id,chapter_number,title,content,publication_status) VALUES(2147483004,2147483004,1,'A private chapter','A-only draft','draft')",
+    "INSERT INTO chapters(id,novel_id,chapter_number,title,content,publication_status) VALUES(2147483005,2147483005,1,'B private chapter','B-only draft','draft')",
     'DELETE FROM chapters WHERE id=2147483001',
     'DELETE FROM novels WHERE id=2147483001',
     "INSERT INTO novels(id,title,author,publication_status,rights_status) VALUES(2147483001,'Runtime Isolation Fixture','Runtime Test','published','original')",
