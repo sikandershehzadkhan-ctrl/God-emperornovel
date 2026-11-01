@@ -133,6 +133,41 @@ try {
     assert.equal(allowed.response.status, 200, "Admin must access " + route + ": " + JSON.stringify(allowed.data));
   }
 
+  // Payment submissions must be bound to the authenticated account. Only administrators may approve them,
+  // and approval credits the donation's stored owner rather than any caller-supplied user_id.
+  const donationSubmission = await request(baseUrl, "/api/donations", {
+    method: "POST", cookie: spectator.cookie,
+    body: { amount: 500, reference_id: "LOCAL-SECURITY-" + suffix, user_id: owner.user.id }
+  });
+  assert.equal(donationSubmission.response.status, 200, JSON.stringify(donationSubmission.data));
+  const donationQueue = await request(baseUrl, "/api/admin/donations", { cookie: administrator.cookie });
+  assert.equal(donationQueue.response.status, 200, JSON.stringify(donationQueue.data));
+  const submittedDonation = donationQueue.data.find(row => row.reference_id === "LOCAL-SECURITY-" + suffix);
+  assert.ok(submittedDonation, "Submitted donation must appear in the administrator queue");
+  assert.equal(Number(submittedDonation.user_id), Number(spectator.user.id), "Donation owner must come from the authenticated session, not request user_id");
+  const readerApproval = await request(baseUrl, "/api/admin/donations/" + submittedDonation.id, {
+    method: "PATCH", cookie: spectator.cookie, body: { status: "approved", tickets: 17, user_id: owner.user.id }
+  });
+  assert.equal(readerApproval.response.status, 403, "Ordinary readers must not approve donations");
+  const moderatorApproval = await request(baseUrl, "/api/admin/donations/" + submittedDonation.id, {
+    method: "PATCH", cookie: moderator.cookie, body: { status: "approved", tickets: 17, user_id: owner.user.id }
+  });
+  assert.equal(moderatorApproval.response.status, 403, "Moderators must not approve donations");
+  const approvedDonation = await request(baseUrl, "/api/admin/donations/" + submittedDonation.id, {
+    method: "PATCH", cookie: administrator.cookie, body: { status: "approved", tickets: 17, user_id: owner.user.id }
+  });
+  assert.equal(approvedDonation.response.status, 200, JSON.stringify(approvedDonation.data));
+  const spectatorLedger = await request(baseUrl, "/api/tickets/ledger", { cookie: spectator.cookie });
+  const ownerLedger = await request(baseUrl, "/api/tickets/ledger", { cookie: owner.cookie });
+  assert.ok(spectatorLedger.data.some(row => row.reason === "payment" && row.reference === String(submittedDonation.id) && Number(row.delta) === 17),
+    "Approved payment credit must appear only in the submitting account's ledger");
+  assert.ok(!ownerLedger.data.some(row => row.reference === String(submittedDonation.id)),
+    "Forged user_id must not redirect payment credit to another account");
+  const duplicateApproval = await request(baseUrl, "/api/admin/donations/" + submittedDonation.id, {
+    method: "PATCH", cookie: administrator.cookie, body: { status: "approved", tickets: 17 }
+  });
+  assert.equal(duplicateApproval.response.status, 409, "A donation must not be credited twice");
+
   // Moderators cannot change account roles or ban state. Admin status changes revoke every existing session.
   const moderatorEscalation = await request(baseUrl, "/api/admin/users/" + spectator.user.id, {
     method: "PATCH", cookie: moderator.cookie, body: { role: "admin", verified: true, banned: false }
