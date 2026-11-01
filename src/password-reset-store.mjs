@@ -55,7 +55,7 @@ export async function completePasswordReset(db, { tokenHash, passwordHash, now }
 }
 
 
-const ISO_UTC = /^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}\\.\\d{3}Z$/;
+const ISO_UTC = /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.\d{3}Z$/;
 
 export const PASSWORD_RESET_ISSUANCE_SQL = [
   `UPDATE password_reset_tokens SET invalidated_at=?
