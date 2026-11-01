@@ -126,9 +126,11 @@ async function home(){
  try{
   const [t,l]=await Promise.all([apiWithTimeout('/api/novels?sort=trending&limit=10'),apiWithTimeout('/api/novels?sort=updated&limit=10')]);
   const trendRows=t.results||[],latestRows=l.results||[];
+  const trendingNovelIds=new Set(trendRows.map(row=>Number(row.id)).filter(id=>Number.isSafeInteger(id)&&id>0));
+  const distinctLatestRows=latestRows.filter(row=>!trendingNovelIds.has(Number(row.id)));
   const renderHomeStories=(selector,rows,empty)=>{const el=$(selector);el.setAttribute('aria-busy','false');el.classList.toggle('singleStory',rows.length===1);el.classList.toggle('multiStory',rows.length>1);el.innerHTML=rows.length?rows.map(card).join():`<div class="empty homeCatalogEmpty" style="grid-column:1/-1">${empty}</div>`};
   renderHomeStories('#trend',trendRows,'The catalog is growing. Be among the first to discover what comes next.');
-  renderHomeStories('#latest',latestRows,'No new updates yet. Explore the catalog and find your first world.');
+  renderHomeStories('#latest',distinctLatestRows,'No additional recently updated stories yet. Explore the catalog for another world.');
  }catch(error){
   const notice=`<div class="notice" role="alert" style="grid-column:1/-1"><b>Story shelves could not be loaded.</b><p>${esc(error.message||'Please try again in a moment.')}</p><a class="secondary" href="/">Try again</a></div>`;
   $('#trend').setAttribute('aria-busy','false');$('#latest').setAttribute('aria-busy','false');$('#trend').innerHTML=notice;$('#latest').innerHTML=notice;
