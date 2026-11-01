@@ -37,8 +37,7 @@ export async function completeEmailVerification(db, { tokenHash, now }) {
 }
 
 
-const EMAIL_PATTERN = /^[^\\s@]+@[^\\s@]+\\.[^\\s@]+$/;
-const ISO_UTC = /^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}\\.\\d{3}Z$/;
+const ISO_UTC = /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.\d{3}Z$/;
 
 export const EMAIL_VERIFICATION_ISSUANCE_SQL = [
   `UPDATE email_verification_tokens SET invalidated_at=?
