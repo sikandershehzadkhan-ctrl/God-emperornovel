@@ -465,8 +465,8 @@ async function api(req,env){
  if(p==="/api/auth/logout"&&m==="POST"){const c=cookies(req.headers.get("cookie"));if(c.session)await env.DB.prepare("DELETE FROM sessions WHERE token_hash=?").bind(await digest(c.session)).run();return json({ok:true},200,{"set-cookie":"session=; Path=/; HttpOnly; Secure; SameSite=Lax; Max-Age=0"})}
  if(p==="/api/me")return json({user:u?{id:u.id,username:u.username,email:u.email,role:u.role,tickets:u.tickets,verified:u.verified}:null});
  if(p==="/api/config")return json({site:env.SITE_NAME||"Imperial Novel",payment:{method:"Not configured",account:"",enabled:false,verification:"Payments are unavailable until an approved merchant integration is configured."},batchUnlock:[10,25,50,100]});
- if(p==="/api/genres")return json((await env.DB.prepare("SELECT * FROM genres ORDER BY name").all()).results);
- if(p==="/api/tags")return json((await env.DB.prepare("SELECT * FROM tags ORDER BY name").all()).results);
+ if(p==="/api/genres")return json((await env.DB.prepare("SELECT id,name,slug FROM genres ORDER BY name").all()).results);
+ if(p==="/api/tags")return json((await env.DB.prepare("SELECT id,name,slug FROM tags ORDER BY name").all()).results);
  if(p==="/api/public-authors") {
   const q=String(url.searchParams.get("q")||"").trim().toLowerCase();
   const sql=q?`SELECT author,COUNT(*) novel_count,SUM(views) views,ROUND(AVG(rating),2) rating,MAX(updated_at) updated_at FROM novels WHERE publication_status='published' AND rights_status IN ('original','public_domain','licensed','authorized') AND LOWER(author) LIKE ? GROUP BY author ORDER BY novel_count DESC,author COLLATE NOCASE LIMIT 50`:`SELECT author,COUNT(*) novel_count,SUM(views) views,ROUND(AVG(rating),2) rating,MAX(updated_at) updated_at FROM novels WHERE publication_status='published' AND rights_status IN ('original','public_domain','licensed','authorized') GROUP BY author ORDER BY novel_count DESC,views DESC,author COLLATE NOCASE LIMIT 100`;
@@ -687,7 +687,7 @@ async function api(req,env){
   if(existing){await env.DB.prepare("DELETE FROM request_votes WHERE request_id=? AND user_id=?").bind(id,u.id).run();return json({voted:false});}
   await env.DB.prepare("INSERT INTO request_votes(request_id,user_id) VALUES(?,?)").bind(id,u.id).run();return json({voted:true});
  }
- if(p==="/api/notifications"&&m==="GET"){const e=need(u);if(e)return e;return json((await env.DB.prepare("SELECT * FROM notifications WHERE user_id=? ORDER BY created_at DESC LIMIT 50").bind(u.id).all()).results)}
+ if(p==="/api/notifications"&&m==="GET"){const e=need(u);if(e)return e;return json((await env.DB.prepare("SELECT id,title,body,read_at,created_at FROM notifications WHERE user_id=? ORDER BY created_at DESC LIMIT 50").bind(u.id).all()).results)}
  if(p==="/api/notifications/read"&&m==="POST"){const e=need(u);if(e)return e;await env.DB.prepare("UPDATE notifications SET read_at=CURRENT_TIMESTAMP WHERE user_id=? AND read_at IS NULL").bind(u.id).run();return json({ok:true})}
  if(p==="/api/report"&&m==="POST"){const e=need(u);if(e)return e;const b=await body(req),reason=String(b.reason||"").trim();if(!reason||reason.length>300)return json({error:"Reason is required"},400);await env.DB.prepare("INSERT INTO reports(user_id,novel_id,chapter_id,reason,details) VALUES(?,?,?,?,?)").bind(u.id,b.novel_id||null,b.chapter_id||null,reason,String(b.details||"").slice(0,2000)).run();return json({ok:true,message:"Report submitted"})}
  if(p==="/api/tickets/ledger"&&m==="GET"){const e=need(u);if(e)return e;return json((await env.DB.prepare("SELECT id,delta,reason,reference,created_at FROM ticket_ledger WHERE user_id=? ORDER BY created_at DESC LIMIT 100").bind(u.id).all()).results)}
