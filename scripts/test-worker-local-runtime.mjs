@@ -464,6 +464,13 @@ try {
   assert.deepEqual(exportAData.collections.reading_positions.map(x=>x.progress_percent),[37],'Account A export must contain Account A reading progress only');
   assert.ok(!exportA.body.includes(accountB.email),'Account A export must not disclose Account B email');
   assert.ok(!exportA.body.includes('password_hash')&&!exportA.body.includes('token_hash'),'Account export must never include password hashes or session token hashes');
+  const exportASecond=await request('/api/privacy/export',{headers:{cookie:accountA.cookie}});
+  assert.equal(exportASecond.response.status,200,'Second account export within the hourly allowance must succeed');
+  const exportAThird=await request('/api/privacy/export',{headers:{cookie:accountA.cookie}});
+  assert.equal(exportAThird.response.status,200,'Third account export within the hourly allowance must succeed');
+  const exportAFourth=await request('/api/privacy/export',{headers:{cookie:accountA.cookie}});
+  assert.equal(exportAFourth.response.status,429,'Account export must be rate-limited after three requests per hour');
+  assert.ok(Number(exportAFourth.response.headers.get('retry-after')||0)>0,'Rate-limited export must include Retry-After');
   const exportB=await request('/api/privacy/export',{headers:{cookie:accountB.cookie}});
   assert.equal(exportB.response.status,200,'Account B must be able to export its own data');
   assert.deepEqual(JSON.parse(exportB.body).collections.reading_positions.map(x=>x.progress_percent),[82],'Account B export must contain Account B reading progress only');
