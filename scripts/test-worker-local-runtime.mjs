@@ -1,6 +1,9 @@
 import assert from 'node:assert/strict';
 import { spawn, execFileSync } from 'node:child_process';
 
+// Apply the checked-in D1 migration chain to a disposable local database before Worker startup.
+execFileSync('npx', ['--yes','wrangler@4','d1','migrations','apply','god-emperornovel-db','--local','--persist-to','.wrangler/test-runtime'], { stdio:'pipe', env:{...process.env,NO_COLOR:'1'} });
+
 const port = 8787;
 const origin = `http://127.0.0.1:${port}`;
 const child = spawn('npx', ['--yes', 'wrangler@4', 'dev', '--local', '--ip', '127.0.0.1', '--port', String(port), '--persist-to', '.wrangler/test-runtime'], {
