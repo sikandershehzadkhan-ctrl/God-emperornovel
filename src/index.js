@@ -898,7 +898,7 @@ async function api(req,env){
  }
  if(p==="/api/author/novels"&&m==="GET"){
   const e=author(u);if(e)return e;
-  return json((await env.DB.prepare(`SELECT n.id,n.title,n.alt_titles,n.author,n.description,n.status,n.kind,n.language,n.cover_url,n.source_url,n.rights_status,n.rights_evidence,n.rights_notes,n.review_feedback,n.reviewed_by,n.reviewed_at,n.publication_status,n.views,n.rating,n.created_at,n.updated_at,(SELECT COUNT(*) FROM chapters c WHERE c.novel_id=n.id) chapter_count,(SELECT COUNT(*) FROM chapters c WHERE c.novel_id=n.id AND c.publication_status='published') published_chapters FROM novels n WHERE n.owner_user_id=? ORDER BY n.updated_at DESC`).bind(u.id).all()).results||[])
+  return json((await env.DB.prepare(`SELECT n.id,n.title,n.alt_titles,n.author,n.description,n.status,n.kind,n.language,n.cover_url,n.source_url,n.rights_status,n.rights_evidence,n.rights_notes,n.review_feedback,n.reviewed_at,n.publication_status,n.views,n.rating,n.created_at,n.updated_at,(SELECT COUNT(*) FROM chapters c WHERE c.novel_id=n.id) chapter_count,(SELECT COUNT(*) FROM chapters c WHERE c.novel_id=n.id AND c.publication_status='published') published_chapters FROM novels n WHERE n.owner_user_id=? ORDER BY n.updated_at DESC`).bind(u.id).all()).results||[])
  }
  if(p==="/api/author/novels"&&m==="POST"){
   const e=author(u);if(e)return e;const b=await body(req);
