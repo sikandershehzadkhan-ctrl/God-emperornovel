@@ -1,7 +1,7 @@
 
 /* 16.15 Community */
 .communityGrid{display:grid;grid-template-columns:minmax(220px,.8fr) minmax(280px,1.4fr);gap:14px}
-.ratingStars{display:flex;gap:5px;margin:10px 0}.ratingStar{border:0;background:transparent;font-size:32px;line-height:1;cursor:pointer;color:var(--muted,#777);padding:2px}.ratingStar.selected,.ratingStar:hover{color:var(--gold2,#d8aa55)}
+.ratingStars{display:flex;flex-wrap:wrap;gap:5px;margin:10px 0}.ratingStar{border:1px solid var(--line,rgba(255,255,255,.14));border-radius:9px;background:transparent;font-size:16px;font-weight:700;line-height:1;cursor:pointer;color:var(--muted,#777);padding:9px 11px;min-width:38px;min-height:38px}.ratingStar.selected,.ratingStar:hover{color:var(--gold2,#d8aa55)}
 .commentItem{padding:14px;border:1px solid rgba(255,255,255,.08);border-radius:14px;background:rgba(255,255,255,.025);margin:9px 0}.commentReply{margin-left:28px}.commentHead{display:flex;gap:10px;align-items:center;flex-wrap:wrap}.commentItem p{white-space:pre-wrap;overflow-wrap:anywhere}.commentActions{display:flex;gap:7px;flex-wrap:wrap}.commentActions .ghost{padding:6px 9px;font-size:12px}
 @media(max-width:700px){.communityGrid{grid-template-columns:1fr}.commentReply{margin-left:12px}.ratingStar{font-size:29px}}
 
