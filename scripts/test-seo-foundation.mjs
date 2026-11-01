@@ -1,6 +1,10 @@
 import assert from "node:assert/strict";
+import { readFileSync } from "node:fs";
 import { applySeoMetadata, authorProfilePath, buildRobotsTxt, buildSitemapXml, buildSitemapIndexXml, canonicalOrigin, canonicalPath, getPageSeo, robotsForPath } from "../src/seo.mjs";
 
+const workerConfig=readFileSync("wrangler.toml","utf8");
+assert.match(workerConfig,/run_worker_first\s*=\s*\[[^\]]*"\/robots\.txt"/s,"robots.txt must be routed through the Worker before static assets.");
+assert.match(workerConfig,/run_worker_first\s*=\s*\[[^\]]*"\/sitemap\*"/s,"All dynamic sitemap index and shard paths must be routed through the Worker.");
 const origin="https://imperial.example";
 assert.equal(canonicalOrigin(origin),origin);
 assert.equal(canonicalPath("/discover"),"/catalog");
