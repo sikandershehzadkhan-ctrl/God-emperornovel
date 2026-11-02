@@ -10,8 +10,8 @@ assert.match(app, /async function apiGetWithRetry\(path,attempts=3\)/, 'Chapter 
 assert.match(app, /const retryable=!status\|\|status===408\|\|status===429\|\|status>=500/, 'Only network and transient HTTP failures should be retried.');
 assert.match(app, /await apiGetWithRetry\('\/api\/novels\/\'\+id\)/, 'Novel metadata must load through the retry helper.');
 assert.match(app, /await apiGetWithRetry\('\/api\/chapters\/\'\+ch\.id\)/, 'Chapter content must load through the retry helper.');
-assert.match(app, /role=\\"status\\" aria-live=\\"polite\\"/, 'The reader must announce its loading state accessibly.');
-assert.match(app, /id=\\"retryChapterLoad\\"/, 'A recoverable chapter error must offer a retry action.');
+assert.ok(app.includes('role="status" aria-live="polite"'), 'The reader must announce its loading state accessibly.');
+assert.ok(app.includes('id="retryChapterLoad"'), 'A recoverable chapter error must offer a retry action.');
 assert.match(styles, /\.readerLoadState\{min-height:55vh/, 'Chapter loading and error states must have a stable layout.');
 assert.match(styles, /prefers-reduced-motion:reduce\)\{\.readerLoadSpinner\{animation:none/, 'Loading animation must respect reduced-motion preferences.');
 console.log('Chapter delivery checks passed: bounded transient retries, accessible loading/error states, retry action, stable layout, and reduced-motion support.');
