@@ -60,6 +60,7 @@ assert db.execute("SELECT COUNT(*) FROM account_deletion_review_events WHERE eve
 db.execute("UPDATE account_deletion_reviewer_assignments SET revoked_by=3,revoked_at=CURRENT_TIMESTAMP WHERE user_id=2 AND role_key='privacy_administrator' AND revoked_at IS NULL")
 rejected(insert,(100,10,"ai_projects",1,2,3,"retain","Revoked reviewer must be denied","policy"))
 db.execute("CREATE TRIGGER injected_audit_failure BEFORE INSERT ON account_deletion_review_events WHEN NEW.event_type='disposition_proposed' BEGIN SELECT RAISE(ABORT,'injected audit failure'); END")
+db.commit()
 try:
  db.execute("BEGIN")
  db.execute("UPDATE account_deletion_reviews SET version=version+1 WHERE id=100")
