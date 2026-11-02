@@ -2177,3 +2177,38 @@ html[dir="rtl"] .menuDrawer.is-open{
   .homePage .homeStoryGrid .cover img{transition:none!important}
   .homePage .homeStoryGrid .card:hover .cover img{transform:none!important}
 }
+
+
+/* Homepage internationalization and RTL layout pass 17.45. */
+.homePage [data-in-lang-key]{unicode-bidi:plaintext}
+html[dir="rtl"] .homePage .imperialHeroCopy,
+html[dir="rtl"] .homePage .homeFormatHeading,
+html[dir="rtl"] .homePage .homeConnectionHeading,
+html[dir="rtl"] .homePage .sectionHead,
+html[dir="rtl"] .homePage .platformPulseHead,
+html[dir="rtl"] .homePage .nextFeatureIntro,
+html[dir="rtl"] .homePage .nextCreatorBand,
+html[dir="rtl"] .homePage .nextReaderPromise{text-align:right}
+html[dir="rtl"] .homePage .imperialHeroAxes{direction:rtl}
+html[dir="rtl"] .homePage .heroSearch{direction:rtl}
+html[dir="rtl"] .homePage .heroSearch input{text-align:right}
+html[dir="rtl"] .homePage .heroSearch>span{order:3}
+html[dir="rtl"] .homePage .heroSearch button{direction:rtl}
+html[dir="rtl"] .homePage .heroTags,
+html[dir="rtl"] .homePage .imperialHeroActions{direction:rtl}
+html[dir="rtl"] .homePage .homeFormatGrid,
+html[dir="rtl"] .homePage .homeConnectionGrid,
+html[dir="rtl"] .homePage .homeStoryGrid{direction:rtl}
+html[dir="rtl"] .homePage .homeFormatCard{direction:rtl}
+html[dir="rtl"] .homePage .homeFormatArrow{transform:scaleX(-1)}
+html[dir="rtl"] .homePage .platformPulseActions{direction:rtl}
+html[dir="rtl"] .homePage .nextFeatureDeck{direction:rtl}
+html[dir="rtl"] .homePage .nextCreatorBand{direction:rtl}
+html[dir="rtl"] .homePage .nextReaderPromise{direction:rtl}
+html[dir="rtl"] .homePage .homeStoryGrid .card{text-align:right}
+@media(max-width:760px){
+ html[dir="rtl"] .homePage .homeFormatHeading,
+ html[dir="rtl"] .homePage .homeConnectionHeading,
+ html[dir="rtl"] .homePage .sectionHead{align-items:flex-start}
+ html[dir="rtl"] .homePage .nextCreatorBand{ text-align:right }
+}
