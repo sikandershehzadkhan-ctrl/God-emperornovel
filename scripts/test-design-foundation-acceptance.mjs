@@ -97,6 +97,7 @@ assert.ok(foundation.includes("html[data-theme=\"dark\"] .adminWrap,\nhtml[data-
 assert.ok(foundation.includes("color:var(--admin-active-foreground)"), "Admin active navigation foreground must adapt to the active theme");
 assert.ok(foundation.includes(".adminWrap .adminTable"), "Admin data tables must receive responsive foundation styling");
 assert.ok(foundation.includes(".adminWrap .adminNav button{min-height:44px"), "Admin navigation actions must meet the 44px touch-target baseline");
+assert.ok(foundation.includes(".adminWrap .mini,.adminWrap .mini.edit,.adminWrap .mini.gold{\n  min-height:44px;"), "Compact admin actions must meet the 44px touch-target baseline");
 assert.ok(foundation.includes(".adminWrap .mini.gold"), "Legacy admin gold action styling must be neutralized inside the Imperial command center");
 
 
