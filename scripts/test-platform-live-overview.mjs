@@ -89,7 +89,9 @@ assert.ok(!route.toLowerCase().includes("onlineusers")&&!route.toLowerCase().inc
 assert.ok(!route.includes("Math.random"),"Live platform metrics must never be randomized");
 assert.ok(app.includes('id="platformPulseMetrics"')&&app.includes('id="platformPulseUpdates"')&&app.includes('id="platformPulseTrending"'),"Homepage must provide live metric, update and trend regions");
 assert.ok(app.includes("apiWithTimeout('/api/platform/overview'"),"Homepage must consume the live overview API with a bounded request");
-assert.ok(app.includes("setInterval(()=>{if(document.visibilityState==='visible')refreshPlatformPulse()},60000)"),"Homepage must refresh every 60 seconds only while visible");
+assert.ok(app.includes("homePulseTimer=setInterval(()=>{")&&app.includes("if(document.visibilityState==='visible')refreshPlatformPulse()"),"Homepage must refresh every 60 seconds only while visible");
+assert.ok(app.includes("function stopHomePulsePolling()")&&app.includes("clearInterval(homePulseTimer)")&&app.includes("document.removeEventListener('visibilitychange',homePulseVisibilityHandler)"),"Homepage live overview polling must clean up its timer and visibility listener");
+assert.ok(app.includes("if(!document.querySelector('.homePage')){stopHomePulsePolling();return}"),"Homepage live overview polling must stop after route exit");
 assert.ok(app.includes("platformPulseRefresh"),"Readers must have a manual refresh control");
 assert.ok(app.includes("Data generated "),"The homepage must display the exact generation timestamp for its metrics.");
 assert.ok(app.includes("refreshes every 60 seconds while this page is visible"),"The freshness cadence must be visible and accurately described.");
