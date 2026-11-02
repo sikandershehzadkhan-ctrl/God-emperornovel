@@ -29,6 +29,10 @@ assert.ok(processor.includes("s.publish_at<=strftime"), "Only due schedules may 
 assert.ok(processor.includes("n.publication_status='published'"), "Scheduled publication must recheck novel approval at execution time.");
 assert.ok(processor.includes("n.rights_status IN"), "Scheduled publication must recheck rights at execution time.");
 assert.ok(processor.includes("author_chapter_scheduled_published"), "Scheduled publication must be audit logged.");
+assert.ok(processor.includes("changes()=1"), "Schedule removal and audit insertion must depend on a successful chapter publication.");
+assert.ok(processor.includes("await notifyUser(env,row.created_by"), "The creator must receive a notification after scheduled publication succeeds.");
+assert.ok(processor.includes("Scheduled chapter published"), "The creator notification must identify the scheduled publication event.");
+
 assert.ok(worker.includes("const published=await publishDueChapters(env)"), "Scheduled handler must invoke the due-publication processor.");
 assert.ok(wrangler.includes('"*/15 * * * *"'), "Scheduled publishing must have a 15-minute Worker cron trigger.");
 
