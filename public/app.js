@@ -44,7 +44,8 @@ async function flushReaderActivityQueue(expectedUserId){
   if(!me.user){sessionStorage.removeItem(READER_ACTIVITY_QUEUE_KEY);sessionStorage.removeItem('imperial_reader_account_id');return}
   const currentUserId=String(me.user.id);
   if(currentUserId!==String(queue.userId)){sessionStorage.removeItem(READER_ACTIVITY_QUEUE_KEY);sessionStorage.setItem('imperial_reader_account_id',currentUserId);return}
-  for(const record of [...queue.records]){
+  while(queue?.records?.length){
+   const record=queue.records[0];
    await Promise.all([
     api('/api/history',{method:'POST',body:JSON.stringify({novel_id:record.novel_id,chapter_number:record.chapter_number})}),
     api('/api/bookmark',{method:'POST',body:JSON.stringify({novel_id:record.novel_id,chapter_number:record.chapter_number})})
@@ -70,8 +71,8 @@ async function queueReaderActivity(novelId,chapterNumber){
  queue.records=queue.records.filter(item=>Number(item.novel_id)!==record.novel_id);
  queue.records.push(record);queue.records=queue.records.slice(-20);
  if(!writeReaderActivityQueue(queue))return false;
- if(navigator.onLine)await flushReaderActivityQueue(userId);
- return true;
+ if(navigator.onLine){await flushReaderActivityQueue(userId);return !readReaderActivityQueue()?.records?.length}
+ return false;
 }
 function iconSvg(name){const p={search:'<circle cx="11" cy="11" r="7"/><path d="m20 20-4-4"/>',home:'<path d="m3 10 9-7 9 7"/><path d="M5 9v11h14V9"/><path d="M9 20v-6h6v6"/>',compass:'<circle cx="12" cy="12" r="10"/><path d="m16 8-3 6-5 2 2-5 6-3Z"/>',library:'<path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2Z"/>',pen:'<path d="m15 5 4 4"/><path d="M4 20h4L19 9a2.8 2.8 0 0 0-4-4L4 16v4Z"/>',users:'<path d="M16 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="10" cy="7" r="4"/><path d="M20 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/>',bell:'<path d="M18 8a6 6 0 0 0-12 0c0 7-3 7-3 9h18c0-2-3-2-3-9"/><path d="M10 21h4"/>',user:'<circle cx="12" cy="8" r="5"/><path d="M20 21a8 8 0 0 0-16 0"/>',trending:'<path d="m3 17 6-6 4 4 8-9"/><path d="M15 6h6v6"/>',genres:'<path d="m12 3 9 5-9 5-9-5 9-5Z"/><path d="m3 12 9 5 9-5M3 16l9 5 9-5"/>',rank:'<path d="M8 21h8M12 17v4"/><path d="M7 4h10l-1 8a4 4 0 0 1-8 0L7 4Z"/><path d="M7 6H4v2a4 4 0 0 0 4 4M17 6h3v2a4 4 0 0 1-4 4"/>',crown:'<path d="m2 8 5 4 5-8 5 8 5-4-2 12H4L2 8Z"/><path d="M4 16h16"/>',sparkles:'<path d="m12 3 1.9 5.8L20 11l-6.1 2.2L12 19l-1.9-5.8L4 11l6.1-2.2L12 3Z"/><path d="m19 14 1.2 2.8L23 18l-2.8 1.2L19 22l-1.2-2.8L15 18l2.8-1.2L19 14Z"/>'};return '<svg class="imperialIcon" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false">'+(p[name]||p.sparkles)+'</svg>'}
 function img(url,title=''){
@@ -291,7 +292,7 @@ async function reader(){
  let bookmarkSaving=false;$('#bookmarkBtn').onclick=async()=>{const button=$('#bookmarkBtn');if(bookmarkSaving||!button)return;bookmarkSaving=true;button.disabled=true;try{const me=await api('/api/me');if(loadToken!==window.__imperialReaderLoadToken)return;if(me.user){await api('/api/bookmark',{method:'POST',body:JSON.stringify({novel_id:Number(id),chapter_number:num})});if(loadToken!==window.__imperialReaderLoadToken)return;const now=!button.classList.contains('saved');button.classList.toggle('saved',now);button.textContent=now?'★':'☆';}else{localStorage.setItem('readerBookmark:'+id,String(num));button.classList.add('saved');button.textContent='★'}}catch(e){if(loadToken===window.__imperialReaderLoadToken)alert(e.message)}finally{bookmarkSaving=false;if(loadToken===window.__imperialReaderLoadToken&&button.isConnected)button.disabled=false}};
  if($('#unlock'))$('#unlock').onclick=async()=>{try{await api('/api/chapters/'+ch.id+'/unlock',{method:'POST'});location.reload()}catch(e){alert(e.message)}};
  let activitySyncPromise=null,activitySyncPending=!!d.unlocked;
- const syncReaderActivity=()=>{if(!d.unlocked||activitySyncPromise)return activitySyncPromise;activitySyncPromise=queueReaderActivity(Number(id),num).then(()=>{activitySyncPending=false}).catch(()=>{activitySyncPending=true}).finally(()=>{activitySyncPromise=null});return activitySyncPromise};
+ const syncReaderActivity=()=>{if(!d.unlocked||activitySyncPromise)return activitySyncPromise;activitySyncPromise=queueReaderActivity(Number(id),num).then(synced=>{activitySyncPending=!synced}).catch(()=>{activitySyncPending=true}).finally(()=>{activitySyncPromise=null});return activitySyncPromise};
  const networkStatus=$('#readerNetworkStatus');
  const updateReaderNetwork=()=>{if(loadToken!==window.__imperialReaderLoadToken||!networkStatus)return;const offline=!navigator.onLine;networkStatus.hidden=!offline;if(!offline&&activitySyncPending)syncReaderActivity();};
  if(window.__imperialReaderNetworkHandler){window.removeEventListener('online',window.__imperialReaderNetworkHandler);window.removeEventListener('offline',window.__imperialReaderNetworkHandler);}
