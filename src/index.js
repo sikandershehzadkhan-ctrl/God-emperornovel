@@ -815,7 +815,10 @@ if(p==="/api/author/feedback"&&m==="GET"){
   if(rawDate&&new Date(rawDate+'T00:00:00Z').toISOString().slice(0,10)!==rawDate)return json({error:'Target date is not a valid calendar date.'},400);
   if(targetChapters===0&&targetWords===0&&!rawDate){
    const removed=await env.DB.prepare('DELETE FROM author_story_goals WHERE novel_id=? AND owner_user_id=? AND EXISTS(SELECT 1 FROM novels WHERE id=? AND owner_user_id=?)').bind(novelId,u.id,novelId,u.id).run();
-   if(!Number(removed.meta?.changes||0))return json({error:'Story not found.'},404);
+   if(!Number(removed.meta?.changes||0)){
+    const owned=await env.DB.prepare('SELECT id FROM novels WHERE id=? AND owner_user_id=?').bind(novelId,u.id).first();
+    if(!owned)return json({error:'Story not found.'},404);
+   }
    await audit(env,u,'author_story_goal_cleared',`novel=${novelId}`);
    return json({ok:true,cleared:true})
   }
