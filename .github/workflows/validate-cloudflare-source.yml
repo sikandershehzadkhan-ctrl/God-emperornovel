@@ -4,7 +4,7 @@ on:
   pull_request:
     branches: [main, 'feature/creator-onboarding-guide-17-24', 'feature/author-scheduled-chapters-17-25', 'feature/author-editorial-workspace-17-26']
   push:
-    branches: [main]
+    branches: [main, 'feature/reader-language-discovery-17-27']
     paths:
       - 'src/**'
       - 'scripts/**'
