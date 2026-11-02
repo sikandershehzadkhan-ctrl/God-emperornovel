@@ -103,7 +103,7 @@ async function home(){
   
   <section class="section nextShelf">
    <div class="sectionHead"><div><div class="eyebrow"><span class="eyebrowDot"></span> THE CURRENT ROTATION</div><h2>Stories with momentum.</h2><p>Real published stories from the Imperial catalog. No made-up counters, no filler.</p></div><a class="ghost" href="/catalog?sort=trending">Explore all <span>↗</span></a></div>
-   <div id="trend" class="grid homeStoryGrid" aria-label="Trending stories" aria-busy="true"><div class="skeletonCard" aria-hidden="true"></div><div class="skeletonCard" aria-hidden="true"></div><div class="skeletonCard" aria-hidden="true"></div></div>
+   <div id="trend" class="grid homeStoryGrid multiStory" aria-label="Trending stories" aria-busy="true"><div class="skeletonCard" aria-hidden="true"></div><div class="skeletonCard" aria-hidden="true"></div><div class="skeletonCard" aria-hidden="true"></div><div class="skeletonCard" aria-hidden="true"></div></div>
   </section>
   <section class="platformPulse" aria-labelledby="platformPulseTitle">
    <div class="platformPulseHead"><div><div class="eyebrow"><span class="eyebrowDot"></span> REAL-TIME FROM THE IMPERIAL DATABASE</div><h2 id="platformPulseTitle">The realm, right now.</h2><p>Novel and chapter views, reader activity, reactions, comments, ratings and saves, measured from recorded platform events. No invented online-user counter.</p></div><div class="platformPulseActions"><span id="platformPulseHealth" class="platformPulseHealth" role="status" aria-live="polite">Checking service health…</span><span id="platformPulseUpdated" class="platformPulseUpdated" role="status" aria-live="polite">Loading real-time data…</span><button id="platformPulseRefresh" class="ghost" type="button">Refresh ↻</button></div></div>
