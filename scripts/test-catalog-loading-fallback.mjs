@@ -39,6 +39,9 @@ assert.ok(catalogSource.includes('id="catalogQuery" name="q" type="search"'),"Di
 assert.ok(catalogSource.includes('role="group" aria-label="Active catalog filters"'),"Active filter chips must be exposed as a named group.");
 assert.ok(catalogSource.includes("Number.isSafeInteger(requestedPage)")&&catalogSource.includes("Math.min(requestedPage,100000)"),"Discover must normalize malformed and excessively large page parameters.");
 assert.ok(catalogSource.includes("d.has_more===true"),"Discover must show Next only when the API confirms more results exist.");
+assert.ok(catalogSource.includes('<nav id="pager" class="pager" aria-label="Catalog pagination"')&&catalogSource.includes('aria-label="Catalog pagination"'),"Discover pagination must be a named navigation landmark.");
+assert.ok(catalogSource.includes('aria-current="page"')&&catalogSource.includes('rel="first"')&&catalogSource.includes('rel="prev"')&&catalogSource.includes('rel="next"'),"Discover pagination must expose the current page and semantic first/previous/next links.");
+
 assert.ok(worker.includes('requestedPage=Number(q.get("page")||1)')&&worker.includes("Number.isSafeInteger(requestedPage)")&&worker.includes("Math.min(requestedPage,100000)"),"Catalog API must clamp invalid and excessive page values before calculating offsets.");
 assert.ok(worker.includes("limit+1,offset")&&worker.includes("has_more:hasMore")&&worker.includes("results:rows.slice(0,limit)"),"Catalog API must fetch one look-ahead row and return accurate has_more metadata.");
 
