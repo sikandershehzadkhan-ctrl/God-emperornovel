@@ -39,6 +39,10 @@ assert.ok(!storyCardRenderer.includes("Number(n.rating||0).toFixed(1)"),"Missing
 assert.ok(!storyCardRenderer.includes("n.chapter_count||n.latest_chapter||0"),"Missing chapter counts must never be presented as zero chapters");
 assert.ok(css.includes(".homeConnectionShelf")&&css.includes("@media(max-width:640px)"),"Connected discovery shelf needs responsive styling");
 assert.ok(css.includes("Homepage mobile pass 17.42"),"Homepage must include the dedicated mobile refinement pass.");
+assert.ok(css.includes("Homepage desktop and keyboard-accessibility pass 17.43"),"Homepage must include the desktop and keyboard accessibility refinement pass.");
+assert.ok(/@media\(min-width:761px\)\s*\{[^}]*grid-template-columns:minmax\(0,1\.18fr\) minmax\(260px,\.82fr\)/s.test(css),"Desktop hero must retain a deliberate copy-and-crest composition.");
+assert.ok(/\.homePage a:focus-visible,[\s\S]*?outline:3px solid var\(--in-focus\)/.test(css),"Homepage interactive links and controls must expose visible keyboard focus.");
+assert.ok(/@media\(prefers-reduced-motion:reduce\)\s*\{[\s\S]*?\.homePage \.homeFormatCard,[\s\S]*?transform:none!important/s.test(css),"Homepage hover motion must respect reduced-motion preferences.");
 const mobileCss=css.slice(css.indexOf("Homepage mobile pass 17.42"));
 assert.ok(/\.imperialHeroVisual\s*\{[^}]*display:flex/s.test(mobileCss),"The imperial crest must remain visible in the compact mobile hero.");
 assert.ok(/\.homePage \.heroSearch input\s*\{[^}]*font-size:16px/s.test(mobileCss),"Mobile search must retain a flexible input and avoid automatic mobile browser zoom.");
