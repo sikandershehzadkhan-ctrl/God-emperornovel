@@ -1,0 +1,31 @@
+import assert from "node:assert/strict";
+import { readFileSync } from "node:fs";
+const source=readFileSync(new URL("../src/index.js",import.meta.url),"utf8");
+const a=source.indexOf('if(p==="/api/admin/account-deletion/reviewer-roles"&&m==="GET")');
+const b=source.indexOf('if(p==="/api/admin/account-deletion/reviewer-roles"&&m==="POST")');
+const c=source.indexOf("const revokeReviewerRole=p.match",b);
+const d=source.indexOf('if(p==="/api/admin/account-deletion/reviews"&&m==="GET")',c);
+assert.ok(a>=0&&b>a&&c>b&&d>c,"all reviewer role routes must exist");
+const list=source.slice(a,b),assign=source.slice(b,c),revoke=source.slice(c,d);
+for(const [name,route] of [["list",list],["assign",assign],["revoke",revoke]]){
+ assert.match(route,/admin\(u\)/,name+" must require administrator authorization");
+ assert.match(route,/consumeAuthRateLimit/,name+" must be rate limited");
+ assert.match(route,/await audit\(env,u,/,name+" must be audited");
+}
+assert.match(list,/LIMIT 200/);
+assert.doesNotMatch(list,/email|password_hash|session/i);
+assert.match(assign,/Number\.isSafeInteger\(targetId\)/);
+assert.match(assign,/roles\.includes\(role\)/);
+assert.match(assign,/targetId===Number\(u\.id\)/);
+assert.match(assign,/banned=0/);
+assert.match(assign,/env\.DB\.batch\(/);
+assert.match(assign,/INSERT INTO account_deletion_reviewer_assignment_events/);
+assert.match(assign,/last_insert_rowid\(\)/);
+assert.match(assign,/changes\(\)=1/);
+assert.match(assign,/RETURNING id,user_id,role_key/);
+assert.match(revoke,/revoked_at IS NULL/);
+assert.match(revoke,/env\.DB\.batch\(/);
+assert.match(revoke,/INSERT INTO account_deletion_reviewer_assignment_events/);
+assert.match(revoke,/changes\(\)=1/);
+assert.match(revoke,/already been revoked/);
+console.log("PASS: reviewer role management routes enforce admin authorization, rate limits, safe assignment, atomic audit events, and one-way revocation.");
