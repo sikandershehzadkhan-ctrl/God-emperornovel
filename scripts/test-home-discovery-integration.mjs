@@ -36,7 +36,7 @@ assert.ok(app.includes('"Follow the threads between worlds.":"تتبّع الر�
 assert.ok(app.includes('"Follow the threads between worlds.":"رشته‌های پیوند میان دنیاها را دنبال کنید."'),"Persian discovery headings must be translated within the Persian dictionary.");
 assert.ok(app.includes('data-in-lang-key="Follow the threads between worlds."')&&app.includes('data-in-lang-key="Stories with momentum."'),"Discovery and trending headings must participate in live locale switching.");
 assert.ok(app.includes('data-in-lang-key="The realm, right now."')&&app.includes('data-in-lang-key="Latest chapter updates"'),"Platform activity headings must participate in live locale switching.");
-assert.ok(app.includes('data-home-dynamic-key="'+(node.type===\'genre\'?\'Genre\':\'Theme\')+'"'),"Dynamic discovery genre and theme labels must be locale-aware.");
+assert.ok(app.includes('homeConnectionType" data-home-dynamic-key="')&&app.includes("node.type===\'genre\'?\'Genre\':\'Theme\'"),"Dynamic discovery genre and theme labels must be locale-aware.");
 assert.ok(app.includes('document.addEventListener("imperial:languagechange",localizeDiscovery)'),"Dynamic discovery chips must refresh when the selected language changes.");
 assert.ok(app.includes('data-home-dynamic-key="The catalog is still building its discovery map.'),"Discovery empty state must be locale-aware.");
 assert.ok(app.includes('data-home-dynamic-key="Connected discovery is temporarily unavailable."'),"Discovery error state must be locale-aware.");
