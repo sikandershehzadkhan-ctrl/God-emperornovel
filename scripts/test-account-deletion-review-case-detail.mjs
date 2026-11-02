@@ -1,0 +1,24 @@
+import assert from "node:assert/strict";
+import { readFileSync } from "node:fs";
+
+const source=readFileSync(new URL("../src/index.js",import.meta.url),"utf8");
+const start=source.indexOf("const deletionReviewDetail=p.match(");
+const end=source.indexOf('if(p==="/api/admin/account-deletion/reviews"&&m==="GET")',start);
+assert.notEqual(start,-1,"case detail route must exist");
+assert.notEqual(end,-1,"case detail route must end before queue route");
+const route=source.slice(start,end);
+assert.match(route,/^\/api\/admin\/account-deletion\/reviews\//,"route matcher must use the exact case-detail path");
+assert.match(route,/need\(u\)/,"case details must require authentication");
+assert.match(route,/Number\.isSafeInteger\(requestId\)/,"request IDs must be safe positive integers");
+assert.match(route,/revoked_at IS NULL/,"authorization must use active reviewer assignments only");
+assert.match(route,/permissions\.includes\("case:read:minimal"\)/,"case details must require explicit minimal-read permission");
+assert.match(route,/String\(row\.subject_user_id\)===String\(u\.id\)/,"requesters must not inspect their own cases");
+assert.match(route,/WHERE r\.id=\? AND r\.status IN \('pending_deletion','review_required'\)/,"details must be bound to the exact active request");
+assert.match(route,/permissions\.includes\("creator:read:ownership"\)/,"creator metadata must require the specialist permission");
+assert.match(route,/rights_verified_at IS NULL/,"creator summary may expose only rights follow-up counts");
+assert.match(route,/evidence_contents_exposed:false/,"raw rights evidence must never be returned");
+assert.match(route,/SELECT event_type,from_state,to_state,review_version,created_at/,"case history must exclude actor identities and event metadata");
+assert.match(route,/account_deletion_review_case_viewed/,"case detail access must be audited");
+assert.match(route,/read_only:true,finalization_enabled:false/,"case detail must remain read-only with finalization disabled");
+assert.doesNotMatch(route,/password_hash|email|session_token|rights_evidence|chapter_content/i,"case detail must not select credentials, contact data, raw evidence, or chapter content");
+console.log("PASS: account-deletion case details are authenticated, specialist-permission-gated, requester-excluding, minimized, audited, and read-only.");
