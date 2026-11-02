@@ -62,6 +62,9 @@ for (const [label, browser] of [["source", app], ["served asset", shipped]]) {
   assert.ok(browser.includes("authorPlanningQueue"), label + " must render the chapter planning queue.");
   assert.ok(browser.includes("api('/api/author/planning')"), label + " must load the authenticated planning API.");
   assert.ok(browser.includes("authorPlanningOpen"), label + " must link queue items to chapter management.");
+  assert.ok(browser.includes("$('.authorPlanningOpen'"), label + " must use a collection selector for multiple queue actions.");
+  assert.ok(browser.includes("data-first"), label + " must route first-chapter tasks to the chapter creation form.");
+
 }
 assert.equal(app, shipped, "Source and served application assets must be identical.");
 console.log("Scheduled chapter publication policy and UI checks passed.");
