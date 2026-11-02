@@ -24,6 +24,7 @@ for (const [fragment, message] of [
 assert.ok(source.includes("user_library (user_id INTEGER NOT NULL,novel_id INTEGER NOT NULL,created_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,PRIMARY KEY(user_id,novel_id))"), "database must enforce one library row per user and novel");
 assert.ok(!routes.includes("DELETE FROM history") && !routes.includes("DELETE FROM bookmarks"), "library removal must never erase reading history or bookmarks");
 assert.ok(app.includes("action:n.in_library?'remove':'add'"), "novel detail must use explicit idempotent membership actions");
+assert.ok(app.includes("n.in_library=Boolean(d.in_library)"), "novel detail must update its local membership state after each successful action");
 assert.ok(app.includes("action:'remove'"), "saved-library removal must use an explicit remove action");
 assert.ok(runtime === app, "served versioned app runtime must stay synchronized with editable app source");
 console.log("PASS: library membership is authenticated, duplicate-safe, idempotent, orphan-cleaned and independent of reading history/bookmarks.");
