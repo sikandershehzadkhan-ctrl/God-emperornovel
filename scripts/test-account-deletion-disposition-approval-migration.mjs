@@ -35,7 +35,7 @@ rejected("INSERT INTO account_deletion_disposition_approvals(plan_id,review_id,r
 assert db.execute("SELECT COUNT(*) FROM account_deletion_disposition_approvals").fetchone()[0]==1
 print("PASS: independent approvals bind to the exact plan digest, reject proposer/requester self-approval, and remain immutable and unique.")
 `;
-const result=spawnSync("python3",["-c",script],{input:base+"\\n"+plans+"\\n"+approvals,encoding:"utf8"});
+const result=spawnSync("python3",["-c",script],{input:base+"\n"+plans+"\n"+approvals,encoding:"utf8"});
 if(result.error) throw result.error;
 if(result.status!==0){process.stderr.write(result.stderr||"");process.stdout.write(result.stdout||"");process.exit(result.status||1)}
 process.stdout.write(result.stdout);
