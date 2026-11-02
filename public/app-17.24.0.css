@@ -147,3 +147,18 @@
 .authorGoalStatus{font-size:11px;color:var(--muted,#687080)}
 .authorGoalsFootnote{font-size:11px;margin:10px 0 0}
 @media(max-width:560px){.authorGoalFields{grid-template-columns:1fr 1fr}.authorGoalFields label:last-child{grid-column:1/-1}.authorGoalHeading{display:grid;gap:4px}}
+
+/* Private creator notes: clear ownership cues and phone-first layout. */
+.authorNotesPanel{margin:16px 0}
+.authorNoteForm{display:grid;gap:10px;padding:13px;border:1px solid var(--line,rgba(139,92,246,.2));border-radius:12px}
+.authorNoteForm label{display:grid;gap:6px;font-size:12px;color:var(--muted,#687080)}
+.authorNoteForm select,.authorNoteForm textarea{width:100%;box-sizing:border-box;padding:10px;border:1px solid var(--line,rgba(139,92,246,.2));border-radius:9px;background:var(--panel,transparent);color:inherit;font:inherit}
+.authorNoteForm button{justify-self:start}
+.authorNotesList{display:grid;gap:9px;margin-top:12px}
+.authorNoteItem{min-width:0;padding:12px;border:1px solid var(--line,rgba(139,92,246,.18));border-radius:11px}
+.authorNoteTop{display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap}
+.authorNoteTop b{font-size:13px;overflow-wrap:anywhere}
+.authorNoteTop span,.authorNotesFootnote{font-size:11px;color:var(--muted,#687080)}
+.authorNoteItem p{white-space:pre-wrap;overflow-wrap:anywhere;line-height:1.55;font-size:13px}
+.authorNoteDelete{font-size:11px}
+.authorNotesFootnote{margin:10px 0 0}
