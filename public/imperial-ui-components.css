@@ -423,3 +423,88 @@ html[data-theme="dark"] .menuToggle[aria-expanded="true"] {
     background: rgba(117, 71, 223, .2);
   }
 }
+
+
+/* Platform-wide mobile navigation and accessibility hardening. */
+:where(a, button, input, select, textarea, summary, [tabindex]):focus-visible {
+  outline: 3px solid var(--imperial-sapphire);
+  outline-offset: 3px;
+}
+
+:where(img, video, canvas, svg) {
+  max-width: 100%;
+}
+
+:where(.top, .navlinks, .navright, .mobileNav, .page, .wrap, .section) {
+  min-width: 0;
+}
+
+.top {
+  padding-top: env(safe-area-inset-top, 0px);
+}
+
+.mobileNav {
+  padding-left: max(8px, env(safe-area-inset-left));
+  padding-right: max(8px, env(safe-area-inset-right));
+  padding-bottom: max(6px, env(safe-area-inset-bottom));
+  box-sizing: border-box;
+}
+
+.mobileNav a {
+  display: flex;
+  flex: 1 1 0;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  overflow-wrap: anywhere;
+  user-select: none;
+}
+
+.top .navlinks a,
+.mobileNav a,
+.menuToggle {
+  touch-action: manipulation;
+}
+
+@media (max-width: 760px) {
+  .top {
+    max-width: 100%;
+  }
+
+  .top .navlinks {
+    max-width: 100%;
+    overscroll-behavior-x: contain;
+    scrollbar-width: none;
+  }
+
+  .top .navlinks::-webkit-scrollbar {
+    display: none;
+  }
+
+  .mobileNav {
+    display: flex;
+    gap: 2px;
+  }
+
+  .mobileNav a {
+    padding-inline: 3px;
+    font-size: clamp(.64rem, 2.7vw, .78rem);
+    line-height: 1.2;
+  }
+}
+
+@media (max-width: 360px) {
+  .mobileNav a {
+    letter-spacing: -.02em;
+    font-size: .64rem;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  :where(*, *::before, *::after) {
+    scroll-behavior: auto !important;
+    animation-duration: .01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: .01ms !important;
+  }
+}
