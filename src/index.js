@@ -745,7 +745,7 @@ async function api(req,env){
  if(/^\/api\/author\/chapters\/\d+\/revisions$/.test(p)&&m==="GET"){
   const e=author(u);if(e)return e;const id=Number(p.split('/')[4]);
   const c=await env.DB.prepare('SELECT c.id,n.owner_user_id FROM chapters c JOIN novels n ON n.id=c.novel_id WHERE c.id=?').bind(id).first();if(!c)return json({error:'Chapter not found'},404);if(u.role!=="admin"&&Number(c.owner_user_id)!==Number(u.id))return json({error:'You do not own this chapter'},403);
-  return json((await env.DB.prepare('SELECT id,chapter_id,chapter_number,title,content,is_locked,ticket_cost,created_at FROM chapter_revisions WHERE chapter_id=? ORDER BY id DESC LIMIT 30').bind(id).all()).results||[])
+  return json((await env.DB.prepare('SELECT id,chapter_id,chapter_number,title,content,is_locked,ticket_cost,created_at FROM chapter_revisions WHERE chapter_id=? ORDER BY id DESC LIMIT 10').bind(id).all()).results||[])
  }
  if(/^\/api\/author\/chapters\/\d+\/publish$/.test(p)&&m==="POST"){
   const e=author(u);if(e)return e;const id=Number(p.split('/')[3]),b=await body(req);const c=await env.DB.prepare(`SELECT c.*,n.owner_user_id,n.rights_status FROM chapters c JOIN novels n ON n.id=c.novel_id WHERE c.id=?`).bind(id).first();if(!c)return json({error:'Chapter not found'},404);if(u.role!=="admin"&&Number(c.owner_user_id)!==Number(u.id))return json({error:'You do not own this chapter'},403);
