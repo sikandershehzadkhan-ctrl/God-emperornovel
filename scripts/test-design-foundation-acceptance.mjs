@@ -97,4 +97,13 @@ assert.ok(foundation.includes(".adminWrap .adminTable"), "Admin data tables must
 assert.ok(foundation.includes(".adminWrap .adminNav button{min-height:44px"), "Admin navigation actions must meet the 44px touch-target baseline");
 assert.ok(foundation.includes(".adminWrap .mini.gold"), "Legacy admin gold action styling must be neutralized inside the Imperial command center");
 
+
+assert.ok(foundation.includes(".adminWrap .adminHero{\n  color:var(--in-text-primary);\n  background:linear-gradient(135deg,var(--in-surface-subtle)"), "Admin hero must use semantic theme-aware surfaces instead of fixed light-only colors");
+assert.ok(foundation.includes(".adminWrap .adminCard,.adminWrap .panel{\n  background:var(--in-surface-raised)"), "Admin cards and panels must follow all six application themes");
+assert.ok(foundation.includes(".adminWrap .adminTable th{\n  color:var(--in-text-secondary);\n  background:var(--in-surface-subtle)"), "Admin table headers must use semantic theme tokens");
+assert.ok(foundation.includes("color-mix(in srgb,var(--in-success) 13%,var(--in-surface-raised))"), "Admin success states must remain visible on dark and light surfaces");
+assert.ok(foundation.includes("color-mix(in srgb,var(--in-danger) 12%,var(--in-surface-raised))"), "Admin error states must remain visible on dark and light surfaces");
+assert.ok(foundation.includes("outline:3px solid var(--in-focus)!important"), "Admin keyboard focus must use the active theme focus token");
+assert.ok(foundation.includes("@media(forced-colors:active){\n  .adminWrap .adminCard"), "Admin cards and status indicators must retain boundaries in forced-colors mode");
+
 console.log("Imperial design foundation acceptance passed: six theme token maps, WCAG AA text/link contrast, focus contrast, reduced motion, RTL, safe areas and stylesheet order.");
