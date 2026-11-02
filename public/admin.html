@@ -71,6 +71,8 @@ const panels=[...document.querySelectorAll('.adminSection')];
 const tabList=document.getElementById('tabs');
 tabList.setAttribute('role','tablist');
 tabList.setAttribute('aria-label','Administrator sections');
+tabList.setAttribute('aria-orientation','horizontal');
+tabList.tabIndex=-1;
 tabs.forEach((b,i)=>{
  b.type='button';
  b.id='admin-tab-'+b.dataset.tab;
