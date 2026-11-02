@@ -2181,7 +2181,7 @@ html[dir="rtl"] .menuDrawer.is-open{
 
 /* Homepage internationalization and RTL layout pass 17.45. */
 .homePage [data-in-lang-key]{unicode-bidi:plaintext}
-html[dir="rtl"] .homePage .imperialHeroCopy,
+html[dir="rtl"] .homePage .nextHeroCopy,
 html[dir="rtl"] .homePage .homeFormatHeading,
 html[dir="rtl"] .homePage .homeConnectionHeading,
 html[dir="rtl"] .homePage .sectionHead,
