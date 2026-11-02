@@ -74,7 +74,13 @@ export async function digestDispositionPlan({ requestId, reviewId, baseReviewVer
     base_review_version: baseReviewVersion,
     proposer_id: proposerId,
     policy_version: policyVersion,
-    items,
+    items: [...items].map(item => ({
+      dependency_key: item.dependency_key,
+      outcome: item.outcome,
+      reason: item.reason,
+      evidence_ref: item.evidence_ref ?? null,
+      policy_reference: item.policy_reference,
+    })).sort((a,b) => a.dependency_key.localeCompare(b.dependency_key)),
   });
   const bytes = new TextEncoder().encode(canonical);
   const digest = await crypto.subtle.digest("SHA-256", bytes);
