@@ -741,3 +741,31 @@
     backdrop-filter: none;
   }
 }
+
+
+/* RTL reader support for Urdu, Arabic and Persian interfaces. */
+html[dir="rtl"] .readerPage,
+html[dir="rtl"] .readerBarInner,
+html[dir="rtl"] .readerMeta,
+html[dir="rtl"] .readerActions,
+html[dir="rtl"] .readerFooterCard,
+html[dir="rtl"] .chapterDrawer,
+html[dir="rtl"] .readerPrefs {
+  direction: rtl;
+}
+html[dir="rtl"] .readerContent,
+html[dir="rtl"] .readerArticle h1,
+html[dir="rtl"] .readerArticle h2,
+html[dir="rtl"] .readerChapterItem,
+html[dir="rtl"] .readerLock {
+  text-align: right;
+}
+html[dir="rtl"] .readerChapterItem {
+  direction: rtl;
+}
+html[dir="rtl"] .readerActions > div {
+  direction: rtl;
+}
+html[dir="rtl"] .readerProgress {
+  direction: rtl;
+}
