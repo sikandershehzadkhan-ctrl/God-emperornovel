@@ -637,3 +637,107 @@
     overflow-wrap: break-word;
   }
 }
+
+
+/* Mobile reader navigation: protect toolbar space and keep controls reachable. */
+.readerBar {
+  padding-top: env(safe-area-inset-top, 0px);
+}
+
+.readerBarInner {
+  min-width: 0;
+}
+
+.readerBack,
+.readerTools {
+  flex-shrink: 0;
+}
+
+.readerBook {
+  min-width: 0;
+  overflow: hidden;
+}
+
+.readerBook b,
+.readerBook span {
+  display: block;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.chapterDrawer {
+  max-height: min(76dvh, 680px);
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  -webkit-overflow-scrolling: touch;
+}
+
+.readerChapterList {
+  overscroll-behavior: contain;
+  scrollbar-gutter: stable;
+}
+
+@media (max-width: 760px) {
+  .readerBar {
+    -webkit-backdrop-filter: blur(10px);
+    backdrop-filter: blur(10px);
+  }
+
+  .readerBarInner {
+    justify-content: space-between;
+  }
+
+  .readerTools {
+    flex-wrap: nowrap;
+  }
+
+  .readerActions > div {
+    min-width: 0;
+  }
+
+  .readerActions a {
+    max-width: 100%;
+    white-space: nowrap;
+  }
+}
+
+@media (max-width: 380px) {
+  .readerBarInner {
+    column-gap: 5px;
+  }
+
+  .readerBack {
+    max-width: 84px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .readerTools {
+    gap: 3px;
+  }
+
+  .readerTool {
+    min-width: 36px;
+    width: 36px;
+    padding-inline: 0;
+  }
+
+  .chapterDrawerHead {
+    padding-inline: 12px;
+  }
+
+  .readerChapterItem {
+    align-items: flex-start;
+    flex-direction: column;
+    gap: 4px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .readerBar {
+    -webkit-backdrop-filter: none;
+    backdrop-filter: none;
+  }
+}
