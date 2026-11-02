@@ -3,6 +3,8 @@ import { readFileSync } from 'node:fs';
 
 const worker = readFileSync('src/index.js', 'utf8');
 const app = readFileSync('public/app.js', 'utf8');
+const versionedApp = readFileSync('public/app-17.23.0.js', 'utf8');
+assert.equal(versionedApp, app, 'editable and served browser bundles must remain byte-identical');
 const start = worker.indexOf('if(p==="/api/leaderboard"&&m==="GET"){');
 const end = worker.indexOf('if(p==="/api/tier-list"&&m==="GET"){', start);
 assert.notEqual(start, -1, 'leaderboard API route must exist');
