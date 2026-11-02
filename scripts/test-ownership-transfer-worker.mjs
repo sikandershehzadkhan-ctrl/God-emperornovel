@@ -757,6 +757,35 @@ try {
   assert.equal(newPasswordLogin.response.status,200,"New password must authenticate after reset");
   const otherAccountAfterReset = await request(baseUrl,"/api/me/export",{cookie:recipient.cookie});
   assert.equal(otherAccountAfterReset.response.status,200,"Resetting one account must not revoke another account's session");
+  const ownerSessionCookie=newPasswordLogin.response.headers.get("set-cookie")||"";
+  const ownerSessionMatch=ownerSessionCookie.match(/(?:^|;\\s*)session=([^;]+)/);
+  assert.ok(ownerSessionMatch,"Re-authentication after password reset must issue a fresh session");
+  owner.cookie="session="+ownerSessionMatch[1];
+
+  const unauthenticatedDeletion=await request(baseUrl,"/api/me/deletion-request",{method:"POST",body:{password:newPassword}});
+  assert.equal(unauthenticatedDeletion.response.status,401,"Deletion requests require authentication");
+  const wrongDeletionPassword=await request(baseUrl,"/api/me/deletion-request",{method:"POST",cookie:owner.cookie,body:{password:"Incorrect-Password-2026!"}});
+  assert.equal(wrongDeletionPassword.response.status,401,"Deletion requests require current-password re-authentication");
+  const ownerDeletion=await request(baseUrl,"/api/me/deletion-request",{method:"POST",cookie:owner.cookie,body:{password:newPassword}});
+  assert.equal(ownerDeletion.response.status,201,JSON.stringify(ownerDeletion.data));
+  assert.equal(ownerDeletion.data.request.status,"review_required","Creator accounts must enter ownership review");
+  const duplicateOwnerDeletion=await request(baseUrl,"/api/me/deletion-request",{method:"POST",cookie:owner.cookie,body:{password:newPassword}});
+  assert.equal(duplicateOwnerDeletion.response.status,200);
+  assert.equal(duplicateOwnerDeletion.data.request.requested_at,ownerDeletion.data.request.requested_at,"Repeated requests must be idempotent");
+  const foreignCancel=await request(baseUrl,"/api/me/deletion-request/cancel",{method:"POST",cookie:recipient.cookie});
+  assert.equal(foreignCancel.response.status,409,"Another account cannot cancel the owner request");
+  const ownerCancel=await request(baseUrl,"/api/me/deletion-request/cancel",{method:"POST",cookie:owner.cookie});
+  assert.equal(ownerCancel.response.status,200,JSON.stringify(ownerCancel.data));
+  assert.equal(ownerCancel.data.request.status,"cancelled");
+  const ownerNovelsAfterDeletionCancel=await request(baseUrl,"/api/author/novels",{cookie:owner.cookie});
+  assert.ok(ownerNovelsAfterDeletionCancel.data.length>0,"Deletion requests must never delete creator novels");
+
+  const readerDeletion=await request(baseUrl,"/api/me/deletion-request",{method:"POST",cookie:recipient.cookie,body:{password:"Integration-Test-Password-2026!"}});
+  assert.equal(readerDeletion.response.status,201,JSON.stringify(readerDeletion.data));
+  assert.equal(readerDeletion.data.request.status,"pending_deletion","Non-creator accounts enter cooling-off state");
+  const readerCancel=await request(baseUrl,"/api/me/deletion-request/cancel",{method:"POST",cookie:recipient.cookie});
+  assert.equal(readerCancel.response.status,200);
+  assert.equal(readerCancel.data.request.status,"cancelled");
 
   console.log("Local Worker/D1 authorization integration passed: account export two-user isolation and rate limits, administrator role boundaries, ban/login/session revocation, private chapter read/publish isolation, six private-data endpoint isolation, session-bound writes, ownership and chapter isolation, recipient privacy, concurrent acceptance, rejection/cancellation, and ineligible transfer rejection.");
 
