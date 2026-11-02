@@ -17,6 +17,8 @@ for(const [label,browser] of [["source",app],["served",shipped]]){
  assert.ok(browser.includes("api('/api/author/feedback')"),label+" app must call the authenticated feedback API.");
  assert.ok(browser.includes("esc(item.body||'')"),label+" app must escape reader comment text.");
  assert.ok(browser.includes("Creator replies are not enabled"),label+" app must not imply a reply workflow exists.");
+ assert.ok(browser.includes("authorFeedbackType")&&browser.includes("authorFeedbackSearch"),label+" app must provide feedback type and text filters.");
+ assert.ok(browser.includes("const filtered=items.filter"),label+" app must filter only the records returned by the owner-scoped API.");
 }
 assert.equal(app,shipped,"Source and served app assets must remain identical.");
 console.log("Author reader feedback inbox checks passed.");
