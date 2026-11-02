@@ -125,7 +125,7 @@ async function catalog(){const root=$('#app');const qs=new URLSearchParams(locat
  const friendly={sort:{updated:'Recently updated',newest:'Newest',trending:'Trending',views:'Most viewed',rating:'Top rated',chapters:'Most chapters'},status:{ongoing:'Ongoing',completed:'Completed'},kind:{original:'Original novels',fanfiction:'Fanfiction',manga:'Manga',manhwa:'Manhwa',manhua:'Manhua',webtoon:'Webtoons',comic:'Comics',graphic_novel:'Graphic novels',light_novel:'Light novels',web_novel:'Web novels',anime:'Anime',cartoon:'Cartoons'}};
  const filterHref=except=>{const p=new URLSearchParams();for(const [k,v] of Object.entries(vals))if(v&&k!==except&&!(k==='sort'&&v==='updated'))p.set(k,v);return '/catalog'+(p.toString()?'?'+p.toString():'')};
  const renderFilterChips=()=>{const active=Object.entries(vals).filter(([k,v])=>v&&!(k==='sort'&&v==='updated'));const el=$('#activeFilters');if(!active.length){el.innerHTML='';el.hidden=true;return}el.hidden=false;el.innerHTML='<span class="activeFiltersLabel" data-in-lang>Active filters</span>'+active.map(([k,v])=>{const label=friendly[k]?.[v]||v;return '<a class="activeFilter" href="'+esc(filterHref(k))+'" aria-label="Remove '+esc(filterNames[k]||k)+' filter"><span>'+esc(filterNames[k]||k)+': '+esc(label)+'</span><b aria-hidden="true">×</b></a>'}).join('')+'<a class="clearFilters" href="/catalog" data-in-lang>Clear all</a>'};
- renderFilterChips();
+ renderFilterChips();setINLang(document.documentElement.lang||'en');
  async function load(page=1){
   const p=new URLSearchParams();for(const [k,v] of Object.entries(vals))if(v)p.set(k,v);p.set('limit','24');p.set('page',page);
   const count=$('#resultCount'),grid=$('#cat');
@@ -138,7 +138,7 @@ async function catalog(){const root=$('#app');const qs=new URLSearchParams(locat
    grid.removeAttribute('aria-busy');
    const pager=$('#pager');pager.innerHTML='';
    if(d.page>1){p.set('page',d.page-1);pager.insertAdjacentHTML('beforeend',`<a class="secondary" href="/catalog?${p}" data-in-lang>← Previous</a>`)}
-   if(items.length===d.limit){p.set('page',d.page+1);pager.insertAdjacentHTML('beforeend',`<a class="primary" href="/catalog?${p}" data-in-lang>Next →</a>`)}
+   if(items.length===d.limit){p.set('page',d.page+1);pager.insertAdjacentHTML('beforeend',`<a class="primary" href="/catalog?${p}" data-in-lang>Next →</a>`)}setINLang(document.documentElement.lang||'en');
   }catch(error){
    count.textContent='Catalog temporarily unavailable';grid.removeAttribute('aria-busy');$('#pager').innerHTML='';
    grid.innerHTML=`<div class="notice" role="alert" style="grid-column:1/-1"><h2>We could not load the catalog.</h2><p>${esc(error.message||'Please try again in a moment.')}</p><button class="primary" id="catalogRetry" type="button">Try again</button></div>`;
