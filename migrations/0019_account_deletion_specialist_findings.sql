@@ -47,7 +47,16 @@ BEGIN
       AND v.claim_expires_at>CURRENT_TIMESTAMP
       AND r.user_id=v.subject_user_id
       AND r.status IN ('pending_deletion','review_required')
-  ) THEN RAISE(ABORT, 'specialist finding scope, lease, or version invalid') END;
+      AND EXISTS (
+        SELECT 1 FROM account_deletion_reviewer_assignments a
+        WHERE a.user_id=NEW.reviewer_id AND a.revoked_at IS NULL
+          AND (
+            (NEW.dependency_key IN ('creator_content','creator_rights','ownership_transfers') AND a.role_key='creator_rights_reviewer')
+            OR (NEW.dependency_key IN ('financial_ledger','donations_refunds_disputes') AND a.role_key='finance_compliance_reviewer')
+            OR (NEW.dependency_key IN ('moderation_legal_holds','ai_projects','omniportal_jobs','sessions_notifications','provider_records','backups') AND a.role_key='privacy_administrator')
+          )
+      )
+  ) THEN RAISE(ABORT, 'specialist finding scope, lease, version, or reviewer role invalid') END;
   SELECT CASE WHEN NEW.revision<>COALESCE((
     SELECT MAX(existing.revision)+1
     FROM account_deletion_disposition_findings existing
