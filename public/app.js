@@ -374,6 +374,7 @@ async function authorStudio(){
  const form=$('#createStoryForm'),notice=$('#createStoryNotice'),list=$('#authorWorksList');
  const releaseList=$('#authorReleaseList');
  const planningList=$('#authorPlanningList');
+ let authorGoalRows=[],authorReadinessRows=[];
  const analyticsSummary=$('#authorAnalyticsSummary'),analyticsStories=$('#authorAnalyticsStories'),analyticsChapters=$('#authorAnalyticsChapters');
  const feedbackSummary=$('#authorFeedbackSummary'),feedbackList=$('#authorFeedbackList');
  async function loadAuthorAnalytics(){
@@ -404,10 +405,10 @@ async function authorStudio(){
  async function loadChapterPlanning(){
   planningList.innerHTML='<div class="empty">Loading your chapter work…</div>';
   try{
-   const [rows,goals,readiness]=await Promise.all([api('/api/author/planning'),api('/api/author/goals'),api('/api/author/readiness')]);
+   const rows=await api('/api/author/planning');
    if(!Array.isArray(rows)||!rows.length){planningList.innerHTML='<div class="empty">Your chapter queue is clear. Create a story or add a new chapter whenever you are ready.</div>';return}
-   const goalMap=new Map((Array.isArray(goals)?goals:[]).map(g=>[Number(g.novel_id),g]));
-   const readinessMap=new Map((Array.isArray(readiness?.items)?readiness.items:[]).map(r=>[Number(r.novel_id),r]));
+   const goalMap=new Map(authorGoalRows.map(g=>[Number(g.novel_id),g]));
+   const readinessMap=new Map(authorReadinessRows.map(r=>[Number(r.novel_id),r]));
    planningList.innerHTML=rows.map(item=>{const first=item.item_type==='first_chapter',goal=goalMap.get(Number(item.novel_id)),check=readinessMap.get(Number(item.novel_id));const planningSignals=[goal?'Goal: '+Number(goal.target_chapters||0)+' chapters / '+Number(goal.target_words||0).toLocaleString()+' words':'No writing goal set',check?Number(check.attention_count)+' readiness items need attention':'Readiness not checked'];return '<article class="authorPlanningItem"><div class="authorPlanningType">'+(first?'FIRST CHAPTER':'DRAFT CHAPTER')+'</div><div class="authorPlanningInfo"><h3>'+esc(item.novel_title||'Untitled story')+'</h3><p class="muted">'+(first?'This story has no chapters yet.':('Chapter '+Number(item.chapter_number)+' · '+esc(item.chapter_title||'Untitled chapter')))+' · Updated '+esc(item.updated_at||'')+'</p><span class="authorPlanningStatus">'+esc(String(item.novel_status||'draft').replaceAll('_',' '))+'</span><div class="authorPlanningSignals">'+planningSignals.map(signal=>'<span>'+esc(signal)+'</span>').join('')+'</div></div><button class="secondary authorPlanningOpen" data-id="'+Number(item.novel_id)+'" data-kind="'+esc(item.kind||'original')+'" data-first="'+(first?'1':'0')+'" type="button">'+(first?'Add first chapter':'Manage chapters')+'</button></article>'}).join('');
    $$('.authorPlanningOpen',planningList).forEach(button=>button.onclick=()=>{const id=Number(button.dataset.id);if(button.dataset.first==='1'){const add=$('.authorAddChapter[data-id="'+id+'"]',list),form=$('.authorChapterForm[data-id="'+id+'"]',list);if(add&&form){form.hidden=false;form.scrollIntoView({behavior:'smooth',block:'center'});return}}const target=$('.authorManageChapters[data-id="'+id+'"]',list);if(target){const manager=$('.authorChapterManager[data-id="'+id+'"]',list);if(manager&&!manager.hidden){manager.hidden=true;return}openAuthorChapterManager({dataset:{id:button.dataset.id,kind:button.dataset.kind}},list,setNotice);target.scrollIntoView({behavior:'smooth',block:'center'});return}setNotice('Refresh My stories to load this work, then open its chapter manager.',true)});
   }catch(error){planningList.innerHTML='<div class="empty">Chapter planning could not load. Check your connection and try again.</div>'}
@@ -417,12 +418,13 @@ async function authorStudio(){
   box.innerHTML='<div class="empty">Loading your writing goals…</div>';
   try{
    const [stories,goals]=await Promise.all([api('/api/author/novels'),api('/api/author/goals')]);
+   authorGoalRows=Array.isArray(goals)?goals:[];
    const goalById=new Map((Array.isArray(goals)?goals:[]).map(g=>[Number(g.novel_id),g]));
    if(!Array.isArray(stories)||!stories.length){box.innerHTML='<div class="empty">Create a story first. Its writing goals will appear here.</div>';return}
    box.innerHTML=stories.slice(0,100).map(story=>{const g=goalById.get(Number(story.id))||{};return '<form class="authorGoalItem" data-novel-id="'+Number(story.id)+'"><div class="authorGoalHeading"><h3>'+esc(story.title||'Untitled story')+'</h3><span>'+Number(g.published_chapters||story.published_chapters||0).toLocaleString()+' published chapters</span></div><div class="authorGoalFields"><label>Chapter target<input name="target_chapters" type="number" min="0" max="10000" step="1" value="'+Number(g.target_chapters||0)+'"></label><label>Word target<input name="target_words" type="number" min="0" max="5000000" step="1" value="'+Number(g.target_words||0)+'"></label><label>Target date<input name="target_date" type="date" value="'+esc(g.target_date||'')+'"></label></div><div class="authorGoalActions"><button class="primary" type="submit">Save goal</button><button class="secondary authorGoalClear" type="button">Clear goal</button><span class="authorGoalStatus" role="status" aria-live="polite"></span></div></form>'}).join('');
    $('.authorGoalItem',box).forEach(form=>{
-    form.onsubmit=async event=>{event.preventDefault();const button=$('button[type="submit"]',form),status=$('.authorGoalStatus',form);button.disabled=true;status.textContent='Saving…';const data=new FormData(form);try{await api('/api/author/goals',{method:'PUT',body:JSON.stringify({novel_id:Number(form.dataset.novelId),target_chapters:Number(data.get('target_chapters')||0),target_words:Number(data.get('target_words')||0),target_date:String(data.get('target_date')||'')})});status.textContent='Goal saved.'}catch(error){status.textContent=error.message||'Could not save goal.'}finally{button.disabled=false}};
-    $('.authorGoalClear',form).onclick=async()=>{const button=$('.authorGoalClear',form),status=$('.authorGoalStatus',form);button.disabled=true;try{await api('/api/author/goals',{method:'PUT',body:JSON.stringify({novel_id:Number(form.dataset.novelId),target_chapters:0,target_words:0,target_date:''})});form.reset();status.textContent='Goal cleared.'}catch(error){status.textContent=error.message||'Could not clear goal.'}finally{button.disabled=false}};
+    form.onsubmit=async event=>{event.preventDefault();const button=$('button[type="submit"]',form),status=$('.authorGoalStatus',form);button.disabled=true;status.textContent='Saving…';const data=new FormData(form);try{await api('/api/author/goals',{method:'PUT',body:JSON.stringify({novel_id:Number(form.dataset.novelId),target_chapters:Number(data.get('target_chapters')||0),target_words:Number(data.get('target_words')||0),target_date:String(data.get('target_date')||'')})});status.textContent='Goal saved.';await loadChapterPlanning()}catch(error){status.textContent=error.message||'Could not save goal.'}finally{button.disabled=false}};
+    $('.authorGoalClear',form).onclick=async()=>{const button=$('.authorGoalClear',form),status=$('.authorGoalStatus',form);button.disabled=true;try{await api('/api/author/goals',{method:'PUT',body:JSON.stringify({novel_id:Number(form.dataset.novelId),target_chapters:0,target_words:0,target_date:''})});form.reset();status.textContent='Goal cleared.';await loadChapterPlanning()}catch(error){status.textContent=error.message||'Could not clear goal.'}finally{button.disabled=false}};
    });
   }catch(error){box.innerHTML='<div class="notice">Writing goals could not load. Check your connection and refresh.</div>'}
  }
@@ -431,6 +433,7 @@ async function authorStudio(){
   box.innerHTML='<div class="empty">Checking your story setup…</div>';
   try{
    const data=await api('/api/author/readiness'),items=Array.isArray(data.items)?data.items:[];
+   authorReadinessRows=items;
    if(!items.length){box.innerHTML='<div class="empty">Create a story to start its editorial pre-flight checks.</div>';return}
    box.innerHTML=items.map(story=>'<article class="authorReadinessStory"><div class="authorReadinessHeading"><div><h3>'+esc(story.title||'Untitled story')+'</h3><span>'+Number(story.chapter_count||0)+' chapters · '+Number(story.published_chapters||0)+' published · '+Number(story.draft_chapters||0)+' drafts</span></div><b class="'+(story.attention_count?'needsAttention':'readinessClear')+'">'+(story.attention_count?Number(story.attention_count)+' needs attention':'Checks clear')+'</b></div><ul>'+story.checks.map(check=>'<li><span class="readinessMark '+esc(check.status)+'">'+(check.status==='pass'?'✓':check.status==='not_applicable'?'—':'!')+'</span><span><b>'+esc(check.label)+'</b><small>'+esc(check.detail)+'</small></span></li>').join('')+'</ul><button class="secondary authorReadinessOpen" data-id="'+Number(story.novel_id)+'" type="button">Open story workspace</button></article>').join('');
    $('.authorReadinessOpen',box).forEach(button=>button.onclick=()=>{const target=$('.authorWork[data-novel-id="'+Number(button.dataset.id)+'"]',list);if(target){target.scrollIntoView({behavior:'smooth',block:'center'});target.classList.add('authorWorkFocus');setTimeout(()=>target.classList.remove('authorWorkFocus'),1500)}else setNotice('Refresh My stories to open this work.',true)});
@@ -490,13 +493,14 @@ async function authorStudio(){
  $('#refreshAuthorFeedback').onclick=loadAuthorFeedback;
  $('#refreshAuthorPlanning').onclick=loadChapterPlanning;
  $('#refreshAuthorNotes').onclick=loadAuthorNotes;
- $('#refreshAuthorReadiness').onclick=loadAuthorReadiness;
+ $('#refreshAuthorReadiness').onclick=async()=>{await loadAuthorReadiness();await loadChapterPlanning()};
  $('#authorNoteForm').onsubmit=async event=>{event.preventDefault();const form=event.currentTarget,button=$('button[type="submit"]',form),story=Number($('#authorNoteStory').value),note=$('#authorNoteText').value;button.disabled=true;try{await api('/api/author/notes',{method:'POST',body:JSON.stringify({novel_id:story,note})});$('#authorNoteText').value='';setNotice('Private note saved.');await loadAuthorNotes()}catch(error){setNotice(error.message||'Could not save private note.',true)}finally{button.disabled=false}};
- $('#refreshAuthorGoals').onclick=loadAuthorGoals;
+ $('#refreshAuthorGoals').onclick=async()=>{await loadAuthorGoals();await loadChapterPlanning()};
  $('#refreshAuthorAnalytics').onclick=loadAuthorAnalytics;
+ await Promise.all([loadAuthorGoals(),loadAuthorReadiness()]);
  await Promise.all([
-  loadAuthorAnalytics(),loadAuthorFeedback(),loadChapterPlanning(),loadAuthorGoals(),
-  loadAuthorNotes(),loadAuthorReadiness(),loadReleaseCalendar(),loadWorks()
+  loadAuthorAnalytics(),loadAuthorFeedback(),loadChapterPlanning(),
+  loadAuthorNotes(),loadReleaseCalendar(),loadWorks()
  ]);
 }
 async function authorPublic(){const slug=decodeURIComponent(location.pathname.split('/').pop()||'').trim();const root=$('#app');root.innerHTML=pageStart('Author Profile','Published stories and public catalog activity.')+`<div id="authorProfile" class="panel">Loading author profile...</div></div></div>`;try{const d=await api('/api/novels?author='+encodeURIComponent(slug)+'&limit=50');const rows=d.results||[];if(!rows.length){$('#authorProfile').innerHTML=`<div class="empty"><h2>Author not found</h2><p>No published stories are currently associated with <b>${esc(slug)}</b>.</p><a class="primary" href="/catalog">Browse the Catalog</a></div>`;return}const author=rows[0].author||slug;$('#authorProfile').innerHTML=`<div class="authorHero"><div class="authorAvatar">♛</div><div><div class="eyebrow">PUBLIC AUTHOR</div><h2>${esc(author)}</h2><p>${rows.length} published ${rows.length===1?'story':'stories'} in the Imperial catalog.</p></div></div><div class="section"><div class="sectionHead"><div><h2>Published Stories</h2><p>Explore this author's available works.</p></div></div><div class="grid">${rows.map(card).join('')}</div></div>`}catch(e){$('#authorProfile').innerHTML=`<div class="notice">${esc(e.message||'Unable to load this author profile.')} <a href="/catalog">Return to Catalog</a></div>`}}
