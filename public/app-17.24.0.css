@@ -124,3 +124,8 @@
 .authorFeedbackMeta{display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap}
 .authorFeedbackFootnote{font-size:11px;margin:12px 0 0}
 @media(max-width:620px){.authorFeedbackSummary{gap:8px}.authorFeedbackMetric{padding:10px}.authorFeedbackTop{display:grid;gap:4px}}
+
+.authorFeedbackFilters{display:grid;grid-template-columns:minmax(120px,.7fr) minmax(180px,1.3fr);gap:10px;margin:12px 0}
+.authorFeedbackFilters label{display:grid;gap:5px;font-size:11px;color:var(--muted,#687080)}
+.authorFeedbackFilters select,.authorFeedbackFilters input{width:100%;min-width:0;padding:9px 10px;border:1px solid var(--line,rgba(139,92,246,.2));border-radius:9px;background:var(--panel,transparent);color:inherit;font:inherit;font-size:12px}
+@media(max-width:420px){.authorFeedbackFilters{grid-template-columns:1fr}}
