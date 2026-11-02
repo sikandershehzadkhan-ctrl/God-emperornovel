@@ -102,3 +102,33 @@
 #tabs[role="tablist"]{scroll-margin-top:12px}
 .adminSection[role="tabpanel"]:focus{outline:3px solid rgba(44,104,214,.45);outline-offset:3px}
 @media(prefers-reduced-motion:reduce){.adminSkipLink{transition:none}}
+
+
+/* RTL admin console support for right-to-left interface locales. */
+html[dir="rtl"] .adminShell,
+html[dir="rtl"] .adminHero,
+html[dir="rtl"] .adminTabs,
+html[dir="rtl"] .adminGrid,
+html[dir="rtl"] .adminCard,
+html[dir="rtl"] .adminTableWrap,
+html[dir="rtl"] .adminForm,
+html[dir="rtl"] .adminAgentGrid {
+  direction: rtl;
+}
+html[dir="rtl"] .adminShell,
+html[dir="rtl"] .adminCard,
+html[dir="rtl"] .adminTableWrap {
+  text-align: right;
+}
+html[dir="rtl"] .adminTable th,
+html[dir="rtl"] .adminTable td {
+  text-align: right;
+}
+html[dir="rtl"] .adminForm input,
+html[dir="rtl"] .adminForm select,
+html[dir="rtl"] .adminForm textarea {
+  text-align: right;
+}
+html[dir="rtl"] .adminTabs {
+  justify-content: flex-start;
+}
