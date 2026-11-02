@@ -711,12 +711,14 @@ async function api(req,env){
  }
 if(p==="/api/author/feedback"&&m==="GET"){
   const e=author(u);if(e)return e;
-  const [ratings,comments]=await Promise.all([
+  const [ratings,comments,ratingTotal,commentTotal]=await Promise.all([
    env.DB.prepare(`SELECT 'rating' kind,r.rating rating,'' body,r.updated_at created_at,COALESCE(u.username,'Reader') username,n.id novel_id,n.title novel_title FROM ratings r JOIN novels n ON n.id=r.novel_id LEFT JOIN users u ON u.id=r.user_id WHERE n.owner_user_id=? ORDER BY r.updated_at DESC LIMIT 100`).bind(u.id).all(),
-   env.DB.prepare(`SELECT 'comment' kind,NULL rating,c.body,c.created_at,COALESCE(u.username,'Reader') username,n.id novel_id,n.title novel_title FROM comments c JOIN novels n ON n.id=c.novel_id JOIN users u ON u.id=c.user_id WHERE n.owner_user_id=? AND c.status='visible' ORDER BY c.created_at DESC LIMIT 100`).bind(u.id).all()
+   env.DB.prepare(`SELECT 'comment' kind,NULL rating,c.body,c.created_at,COALESCE(u.username,'Reader') username,n.id novel_id,n.title novel_title FROM comments c JOIN novels n ON n.id=c.novel_id JOIN users u ON u.id=c.user_id WHERE n.owner_user_id=? AND c.status='visible' ORDER BY c.created_at DESC LIMIT 100`).bind(u.id).all(),
+   env.DB.prepare(`SELECT COUNT(*) total FROM ratings r JOIN novels n ON n.id=r.novel_id WHERE n.owner_user_id=?`).bind(u.id).first(),
+   env.DB.prepare(`SELECT COUNT(*) total FROM comments c JOIN novels n ON n.id=c.novel_id WHERE n.owner_user_id=? AND c.status='visible'`).bind(u.id).first()
   ]);
   const items=[...(ratings.results||[]),...(comments.results||[])].sort((a,b)=>String(b.created_at||'').localeCompare(String(a.created_at||''))).slice(0,100);
-  return json({items,scope:'owned_stories',limit:100,ratings_count:(ratings.results||[]).length,comments_count:(comments.results||[]).length});
+  return json({items,scope:'owned_stories',limit:100,ratings_count:(ratings.results||[]).length,comments_count:(comments.results||[]).length,ratings_total:Number(ratingTotal?.total||0),comments_total:Number(commentTotal?.total||0)});
  }
  if(p==="/api/author/novels"&&m==="GET"){
   const e=author(u);if(e)return e;
