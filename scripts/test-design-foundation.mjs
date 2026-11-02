@@ -56,8 +56,8 @@ assert.ok(css.includes(".skeletonCard::before,.skeletonCard::after"),"Homepage l
 assert.ok(sourceApp.includes('aria-label="Trending stories" aria-busy="true"'),"Trending shelf must expose its loading state to assistive technology");
 assert.ok(sourceApp.includes('aria-label="Recently updated stories" aria-busy="true"'),"Latest shelf must expose its loading state to assistive technology");
 assert.ok(sourceApp.includes('class="skeletonCard" aria-hidden="true"'),"Decorative skeleton placeholders must be hidden from assistive technology");
-assert.ok(sourceApp.includes("el.setAttribute('aria-busy','false')"),"Story shelf must clear its busy state after rendering results");
-assert.ok(sourceApp.includes("$('#trend').setAttribute('aria-busy','false');$('#latest').setAttribute('aria-busy','false')"),"Story shelf must clear its busy state after a loading error");
+assert.ok(sourceApp.includes('el.setAttribute("aria-busy","false")'),"Story shelf must clear its busy state after rendering results");
+assert.ok(sourceApp.includes('const renderHomeShelfError=selector=>')&&sourceApp.includes('el.setAttribute("aria-busy","false")'),"Each failed story shelf must clear its busy state independently");
 assert.ok(css.includes("aspect-ratio:.76"),"Loading placeholders must reserve a stable story-card footprint");
 assert.ok(css.includes("@media(prefers-reduced-motion:reduce){.skeletonCard{animation:none;background:var(--in-surface)}}"),"Story loading animation must respect reduced-motion preferences");
 assert.ok(css.includes("Homepage story cards: editorial hierarchy"),"Homepage story-card refinement must remain in the design foundation");
@@ -76,6 +76,10 @@ assert.ok(css.includes(".homeStoryGrid .card:focus-visible"),"Story cards must h
 assert.equal((html.match(/imperial-design-foundation\.css/g)||[]).length,1,"Design foundation must be linked exactly once");
 assert.ok(html.indexOf("imperial-glass.css")<html.indexOf("imperial-design-foundation.css"),"Foundation must load after legacy global styles");
 assert.equal(sourceApp,releaseApp,"Editable and versioned browser bundles must remain synchronized");
+assert.ok(sourceApp.includes('class="imperialHeroSeal"><img src="/imperial-novel-app-icon.svg" alt="" width="184" height="184" loading="eager" decoding="async" fetchpriority="high"'),"Above-the-fold imperial crest must load eagerly at high priority");
+assert.ok(sourceApp.includes("function stopHomePulsePolling()")&&sourceApp.includes("clearInterval(homePulseTimer)")&&sourceApp.includes("document.removeEventListener('visibilitychange',homePulseVisibilityHandler)"),"Homepage live-data polling must clean up its timer and visibility listener");
+assert.ok(sourceApp.includes("if(!document.querySelector('.homePage')){stopHomePulsePolling();return}"),"Homepage polling must stop when the user navigates away from the homepage");
+assert.match(html,/<script src="\/app-17\.23\.0\.js" defer fetchpriority="high"><\/script>/,"The deferred application entry bundle must receive high fetch priority so the homepage shell is not needlessly delayed.");
 for(const label of ["Home","Discover","Trending","Rankings","Library","Community","Create"]){
   assert.ok(sourceApp.includes(">"+label+"</a>"),"Primary desktop navigation must include "+label);
 }
@@ -300,3 +304,9 @@ assert.ok(css.includes('body .mobileNav a[href="/account"]{')&&css.includes("dis
 assert.ok(css.includes("body .mobileNav{")&&css.includes("position:fixed!important")&&css.includes("inset:auto 0 0 0!important"),"Mobile navigation must remain fixed to the viewport bottom.");
 assert.ok(css.includes("env(safe-area-inset-bottom)"),"Mobile navigation must respect device safe-area insets.");
 assert.ok(css.includes("body .footerInner{padding-bottom:calc(76px + env(safe-area-inset-bottom))}"),"Footer content must remain reachable above the fixed mobile navigation.");
+
+/* Homepage narrow-screen story-card overflow regression checks. */
+for(const selector of [".homePage .homeStoryGrid .cardBody,",".homePage .homeStoryGrid .cardTitle,",".homePage .homeStoryGrid .meta{display:flex;flex-wrap:wrap;align-items:flex-start;gap:5px}",".homePage .homeStoryGrid .meta span{max-width:100%;white-space:normal;overflow-wrap:anywhere;line-height:1.35}"]){
+  assert.ok(css.includes(selector),"Homepage story cards must support narrow translated content without horizontal overflow: "+selector);
+}
+assert.ok(css.includes("@media(max-width:390px){\n  .homePage .homeStoryGrid .cardTitle{font-size:13px;overflow-wrap:anywhere}"),"Very narrow phones must wrap long story titles and compact metadata safely");

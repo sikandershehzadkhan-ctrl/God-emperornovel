@@ -111,10 +111,13 @@ FROM novels n WHERE n.publication_status='published'"""
 
 def run(base, filters, sort, page=1, limit=17):
     sql, args = base, []
-    term = filters.get("q", "").strip().lower()
-    if term:
-        sql += " AND (LOWER(n.title) LIKE ? OR LOWER(n.author) LIKE ? OR LOWER(n.description) LIKE ? OR LOWER(n.alt_titles) LIKE ?)"
-        args.extend(["%" + term + "%"] * 4)
+    term = " ".join(filters.get("q", "").lower().split())[:120]
+    search_terms = term.split()[:8]
+    for word in search_terms:
+        escaped = word.replace("\\", "\\\\").replace("%", "\\%").replace("_", "\\_")
+        pattern = "%" + escaped + "%"
+        sql += " AND (LOWER(n.title) LIKE ? ESCAPE char(92) OR LOWER(n.author) LIKE ? ESCAPE char(92) OR LOWER(n.description) LIKE ? ESCAPE char(92) OR LOWER(n.alt_titles) LIKE ? ESCAPE char(92))"
+        args.extend([pattern] * 4)
     if filters.get("genre"):
         sql += " AND n.id IN(SELECT ng.novel_id FROM novel_genres ng JOIN genres g ON g.id=ng.genre_id WHERE g.slug=?)"
         args.append(filters["genre"])
@@ -130,7 +133,7 @@ def run(base, filters, sort, page=1, limit=17):
     if filters.get("author"):
         sql += " AND LOWER(n.author)=LOWER(?)"; args.append(filters["author"])
     if filters.get("min_rating", 0) > 0:
-        sql += " AND n.rating>=?"; args.append(min(5, filters["min_rating"]))
+        sql += " AND n.rating>=?"; args.append(min(10, filters["min_rating"]))
     if base == OLD:
         sql += " GROUP BY n.id"
     order = {
@@ -140,6 +143,10 @@ def run(base, filters, sort, page=1, limit=17):
         "newest": "n.created_at DESC",
         "trending": "(SELECT COUNT(*) FROM unlocks ux JOIN chapters cx ON cx.id=ux.chapter_id WHERE cx.novel_id=n.id AND ux.unlocked_at>=datetime('now','-7 days')) DESC",
     }.get(sort, "n.updated_at DESC")
+    if search_terms and sort == "updated":
+        phrase = term.replace("\\", "\\\\").replace("%", "\\%").replace("_", "\\_")
+        order = "CASE WHEN LOWER(n.title)=? THEN 0 WHEN LOWER(n.title) LIKE ? ESCAPE char(92) THEN 1 WHEN LOWER(n.author)=? THEN 2 WHEN LOWER(n.title) LIKE ? ESCAPE char(92) THEN 3 ELSE 4 END," + order
+        args.extend([term, phrase + "%", term, "%" + phrase + "%"])
     sql += " ORDER BY " + order + ",n.id DESC LIMIT ? OFFSET ?"
     args.extend([limit, (page - 1) * limit])
     return [dict(row) for row in db.execute(sql, args).fetchall()]
@@ -147,9 +154,11 @@ def run(base, filters, sort, page=1, limit=17):
 cases = [
     ({}, "updated"), ({}, "chapters"), ({}, "trending"), ({}, "views"),
     ({"q": "fantasy"}, "rating"),
+    ({"q": "fantasy story"}, "updated"),
+    ({"q": "fantasy %"}, "updated"),
     ({"genre": "genre-2", "tag": "tag-3"}, "updated"),
     ({"status": "completed", "kind": "fanfiction"}, "newest"),
-    ({"language": "urdu", "min_rating": 3}, "rating"),
+    ({"language": "urdu", "min_rating": 8}, "rating"),
     ({"author": "author 4"}, "updated"),
 ]
 for filters, sort in cases:
@@ -157,4 +166,9 @@ for filters, sort in cases:
     new_rows = run(NEW, filters, sort)
     assert old_rows == new_rows, (filters, sort, old_rows[:1], new_rows[:1])
     assert all(row["chapter_count"] == 37 for row in new_rows)
-print(f"PASS: {len(cases)} catalog query parity cases; relationship row multiplication removed.")
+assert run(NEW, {"q": "fantasy story"}, "updated"), "Multi-word search must match all terms across catalog text."
+assert run(NEW, {"q": "fantasy story 1"}, "updated")[0]["id"] == 1, "Default search must rank an exact title match first."
+assert run(NEW, {"q": "fantasy"}, "views")[0]["id"] == 80, "An explicitly selected sort must take priority over relevance ranking."
+assert run(NEW, {"q": "%"}, "updated") == [], "Percent must be treated as a literal search character, not a wildcard."
+assert run(NEW, {"q": "_"}, "updated") == [], "Underscore must be treated as a literal search character, not a wildcard."
+print(f"PASS: {len(cases)} catalog query parity cases plus multi-term and literal wildcard search; relationship row multiplication removed.")

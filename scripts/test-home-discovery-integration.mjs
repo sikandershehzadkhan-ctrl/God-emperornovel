@@ -1,22 +1,135 @@
 import assert from "node:assert/strict";
 import { readFile } from "node:fs/promises";
 
-const [html,app,css,worker]=await Promise.all([
+const [html,app,sourceApp,css,worker]=await Promise.all([
  readFile(new URL("../public/index.html",import.meta.url),"utf8"),
  readFile(new URL("../public/app-17.23.0.js",import.meta.url),"utf8"),
+ readFile(new URL("../public/app.js",import.meta.url),"utf8"),
  readFile(new URL("../public/imperial-design-foundation.css",import.meta.url),"utf8"),
  readFile(new URL("../src/index.js",import.meta.url),"utf8")
 ]);
+assert.equal(app,sourceApp,"Served homepage bundle must remain byte-for-byte synchronized with the editable source.");
 assert.ok(html.includes("/app-17.23.0.js"),"HTML must load the refreshed client bundle");
 assert.equal(html.split("/app-17.23.0.js").length-1,1,"HTML must reference the current versioned client bundle exactly once");
 assert.ok(app.includes("id=\"homeConnections\""),"Homepage must expose the connected discovery region");
 assert.ok(app.includes("imperialHeroVisual")&&app.includes("/imperial-novel-app-icon.svg"),"Homepage hero must feature the approved Imperial black-sun and empty-throne crest.");
 assert.ok(app.includes("A NEW ERA OF STORYTELLING")&&app.includes("THE IMPERIAL CREST"),"Homepage hero must establish a distinct editorial identity.");
+assert.ok(app.includes('c=Object.prototype.hasOwnProperty.call(IN_LANG,c)?c:"en"'),"Unsupported stored locale values must safely fall back to English.");
+assert.ok(app.includes('(c==="ur"||c==="ar"||c==="fa")?"rtl":"ltr"'),"Urdu, Arabic, and Persian must use right-to-left document direction.");
+assert.ok(app.includes('[data-in-lang-key]'),"Explicitly marked homepage text nodes must participate in live locale switching.");
+assert.ok(app.includes('[data-in-lang-placeholder]'),"Search placeholders must update when the interface language changes.");
+assert.ok(app.includes('data-in-lang-key="Open a world."')&&app.includes('data-in-lang-key="Shape an empire."'),"The homepage hero headline must expose translation-safe text spans.");
+assert.ok(app.includes('document.querySelectorAll(".navlinks a,.menuDrawer a span,.footerLinks a,.mobileNav a,[data-in-lang-key]")'),"Navigation drawer labels must be included in the language refresh pass.");
+
+const localeMatch=app.match(/const IN_LANG=(\{[\s\S]*?\});(?:const READER_LANG|function setINLang)/);
+assert.ok(localeMatch,"The language dictionary must remain a single parseable object.");
+const localeDictionary=JSON.parse(localeMatch[1]);
+for(const code of ["ur","hi","ar","fa"])assert.ok(["Explore the realm","Discover novels","Trend Factory","Genres","Browse formats","My library","Become an Author","Author Studio","Imperial Crown Vault","OmniPortal","Account"].every(label=>localeDictionary[code]?.[label]),code+" must translate the navigation drawer vocabulary in its own locale dictionary.");
+assert.equal(Object.keys(localeDictionary).length,14,"The existing fourteen interface locales must be retained.");
+const homepageMarkupStart=app.indexOf("async function home(){");
+const homepageMarkupEnd=app.indexOf(" let platformPulseRequest",homepageMarkupStart);
+assert.ok(homepageMarkupStart>=0&&homepageMarkupEnd>homepageMarkupStart,"Homepage markup boundaries must remain identifiable for localization coverage.");
+const homepageMarkup=app.slice(homepageMarkupStart,homepageMarkupEnd);
+const homepageLocaleKeys=[...new Set([...homepageMarkup.matchAll(/data-in-lang-key="([^"]+)"/g)].map(match=>match[1]).concat([...homepageMarkup.matchAll(/data-in-lang-placeholder="([^"]+)"/g)].map(match=>match[1])))].filter(key=>!key.startsWith("${"));
+assert.ok(homepageLocaleKeys.length>=75,"The homepage localization audit must cover the complete visible key set.");
+for(const code of Object.keys(localeDictionary).filter(code=>code!=="en"))assert.ok(homepageLocaleKeys.every(key=>localeDictionary[code]?.[key]),code+" must translate every fixed homepage label and placeholder.");
+for(const code of ["ur","hi","ar","fa"])assert.ok(localeDictionary[code]?.["Open a world."]&&localeDictionary[code]?.["Shape an empire."]&&localeDictionary[code]?.["Find your story"],code+" homepage hero copy must be inside its own locale dictionary.");
+for(const code of ["ur","hi","ar","fa"])assert.ok(localeDictionary[code]?.["Follow the threads between worlds."]&&localeDictionary[code]?.["The realm, right now."],code+" discovery and platform sections must be translated.");
+
+for(const code of ["ur","hi","ar","fa"])assert.ok(localeDictionary[code]?.["Follow the threads between worlds."],"Every supported RTL/South Asian homepage locale must contain discovery translations.");
+assert.ok(localeDictionary.ur?.["The realm, right now."]&&localeDictionary.hi?.["The realm, right now."]&&localeDictionary.ar?.["The realm, right now."]&&localeDictionary.fa?.["The realm, right now."],"Platform activity headings must be translated in all four extended locales.");
+
+assert.ok(app.includes('"Follow the threads between worlds.":"دنیاؤں کے درمیان رشتے تلاش کریں۔"'),"Urdu discovery headings must be translated within the Urdu dictionary.");
+assert.ok(app.includes('"Follow the threads between worlds.":"दुनियाओं के बीच के सूत्र खोजें।"'),"Hindi discovery headings must be translated within the Hindi dictionary.");
+assert.ok(app.includes('"Follow the threads between worlds.":"تتبّع الروابط بين العوالم."'),"Arabic discovery headings must be translated within the Arabic dictionary.");
+assert.ok(app.includes('"Follow the threads between worlds.":"رشته‌های پیوند میان دنیاها را دنبال کنید."'),"Persian discovery headings must be translated within the Persian dictionary.");
+assert.ok(app.includes('data-in-lang-key="Follow the threads between worlds."')&&app.includes('data-in-lang-key="Stories with momentum."'),"Discovery and trending headings must participate in live locale switching.");
+assert.ok(app.includes('data-in-lang-key="The realm, right now."')&&app.includes('data-in-lang-key="Latest chapter updates"'),"Platform activity headings must participate in live locale switching.");
+assert.ok(app.includes('homeConnectionType" data-home-dynamic-key="')&&app.includes("node.type===\'genre\'?\'Genre\':\'Theme\'"),"Dynamic discovery genre and theme labels must be locale-aware.");
+assert.ok(app.includes('homeDiscoveryLanguageHandler=localizeDiscovery')&&app.includes('document.addEventListener("imperial:languagechange",homeDiscoveryLanguageHandler)'),"Dynamic discovery chips must refresh when the selected language changes.");
+assert.ok(app.includes('data-home-dynamic-key="The catalog is still building its discovery map.'),"Discovery empty state must be locale-aware.");
+assert.ok(app.includes('data-home-dynamic-key="Connected discovery is temporarily unavailable."'),"Discovery error state must be locale-aware.");
+const platformLabels=["Published novels","Published chapters","Credited authors","Novel views · all-time","Chapter views · all-time","Signed-in readers · 24h","Chapter updates · 24h","Visible comments","New comments · 24h","Comment likes","Novel reactions","Reader ratings","Bookmarks","Novel follows","No published chapter updates are recorded yet.","No chapter unlock activity in the last seven days yet.","unlocks"];
+for(const code of ["ur","hi","ar","fa"])assert.ok(platformLabels.every(label=>localeDictionary[code]?.[label]),code+" must translate platform metric labels and activity states.");
+assert.ok(app.includes("data-in-lang-key=\"'+label+'\">"),"Live platform metric labels must expose translation keys when rendered.");
+assert.ok(app.includes('setINLang(document.documentElement.lang||\'en\')'),"Live platform data must apply the current locale after asynchronous rendering.");
+
+for(const code of ["ur","hi","ar","fa"])assert.ok(localeDictionary[code]?.["Unknown author"]&&localeDictionary[code]?.["chapters"],code+" must translate dynamic story-card metadata.");
+for(const code of ["ur","hi","ar","fa"])assert.ok(localeDictionary[code]?.["The catalog is growing. Be among the first to discover what comes next."]&&localeDictionary[code]?.["No additional recently updated stories yet. Explore the catalog for another world."],code+" must translate story-shelf empty states.");
+assert.ok(app.includes('data-in-lang-key="chapters"')&&app.includes('data-in-lang-key="Unknown author"'),"Dynamic story-card metadata must expose translation keys.");
+assert.ok(app.includes('setINLang(document.documentElement.lang||"en")'),"Rendered story shelves must apply the currently selected locale after asynchronous insertion.");
+
+const homeCss=css;
+assert.ok(homeCss.includes(".homePage .nextFeatureDeck{grid-template-columns:minmax(0,1fr)"),"Localized feature tiles must stack cleanly on mobile.");
+assert.ok(homeCss.includes("overflow-wrap:anywhere"),"Long translated homepage copy must not force horizontal overflow.");
+assert.ok(homeCss.includes(".homePage .homeFormatShelf,")&&homeCss.includes(".homePage .nextReaderPromise{")&&homeCss.includes("content-visibility:auto;"),"Long below-the-fold homepage shelves must use progressive rendering.");
+assert.ok(homeCss.includes("contain-intrinsic-size:auto 520px;")&&homeCss.includes("@media(max-width:760px)")&&/contain-intrinsic-size:auto 900px(?:;|})/.test(homeCss),"Deferred homepage sections must reserve responsive intrinsic space to limit scroll jumps.");
+const deferredStart=homeCss.indexOf("Homepage off-screen rendering budget");
+const deferredEnd=homeCss.indexOf("@media(max-width:760px)",deferredStart);
+const deferredCss=homeCss.slice(deferredStart,deferredEnd);
+assert.ok(deferredStart>=0&&deferredEnd>deferredStart&&!deferredCss.includes(".imperialArchiveHero"),"The first-screen imperial hero must remain eager rather than being deferred with lower shelves.");
+assert.ok(homeCss.includes("@media(prefers-reduced-motion:reduce)")&&homeCss.includes("transition:none!important"),"Homepage motion must respect reduced-motion preferences.");
+
+assert.ok(homeCss.includes('html[dir="rtl"] .homePage .nextFeatureTile'),"Editorial feature tiles must support RTL alignment.");
+assert.ok(app.includes('data-in-lang-key="Story shelves could not be loaded."')&&app.includes('data-in-lang-key="Try again"'),"Story shelf failure messages must expose translation keys.");
+
+const globalNavigationKeys=["For You","Author","Language"];
+assert.ok(globalNavigationKeys.every(key=>Object.keys(localeDictionary).every(code=>localeDictionary[code]?.[key])),"Global navigation and language-control labels must exist in every supported locale.");
+assert.ok(app.includes('href="/for-you"')&&app.includes('href="/author"'),"Desktop navigation must expose For You and Author destinations.");
+assert.ok(app.includes('data-in-lang-aria-label="Language"'),"Language selector accessible label must be localizable.");
+const editorialHomeKeys=["Fantasy","Progression","Romance","Isekai","Original. Authorized. Reader-first.","THE IMPERIAL CREST","Read. Create. Conquer.","Light novels","Web novels","Manga & comics","Manhwa & webtoons","Explore the library","FRESH FROM THE REALM","New chapters. New reasons to stay.","Recently updated stories from the Imperial catalog.","Latest updates","Trend Factory","Spot story signals, explore metadata and find creators worth inviting. Rights review stays in control.","Read the signals ↗","World Forge","Shape your premise, build a story bible and draft chapters in a focused studio.","Build your world ↗","Reader Constellation","Find your people, trade theories and make a fandom feel alive.","Join the conversation ↗","A rights-first gateway for approved sources, creator attribution and future partnerships.","Explore the portal ↗","You're not just a reader.","Become an Author","Imperial Crown Vault ↗","Search titles, tropes, worlds...","Search novels, genres and authors","Checking service health…","Loading real-time data…","Checking the publication feed…","Calculating from recorded unlocks…","Mapping the published library…"];
+for(const code of ["ur","hi","ar","fa"])assert.ok(editorialHomeKeys.every(key=>localeDictionary[code]?.[key]),code+" must translate the extended homepage editorial and navigation copy.");
+assert.ok(editorialHomeKeys.filter(key=>!["Search titles, tropes, worlds...","Search novels, genres and authors"].includes(key)).every(key=>app.includes('data-in-lang-key="'+key+'"')||app.includes('data-in-lang-placeholder="'+key+'"')||app.includes('aria-label="'+key+'"')),"Extended homepage copy must be marked for live locale switching.");
+
+
+assert.ok(app.includes('document.dispatchEvent(new Event("imperial:languagechange"))'),"Language changes must notify asynchronously rendered homepage content.");
+
+assert.ok(app.includes('data-in-lang-key="A whole creative ecosystem built around the stories you love and the worlds you want to make."'),"Creator ecosystem introduction must be translatable.");
+
+assert.ok(app.includes('"ur":{"Home":"صفحہ اول"')&&app.includes('"hi":{"Home":"होम"')&&app.includes('"ar":{"Home":"الرئيسية"')&&app.includes('"fa":{"Home":"خانه"'),"Urdu, Hindi, Arabic, and Persian dictionaries must remain available.");
+assert.ok(app.includes('"Discover stories worth staying up for, then create the worlds only you can imagine.":"ایسی کہانیاں'),"Urdu homepage hero copy must be translated.");
+assert.ok(app.includes('"Discover stories worth staying up for, then create the worlds only you can imagine.":"اكتشف قصصاً'),"Arabic homepage hero copy must be translated.");
+assert.ok(app.includes('"Discover stories worth staying up for, then create the worlds only you can imagine.":"داستان‌هایی کشف کنید'),"Persian homepage hero copy must be nested in the Persian locale dictionary.");
+assert.ok(css.includes("Homepage internationalization and RTL layout pass 17.45"),"Homepage must include a dedicated RTL layout refinement.");
+assert.ok(css.includes('html[dir="rtl"] .homePage .heroSearch input{text-align:right}'),"RTL homepage search input must align to the reading direction.");
+assert.ok(css.includes('html[dir="rtl"] .homePage .nextHeroCopy,'),"RTL hero alignment must target the real homepage copy container.");
+
 assert.ok(app.includes("class=\"imperialHeroAuthor\" href=\"/become-an-author\"")&&app.includes("class=\"imperialHeroBrowse\" href=\"/catalog\""),"Homepage hero must provide direct creator onboarding and library discovery actions.");
+assert.ok(app.includes('id="catalogQuery" name="q" type="search" maxlength="120"'),"Homepage hero search must enforce the same 120-character limit as the catalog API.");
+assert.ok(app.includes('<form class="heroSearch" action="/catalog" method="get" role="search">'),"Homepage hero search must route into Discover so users get the unified filters and pagination.");
 assert.ok(css.includes(".imperialHeroVisual")&&css.includes("@media(max-width:760px)"),"Imperial crest composition must have responsive mobile behavior.");
 assert.ok(css.includes("prefers-reduced-motion:reduce")&&css.includes(".imperialHeroSeal{transform:none}"),"Hero crest must respect reduced-motion preferences.");
 assert.ok(app.includes("/api/discovery/graph?limit=60"),"Homepage must use the bounded live graph endpoint");
-const homepageLoader=app.slice(app.indexOf("async function home(){"),app.indexOf("\\nasync function trendFactory"));
+const homepageLoader=app.slice(app.indexOf("async function home(){"),app.indexOf("async function trendFactory"));
+assert.ok(homepageLoader.includes('setINLang(document.documentElement.lang||"en");'),"Saved locale must be applied after homepage markup is inserted into the document.");
+assert.ok(homepageLoader.includes("void (async()=>{"),"Catalog and discovery requests must run as independent non-blocking homepage tasks.");
+assert.ok(homepageLoader.includes("const pageGeneration=homePulseGeneration;")&&homepageLoader.includes("const isCurrentHome=()=>pageGeneration===homePulseGeneration&&root.isConnected&&!!root.querySelector('.homePage')"),"Each homepage visit must own a lifecycle guard that detects navigation away and later re-entry.");
+assert.ok(homepageLoader.includes("if(!isCurrentHome())return;const el=$(selector);if(!el)return;"),"Asynchronous story shelf rendering must stop safely when its homepage has been detached.");
+assert.ok(homepageLoader.includes("if(!isCurrentHome())return;\n  const target=$('#homeConnections');"),"Discovery graph failures must not write into a page after navigation.");
+assert.ok(homepageLoader.includes("if(!isCurrentHome())return;\n  const trendingNovelIds="),"Late trending/latest responses must be discarded after the visitor leaves the homepage.");
+assert.ok(homepageLoader.includes("if(!isCurrentHome())return;\n  const nodes=Array.isArray(graph.nodes)?graph.nodes:[];"),"Late discovery graph responses must be discarded after the visitor leaves the homepage.");
+
+assert.ok(homepageLoader.includes("void refreshPlatformPulse();"),"The initial live overview must not block homepage navigation from becoming interactive.");
+const pulseLoader=homepageLoader.slice(homepageLoader.indexOf("function refreshPlatformPulse()"),homepageLoader.indexOf("async function trendFactory"));
+assert.ok(pulseLoader.includes("pulseGeneration!==homePulseGeneration||!document.querySelector('.homePage')"),"Late live overview responses must not mutate detached or newly re-entered homepage UI after navigation.");
+assert.ok(app.includes("homePulseGeneration++")&&app.includes("let homePulseTimer=null,homePulseVisibilityHandler=null,homePulseGeneration=0"),"Each homepage visit must receive a fresh generation so old requests cannot update a later visit.");
+assert.ok(app.includes("platformPulseRequestGeneration===pulseGeneration")&&app.includes("platformPulseRequestGeneration=pulseGeneration"),"A new homepage visit must not be blocked by an in-flight request from the previous visit.");
+assert.ok(app.includes("function stopHomePulsePolling()")&&app.includes("document.removeEventListener('visibilitychange',homePulseVisibilityHandler)"),"Homepage polling lifecycle must release its interval and visibility listener.");
+assert.ok(app.includes("homeDiscoveryLanguageHandler=localizeDiscovery")&&app.includes("document.removeEventListener('imperial:languagechange',homeDiscoveryLanguageHandler)"),"Homepage discovery locale listener must be removed before the next route render to prevent listener accumulation.");
+
+assert.ok(!homepageLoader.includes("await refreshPlatformPulse();"),"Homepage boot must not wait for the real-time panel's network response.");
+assert.ok(homepageLoader.includes("Promise.allSettled([")&&homepageLoader.includes("apiWithTimeout('/api/novels?sort=trending&limit=10')")&&homepageLoader.includes("apiWithTimeout('/api/novels?sort=updated&limit=10')"),"Trending and latest catalog shelves must load concurrently and settle independently.");
+assert.ok(homepageLoader.includes('const renderHomeShelfError=selector=>'),"A failed catalog endpoint must render an error state only in its own shelf.");
+assert.ok(homepageLoader.includes('if(trendResult.status==="fulfilled")')&&homepageLoader.includes('else renderHomeShelfError(\'#trend\')')&&homepageLoader.includes('if(latestResult.status==="fulfilled")')&&homepageLoader.includes('else renderHomeShelfError(\'#latest\')'),"Trending and latest shelves must preserve successful results when the other endpoint fails.");
+assert.ok(homepageLoader.includes('const validRows=payload=>Array.isArray(payload?.results)?payload.results.filter(row=>row&&Number.isSafeInteger(Number(row.id))&&Number(row.id)>0):[]'),"Malformed catalog responses and invalid novel identifiers must be excluded before rendering.");
+const trendingSectionIndex=homepageLoader.indexOf('<section class="section nextShelf">');
+const platformPulseSectionIndex=homepageLoader.indexOf('<section class="platformPulse"');
+assert.ok(trendingSectionIndex>=0&&platformPulseSectionIndex>trendingSectionIndex,"Reader-facing trending stories must appear before platform activity metrics in the homepage flow.");
+assert.ok(homepageLoader.includes('id="trend" class="grid homeStoryGrid multiStory"'),"Trending cards must activate the responsive multi-story grid styles.");
+assert.ok((homepageLoader.match(/class="skeletonCard"/g)||[]).length>=4,"Trending loading placeholders must fill a balanced two-column mobile row.");
+assert.ok(css.includes("Story-card presentation pass 17.44"),"Story cards must include the dedicated visual presentation pass.");
+assert.ok(css.includes(".homePage .homeStoryGrid .cover::after"),"Story covers must receive a subtle image treatment without changing source artwork.");
+assert.ok(css.includes(".homePage .homeStoryGrid .meta span{"),"Real story metadata must be visually separated into readable badges.");
 assert.ok(homepageLoader.includes("const trendingNovelIds=new Set(trendRows.map(row=>Number(row.id))"),"Homepage must identify novels already displayed in the trending shelf.");
 assert.ok(homepageLoader.includes("const distinctLatestRows=latestRows.filter(row=>!trendingNovelIds.has(Number(row.id)))"),"Latest-updates shelf must not repeat novels already shown in trending.");
 assert.ok(homepageLoader.includes("renderHomeStories('#latest',distinctLatestRows"),"Latest-updates shelf must render the de-duplicated list.");
@@ -28,10 +141,22 @@ assert.ok(app.includes("Connected discovery is temporarily unavailable"),"Graph 
 const storyCardRenderer=app.slice(app.indexOf("function card(n){"),app.indexOf("function chapterRow"));
 assert.ok(storyCardRenderer.includes("Number.isFinite(rating)&&rating>0"),"Story cards must show ratings only when a real positive rating is present");
 assert.ok(storyCardRenderer.includes("Number.isFinite(chapters)&&chapters>0"),"Story cards must show chapter counts only when a real positive count is present");
-assert.ok(storyCardRenderer.includes("metadata?\x60<div class=\"meta\">"),"Story cards must omit the metadata row when both statistics are unavailable");
+assert.ok(storyCardRenderer.includes("(metadata?'<div class=\"meta\">'+metadata+'</div>':'')"),"Story cards must omit the metadata row when both statistics are unavailable");
 assert.ok(!storyCardRenderer.includes("Number(n.rating||0).toFixed(1)"),"Missing ratings must never be presented as a fabricated zero-star score");
 assert.ok(!storyCardRenderer.includes("n.chapter_count||n.latest_chapter||0"),"Missing chapter counts must never be presented as zero chapters");
 assert.ok(css.includes(".homeConnectionShelf")&&css.includes("@media(max-width:640px)"),"Connected discovery shelf needs responsive styling");
+assert.ok(css.includes("Homepage mobile pass 17.42"),"Homepage must include the dedicated mobile refinement pass.");
+assert.ok(css.includes("Homepage desktop and keyboard-accessibility pass 17.43"),"Homepage must include the desktop and keyboard accessibility refinement pass.");
+assert.ok(/@media\(min-width:761px\)\s*\{[^}]*grid-template-columns:minmax\(0,1\.18fr\) minmax\(260px,\.82fr\)/s.test(css),"Desktop hero must retain a deliberate copy-and-crest composition.");
+assert.ok(/\.homePage a:focus-visible,[\s\S]*?outline:3px solid var\(--in-focus\)/.test(css),"Homepage interactive links and controls must expose visible keyboard focus.");
+assert.ok(/@media\(prefers-reduced-motion:reduce\)\s*\{[\s\S]*?\.homePage \.homeFormatCard,[\s\S]*?transform:none!important/s.test(css),"Homepage hover motion must respect reduced-motion preferences.");
+const mobileCss=css.slice(css.indexOf("Homepage mobile pass 17.42"));
+assert.ok(/\.imperialHeroVisual\s*\{[^}]*display:flex/s.test(mobileCss),"The imperial crest must remain visible in the compact mobile hero.");
+assert.ok(/\.homePage \.heroSearch input\s*\{[^}]*font-size:16px/s.test(mobileCss),"Mobile search must retain a flexible input and avoid automatic mobile browser zoom.");
+assert.ok(/\.homePage \.heroSearch button\s*\{[^}]*min-height:44px/s.test(mobileCss),"Mobile search action must retain an accessible touch target.");
+assert.ok(mobileCss.includes(".homeStoryGrid{grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}"),"Mobile story shelves must preserve a compact two-column layout.");
+assert.ok(mobileCss.includes(".homeStoryGrid .cardTitle{display:-webkit-box;"),"Mobile story titles must be clamped to prevent uneven cards.");
+assert.ok(/\.platformPulseDetails\s*\{[^}]*grid-template-columns:1fr/s.test(mobileCss),"Platform activity panels must stack cleanly on mobile.");
 assert.ok(css.includes(".homeFormatGrid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr))"),"Desktop format discovery must use a balanced three-column grid.");
 assert.ok(css.includes("@media(max-width:420px)")&&css.includes(".homeFormatGrid{gap:7px}"),"Narrow mobile format cards must use compact spacing.");
 assert.ok(css.includes("border:1px solid var(--in-line)")&&css.includes("var(--in-brand) 5%"),"Homepage and real-time panels must use declared design tokens.");
@@ -40,13 +165,20 @@ assert.ok(css.includes(".platformPulseRow:focus-visible")&&css.includes(".homeFo
 assert.ok(css.includes("html[data-theme=\"dark\"] .homeFormatShelf"),"Format discovery must preserve the dark theme.");
 
 const pulse=app.slice(app.indexOf(" let platformPulseRequest="),app.indexOf("async function trendFactory"));
-assert.ok(pulse.includes("setInterval(()=>{if(document.visibilityState==='visible')refreshPlatformPulse()},60000)"),"Live overview must refresh once per minute while the page is visible");
-assert.ok(pulse.includes("if(platformPulseRequest)return platformPulseRequest"),"Manual and scheduled refreshes must not overlap");
+assert.ok(pulse.includes("homePulseTimer=setInterval(()=>{")&&pulse.includes("if(document.visibilityState==='visible')refreshPlatformPulse()"),"Live overview must refresh once per minute while the homepage is visible");
+assert.ok(pulse.includes("if(!document.querySelector('.homePage')){stopHomePulsePolling();return}"),"Live overview polling must clean itself up after leaving the homepage");
+assert.ok(pulse.includes("if(platformPulseRequest&&platformPulseRequestGeneration===pulseGeneration)return platformPulseRequest"),"Manual and scheduled refreshes within one homepage visit must not overlap");
 assert.ok(pulse.includes("last successful update"),"A failed refresh must preserve the last successful snapshot and disclose its age");
 assert.ok(pulse.includes("second:'2-digit',timeZoneName:'short'"),"The refresh timestamp must show seconds and the visitor's local timezone");
 assert.ok(pulse.includes("refreshes every 60 seconds"),"The live panel must disclose its refresh cadence");
 
 assert.ok(app.includes('id="platformPulseHealth"'),"Homepage must expose a separate live service-health indicator");
+assert.ok(app.includes('id="platformPulseHealth" class="platformPulseHealth" role="status" aria-live="polite"'),"The concise service-health indicator must remain announced to assistive technology.");
+for(const id of ["homeConnections","platformPulseUpdated","platformPulseUpdates","platformPulseTrending"]){const match=app.match(new RegExp(`<[^>]+id="${id}"[^>]*>`));assert.ok(match&&!/aria-live|role="status"/.test(match[0]),id+" must not announce a large dynamic region or repeating timestamp on every refresh.");}
+
+const healthLabels=["Health status unavailable","Operational · ","Service issue · database unavailable","Refreshing…","Real-time data temporarily unavailable"];
+for(const code of ["ur","hi","ar","fa"])assert.ok(healthLabels.every(label=>localeDictionary[code]?.[label]),code+" must translate live service-health and refresh states.");
+assert.ok(app.includes('data-in-lang-key="Health status unavailable"')&&app.includes('data-in-lang-key="Service issue · database unavailable"'),"Live health states must expose locale keys.");
 assert.ok(pulse.includes("apiWithTimeout('/api/health',{},10000)"),"Platform pulse must query the real health endpoint independently");
 assert.ok(pulse.includes("service.ok===true&&service.database===true"),"Healthy status must require both Worker and database checks");
 assert.ok(pulse.includes("Health status unavailable"),"Health-check failures must be disclosed instead of implying the service is healthy");
@@ -59,4 +191,26 @@ assert.ok(worker.includes("FROM history h JOIN novels n"),"Reader activity must 
 assert.ok(worker.includes("unlocked_at>=datetime('now','-7 days')"),"Trending momentum must use recorded seven-day chapter unlocks");
 assert.ok(worker.includes("c.updated_at DESC,c.id DESC LIMIT 8"),"Latest updates must come from published chapter update timestamps");
 
-console.log("Homepage connected-discovery integration tests passed: versioned entry, live bounded graph, safe taxonomy links, escaped labels and graceful fallback.");
+const readerControls=["← Chapters","Chapter","Bookmark chapter","Cycle reader theme","Reader settings and chapter navigation","Chapter List","Close","Theme","Line spacing","Text width"];
+for(const key of readerControls)assert.ok(app.includes('data-in-lang-key="'+key+'"')||app.includes('data-in-lang-aria-label="'+key+'"'),"Reader control must expose locale key: "+key);
+const readerOptions=["Light","Dark","Midnight","Sepia","Imperial","Cosmic","Compact","Comfort","Relaxed","Focused","Standard","Wide"];
+assert.ok(readerOptions.every(key=>app.includes('data-in-lang-option="'+key+'"')),"Reader theme and typography options must be localizable.");
+assert.ok(app.includes("const READER_LANG=")&&app.includes("...(READER_LANG[c]||{})"),"Reader dictionaries must be merged into the active interface locale.");
+assert.ok(app.includes('document.querySelectorAll("[data-in-lang-option]")'),"Reader select options must refresh when the language changes.");
+assert.ok(app.includes("setINLang(document.documentElement.lang||localStorage.getItem('imperial_language')||'en')"),"Reader must apply the saved locale after its page markup is inserted.");
+
+const novelOverviewKeys=["Views","Rating","Chapters","Rights","REAL-TIME STORY ACTIVITY","Recorded reader views and community activity for this story.","Loading activity…","Refresh ↻","Overview","Community","View chapter list","Reader Community","Rate this novel","Join the discussion"];
+for(const key of novelOverviewKeys)assert.ok(app.includes('data-in-lang-key="'+key+'"'),"Novel overview text must expose locale key: "+key);
+assert.ok(app.includes("const NOVEL_LANG=")&&app.includes("...(NOVEL_LANG[c]||{})"),"Novel overview translations must be merged into the active interface locale.");
+assert.ok(app.includes("setINLang(document.documentElement.lang||localStorage.getItem('imperial_language')||'en');$('#libraryBtn').onclick"),"Novel overview must apply the saved locale after inserting its page markup.");
+
+/* Homepage progressive rendering regression checks. */
+assert.ok(css.includes("Homepage off-screen rendering budget 17.47"),"Homepage must document its off-screen rendering budget.");
+for(const selector of [".homePage .homeFormatShelf,",".homePage .homeConnectionShelf,",".homePage .nextShelf,",".homePage .platformPulse,",".homePage .nextFeatureDeck,",".homePage .nextCreatorBand,",".homePage .nextReaderPromise{"]){
+ assert.ok(css.includes(selector),"Below-the-fold homepage rendering must include "+selector);
+}
+assert.ok(css.includes("content-visibility:auto;")&&css.includes("contain-intrinsic-size:auto 520px"),"Off-screen sections must use progressive rendering with intrinsic size estimates to reduce initial layout/paint work without collapsing scroll space.");
+assert.ok(app.includes('<section class="hero nextHero imperialArchiveHero">'),"The homepage hero must remain outside off-screen rendering so the primary content is immediately available.");
+assert.ok(css.includes("@media(max-width:760px){")&&css.includes(".homePage .homeFormatShelf{contain-intrinsic-size:auto 470px}"),"Mobile layouts must use dedicated intrinsic size estimates for deferred homepage sections.");
+
+console.log("Homepage, novel overview and reader localization integration tests passed: versioned entry, live bounded graph, safe taxonomy links, escaped labels and graceful fallback.");
