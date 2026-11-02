@@ -2059,3 +2059,69 @@ html[dir="rtl"] .menuDrawer.is-open{
 @media(prefers-reduced-motion:reduce){
   .imperialHeroVisual,.imperialHeroOrbit,.imperialHeroSeal{transition:none!important;animation:none!important}
 }
+
+
+/* Homepage desktop and keyboard-accessibility pass 17.43. */
+@media(min-width:761px){
+  .homePage .hero.imperialArchiveHero{
+    grid-template-columns:minmax(0,1.18fr) minmax(260px,.82fr);
+    align-items:center;
+    gap:clamp(28px,4.5vw,64px);
+    padding:clamp(34px,5vw,64px);
+  }
+  .homePage .hero.imperialArchiveHero .nextHeroCopy{max-width:720px}
+  .homePage .hero.imperialArchiveHero h1{
+    max-width:11ch;
+    font-size:clamp(48px,5.1vw,72px);
+    line-height:.99;
+    text-wrap:balance;
+  }
+  .homePage .hero.imperialArchiveHero .nextHeroLead{
+    max-width:48ch;
+    font-size:clamp(15px,1.25vw,18px);
+  }
+  .imperialHeroVisual{width:min(100%,390px);min-height:390px}
+  .imperialHeroSeal{width:clamp(172px,16vw,218px)}
+  .homePage .heroSearch{max-width:650px}
+  .homeFormatShelf,.homeConnectionShelf,.platformPulse,.homePage .section,.nextFeatureDeck,.nextCreatorBand,.nextReaderPromise{
+    scroll-margin-top:96px;
+  }
+}
+.homePage a:focus-visible,
+.homePage button:focus-visible,
+.homePage input:focus-visible{
+  outline:3px solid var(--in-focus);
+  outline-offset:3px;
+  border-radius:10px;
+}
+.homePage .homeFormatCard:focus-visible,
+.homePage .nextFeatureTile:focus-visible,
+.homePage .imperialHeroAuthor:focus-visible,
+.homePage .imperialHeroBrowse:focus-visible,
+.homePage .heroTags a:focus-visible{
+  outline:3px solid var(--in-focus);
+  outline-offset:4px;
+}
+.homePage .homeFormatCard,
+.homePage .nextFeatureTile,
+.homePage .homeStoryGrid .card{
+  -webkit-tap-highlight-color:transparent;
+}
+@media(hover:hover) and (pointer:fine){
+  .homePage .homeFormatCard,
+  .homePage .heroTags a,
+  .homePage .imperialHeroBrowse{
+    transition:border-color var(--in-motion),background var(--in-motion),color var(--in-motion),transform var(--in-motion);
+  }
+  .homePage .homeFormatCard:hover{transform:translateY(-2px);border-color:var(--in-line-strong)}
+  .homePage .heroTags a:hover{border-color:var(--in-brand);color:var(--in-brand)}
+  .homePage .imperialHeroBrowse:hover{color:var(--in-brand)}
+}
+@media(prefers-reduced-motion:reduce){
+  .homePage .homeFormatCard,
+  .homePage .nextFeatureTile,
+  .homePage .homeStoryGrid .card,
+  .homePage .imperialHeroAuthor,
+  .homePage .imperialHeroBrowse,
+  .homePage .heroTags a{transition:none!important;transform:none!important}
+}
