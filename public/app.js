@@ -392,7 +392,7 @@ async function authorStudio(){
   feedbackSummary.innerHTML='<div class="empty">Loading reader feedback…</div>';feedbackList.innerHTML='';
   try{
    const data=await api('/api/author/feedback');const items=Array.isArray(data.items)?data.items:[];
-   feedbackSummary.innerHTML='<article class="authorFeedbackMetric"><b>'+Number(data.ratings_count||0).toLocaleString()+'</b><span>ratings retrieved, maximum 100</span></article><article class="authorFeedbackMetric"><b>'+Number(data.comments_count||0).toLocaleString()+'</b><span>visible comments retrieved, maximum 100</span></article>';
+   feedbackSummary.innerHTML='<article class="authorFeedbackMetric"><b>'+Number(data.ratings_total||0).toLocaleString()+'</b><span>total reader ratings</span></article><article class="authorFeedbackMetric"><b>'+Number(data.comments_total||0).toLocaleString()+'</b><span>total visible comments</span></article><p class="authorFeedbackLimit">Latest '+Number(items.length).toLocaleString()+' feedback records loaded for filtering and search.</p>';
    const type=$('#authorFeedbackType'),search=$('#authorFeedbackSearch');
    const render=()=>{const q=String(search.value||'').trim().toLocaleLowerCase(),kind=type.value;const filtered=items.filter(item=>(kind==='all'||item.kind===kind)&&(!q||[item.novel_title,item.username,item.body].some(value=>String(value||'').toLocaleLowerCase().includes(q))));
     if(!filtered.length){feedbackList.innerHTML='<div class="empty">No feedback matches these filters.</div>';return}
