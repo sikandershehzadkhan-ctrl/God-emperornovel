@@ -45,4 +45,13 @@ assert.ok(catalog.includes("catalogTitle.dataset.inLang=''"),"Catalog heading mu
 assert.ok(catalog.includes("renderFilterChips();setINLang(document.documentElement.lang||'en')"),"Dynamically rendered active filters must be localized.");
 assert.ok(catalog.includes("setINLang(document.documentElement.lang||'en');\n }catch(error)"),"Catalog pagination and result state must reapply the selected language.");
 
+
+for(const key of ["Sort","Status","Type","Minimum Rating","Apply Filters","Browse Genres","Browse Tags","Advanced Search","Active filters","Clear all","Clear","Discover your next world"]) {
+  assert.ok(catalog.includes('data-in-lang>'+key+'<')||catalog.includes('data-in-lang>'+key), "Catalog UI must mark "+key+" for translation.");
+  for(const locale of Object.keys(languageDictionary))assert.ok(languageDictionary[locale][key], "Missing catalog label "+key+" translation for "+locale);
+}
+assert.ok(catalog.includes("catalogTitle.dataset.inLang=''"),"Catalog heading must be localized after the page template renders.");
+assert.ok(catalog.includes("renderFilterChips();setINLang(document.documentElement.lang||'en')"),"Dynamic active filter chips must apply the selected language.");
+assert.ok(catalog.includes("data-in-lang>← Previous")&&catalog.includes("data-in-lang>Next →"),"Catalog pagination labels must be localizable.");
+
 console.log("Catalog discovery, localized catalog controls and 14-language reader interface checks passed.");
