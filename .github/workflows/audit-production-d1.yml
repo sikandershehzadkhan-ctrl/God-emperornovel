@@ -128,7 +128,7 @@ jobs:
           core_tables_sql="$(cat <<'SQL'
           WITH required(name) AS (
             VALUES ('users'),('sessions'),('novels'),('chapters'),('genres'),('tags'),('novel_genres'),('novel_tags'),
-                   ('unlocks'),('unlock_batches'),('bookmarks'),('history'),('donations'),('connectors'),('comments'),
+                   ('unlocks'),('unlock_batches'),('bookmarks'),('history'),('reader_activity_versions'),('donations'),('connectors'),('comments'),
                    ('novel_requests'),('audit_logs'),('ticket_ledger'),('follows'),('user_library'),('ratings'),('reports'),
                    ('notifications'),('agents'),('agent_runs'),('app_settings'),('chapter_views'),('connector_events'),('import_jobs'),('recommendations'),('request_votes'),('comment_likes'),('comment_reports'),('novel_reactions'),('connector_authorization_requests'),('taxonomy_submissions'),('taxonomy_suggestions'),('tag_follows'),('ai_author_projects'),
                    ('ai_chapter_jobs'),('ai_generation_runs'),('ai_provider_benchmarks'),('ai_publish_policies'),('auth_rate_limits')
@@ -159,6 +159,7 @@ jobs:
           run_query "Application settings schema (columns only)" "PRAGMA table_info(app_settings);"
           run_query "Publication and rights columns" "PRAGMA table_info(novels);"
           run_query "Session schema (columns only)" "PRAGMA table_info(sessions);"
+          run_query "Reader activity revision schema (columns only)" "PRAGMA table_info(reader_activity_versions);"
           run_query "Ticket ledger schema (columns only)" "PRAGMA table_info(ticket_ledger);"
           run_query "Donation schema (columns only)" "PRAGMA table_info(donations);"
           run_query "Donation reference duplicate audit (aggregate only)" "SELECT COUNT(*) AS donation_rows, COUNT(*)-COUNT(NULLIF(TRIM(reference_id),'')) AS blank_reference_rows, COUNT(DISTINCT CASE WHEN TRIM(reference_id)<>'' THEN LOWER(TRIM(reference_id)) END) AS distinct_nonblank_references, (SELECT COUNT(*) FROM (SELECT LOWER(TRIM(reference_id)) AS normalized_reference FROM donations WHERE TRIM(reference_id)<>'' GROUP BY LOWER(TRIM(reference_id)) HAVING COUNT(*)>1)) AS duplicate_reference_groups, (SELECT COALESCE(SUM(duplicate_rows-1),0) FROM (SELECT COUNT(*) AS duplicate_rows FROM donations WHERE TRIM(reference_id)<>'' GROUP BY LOWER(TRIM(reference_id)) HAVING COUNT(*)>1)) AS duplicate_extra_rows FROM donations;"
