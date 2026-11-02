@@ -16,7 +16,7 @@ INSERT INTO account_deletion_requests(id,user_id,status) VALUES(10,1,'review_req
 """)
 `;
 const script=python+String.raw`
-db.executescript(sys.stdin.readline())
+db.executescript(sys.stdin.read())
 now=(datetime.now(timezone.utc)+timedelta(days=1)).isoformat()
 db.execute("INSERT INTO account_deletion_reviews(id,request_id,subject_user_id,state,version,claimed_by,claim_expires_at) VALUES(100,10,1,'review_in_progress',2,2,?)",(now,))
 digest='a'*64
