@@ -836,7 +836,7 @@ if(p==="/api/author/feedback"&&m==="GET"){
  if(p==="/api/author/notes"&&m==="GET"){
   const e=author(u);if(e)return e;
   const novelId=Number(url.searchParams.get('novel_id')||0),chapterId=Number(url.searchParams.get('chapter_id')||0);
-  if((novelId&&!Number.isSafeInteger(novelId))||(chapterId&&!Number.isSafeInteger(chapterId)))return json({error:'Invalid story or chapter.'},400);
+  if(!Number.isSafeInteger(novelId)||novelId<0||!Number.isSafeInteger(chapterId)||chapterId<0)return json({error:'Invalid story or chapter.'},400);
   const rows=await env.DB.prepare(`SELECT pn.id,pn.novel_id,pn.chapter_id,pn.note,pn.created_at,pn.updated_at,n.title novel_title,c.chapter_number,c.title chapter_title
    FROM author_private_notes pn JOIN novels n ON n.id=pn.novel_id
    LEFT JOIN chapters c ON c.id=pn.chapter_id
