@@ -2,8 +2,8 @@ import assert from "node:assert/strict";
 import fs from "node:fs";
 
 const source = fs.readFileSync("public/app.js", "utf8");
-const shipped = fs.readFileSync("public/app-17.23.0.js", "utf8");
-const css = fs.readFileSync("public/app-17.23.0.css", "utf8");
+const shipped = fs.readFileSync("public/app-17.24.0.js", "utf8");
+const css = fs.readFileSync("public/app-17.24.0.css", "utf8");
 
 for (const [label, app] of [["source", source], ["served asset", shipped]]) {
   assert.ok(app.includes('class="creatorPathGuide"'), label + " must expose the creator journey guide.");
