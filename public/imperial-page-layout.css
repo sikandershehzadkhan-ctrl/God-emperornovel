@@ -1466,3 +1466,36 @@ html[data-theme="dark"] #noticeList .unreadNotice { background: rgba(109, 59, 23
     flex: 1 1 100%;
   }
 }
+
+
+/* RTL support for catalog, profile and account page families. */
+html[dir="rtl"] .page,
+html[dir="rtl"] .catalogTop,
+html[dir="rtl"] .catalogMeta,
+html[dir="rtl"] .settingsGrid,
+html[dir="rtl"] .authorHero,
+html[dir="rtl"] .accountProfile,
+html[dir="rtl"] .notificationCard,
+html[dir="rtl"] .communityDiscovery {
+  direction: rtl;
+}
+html[dir="rtl"] .catalogCard,
+html[dir="rtl"] .card,
+html[dir="rtl"] .authorWorkCard,
+html[dir="rtl"] .rankCard,
+html[dir="rtl"] .libraryCard {
+  text-align: right;
+}
+html[dir="rtl"] .catalogStats,
+html[dir="rtl"] .catalogTags,
+html[dir="rtl"] .activeFilters,
+html[dir="rtl"] .pager {
+  direction: rtl;
+}
+html[dir="rtl"] .catalogTop input,
+html[dir="rtl"] .catalogTop select,
+html[dir="rtl"] .settingsPanel input,
+html[dir="rtl"] .settingsPanel select,
+html[dir="rtl"] .settingsPanel textarea {
+  text-align: right;
+}
