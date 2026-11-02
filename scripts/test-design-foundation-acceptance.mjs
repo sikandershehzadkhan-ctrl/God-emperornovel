@@ -5,14 +5,17 @@ const css = fs.readFileSync("public/imperial-design-system-17.25.0.css", "utf8")
 const foundation = fs.readFileSync("public/imperial-design-foundation.css", "utf8");
 const html = fs.readFileSync("public/index.html", "utf8");
 
-function declarations(block) {
-  return Object.fromEntries([...block.matchAll(/(--[\\w-]+)\\s*:\\s*([^;]+);/g)]
-    .map((match) => [match[1], match[2].trim()]));
+function block(selector) {
+  const start = css.indexOf(selector);
+  assert.notEqual(start, -1, "Missing theme rule: " + selector);
+  const open = css.indexOf("{", start);
+  const close = css.indexOf("}", open);
+  assert.ok(open > start && close > open, "Malformed theme rule: " + selector);
+  return css.slice(open + 1, close);
 }
-function rule(selector) {
-  const escaped = selector.replace(/[.*+?^${}()|[\\]\\\\]/g, "\\\\$&");
-  const match = css.match(new RegExp(escaped + "\\\\s*\\\\{([^}]*)\\\\}"));
-  return match?.[1] || "";
+function declarations(source) {
+  return Object.fromEntries([...source.matchAll(/(--[\w-]+)\s*:\s*([^;]+);/g)]
+    .map((match) => [match[1], match[2].trim()]));
 }
 function color(value) {
   const match = String(value || "").match(/^#([0-9a-f]{6})$/i);
@@ -32,12 +35,12 @@ function contrast(first, second) {
   return (Math.max(a, b) + 0.05) / (Math.min(a, b) + 0.05);
 }
 
-const root = declarations(rule(":root"));
-const dark = declarations(rule('html[data-theme="dark"]'));
-const midnight = declarations(rule('html[data-theme="midnight"]'));
-const imperial = declarations(rule('html[data-theme="imperial"]'));
-const cosmic = declarations(rule('html[data-theme="cosmic"]'));
-const sepia = declarations(rule('html[data-theme="sepia"]'));
+const root = declarations(block(":root"));
+const dark = declarations(block('html[data-theme="dark"]'));
+const midnight = declarations(block('html[data-theme="midnight"]'));
+const imperial = declarations(block('html[data-theme="imperial"]'));
+const cosmic = declarations(block('html[data-theme="cosmic"]'));
+const sepia = declarations(block('html[data-theme="sepia"]'));
 const themes = {
   light: root,
   dark: { ...root, ...dark },
