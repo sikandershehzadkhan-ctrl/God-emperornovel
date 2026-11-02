@@ -33,6 +33,13 @@ const catalogSource=app.slice(catalogStartForAccessibility,catalogEndForAccessib
 for(const label of ["Catalog filters","Search titles, authors, and tropes","Sort catalog","Filter by publication status","Filter by story format","Filter by minimum rating","Filter by genre","Filter by theme or tag","Filter by story language"])assert.ok(catalogSource.includes('aria-label="'+label+'"'),"Discover filter must have an accessible name: "+label);
 assert.ok(catalogSource.includes('data-in-lang-aria-label="Catalog filters"')&&catalogSource.includes('data-in-lang-placeholder="Search titles, authors, tropes..."'),"Discover filter accessibility labels and search placeholder must participate in live localization.");
 for(const label of ["Sort catalog","Filter by publication status","Filter by story format","Filter by minimum rating","Filter by genre","Filter by theme or tag","Filter by story language"])assert.ok(catalogSource.includes('data-in-lang-aria-label="'+label+'"'),"Discover accessibility label must be localizable: "+label);
+const controlLabels={catalogSort:"Sort",catalogStatus:"Status",catalogKind:"Type",catalogMinRating:"Minimum Rating",catalogGenre:"Genre",catalogTag:"Tag",catalogLanguage:"Language"};
+for(const [id,label] of Object.entries(controlLabels))assert.ok(catalogSource.includes('<label class="filterLabel" for="'+id+'">'+label+'</label>')&&catalogSource.includes('id="'+id+'"'),"Discover filter must use an explicitly associated label: "+id);
+assert.ok(catalogSource.includes('id="catalogQuery" name="q" type="search"'),"Discover search must have a stable control id.");
+assert.ok(catalogSource.includes('role="group" aria-label="Active catalog filters"'),"Active filter chips must be exposed as a named group.");
+const designCss=await readFile("public/imperial-design-foundation.css","utf8");
+assert.ok(designCss.includes(".catalogTop .filterGroup :is(input,select):focus-visible")&&designCss.includes("@media(max-width:420px)"),"Discover controls must expose keyboard focus and a compact-phone layout.");
+
 
 assert.ok(catalogSource.includes('list="catalogGenreOptions"')&&catalogSource.includes('id="catalogGenreOptions"')&&catalogSource.includes("apiWithTimeout('/api/genres',{},8000)"),"Discover genre filter must offer live taxonomy suggestions.");
 assert.ok(catalogSource.includes('list="catalogTagOptions"')&&catalogSource.includes('id="catalogTagOptions"')&&catalogSource.includes("apiWithTimeout('/api/tags',{},8000)"),"Discover tag filter must offer live taxonomy suggestions.");
