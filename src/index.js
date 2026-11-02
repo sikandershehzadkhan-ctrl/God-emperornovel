@@ -469,6 +469,7 @@ async function api(req,env){
   return json({ok:true,chapter_number:Number(saved.chapter_number),updated_at:saved.updated_at});
  }
  if(p==="/api/history"&&m==="GET"){const e=need(u);if(e)return e;return json((await env.DB.prepare(`SELECT h.novel_id,h.chapter_number,h.updated_at,n.title,n.author,n.cover_url FROM history h JOIN novels n ON n.id=h.novel_id WHERE h.user_id=? AND n.publication_status='published' ORDER BY h.updated_at DESC LIMIT 50`).bind(u.id).all()).results)}
+ if(p==="/api/history"&&m==="DELETE"){const e=need(u);if(e)return e;const nid=Number(url.searchParams.get("novel_id"));if(!Number.isSafeInteger(nid)||nid<1)return json({error:"A valid novel id is required."},400);const result=await env.DB.prepare("DELETE FROM history WHERE user_id=? AND novel_id=?").bind(u.id,nid).run();return json({ok:true,removed:Number(result.meta?.changes||0)>0})}
  if(p==="/api/history"&&m==="POST"){
   const e=need(u);if(e)return e;
   const b=await body(req),nid=Number(b.novel_id),chapter=Number(b.chapter_number);
