@@ -19,21 +19,29 @@ INSERT INTO account_deletion_requests(id,user_id,status) VALUES(10,1,'review_req
 db.executescript(sys.stdin.read())
 expiry=(datetime.now(timezone.utc)+timedelta(days=1)).isoformat()
 db.execute("INSERT INTO account_deletion_reviews(id,request_id,subject_user_id,state,version,claimed_by,claim_expires_at) VALUES(100,10,1,'review_in_progress',2,2,?)",(expiry,))
-digest='a'*64
-db.execute("INSERT INTO account_deletion_disposition_plans(review_id,request_id,plan_version,base_review_version,proposer_id,policy_version,plan_digest) VALUES(100,10,1,2,2,'2026-11',?)",(digest,))
-plan=db.execute("SELECT id FROM account_deletion_disposition_plans").fetchone()[0]
+digest1='a'*64
+digest2='b'*64
+db.execute("INSERT INTO account_deletion_disposition_plans(review_id,request_id,plan_version,base_review_version,proposer_id,policy_version,plan_digest) VALUES(100,10,1,2,2,'2026-11',?)",(digest1,))
+plan1=db.execute("SELECT id FROM account_deletion_disposition_plans WHERE plan_version=1").fetchone()[0]
+db.execute("UPDATE account_deletion_reviews SET version=version+1,proposed_by=2,plan_digest=? WHERE id=100",(digest1,))
+db.execute("UPDATE account_deletion_reviews SET version=version+1 WHERE id=100")
+db.execute("INSERT INTO account_deletion_disposition_plans(review_id,request_id,plan_version,base_review_version,proposer_id,policy_version,plan_digest) VALUES(100,10,2,4,2,'2026-11',?)",(digest2,))
+plan2=db.execute("SELECT id FROM account_deletion_disposition_plans WHERE plan_version=2").fetchone()[0]
+db.execute("UPDATE account_deletion_reviews SET version=version+1,proposed_by=2,plan_digest=? WHERE id=100",(digest2,))
 def rejected(sql,args=()):
  try: db.execute(sql,args); raise AssertionError("invalid approval accepted")
  except sqlite3.IntegrityError: pass
-db.execute("INSERT INTO account_deletion_disposition_approvals(plan_id,review_id,request_id,approver_id,approved_plan_digest,approval_policy_version) VALUES(?,100,10,3,?,'approval-v1')",(plan,digest))
-rejected("INSERT INTO account_deletion_disposition_approvals(plan_id,review_id,request_id,approver_id,approved_plan_digest,approval_policy_version) VALUES(?,100,10,2,?,'approval-v1')",(plan,digest))
-rejected("INSERT INTO account_deletion_disposition_approvals(plan_id,review_id,request_id,approver_id,approved_plan_digest,approval_policy_version) VALUES(?,100,10,1,?,'approval-v1')",(plan,digest))
-rejected("INSERT INTO account_deletion_disposition_approvals(plan_id,review_id,request_id,approver_id,approved_plan_digest,approval_policy_version) VALUES(?,100,10,3,?,'approval-v1')",(plan,'b'*64))
-rejected("UPDATE account_deletion_disposition_approvals SET approval_policy_version='changed' WHERE plan_id=?",(plan,))
-rejected("DELETE FROM account_deletion_disposition_approvals WHERE plan_id=?",(plan,))
-rejected("INSERT INTO account_deletion_disposition_approvals(plan_id,review_id,request_id,approver_id,approved_plan_digest,approval_policy_version) VALUES(?,100,10,3,?,'approval-v1')",(plan,digest))
+insert="INSERT INTO account_deletion_disposition_approvals(plan_id,review_id,request_id,approver_id,approved_plan_digest,approval_policy_version) VALUES(?,100,10,?,?,'approval-v1')"
+rejected(insert,(plan1,3,digest1),"")
+rejected(insert,(plan2,2,digest2))
+rejected(insert,(plan2,1,digest2))
+rejected(insert,(plan2,3,digest1))
+db.execute(insert,(plan2,3,digest2))
+rejected("UPDATE account_deletion_disposition_approvals SET approval_policy_version='changed' WHERE plan_id=?",(plan2,))
+rejected("DELETE FROM account_deletion_disposition_approvals WHERE plan_id=?",(plan2,))
+rejected(insert,(plan2,3,digest2))
 assert db.execute("SELECT COUNT(*) FROM account_deletion_disposition_approvals").fetchone()[0]==1
-print("PASS: independent approvals bind to the exact plan digest, reject proposer/requester self-approval, and remain immutable and unique.")
+print("PASS: approvals bind only to the latest active plan and exact digest; proposer/requester self-approval, stale plans, duplicates, updates, and deletion are rejected.")
 `;
 const result=spawnSync("python3",["-c",script],{input:base+"\n"+plans+"\n"+approvals,encoding:"utf8"});
 if(result.error) throw result.error;
