@@ -535,6 +535,19 @@ async function api(req,env){
   await audit(env,u,"account_deletion_cancelled","");
   return json({ok:true,request:result});
  }
+ if(p==="/api/admin/account-deletion/reviews"&&m==="GET"){
+  const authError=admin(u);if(authError)return authError;
+  const limited=await consumeAuthRateLimit(env,"account-deletion-review-queue",String(u.id),30,60);if(limited)return limited;
+  const requestedState=String(url.searchParams.get("state")||"").trim();
+  const allowedStates=["review_required","review_in_progress","awaiting_user_action","blocked_retention","review_approved","finalization_eligible"];
+  if(requestedState&&!allowedStates.includes(requestedState))return json({error:"Invalid review state"},400);
+  try{
+   const filter=requestedState||"";
+   const rows=await env.DB.prepare(`SELECT r.id AS request_id,r.user_id AS subject_user_id,u.username AS subject_username,r.status AS request_status,r.requested_at,r.scheduled_for,substr(r.review_reason,1,240) AS review_reason,v.id AS review_id,v.state AS review_state,v.version AS review_version,v.claim_expires_at FROM account_deletion_requests r JOIN users u ON u.id=r.user_id LEFT JOIN account_deletion_reviews v ON v.request_id=r.id WHERE r.status IN ('pending_deletion','review_required') AND (?='' OR COALESCE(v.state,r.status)=?) ORDER BY r.requested_at ASC,r.id ASC LIMIT 50`).bind(filter,filter).all();
+   await audit(env,u,"account_deletion_review_queue_viewed",`count=${(rows.results||[]).length};state=${filter||"all"}`);
+   return json({reviews:rows.results||[],limit:50,read_only:true,finalization_enabled:false});
+  }catch(error){console.error("account deletion review queue unavailable",String(error?.message||error));return json({error:"The review queue is temporarily unavailable. Verify that the review-store migration has been applied."},503)}
+ }
  if(p==="/api/auth/logout"&&m==="POST"){const c=cookies(req.headers.get("cookie"));if(c.session)await env.DB.prepare("DELETE FROM sessions WHERE token_hash=?").bind(await digest(c.session)).run();return json({ok:true},200,{"set-cookie":"session=; Path=/; HttpOnly; Secure; SameSite=Lax; Max-Age=0"})}
  if(p==="/api/me/export"&&m==="GET"){
   const authError=need(u);if(authError)return authError;
