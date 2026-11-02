@@ -7,7 +7,7 @@ const migration15=readFileSync(new URL("../migrations/0015_account_deletion_revi
 const python=String.raw`
 import json, sqlite3, sys
 payload=json.load(sys.stdin)
-db=sqlite3.connect(":memory:")
+db=sqlite3.connect(":memory:", isolation_level=None)
 db.execute("PRAGMA foreign_keys=ON")
 db.execute("CREATE TABLE users(id INTEGER PRIMARY KEY)")
 db.executemany("INSERT INTO users(id) VALUES(?)",[(1,),(2,),(3,)])
