@@ -12,6 +12,9 @@ assert.ok(route.includes("c.status='visible'"),"Hidden or removed comments must 
 assert.ok(route.includes("FROM ratings")&&route.includes("FROM comments"),"Inbox must use real rating and comment records.");
 assert.ok(route.includes("LIMIT 100"),"Both feedback streams must be bounded.");
 assert.ok(route.includes("scope:'owned_stories'"),"Response must disclose its ownership scope.");
+const commentRoute=worker.slice(worker.indexOf('if(p==="/api/comments"&&m==="POST")'),worker.indexOf('if(p==="/api/comments/like"'));
+assert.ok(commentRoute.includes('"New reader comment"')&&commentRoute.includes("notifyUser(env,owner.owner_user_id"),"A new comment on a published story must notify its creator.");
+assert.ok(commentRoute.includes("Number(owner.owner_user_id)!==Number(u.id)"),"Creators must not receive notifications for their own comments.");
 for(const [label,browser] of [["source",app],["served",shipped]]){
  assert.ok(browser.includes("authorFeedbackPanel"),label+" app must render the reader feedback panel.");
  assert.ok(browser.includes("api('/api/author/feedback')"),label+" app must call the authenticated feedback API.");
