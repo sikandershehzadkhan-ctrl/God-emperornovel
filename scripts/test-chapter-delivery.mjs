@@ -20,4 +20,10 @@ assert.match(app, /if\(window\.__imperialReaderScrollHandler\)window\.removeEven
 assert.ok(app.includes("const root=$('#app');\n if(window.__imperialReaderScrollHandler)window.removeEventListener('scroll',window.__imperialReaderScrollHandler);"), 'Old scroll listeners must be cleared before the loading view replaces reader content.');
 assert.match(app, /if\(window\.__imperialReaderKeyHandler\)document\.removeEventListener\('keydown',window\.__imperialReaderKeyHandler\)/, 'Reader retries must remove the previous keyboard listener.');
 assert.match(app, /let bookmarkSaving=false;\$\('#bookmarkBtn'\)\.onclick=async\(\)=>\{const button=\$\('#bookmarkBtn'\);if\(bookmarkSaving\|\|!button\)return;/, 'Bookmark actions must be guarded against concurrent clicks.');
+assert.match(app, /id="readerNetworkStatus" class="readerNetworkStatus" role="status" aria-live="polite" hidden/, 'Reader must expose an accessible offline status banner.');
+assert.match(app, /window\.addEventListener\('online',updateReaderNetwork\);window\.addEventListener\('offline',updateReaderNetwork\)/, 'Reader must react to online and offline transitions.');
+assert.match(app, /if\(window\.__imperialReaderNetworkHandler\)\{window\.removeEventListener\('online',window\.__imperialReaderNetworkHandler\);window\.removeEventListener\('offline',window\.__imperialReaderNetworkHandler\);\}/, 'Reader network listeners must be removed before a new load.');
+assert.match(app, /Promise\.allSettled\(\[api\('\/api\/history'/, 'Reader history and bookmark sync must be tracked together so failed activity can retry after reconnect.');
+assert.match(app, /if\(results\.some\(result=>result\.status==='rejected'\)\)activitySyncPending=true/, 'Failed reader activity sync must remain pending for reconnection.');
+assert.match(app, /className='comicPageRetry'/, 'Failed comic images must expose a user-triggered retry control.');
 console.log('Chapter delivery checks passed: bounded retries, accessible recovery, stale-response protection, listener cleanup, bookmark click locking, stable layout, and reduced motion.');
