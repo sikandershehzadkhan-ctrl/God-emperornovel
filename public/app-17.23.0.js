@@ -226,6 +226,7 @@ async function home(){
     metrics.setAttribute('aria-busy','false');
     if(updated)updated.textContent='Data generated '+platformPulseLastUpdated+' · refreshes every 60 seconds while this page is visible';setINLang(document.documentElement.lang||'en');
    }catch(error){
+    if(pulseGeneration!==homePulseGeneration||!document.querySelector('.homePage'))return;
     metrics.setAttribute('aria-busy','false');
     if(platformPulseHasData){
      if(updated)updated.textContent='Refresh failed · showing last successful update '+platformPulseLastUpdated;
@@ -236,6 +237,7 @@ async function home(){
      trending.innerHTML='<p class="muted" data-in-lang-key="Trend data unavailable right now.">Trend data unavailable right now.</p>';setINLang(document.documentElement.lang||'en');
     }
    }finally{
+    if(pulseGeneration!==homePulseGeneration||!document.querySelector('.homePage'))return;
     if(platformPulseRequestGeneration===pulseGeneration)platformPulseRequest=null;
     if(refreshButton){refreshButton.disabled=false;refreshButton.textContent='Refresh ↻';delete refreshButton.dataset.inLangKey}setINLang(document.documentElement.lang||'en');
    }
