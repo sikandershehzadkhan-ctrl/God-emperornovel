@@ -111,10 +111,13 @@ FROM novels n WHERE n.publication_status='published'"""
 
 def run(base, filters, sort, page=1, limit=17):
     sql, args = base, []
-    term = filters.get("q", "").strip().lower()
-    if term:
-        sql += " AND (LOWER(n.title) LIKE ? OR LOWER(n.author) LIKE ? OR LOWER(n.description) LIKE ? OR LOWER(n.alt_titles) LIKE ?)"
-        args.extend(["%" + term + "%"] * 4)
+    term = " ".join(filters.get("q", "").lower().split())[:120]
+    search_terms = term.split()[:8]
+    for word in search_terms:
+        escaped = word.replace("\\", "\\\\").replace("%", "\\%").replace("_", "\\_")
+        pattern = "%" + escaped + "%"
+        sql += " AND (LOWER(n.title) LIKE ? ESCAPE '\\\\' OR LOWER(n.author) LIKE ? ESCAPE '\\\\' OR LOWER(n.description) LIKE ? ESCAPE '\\\\' OR LOWER(n.alt_titles) LIKE ? ESCAPE '\\\\')"
+        args.extend([pattern] * 4)
     if filters.get("genre"):
         sql += " AND n.id IN(SELECT ng.novel_id FROM novel_genres ng JOIN genres g ON g.id=ng.genre_id WHERE g.slug=?)"
         args.append(filters["genre"])
@@ -140,6 +143,10 @@ def run(base, filters, sort, page=1, limit=17):
         "newest": "n.created_at DESC",
         "trending": "(SELECT COUNT(*) FROM unlocks ux JOIN chapters cx ON cx.id=ux.chapter_id WHERE cx.novel_id=n.id AND ux.unlocked_at>=datetime('now','-7 days')) DESC",
     }.get(sort, "n.updated_at DESC")
+    if search_terms and sort == "updated":
+        phrase = term.replace("\\", "\\\\").replace("%", "\\%").replace("_", "\\_")
+        order = "CASE WHEN LOWER(n.title)=? THEN 0 WHEN LOWER(n.title) LIKE ? ESCAPE '\\\\' THEN 1 WHEN LOWER(n.author)=? THEN 2 WHEN LOWER(n.title) LIKE ? ESCAPE '\\\\' THEN 3 ELSE 4 END," + order
+        args.extend([term, phrase + "%", term, "%" + phrase + "%"])
     sql += " ORDER BY " + order + ",n.id DESC LIMIT ? OFFSET ?"
     args.extend([limit, (page - 1) * limit])
     return [dict(row) for row in db.execute(sql, args).fetchall()]
@@ -147,6 +154,8 @@ def run(base, filters, sort, page=1, limit=17):
 cases = [
     ({}, "updated"), ({}, "chapters"), ({}, "trending"), ({}, "views"),
     ({"q": "fantasy"}, "rating"),
+    ({"q": "fantasy story"}, "updated"),
+    ({"q": "fantasy %"}, "updated"),
     ({"genre": "genre-2", "tag": "tag-3"}, "updated"),
     ({"status": "completed", "kind": "fanfiction"}, "newest"),
     ({"language": "urdu", "min_rating": 8}, "rating"),
