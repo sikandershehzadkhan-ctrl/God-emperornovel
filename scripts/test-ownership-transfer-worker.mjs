@@ -832,6 +832,33 @@ try {
     "Expired-lease takeover must increment the review version");
   assert.equal(takeover.data.review.claimed_by,takeoverReviewer.user.id,
     "Expired-lease takeover must assign the case to the second reviewer");
+  const findingPayload={expected_review_version:Number(takeover.data.review.version),items:[{
+    dependency_key:"creator_rights",outcome:"retain",
+    reason:"Preserve creator rights records pending independent review",
+    evidence_ref:null,policy_reference:"creator-rights-retention-v1"
+  }]};
+  const missingOriginFinding=await request(baseUrl,"/api/admin/account-deletion/reviews/"+requestId+"/disposition-findings",{
+    method:"POST",cookie:recipient.cookie,body:findingPayload
+  });
+  assert.equal(missingOriginFinding.response.status,403,"Specialist finding writes must reject missing same-origin proof");
+  const unauthorizedFinding=await request(baseUrl,"/api/admin/account-deletion/reviews/"+requestId+"/disposition-findings",{
+    method:"POST",cookie:moderator.cookie,origin:baseUrl,
+    body:{expected_review_version:findingPayload.expected_review_version,items:findingPayload.items}
+  });
+  assert.equal(unauthorizedFinding.response.status,400,"Support reviewers must not submit creator-rights findings");
+  const specialistFinding=await request(baseUrl,"/api/admin/account-deletion/reviews/"+requestId+"/disposition-findings",{
+    method:"POST",cookie:recipient.cookie,origin:baseUrl,body:findingPayload
+  });
+  assert.equal(specialistFinding.response.status,200,JSON.stringify(specialistFinding.data));
+  assert.equal(specialistFinding.data.findings.length,1);
+  assert.equal(specialistFinding.data.findings[0].dependency_key,"creator_rights");
+  assert.equal(Number(specialistFinding.data.review_version),findingPayload.expected_review_version+1);
+  assert.equal(specialistFinding.data.finalization_enabled,false);
+  const staleFinding=await request(baseUrl,"/api/admin/account-deletion/reviews/"+requestId+"/disposition-findings",{
+    method:"POST",cookie:recipient.cookie,origin:baseUrl,body:findingPayload
+  });
+  assert.equal(staleFinding.response.status,409,"Stale specialist submissions must be rejected");
+
   const unassignedDetail=await request(baseUrl,"/api/admin/account-deletion/reviews/"+requestId,{cookie:owner.cookie});
   assert.equal(unassignedDetail.response.status,403,"Accounts without a reviewer assignment must not read case details");
   const requesterDetail=await request(baseUrl,"/api/admin/account-deletion/reviews/"+requestId,{cookie:spectator.cookie});
@@ -849,6 +876,7 @@ try {
   assert.equal(Number(creatorDetail.data.creator_ownership.novel_count),0);
   assert.ok(creatorDetail.data.events.some(event=>event.event_type==="case_claimed"),"Case details must include the minimized claim history");
   assert.ok(creatorDetail.data.events.some(event=>event.event_type==="state_changed"&&event.to_state==="review_in_progress"),"The transition into active review must be recorded in the immutable timeline");
+  assert.ok(creatorDetail.data.events.some(event=>event.event_type==="disposition_proposed"),"Specialist findings must append an immutable review event");
   assert.doesNotMatch(JSON.stringify(creatorDetail.data),/email|password_hash|session_token|rights_evidence|chapter_content/i,
     "Case details must not disclose credentials, contact data, raw rights evidence, or chapter content");
   const repeatClaim=await request(baseUrl,"/api/admin/account-deletion/reviews/"+requestId+"/claim",{
