@@ -95,6 +95,7 @@ assert.ok(css.includes('html[dir="rtl"] .homePage .heroSearch input{text-align:r
 assert.ok(css.includes('html[dir="rtl"] .homePage .nextHeroCopy,'),"RTL hero alignment must target the real homepage copy container.");
 
 assert.ok(app.includes("class=\"imperialHeroAuthor\" href=\"/become-an-author\"")&&app.includes("class=\"imperialHeroBrowse\" href=\"/catalog\""),"Homepage hero must provide direct creator onboarding and library discovery actions.");
+assert.ok(app.includes('id="catalogQuery" name="q" type="search" maxlength="120"'),"Homepage hero search must enforce the same 120-character limit as the catalog API.");
 assert.ok(css.includes(".imperialHeroVisual")&&css.includes("@media(max-width:760px)"),"Imperial crest composition must have responsive mobile behavior.");
 assert.ok(css.includes("prefers-reduced-motion:reduce")&&css.includes(".imperialHeroSeal{transform:none}"),"Hero crest must respect reduced-motion preferences.");
 assert.ok(app.includes("/api/discovery/graph?limit=60"),"Homepage must use the bounded live graph endpoint");
