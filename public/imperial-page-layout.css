@@ -624,3 +624,279 @@ html[data-theme="dark"] .genreCard:hover {
     font-size: 1.25rem;
   }
 }
+
+
+/* Shared states and specialist discovery workspaces. */
+:where(.notice, .empty, .catalogEmpty) {
+  min-width: 0;
+  border: 1px solid var(--ds-border);
+  border-radius: var(--radius-lg);
+  background: var(--ds-surface);
+  color: var(--ds-text-muted);
+  line-height: var(--leading-normal);
+}
+
+.notice {
+  padding: 14px 16px;
+}
+
+.empty,
+.catalogEmpty {
+  padding: clamp(22px, 4vw, 42px);
+  text-align: center;
+}
+
+.empty h2,
+.catalogEmpty h2 {
+  margin: 0 0 8px;
+  color: var(--ds-text);
+  font-family: var(--font-display);
+}
+
+.empty p,
+.catalogEmpty p {
+  max-width: 56ch;
+  margin: 0 auto 16px;
+}
+
+.catalogEmptyIcon {
+  display: grid;
+  width: 48px;
+  height: 48px;
+  place-items: center;
+  margin: 0 auto 14px;
+  border-radius: 50%;
+  background: var(--imperial-purple-soft);
+  color: var(--imperial-purple);
+  font-size: 1.35rem;
+}
+
+.catalogEmptyActions {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 8px;
+}
+
+.formatProfile {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+  margin-block: 16px;
+}
+
+.formatProfile > div {
+  display: grid;
+  gap: 7px;
+  min-width: 0;
+  padding: 16px;
+  border: 1px solid var(--ds-border);
+  border-radius: var(--radius-md);
+  background: var(--ds-surface);
+}
+
+.formatProfile strong {
+  color: var(--ds-text);
+  overflow-wrap: anywhere;
+}
+
+.trendFactoryHero,
+.trendControls,
+.trendPipeline {
+  min-width: 0;
+  border: 1px solid var(--ds-border);
+  border-radius: var(--radius-xl);
+  background: var(--ds-surface);
+  color: var(--ds-text);
+  box-shadow: var(--shadow-card);
+}
+
+.trendFactoryHero {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(140px, .34fr);
+  align-items: center;
+  gap: 24px;
+  padding: clamp(22px, 4vw, 44px);
+}
+
+.trendFactoryHero h2,
+.trendControls h2 {
+  color: var(--ds-text);
+  font-family: var(--font-display);
+  letter-spacing: -.035em;
+}
+
+.trendFactoryHero p {
+  max-width: 64ch;
+  color: var(--ds-text-muted);
+  line-height: var(--leading-normal);
+}
+
+.trendSeal {
+  display: grid;
+  width: min(100%, 180px);
+  aspect-ratio: 1;
+  place-content: center;
+  justify-self: center;
+  gap: 4px;
+  border: 1px solid var(--ds-border);
+  border-radius: 50%;
+  background: var(--imperial-purple-soft);
+  color: var(--imperial-purple);
+  text-align: center;
+}
+
+.trendSeal span {
+  font-size: .7rem;
+  letter-spacing: .18em;
+}
+
+.trendSeal b {
+  font-family: var(--font-display);
+  font-size: 2.5rem;
+}
+
+.trendSeal small {
+  color: var(--ds-text-muted);
+  font-size: .58rem;
+  line-height: 1.5;
+}
+
+.trendPipeline {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-block: 18px;
+  padding: 16px;
+}
+
+.trendStep {
+  display: grid;
+  min-width: 0;
+  gap: 4px;
+}
+
+.trendStep span {
+  color: var(--imperial-purple);
+  font-size: .72rem;
+  font-weight: 800;
+}
+
+.trendStep b {
+  color: var(--ds-text);
+  font-size: .88rem;
+}
+
+.trendStep small {
+  color: var(--ds-text-muted);
+  font-size: .72rem;
+}
+
+.trendConnector {
+  height: 1px;
+  min-width: 10px;
+  flex: 1 1 14px;
+  background: var(--ds-border-strong);
+}
+
+.trendControls {
+  padding: clamp(16px, 2.5vw, 24px);
+}
+
+.trendControlTitle,
+.trendControlRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+.trendControlRow {
+  margin-top: 16px;
+}
+
+.trendControlRow select,
+.trendSearch {
+  min-width: min(100%, 170px);
+  min-height: 44px;
+}
+
+.trendSearch {
+  display: flex;
+  flex: 1 1 240px;
+  align-items: center;
+  gap: 8px;
+  padding-inline: 12px;
+  border: 1px solid var(--ds-border-strong);
+  border-radius: var(--radius-md);
+  background: var(--ds-surface-raised);
+}
+
+.trendSearch input {
+  width: 100%;
+  min-width: 0;
+  border: 0;
+  background: transparent;
+  color: var(--ds-text);
+  outline: none;
+}
+
+html[data-theme="dark"] :where(.notice, .empty, .catalogEmpty, .formatProfile > div, .trendFactoryHero, .trendControls, .trendPipeline) {
+  border-color: var(--ds-border);
+  background-color: var(--ds-surface);
+  color: var(--ds-text-muted);
+}
+
+html[data-theme="dark"] .trendFactoryHero h2,
+html[data-theme="dark"] .trendControls h2,
+html[data-theme="dark"] .trendStep b,
+html[data-theme="dark"] .formatProfile strong {
+  color: var(--ds-text);
+}
+
+@media (max-width: 760px) {
+  .formatProfile {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .trendFactoryHero {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .trendSeal {
+    width: 112px;
+    justify-self: start;
+  }
+
+  .trendPipeline {
+    overflow-x: auto;
+    justify-content: flex-start;
+    scrollbar-width: thin;
+  }
+
+  .trendStep {
+    flex: 0 0 auto;
+  }
+
+  .trendConnector {
+    flex: 0 0 18px;
+  }
+
+  .trendControlRow {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .trendControlRow select,
+  .trendSearch {
+    width: 100%;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .catalogCard:hover,
+  .genreCard:hover {
+    transform: none;
+  }
+}
