@@ -53,7 +53,7 @@ for(const code of ["ur","hi","ar","fa"])assert.ok(localeDictionary[code]?.["The 
 assert.ok(app.includes('data-in-lang-key="chapters"')&&app.includes('data-in-lang-key="Unknown author"'),"Dynamic story-card metadata must expose translation keys.");
 assert.ok(app.includes('setINLang(document.documentElement.lang||"en")'),"Rendered story shelves must apply the currently selected locale after asynchronous insertion.");
 
-const homeCss=readFileSync(new URL("../public/imperial-design-foundation.css",import.meta.url),"utf8");
+const homeCss=css;
 assert.ok(homeCss.includes(".homePage .nextFeatureDeck{grid-template-columns:minmax(0,1fr)"),"Localized feature tiles must stack cleanly on mobile.");
 assert.ok(homeCss.includes("overflow-wrap:anywhere"),"Long translated homepage copy must not force horizontal overflow.");
 assert.ok(homeCss.includes('html[dir="rtl"] .homePage .nextFeatureTile'),"Editorial feature tiles must support RTL alignment.");
