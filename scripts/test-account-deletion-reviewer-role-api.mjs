@@ -1,6 +1,7 @@
 import assert from "node:assert/strict";
 import { readFileSync } from "node:fs";
 const source=readFileSync(new URL("../src/index.js",import.meta.url),"utf8");
+assert.match(source,/req\.headers\.get\("origin"\)!==url\.origin/,"reviewer role mutations must enforce exact same-origin Origin");
 const a=source.indexOf('if(p==="/api/admin/account-deletion/reviewer-roles"&&m==="GET")');
 const b=source.indexOf('if(p==="/api/admin/account-deletion/reviewer-roles"&&m==="POST")');
 const c=source.indexOf("const revokeReviewerRole=p.match",b);
