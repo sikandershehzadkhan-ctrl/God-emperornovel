@@ -180,6 +180,6 @@ for(const selector of [".homePage .homeFormatShelf,",".homePage .homeConnectionS
 }
 assert.ok(css.includes("content-visibility:auto;")&&css.includes("contain-intrinsic-size:auto 520px"),"Off-screen sections must use progressive rendering with intrinsic size estimates to reduce initial layout/paint work without collapsing scroll space.");
 assert.ok(app.includes('<section class="hero nextHero imperialArchiveHero">'),"The homepage hero must remain outside off-screen rendering so the primary content is immediately available.");
-assert.ok(css.includes("@media(max-width:760px){\\n  .homePage .homeFormatShelf{contain-intrinsic-size:auto 470px}"),"Mobile layouts must use dedicated intrinsic size estimates for deferred homepage sections.");
+assert.ok(css.includes("@media(max-width:760px){")&&css.includes(".homePage .homeFormatShelf{contain-intrinsic-size:auto 470px}"),"Mobile layouts must use dedicated intrinsic size estimates for deferred homepage sections.");
 
 console.log("Homepage, novel overview and reader localization integration tests passed: versioned entry, live bounded graph, safe taxonomy links, escaped labels and graceful fallback.");
