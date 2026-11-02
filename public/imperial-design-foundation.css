@@ -1996,10 +1996,15 @@ html[dir="rtl"] .menuDrawer.is-open{
   background:var(--in-surface-subtle);
   color:var(--in-action-primary);
 }
+.adminWrap{--admin-active-foreground:#fff}
+html[data-theme="dark"] .adminWrap,
+html[data-theme="midnight"] .adminWrap,
+html[data-theme="imperial"] .adminWrap,
+html[data-theme="cosmic"] .adminWrap{--admin-active-foreground:#111426}
 .adminWrap .adminNav button.active{
   border-color:var(--in-action-primary);
   background:var(--in-action-primary);
-  color:#fff;
+  color:var(--admin-active-foreground);
 }
 .adminWrap .adminCard,.adminWrap .panel{
   background:var(--in-surface-raised);
