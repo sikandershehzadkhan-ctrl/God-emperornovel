@@ -758,7 +758,7 @@ try {
   const otherAccountAfterReset = await request(baseUrl,"/api/me/export",{cookie:recipient.cookie});
   assert.equal(otherAccountAfterReset.response.status,200,"Resetting one account must not revoke another account's session");
   const ownerSessionCookie=newPasswordLogin.response.headers.get("set-cookie")||"";
-  const ownerSessionMatch=ownerSessionCookie.match(/(?:^|;\\s*)session=([^;]+)/);
+  const ownerSessionMatch=ownerSessionCookie.match(/(?:^|;\s*)session=([^;]+)/);
   assert.ok(ownerSessionMatch,"Re-authentication after password reset must issue a fresh session");
   owner.cookie="session="+ownerSessionMatch[1];
 
