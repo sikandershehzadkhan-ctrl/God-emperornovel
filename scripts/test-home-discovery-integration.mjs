@@ -24,6 +24,9 @@ const localeMatch=app.match(/const IN_LANG=(\{[\s\S]*?\});function setINLang/);
 assert.ok(localeMatch,"The language dictionary must remain a single parseable object.");
 const localeDictionary=JSON.parse(localeMatch[1]);
 assert.equal(Object.keys(localeDictionary).length,14,"The existing fourteen interface locales must be retained.");
+for(const code of ["ur","hi","ar","fa"])assert.ok(localeDictionary[code]?.["Open a world."]&&localeDictionary[code]?.["Shape an empire."]&&localeDictionary[code]?.["Find your story"],code+" homepage hero copy must be inside its own locale dictionary.");
+for(const code of ["ur","hi","ar","fa"])assert.ok(localeDictionary[code]?.["Follow the threads between worlds."]&&localeDictionary[code]?.["The realm, right now."],code+" discovery and platform sections must be translated.");
+
 for(const code of ["ur","hi","ar","fa"])assert.ok(localeDictionary[code]?.["Follow the threads between worlds."],"Every supported RTL/South Asian homepage locale must contain discovery translations.");
 assert.ok(localeDictionary.ur?.["The realm, right now."]&&localeDictionary.hi?.["The realm, right now."]&&localeDictionary.ar?.["The realm, right now."]&&localeDictionary.fa?.["The realm, right now."],"Platform activity headings must be translated in all four extended locales.");
 
