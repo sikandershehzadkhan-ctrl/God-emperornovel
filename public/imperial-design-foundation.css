@@ -1940,3 +1940,37 @@ html[dir="rtl"] .menuDrawer{
 html[dir="rtl"] .menuDrawer.is-open{
   transform:translateX(0);
 }
+
+
+/* Imperial Command Center: align the private admin workspace with the shared design language. */
+.adminWrap{--admin-gap:14px;color:var(--in-text-primary);padding-inline:clamp(14px,2vw,28px)}
+.adminWrap .adminHero{color:var(--in-text-primary);background:linear-gradient(135deg,#F5F2FF 0%,#FFFFFF 58%,#EEF4FF 100%);border:1px solid #D9D2EC;border-top:3px solid var(--in-color-purple-700);border-radius:var(--in-radius-xl);box-shadow:var(--in-shadow-sm)}
+.adminWrap .adminHero h1{color:#171C2B;font-family:var(--in-font-ui);font-size:clamp(28px,3vw,38px);letter-spacing:-.04em}
+.adminWrap .adminHero p{color:#59647B;line-height:1.6}
+.adminWrap .adminNav{gap:8px;padding:4px 2px 10px;scrollbar-width:thin}
+.adminWrap .adminNav button{min-height:44px;padding:9px 14px;border:1px solid #DDE2EC;border-radius:var(--in-radius-md);background:#FFFFFF;color:#3C465C;font-weight:650;transition:background-color 120ms,border-color 120ms,color 120ms}
+.adminWrap .adminNav button:hover{border-color:#B9A1FF;background:#F7F4FF;color:#5935B5}
+.adminWrap .adminNav button.active{border-color:#5935B5;background:#5935B5;color:#FFFFFF}
+.adminWrap .adminGrid{gap:var(--admin-gap)}
+.adminWrap .adminCard,.adminWrap .panel{min-width:0;background:#FFFFFF;border:1px solid #DDE2EC;border-radius:var(--in-radius-lg);box-shadow:var(--in-shadow-sm);color:#171C2B}
+.adminWrap .adminCard b.big{color:#171C2B;font-variant-numeric:tabular-nums}
+.adminWrap .adminCard small,.adminWrap .muted2{color:#59647B}
+.adminWrap .adminTable th{color:#59647B;background:#F7F8FC}
+.adminWrap .adminTable td{color:#252D40}
+.adminWrap .adminTable th,.adminWrap .adminTable td{border-bottom-color:#DDE2EC}
+.adminWrap .mini,.adminWrap .mini.edit,.adminWrap .mini.gold{min-height:40px;border-color:#C9BCEB;background:#F5F2FF;color:#482A9A!important}
+.adminWrap .mini.good{border-color:#A9D9C6;background:#EFFAF5;color:#176B4E!important}
+.adminWrap .mini.bad{border-color:#E7B8C2;background:#FFF3F5;color:#A52F48!important}
+.adminWrap .status{font-weight:650}
+.adminWrap .status.pending,.adminWrap .status.open{color:#8056E8;border-color:#D4C6F4;background:#F7F4FF}
+.adminWrap .status.approved,.adminWrap .status.resolved,.adminWrap .status.online{color:#176B4E;border-color:#A9D9C6;background:#EFFAF5}
+.adminWrap .status.rejected,.adminWrap .status.dismissed,.adminWrap .status.error{color:#A52F48;border-color:#E7B8C2;background:#FFF3F5}
+.adminWrap .linkBtn{color:#2054B3}
+.adminWrap :where(button,a,input,select,textarea):focus-visible{outline:3px solid #397BE8!important;outline-offset:3px!important}
+.adminWrap :where(button,a,input,select,textarea){touch-action:manipulation}
+.adminWrap .adminTable{min-width:680px}
+.adminWrap .scroll{max-width:100%;overscroll-behavior-inline:contain}
+@media(max-width:760px){.adminWrap{padding-inline:12px}.adminWrap .adminHero{border-radius:14px}.adminWrap .adminNav{margin-inline:-2px}.adminWrap .adminGrid{grid-template-columns:repeat(2,minmax(0,1fr))}.adminWrap .adminTable th,.adminWrap .adminTable td{padding:9px}}
+@media(max-width:380px){.adminWrap .adminGrid{grid-template-columns:1fr}.adminWrap .adminHero h1{font-size:27px}}
+@media(prefers-reduced-motion:reduce){.adminWrap .adminNav button{transition:none}}
+@media(forced-colors:active){.adminWrap .adminNav button.active{outline:2px solid Highlight}}
