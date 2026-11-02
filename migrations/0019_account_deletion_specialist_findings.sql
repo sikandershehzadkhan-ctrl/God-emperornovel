@@ -81,3 +81,16 @@ BEGIN
     json_object('dependency_key',NEW.dependency_key,'revision',NEW.revision)
   );
 END;
+
+-- State transitions are recorded by the database in the same transaction as the update.
+CREATE TRIGGER IF NOT EXISTS trg_account_deletion_review_state_audit
+AFTER UPDATE OF state ON account_deletion_reviews
+WHEN OLD.state<>NEW.state
+BEGIN
+  INSERT INTO account_deletion_review_events(
+    review_id,request_id,actor_id,event_type,from_state,to_state,review_version,metadata_json
+  ) VALUES (
+    NEW.id,NEW.request_id,NEW.claimed_by,'state_changed',
+    OLD.state,NEW.state,NEW.version,'{}'
+  );
+END;
