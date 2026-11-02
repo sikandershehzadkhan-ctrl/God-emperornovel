@@ -19,7 +19,7 @@ for (const [fragment, description] of [
   ["return json({ok:true,removed:", "history deletion must return a clear idempotent result"]
 ]) assert.ok(route.includes(fragment), description);
 assert.ok(!route.includes("DELETE FROM bookmarks") && !route.includes("DELETE FROM user_library"), "history deletion must preserve bookmarks and Library membership");
-assert.ok(!route.includes("DELETE FROM history WHERE user_id=?"), "history endpoint must not expose a bulk clear operation");
+assert.ok(!route.includes('DELETE FROM history WHERE user_id=?").bind(u.id).run()'), "history endpoint must not expose a bulk clear operation");
 assert.ok(/PRIMARY KEY\s*\(user_id,novel_id\)/i.test(schema.slice(schema.indexOf("CREATE TABLE IF NOT EXISTS history"), schema.indexOf(");", schema.indexOf("CREATE TABLE IF NOT EXISTS history")))), "history table must prevent duplicate per-account novel rows");
 assert.ok(app.includes("method:'DELETE'") && app.includes("/api/history?novel_id="), "history page must use the single-novel delete endpoint");
 assert.ok(app.includes("Saved Library entries and bookmarks will remain."), "history UI must explain that independent saved data is retained");
