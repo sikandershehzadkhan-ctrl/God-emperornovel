@@ -8,7 +8,6 @@ const account=app.slice(accountStart,accountEnd);
 for(const fragment of [
   "Account deletion request",
   "30-day cooling-off period",
-  'api("/api/me/deletion-request")',
   'api(\'/api/me/deletion-request\'',
   'api(\'/api/me/deletion-request/cancel\'',
   'autocomplete="current-password"',
