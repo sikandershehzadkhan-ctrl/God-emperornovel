@@ -74,6 +74,14 @@ assert.ok(analyticsRoute.includes("n.owner_user_id=?"), "Analytics must be scope
 assert.ok(analyticsRoute.includes("FROM chapter_views"), "Analytics must use recorded chapter-view counters.");
 assert.ok(analyticsRoute.includes("FROM ratings"), "Analytics must use recorded reader ratings.");
 assert.ok(analyticsRoute.includes("FROM unlocks"), "Analytics must use recorded chapter unlocks.");
+assert.ok(analyticsRoute.includes("SUM(x.cost)"), "Creator monetization reporting must sum recorded unlock costs.");
+assert.ok(analyticsRoute.includes("x.cost>0"), "Free unlocks must not be counted as paid Crown spend.");
+assert.ok(analyticsRoute.includes("reader_crown_spend"), "Analytics must expose Crown spend separately from ordinary unlock counts.");
+assert.ok(analyticsRoute.includes("paying_readers"), "Per-story analytics must count distinct readers with paid unlocks.");
+assert.ok(analyticsRoute.includes("n.owner_user_id=?"), "Crown spend must remain scoped through the author's owned novels.");
+assert.ok(!analyticsRoute.includes("donations"), "Reader donations must not be misrepresented as creator chapter earnings.");
+assert.ok(!analyticsRoute.includes("payout"), "No payout or withdrawable-balance records may be implied before a payout system exists.");
+
 assert.ok(analyticsRoute.includes("LIMIT 100") && analyticsRoute.includes("LIMIT 10"), "Analytics story and chapter lists must be bounded.");
 assert.ok(analyticsRoute.includes('scope:"lifetime_counters"'), "Analytics must identify its metrics as lifetime counters.");
 for (const [label, browser] of [["source", app], ["served asset", shipped]]) {
@@ -81,6 +89,10 @@ for (const [label, browser] of [["source", app], ["served asset", shipped]]) {
   assert.ok(browser.includes("api('/api/author/analytics')"), label + " must load the authenticated analytics API.");
   assert.ok(browser.includes("Most-read chapters"), label + " must show chapter-level performance.");
   assert.ok(browser.includes("lifetime counters"), label + " must explain the limits of available historical data.");
+  assert.ok(browser.includes("Crown spend on chapters"), label + " must report actual recorded paid unlock spend.");
+  assert.ok(browser.includes("Author payouts are not enabled"), label + " must clearly disclose that Crown spend is not author income.");
+  assert.ok(browser.includes("not author revenue"), label + " must not label Crown spend as payable earnings.");
+
 }
 assert.equal(app, shipped, "Source and served application assets must be identical.");
 console.log("Scheduled chapter publication policy and UI checks passed.");
