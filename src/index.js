@@ -833,6 +833,52 @@ if(p==="/api/author/feedback"&&m==="GET"){
   await audit(env,u,'author_story_goal_saved',`novel=${novelId};chapters=${targetChapters};words=${targetWords}`);
   return json({ok:true})
  }
+ if(p==="/api/author/notes"&&m==="GET"){
+  const e=author(u);if(e)return e;
+  const novelId=Number(url.searchParams.get('novel_id')||0),chapterId=Number(url.searchParams.get('chapter_id')||0);
+  if((novelId&&!Number.isSafeInteger(novelId))||(chapterId&&!Number.isSafeInteger(chapterId)))return json({error:'Invalid story or chapter.'},400);
+  const rows=await env.DB.prepare(`SELECT pn.id,pn.novel_id,pn.chapter_id,pn.note,pn.created_at,pn.updated_at,n.title novel_title,c.chapter_number,c.title chapter_title
+   FROM author_private_notes pn JOIN novels n ON n.id=pn.novel_id
+   LEFT JOIN chapters c ON c.id=pn.chapter_id
+   WHERE pn.owner_user_id=? AND n.owner_user_id=? AND (?=0 OR pn.novel_id=?) AND (?=0 OR pn.chapter_id=?)
+   ORDER BY pn.updated_at DESC,pn.id DESC LIMIT 100`).bind(u.id,u.id,novelId,novelId,chapterId,chapterId).all();
+  return json(rows.results||[])
+ }
+ if(p==="/api/author/notes"&&m==="POST"){
+  const e=author(u);if(e)return e;
+  const b=await body(req),novelId=Number(b.novel_id),chapterId=b.chapter_id==null||b.chapter_id===''?null:Number(b.chapter_id);
+  const note=String(b.note||'').replace(/\\u0000/g,'').trim();
+  if(!Number.isSafeInteger(novelId)||novelId<1)return json({error:'A valid story is required.'},400);
+  if(chapterId!==null&&(!Number.isSafeInteger(chapterId)||chapterId<1))return json({error:'Invalid chapter.'},400);
+  if(!note||note.length>4000)return json({error:'Notes must contain between 1 and 4,000 characters.'},400);
+  const saved=await env.DB.prepare(`INSERT INTO author_private_notes(owner_user_id,novel_id,chapter_id,note)
+   SELECT ?,n.id,?,? FROM novels n WHERE n.id=? AND n.owner_user_id=?
+   AND (? IS NULL OR EXISTS(SELECT 1 FROM chapters c WHERE c.id=? AND c.novel_id=n.id))`)
+   .bind(u.id,chapterId,note,novelId,u.id,chapterId,chapterId).run();
+  if(!Number(saved.meta?.changes||0))return json({error:'Story or chapter not found.'},404);
+  await audit(env,u,'author_private_note_created',`novel=${novelId};chapter=${chapterId||'story'}`);
+  return json({ok:true,id:Number(saved.meta.last_row_id)},201)
+ }
+ let authorNote=p.match(/^\\/api\\/author\\/notes\\/(\\d+)$/);
+ if(authorNote&&m==="PATCH"){
+  const e=author(u);if(e)return e;
+  const id=Number(authorNote[1]),b=await body(req),note=String(b.note||'').replace(/\\u0000/g,'').trim();
+  if(!note||note.length>4000)return json({error:'Notes must contain between 1 and 4,000 characters.'},400);
+  const saved=await env.DB.prepare(`UPDATE author_private_notes SET note=?,updated_at=CURRENT_TIMESTAMP
+   WHERE id=? AND owner_user_id=? AND EXISTS(SELECT 1 FROM novels n WHERE n.id=author_private_notes.novel_id AND n.owner_user_id=?)`).bind(note,id,u.id,u.id).run();
+  if(!Number(saved.meta?.changes||0))return json({error:'Note not found.'},404);
+  await audit(env,u,'author_private_note_updated',`note=${id}`);
+  return json({ok:true})
+ }
+ if(authorNote&&m==="DELETE"){
+  const e=author(u);if(e)return e;
+  const id=Number(authorNote[1]);
+  const removed=await env.DB.prepare(`DELETE FROM author_private_notes WHERE id=? AND owner_user_id=?
+   AND EXISTS(SELECT 1 FROM novels n WHERE n.id=author_private_notes.novel_id AND n.owner_user_id=?)`).bind(id,u.id,u.id).run();
+  if(!Number(removed.meta?.changes||0))return json({error:'Note not found.'},404);
+  await audit(env,u,'author_private_note_deleted',`note=${id}`);
+  return json({ok:true})
+ }
  if(p==="/api/author/planning"&&m==="GET"){
   const e=author(u);if(e)return e;
   const rows=await env.DB.prepare(`SELECT * FROM (
