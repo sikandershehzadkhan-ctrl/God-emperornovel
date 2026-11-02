@@ -11,12 +11,12 @@ for (const [label, app] of [["source", source], ["served asset", shipped]]) {
   assert.ok(app.includes("localStorage.removeItem(storageKey)"), label + " must clear local data after successful save.");
   assert.ok(app.includes("attachLocalDraft(f,'chapter:'+Number(f.dataset.id),()=>({comicContent:"), label + " must recover chapter drafts by story.");
   assert.ok(app.includes("$$('.authorChapterForm',list).forEach"), label + " must initialize every chapter form with a collection query.");
-  assert.ok(!app.includes("$('.authorChapterForm',list).forEach"), label + " must not use single-element querySelector for a collection.");
+  assert.doesNotMatch(app, /(?<!\\$)\\$\\('\.authorChapterForm',list\\)\\.forEach/, label + " must not use single-element querySelector for a collection.");
   assert.ok(app.includes("restoreExtra(saved.extra)"), label + " must restore structured draft data through an explicit callback.");
   assert.ok(app.includes("saved.comicContent==='string'"), label + " must restore comic chapter payloads before initializing the page composer.");
   assert.ok(app.includes("content.dispatchEvent(new Event('input',{bubbles:true}))"), label + " must persist page-composer changes to local recovery.");
   assert.ok(app.includes("isSafeComicImageUrl(String(page.src||''))"), label + " must revalidate recovered comic image URLs.");
-  assert.ok(!app.includes(";\\n form.onsubmit="), label + " must not contain an escaped newline in executable code.");
+  assert.ok(!app.includes(";\\\\n form.onsubmit="), label + " must not contain an escaped newline in executable code.");
 }
 assert.equal(source, shipped, "Source and served app assets must stay identical.");
 console.log("Author local draft recovery checks passed.");
