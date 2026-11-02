@@ -31,7 +31,12 @@ BEGIN
       AND p.review_id=NEW.review_id
       AND p.request_id=NEW.request_id
       AND p.plan_digest=NEW.approved_plan_digest
+      AND p.plan_version=(SELECT MAX(latest.plan_version) FROM account_deletion_disposition_plans latest WHERE latest.review_id=p.review_id)
       AND r.request_id=NEW.request_id
+      AND r.state='review_in_progress'
+      AND r.version=p.base_review_version+1
+      AND r.proposed_by=p.proposer_id
+      AND r.plan_digest=p.plan_digest
       AND r.subject_user_id<>NEW.approver_id
       AND p.proposer_id<>NEW.approver_id
   ) THEN RAISE(ABORT, 'approval must independently bind to the exact disposition plan') END;
