@@ -783,6 +783,7 @@ try {
 
   const readerDeletion=await request(baseUrl,"/api/me/deletion-request",{method:"POST",cookie:spectator.cookie,body:{password:"Integration-Test-Password-2026!"}});
   assert.equal(readerDeletion.response.status,201,JSON.stringify(readerDeletion.data));
+  assert.ok(Number.isSafeInteger(Number(readerDeletion.data.request.id)) && Number(readerDeletion.data.request.id)>0,"Deletion request creation must return its stable database ID for reviewer-case correlation");
   assert.equal(readerDeletion.data.request.status,"pending_deletion","Non-creator accounts enter cooling-off state");
 
   // Account-deletion review claims are exercised through the real local Worker + isolated D1.
