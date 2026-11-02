@@ -20,12 +20,12 @@ assert.ok(app.includes('[data-in-lang-key]'),"Explicitly marked homepage text no
 assert.ok(app.includes('[data-in-lang-placeholder]'),"Search placeholders must update when the interface language changes.");
 assert.ok(homepageLoader.includes('setINLang(document.documentElement.lang||"en");'),"Saved locale must be applied after homepage markup is inserted into the document.");
 assert.ok(app.includes('data-in-lang-key="Open a world."')&&app.includes('data-in-lang-key="Shape an empire."'),"The homepage hero headline must expose translation-safe text spans.");
-for(const code of ["ur","hi","ar","fa"])assert.ok(["Explore the realm","Discover novels","Trend Factory","Genres","Browse formats","My library","Become an Author","Author Studio","Imperial Crown Vault","OmniPortal","Account"].every(label=>localeDictionary[code]?.[label]),code+" must translate the navigation drawer vocabulary in its own locale dictionary.");
 assert.ok(app.includes('document.querySelectorAll(".navlinks a,.menuDrawer a span,.footerLinks a,.mobileNav a,[data-in-lang-key]")'),"Navigation drawer labels must be included in the language refresh pass.");
 
 const localeMatch=app.match(/const IN_LANG=(\{[\s\S]*?\});function setINLang/);
 assert.ok(localeMatch,"The language dictionary must remain a single parseable object.");
 const localeDictionary=JSON.parse(localeMatch[1]);
+for(const code of ["ur","hi","ar","fa"])assert.ok(["Explore the realm","Discover novels","Trend Factory","Genres","Browse formats","My library","Become an Author","Author Studio","Imperial Crown Vault","OmniPortal","Account"].every(label=>localeDictionary[code]?.[label]),code+" must translate the navigation drawer vocabulary in its own locale dictionary.");
 assert.equal(Object.keys(localeDictionary).length,14,"The existing fourteen interface locales must be retained.");
 for(const code of ["ur","hi","ar","fa"])assert.ok(localeDictionary[code]?.["Open a world."]&&localeDictionary[code]?.["Shape an empire."]&&localeDictionary[code]?.["Find your story"],code+" homepage hero copy must be inside its own locale dictionary.");
 for(const code of ["ur","hi","ar","fa"])assert.ok(localeDictionary[code]?.["Follow the threads between worlds."]&&localeDictionary[code]?.["The realm, right now."],code+" discovery and platform sections must be translated.");
