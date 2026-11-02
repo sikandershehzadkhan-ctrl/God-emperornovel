@@ -67,4 +67,9 @@ assert.ok(app.includes("api('/api/author/readiness')")&&shipped.includes("api('/
 assert.ok(app.includes("do not certify literary quality")&&shipped.includes("do not certify literary quality"),"UI must disclose the checks' limits.");
 assert.ok(css.includes(".readinessMark")&&css.includes(".authorReadinessStory"),"Readiness results must have responsive presentation.");
 
-console.log("Author writing goals, private notes and editorial readiness policy, ownership, migration, UI and asset parity checks passed.");
+
+assert.ok(app.includes("authorGoalRows.map")&&app.includes("authorReadinessRows.map"),"Planning queue must reuse loaded goal and readiness data.");
+assert.ok(app.includes("authorPlanningSignals")&&app.includes("readiness items need attention"),"Planning queue must surface writing targets and readiness attention.");
+assert.ok(app.includes("await Promise.all([loadAuthorGoals(),loadAuthorReadiness()])"),"Goal and readiness data must load concurrently before planning queue composition.");
+
+console.log("Author writing goals, private notes, editorial readiness and planning integration checks passed.");
