@@ -15,7 +15,7 @@ const items=keys.map(dependency_key=>({
 const valid=validateDispositionItems(items,allPermissions);
 assert.equal(valid.ok,true);
 assert.equal(valid.items.length,keys.length);
-assert.deepEqual(validateDispositionItems(items.slice(1),allPermissions).ok,false,"Incomplete inventory must be rejected");
+assert.deepEqual(validateDispositionItems(items.slice(1),allPermissions,{requireComplete:true}).ok,false,"Incomplete final inventory must be rejected");
 assert.equal(validateDispositionItems([items[0],items[0],...items.slice(2)],allPermissions).ok,false,"Duplicate dependencies must be rejected");
 assert.equal(validateDispositionItems([{...items[0],outcome:"erase_everything"}],allPermissions).ok,false,"Unknown outcomes must be rejected");
 assert.equal(validateDispositionItems([{...items[0],reason:" "}],allPermissions).ok,false,"Blank reasons must be rejected");
@@ -23,6 +23,7 @@ assert.equal(validateDispositionItems([{...items[0],outcome:"transfer_with_conse
 assert.equal(validateDispositionItems([items[0]],["case:disposition:finance"]).ok,false,"Wrong specialist role must be rejected");
 const creatorItems=items.filter(item=>["creator_content","creator_rights","ownership_transfers"].includes(item.dependency_key));
 assert.equal(validateDispositionItems(creatorItems,["case:disposition:creator"]).ok,true,"Creator specialist may validate only creator dependencies");
+assert.equal(validateDispositionItems(creatorItems,["case:disposition:creator"],{requireComplete:true}).ok,false,"A specialist submission cannot claim to complete the entire inventory");
 const first=await digestDispositionPlan({requestId:10,reviewId:20,baseReviewVersion:3,proposerId:4,items:valid.items});
 const reordered=await digestDispositionPlan({requestId:10,reviewId:20,baseReviewVersion:3,proposerId:4,items:[...valid.items].reverse()});
 assert.equal(first,reordered,"Canonical digest must be independent of input item order");
