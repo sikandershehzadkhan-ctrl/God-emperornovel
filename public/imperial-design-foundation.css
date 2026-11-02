@@ -2125,3 +2125,55 @@ html[dir="rtl"] .menuDrawer.is-open{
   .homePage .imperialHeroBrowse,
   .homePage .heroTags a{transition:none!important;transform:none!important}
 }
+
+
+/* Story-card presentation pass 17.44: cover depth, metadata clarity, balanced loading. */
+.homePage .homeStoryGrid .card{
+  overflow:hidden;
+  border-color:var(--in-line);
+  border-radius:15px;
+  box-shadow:0 3px 14px rgba(11,18,21,.045);
+  transition:border-color var(--in-motion),box-shadow var(--in-motion),transform var(--in-motion);
+}
+.homePage .homeStoryGrid .cover{
+  overflow:hidden;
+  isolation:isolate;
+  aspect-ratio:3/3.85;
+  background:linear-gradient(145deg,var(--in-surface-raised),var(--in-brand-soft));
+}
+.homePage .homeStoryGrid .cover::after{
+  content:"";
+  position:absolute;
+  z-index:1;
+  inset:42% 0 0;
+  pointer-events:none;
+  background:linear-gradient(180deg,transparent,rgba(5,8,18,.18));
+}
+.homePage .homeStoryGrid .cover img{
+  transition:transform 260ms cubic-bezier(.2,.7,.2,1);
+}
+.homePage .homeStoryGrid .meta span{
+  min-height:23px;
+  padding:3px 7px;
+  border:1px solid var(--in-line);
+  border-radius:999px;
+  background:var(--in-surface-raised);
+  color:var(--in-muted);
+  font-weight:700;
+  white-space:nowrap;
+}
+.homePage .homeStoryGrid .card:focus-visible{
+  outline-offset:4px;
+}
+@media(hover:hover) and (pointer:fine){
+  .homePage .homeStoryGrid .card:hover .cover img{transform:scale(1.035)}
+}
+@media(max-width:760px){
+  .homePage .homeStoryGrid.multiStory .cover{aspect-ratio:3/3.8}
+  .homePage .homeStoryGrid.multiStory .meta span{min-height:21px;padding:2px 6px}
+}
+@media(prefers-reduced-motion:reduce){
+  .homePage .homeStoryGrid .card,
+  .homePage .homeStoryGrid .cover img{transition:none!important}
+  .homePage .homeStoryGrid .card:hover .cover img{transform:none!important}
+}
