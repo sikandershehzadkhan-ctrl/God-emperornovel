@@ -65,8 +65,58 @@
 <script>
 const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 async function api(path,opt={}){const r=await fetch(path,{credentials:'same-origin',...opt,headers:{'content-type':'application/json',...(opt.headers||{})}});let d={};try{d=await r.json()}catch{}if(!r.ok)throw new Error(d.error||`Request failed (${r.status})`);return d}
-const tabs=[...document.querySelectorAll('#tabs button')];tabs.forEach(b=>b.onclick=()=>showTab(b.dataset.tab));
-function showTab(id){tabs.forEach(b=>b.classList.toggle('active',b.dataset.tab===id));document.querySelectorAll('.adminSection').forEach(s=>s.classList.toggle('active',s.id===id));({overview:loadOverview,users:loadUsers,authorApplications:loadAuthorApplications,taxonomy:loadTaxonomy,publishing:loadPublishing,community:loadCommunityModeration,donations:loadDonations,requests:loadRequests,reports:loadReports,agents:loadAgents,connectors:loadConnectors,connectorRequests:loadConnectorRequests}[id]||loadOverview)()}
+const tabs=[...document.querySelectorAll('#tabs button')];
+const panels=[...document.querySelectorAll('.adminSection')];
+const tabList=document.getElementById('tabs');
+tabList.setAttribute('role','tablist');
+tabList.setAttribute('aria-label','Administrator sections');
+tabs.forEach((b,i)=>{
+ b.type='button';
+ b.id='admin-tab-'+b.dataset.tab;
+ b.setAttribute('role','tab');
+ b.setAttribute('aria-controls',b.dataset.tab);
+ b.setAttribute('aria-selected',String(b.dataset.tab==='overview'));
+ b.tabIndex=b.dataset.tab==='overview'?0:-1;
+ b.onclick=()=>showTab(b.dataset.tab,true);
+});
+panels.forEach(s=>{
+ s.setAttribute('role','tabpanel');
+ s.setAttribute('aria-labelledby','admin-tab-'+s.id);
+ s.tabIndex=0;
+ s.hidden=s.id!=='overview';
+});
+tabList.addEventListener('keydown',event=>{
+ const current=tabs.indexOf(document.activeElement);
+ if(current<0)return;
+ let next=current;
+ if(event.key==='ArrowRight')next=(current+1)%tabs.length;
+ else if(event.key==='ArrowLeft')next=(current-1+tabs.length)%tabs.length;
+ else if(event.key==='Home')next=0;
+ else if(event.key==='End')next=tabs.length-1;
+ else return;
+ event.preventDefault();
+ showTab(tabs[next].dataset.tab,true);
+});
+function showTab(id,moveFocus=false){
+ const selected=tabs.find(b=>b.dataset.tab===id);
+ if(!selected)return;
+ tabs.forEach(b=>{
+  const active=b===selected;
+  b.classList.toggle('active',active);
+  b.setAttribute('aria-selected',String(active));
+  b.tabIndex=active?0:-1;
+ });
+ panels.forEach(s=>{
+  const active=s.id===id;
+  s.classList.toggle('active',active);
+  s.hidden=!active;
+ });
+ if(moveFocus){
+  selected.focus({preventScroll:true});
+  selected.scrollIntoView({block:'nearest',inline:'nearest'});
+ }
+ ({overview:loadOverview,users:loadUsers,authorApplications:loadAuthorApplications,taxonomy:loadTaxonomy,publishing:loadPublishing,community:loadCommunityModeration,donations:loadDonations,requests:loadRequests,reports:loadReports,agents:loadAgents,connectors:loadConnectors,connectorRequests:loadConnectorRequests}[id]||loadOverview)();
+}
 function status(x){return `<span class="status ${esc(x)}">${esc(x)}</span>`}
 function msg(id,text,bad=false){const el=document.getElementById(id);el.innerHTML=text?`<div class="notice" style="${bad?'border-color:#efc1cb;color:#c94f67;background:#180d12':''}">${esc(text)}</div>`:''}
 async function loadPublishing(){try{const rows=await api('/api/admin/publishing');document.getElementById('publishingBody').innerHTML=rows.map(n=>`<tr><td>${n.id}</td><td><b>${esc(n.title)}</b><br><span class="muted2">${esc(n.author)}</span></td><td><span class="status ${n.rights_status==='original'||n.rights_status==='licensed'||n.rights_status==='authorized'||n.rights_status==='public_domain'?'approved':'pending'}">${esc(n.rights_status)}</span>${n.rights_evidence?`<div class="muted2">Evidence: ${esc(n.rights_evidence)}</div>`:''}</td><td><span class="status ${n.publication_status==='published'?'approved':n.publication_status==='review'?'pending':'dismissed'}">${esc(n.publication_status)}</span></td><td>${n.chapter_count}</td><td><div class="rowActions">${n.publication_status!=='published'?`<button class="mini good" onclick="publishNovel(${n.id})">Publish</button>`:''}${n.publication_status==='published'?`<button class="mini bad" onclick="archiveNovel(${n.id})">Archive</button>`:''}<button class="mini" onclick="reviewNovel(${n.id})">Review</button>${n.publication_status==='review'?`<button class="mini bad" onclick="requestChanges(${n.id})">Request Changes</button>`:''}</div></td></tr>`).join('')||`<tr><td colspan="6">No novels yet. Create your first authorized draft above.</td></tr>`}catch(e){document.getElementById('publishingBody').innerHTML=`<tr><td colspan="7">${esc(e.message)}</td></tr>`}}
