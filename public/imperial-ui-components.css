@@ -1,0 +1,279 @@
+/* Imperial Novel shared UI components
+ * Version: 17.24.0
+ * Loaded after the legacy/versioned styles and semantic design tokens.
+ * Keep selectors aligned to existing application class names.
+ */
+
+/* Buttons: clear hierarchy, consistent geometry, restrained brand color. */
+:where(button, .primary, .secondary, .ghost, .iconbtn) {
+  font: inherit;
+  border-radius: var(--radius-md);
+  -webkit-tap-highlight-color: transparent;
+}
+
+.primary,
+button.primary,
+.actions .primary {
+  min-height: var(--control-min-height);
+  padding: 10px 16px;
+  border: 1px solid var(--imperial-purple);
+  border-radius: var(--radius-md);
+  background: var(--imperial-purple);
+  color: #fff;
+  font-weight: 700;
+  line-height: 1.2;
+  box-shadow: none;
+  cursor: pointer;
+}
+
+.primary:hover,
+button.primary:hover,
+.actions .primary:hover {
+  background: var(--imperial-purple-hover);
+  border-color: var(--imperial-purple-hover);
+  color: #fff;
+}
+
+.secondary,
+button.secondary {
+  min-height: var(--control-min-height);
+  padding: 10px 16px;
+  border: 1px solid var(--ds-border-strong);
+  border-radius: var(--radius-md);
+  background: var(--ds-surface);
+  color: var(--ds-text);
+  font-weight: 650;
+  line-height: 1.2;
+  box-shadow: none;
+  cursor: pointer;
+}
+
+.secondary:hover,
+button.secondary:hover {
+  border-color: var(--imperial-purple);
+  background: var(--imperial-purple-soft);
+  color: var(--imperial-purple-hover);
+}
+
+.ghost,
+button.ghost {
+  min-height: var(--control-min-height);
+  padding: 9px 12px;
+  border: 1px solid transparent;
+  border-radius: var(--radius-md);
+  background: transparent;
+  color: var(--ds-text-muted);
+  font-weight: 600;
+  box-shadow: none;
+  cursor: pointer;
+}
+
+.ghost:hover,
+button.ghost:hover {
+  border-color: var(--ds-border);
+  background: var(--ds-surface-muted);
+  color: var(--ds-text);
+}
+
+.iconbtn,
+button.iconbtn {
+  display: inline-flex;
+  min-width: var(--control-min-height);
+  min-height: var(--control-min-height);
+  align-items: center;
+  justify-content: center;
+  padding: 8px;
+  border: 1px solid var(--ds-border);
+  border-radius: var(--radius-md);
+  background: var(--ds-surface);
+  color: var(--ds-text);
+  box-shadow: none;
+  cursor: pointer;
+}
+
+.iconbtn:hover,
+button.iconbtn:hover {
+  border-color: var(--imperial-purple);
+  background: var(--imperial-purple-soft);
+  color: var(--imperial-purple-hover);
+}
+
+:where(button, .primary, .secondary, .ghost, .iconbtn):disabled,
+:where(button, .primary, .secondary, .ghost, .iconbtn)[aria-disabled="true"] {
+  opacity: .55;
+  cursor: not-allowed;
+  box-shadow: none;
+  transform: none;
+}
+
+/* Form controls: consistent contrast in both supported global themes. */
+:where(input:not([type="checkbox"]):not([type="radio"]):not([type="range"]), select, textarea),
+.toolbar select,
+.field input,
+.field textarea,
+.field select {
+  min-height: var(--control-min-height);
+  max-width: 100%;
+  box-sizing: border-box;
+  border: 1px solid var(--ds-border-strong);
+  border-radius: var(--radius-md);
+  background: var(--ds-surface);
+  color: var(--ds-text);
+  font: inherit;
+  line-height: 1.45;
+}
+
+:where(input:not([type="checkbox"]):not([type="radio"]):not([type="range"]), select, textarea) {
+  padding: 10px 12px;
+}
+
+.field input,
+.field textarea,
+.field select {
+  width: 100%;
+}
+
+:where(input, textarea)::placeholder {
+  color: var(--ds-text-subtle);
+  opacity: 1;
+}
+
+:where(input, select, textarea):hover:not(:disabled) {
+  border-color: var(--ds-border-strong);
+}
+
+:where(input, select, textarea):disabled {
+  background: var(--ds-surface-muted);
+  color: var(--ds-text-subtle);
+  cursor: not-allowed;
+}
+
+:where(input[type="checkbox"], input[type="radio"], input[type="range"]) {
+  accent-color: var(--imperial-purple);
+}
+
+:where(textarea) {
+  min-height: 112px;
+  resize: vertical;
+}
+
+/* Search and filter controls share the same semantic surface. */
+.search,
+.filterChip,
+.readerTool {
+  border-color: var(--ds-border);
+  background: var(--ds-surface);
+  color: var(--ds-text);
+  box-shadow: none;
+}
+
+.search input {
+  min-height: 40px;
+  color: var(--ds-text);
+}
+
+.search input::placeholder {
+  color: var(--ds-text-subtle);
+}
+
+.filterChip[aria-pressed="true"],
+.filterChip.active,
+.readerTool[aria-pressed="true"],
+.readerTool.active {
+  border-color: var(--imperial-purple);
+  background: var(--imperial-purple-soft);
+  color: var(--imperial-purple-hover);
+}
+
+/* Dark theme uses the same hierarchy, not a second visual language. */
+html[data-theme="dark"] .primary,
+html[data-theme="dark"] button.primary,
+html[data-theme="dark"] .actions .primary {
+  border-color: #8b68ef;
+  background: #7547df;
+  color: #fff;
+}
+
+html[data-theme="dark"] .primary:hover,
+html[data-theme="dark"] button.primary:hover,
+html[data-theme="dark"] .actions .primary:hover {
+  border-color: #a78bfa;
+  background: #8559ed;
+}
+
+html[data-theme="dark"] .secondary,
+html[data-theme="dark"] button.secondary,
+html[data-theme="dark"] .iconbtn,
+html[data-theme="dark"] button.iconbtn {
+  border-color: var(--ds-border-strong);
+  background: var(--ds-surface-raised);
+  color: var(--ds-text);
+}
+
+html[data-theme="dark"] .secondary:hover,
+html[data-theme="dark"] button.secondary:hover,
+html[data-theme="dark"] .iconbtn:hover,
+html[data-theme="dark"] button.iconbtn:hover {
+  border-color: #8b68ef;
+  background: #211b38;
+  color: #e8ddff;
+}
+
+html[data-theme="dark"] .ghost,
+html[data-theme="dark"] button.ghost {
+  color: var(--ds-text-muted);
+}
+
+html[data-theme="dark"] .ghost:hover,
+html[data-theme="dark"] button.ghost:hover {
+  border-color: var(--ds-border);
+  background: var(--ds-surface-raised);
+  color: var(--ds-text);
+}
+
+html[data-theme="dark"] :where(input:not([type="checkbox"]):not([type="radio"]):not([type="range"]), select, textarea),
+html[data-theme="dark"] .toolbar select,
+html[data-theme="dark"] .field input,
+html[data-theme="dark"] .field textarea,
+html[data-theme="dark"] .field select {
+  border-color: var(--ds-border-strong);
+  background: var(--ds-surface-raised);
+  color: var(--ds-text);
+}
+
+html[data-theme="dark"] .search,
+html[data-theme="dark"] .filterChip,
+html[data-theme="dark"] .readerTool {
+  border-color: var(--ds-border);
+  background: var(--ds-surface-raised);
+  color: var(--ds-text);
+}
+
+html[data-theme="dark"] .filterChip[aria-pressed="true"],
+html[data-theme="dark"] .filterChip.active,
+html[data-theme="dark"] .readerTool[aria-pressed="true"],
+html[data-theme="dark"] .readerTool.active {
+  border-color: #8b68ef;
+  background: rgba(117, 71, 223, .2);
+  color: #d8c8ff;
+}
+
+/* Keep controls usable without causing layout overflow on narrow screens. */
+@media (max-width: 760px) {
+  :where(.primary, .secondary, .ghost, .iconbtn) {
+    max-width: 100%;
+  }
+
+  .field input,
+  .field textarea,
+  .field select,
+  .toolbar select {
+    min-width: 0;
+  }
+}
+
+@media (forced-colors: active) {
+  :where(.primary, .secondary, .ghost, .iconbtn, input, select, textarea) {
+    forced-color-adjust: auto;
+  }
+}
