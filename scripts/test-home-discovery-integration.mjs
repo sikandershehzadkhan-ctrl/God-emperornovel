@@ -43,6 +43,11 @@ assert.ok(app.includes('homeConnectionType" data-home-dynamic-key="')&&app.inclu
 assert.ok(app.includes('document.addEventListener("imperial:languagechange",localizeDiscovery)'),"Dynamic discovery chips must refresh when the selected language changes.");
 assert.ok(app.includes('data-home-dynamic-key="The catalog is still building its discovery map.'),"Discovery empty state must be locale-aware.");
 assert.ok(app.includes('data-home-dynamic-key="Connected discovery is temporarily unavailable."'),"Discovery error state must be locale-aware.");
+const platformLabels=["Published novels","Published chapters","Credited authors","Novel views · all-time","Chapter views · all-time","Signed-in readers · 24h","Chapter updates · 24h","Visible comments","New comments · 24h","Comment likes","Novel reactions","Reader ratings","Bookmarks","Novel follows","No published chapter updates are recorded yet.","No chapter unlock activity in the last seven days yet.","unlocks"];
+for(const code of ["ur","hi","ar","fa"])assert.ok(platformLabels.every(label=>localeDictionary[code]?.[label]),code+" must translate platform metric labels and activity states.");
+assert.ok(app.includes('data-in-lang-key="'+label+'"'),"Live platform metric labels must expose translation keys when rendered.");
+assert.ok(app.includes('setINLang(document.documentElement.lang||\'en\')'),"Live platform data must apply the current locale after asynchronous rendering.");
+
 for(const code of ["ur","hi","ar","fa"])assert.ok(localeDictionary[code]?.["Unknown author"]&&localeDictionary[code]?.["chapters"],code+" must translate dynamic story-card metadata.");
 for(const code of ["ur","hi","ar","fa"])assert.ok(localeDictionary[code]?.["The catalog is growing. Be among the first to discover what comes next."]&&localeDictionary[code]?.["No additional recently updated stories yet. Explore the catalog for another world."],code+" must translate story-shelf empty states.");
 assert.ok(app.includes('data-in-lang-key="chapters"')&&app.includes('data-in-lang-key="Unknown author"'),"Dynamic story-card metadata must expose translation keys.");
