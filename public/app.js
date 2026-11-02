@@ -123,6 +123,7 @@ async function home(){
   </section>
   <section class="nextReaderPromise"><span class="promiseIcon">◈</span><div><b>Clear rules. Your reading, your call.</b><p>Imperial Crowns and chapter unlocks show their real status. Payments remain pending until manually reviewed.</p></div><a href="/tickets">Imperial Crown Vault ↗</a></section>
  </div></div>`;
+ void (async()=>{
  try{
   const [t,l]=await Promise.all([apiWithTimeout('/api/novels?sort=trending&limit=10'),apiWithTimeout('/api/novels?sort=updated&limit=10')]);
   const trendRows=t.results||[],latestRows=l.results||[];
@@ -135,6 +136,8 @@ async function home(){
   const notice=`<div class="notice" role="alert" style="grid-column:1/-1"><b>Story shelves could not be loaded.</b><p>${esc(error.message||'Please try again in a moment.')}</p><a class="secondary" href="/">Try again</a></div>`;
   $('#trend').setAttribute('aria-busy','false');$('#latest').setAttribute('aria-busy','false');$('#trend').innerHTML=notice;$('#latest').innerHTML=notice;
  }
+ })();
+ void (async()=>{
  try{
   const graph=await apiWithTimeout('/api/discovery/graph?limit=60',{},10000);
   const nodes=Array.isArray(graph.nodes)?graph.nodes:[];
@@ -146,6 +149,7 @@ async function home(){
   const target=$('#homeConnections');
   if(target)target.innerHTML='<div class="homeConnectionEmpty">Connected discovery is temporarily unavailable. <a href="/catalog">Browse the catalog</a>.</div>';
  }
+ })();
  let platformPulseRequest=null,platformPulseHasData=false,platformPulseLastUpdated='';
  async function refreshPlatformPulse(){
   const updated=$('#platformPulseUpdated'),health=$('#platformPulseHealth'),metrics=$('#platformPulseMetrics'),updates=$('#platformPulseUpdates'),trending=$('#platformPulseTrending'),refreshButton=$('#platformPulseRefresh');
@@ -215,7 +219,7 @@ async function home(){
   return platformPulseRequest;
  }
  $('#platformPulseRefresh')?.addEventListener('click',refreshPlatformPulse);
- await refreshPlatformPulse();
+ void refreshPlatformPulse();
  setInterval(()=>{if(document.visibilityState==='visible')refreshPlatformPulse()},60000);
  document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='visible')refreshPlatformPulse()});
 }
