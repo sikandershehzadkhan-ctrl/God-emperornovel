@@ -202,6 +202,8 @@ async function reader(){
  const loadToken=(window.__imperialReaderLoadToken||0)+1;window.__imperialReaderLoadToken=loadToken;
  const parts=location.pathname.split('/');const id=parts[2],num=Math.max(1,Number(parts[3]||1));
  const root=$('#app');
+ if(window.__imperialReaderScrollHandler)window.removeEventListener('scroll',window.__imperialReaderScrollHandler);
+ if(window.__imperialReaderKeyHandler)document.removeEventListener('keydown',window.__imperialReaderKeyHandler);
  root.innerHTML='<section class="readerLoadState" role="status" aria-live="polite"><span class="readerLoadSpinner" aria-hidden="true"></span><h1>Preparing your chapter</h1><p>Loading the novel and checking chapter access…</p></section>';
  let n,ch,d;
  try{
