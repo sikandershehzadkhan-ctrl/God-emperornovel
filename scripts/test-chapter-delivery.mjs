@@ -23,7 +23,9 @@ assert.match(app, /let bookmarkSaving=false;\$\('#bookmarkBtn'\)\.onclick=async\
 assert.match(app, /id="readerNetworkStatus" class="readerNetworkStatus" role="status" aria-live="polite" hidden/, 'Reader must expose an accessible offline status banner.');
 assert.match(app, /window\.addEventListener\('online',updateReaderNetwork\);window\.addEventListener\('offline',updateReaderNetwork\)/, 'Reader must react to online and offline transitions.');
 assert.match(app, /if\(window\.__imperialReaderNetworkHandler\)\{window\.removeEventListener\('online',window\.__imperialReaderNetworkHandler\);window\.removeEventListener\('offline',window\.__imperialReaderNetworkHandler\);\}/, 'Reader network listeners must be removed before a new load.');
-assert.match(app, /await Promise\.all\(\[\s*api\('\/api\/history'/, 'Queued history and bookmark writes must both succeed before a record is removed.');
+assert.ok(app.includes("Promise.all(tasks.map(task=>task.promise.then(value=>({status:'fulfilled',value}),reason=>({status:'rejected',reason}))))"), 'Queued history and bookmark writes must be reconciled independently.');
+assert.ok(app.includes("result.reason?.status===409&&result.reason?.data?.code==='stale_activity_version'"), 'A server-confirmed stale activity dimension must be discarded rather than replayed forever.');
+assert.ok(app.includes("current.history_pending=record.history_pending;current.bookmark_pending=record.bookmark_pending"), 'Successful and stale dimensions must be removed independently while transient failures remain queued.');
 assert.match(app, /\.catch\(\(\)=>\{activitySyncPending=true\}\)/, 'Failed queued activity sync must remain pending for reconnection.');
 assert.ok(app.includes("retry.className='comicPageRetry secondary'"), 'Failed comic images must expose a user-triggered retry control.');
 
