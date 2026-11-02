@@ -18,7 +18,6 @@ assert.ok(app.includes('c=Object.prototype.hasOwnProperty.call(IN_LANG,c)?c:"en"
 assert.ok(app.includes('(c==="ur"||c==="ar"||c==="fa")?"rtl":"ltr"'),"Urdu, Arabic, and Persian must use right-to-left document direction.");
 assert.ok(app.includes('[data-in-lang-key]'),"Explicitly marked homepage text nodes must participate in live locale switching.");
 assert.ok(app.includes('[data-in-lang-placeholder]'),"Search placeholders must update when the interface language changes.");
-assert.ok(homepageLoader.includes('setINLang(document.documentElement.lang||"en");'),"Saved locale must be applied after homepage markup is inserted into the document.");
 assert.ok(app.includes('data-in-lang-key="Open a world."')&&app.includes('data-in-lang-key="Shape an empire."'),"The homepage hero headline must expose translation-safe text spans.");
 assert.ok(app.includes('document.querySelectorAll(".navlinks a,.menuDrawer a span,.footerLinks a,.mobileNav a,[data-in-lang-key]")'),"Navigation drawer labels must be included in the language refresh pass.");
 
@@ -45,7 +44,7 @@ assert.ok(app.includes('data-home-dynamic-key="The catalog is still building its
 assert.ok(app.includes('data-home-dynamic-key="Connected discovery is temporarily unavailable."'),"Discovery error state must be locale-aware.");
 const platformLabels=["Published novels","Published chapters","Credited authors","Novel views · all-time","Chapter views · all-time","Signed-in readers · 24h","Chapter updates · 24h","Visible comments","New comments · 24h","Comment likes","Novel reactions","Reader ratings","Bookmarks","Novel follows","No published chapter updates are recorded yet.","No chapter unlock activity in the last seven days yet.","unlocks"];
 for(const code of ["ur","hi","ar","fa"])assert.ok(platformLabels.every(label=>localeDictionary[code]?.[label]),code+" must translate platform metric labels and activity states.");
-assert.ok(app.includes('data-in-lang-key="'+label+'"'),"Live platform metric labels must expose translation keys when rendered.");
+assert.ok(app.includes("data-in-lang-key=\"'+label+'\">"),"Live platform metric labels must expose translation keys when rendered.");
 assert.ok(app.includes('setINLang(document.documentElement.lang||\'en\')'),"Live platform data must apply the current locale after asynchronous rendering.");
 
 for(const code of ["ur","hi","ar","fa"])assert.ok(localeDictionary[code]?.["Unknown author"]&&localeDictionary[code]?.["chapters"],code+" must translate dynamic story-card metadata.");
@@ -85,6 +84,7 @@ assert.ok(css.includes(".imperialHeroVisual")&&css.includes("@media(max-width:76
 assert.ok(css.includes("prefers-reduced-motion:reduce")&&css.includes(".imperialHeroSeal{transform:none}"),"Hero crest must respect reduced-motion preferences.");
 assert.ok(app.includes("/api/discovery/graph?limit=60"),"Homepage must use the bounded live graph endpoint");
 const homepageLoader=app.slice(app.indexOf("async function home(){"),app.indexOf("async function trendFactory"));
+assert.ok(homepageLoader.includes('setINLang(document.documentElement.lang||"en");'),"Saved locale must be applied after homepage markup is inserted into the document.");
 assert.ok(homepageLoader.includes("void (async()=>{"),"Catalog and discovery requests must run as independent non-blocking homepage tasks.");
 assert.ok(homepageLoader.includes("void refreshPlatformPulse();"),"The initial live overview must not block homepage navigation from becoming interactive.");
 assert.ok(!homepageLoader.includes("await refreshPlatformPulse();"),"Homepage boot must not wait for the real-time panel's network response.");
