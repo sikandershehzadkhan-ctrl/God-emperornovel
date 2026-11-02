@@ -23,6 +23,7 @@ assert.ok(app.includes('data-in-lang-key="Open a world."')&&app.includes('data-i
 assert.ok(app.includes('"ur":{"Home":"صفحہ اول"')&&app.includes('"hi":{"Home":"होम"')&&app.includes('"ar":{"Home":"الرئيسية"')&&app.includes('"fa":{"Home":"خانه"'),"Urdu, Hindi, Arabic, and Persian dictionaries must remain available.");
 assert.ok(app.includes('"Discover stories worth staying up for, then create the worlds only you can imagine.":"ایسی کہانیاں'),"Urdu homepage hero copy must be translated.");
 assert.ok(app.includes('"Discover stories worth staying up for, then create the worlds only you can imagine.":"اكتشف قصصاً'),"Arabic homepage hero copy must be translated.");
+assert.ok(app.includes('"Discover stories worth staying up for, then create the worlds only you can imagine.":"داستان‌هایی کشف کنید'),"Persian homepage hero copy must be nested in the Persian locale dictionary.");
 assert.ok(css.includes("Homepage internationalization and RTL layout pass 17.45"),"Homepage must include a dedicated RTL layout refinement.");
 assert.ok(css.includes('html[dir="rtl"] .homePage .heroSearch input{text-align:right}'),"RTL homepage search input must align to the reading direction.");
 
