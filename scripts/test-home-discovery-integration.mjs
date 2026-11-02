@@ -99,6 +99,7 @@ assert.ok(pulseLoader.includes("pulseGeneration!==homePulseGeneration||!document
 assert.ok(app.includes("homePulseGeneration++")&&app.includes("let homePulseTimer=null,homePulseVisibilityHandler=null,homePulseGeneration=0"),"Each homepage visit must receive a fresh generation so old requests cannot update a later visit.");
 assert.ok(app.includes("platformPulseRequestGeneration===pulseGeneration")&&app.includes("platformPulseRequestGeneration=pulseGeneration"),"A new homepage visit must not be blocked by an in-flight request from the previous visit.");
 assert.ok(app.includes("function stopHomePulsePolling()")&&app.includes("document.removeEventListener('visibilitychange',homePulseVisibilityHandler)"),"Homepage polling lifecycle must release its interval and visibility listener.");
+assert.ok(app.includes("homeDiscoveryLanguageHandler=localizeDiscovery")&&app.includes("document.removeEventListener('imperial:languagechange',homeDiscoveryLanguageHandler)"),"Homepage discovery locale listener must be removed before the next route render to prevent listener accumulation.");
 
 assert.ok(!homepageLoader.includes("await refreshPlatformPulse();"),"Homepage boot must not wait for the real-time panel's network response.");
 assert.ok(homepageLoader.includes("Promise.allSettled([")&&homepageLoader.includes("apiWithTimeout('/api/novels?sort=trending&limit=10')")&&homepageLoader.includes("apiWithTimeout('/api/novels?sort=updated&limit=10')"),"Trending and latest catalog shelves must load concurrently and settle independently.");
