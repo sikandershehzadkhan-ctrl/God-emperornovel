@@ -1,12 +1,14 @@
 import assert from "node:assert/strict";
 import { readFile } from "node:fs/promises";
 
-const [html,app,css,worker]=await Promise.all([
+const [html,app,sourceApp,css,worker]=await Promise.all([
  readFile(new URL("../public/index.html",import.meta.url),"utf8"),
  readFile(new URL("../public/app-17.23.0.js",import.meta.url),"utf8"),
+ readFile(new URL("../public/app.js",import.meta.url),"utf8"),
  readFile(new URL("../public/imperial-design-foundation.css",import.meta.url),"utf8"),
  readFile(new URL("../src/index.js",import.meta.url),"utf8")
 ]);
+assert.equal(app,sourceApp,"Served homepage bundle must remain byte-for-byte synchronized with the editable source.");
 assert.ok(html.includes("/app-17.23.0.js"),"HTML must load the refreshed client bundle");
 assert.equal(html.split("/app-17.23.0.js").length-1,1,"HTML must reference the current versioned client bundle exactly once");
 assert.ok(app.includes("id=\"homeConnections\""),"Homepage must expose the connected discovery region");
@@ -17,6 +19,10 @@ assert.ok(css.includes(".imperialHeroVisual")&&css.includes("@media(max-width:76
 assert.ok(css.includes("prefers-reduced-motion:reduce")&&css.includes(".imperialHeroSeal{transform:none}"),"Hero crest must respect reduced-motion preferences.");
 assert.ok(app.includes("/api/discovery/graph?limit=60"),"Homepage must use the bounded live graph endpoint");
 const homepageLoader=app.slice(app.indexOf("async function home(){"),app.indexOf("\\nasync function trendFactory"));
+assert.ok(homepageLoader.includes("void (async()=>{"),"Catalog and discovery requests must run as independent non-blocking homepage tasks.");
+assert.ok(homepageLoader.includes("void refreshPlatformPulse();"),"The initial live overview must not block homepage navigation from becoming interactive.");
+assert.ok(!homepageLoader.includes("await refreshPlatformPulse();"),"Homepage boot must not wait for the real-time panel's network response.");
+assert.ok(homepageLoader.includes("Promise.all([apiWithTimeout('/api/novels?sort=trending&limit=10'),apiWithTimeout('/api/novels?sort=updated&limit=10')])"),"Trending and latest catalog shelves must load concurrently.");
 assert.ok(homepageLoader.includes("const trendingNovelIds=new Set(trendRows.map(row=>Number(row.id))"),"Homepage must identify novels already displayed in the trending shelf.");
 assert.ok(homepageLoader.includes("const distinctLatestRows=latestRows.filter(row=>!trendingNovelIds.has(Number(row.id)))"),"Latest-updates shelf must not repeat novels already shown in trending.");
 assert.ok(homepageLoader.includes("renderHomeStories('#latest',distinctLatestRows"),"Latest-updates shelf must render the de-duplicated list.");
