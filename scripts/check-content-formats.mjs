@@ -113,6 +113,9 @@ assert.ok(runtime.includes('class="skipLink" href="#app">Skip to main content</a
 assert.ok(runtime.includes('".navlinks a,.menuDrawer a span,.footerLinks a,.mobileNav a"'), 'Shared localization includes the mobile navigation and footer');
 assert.ok(runtime.includes('n.nodeType===3&&n.textContent.trim()') && runtime.includes('e.dataset.inLangKey'), 'Language switching preserves mobile navigation icons and original translation keys');
 assert.ok(runtime.includes('document.documentElement.dir=(c==="ur"||c==="ar")?"rtl":"ltr"'), 'Arabic and Urdu languages switch the document to right-to-left layout');
+
+assert.ok(runtime.includes('c=Object.prototype.hasOwnProperty.call(IN_LANG,c)?c:"en"'), 'Unsupported locale selections are normalized to English before changing document language or direction');
+assert.ok(runtime.includes('if(!Object.prototype.hasOwnProperty.call(IN_LANG,language))language="en"'), 'Unsupported saved locale values fall back to English during startup');
 assert.ok(runtime.includes('"Switch to light mode"') && runtime.includes('"Switch to dark mode"') && runtime.includes('"Open navigation menu"'), 'Shared accessibility labels are localized');
 assert.ok(runtime.includes('"vi"') && runtime.includes('"fa"') && runtime.includes('value="vi">Tiếng Việt') && runtime.includes('value="fa">فارسی'), 'Vietnamese and Persian are selectable interface languages');
 assert.ok(runtime.includes('const t={...IN_LANG.en,...(IN_LANG[c]||{})}') && runtime.includes('e.textContent=key;return'), 'Missing translations safely fall back to English instead of retaining a previous language');
