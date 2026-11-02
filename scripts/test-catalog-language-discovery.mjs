@@ -19,4 +19,21 @@ for(const language of ["English","Urdu","Hindi","Chinese (Simplified)","Chinese 
 assert.ok(catalog.includes("for(const [k,v] of f.entries())"),"Catalog form must preserve the selected language filter in its query.");
 assert.ok(worker.includes('if(language){sql+=" AND LOWER(n.language)=LOWER(?)";a.push(language)}'),"Catalog language matching must remain case-insensitive and parameterized.");
 assert.equal(app,shipped,"Served JavaScript must match the source.");
-console.log("Catalog language suggestions, creator parity, query submission and case-insensitive filtering passed.");
+
+const languageBlock=app.match(/const IN_LANG=(\\{[\\s\\S]*?\\});function setINLang/);
+assert.ok(languageBlock,"Interface language dictionary must be available.");
+const languageDictionary=JSON.parse(languageBlock[1]);
+assert.equal(Object.keys(languageDictionary).length,14,"The interface must retain all 14 supported UI languages.");
+const readerAt=app.indexOf("async function reader()");
+const readerEnd=app.indexOf("\\n}\\nasync function authPage",readerAt);
+assert.ok(readerAt>=0&&readerEnd>readerAt,"Reader implementation must exist.");
+const reader=app.slice(readerAt,readerEnd);
+for(const key of ["Chapter","← Chapters","Chapter List","Close","Theme","Line spacing","Text width","Compact","Comfort","Relaxed","Focused","Standard","Wide","Keep reading","Next Chapter →","Novel Overview","Previous","Next","Next →","Unlock Chapter","Open Crown Vault","Chapter locked","Authorized chapter"]) {
+  assert.ok(reader.includes('data-in-lang>'+key+'<')||reader.includes('data-in-lang>'+key+'<')||reader.includes('data-in-lang>'+key), "Reader UI must mark "+key+" for translation.");
+  for(const locale of Object.keys(languageDictionary))assert.ok(languageDictionary[locale][key], "Missing "+key+" translation for "+locale);
+}
+assert.ok(app.includes("document.querySelectorAll('[data-in-lang]')"),"Language switching must translate dynamically rendered reader labels.");
+assert.ok(reader.includes("setINLang(document.documentElement.lang||'en')"),"Reader must apply the selected language after rendering.");
+assert.ok(reader.includes("content.dir=/^(ur|ar|fa|persian|arabic|urdu)$/i.test(String(n.language||''))"),"Chapter text direction must follow the story language, not only the interface language.");
+
+console.log("Catalog language discovery and 14-language reader-interface localization checks passed.");
