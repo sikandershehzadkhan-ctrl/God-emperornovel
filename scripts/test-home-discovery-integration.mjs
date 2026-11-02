@@ -94,6 +94,10 @@ const homepageLoader=app.slice(app.indexOf("async function home(){"),app.indexOf
 assert.ok(homepageLoader.includes('setINLang(document.documentElement.lang||"en");'),"Saved locale must be applied after homepage markup is inserted into the document.");
 assert.ok(homepageLoader.includes("void (async()=>{"),"Catalog and discovery requests must run as independent non-blocking homepage tasks.");
 assert.ok(homepageLoader.includes("void refreshPlatformPulse();"),"The initial live overview must not block homepage navigation from becoming interactive.");
+const pulseLoader=homepageLoader.slice(homepageLoader.indexOf("function refreshPlatformPulse()"),homepageLoader.indexOf("async function trendFactory"));
+assert.ok(pulseLoader.includes("if(!document.querySelector('.homePage'))return;"),"Late live overview responses must not mutate detached homepage UI after navigation.");
+assert.ok(app.includes("function stopHomePulsePolling()")&&app.includes("document.removeEventListener('visibilitychange',homePulseVisibilityHandler)"),"Homepage polling lifecycle must release its interval and visibility listener.");
+
 assert.ok(!homepageLoader.includes("await refreshPlatformPulse();"),"Homepage boot must not wait for the real-time panel's network response.");
 assert.ok(homepageLoader.includes("Promise.allSettled([")&&homepageLoader.includes("apiWithTimeout('/api/novels?sort=trending&limit=10')")&&homepageLoader.includes("apiWithTimeout('/api/novels?sort=updated&limit=10')"),"Trending and latest catalog shelves must load concurrently and settle independently.");
 assert.ok(homepageLoader.includes('const renderHomeShelfError=selector=>'),"A failed catalog endpoint must render an error state only in its own shelf.");
