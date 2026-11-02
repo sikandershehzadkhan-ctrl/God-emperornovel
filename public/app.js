@@ -165,7 +165,7 @@ async function home(){
   if(!metrics||!updates||!trending)return;
   if(platformPulseRequest)return platformPulseRequest;
   if(refreshButton){refreshButton.disabled=true;refreshButton.textContent='Refreshing…';refreshButton.dataset.inLangKey='Refreshing…'}setINLang(document.documentElement.lang||'en');
-  if(updated)updated.textContent=platformPulseHasData?'Refreshing · last successful update '+platformPulseLastUpdated:'Refreshing real-time data…';
+  if(updated)updated.textContent=platformPulseHasData?'Refreshing · last successful update '+platformPulseLastUpdated:'Refreshing real-time data…';if(!platformPulseHasData&&updated)updated.dataset.inLangKey='Refreshing real-time data…';setINLang(document.documentElement.lang||'en');
   if(!platformPulseHasData)metrics.setAttribute('aria-busy','true');
   platformPulseRequest=(async()=>{
    try{
@@ -175,8 +175,8 @@ async function home(){
     ]);
     if(healthResult.status==='fulfilled'){
      const service=healthResult.value||{},healthy=service.ok===true&&service.database===true;
-     if(health){health.textContent=healthy?'Operational · '+esc(service.version||'version unknown'):'Service issue · database unavailable';health.dataset.state=healthy?'healthy':'degraded'}
-    }else if(health){health.textContent='Health status unavailable';health.dataset.state='unknown'}
+     if(health){health.innerHTML=healthy?'<span data-in-lang-key="Operational · ">Operational · </span>'+esc(service.version||'version unknown'):'<span data-in-lang-key="Service issue · database unavailable">Service issue · database unavailable</span>';health.dataset.state=healthy?'healthy':'degraded';setINLang(document.documentElement.lang||'en')}
+    }else if(health){health.innerHTML='<span data-in-lang-key="Health status unavailable">Health status unavailable</span>';health.dataset.state='unknown';setINLang(document.documentElement.lang||'en')}
     if(overviewResult.status!=='fulfilled')throw overviewResult.reason||new Error('The real-time overview could not be loaded.');
     const data=overviewResult.value,m=data?.metrics;
     const generatedAt=data.generated_at||data.asOf;if(!m||!generatedAt)throw new Error('The real-time overview response is incomplete.');
@@ -215,7 +215,7 @@ async function home(){
     if(platformPulseHasData){
      if(updated)updated.textContent='Refresh failed · showing last successful update '+platformPulseLastUpdated;
     }else{
-     if(updated)updated.textContent='Real-time data temporarily unavailable';
+     if(updated){updated.textContent='Real-time data temporarily unavailable';updated.dataset.inLangKey='Real-time data temporarily unavailable'}setINLang(document.documentElement.lang||'en');
      metrics.innerHTML='<div class="platformPulseError" role="status" data-in-lang-key="Real-time platform figures could not be loaded. Your catalog remains available.">Real-time platform figures could not be loaded. Your catalog remains available.</div>';
      updates.innerHTML='<p class="muted" data-in-lang-key="Update feed unavailable right now.">Update feed unavailable right now.</p>';
      trending.innerHTML='<p class="muted" data-in-lang-key="Trend data unavailable right now.">Trend data unavailable right now.</p>';setINLang(document.documentElement.lang||'en');
