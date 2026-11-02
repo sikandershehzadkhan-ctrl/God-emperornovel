@@ -536,6 +536,50 @@ async function api(req,env){
   await audit(env,u,"account_deletion_cancelled","");
   return json({ok:true,request:result});
  }
+ if(p==="/api/admin/account-deletion/reviewer-roles"&&m==="GET"){
+  const authError=admin(u);if(authError)return authError;
+  const limited=await consumeAuthRateLimit(env,"account-deletion-reviewer-role-list",String(u.id),30,60);if(limited)return limited;
+  try{
+   const rows=await env.DB.prepare(`SELECT a.id,a.user_id,u.username,a.role_key,a.assigned_by,actor.username AS assigned_by_username,a.assigned_at,a.revoked_by,revoker.username AS revoked_by_username,a.revoked_at FROM account_deletion_reviewer_assignments a JOIN users u ON u.id=a.user_id JOIN users actor ON actor.id=a.assigned_by LEFT JOIN users revoker ON revoker.id=a.revoked_by ORDER BY a.revoked_at IS NULL DESC,a.assigned_at DESC,a.id DESC LIMIT 200`).all();
+   await audit(env,u,"account_deletion_reviewer_roles_listed",`count=${(rows.results||[]).length}`);
+   return json({assignments:rows.results||[],limit:200});
+  }catch(error){console.error("reviewer role list unavailable",String(error?.message||error));return json({error:"Reviewer assignments are temporarily unavailable."},503)}
+ }
+ if(p==="/api/admin/account-deletion/reviewer-roles"&&m==="POST"){
+  const authError=admin(u);if(authError)return authError;
+  const limited=await consumeAuthRateLimit(env,"account-deletion-reviewer-role-assign",String(u.id),10,3600);if(limited)return limited;
+  const input=await body(req),targetId=Number(input.user_id),role=String(input.role_key||"").trim();
+  const roles=["support_reviewer","creator_rights_reviewer","finance_compliance_reviewer","privacy_administrator","deletion_second_approver"];
+  if(!Number.isSafeInteger(targetId)||targetId<=0||!roles.includes(role))return json({error:"A valid user_id and reviewer role_key are required."},400);
+  if(targetId===Number(u.id))return json({error:"Administrators cannot assign reviewer privileges to themselves."},403);
+  try{
+   const results=await env.DB.batch([
+    env.DB.prepare("INSERT INTO account_deletion_reviewer_assignments(user_id,role_key,assigned_by) SELECT ?,?,? WHERE EXISTS(SELECT 1 FROM users WHERE id=? AND banned=0) RETURNING id,user_id,role_key,assigned_by,assigned_at").bind(targetId,role,u.id,targetId),
+    env.DB.prepare("INSERT INTO account_deletion_reviewer_assignment_events(assignment_id,target_user_id,actor_id,action,role_key) SELECT last_insert_rowid(),?,?, 'assigned',? WHERE changes()=1").bind(targetId,u.id,role)
+   ]);
+   const assignment=results?.[0]?.results?.[0],eventChanges=Number(results?.[1]?.meta?.changes??results?.[1]?.changes??0);
+   if(!assignment||eventChanges!==1)return json({error:"The target account is unavailable or the assignment could not be recorded."},409);
+   await audit(env,u,"account_deletion_reviewer_role_assigned",`assignment=${assignment.id};target=${targetId};role=${role}`);
+   return json({ok:true,assignment},201);
+  }catch(error){const message=String(error?.message||error);console.error("reviewer role assignment failed",message);if(/unique|constraint/i.test(message))return json({error:"That user already has this active reviewer role, or the assignment violates a policy constraint."},409);return json({error:"Reviewer assignment could not be safely recorded."},503)}
+ }
+ const revokeReviewerRole=p.match(/^\/api\/admin\/account-deletion\/reviewer-roles\/(\d+)\/revoke$/);
+ if(revokeReviewerRole&&m==="POST"){
+  const authError=admin(u);if(authError)return authError;
+  const limited=await consumeAuthRateLimit(env,"account-deletion-reviewer-role-revoke",String(u.id),20,3600);if(limited)return limited;
+  const assignmentId=Number(revokeReviewerRole[1]);
+  if(!Number.isSafeInteger(assignmentId)||assignmentId<=0)return json({error:"Invalid reviewer assignment."},400);
+  try{
+   const results=await env.DB.batch([
+    env.DB.prepare("UPDATE account_deletion_reviewer_assignments SET revoked_by=?,revoked_at=CURRENT_TIMESTAMP WHERE id=? AND revoked_at IS NULL RETURNING id,user_id,role_key,assigned_by,assigned_at,revoked_by,revoked_at").bind(u.id,assignmentId),
+    env.DB.prepare("INSERT INTO account_deletion_reviewer_assignment_events(assignment_id,target_user_id,actor_id,action,role_key) SELECT id,user_id,?,'revoked',role_key FROM account_deletion_reviewer_assignments WHERE id=? AND changes()=1").bind(u.id,assignmentId)
+   ]);
+   const assignment=results?.[0]?.results?.[0],eventChanges=Number(results?.[1]?.meta?.changes??results?.[1]?.changes??0);
+   if(!assignment||eventChanges!==1)return json({error:"The assignment was not active or has already been revoked."},409);
+   await audit(env,u,"account_deletion_reviewer_role_revoked",`assignment=${assignmentId};target=${assignment.user_id};role=${assignment.role_key}`);
+   return json({ok:true,assignment});
+  }catch(error){console.error("reviewer role revocation failed",String(error?.message||error));return json({error:"Reviewer assignment could not be safely revoked."},503)}
+ }
  if(p==="/api/admin/account-deletion/reviews"&&m==="GET"){
   const authError=need(u);if(authError)return authError;
   let reviewerRoles;
