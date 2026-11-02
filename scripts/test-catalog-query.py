@@ -116,7 +116,7 @@ def run(base, filters, sort, page=1, limit=17):
     for word in search_terms:
         escaped = word.replace("\\", "\\\\").replace("%", "\\%").replace("_", "\\_")
         pattern = "%" + escaped + "%"
-        sql += " AND (LOWER(n.title) LIKE ? ESCAPE '\\\\' OR LOWER(n.author) LIKE ? ESCAPE '\\\\' OR LOWER(n.description) LIKE ? ESCAPE '\\\\' OR LOWER(n.alt_titles) LIKE ? ESCAPE '\\\\')"
+        sql += " AND (LOWER(n.title) LIKE ? ESCAPE char(92) OR LOWER(n.author) LIKE ? ESCAPE char(92) OR LOWER(n.description) LIKE ? ESCAPE char(92) OR LOWER(n.alt_titles) LIKE ? ESCAPE char(92))"
         args.extend([pattern] * 4)
     if filters.get("genre"):
         sql += " AND n.id IN(SELECT ng.novel_id FROM novel_genres ng JOIN genres g ON g.id=ng.genre_id WHERE g.slug=?)"
@@ -145,7 +145,7 @@ def run(base, filters, sort, page=1, limit=17):
     }.get(sort, "n.updated_at DESC")
     if search_terms and sort == "updated":
         phrase = term.replace("\\", "\\\\").replace("%", "\\%").replace("_", "\\_")
-        order = "CASE WHEN LOWER(n.title)=? THEN 0 WHEN LOWER(n.title) LIKE ? ESCAPE '\\\\' THEN 1 WHEN LOWER(n.author)=? THEN 2 WHEN LOWER(n.title) LIKE ? ESCAPE '\\\\' THEN 3 ELSE 4 END," + order
+        order = "CASE WHEN LOWER(n.title)=? THEN 0 WHEN LOWER(n.title) LIKE ? ESCAPE char(92) THEN 1 WHEN LOWER(n.author)=? THEN 2 WHEN LOWER(n.title) LIKE ? ESCAPE char(92) THEN 3 ELSE 4 END," + order
         args.extend([term, phrase + "%", term, "%" + phrase + "%"])
     sql += " ORDER BY " + order + ",n.id DESC LIMIT ? OFFSET ?"
     args.extend([limit, (page - 1) * limit])
