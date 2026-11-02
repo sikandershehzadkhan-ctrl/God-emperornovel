@@ -780,10 +780,10 @@ try {
   const ownerNovelsAfterDeletionCancel=await request(baseUrl,"/api/author/novels",{cookie:owner.cookie});
   assert.ok(ownerNovelsAfterDeletionCancel.data.length>0,"Deletion requests must never delete creator novels");
 
-  const readerDeletion=await request(baseUrl,"/api/me/deletion-request",{method:"POST",cookie:recipient.cookie,body:{password:"Integration-Test-Password-2026!"}});
+  const readerDeletion=await request(baseUrl,"/api/me/deletion-request",{method:"POST",cookie:spectator.cookie,body:{password:"Integration-Test-Password-2026!"}});
   assert.equal(readerDeletion.response.status,201,JSON.stringify(readerDeletion.data));
   assert.equal(readerDeletion.data.request.status,"pending_deletion","Non-creator accounts enter cooling-off state");
-  const readerCancel=await request(baseUrl,"/api/me/deletion-request/cancel",{method:"POST",cookie:recipient.cookie});
+  const readerCancel=await request(baseUrl,"/api/me/deletion-request/cancel",{method:"POST",cookie:spectator.cookie});
   assert.equal(readerCancel.response.status,200);
   assert.equal(readerCancel.data.request.status,"cancelled");
 
