@@ -35,3 +35,13 @@
 .comicPageComposerGrid input:focus-visible,.comicPageComposerGrid button:focus-visible,.comicComposerPageActions button:focus-visible{outline:2px solid var(--in-sapphire,#4f8cff);outline-offset:2px}
 .comicComposerPage{display:grid;grid-template-columns:58px minmax(0,1fr) auto;align-items:center;gap:10px;margin:8px 0;padding:9px;border:1px solid var(--line,rgba(139,92,246,.18));border-radius:12px;background:rgba(255,255,255,.025);min-width:0}.comicComposerPage>img{width:58px;height:72px;object-fit:cover;border-radius:6px;background:#080a12}.comicComposerPage>img.comicPreviewError{opacity:.25}.comicComposerPage>div:nth-child(2){display:grid;gap:2px;min-width:0}.comicComposerPage small{overflow-wrap:anywhere;color:var(--muted,#a3abc2);font-size:11px}.comicComposerPageActions{display:flex;gap:4px;flex-wrap:wrap;justify-content:flex-end}.comicComposerPageActions button{min-height:34px;padding:5px 8px;font-size:11px}.comicAuthorBuilder [data-page-status]{margin:10px 0 0;font-size:11px;line-height:1.5;color:var(--muted,#a3abc2)}
 @media(max-width:620px){.comicPageComposerGrid{grid-template-columns:1fr}.comicPageComposerGrid label:nth-child(3){grid-column:auto}.comicComposerPage{grid-template-columns:48px minmax(0,1fr)}.comicComposerPage>img{width:48px;height:62px}.comicComposerPageActions{grid-column:1/-1;justify-content:flex-start}.comicAuthorBuilder{padding:12px}}
+
+
+/* 17.24 mobile navigation accessibility: reliable touch targets and visible keyboard focus. */
+@media(max-width:760px){
+  .mobileNav{gap:4px;align-items:stretch}
+  .mobileNav a{display:flex;flex:1 1 0;min-width:44px;min-height:44px;flex-direction:column;align-items:center;justify-content:center;gap:2px;padding:5px 3px;line-height:1.2}
+  .mobileNav a:focus-visible{outline:3px solid var(--brand-sapphire,#4f8cff);outline-offset:2px;position:relative;z-index:1}
+  .mobileNav a span{display:grid;place-items:center;min-height:20px}
+  .mobileNav a span svg{width:19px;height:19px}
+}
