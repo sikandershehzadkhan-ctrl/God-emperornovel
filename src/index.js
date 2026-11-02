@@ -684,7 +684,26 @@ async function api(req,env){
   await env.DB.prepare('INSERT INTO ai_provider_benchmarks(provider,chapters_delta,interval_seconds,source_url,access_mode,confidence) VALUES(?,?,?,?,?,?)').bind(provider,delta,interval,aiSafeText(b.source_url,500),'public-metadata',aiSafeText(b.confidence||'observed',40)).run();return json({ok:true});
  }
 
- if(p==="/api/author/novels"&&m==="GET"){
+ if(p==="/api/author/analytics"&&m==="GET"){
+  const e=author(u);if(e)return e;
+  const [novelRows,chapterRows]=await Promise.all([
+   env.DB.prepare(`SELECT n.id,n.title,n.publication_status,n.views,n.rating,n.updated_at,
+    (SELECT COUNT(*) FROM ratings r WHERE r.novel_id=n.id) rating_count,
+    (SELECT COUNT(*) FROM chapters c WHERE c.novel_id=n.id AND c.publication_status='published') published_chapters,
+    (SELECT COUNT(*) FROM chapters c WHERE c.novel_id=n.id AND c.publication_status='draft') draft_chapters,
+    (SELECT COALESCE(SUM(v.views),0) FROM chapter_views v JOIN chapters c ON c.id=v.chapter_id WHERE c.novel_id=n.id) chapter_views,
+    (SELECT COUNT(*) FROM unlocks x JOIN chapters c ON c.id=x.chapter_id WHERE c.novel_id=n.id) unlocks
+    FROM novels n WHERE n.owner_user_id=? ORDER BY n.views DESC,n.updated_at DESC LIMIT 100`).bind(u.id).all(),
+   env.DB.prepare(`SELECT c.id,c.novel_id,n.title novel_title,c.chapter_number,c.title chapter_title,
+    COALESCE(v.views,0) views,(SELECT COUNT(*) FROM unlocks x WHERE x.chapter_id=c.id) unlocks
+    FROM chapters c JOIN novels n ON n.id=c.novel_id LEFT JOIN chapter_views v ON v.chapter_id=c.id
+    WHERE n.owner_user_id=? AND c.publication_status='published'
+    ORDER BY views DESC,unlocks DESC,c.id DESC LIMIT 10`).bind(u.id).all()
+  ]);
+  const novels=novelRows.results||[],sum=key=>novels.reduce((total,row)=>total+Number(row[key]||0),0);
+  return json({generated_at:new Date().toISOString(),scope:"lifetime_counters",totals:{novels:novels.length,published_novels:novels.filter(n=>n.publication_status==="published").length,published_chapters:sum("published_chapters"),draft_chapters:sum("draft_chapters"),novel_views:sum("views"),chapter_views:sum("chapter_views"),ratings:sum("rating_count"),unlocks:sum("unlocks")},novels,top_chapters:chapterRows.results||[]})
+ }
+if(p==="/api/author/novels"&&m==="GET"){
   const e=author(u);if(e)return e;
   return json((await env.DB.prepare(`SELECT n.id,n.title,n.alt_titles,n.author,n.description,n.status,n.kind,n.language,n.cover_url,n.source_url,n.rights_status,n.rights_evidence,n.rights_notes,n.review_feedback,n.reviewed_by,n.reviewed_at,n.publication_status,n.views,n.rating,n.created_at,n.updated_at,(SELECT COUNT(*) FROM chapters c WHERE c.novel_id=n.id) chapter_count,(SELECT COUNT(*) FROM chapters c WHERE c.novel_id=n.id AND c.publication_status='published') published_chapters FROM novels n WHERE n.owner_user_id=? ORDER BY n.updated_at DESC`).bind(u.id).all()).results||[])
  }
