@@ -7,7 +7,8 @@ const end=source.indexOf('if(p==="/api/admin/account-deletion/reviews"&&m==="GET
 assert.notEqual(start,-1,"case detail route must exist");
 assert.notEqual(end,-1,"case detail route must end before queue route");
 const route=source.slice(start,end);
-assert.match(route,/^\/api\/admin\/account-deletion\/reviews\//,"route matcher must use the exact case-detail path");
+assert.match(route,/deletionReviewDetail=p\.match\(/,"route must use a dedicated exact-path matcher");
+assert.match(route,/p\.match\(\/\^\\\/api\\\/admin\\\/account-deletion\\\/reviews\\\//,"route matcher must be restricted to the case-detail path");
 assert.match(route,/need\(u\)/,"case details must require authentication");
 assert.match(route,/Number\.isSafeInteger\(requestId\)/,"request IDs must be safe positive integers");
 assert.match(route,/revoked_at IS NULL/,"authorization must use active reviewer assignments only");
