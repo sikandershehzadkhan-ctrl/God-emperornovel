@@ -130,7 +130,7 @@ def run(base, filters, sort, page=1, limit=17):
     if filters.get("author"):
         sql += " AND LOWER(n.author)=LOWER(?)"; args.append(filters["author"])
     if filters.get("min_rating", 0) > 0:
-        sql += " AND n.rating>=?"; args.append(min(5, filters["min_rating"]))
+        sql += " AND n.rating>=?"; args.append(min(10, filters["min_rating"]))
     if base == OLD:
         sql += " GROUP BY n.id"
     order = {
@@ -149,7 +149,7 @@ cases = [
     ({"q": "fantasy"}, "rating"),
     ({"genre": "genre-2", "tag": "tag-3"}, "updated"),
     ({"status": "completed", "kind": "fanfiction"}, "newest"),
-    ({"language": "urdu", "min_rating": 3}, "rating"),
+    ({"language": "urdu", "min_rating": 8}, "rating"),
     ({"author": "author 4"}, "updated"),
 ]
 for filters, sort in cases:
