@@ -26,6 +26,11 @@ assert.ok(homepageLoader.includes("Promise.all([apiWithTimeout('/api/novels?sort
 const trendingSectionIndex=homepageLoader.indexOf('<section class="section nextShelf">');
 const platformPulseSectionIndex=homepageLoader.indexOf('<section class="platformPulse"');
 assert.ok(trendingSectionIndex>=0&&platformPulseSectionIndex>trendingSectionIndex,"Reader-facing trending stories must appear before platform activity metrics in the homepage flow.");
+assert.ok(homepageLoader.includes('id="trend" class="grid homeStoryGrid multiStory"'),"Trending cards must activate the responsive multi-story grid styles.");
+assert.ok((homepageLoader.match(/class="skeletonCard"/g)||[]).length>=4,"Trending loading placeholders must fill a balanced two-column mobile row.");
+assert.ok(css.includes("Story-card presentation pass 17.44"),"Story cards must include the dedicated visual presentation pass.");
+assert.ok(css.includes(".homePage .homeStoryGrid .cover::after"),"Story covers must receive a subtle image treatment without changing source artwork.");
+assert.ok(css.includes(".homePage .homeStoryGrid .meta span{"),"Real story metadata must be visually separated into readable badges.");
 assert.ok(homepageLoader.includes("const trendingNovelIds=new Set(trendRows.map(row=>Number(row.id))"),"Homepage must identify novels already displayed in the trending shelf.");
 assert.ok(homepageLoader.includes("const distinctLatestRows=latestRows.filter(row=>!trendingNovelIds.has(Number(row.id)))"),"Latest-updates shelf must not repeat novels already shown in trending.");
 assert.ok(homepageLoader.includes("renderHomeStories('#latest',distinctLatestRows"),"Latest-updates shelf must render the de-duplicated list.");
