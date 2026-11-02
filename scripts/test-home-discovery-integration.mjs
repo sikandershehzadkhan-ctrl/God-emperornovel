@@ -20,6 +20,14 @@ assert.ok(app.includes('[data-in-lang-key]'),"Explicitly marked homepage text no
 assert.ok(app.includes('[data-in-lang-placeholder]'),"Search placeholders must update when the interface language changes.");
 assert.ok(homepageLoader.includes('setINLang(document.documentElement.lang||"en");'),"Saved locale must be applied after homepage markup is inserted into the document.");
 assert.ok(app.includes('data-in-lang-key="Open a world."')&&app.includes('data-in-lang-key="Shape an empire."'),"The homepage hero headline must expose translation-safe text spans.");
+assert.ok(app.includes('"Follow the threads between worlds.":"دنیاؤں کے درمیان رشتے تلاش کریں۔"'),"Urdu discovery headings must be translated within the Urdu dictionary.");
+assert.ok(app.includes('"Follow the threads between worlds.":"दुनियाओं के बीच के सूत्र खोजें।"'),"Hindi discovery headings must be translated within the Hindi dictionary.");
+assert.ok(app.includes('"Follow the threads between worlds.":"تتبّع الروابط بين العوالم."'),"Arabic discovery headings must be translated within the Arabic dictionary.");
+assert.ok(app.includes('"Follow the threads between worlds.":"رشته‌های پیوند میان دنیاها را دنبال کنید."'),"Persian discovery headings must be translated within the Persian dictionary.");
+assert.ok(app.includes('data-in-lang-key="Follow the threads between worlds."')&&app.includes('data-in-lang-key="Stories with momentum."'),"Discovery and trending headings must participate in live locale switching.");
+assert.ok(app.includes('data-in-lang-key="The realm, right now."')&&app.includes('data-in-lang-key="Latest chapter updates"'),"Platform activity headings must participate in live locale switching.");
+assert.ok(app.includes('data-in-lang-key="A whole creative ecosystem built around the stories you love and the worlds you want to make."'),"Creator ecosystem introduction must be translatable.");
+
 assert.ok(app.includes('"ur":{"Home":"صفحہ اول"')&&app.includes('"hi":{"Home":"होम"')&&app.includes('"ar":{"Home":"الرئيسية"')&&app.includes('"fa":{"Home":"خانه"'),"Urdu, Hindi, Arabic, and Persian dictionaries must remain available.");
 assert.ok(app.includes('"Discover stories worth staying up for, then create the worlds only you can imagine.":"ایسی کہانیاں'),"Urdu homepage hero copy must be translated.");
 assert.ok(app.includes('"Discover stories worth staying up for, then create the worlds only you can imagine.":"اكتشف قصصاً'),"Arabic homepage hero copy must be translated.");
