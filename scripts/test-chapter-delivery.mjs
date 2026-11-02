@@ -14,4 +14,9 @@ assert.ok(app.includes('role="status" aria-live="polite"'), 'The reader must ann
 assert.ok(app.includes('id="retryChapterLoad"'), 'A recoverable chapter error must offer a retry action.');
 assert.match(styles, /\.readerLoadState\{min-height:55vh/, 'Chapter loading and error states must have a stable layout.');
 assert.match(styles, /prefers-reduced-motion:reduce\)\{\.readerLoadSpinner\{animation:none/, 'Loading animation must respect reduced-motion preferences.');
-console.log('Chapter delivery checks passed: bounded transient retries, accessible loading/error states, retry action, stable layout, and reduced-motion support.');
+assert.match(app, /const loadToken=\(window\.__imperialReaderLoadToken\|\|0\)\+1/, 'Each reader load must receive a unique generation token.');
+assert.match(app, /if\(loadToken!==window\.__imperialReaderLoadToken\)return;/, 'Stale chapter responses must not overwrite the latest reader view.');
+assert.match(app, /if\(window\.__imperialReaderScrollHandler\)window\.removeEventListener\('scroll',window\.__imperialReaderScrollHandler\)/, 'Reader retries must remove the previous scroll listener.');
+assert.match(app, /if\(window\.__imperialReaderKeyHandler\)document\.removeEventListener\('keydown',window\.__imperialReaderKeyHandler\)/, 'Reader retries must remove the previous keyboard listener.');
+assert.match(app, /let bookmarkSaving=false;\$\('#bookmarkBtn'\)\.onclick=async\(\)=>\{const button=\$\('#bookmarkBtn'\);if\(bookmarkSaving\|\|!button\)return;/, 'Bookmark actions must be guarded against concurrent clicks.');
+console.log('Chapter delivery checks passed: bounded retries, accessible recovery, stale-response protection, listener cleanup, bookmark click locking, stable layout, and reduced motion.');
