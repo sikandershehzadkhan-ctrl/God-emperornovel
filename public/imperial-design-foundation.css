@@ -1,3 +1,40 @@
+
+
+/* Homepage localization layout resilience 17.47: translated copy must never force horizontal overflow. */
+.homePage .nextFeatureDeck,
+.homePage .nextFeatureTile,
+.homePage .nextCreatorBand,
+.homePage .nextReaderPromise,
+.homePage .homeFormatCard,
+.homePage .homeConnectionChip{min-width:0;max-width:100%}
+.homePage .nextFeatureTile p,
+.homePage .nextCreatorBand p,
+.homePage .nextReaderPromise p,
+.homePage .homeFormatCopy,
+.homePage .homeConnectionChip b{overflow-wrap:anywhere;word-break:normal}
+.homePage .nextFeatureTile .featureInlineLink,
+.homePage .nextCreatorBand>a,
+.homePage .nextReaderPromise>a{max-width:100%;overflow-wrap:anywhere}
+.homePage [data-in-lang-key],
+.homePage [data-in-lang-placeholder]{unicode-bidi:plaintext}
+html[dir="rtl"] .homePage .nextFeatureTile,
+html[dir="rtl"] .homePage .nextCreatorBand,
+html[dir="rtl"] .homePage .nextReaderPromise{ text-align:right }
+html[dir="rtl"] .homePage .nextFeatureTile .featureMeta{direction:ltr;text-align:left}
+@media(max-width:760px){
+ .homePage .nextFeatureDeck{grid-template-columns:minmax(0,1fr);gap:10px}
+ .homePage .nextFeatureTile{min-height:0;padding:16px}
+ .homePage .nextFeatureTile p{font-size:13px;line-height:1.65}
+ .homePage .nextCreatorBand{gap:12px;padding:17px}
+ .homePage .nextCreatorBand>a,
+ .homePage .nextReaderPromise>a{min-height:44px;display:inline-flex;align-items:center}
+ .homePage .nextReaderPromise{align-items:flex-start;gap:10px;padding:14px}
+}
+@media(prefers-reduced-motion:reduce){
+ .homePage .nextFeatureTile,
+ .homePage .nextCreatorBand>a,
+ .homePage .nextReaderPromise>a{transition:none!important}
+}
 /* Imperial Novel Design Foundation 17.24
    Shared visual tokens and global shell refinement.
    Mobile-first, low-effects, accessible, and intentionally restrained. */
