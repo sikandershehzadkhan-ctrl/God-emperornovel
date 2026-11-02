@@ -20,6 +20,13 @@ assert.ok(app.includes('[data-in-lang-key]'),"Explicitly marked homepage text no
 assert.ok(app.includes('[data-in-lang-placeholder]'),"Search placeholders must update when the interface language changes.");
 assert.ok(homepageLoader.includes('setINLang(document.documentElement.lang||"en");'),"Saved locale must be applied after homepage markup is inserted into the document.");
 assert.ok(app.includes('data-in-lang-key="Open a world."')&&app.includes('data-in-lang-key="Shape an empire."'),"The homepage hero headline must expose translation-safe text spans.");
+const localeMatch=app.match(/const IN_LANG=(\\{[\\s\\S]*?\\});function setINLang/);
+assert.ok(localeMatch,"The language dictionary must remain a single parseable object.");
+const localeDictionary=JSON.parse(localeMatch[1]);
+assert.equal(Object.keys(localeDictionary).length,14,"The existing fourteen interface locales must be retained.");
+for(const code of ["ur","hi","ar","fa"])assert.ok(localeDictionary[code]?.["Follow the threads between worlds."],"Every supported RTL/South Asian homepage locale must contain discovery translations.");
+assert.ok(localeDictionary.ur?.["The realm, right now."]&&localeDictionary.hi?.["The realm, right now."]&&localeDictionary.ar?.["The realm, right now."]&&localeDictionary.fa?.["The realm, right now."],"Platform activity headings must be translated in all four extended locales.");
+
 assert.ok(app.includes('"Follow the threads between worlds.":"دنیاؤں کے درمیان رشتے تلاش کریں۔"'),"Urdu discovery headings must be translated within the Urdu dictionary.");
 assert.ok(app.includes('"Follow the threads between worlds.":"दुनियाओं के बीच के सूत्र खोजें।"'),"Hindi discovery headings must be translated within the Hindi dictionary.");
 assert.ok(app.includes('"Follow the threads between worlds.":"تتبّع الروابط بين العوالم."'),"Arabic discovery headings must be translated within the Arabic dictionary.");
