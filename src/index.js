@@ -887,8 +887,16 @@ async function api(req,env){
   const kind=String(b.kind||'original').trim().toLowerCase();if(!CONTENT_FORMAT_IDS.has(kind))return json({error:'Unsupported content format. Fetch /api/formats for the supported format registry.',supported_formats:CONTENT_FORMATS.map(x=>x.id)},400);
   const rights=String(b.rights_status||'original').toLowerCase();
   if(!['original','public_domain','licensed','authorized'].includes(rights))return json({error:'Invalid rights status'},400);
+  const readSlugs=value=>[...new Set((Array.isArray(value)?value:String(value||'').split(',')).map(item=>String(item||'').trim().toLowerCase()).filter(Boolean))];
+  const genreSlugs=readSlugs(b.genre_slugs),tagSlugs=readSlugs(b.tag_slugs);
+  if(genreSlugs.length>8||tagSlugs.length>12)return json({error:'Choose up to 8 genres and 12 tags.'},400);
+  const validateSlugs=async(table,slugs)=>{if(!slugs.length)return [];if(!slugs.every(slug=>/^[a-z0-9]+(?:-[a-z0-9]+)*$/.test(slug)))return null;const rows=(await env.DB.prepare(`SELECT slug FROM ${table} WHERE slug IN (${slugs.map(()=>'?').join(',')})`).bind(...slugs).all()).results||[];return rows.length===slugs.length?slugs:null};
+  const validGenres=await validateSlugs('genres',genreSlugs),validTags=await validateSlugs('tags',tagSlugs);
+  if(!validGenres||!validTags)return json({error:'One or more genre or tag slugs are not in the official catalog taxonomy.'},400);
   const r=await env.DB.prepare(`INSERT INTO novels(title,alt_titles,author,description,status,kind,language,cover_url,source_url,rights_status,owner_user_id,publication_status,rights_evidence,rights_notes) VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,?)`).bind(title,String(b.alt_titles||''),authorName,String(b.description||''),['ongoing','completed'].includes(String(b.status))?String(b.status):'ongoing',kind,String(b.language||'English'),String(b.cover_url||''),String(b.source_url||''),rights,u.id,'draft',String(b.rights_evidence||''),String(b.rights_notes||'')).run();
-  const id=Number(r.meta.last_row_id);await audit(env,u,'author_novel_created',`novel=${id}`);return json({ok:true,id,message:`Novel created as draft. ID: ${id}`},201)
+  const id=Number(r.meta.last_row_id),metadataStatements=[...validGenres.map(slug=>env.DB.prepare('INSERT OR IGNORE INTO novel_genres(novel_id,genre_id) SELECT ?,id FROM genres WHERE slug=?').bind(id,slug)),...validTags.map(slug=>env.DB.prepare('INSERT OR IGNORE INTO novel_tags(novel_id,tag_id) SELECT ?,id FROM tags WHERE slug=?').bind(id,slug))];
+  if(metadataStatements.length)await env.DB.batch(metadataStatements);
+  await audit(env,u,'author_novel_created',`novel=${id};genres=${validGenres.length};tags=${validTags.length}`);return json({ok:true,id,message:`Novel created as draft with ${validGenres.length} genres and ${validTags.length} tags. ID: ${id}`},201)
  }
  if(/^\/api\/author\/novels\/\d+\/submit$/.test(p)&&m==="POST"){
   const e=author(u);if(e)return e;const id=Number(p.split('/')[4]);const n=await env.DB.prepare('SELECT * FROM novels WHERE id=?').bind(id).first();if(!n)return json({error:'Novel not found'},404);if(u.role!=="admin"&&Number(n.owner_user_id)!==Number(u.id))return json({error:'You do not own this novel'},403);
