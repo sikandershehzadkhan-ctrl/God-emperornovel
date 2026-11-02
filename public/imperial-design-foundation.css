@@ -2020,6 +2020,7 @@ html[data-theme="cosmic"] .adminWrap{--admin-active-foreground:#111426}
 .adminWrap .adminTable td{color:var(--in-text-primary)}
 .adminWrap .adminTable th,.adminWrap .adminTable td{border-bottom-color:var(--in-border)}
 .adminWrap .mini,.adminWrap .mini.edit,.adminWrap .mini.gold{
+  min-height:44px;
   border-color:var(--in-border-strong);
   background:var(--in-surface-subtle);
   color:var(--in-action-primary)!important;
