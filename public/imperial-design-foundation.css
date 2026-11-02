@@ -1144,6 +1144,25 @@ html[data-theme="dark"] .novelLivePulseMetric{background:var(--in-surface-raised
 }
 @media(prefers-reduced-motion:reduce){.catalogCover img{transition:none!important}.catalogCard:hover .catalogCover img{transform:none}}
 
+/* Discover controls: explicit keyboard focus and compact-phone filter rhythm. */
+.catalogTop .filterGroup :is(input,select):focus-visible,
+.catalogTop .catalogSearch .search:focus-within{
+  outline:2px solid var(--in-focus);outline-offset:2px;
+}
+.catalogTop .filterLabel{display:block;cursor:pointer}
+.catalogTop .actions :is(a,button):focus-visible,
+.activeFilters :is(a,button):focus-visible{
+  outline:2px solid var(--in-focus);outline-offset:3px;
+}
+@media(max-width:420px){
+ .catalogTop form{gap:11px}
+ .filterRow{grid-template-columns:minmax(0,1fr);gap:9px}
+ .catalogTop .filterGroup :is(input,select){min-height:44px}
+ .catalogTop .actions>*{flex:1 1 calc(50% - 6px);min-width:0}
+ .activeFilters{align-items:flex-start}
+}
+
+
 
 /* Story detail: editorial hierarchy, clear reading actions and a calm chapter archive. */
 .novelHero{
