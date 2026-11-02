@@ -125,6 +125,10 @@ assert.ok(pulse.includes("second:'2-digit',timeZoneName:'short'"),"The refresh t
 assert.ok(pulse.includes("refreshes every 60 seconds"),"The live panel must disclose its refresh cadence");
 
 assert.ok(app.includes('id="platformPulseHealth"'),"Homepage must expose a separate live service-health indicator");
+
+const healthLabels=["Health status unavailable","Operational · ","Service issue · database unavailable","Refreshing…","Real-time data temporarily unavailable"];
+for(const code of ["ur","hi","ar","fa"])assert.ok(healthLabels.every(label=>localeDictionary[code]?.[label]),code+" must translate live service-health and refresh states.");
+assert.ok(app.includes('data-in-lang-key="Health status unavailable"')&&app.includes('data-in-lang-key="Service issue · database unavailable"'),"Live health states must expose locale keys.");
 assert.ok(pulse.includes("apiWithTimeout('/api/health',{},10000)"),"Platform pulse must query the real health endpoint independently");
 assert.ok(pulse.includes("service.ok===true&&service.database===true"),"Healthy status must require both Worker and database checks");
 assert.ok(pulse.includes("Health status unavailable"),"Health-check failures must be disclosed instead of implying the service is healthy");
