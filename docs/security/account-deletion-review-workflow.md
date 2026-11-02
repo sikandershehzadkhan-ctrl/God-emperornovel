@@ -62,7 +62,7 @@ The implementation must define allowed transitions explicitly. Arbitrary status 
 
 ## Data access and privacy
 
-- All reviewer endpoints require authentication, explicit permission checks, CSRF protection where cookie sessions are used, and account/request-level authorization.
+- All reviewer endpoints require authentication, explicit permission checks, and account/request-level authorization. Reviewer role assignment, revocation, and case-claim POST routes additionally require an exact same-origin `Origin` header; missing or mismatched origins are rejected. This is a route-specific CSRF defense, not a claim that every cookie-authenticated API route has a global CSRF middleware.
 - Reviewer identity is never included in the user's ordinary account export or exposed to another reviewer without a legitimate audit purpose.
 - Review responses must not return password hashes, session identifiers, token digests, private notes unrelated to the case, or other users' records.
 - Use no-store response headers for sensitive review pages.
@@ -72,7 +72,7 @@ The implementation must define allowed transitions explicitly. Arbitrary status 
 
 ## Atomicity and failure handling
 
-- Claiming, state transitions, approval records, and audit events must be committed atomically where they form one logical operation. The current claim endpoint creates the review row if needed, performs a conditional lease update, and inserts the claim event in one D1 batch. SQLite-backed tests cover competing claims, expiry takeover, requester exclusion, and rollback when audit insertion fails; live Cloudflare D1 concurrency remains to be verified.
+- Claiming, state transitions, approval records, and audit events must be committed atomically where they form one logical operation. The current claim endpoint creates the review row if needed, performs a conditional lease update, and inserts the claim event in one D1 batch. SQLite-backed tests cover competing claims, expiry takeover, requester exclusion, and rollback when audit insertion fails. The Cloudflare validation workflow also exercises role assignment, same-origin enforcement, queue authorization, concurrent Worker claim requests, requester self-claim denial, expired-lease takeover, and revocation through a local Wrangler Worker with isolated D1.
 - Use compare-and-set conditions on the expected prior state and current lease/version.
 - A stale reviewer must receive a conflict response, not overwrite a newer decision.
 - If audit persistence fails, the corresponding privileged mutation must fail closed.
@@ -99,6 +99,6 @@ The implementation must define allowed transitions explicitly. Arbitrary status 
 
 ## Release boundary
 
-The reversible account-deletion API and user settings interface remain the only implemented user-facing deletion functionality. Administrative reviewer-role APIs now support bounded listing, explicit assignment, one-way revocation, and append-only assignment events. The review queue is read-only and requires an active reviewer assignment. Case claiming is implemented as a ten-minute leased API primitive, but live Cloudflare D1 concurrency verification and reviewer UI are still pending. Role-specific case details, disposition recording, independent approval, and finalization remain unimplemented. The draft branch has not been deployed and no production migration has run. Keep the pull request in draft until the remaining workflow, integration tests, and independent review are complete.
+The reversible account-deletion API and user settings interface remain the only implemented user-facing deletion functionality. Administrative reviewer-role APIs now support bounded listing, explicit assignment, one-way revocation, and append-only assignment events. The review queue is read-only and requires an active reviewer assignment. Case claiming is implemented as a ten-minute leased API primitive and is included in local Wrangler Worker + D1 integration coverage. Production D1 concurrency and operational reviewer UI remain unverified and unimplemented. Role-specific case details, disposition recording, independent approval, and finalization remain unimplemented. The draft branch has not been deployed and no production migration has run. Keep the pull request in draft until the remaining workflow, integration tests, and independent review are complete.
 
 Review this policy against applicable Pakistani law and every jurisdiction in which Imperial Novel operates before implementing retention periods or irreversible processing.
