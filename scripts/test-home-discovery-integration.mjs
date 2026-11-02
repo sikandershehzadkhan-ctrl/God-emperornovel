@@ -90,7 +90,10 @@ assert.ok(homepageLoader.includes('setINLang(document.documentElement.lang||"en"
 assert.ok(homepageLoader.includes("void (async()=>{"),"Catalog and discovery requests must run as independent non-blocking homepage tasks.");
 assert.ok(homepageLoader.includes("void refreshPlatformPulse();"),"The initial live overview must not block homepage navigation from becoming interactive.");
 assert.ok(!homepageLoader.includes("await refreshPlatformPulse();"),"Homepage boot must not wait for the real-time panel's network response.");
-assert.ok(homepageLoader.includes("Promise.all([apiWithTimeout('/api/novels?sort=trending&limit=10'),apiWithTimeout('/api/novels?sort=updated&limit=10')])"),"Trending and latest catalog shelves must load concurrently.");
+assert.ok(homepageLoader.includes("Promise.allSettled([")&&homepageLoader.includes("apiWithTimeout('/api/novels?sort=trending&limit=10')")&&homepageLoader.includes("apiWithTimeout('/api/novels?sort=updated&limit=10')"),"Trending and latest catalog shelves must load concurrently and settle independently.");
+assert.ok(homepageLoader.includes('const renderHomeShelfError=selector=>'),"A failed catalog endpoint must render an error state only in its own shelf.");
+assert.ok(homepageLoader.includes('if(trendResult.status==="fulfilled")')&&homepageLoader.includes('else renderHomeShelfError(\'#trend\')')&&homepageLoader.includes('if(latestResult.status==="fulfilled")')&&homepageLoader.includes('else renderHomeShelfError(\'#latest\')'),"Trending and latest shelves must preserve successful results when the other endpoint fails.");
+assert.ok(homepageLoader.includes('const validRows=payload=>Array.isArray(payload?.results)?payload.results.filter(row=>row&&Number.isSafeInteger(Number(row.id))&&Number(row.id)>0):[]'),"Malformed catalog responses and invalid novel identifiers must be excluded before rendering.");
 const trendingSectionIndex=homepageLoader.indexOf('<section class="section nextShelf">');
 const platformPulseSectionIndex=homepageLoader.indexOf('<section class="platformPulse"');
 assert.ok(trendingSectionIndex>=0&&platformPulseSectionIndex>trendingSectionIndex,"Reader-facing trending stories must appear before platform activity metrics in the homepage flow.");
