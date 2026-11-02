@@ -23,8 +23,8 @@ assert.match(app, /let bookmarkSaving=false;\$\('#bookmarkBtn'\)\.onclick=async\
 assert.match(app, /id="readerNetworkStatus" class="readerNetworkStatus" role="status" aria-live="polite" hidden/, 'Reader must expose an accessible offline status banner.');
 assert.match(app, /window\.addEventListener\('online',updateReaderNetwork\);window\.addEventListener\('offline',updateReaderNetwork\)/, 'Reader must react to online and offline transitions.');
 assert.match(app, /if\(window\.__imperialReaderNetworkHandler\)\{window\.removeEventListener\('online',window\.__imperialReaderNetworkHandler\);window\.removeEventListener\('offline',window\.__imperialReaderNetworkHandler\);\}/, 'Reader network listeners must be removed before a new load.');
-assert.match(app, /Promise\.allSettled\(\[api\('\/api\/history'/, 'Reader history and bookmark sync must be tracked together so failed activity can retry after reconnect.');
-assert.match(app, /if\(results\.some\(result=>result\.status==='rejected'\)\)activitySyncPending=true/, 'Failed reader activity sync must remain pending for reconnection.');
+assert.match(app, /await Promise\.all\(\[\s*api\('\/api\/history'/, 'Queued history and bookmark writes must both succeed before a record is removed.');
+assert.match(app, /\.catch\(\(\)=>\{activitySyncPending=true\}\)/, 'Failed queued activity sync must remain pending for reconnection.');
 assert.ok(app.includes("retry.className='comicPageRetry secondary'"), 'Failed comic images must expose a user-triggered retry control.');
 
 assert.ok(app.includes("const READER_ACTIVITY_QUEUE_KEY='imperial_reader_activity_v1'"), 'Offline activity must use a dedicated session-scoped queue.'); 
