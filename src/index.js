@@ -758,6 +758,18 @@ async function api(req,env){
   if(c.publication_status==='published')return json({error:'Move the chapter to draft before scheduling it again.'},409);if(c.novel_status!=='published')return json({error:'The novel must be approved and published before a chapter can be scheduled.'},409);if(!['original','public_domain','licensed','authorized'].includes(String(c.rights_status)))return json({error:'Novel rights are not eligible for publication'},403);
   const timestamp=Date.parse(String(b.publish_at||''));const now=Date.now();if(!Number.isFinite(timestamp)||timestamp<now+5*60*1000||timestamp>now+365*24*60*60*1000)return json({error:'Choose a publication time at least 5 minutes from now and within the next 365 days.'},400);const publishAt=new Date(timestamp).toISOString();await env.DB.prepare(`INSERT INTO scheduled_chapter_publications(chapter_id,publish_at,created_by,updated_at) VALUES(?,?,?,CURRENT_TIMESTAMP) ON CONFLICT(chapter_id) DO UPDATE SET publish_at=excluded.publish_at,created_by=excluded.created_by,updated_at=CURRENT_TIMESTAMP`).bind(id,publishAt,u.id).run();await audit(env,u,'author_chapter_scheduled',`chapter=${id};publish_at=${publishAt}`);return json({ok:true,message:'Chapter publication scheduled.',publish_at:publishAt})
  }
+ if(p==="/api/author/planning"&&m==="GET"){
+  const e=author(u);if(e)return e;
+  const rows=await env.DB.prepare(`SELECT * FROM (
+   SELECT c.id chapter_id,c.novel_id,n.title novel_title,n.kind,n.publication_status novel_status,c.chapter_number,c.title chapter_title,c.updated_at,'draft_chapter' item_type
+   FROM chapters c JOIN novels n ON n.id=c.novel_id
+   WHERE n.owner_user_id=? AND c.publication_status='draft' AND NOT EXISTS(SELECT 1 FROM scheduled_chapter_publications s WHERE s.chapter_id=c.id)
+   UNION ALL
+   SELECT NULL chapter_id,n.id novel_id,n.title novel_title,n.kind,n.publication_status novel_status,NULL chapter_number,NULL chapter_title,n.updated_at,'first_chapter' item_type
+   FROM novels n WHERE n.owner_user_id=? AND NOT EXISTS(SELECT 1 FROM chapters c WHERE c.novel_id=n.id)
+  ) ORDER BY updated_at DESC LIMIT 100`).bind(u.id,u.id).all();
+  return json(rows.results||[])
+ }
  if(p==="/api/author/schedules"&&m==="GET"){
   const e=author(u);if(e)return e;const adminView=u.role==="admin"?1:0;
   const rows=await env.DB.prepare(`SELECT s.chapter_id,s.publish_at,s.created_at,s.updated_at,c.chapter_number,c.title chapter_title,n.id novel_id,n.title novel_title,n.owner_user_id FROM scheduled_chapter_publications s JOIN chapters c ON c.id=s.chapter_id JOIN novels n ON n.id=c.novel_id WHERE (?=1 OR n.owner_user_id=?) ORDER BY s.publish_at ASC LIMIT 200`).bind(adminView,u.id).all();
