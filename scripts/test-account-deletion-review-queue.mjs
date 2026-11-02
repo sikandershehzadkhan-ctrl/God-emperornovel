@@ -7,7 +7,11 @@ assert.notEqual(start,-1,"admin review queue route must exist");
 const end=source.indexOf('if(p==="/api/auth/logout"&&m==="POST")',start);
 assert.notEqual(end,-1,"review queue route must end before logout route");
 const route=source.slice(start,end);
-assert.match(route,/const authError=admin\(u\);if\(authError\)return authError/,"route must enforce administrator authorization before reading data");
+assert.match(route,/const authError=need\(u\);if\(authError\)return authError/,"route must require an authenticated account");
+assert.match(route,/SELECT role_key FROM account_deletion_reviewer_assignments WHERE user_id=\? AND revoked_at IS NULL/,"queue authorization must load only active explicit reviewer assignments");
+assert.match(route,/permissionsForRoles\(reviewerRoles\)\.includes\("queue:read"\)/,"queue access must require the reviewer queue permission");
+assert.match(route,/An active account-deletion reviewer assignment is required/,"ordinary admins without reviewer assignment must be denied");
+assert.doesNotMatch(route,/admin\(u\)/,"broad site-admin status must not grant reviewer queue access");
 assert.match(route,/consumeAuthRateLimit\(env,"account-deletion-review-queue",String\(u\.id\),30,60\)/,"queue reads must be rate limited per administrator");
 assert.match(route,/LIMIT 50/,"queue must have a bounded result set");
 assert.match(route,/substr\(r\.review_reason,1,240\)/,"review reason must be truncated");
@@ -15,4 +19,4 @@ assert.match(route,/read_only:true,finalization_enabled:false/,"response must ex
 assert.match(route,/catch\(error\)/,"missing migration must fail closed");
 assert.doesNotMatch(route,/SELECT[^;]*(email|password_hash|content|rights_evidence)/i,"queue must not fetch unnecessary sensitive account or content fields");
 assert.match(route,/account_deletion_review_queue_viewed/,"queue access must be audited");
-console.log("PASS: account deletion admin queue is admin-only, rate-limited, bounded, minimized, audited, and read-only.");
+console.log("PASS: account deletion queue requires an active assigned reviewer role, is rate-limited, bounded, minimized, audited, and read-only.");
