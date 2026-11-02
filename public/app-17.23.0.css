@@ -45,3 +45,17 @@
   .mobileNav a span{display:grid;place-items:center;min-height:20px}
   .mobileNav a span svg{width:19px;height:19px}
 }
+
+
+/* 17.25 international mobile UX: logical spacing and native RTL reading order. */
+.commentReply{margin-inline-start:28px;margin-left:0}
+@media(max-width:700px){.commentReply{margin-inline-start:12px;margin-left:0}}
+html[dir=rtl]{direction:rtl}
+html[dir=rtl] body{text-align:start}
+html[dir=rtl] .mobileNav{direction:rtl}
+html[dir=rtl] .navlinks,html[dir=rtl] .footerLinks{direction:rtl}
+html[dir=rtl] .comicPageComposerGrid{direction:rtl}
+html[dir=rtl] .comicComposerPage{direction:rtl}
+html[dir=rtl] input,html[dir=rtl] textarea,html[dir=rtl] select{text-align:start}
+html[dir=rtl] .commentReply{margin-inline-start:28px;margin-left:0}
+@media(max-width:700px){html[dir=rtl] .commentReply{margin-inline-start:12px;margin-left:0}}
