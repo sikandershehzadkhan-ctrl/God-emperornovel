@@ -620,7 +620,7 @@ async function api(req,env){
    ];
    for(const item of validated.items){
     const revision=(revisions.get(item.dependency_key)||0)+1;
-    statements.push(env.DB.prepare("INSERT INTO account_deletion_disposition_findings(review_id,request_id,dependency_key,revision,reviewer_id,review_version,outcome,reason,evidence_ref,policy_reference) SELECT id,request_id,?,?,?,?,?,?,?,? FROM account_deletion_reviews WHERE id=? AND request_id=? AND version=? AND state='review_in_progress' AND claimed_by IS NOT NULL AND claim_expires_at>? RETURNING id,dependency_key,revision").bind(item.dependency_key,revision,u.id,nextVersion,item.outcome,item.reason,item.evidence_ref,item.policy_reference,review.id,requestId,nextVersion,nowIso));
+    statements.push(env.DB.prepare("INSERT INTO account_deletion_disposition_findings(review_id,request_id,dependency_key,revision,reviewer_id,review_version,outcome,reason,evidence_ref,policy_reference) VALUES(?,?,?,?,?,?,?,?,?,?) RETURNING id,dependency_key,revision").bind(review.id,requestId,item.dependency_key,revision,u.id,nextVersion,item.outcome,item.reason,item.evidence_ref,item.policy_reference));
    }
    const results=await env.DB.batch(statements);
    const updated=results?.[0]?.results?.[0];
