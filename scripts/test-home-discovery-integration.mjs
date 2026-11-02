@@ -157,6 +157,8 @@ assert.ok(pulse.includes("second:'2-digit',timeZoneName:'short'"),"The refresh t
 assert.ok(pulse.includes("refreshes every 60 seconds"),"The live panel must disclose its refresh cadence");
 
 assert.ok(app.includes('id="platformPulseHealth"'),"Homepage must expose a separate live service-health indicator");
+assert.ok(app.includes('id="platformPulseHealth" class="platformPulseHealth" role="status" aria-live="polite"'),"The concise service-health indicator must remain announced to assistive technology.");
+for(const id of ["homeConnections","platformPulseUpdated","platformPulseUpdates","platformPulseTrending"]){const match=app.match(new RegExp(`<[^>]+id="${id}"[^>]*>`));assert.ok(match&&!/aria-live|role="status"/.test(match[0]),id+" must not announce a large dynamic region or repeating timestamp on every refresh.");}
 
 const healthLabels=["Health status unavailable","Operational · ","Service issue · database unavailable","Refreshing…","Real-time data temporarily unavailable"];
 for(const code of ["ur","hi","ar","fa"])assert.ok(healthLabels.every(label=>localeDictionary[code]?.[label]),code+" must translate live service-health and refresh states.");
