@@ -43,6 +43,12 @@ assert.ok(app.includes('homeConnectionType" data-home-dynamic-key="')&&app.inclu
 assert.ok(app.includes('document.addEventListener("imperial:languagechange",localizeDiscovery)'),"Dynamic discovery chips must refresh when the selected language changes.");
 assert.ok(app.includes('data-home-dynamic-key="The catalog is still building its discovery map.'),"Discovery empty state must be locale-aware.");
 assert.ok(app.includes('data-home-dynamic-key="Connected discovery is temporarily unavailable."'),"Discovery error state must be locale-aware.");
+for(const code of ["ur","hi","ar","fa"])assert.ok(localeDictionary[code]?.["Unknown author"]&&localeDictionary[code]?.["chapters"],code+" must translate dynamic story-card metadata.");
+for(const code of ["ur","hi","ar","fa"])assert.ok(localeDictionary[code]?.["The catalog is growing. Be among the first to discover what comes next."]&&localeDictionary[code]?.["No additional recently updated stories yet. Explore the catalog for another world."],code+" must translate story-shelf empty states.");
+assert.ok(app.includes('data-in-lang-key="chapters"')&&app.includes('data-in-lang-key="Unknown author"'),"Dynamic story-card metadata must expose translation keys.");
+assert.ok(app.includes('setINLang(document.documentElement.lang||"en")'),"Rendered story shelves must apply the currently selected locale after asynchronous insertion.");
+assert.ok(app.includes('data-in-lang-key="Story shelves could not be loaded."')&&app.includes('data-in-lang-key="Try again"'),"Story shelf failure messages must expose translation keys.");
+
 assert.ok(app.includes('document.dispatchEvent(new Event("imperial:languagechange"))'),"Language changes must notify asynchronously rendered homepage content.");
 
 assert.ok(app.includes('data-in-lang-key="A whole creative ecosystem built around the stories you love and the worlds you want to make."'),"Creator ecosystem introduction must be translatable.");
