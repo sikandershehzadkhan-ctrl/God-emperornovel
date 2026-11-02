@@ -730,10 +730,22 @@ async function api(req,env){
  }
  if(/^\/api\/author\/chapters\/\d+$/.test(p)&&m==="PATCH"){
   const e=author(u);if(e)return e;const id=Number(p.split('/').pop()),b=await body(req);
-  const c=await env.DB.prepare(`SELECT c.*,n.owner_user_id FROM chapters c JOIN novels n ON n.id=c.novel_id WHERE c.id=?`).bind(id).first();if(!c)return json({error:'Chapter not found'},404);if(u.role!=="admin"&&Number(c.owner_user_id)!==Number(u.id))return json({error:'You do not own this chapter'},403);
-  const num=Number(b.chapter_number??c.chapter_number),title=String(b.title??c.title).trim(),content=String(b.content??c.content);const cost=Number(b.ticket_cost??c.ticket_cost);if(!Number.isInteger(num)||num<1||!title||!content||cost<0)return json({error:'Invalid chapter data'},400);
+  const c=await env.DB.prepare(`SELECT c.*,n.owner_user_id,n.kind FROM chapters c JOIN novels n ON n.id=c.novel_id WHERE c.id=?`).bind(id).first();if(!c)return json({error:'Chapter not found'},404);if(u.role!=="admin"&&Number(c.owner_user_id)!==Number(u.id))return json({error:'You do not own this chapter'},403);
+  const num=Number(b.chapter_number??c.chapter_number),title=String(b.title??c.title).trim(),content=String(b.content??c.content);const cost=Number(b.ticket_cost??c.ticket_cost),locked=b.is_locked===undefined?Number(c.is_locked):b.is_locked?1:0;
+  if(!Number.isInteger(num)||num<1||!title||!content||content.length>100000||!Number.isInteger(cost)||cost<0)return json({error:'Invalid chapter data'},400);
+  if(["manga","manhwa","manhua","webtoon","comic","graphic_novel"].includes(String(c.kind||"").toLowerCase())){const comicCheck=validateComicChapterContent(content);if(!comicCheck.ok)return json({error:comicCheck.error},400)}
   const dup=await env.DB.prepare('SELECT id FROM chapters WHERE novel_id=? AND chapter_number=? AND id<>?').bind(c.novel_id,num,id).first();if(dup)return json({error:'Another chapter already uses that chapter number.'},409);
-  await env.DB.prepare(`UPDATE chapters SET chapter_number=?,title=?,content=?,is_locked=?,ticket_cost=?,updated_at=CURRENT_TIMESTAMP WHERE id=?`).bind(num,title,content,b.is_locked?1:0,cost,id).run();await env.DB.prepare('UPDATE novels SET updated_at=CURRENT_TIMESTAMP WHERE id=?').bind(c.novel_id).run();await audit(env,u,'author_chapter_updated',`chapter=${id}`);return json({ok:true,message:'Chapter saved.'})
+  await env.DB.batch([
+   env.DB.prepare(`INSERT INTO chapter_revisions(chapter_id,chapter_number,title,content,is_locked,ticket_cost,editor_user_id) SELECT id,chapter_number,title,content,is_locked,ticket_cost,? FROM chapters WHERE id=? AND (chapter_number<>? OR title<>? OR content<>? OR is_locked<>? OR ticket_cost<>?)`).bind(u.id,id,num,title,content,locked,cost),
+   env.DB.prepare(`UPDATE chapters SET chapter_number=?,title=?,content=?,is_locked=?,ticket_cost=?,updated_at=CURRENT_TIMESTAMP WHERE id=?`).bind(num,title,content,locked,cost,id),
+   env.DB.prepare('UPDATE novels SET updated_at=CURRENT_TIMESTAMP WHERE id=?').bind(c.novel_id)
+  ]);
+  await audit(env,u,'author_chapter_updated',`chapter=${id}`);return json({ok:true,message:'Chapter saved. A previous version is available in revision history when changes were made.'})
+ }
+ if(/^\/api\/author\/chapters\/\d+\/revisions$/.test(p)&&m==="GET"){
+  const e=author(u);if(e)return e;const id=Number(p.split('/')[4]);
+  const c=await env.DB.prepare('SELECT c.id,n.owner_user_id FROM chapters c JOIN novels n ON n.id=c.novel_id WHERE c.id=?').bind(id).first();if(!c)return json({error:'Chapter not found'},404);if(u.role!=="admin"&&Number(c.owner_user_id)!==Number(u.id))return json({error:'You do not own this chapter'},403);
+  return json((await env.DB.prepare('SELECT id,chapter_id,chapter_number,title,content,is_locked,ticket_cost,created_at FROM chapter_revisions WHERE chapter_id=? ORDER BY id DESC LIMIT 30').bind(id).all()).results||[])
  }
  if(/^\/api\/author\/chapters\/\d+\/publish$/.test(p)&&m==="POST"){
   const e=author(u);if(e)return e;const id=Number(p.split('/')[3]),b=await body(req);const c=await env.DB.prepare(`SELECT c.*,n.owner_user_id,n.rights_status FROM chapters c JOIN novels n ON n.id=c.novel_id WHERE c.id=?`).bind(id).first();if(!c)return json({error:'Chapter not found'},404);if(u.role!=="admin"&&Number(c.owner_user_id)!==Number(u.id))return json({error:'You do not own this chapter'},403);
