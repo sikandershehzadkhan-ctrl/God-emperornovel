@@ -32,7 +32,7 @@ for (const path of ['public/app.js', `public/app-${version}.js`]) {
  assert.ok(app.includes('aria-labelledby="homeFormatTitle"'), path + ' makes format discovery visible from the homepage');
  assert.ok(app.includes('href="/format/original"') && app.includes('href="/format/fanfiction"'), path + ' keeps original novels and fanfiction first-class homepage destinations');
 }
-const scriptMatch = index.match(/<script src="\/([^"]+\.js)" defer><\/script>/);
+const scriptMatch = index.match(/<script src="\/([^"]+\.js)"\s+defer(?:\s+[^>]*)?><\/script>/);
 assert.ok(scriptMatch && fs.existsSync('public/' + scriptMatch[1]), 'HTML references an existing application bundle');
 for (const name of new Set(['app.js', scriptMatch[1]])) {
  const app = fs.readFileSync('public/' + name, 'utf8');
