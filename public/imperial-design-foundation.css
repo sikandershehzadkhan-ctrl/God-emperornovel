@@ -1122,6 +1122,11 @@ html[data-theme="dark"] .novelLivePulseMetric{background:var(--in-surface-raised
 .catalogEmptyActions>*{min-height:40px;padding:9px 12px;font-size:11px;text-decoration:none}
 .pager{display:flex;justify-content:center;gap:10px;margin:24px 0}
 .pager a{min-height:42px;padding:10px 16px;text-decoration:none}
+.pager{align-items:center;flex-wrap:wrap}
+.pager .pagerCurrent{display:inline-flex;align-items:center;min-height:42px;padding:10px 13px;color:var(--text-muted);font-size:12px;font-weight:650}
+.pager a[rel="first"]{margin-right:4px}
+.pager a:focus-visible{outline:2px solid var(--in-focus);outline-offset:3px}
+
 .catalogGrid[aria-busy="true"]{opacity:.72}
 @media(max-width:1050px){.catalogGrid{grid-template-columns:repeat(3,minmax(0,1fr))}.filterRow{grid-template-columns:repeat(2,minmax(0,1fr))}}
 @media(max-width:640px){
