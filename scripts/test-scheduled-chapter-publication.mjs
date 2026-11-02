@@ -50,5 +50,18 @@ for (const [label, browser] of [["source", app], ["served asset", shipped]]) {
   assert.ok(browser.includes("authorCalendarCancel"), label + " must expose schedule cancellation.");
   assert.ok(browser.includes("toLocaleDateString") && browser.includes("toLocaleTimeString"), label + " must display release times in local time.");
 }
+const planningRouteAt = worker.indexOf('if(p==="/api/author/planning"&&m==="GET")');
+assert.ok(planningRouteAt >= 0, "Author chapter planning API must exist.");
+const planningRoute = worker.slice(planningRouteAt, worker.indexOf('if(p==="/api/author/schedules"', planningRouteAt));
+assert.ok(planningRoute.includes("const e=author(u)"), "Chapter planning must require an author or admin session.");
+assert.ok(planningRoute.includes("n.owner_user_id=?"), "Chapter planning must be scoped to the current owner.");
+assert.ok(planningRoute.includes("NOT EXISTS(SELECT 1 FROM scheduled_chapter_publications"), "Scheduled drafts must not appear as unfinished unscheduled work.");
+assert.ok(planningRoute.includes("NOT EXISTS(SELECT 1 FROM chapters"), "Stories without chapters must appear in the planning queue.");
+assert.ok(planningRoute.includes("ORDER BY updated_at DESC LIMIT 100"), "Planning queue must be bounded and sorted by recent activity.");
+for (const [label, browser] of [["source", app], ["served asset", shipped]]) {
+  assert.ok(browser.includes("authorPlanningQueue"), label + " must render the chapter planning queue.");
+  assert.ok(browser.includes("api('/api/author/planning')"), label + " must load the authenticated planning API.");
+  assert.ok(browser.includes("authorPlanningOpen"), label + " must link queue items to chapter management.");
+}
 assert.equal(app, shipped, "Source and served application assets must be identical.");
 console.log("Scheduled chapter publication policy and UI checks passed.");
