@@ -95,3 +95,10 @@
 @media(max-width:380px){.adminWrap{width:calc(100% - 18px)}.adminGrid{grid-template-columns:1fr}.adminHero h1{font-size:29px}}
 @media(forced-colors:active){.adminHero,.adminCard,.adminSection .panel,.adminNav button,.mini{border:1px solid CanvasText}.adminNav button.active{outline:2px solid Highlight}}
 @media(prefers-reduced-motion:reduce){.adminNav button{transition:none}}
+
+/* Keyboard users can bypass the dashboard masthead. */
+.adminSkipLink{position:absolute;z-index:1000;top:8px;left:8px;transform:translateY(-160%);padding:11px 14px;border-radius:10px;background:#25163d;color:#fff;font-weight:750;text-decoration:none;box-shadow:0 5px 18px rgba(20,12,36,.2)}
+.adminSkipLink:focus{transform:translateY(0);outline:3px solid #477fe0;outline-offset:3px}
+#tabs[role="tablist"]{scroll-margin-top:12px}
+.adminSection[role="tabpanel"]:focus{outline:3px solid rgba(44,104,214,.45);outline-offset:3px}
+@media(prefers-reduced-motion:reduce){.adminSkipLink{transition:none}}
