@@ -58,4 +58,20 @@ assert.ok(app.includes("input[aria-label]"),"Homepage search accessibility label
 assert.ok(home.includes('setINLang(document.documentElement.lang||"en")'),"Homepage must apply the selected language after rendering.");
 assert.equal(app,shipped,"Served JavaScript must match the source.");
 
-console.log("Homepage, catalog discovery and 14-language reader localization checks passed.");
+
+const genresAt=app.indexOf("async function genres()");
+const tagsAt=app.indexOf("async function tags()",genresAt);
+const searchAt=app.indexOf("async function search()",tagsAt);
+const novelAt=app.indexOf("async function novel()",searchAt);
+assert.ok(genresAt>=0&&tagsAt>genresAt&&searchAt>tagsAt&&novelAt>searchAt,"Genre, tag and search pages must exist.");
+const genresPage=app.slice(genresAt,tagsAt),tagsPage=app.slice(tagsAt,searchAt),searchPage=app.slice(searchAt,novelAt);
+for(const key of ["Genres","Enter a genre and let the catalog narrow the realm for you.","Tags","Browse story themes and fandom-friendly classifications.","Search","Find novels, authors and alternate titles, then refine the results with catalog filters.","Search the storyverse...","Top Rated","Completed","Fanfiction","Search the Imperial catalog","Enter a title, author or alternate title to begin.","Explore Trending Stories"]) {
+  for(const locale of Object.keys(languageDictionary))assert.ok(languageDictionary[locale][key],"Missing discovery page translation for "+key+" in "+locale);
+}
+assert.ok(genresPage.includes("sub.dataset.inLang=''")&&genresPage.includes("setINLang(document.documentElement.lang||'en')"),"Genre directory heading and description must use the selected language.");
+assert.ok(tagsPage.includes("sub.dataset.inLang=''")&&tagsPage.includes("setINLang(document.documentElement.lang||'en')"),"Tag directory heading and description must use the selected language.");
+assert.ok(searchPage.includes('data-in-lang-placeholder="Search the storyverse..."'),"Search input placeholder must be localizable.");
+assert.ok(searchPage.includes("data-in-lang>Search</button>"),"Search action must be localizable.");
+assert.ok(searchPage.includes("setINLang(document.documentElement.lang||'en')"),"Search page must apply the selected language after dynamic rendering.");
+
+console.log("Homepage, catalog, genre/tag directories, search and 14-language reader localization checks passed.");
