@@ -53,7 +53,6 @@
 .chapterRow:hover{background:#faf9fd}
 #chapterPreviewPanel,#chapterEditPanel{background:#fbfaff}
 .mobileAdmin a{background:#25163d;color:#fff;border-color:#25163d;box-shadow:0 5px 16px rgba(37,22,61,.18)}
-@media(prefers-color-scheme:dark){
  html[data-theme="dark"] .adminHero{background:radial-gradient(ellipse at 92% 0%,rgba(68,116,219,.2),transparent 42%),linear-gradient(135deg,#191626,#11131c 62%,#121b2b);border-color:#373044}
  html[data-theme="dark"] .adminHero h1,html[data-theme="dark"] .adminSection h2,html[data-theme="dark"] .adminSection h3,html[data-theme="dark"] .adminCard b.big,html[data-theme="dark"] .agent b{color:#f3f0fa}
  html[data-theme="dark"] .adminHero p,html[data-theme="dark"] .adminSection .sectionHead p{color:#aaa5b8}
@@ -77,7 +76,6 @@
  html[data-theme="dark"] .status.rejected,html[data-theme="dark"] .status.dismissed,html[data-theme="dark"] .status.error{color:#ffb5c1;background:#381e28;border-color:#713545}
  html[data-theme="dark"] .linkBtn{color:#c6a9ff}
  html[data-theme="dark"] #chapterPreviewPanel,html[data-theme="dark"] #chapterEditPanel{background:#1b1925}
-}
 @media(max-width:760px){
  .adminWrap{width:calc(100% - 24px);padding:14px 0 100px}
  .adminHero{border-radius:18px;padding:19px}
