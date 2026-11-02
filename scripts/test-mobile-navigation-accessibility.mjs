@@ -19,4 +19,19 @@ if (!/\.mobileNav a:focus-visible\s*\{[^}]*outline:\s*3px/s.test(styles)) {
   console.error('Mobile navigation links need a clearly visible keyboard focus indicator.');
   process.exit(1);
 }
+const drawerChecks = [
+  ['closed drawer is removed from keyboard navigation', 'menuDrawer.inert=true'],
+  ['opening drawer restores keyboard access', 'menuDrawer.inert=false'],
+  ['opening drawer moves focus inside', "querySelector('a[href],button:not([disabled])')?.focus"],
+  ['Escape closes the drawer', "if(e.key==='Escape')"],
+  ['Tab focus is contained in the drawer', "if(e.key!=='Tab'||!menuDrawer)return"],
+  ['closing drawer restores focus to its trigger', 'menuButton.focus({preventScroll:true})'],
+];
+for (const [label, snippet] of drawerChecks) {
+  if (!app.includes(snippet)) {
+    console.error('Drawer accessibility regression:', label);
+    process.exit(1);
+  }
+}
+console.log('Drawer keyboard checks passed: inert closed state, focus entry, Escape, Tab containment, and focus restoration.');
 console.log('Mobile navigation accessibility checks passed: six current-page states, 44px touch targets, and visible keyboard focus.');
