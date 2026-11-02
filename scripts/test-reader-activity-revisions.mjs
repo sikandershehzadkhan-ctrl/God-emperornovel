@@ -49,5 +49,8 @@ assert.ok(app.includes("history_version:versions.history_version") && app.includ
 assert.ok(app.includes("record[kind+'_pending']=false"), "A stale queued dimension must be discarded without retrying it forever.");
 assert.ok(app.includes("result.reason?.data?.code==='stale_activity_version'"), "Stale queued requests must be recognized and discarded safely.");
 assert.ok(app.includes("bookmark_version:versions.bookmark_version"), "Direct bookmark writes must also carry a revision.");
+assert.match(app, /record_id:\(globalThis\.crypto\?\.randomUUID\?\.\(\)\|\|\(/, "Every queued reader activity must receive a unique record identity.");
+assert.ok(app.includes("item.record_id===record.record_id"), "A sync response may reconcile only the exact queue record it submitted.");
+assert.ok(app.includes("!item.record_id&&Number(item.novel_id)===Number(record.novel_id)"), "Legacy queue entries without record IDs must retain a narrowly scoped compatibility match.");
 
-console.log("PASS: server-side activity revisions are authenticated, independently versioned, atomically advanced on deletion, enforced inside conditional SQL writes, and carried through offline queue replay.");
+console.log("PASS: server-side activity revisions are authenticated, independently versioned, atomically advanced on deletion, enforced inside conditional SQL writes, and queue replay reconciles only the exact record submitted.");
