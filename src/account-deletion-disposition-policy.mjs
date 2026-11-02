@@ -22,9 +22,9 @@ const OUTCOMES = new Set([
 const boundedText = (value, max) =>
   typeof value === "string" && value.trim().length > 0 && value.trim().length <= max;
 
-export function validateDispositionItems(items, permissions) {
-  if (!Array.isArray(items) || items.length !== Object.keys(DISPOSITION_DEPENDENCIES).length) {
-    return { ok: false, error: "A complete dependency inventory is required." };
+export function validateDispositionItems(items, permissions, { requireComplete = false } = {}) {
+  if (!Array.isArray(items) || items.length < 1 || items.length > Object.keys(DISPOSITION_DEPENDENCIES).length) {
+    return { ok: false, error: "A bounded, non-empty dependency submission is required." };
   }
   if (!Array.isArray(permissions)) return { ok: false, error: "Reviewer permissions are required." };
   const seen = new Set();
@@ -55,7 +55,7 @@ export function validateDispositionItems(items, permissions) {
     });
     seen.add(key);
   }
-  if (seen.size !== Object.keys(DISPOSITION_DEPENDENCIES).length) {
+  if (requireComplete && seen.size !== Object.keys(DISPOSITION_DEPENDENCIES).length) {
     return { ok: false, error: "The dependency inventory is incomplete." };
   }
   normalized.sort((a,b) => a.dependency_key.localeCompare(b.dependency_key));
