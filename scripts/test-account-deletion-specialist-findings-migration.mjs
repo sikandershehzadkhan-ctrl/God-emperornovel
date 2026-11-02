@@ -40,7 +40,18 @@ rejected("DELETE FROM account_deletion_disposition_findings WHERE review_id=100"
 db.execute("UPDATE account_deletion_reviews SET version=version+1 WHERE id=100")
 db.execute("INSERT INTO account_deletion_disposition_findings(review_id,request_id,dependency_key,revision,reviewer_id,review_version,outcome,reason,policy_reference) VALUES(100,10,'creator_rights',2,4,3,'retain','Second specialist revision','policy-v2')")
 assert db.execute("SELECT COUNT(*) FROM account_deletion_disposition_findings WHERE review_id=100").fetchone()[0]==3
-print("PASS: specialist findings permit independent reviewers under an active case lease, enforce request/subject/version scope and sequential revisions, and are immutable.")
+assert db.execute("SELECT COUNT(*) FROM account_deletion_review_events WHERE event_type='disposition_proposed' AND review_id=100").fetchone()[0]==3
+db.execute("CREATE TRIGGER injected_audit_failure BEFORE INSERT ON account_deletion_review_events WHEN NEW.event_type='disposition_proposed' BEGIN SELECT RAISE(ABORT,'injected audit failure'); END")
+try:
+ db.execute("BEGIN")
+ db.execute("UPDATE account_deletion_reviews SET version=version+1 WHERE id=100")
+ db.execute("INSERT INTO account_deletion_disposition_findings(review_id,request_id,dependency_key,revision,reviewer_id,review_version,outcome,reason,policy_reference) VALUES(100,10,'creator_rights',3,4,4,'retain','Must roll back','policy-v3')")
+ raise AssertionError("injected audit failure did not abort finding")
+except sqlite3.IntegrityError:
+ db.rollback()
+assert db.execute("SELECT version FROM account_deletion_reviews WHERE id=100").fetchone()[0]==3
+assert db.execute("SELECT COUNT(*) FROM account_deletion_disposition_findings WHERE review_id=100").fetchone()[0]==3
+print("PASS: specialist findings permit independent reviewers under an active case lease, enforce request/subject/version scope and sequential revisions, remain immutable, and atomically roll back if their audit event fails.")
 `;
 const result=spawnSync("python3",["-c",script],{input:base+"\n"+migration,encoding:"utf8"});
 if(result.error) throw result.error;
