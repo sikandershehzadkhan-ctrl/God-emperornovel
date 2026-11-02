@@ -879,6 +879,29 @@ if(p==="/api/author/feedback"&&m==="GET"){
   await audit(env,u,'author_private_note_deleted',`note=${id}`);
   return json({ok:true})
  }
+ if(p==="/api/author/readiness"&&m==="GET"){
+  const e=author(u);if(e)return e;
+  const rows=await env.DB.prepare(`SELECT n.id novel_id,n.title,n.description,n.language,n.rights_status,n.rights_evidence,n.publication_status,n.kind,
+   (SELECT COUNT(*) FROM chapters c WHERE c.novel_id=n.id) chapter_count,
+   (SELECT COUNT(*) FROM chapters c WHERE c.novel_id=n.id AND c.publication_status='published') published_chapters,
+   (SELECT COUNT(*) FROM chapters c WHERE c.novel_id=n.id AND c.publication_status='draft') draft_chapters,
+   (SELECT COUNT(*) FROM chapters c WHERE c.novel_id=n.id AND (TRIM(COALESCE(c.title,''))='' OR TRIM(COALESCE(c.content,''))='')) incomplete_drafts
+   FROM novels n WHERE n.owner_user_id=? ORDER BY n.updated_at DESC LIMIT 100`).bind(u.id).all();
+  const checks=(rows.results||[]).map(n=>{
+   const items=[
+    {key:'title',label:'Story title',status:String(n.title||'').trim()?'pass':'attention',detail:String(n.title||'').trim()?'A title is recorded.':'Add a story title.'},
+    {key:'synopsis',label:'Synopsis',status:String(n.description||'').trim()?'pass':'attention',detail:String(n.description||'').trim()?'A synopsis is recorded.':'Add a synopsis so readers and reviewers can understand the work.'},
+    {key:'language',label:'Language',status:String(n.language||'').trim()?'pass':'attention',detail:String(n.language||'').trim()?'A language is selected.':'Choose the story language.'},
+    {key:'format',label:'Content format',status:CONTENT_FORMAT_IDS.has(String(n.kind||'').toLowerCase())?'pass':'attention',detail:CONTENT_FORMAT_IDS.has(String(n.kind||'').toLowerCase())?'The format is supported.':'Select a supported content format.'},
+    {key:'rights',label:'Rights status',status:['original','public_domain','licensed','authorized'].includes(String(n.rights_status||'').toLowerCase())?'pass':'attention',detail:['original','public_domain','licensed','authorized'].includes(String(n.rights_status||'').toLowerCase())?'A recognized rights status is recorded.':'Choose a valid rights status.'},
+    {key:'evidence',label:'Rights evidence',status:String(n.rights_status||'').toLowerCase()==='original'?'not_applicable':String(n.rights_evidence||'').trim()?'pass':'attention',detail:String(n.rights_status||'').toLowerCase()==='original'?'Not required for a work declared original.':String(n.rights_evidence||'').trim()?'Supporting evidence is recorded.':'Add the license, permission or public-domain evidence required for review.'},
+    {key:'chapters',label:'Chapter content',status:Number(n.chapter_count)>0?'pass':'attention',detail:Number(n.chapter_count)>0?Number(n.chapter_count)+' chapter records exist.':'Create at least one chapter.'},
+    {key:'drafts',label:'Draft completeness',status:Number(n.incomplete_drafts)>0?'attention':'pass',detail:Number(n.incomplete_drafts)>0?Number(n.incomplete_drafts)+' draft chapters have a blank title or content.':'No incomplete draft chapters were detected.'}
+   ];
+   return {novel_id:Number(n.novel_id),title:n.title,publication_status:n.publication_status,chapter_count:Number(n.chapter_count||0),published_chapters:Number(n.published_chapters||0),draft_chapters:Number(n.draft_chapters||0),checks:items,attention_count:items.filter(x=>x.status==='attention').length};
+  });
+  return json({scope:'owned_stories',generated_at:new Date().toISOString(),items:checks});
+ }
  if(p==="/api/author/planning"&&m==="GET"){
   const e=author(u);if(e)return e;
   const rows=await env.DB.prepare(`SELECT * FROM (
