@@ -16,6 +16,8 @@ assert.match(route,/permissionsForRoles\(reviewerRoles\)\.includes\("case:claim"
 assert.match(route,/new Date\(claimedAt\.getTime\(\)\+10\*60\*1000\)/,"claim lease must expire after ten minutes");
 assert.match(route,/INSERT INTO account_deletion_reviews[\s\S]*ON CONFLICT\(request_id\) DO NOTHING/,"first claim must safely initialize a review row");
 assert.match(route,/UPDATE account_deletion_reviews SET claimed_by=\?,claim_expires_at=\?,version=version\+1/,"claim must use a versioned compare-and-set update");
+assert.match(route,/state='review_in_progress'/,"a successful claim must move the case into the in-progress state");
+assert.match(route,/state IN \('review_required','review_in_progress'\)/,"only new or already-in-progress reviews may be claimed");
 assert.match(route,/claimed_by IS NULL OR claim_expires_at<=\?/,"only unclaimed or expired leases may be acquired");
 assert.match(route,/subject_user_id<>\?/,"requesters must never claim their own case");
 assert.match(route,/status IN \('pending_deletion','review_required'\)/,"only active deletion requests may be claimed");
