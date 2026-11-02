@@ -608,6 +608,36 @@ async function api(req,env){
    return json({ok:true,review,lease_minutes:10});
   }catch(error){console.error("account deletion review claim failed",String(error?.message||error));return json({error:"The review case could not be safely claimed."},503)}
  }
+ const deletionReviewDetail=p.match(/^\\/api\\/admin\\/account-deletion\\/reviews\\/(\\d+)$/);
+ if(deletionReviewDetail&&m==="GET"){
+  const authError=need(u);if(authError)return authError;
+  const requestId=Number(deletionReviewDetail[1]);
+  if(!Number.isSafeInteger(requestId)||requestId<=0)return json({error:"Invalid review request."},400);
+  let reviewerRoles;
+  try{
+   const assigned=await env.DB.prepare("SELECT role_key FROM account_deletion_reviewer_assignments WHERE user_id=? AND revoked_at IS NULL").bind(u.id).all();
+   reviewerRoles=(assigned.results||[]).map(row=>row.role_key);
+  }catch(error){console.error("account deletion reviewer authorization unavailable",String(error?.message||error));return json({error:"Reviewer authorization is temporarily unavailable."},503)}
+  const permissions=permissionsForRoles(reviewerRoles);
+  if(!permissions.includes("case:read:minimal"))return json({error:"An active account-deletion reviewer assignment is required."},403);
+  const limited=await consumeAuthRateLimit(env,"account-deletion-review-case-detail",String(u.id),20,60);if(limited)return limited;
+  try{
+   const row=await env.DB.prepare(`SELECT r.id AS request_id,r.user_id AS subject_user_id,u.username AS subject_username,r.status AS request_status,r.requested_at,r.scheduled_for,substr(r.review_reason,1,240) AS review_reason,v.id AS review_id,v.state AS review_state,v.version AS review_version,v.claimed_by,v.claim_expires_at,v.proposed_by,v.plan_digest,v.approved_by FROM account_deletion_requests r JOIN users u ON u.id=r.user_id LEFT JOIN account_deletion_reviews v ON v.request_id=r.id WHERE r.id=? AND r.status IN ('pending_deletion','review_required') LIMIT 1`).bind(requestId).first();
+   if(!row||String(row.subject_user_id)===String(u.id))return json({error:"Review case not found."},404);
+   let creatorOwnership=null;
+   if(permissions.includes("creator:read:ownership")){
+    const owned=await env.DB.prepare(`SELECT COUNT(*) AS novel_count,SUM(CASE WHEN publication_status='published' THEN 1 ELSE 0 END) AS published_novel_count,SUM(CASE WHEN rights_verified_at IS NULL THEN 1 ELSE 0 END) AS rights_follow_up_count FROM novels WHERE owner_user_id=?`).bind(row.subject_user_id).first();
+    creatorOwnership={novel_count:Number(owned?.novel_count||0),published_novel_count:Number(owned?.published_novel_count||0),rights_follow_up_count:Number(owned?.rights_follow_up_count||0),evidence_contents_exposed:false};
+   }
+   let events=[];
+   if(row.review_id){
+    const history=await env.DB.prepare("SELECT event_type,from_state,to_state,review_version,created_at FROM account_deletion_review_events WHERE review_id=? ORDER BY id ASC LIMIT 100").bind(row.review_id).all();
+    events=history.results||[];
+   }
+   await audit(env,u,"account_deletion_review_case_viewed",`request_id=${requestId};roles=${reviewerRoles.join(",")}`);
+   return json({case:{request_id:row.request_id,subject_user_id:row.subject_user_id,subject_username:row.subject_username,request_status:row.request_status,requested_at:row.requested_at,scheduled_for:row.scheduled_for,review_reason:row.review_reason,review_id:row.review_id,review_state:row.review_state||row.request_status,review_version:row.review_version,claim_expires_at:row.claim_expires_at,proposed_by:row.proposed_by,approved_by:row.approved_by},sections:{support:permissions.includes("case:request_user_action"),creator_ownership:permissions.includes("creator:read:ownership"),finance_retention_metadata:permissions.includes("finance:read:retention_metadata"),privacy_coordination:permissions.includes("case:prepare_disposition"),independent_approval:permissions.includes("case:approve")},creator_ownership:creatorOwnership,events,read_only:true,finalization_enabled:false});
+  }catch(error){console.error("account deletion review case detail unavailable",String(error?.message||error));return json({error:"The review case is temporarily unavailable."},503)}
+ }
  if(p==="/api/admin/account-deletion/reviews"&&m==="GET"){
   const authError=need(u);if(authError)return authError;
   let reviewerRoles;
