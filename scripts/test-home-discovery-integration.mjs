@@ -18,7 +18,7 @@ assert.ok(app.includes("class=\"imperialHeroAuthor\" href=\"/become-an-author\""
 assert.ok(css.includes(".imperialHeroVisual")&&css.includes("@media(max-width:760px)"),"Imperial crest composition must have responsive mobile behavior.");
 assert.ok(css.includes("prefers-reduced-motion:reduce")&&css.includes(".imperialHeroSeal{transform:none}"),"Hero crest must respect reduced-motion preferences.");
 assert.ok(app.includes("/api/discovery/graph?limit=60"),"Homepage must use the bounded live graph endpoint");
-const homepageLoader=app.slice(app.indexOf("async function home(){"),app.indexOf("\\nasync function trendFactory"));
+const homepageLoader=app.slice(app.indexOf("async function home(){"),app.indexOf("async function trendFactory"));
 assert.ok(homepageLoader.includes("void (async()=>{"),"Catalog and discovery requests must run as independent non-blocking homepage tasks.");
 assert.ok(homepageLoader.includes("void refreshPlatformPulse();"),"The initial live overview must not block homepage navigation from becoming interactive.");
 assert.ok(!homepageLoader.includes("await refreshPlatformPulse();"),"Homepage boot must not wait for the real-time panel's network response.");
