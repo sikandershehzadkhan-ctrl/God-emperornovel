@@ -1,0 +1,99 @@
+/* Imperial Novel | Admin Command Center
+   Semantic, mobile-first styling for the existing admin.html interface. */
+.adminWrap{width:min(100% - 32px,1440px);padding:28px 0 110px;color:var(--text,#171522)}
+.adminHero{position:relative;overflow:hidden;background:radial-gradient(ellipse at 92% 0%,rgba(44,104,214,.14),transparent 42%),linear-gradient(135deg,#f8f6ff 0%,#fff 58%,#f4f7ff 100%);border:1px solid rgba(91,69,155,.18);border-radius:24px;padding:clamp(20px,3vw,34px);box-shadow:0 18px 50px rgba(25,20,50,.07)}
+.adminHero:after{content:"";position:absolute;width:190px;height:190px;border:1px solid rgba(106,13,173,.12);border-radius:50%;right:-62px;top:-92px;box-shadow:0 0 0 24px rgba(106,13,173,.025),0 0 0 48px rgba(44,104,214,.025);pointer-events:none}
+.adminHero .eyebrow{color:#6330a3;font-size:11px;font-weight:800;letter-spacing:.18em}
+.adminHero h1{font:750 clamp(30px,4vw,46px)/1.04 system-ui,-apple-system,sans-serif;letter-spacing:-.045em;color:#171326;margin:12px 0}
+.adminHero p{max-width:650px;color:#626477;font-size:14px;line-height:1.65}
+#identity{display:inline-flex;align-items:center;gap:8px;margin-top:14px!important;padding:7px 11px;border:1px solid rgba(106,13,173,.16);border-radius:999px;background:rgba(255,255,255,.78);color:#55456f}
+.adminNav{gap:8px;margin:18px 0 20px;padding:4px 2px 9px;scrollbar-width:thin}
+.adminNav button{min-height:40px;padding:9px 14px;border-radius:999px;border:1px solid #e5e1ed;background:#fff;color:#5d5b6b;font-size:12px;font-weight:700;transition:background .18s,border-color .18s,color .18s}
+.adminNav button:hover{border-color:#b9a6df;color:#54248b}
+.adminNav button.active{background:#25163d;border-color:#25163d;color:#fff;box-shadow:0 5px 16px rgba(37,22,61,.16)}
+.adminSection>.panel,.adminSection .panel{border:1px solid var(--border,#e8e5ee);border-radius:18px;background:var(--surface,#fff);box-shadow:0 8px 28px rgba(20,17,35,.045);padding:clamp(15px,2vw,22px)}
+.adminSection h2,.adminSection h3{color:var(--text,#171522);letter-spacing:-.025em}
+.adminSection .sectionHead{gap:14px;align-items:center;margin-bottom:14px}
+.adminSection .sectionHead p{color:var(--muted,#777487);font-size:13px;line-height:1.55}
+.adminGrid{gap:12px}
+.adminCard{min-width:0;border:1px solid #e8e4ef;border-radius:16px;background:linear-gradient(145deg,#fff,#faf9fd);padding:17px;box-shadow:0 5px 18px rgba(30,23,50,.035)}
+.adminCard b.big{font-size:clamp(23px,2.4vw,31px);line-height:1.1;color:#211a31;letter-spacing:-.04em}
+.adminCard small{display:block;margin-top:5px;color:#777487;line-height:1.45}
+.adminTable{min-width:720px;border-collapse:separate;border-spacing:0;font-size:13px}
+.adminTable th{position:sticky;top:0;background:#f7f6fa;color:#777387;padding:12px 11px;font-size:10px;letter-spacing:.1em}
+.adminTable td{color:#302d3b;padding:12px 11px;border-bottom:1px solid #eeebf2;line-height:1.5}
+.adminTable tbody tr:hover{background:#faf9fd}
+.adminTable tbody tr:last-child td{border-bottom:0}
+.scroll{border:1px solid #eeebf2;border-radius:13px;overscroll-behavior-x:contain}
+.rowActions{gap:7px}
+.mini{min-height:34px;padding:7px 10px;border-radius:9px;background:#f4f1fa;border-color:#ded5ed;color:#56318c!important;font-size:11px}
+.mini.edit{background:#eee9fb;border-color:#cfc1eb;color:#4d278d!important}
+.mini.good{background:#edf8f3;border-color:#bfe4d2;color:#16734e!important}
+.mini.bad{background:#fff1f3;border-color:#f0c8cf;color:#a83d51!important}
+.mini.gold{background:#edf3ff;border-color:#c9d8fa;color:#315b9f!important}
+.mini:focus-visible,.adminNav button:focus-visible,.adminSection a:focus-visible,.adminSection input:focus-visible,.adminSection select:focus-visible,.adminSection textarea:focus-visible{outline:3px solid rgba(44,104,214,.55);outline-offset:2px}
+.status{padding:4px 9px;font-weight:750;letter-spacing:.01em;background:#f7f6fa}
+.status.pending,.status.open{color:#8a5b13;border-color:#ead6aa;background:#fff9eb}
+.status.approved,.status.resolved,.status.online{color:#176d4d;border-color:#bfe4d2;background:#effaf4}
+.status.rejected,.status.dismissed,.status.error{color:#a33b50;border-color:#f0c8cf;background:#fff2f4}
+.adminMsg,.notice{border-radius:12px}
+.adminForm .field label,.adminSection .field label{display:block;margin:0 0 6px;color:#514d60;font-size:12px;font-weight:750}
+.adminForm input,.adminForm textarea,.adminForm select,#chapterForm input,#chapterForm textarea,.adminSection select{min-height:42px;border:1px solid #ddd8e7;border-radius:10px;background:#fff;color:#272333;padding:10px 12px;font:inherit}
+.adminForm textarea,#chapterForm textarea{min-height:110px;resize:vertical}
+.adminForm input:focus,.adminForm textarea:focus,.adminForm select:focus,#chapterForm input:focus,#chapterForm textarea:focus,.adminSection select:focus{border-color:#7952b5;outline:3px solid rgba(106,13,173,.12)}
+.agentGrid{gap:12px}
+.agent{border:1px solid #e8e4ef;border-radius:14px;background:#fff;padding:14px}
+.agent .left{min-width:0}
+.agent .left>div:last-child{min-width:0}
+.agent b{color:#262135}
+.muted2{color:#777487;font-size:11px;line-height:1.5}
+.linkBtn{color:#5530a0;font-weight:700}
+.chapterTools{grid-template-columns:minmax(150px,260px) auto}
+.chapterRow{border-color:#ece8f1}
+.chapterRow:hover{background:#faf9fd}
+#chapterPreviewPanel,#chapterEditPanel{background:#fbfaff}
+.mobileAdmin a{background:#25163d;color:#fff;border-color:#25163d;box-shadow:0 5px 16px rgba(37,22,61,.18)}
+@media(prefers-color-scheme:dark){
+ html[data-theme="dark"] .adminHero{background:radial-gradient(ellipse at 92% 0%,rgba(68,116,219,.2),transparent 42%),linear-gradient(135deg,#191626,#11131c 62%,#121b2b);border-color:#373044}
+ html[data-theme="dark"] .adminHero h1,html[data-theme="dark"] .adminSection h2,html[data-theme="dark"] .adminSection h3,html[data-theme="dark"] .adminCard b.big,html[data-theme="dark"] .agent b{color:#f3f0fa}
+ html[data-theme="dark"] .adminHero p,html[data-theme="dark"] .adminSection .sectionHead p{color:#aaa5b8}
+ html[data-theme="dark"] .adminNav button,html[data-theme="dark"] .adminCard,html[data-theme="dark"] .agent{background:#191824;border-color:#363142;color:#dcd7e8}
+ html[data-theme="dark"] .adminNav button.active{background:#6a36a5;border-color:#6a36a5;color:#fff}
+ html[data-theme="dark"] .adminTable th{background:#201d2b;color:#b9b2c8}
+ html[data-theme="dark"] .adminTable td{color:#ded9e8;border-color:#302c3b}
+ html[data-theme="dark"] .adminTable tbody tr:hover{background:#201d2b}
+ html[data-theme="dark"] .adminSection>.panel,html[data-theme="dark"] .adminSection .panel{background:#171620;border-color:#34303e}
+ html[data-theme="dark"] .adminForm input,html[data-theme="dark"] .adminForm textarea,html[data-theme="dark"] .adminForm select,html[data-theme="dark"] #chapterForm input,html[data-theme="dark"] #chapterForm textarea,html[data-theme="dark"] .adminSection select{background:#111019;border-color:#454052;color:#f0edf6}
+ html[data-theme="dark"] .adminForm .field label,html[data-theme="dark"] .adminSection .field label{color:#c8c1d3}
+ html[data-theme="dark"] .adminCard small,html[data-theme="dark"] .muted2{color:#aaa4b6}
+ html[data-theme="dark"] .scroll{border-color:#34303e}
+ html[data-theme="dark"] .mini{background:#292239;border-color:#4d3d66;color:#e0d2fa!important}
+ html[data-theme="dark"] .mini.good{background:#173126;border-color:#285c45;color:#a9e4c8!important}
+ html[data-theme="dark"] .mini.bad{background:#381e28;border-color:#713545;color:#ffbac5!important}
+ html[data-theme="dark"] .mini.gold{background:#1d2b45;border-color:#354e78;color:#c3d8ff!important}
+ html[data-theme="dark"] .status{background:#252230}
+ html[data-theme="dark"] .status.pending,html[data-theme="dark"] .status.open{color:#f0ce88;background:#302819;border-color:#5c4829}
+ html[data-theme="dark"] .status.approved,html[data-theme="dark"] .status.resolved,html[data-theme="dark"] .status.online{color:#9de2bf;background:#173126;border-color:#285c45}
+ html[data-theme="dark"] .status.rejected,html[data-theme="dark"] .status.dismissed,html[data-theme="dark"] .status.error{color:#ffb5c1;background:#381e28;border-color:#713545}
+ html[data-theme="dark"] .linkBtn{color:#c6a9ff}
+ html[data-theme="dark"] #chapterPreviewPanel,html[data-theme="dark"] #chapterEditPanel{background:#1b1925}
+}
+@media(max-width:760px){
+ .adminWrap{width:calc(100% - 24px);padding:14px 0 100px}
+ .adminHero{border-radius:18px;padding:19px}
+ .adminNav{margin:13px -2px 16px}
+ .adminNav button{min-height:42px}
+ .adminSection .sectionHead{align-items:flex-start;flex-direction:column}
+ .adminSection .sectionHead>button{align-self:flex-start}
+ .adminGrid{grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
+ .adminCard{padding:12px}
+ .adminCard b.big{font-size:22px}
+ .adminSection>.panel,.adminSection .panel{padding:13px;border-radius:15px}
+ .adminTable{min-width:680px}
+ .chapterTools{grid-template-columns:1fr}
+ .chapterRow{grid-template-columns:1fr;gap:7px}
+ .chapterRow .actions{width:100%}
+}
+@media(max-width:380px){.adminWrap{width:calc(100% - 18px)}.adminGrid{grid-template-columns:1fr}.adminHero h1{font-size:29px}}
+@media(forced-colors:active){.adminHero,.adminCard,.adminSection .panel,.adminNav button,.mini{border:1px solid CanvasText}.adminNav button.active{outline:2px solid Highlight}}
+@media(prefers-reduced-motion:reduce){.adminNav button{transition:none}}
