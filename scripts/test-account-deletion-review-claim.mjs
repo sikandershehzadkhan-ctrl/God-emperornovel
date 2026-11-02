@@ -1,0 +1,26 @@
+import assert from "node:assert/strict";
+import { readFileSync } from "node:fs";
+
+const source=readFileSync(new URL("../src/index.js",import.meta.url),"utf8");
+const start=source.indexOf("const claimDeletionReview=p.match(");
+assert.notEqual(start,-1,"review claim endpoint must exist");
+const end=source.indexOf('if(p==="/api/admin/account-deletion/reviews"&&m==="GET")',start);
+assert.notEqual(end,-1,"claim endpoint must be bounded before queue route");
+const route=source.slice(start,end);
+assert.match(route,/need\(u\)/,"claim endpoint must require authentication");
+assert.match(route,/account-deletion-review-claim",String\(u\.id\),10,60/,"claims must be rate limited per reviewer");
+assert.match(route,/Number\.isSafeInteger\(requestId\)/,"request IDs must be validated");
+assert.match(route,/revoked_at IS NULL/,"only active reviewer assignments may claim");
+assert.match(route,/permissionsForRoles\(reviewerRoles\)\.includes\("case:claim"\)/,"claim permission must be explicit");
+assert.match(route,/new Date\(claimedAt\.getTime\(\)\+10\*60\*1000\)/,"claim lease must expire after ten minutes");
+assert.match(route,/INSERT INTO account_deletion_reviews[\s\S]*ON CONFLICT\(request_id\) DO NOTHING/,"first claim must safely initialize a review row");
+assert.match(route,/UPDATE account_deletion_reviews SET claimed_by=\?,claim_expires_at=\?,version=version\+1/,"claim must use a versioned compare-and-set update");
+assert.match(route,/claimed_by IS NULL OR claim_expires_at<=\?/,"only unclaimed or expired leases may be acquired");
+assert.match(route,/subject_user_id<>\?/,"requesters must never claim their own case");
+assert.match(route,/status IN \('pending_deletion','review_required'\)/,"only active deletion requests may be claimed");
+assert.match(route,/env\.DB\.batch\(\[/,"review creation, claim, and event must be in one D1 batch");
+assert.match(route,/INSERT INTO account_deletion_review_events[\s\S]*'case_claimed'[\s\S]*changes\(\)=1/,"claim audit event must be conditional on the successful claim");
+assert.match(route,/eventChanges!==1/,"missing audit event must fail the request");
+assert.match(route,/return json\(\{error:"This case is unavailable or is currently claimed by another reviewer\."\},409\)/,"claim conflicts must not leak case data");
+assert.match(route,/finalization|DELETE FROM account_deletion_requests/,"claim route must not perform finalization or deletion");
+console.log("PASS: account deletion review claims require explicit active permission, use ten-minute versioned leases, reject self-claims and active competing leases, and atomically append audit events.");
