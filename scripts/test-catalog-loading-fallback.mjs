@@ -26,6 +26,15 @@ assert.match(catalogLoad, /skeletonCard/);
 assert.match(catalogLoad, /catalogRetry/);
 assert.match(catalogLoad, /catch\(error\)/);
 
+
+const catalogStartForAccessibility=app.indexOf("async function catalog(){");
+const catalogEndForAccessibility=app.indexOf("async function formatDirectory()",catalogStartForAccessibility);
+const catalogSource=app.slice(catalogStartForAccessibility,catalogEndForAccessibility);
+for(const label of ["Catalog filters","Search titles, authors, and tropes","Sort catalog","Filter by publication status","Filter by story format","Filter by minimum rating","Filter by genre","Filter by theme or tag","Filter by story language"])assert.ok(catalogSource.includes('aria-label="'+label+'"'),"Discover filter must have an accessible name: "+label);
+assert.ok(catalogSource.includes('list="catalogGenreOptions"')&&catalogSource.includes('id="catalogGenreOptions"')&&catalogSource.includes("apiWithTimeout('/api/genres',{},8000)"),"Discover genre filter must offer live taxonomy suggestions.");
+assert.ok(catalogSource.includes('list="catalogTagOptions"')&&catalogSource.includes('id="catalogTagOptions"')&&catalogSource.includes("apiWithTimeout('/api/tags',{},8000)"),"Discover tag filter must offer live taxonomy suggestions.");
+assert.ok(catalogSource.includes("Promise.allSettled([apiWithTimeout('/api/genres',{},8000),apiWithTimeout('/api/tags',{},8000)])"),"Optional taxonomy suggestions must fail independently without blocking catalog results.");
+
 assert.match(app, /else if\(p==='\/discover'\|\|p==='\/catalog'\)await catalog\(\)/);
 assert.match(app, /x==='\/catalog'&&path==='\/discover'/);
 assert.match(worker, /"\/discover":"catalog\.html"/);
