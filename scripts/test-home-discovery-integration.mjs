@@ -142,7 +142,8 @@ assert.ok(css.includes(".platformPulseRow:focus-visible")&&css.includes(".homeFo
 assert.ok(css.includes("html[data-theme=\"dark\"] .homeFormatShelf"),"Format discovery must preserve the dark theme.");
 
 const pulse=app.slice(app.indexOf(" let platformPulseRequest="),app.indexOf("async function trendFactory"));
-assert.ok(pulse.includes("setInterval(()=>{if(document.visibilityState==='visible')refreshPlatformPulse()},60000)"),"Live overview must refresh once per minute while the page is visible");
+assert.ok(pulse.includes("homePulseTimer=setInterval(()=>{")&&pulse.includes("if(document.visibilityState==='visible')refreshPlatformPulse()"),"Live overview must refresh once per minute while the homepage is visible");
+assert.ok(pulse.includes("if(!document.querySelector('.homePage')){stopHomePulsePolling();return}"),"Live overview polling must clean itself up after leaving the homepage");
 assert.ok(pulse.includes("if(platformPulseRequest)return platformPulseRequest"),"Manual and scheduled refreshes must not overlap");
 assert.ok(pulse.includes("last successful update"),"A failed refresh must preserve the last successful snapshot and disclose its age");
 assert.ok(pulse.includes("second:'2-digit',timeZoneName:'short'"),"The refresh timestamp must show seconds and the visitor's local timezone");
