@@ -1974,3 +1974,84 @@ html[dir="rtl"] .menuDrawer.is-open{
 @media(max-width:380px){.adminWrap .adminGrid{grid-template-columns:1fr}.adminWrap .adminHero h1{font-size:27px}}
 @media(prefers-reduced-motion:reduce){.adminWrap .adminNav button{transition:none}}
 @media(forced-colors:active){.adminWrap .adminNav button.active{outline:2px solid Highlight}}
+
+
+/* Admin theme parity: use semantic design tokens instead of fixed light-only colors.
+   This keeps the command center coherent in all six reader/application themes. */
+.adminWrap .adminHero{
+  color:var(--in-text-primary);
+  background:linear-gradient(135deg,var(--in-surface-subtle) 0%,var(--in-surface-raised) 58%,var(--in-surface-canvas) 100%);
+  border-color:var(--in-border);
+  border-top-color:var(--in-action-primary);
+}
+.adminWrap .adminHero h1{color:var(--in-text-primary)}
+.adminWrap .adminHero p{color:var(--in-text-secondary)}
+.adminWrap .adminNav button{
+  border-color:var(--in-border);
+  background:var(--in-surface-raised);
+  color:var(--in-text-secondary);
+}
+.adminWrap .adminNav button:hover{
+  border-color:var(--in-action-primary);
+  background:var(--in-surface-subtle);
+  color:var(--in-action-primary);
+}
+.adminWrap .adminNav button.active{
+  border-color:var(--in-action-primary);
+  background:var(--in-action-primary);
+  color:#fff;
+}
+.adminWrap .adminCard,.adminWrap .panel{
+  background:var(--in-surface-raised);
+  border-color:var(--in-border);
+  color:var(--in-text-primary);
+}
+.adminWrap .adminCard b.big{color:var(--in-text-primary)}
+.adminWrap .adminCard small,.adminWrap .muted2{color:var(--in-text-secondary)}
+.adminWrap .adminTable th{
+  color:var(--in-text-secondary);
+  background:var(--in-surface-subtle);
+}
+.adminWrap .adminTable td{color:var(--in-text-primary)}
+.adminWrap .adminTable th,.adminWrap .adminTable td{border-bottom-color:var(--in-border)}
+.adminWrap .mini,.adminWrap .mini.edit,.adminWrap .mini.gold{
+  border-color:var(--in-border-strong);
+  background:var(--in-surface-subtle);
+  color:var(--in-action-primary)!important;
+}
+.adminWrap .mini.good{
+  border-color:color-mix(in srgb,var(--in-success) 48%,var(--in-border));
+  background:color-mix(in srgb,var(--in-success) 13%,var(--in-surface-raised));
+  color:var(--in-success)!important;
+}
+.adminWrap .mini.bad{
+  border-color:color-mix(in srgb,var(--in-danger) 48%,var(--in-border));
+  background:color-mix(in srgb,var(--in-danger) 12%,var(--in-surface-raised));
+  color:var(--in-danger)!important;
+}
+.adminWrap .status.pending,.adminWrap .status.open{
+  color:var(--in-action-primary);
+  border-color:color-mix(in srgb,var(--in-action-primary) 42%,var(--in-border));
+  background:color-mix(in srgb,var(--in-action-primary) 12%,var(--in-surface-raised));
+}
+.adminWrap .status.approved,.adminWrap .status.resolved,.adminWrap .status.online{
+  color:var(--in-success);
+  border-color:color-mix(in srgb,var(--in-success) 42%,var(--in-border));
+  background:color-mix(in srgb,var(--in-success) 12%,var(--in-surface-raised));
+}
+.adminWrap .status.rejected,.adminWrap .status.dismissed,.adminWrap .status.error{
+  color:var(--in-danger);
+  border-color:color-mix(in srgb,var(--in-danger) 42%,var(--in-border));
+  background:color-mix(in srgb,var(--in-danger) 12%,var(--in-surface-raised));
+}
+.adminWrap .linkBtn{color:var(--in-action-secondary)}
+.adminWrap :where(button,a,input,select,textarea):focus-visible{
+  outline:3px solid var(--in-focus)!important;
+  outline-offset:3px!important;
+}
+.adminWrap .adminTable{max-width:100%}
+@media(forced-colors:active){
+  .adminWrap .adminCard,.adminWrap .panel,.adminWrap .adminHero{border:1px solid CanvasText}
+  .adminWrap .adminNav button.active{outline:2px solid Highlight;outline-offset:2px}
+  .adminWrap .status{border:1px solid currentColor}
+}
