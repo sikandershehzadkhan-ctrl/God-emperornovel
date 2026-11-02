@@ -133,18 +133,21 @@ async function home(){
  const localizeDiscovery=()=>{const target=$('#homeConnections');if(!target)return;const locale=document.documentElement.lang||"en",dict={...IN_LANG.en,...(IN_LANG[locale]||{})};target.querySelectorAll('[data-home-dynamic-key]').forEach(el=>{const key=el.dataset.homeDynamicKey;if(dict[key])el.textContent=dict[key]})};
  document.addEventListener("imperial:languagechange",localizeDiscovery);
  void (async()=>{
- try{
-  const [t,l]=await Promise.all([apiWithTimeout('/api/novels?sort=trending&limit=10'),apiWithTimeout('/api/novels?sort=updated&limit=10')]);
-  const trendRows=t.results||[],latestRows=l.results||[];
-  const trendingNovelIds=new Set(trendRows.map(row=>Number(row.id)).filter(id=>Number.isSafeInteger(id)&&id>0));
-  const distinctLatestRows=latestRows.filter(row=>!trendingNovelIds.has(Number(row.id)));
   const renderHomeStories=(selector,rows,empty)=>{const el=$(selector);el.setAttribute("aria-busy","false");el.classList.toggle("singleStory",rows.length===1);el.classList.toggle("multiStory",rows.length>1);el.innerHTML=rows.length?rows.map(card).join():`<div class="empty homeCatalogEmpty" style="grid-column:1/-1" data-in-lang-key="${empty}">${empty}</div>`;setINLang(document.documentElement.lang||"en")};
-  renderHomeStories('#trend',trendRows,'The catalog is growing. Be among the first to discover what comes next.');
-  renderHomeStories('#latest',distinctLatestRows,'No additional recently updated stories yet. Explore the catalog for another world.');
- }catch(error){
-  const notice=`<div class="notice" role="alert" style="grid-column:1/-1"><b data-in-lang-key="Story shelves could not be loaded.">Story shelves could not be loaded.</b><p data-in-lang-key="Please try again in a moment.">Please try again in a moment.</p><a class="secondary" href="/" data-in-lang-key="Try again">Try again</a></div>`;
-  $('#trend').setAttribute('aria-busy','false');$('#latest').setAttribute('aria-busy','false');$('#trend').innerHTML=notice;$('#latest').innerHTML=notice;setINLang(document.documentElement.lang||'en');
- }
+  const renderHomeShelfError=selector=>{const el=$(selector);el.setAttribute("aria-busy","false");el.innerHTML=`<div class="notice" role="alert" style="grid-column:1/-1"><b data-in-lang-key="Story shelves could not be loaded.">Story shelves could not be loaded.</b><p data-in-lang-key="Please try again in a moment.">Please try again in a moment.</p><a class="secondary" href="/" data-in-lang-key="Try again">Try again</a></div>`;setINLang(document.documentElement.lang||"en")};
+  const validRows=payload=>Array.isArray(payload?.results)?payload.results.filter(row=>row&&Number.isSafeInteger(Number(row.id))&&Number(row.id)>0):[];
+  const [trendResult,latestResult]=await Promise.allSettled([
+   apiWithTimeout('/api/novels?sort=trending&limit=10'),
+   apiWithTimeout('/api/novels?sort=updated&limit=10')
+  ]);
+  const trendRows=trendResult.status==="fulfilled"?validRows(trendResult.value):[];
+  const latestRows=latestResult.status==="fulfilled"?validRows(latestResult.value):[];
+  const trendingNovelIds=new Set(trendRows.map(row=>Number(row.id)));
+  const distinctLatestRows=latestRows.filter(row=>!trendingNovelIds.has(Number(row.id)));
+  if(trendResult.status==="fulfilled")renderHomeStories('#trend',trendRows,'The catalog is growing. Be among the first to discover what comes next.');
+  else renderHomeShelfError('#trend');
+  if(latestResult.status==="fulfilled")renderHomeStories('#latest',distinctLatestRows,'No additional recently updated stories yet. Explore the catalog for another world.');
+  else renderHomeShelfError('#latest');
  })();
  void (async()=>{
  try{
