@@ -494,6 +494,47 @@ async function api(req,env){
    return json({ok:false,error:"Email verification is temporarily unavailable. Please try again later."},503);
   }
  }
+ if(p==="/api/me/deletion-request"&&m==="GET"){
+  const authError=need(u);if(authError)return authError;
+  const request=await env.DB.prepare("SELECT status,requested_at,scheduled_for,cancelled_at,review_reason FROM account_deletion_requests WHERE user_id=? ORDER BY id DESC LIMIT 1").bind(u.id).first();
+  return json({request:request||null});
+ }
+ if(p==="/api/me/deletion-request"&&m==="POST"){
+  const authError=need(u);if(authError)return authError;
+  const ip=String(req.headers.get("cf-connecting-ip")||"unknown").trim().slice(0,128);
+  const ipLimited=await consumeAuthRateLimit(env,"account-deletion-request-ip",ip,5,3600);if(ipLimited)return ipLimited;
+  const accountLimited=await consumeAuthRateLimit(env,"account-deletion-request-account",String(u.id),3,86400);if(accountLimited)return accountLimited;
+  const b=await body(req),password=typeof b.password==="string"?b.password:"";
+  if(!password||password.length>1024||!await verifyPassword(password,(await env.DB.prepare("SELECT password_hash FROM users WHERE id=?").bind(u.id).first())?.password_hash||""))return json({error:"Current password is incorrect"},401);
+  const existing=await env.DB.prepare("SELECT status,requested_at,scheduled_for,cancelled_at,review_reason FROM account_deletion_requests WHERE user_id=? AND status IN ('pending_deletion','review_required') ORDER BY id DESC LIMIT 1").bind(u.id).first();
+  if(existing)return json({ok:true,request:existing});
+  const nowDate=new Date(),requestedAt=nowDate.toISOString(),scheduledFor=new Date(nowDate.getTime()+30*86400000).toISOString();
+  const owned=await env.DB.prepare("SELECT COUNT(*) AS count FROM novels WHERE owner_user_id=?").bind(u.id).first();
+  const review=Number(owned?.count||0)>0;
+  const status=review?"review_required":"pending_deletion";
+  const reason=review?"Creator-owned novels require ownership and publication-rights review before account closure.":"";
+  try{
+   const inserted=await env.DB.prepare("INSERT INTO account_deletion_requests(user_id,status,requested_at,scheduled_for,review_reason) SELECT ?,?,?,?,? WHERE NOT EXISTS (SELECT 1 FROM account_deletion_requests WHERE user_id=? AND status IN ('pending_deletion','review_required')) RETURNING status,requested_at,scheduled_for,cancelled_at,review_reason").bind(u.id,status,requestedAt,scheduledFor,reason,u.id).first();
+   if(!inserted){
+    const current=await env.DB.prepare("SELECT status,requested_at,scheduled_for,cancelled_at,review_reason FROM account_deletion_requests WHERE user_id=? AND status IN ('pending_deletion','review_required') ORDER BY id DESC LIMIT 1").bind(u.id).first();
+    if(current)return json({ok:true,request:current});
+    return json({error:"Deletion request could not be created. Please try again."},503);
+   }
+   await audit(env,u,"account_deletion_requested",status);
+   return json({ok:true,request:inserted},201);
+  }catch(error){console.error("account deletion request failed",String(error?.message||error));return json({error:"Deletion request could not be created. Please try again later."},503)}
+ }
+ if(p==="/api/me/deletion-request/cancel"&&m==="POST"){
+  const authError=need(u);if(authError)return authError;
+  const ip=String(req.headers.get("cf-connecting-ip")||"unknown").trim().slice(0,128);
+  const ipLimited=await consumeAuthRateLimit(env,"account-deletion-cancel-ip",ip,10,3600);if(ipLimited)return ipLimited;
+  const accountLimited=await consumeAuthRateLimit(env,"account-deletion-cancel-account",String(u.id),5,86400);if(accountLimited)return accountLimited;
+  const cancelledAt=new Date().toISOString();
+  const result=await env.DB.prepare("UPDATE account_deletion_requests SET status='cancelled',cancelled_at=?,updated_at=CURRENT_TIMESTAMP WHERE id=(SELECT id FROM account_deletion_requests WHERE user_id=? AND status IN ('pending_deletion','review_required') ORDER BY id DESC LIMIT 1) AND user_id=? AND status IN ('pending_deletion','review_required') RETURNING status,requested_at,scheduled_for,cancelled_at,review_reason").bind(cancelledAt,u.id,u.id).first();
+  if(!result)return json({error:"No cancellable deletion request was found"},409);
+  await audit(env,u,"account_deletion_cancelled","");
+  return json({ok:true,request:result});
+ }
  if(p==="/api/auth/logout"&&m==="POST"){const c=cookies(req.headers.get("cookie"));if(c.session)await env.DB.prepare("DELETE FROM sessions WHERE token_hash=?").bind(await digest(c.session)).run();return json({ok:true},200,{"set-cookie":"session=; Path=/; HttpOnly; Secure; SameSite=Lax; Max-Age=0"})}
  if(p==="/api/me/export"&&m==="GET"){
   const authError=need(u);if(authError)return authError;
