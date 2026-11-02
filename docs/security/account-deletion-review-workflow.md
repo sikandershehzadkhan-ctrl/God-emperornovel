@@ -1,6 +1,6 @@
 # Account deletion administrative review workflow
 
-Status: partial security implementation on the draft security branch. Reviewer-role listing, assignment, revocation, and a role-gated read-only queue now have API routes. Case claiming, case decisions, approval workflow, and finalization are not implemented. Nothing here approves deletion or authorizes production erasure.
+Status: partial security implementation on the draft security branch. Reviewer-role listing, assignment, revocation, a role-gated read-only queue, and leased case claiming now have API routes. Case decisions, approval workflow, reviewer UI, and finalization are not implemented. Nothing here approves deletion or authorizes production erasure.
 
 ## Purpose
 
@@ -50,7 +50,7 @@ The implementation must define allowed transitions explicitly. Arbitrary status 
 ## Required reviewer workflow
 
 1. **Queue:** list only request ID, status, request date, scheduled date, and coarse reason category. Paginate and avoid bulk export.
-2. **Claim:** acquire an atomic, expiring reviewer lease. Prevent concurrent reviewers from silently overwriting each other's decisions.
+2. **Claim:** an assigned reviewer with `case:claim` permission can acquire a ten-minute lease. The claim is scoped to the request record, rejects the requester, uses a versioned conditional update, and appends a `case_claimed` event in the same D1 batch. An unexpired lease held by another reviewer returns a conflict; an expired lease can be reclaimed. This endpoint does not expose case details or approve a disposition.
 3. **Verify scope:** derive the subject account from the request record. Never accept a subject account ID from the browser as authority.
 4. **Inventory dependencies:** check creator-owned novels and chapters, ownership transfers, rights evidence, tickets and financial ledgers, donations/refunds/disputes, moderation and legal holds, AI drafts/projects, OmniPortal jobs and authorizations, sessions, notifications, backups, and provider-side records.
 5. **Minimize access:** expose only the fields needed by the reviewer's role. Use references and counts instead of chapter bodies, private drafts, or complete financial records.
@@ -72,7 +72,7 @@ The implementation must define allowed transitions explicitly. Arbitrary status 
 
 ## Atomicity and failure handling
 
-- Claiming, state transitions, approval records, and audit events must be committed atomically where they form one logical operation.
+- Claiming, state transitions, approval records, and audit events must be committed atomically where they form one logical operation. The current claim endpoint creates the review row if needed, performs a conditional lease update, and inserts the claim event in one D1 batch. SQLite-backed tests cover competing claims, expiry takeover, requester exclusion, and rollback when audit insertion fails; live Cloudflare D1 concurrency remains to be verified.
 - Use compare-and-set conditions on the expected prior state and current lease/version.
 - A stale reviewer must receive a conflict response, not overwrite a newer decision.
 - If audit persistence fails, the corresponding privileged mutation must fail closed.
@@ -85,7 +85,7 @@ The implementation must define allowed transitions explicitly. Arbitrary status 
 - Reviewer A cannot claim or modify another request outside the permitted queue scope.
 - The requester cannot review or approve their own request.
 - One reviewer cannot satisfy both approval roles.
-- Concurrent claim attempts produce exactly one active lease.
+- Concurrent claim attempts produce exactly one active lease; expired leases can be reclaimed without losing prior audit history. The local SQLite claim test must exercise the exact conditional update and audit insert SQL.
 - Expired leases can be reclaimed without losing prior audit history.
 - Stale state transitions and stale approvals are rejected.
 - Changing the dependency inventory invalidates existing approval.
@@ -99,6 +99,6 @@ The implementation must define allowed transitions explicitly. Arbitrary status 
 
 ## Release boundary
 
-The reversible account-deletion API and user settings interface remain the only implemented user-facing deletion functionality. Administrative reviewer-role APIs now support bounded listing, explicit assignment, one-way revocation, and append-only assignment events. The review queue is read-only and requires an active reviewer assignment. Case claiming, role-specific case details, disposition recording, independent approval, reviewer UI, and finalization remain unimplemented. The draft branch has not been deployed and no production migration has run. Keep the pull request in draft until the remaining workflow, integration tests, and independent review are complete.
+The reversible account-deletion API and user settings interface remain the only implemented user-facing deletion functionality. Administrative reviewer-role APIs now support bounded listing, explicit assignment, one-way revocation, and append-only assignment events. The review queue is read-only and requires an active reviewer assignment. Case claiming is implemented as a ten-minute leased API primitive, but live Cloudflare D1 concurrency verification and reviewer UI are still pending. Role-specific case details, disposition recording, independent approval, and finalization remain unimplemented. The draft branch has not been deployed and no production migration has run. Keep the pull request in draft until the remaining workflow, integration tests, and independent review are complete.
 
 Review this policy against applicable Pakistani law and every jurisdiction in which Imperial Novel operates before implementing retention periods or irreversible processing.
