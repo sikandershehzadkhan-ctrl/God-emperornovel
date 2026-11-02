@@ -66,5 +66,21 @@ for (const [label, browser] of [["source", app], ["served asset", shipped]]) {
   assert.ok(browser.includes("data-first"), label + " must route first-chapter tasks to the chapter creation form.");
 
 }
+const analyticsRouteAt = worker.indexOf('if(p==="/api/author/analytics"&&m==="GET")');
+assert.ok(analyticsRouteAt >= 0, "Author analytics API must exist.");
+const analyticsRoute = worker.slice(analyticsRouteAt, worker.indexOf('if(p==="/api/author/novels"', analyticsRouteAt));
+assert.ok(analyticsRoute.includes("const e=author(u)"), "Analytics must require an author or admin session.");
+assert.ok(analyticsRoute.includes("n.owner_user_id=?"), "Analytics must be scoped to novels owned by the current account.");
+assert.ok(analyticsRoute.includes("FROM chapter_views"), "Analytics must use recorded chapter-view counters.");
+assert.ok(analyticsRoute.includes("FROM ratings"), "Analytics must use recorded reader ratings.");
+assert.ok(analyticsRoute.includes("FROM unlocks"), "Analytics must use recorded chapter unlocks.");
+assert.ok(analyticsRoute.includes("LIMIT 100") && analyticsRoute.includes("LIMIT 10"), "Analytics story and chapter lists must be bounded.");
+assert.ok(analyticsRoute.includes('scope:"lifetime_counters"'), "Analytics must identify its metrics as lifetime counters.");
+for (const [label, browser] of [["source", app], ["served asset", shipped]]) {
+  assert.ok(browser.includes("authorAnalyticsPanel"), label + " must render the creator performance dashboard.");
+  assert.ok(browser.includes("api('/api/author/analytics')"), label + " must load the authenticated analytics API.");
+  assert.ok(browser.includes("Most-read chapters"), label + " must show chapter-level performance.");
+  assert.ok(browser.includes("lifetime counters"), label + " must explain the limits of available historical data.");
+}
 assert.equal(app, shipped, "Source and served application assets must be identical.");
 console.log("Scheduled chapter publication policy and UI checks passed.");
