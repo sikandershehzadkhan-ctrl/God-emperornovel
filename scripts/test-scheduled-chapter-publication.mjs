@@ -38,5 +38,17 @@ for (const [label, browser] of [["source", app], ["served asset", shipped]]) {
   assert.ok(browser.includes("authorChapterScheduleCancel"), label + " must expose schedule cancellation.");
   assert.ok(browser.includes("next 15-minute Worker check"), label + " must explain the actual publication cadence.");
 }
+const calendarRouteAt = worker.indexOf('if(p==="/api/author/schedules"&&m==="GET")');
+assert.ok(calendarRouteAt >= 0, "Author release calendar API must exist.");
+const calendarRoute = worker.slice(calendarRouteAt, worker.indexOf('if(p==="/api/admin/publishing"', calendarRouteAt));
+assert.ok(calendarRoute.includes("const e=author(u)"), "Release calendar must require an author or admin session.");
+assert.ok(calendarRoute.includes("n.owner_user_id=?"), "Release calendar results must be owner-scoped.");
+assert.ok(calendarRoute.includes("ORDER BY s.publish_at ASC LIMIT 200"), "Release calendar must be ordered and bounded.");
+for (const [label, browser] of [["source", app], ["served asset", shipped]]) {
+  assert.ok(browser.includes("authorReleaseCalendar"), label + " must render the release calendar.");
+  assert.ok(browser.includes("api('/api/author/schedules')"), label + " must load the authenticated calendar API.");
+  assert.ok(browser.includes("authorCalendarCancel"), label + " must expose schedule cancellation.");
+  assert.ok(browser.includes("toLocaleDateString") && browser.includes("toLocaleTimeString"), label + " must display release times in local time.");
+}
 assert.equal(app, shipped, "Source and served application assets must be identical.");
 console.log("Scheduled chapter publication policy and UI checks passed.");
