@@ -91,6 +91,8 @@ assert.ok(app.includes('id="platformPulseMetrics"')&&app.includes('id="platformP
 assert.ok(app.includes("apiWithTimeout('/api/platform/overview'"),"Homepage must consume the live overview API with a bounded request");
 assert.ok(app.includes("homePulseTimer=setInterval(()=>{")&&app.includes("if(document.visibilityState==='visible')refreshPlatformPulse()"),"Homepage must refresh every 60 seconds only while visible");
 assert.ok(app.includes("function stopHomePulsePolling()")&&app.includes("clearInterval(homePulseTimer)")&&app.includes("document.removeEventListener('visibilitychange',homePulseVisibilityHandler)"),"Homepage live overview polling must clean up its timer and visibility listener");
+assert.ok(app.includes("if(pulseGeneration!==homePulseGeneration||!document.querySelector('.homePage'))return;"),"Late overview failures must not overwrite a newer route or homepage render.");
+assert.ok(app.includes("}finally{\n    if(pulseGeneration!==homePulseGeneration||!document.querySelector('.homePage'))return;"),"Stale overview requests must not reset controls or shared request state after route changes.");
 assert.ok(app.includes("if(!document.querySelector('.homePage')){stopHomePulsePolling();return}"),"Homepage live overview polling must stop after route exit");
 assert.ok(app.includes("platformPulseRefresh"),"Readers must have a manual refresh control");
 assert.ok(app.includes("Data generated "),"The homepage must display the exact generation timestamp for its metrics.");
