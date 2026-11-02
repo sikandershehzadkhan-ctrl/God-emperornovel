@@ -497,7 +497,7 @@ async function api(req,env){
  }
  if(p==="/api/me/deletion-request"&&m==="GET"){
   const authError=need(u);if(authError)return authError;
-  const request=await env.DB.prepare("SELECT status,requested_at,scheduled_for,cancelled_at,review_reason FROM account_deletion_requests WHERE user_id=? ORDER BY id DESC LIMIT 1").bind(u.id).first();
+  const request=await env.DB.prepare("SELECT id,status,requested_at,scheduled_for,cancelled_at,review_reason FROM account_deletion_requests WHERE user_id=? ORDER BY id DESC LIMIT 1").bind(u.id).first();
   return json({request:request||null});
  }
  if(p==="/api/me/deletion-request"&&m==="POST"){
@@ -507,7 +507,7 @@ async function api(req,env){
   const accountLimited=await consumeAuthRateLimit(env,"account-deletion-request-account",String(u.id),3,86400);if(accountLimited)return accountLimited;
   const b=await body(req),password=typeof b.password==="string"?b.password:"";
   if(!password||password.length>1024||!await verifyPassword(password,(await env.DB.prepare("SELECT password_hash FROM users WHERE id=?").bind(u.id).first())?.password_hash||""))return json({error:"Current password is incorrect"},401);
-  const existing=await env.DB.prepare("SELECT status,requested_at,scheduled_for,cancelled_at,review_reason FROM account_deletion_requests WHERE user_id=? AND status IN ('pending_deletion','review_required') ORDER BY id DESC LIMIT 1").bind(u.id).first();
+  const existing=await env.DB.prepare("SELECT id,status,requested_at,scheduled_for,cancelled_at,review_reason FROM account_deletion_requests WHERE user_id=? AND status IN ('pending_deletion','review_required') ORDER BY id DESC LIMIT 1").bind(u.id).first();
   if(existing)return json({ok:true,request:existing});
   const nowDate=new Date(),requestedAt=nowDate.toISOString(),scheduledFor=new Date(nowDate.getTime()+30*86400000).toISOString();
   const owned=await env.DB.prepare("SELECT COUNT(*) AS count FROM novels WHERE owner_user_id=?").bind(u.id).first();
@@ -515,9 +515,9 @@ async function api(req,env){
   const status=review?"review_required":"pending_deletion";
   const reason=review?"Creator-owned novels require ownership and publication-rights review before account closure.":"";
   try{
-   const inserted=await env.DB.prepare("INSERT INTO account_deletion_requests(user_id,status,requested_at,scheduled_for,review_reason) SELECT ?,?,?,?,? WHERE NOT EXISTS (SELECT 1 FROM account_deletion_requests WHERE user_id=? AND status IN ('pending_deletion','review_required')) RETURNING status,requested_at,scheduled_for,cancelled_at,review_reason").bind(u.id,status,requestedAt,scheduledFor,reason,u.id).first();
+   const inserted=await env.DB.prepare("INSERT INTO account_deletion_requests(user_id,status,requested_at,scheduled_for,review_reason) SELECT ?,?,?,?,? WHERE NOT EXISTS (SELECT 1 FROM account_deletion_requests WHERE user_id=? AND status IN ('pending_deletion','review_required')) RETURNING id,status,requested_at,scheduled_for,cancelled_at,review_reason").bind(u.id,status,requestedAt,scheduledFor,reason,u.id).first();
    if(!inserted){
-    const current=await env.DB.prepare("SELECT status,requested_at,scheduled_for,cancelled_at,review_reason FROM account_deletion_requests WHERE user_id=? AND status IN ('pending_deletion','review_required') ORDER BY id DESC LIMIT 1").bind(u.id).first();
+    const current=await env.DB.prepare("SELECT id,status,requested_at,scheduled_for,cancelled_at,review_reason FROM account_deletion_requests WHERE user_id=? AND status IN ('pending_deletion','review_required') ORDER BY id DESC LIMIT 1").bind(u.id).first();
     if(current)return json({ok:true,request:current});
     return json({error:"Deletion request could not be created. Please try again."},503);
    }
