@@ -2263,10 +2263,6 @@ html[dir="rtl"] .homePage .homeStoryGrid .card{text-align:right}
   .homePage .homeStoryGrid .cardTitle{font-size:13px;overflow-wrap:anywhere}
   .homePage .homeStoryGrid .meta span{font-size:10px}
 }
-@media(prefers-reduced-motion:reduce){
-  .homePage .homeStoryGrid .cover img{scroll-behavior:auto}
-}
-
 /* Homepage off-screen rendering budget 17.47.
    Keep the hero eager; let modern browsers defer layout/paint work for long
    below-the-fold shelves until they approach the viewport. The intrinsic
