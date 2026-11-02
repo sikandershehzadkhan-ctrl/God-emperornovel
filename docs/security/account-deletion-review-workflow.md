@@ -1,6 +1,6 @@
 # Account deletion administrative review workflow
 
-Status: security design artifact. This document does not add an administrative API, approve any deletion, or authorize production erasure.
+Status: partial security implementation on the draft security branch. Reviewer-role listing, assignment, revocation, and a role-gated read-only queue now have API routes. Case claiming, case decisions, approval workflow, and finalization are not implemented. Nothing here approves deletion or authorizes production erasure.
 
 ## Purpose
 
@@ -99,6 +99,6 @@ The implementation must define allowed transitions explicitly. Arbitrary status 
 
 ## Release boundary
 
-The existing reversible account-deletion API and user settings interface remain the only implemented deletion functionality. This design document does not add administrative routes, reviewer roles, email notifications, automated finalization, anonymization, or hard deletion. Keep the pull request in draft until the actual route, authorization, migration, UI, integration tests, and independent review are complete. Do not deploy or migrate production as part of this design milestone.
+The reversible account-deletion API and user settings interface remain the only implemented user-facing deletion functionality. Administrative reviewer-role APIs now support bounded listing, explicit assignment, one-way revocation, and append-only assignment events. The review queue is read-only and requires an active reviewer assignment. Case claiming, role-specific case details, disposition recording, independent approval, reviewer UI, and finalization remain unimplemented. The draft branch has not been deployed and no production migration has run. Keep the pull request in draft until the remaining workflow, integration tests, and independent review are complete.
 
 Review this policy against applicable Pakistani law and every jurisdiction in which Imperial Novel operates before implementing retention periods or irreversible processing.
