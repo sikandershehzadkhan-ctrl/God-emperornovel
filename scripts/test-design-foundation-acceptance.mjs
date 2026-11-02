@@ -79,6 +79,13 @@ assert.ok(css.includes(":focus-visible"), "Keyboard focus must remain visible");
 assert.ok(css.includes(".in-btn-primary") && css.includes(".in-btn-secondary") && css.includes(".in-control"), "Core action and form primitives must exist");
 assert.ok(foundation.includes('html[dir="rtl"] .menuDrawer'), "RTL drawer behavior must be defined");
 assert.ok(foundation.includes("env(safe-area-inset-bottom)"), "Mobile shell must respect device safe areas");
+assert.ok(foundation.includes("@media(max-width:340px)"), "Small-screen layout must include a narrow 320px-class breakpoint");
+assert.ok(foundation.includes("@media(max-width:360px)"), "Compact Android layout must include a 360px breakpoint");
+assert.ok(foundation.includes("min-height:44px"), "Primary navigation and drawer actions must meet the 44px touch-target baseline");
+assert.ok(foundation.includes("overscroll-behavior:contain"), "Scrollable navigation drawers must contain overscroll");
+assert.ok(foundation.includes("overflow-x:clip"), "Global shell must prevent accidental horizontal overflow");
+assert.ok(foundation.includes("@media(forced-colors:active)"), "Forced-colors mode must retain visible keyboard focus");
+assert.ok(foundation.includes("touch-action:manipulation"), "Interactive controls must avoid delayed touch gestures");
 assert.ok(html.indexOf("/imperial-design-foundation.css") < html.indexOf("/imperial-design-system-17.25.0.css"), "Foundation stylesheet must load before the versioned primitives");
 
 console.log("Imperial design foundation acceptance passed: six theme token maps, WCAG AA text/link contrast, focus contrast, reduced motion, RTL, safe areas and stylesheet order.");
