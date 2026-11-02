@@ -111,9 +111,9 @@ for (const asset of coreAssets) {
 assert.ok(runtime.includes("navigator.serviceWorker.register('/sw.js',{updateViaCache:'none'})"), 'Application registers the cache worker without stale update checks');
 assert.ok(luxuryCss.includes(':focus-visible') && luxuryCss.includes('prefers-reduced-motion:reduce') && luxuryCss.includes('forced-colors:active'), 'Design system includes keyboard, reduced-motion, and forced-color accessibility safeguards');
 assert.ok(runtime.includes('class="skipLink" href="#app">Skip to main content</a>') && entry.includes('id="app" class="appBootRoot" tabindex="-1"') && luxuryCss.includes('.skipLink:focus-visible'), 'Keyboard users can skip navigation and focus the main content landmark');
-assert.ok(runtime.includes('".navlinks a,.menuDrawer a span,.footerLinks a,.mobileNav a"'), 'Shared localization includes the mobile navigation and footer');
+assert.ok(runtime.includes('".navlinks a,.menuDrawer a span,.footerLinks a,.mobileNav a,[data-in-lang-key]"'), 'Shared localization includes the mobile navigation and footer');
 assert.ok(runtime.includes('n.nodeType===3&&n.textContent.trim()') && runtime.includes('e.dataset.inLangKey'), 'Language switching preserves mobile navigation icons and original translation keys');
-assert.ok(runtime.includes('document.documentElement.dir=(c==="ur"||c==="ar")?"rtl":"ltr"'), 'Arabic and Urdu languages switch the document to right-to-left layout');
+assert.ok(runtime.includes('document.documentElement.dir=(c==="ur"||c==="ar"||c==="fa")?"rtl":"ltr"'), 'Arabic and Urdu languages switch the document to right-to-left layout');
 assert.ok(runtime.includes('"Switch to light mode"') && runtime.includes('"Switch to dark mode"') && runtime.includes('"Open navigation menu"'), 'Shared accessibility labels are localized');
 assert.ok(runtime.includes('"vi"') && runtime.includes('"fa"') && runtime.includes('value="vi">Tiếng Việt') && runtime.includes('value="fa">فارسی'), 'Vietnamese and Persian are selectable interface languages');
 assert.ok(runtime.includes('const t={...IN_LANG.en,...(IN_LANG[c]||{})}') && runtime.includes('e.textContent=key;return'), 'Missing translations safely fall back to English instead of retaining a previous language');
