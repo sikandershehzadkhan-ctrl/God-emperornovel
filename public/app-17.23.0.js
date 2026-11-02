@@ -70,7 +70,7 @@ async function flushReaderActivityQueue(expectedUserId){
     else retryError=retryError||result.reason;
    });
    queue=readReaderActivityQueue();if(!queue||String(queue.userId)!==currentUserId)return;
-   const current=queue.records.find(item=>Number(item.novel_id)===Number(record.novel_id)&&Number(item.chapter_number)===Number(record.chapter_number));
+   const current=queue.records.find(item=>record.record_id?item.record_id===record.record_id:(!item.record_id&&Number(item.novel_id)===Number(record.novel_id)&&Number(item.chapter_number)===Number(record.chapter_number)));
    if(current){current.history_pending=record.history_pending;current.bookmark_pending=record.bookmark_pending;if(current.history_pending===false&&current.bookmark_pending===false)queue.records=queue.records.filter(item=>item!==current)}
    if(queue.records.length)writeReaderActivityQueue(queue);else sessionStorage.removeItem(READER_ACTIVITY_QUEUE_KEY);
    if(retryError)throw retryError;
@@ -95,7 +95,7 @@ async function queueReaderActivity(novelId,chapterNumber){
  let queue=readReaderActivityQueue();
  if(queue&&String(queue.userId)!==userId){try{sessionStorage.removeItem(READER_ACTIVITY_QUEUE_KEY)}catch{}queue=null}
  queue=queue||{userId,createdAt:Date.now(),records:[]};
- const record={novel_id:Number(novelId),chapter_number:Number(chapterNumber),history_version:versions.history_version,bookmark_version:versions.bookmark_version,history_pending:true,bookmark_pending:true};
+ const record={record_id:(globalThis.crypto?.randomUUID?.()||('reader-'+Date.now().toString(36)+'-'+Math.random().toString(36).slice(2))),novel_id:Number(novelId),chapter_number:Number(chapterNumber),history_version:versions.history_version,bookmark_version:versions.bookmark_version,history_pending:true,bookmark_pending:true};
  queue.records=queue.records.filter(item=>Number(item.novel_id)!==record.novel_id);
  queue.records.push(record);queue.records=queue.records.slice(-20);
  if(!writeReaderActivityQueue(queue))return false;
