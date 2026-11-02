@@ -31,7 +31,7 @@ db.execute("INSERT INTO account_deletion_reviews(id,request_id,subject_user_id,s
 db.execute("INSERT INTO account_deletion_reviews(id,request_id,subject_user_id,state,version,claimed_by,claim_expires_at) VALUES(101,11,4,'review_in_progress',2,2,?)",(future,))
 db.execute("INSERT INTO account_deletion_reviews(id,request_id,subject_user_id,state,version,claimed_by,claim_expires_at) VALUES(102,12,1,'review_in_progress',2,2,?)",(past,))
 db.execute("INSERT INTO account_deletion_reviews(id,request_id,subject_user_id,state,version) VALUES(103,13,1,'review_required',2)")
-insert="INSERT INTO account_deletion_disposition_findings(review_id,request_id,dependency_key,revision,reviewer_id,review_version,outcome,reason,policy_reference) VALUES(?,?,?,?,?,?,?,?,?,?)"
+insert="INSERT INTO account_deletion_disposition_findings(review_id,request_id,dependency_key,revision,reviewer_id,review_version,outcome,reason,policy_reference) VALUES(?,?,?,?,?,?,?,?,?)"
 def add(key,revision,reviewer,version=2,review=100,request=10,outcome="retain",reason="Preserve pending specialist review",policy="policy-v1"):
  db.execute(insert,(review,request,key,revision,reviewer,version,outcome,reason,policy))
 def rejected(sql,args=()):
