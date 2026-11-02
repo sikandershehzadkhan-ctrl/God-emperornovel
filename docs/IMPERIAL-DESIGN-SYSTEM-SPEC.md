@@ -169,3 +169,14 @@ The first shared design-foundation stylesheet is now linked after the existing g
 The editable and versioned browser bundles are kept synchronized where shared page-title metadata is updated. Browser/PWA theme colors now use the same Imperial Purple accent. A build-integrated design test checks stylesheet structure, key brand tokens, responsive and accessibility hooks, stylesheet load order, absence of remote runtime imports, bundle parity and PWA/browser theme-color consistency.
 
 This is the foundation pass, not final visual sign-off. Device screenshots, contrast sampling, interaction checks and Core Web Vitals still need a browser-connected QA pass before merge/deployment.
+
+
+## Design foundation completion checkpoint — 2 November 2026
+
+The shared foundation now covers the public shell, catalog/discovery, story detail, reader, community, author onboarding and the private Imperial Command Center. The admin route loads the shared foundation and receives scoped purple/white/sapphire styling for its hero, navigation, cards, tables, statuses, action controls and mobile layouts. Legacy gold action styling is neutralized within the admin workspace; this does not change unrelated legacy pages.
+
+The build-integrated acceptance gate now checks all six reader theme token maps, resolves semantic CSS variables before measuring contrast, enforces WCAG AA 4.5:1 for normal text/links and 3:1 for focus indicators, and checks reduced motion, forced colors, keyboard focus, RTL navigation, safe areas, narrow mobile breakpoints, touch-target baseline, drawer overscroll, horizontal overflow prevention, stylesheet order, and admin foundation coverage.
+
+The complete Cloudflare source-validation workflow passed on the current review branch, including the build, Worker bundle validation, production safety invariants, D1 migration validation, catalog aggregation parity, author application constraints, donation reference uniqueness and atomic novel-request charging. This is automated source validation only; it does not deploy to production.
+
+**Still required before design sign-off:** real browser screenshots at 320, 360, 390, 768, 1024 and 1440 CSS pixels; portrait/landscape and 200% zoom checks; live keyboard and screen-reader interaction review; long Urdu/Arabic and translated-string overflow checks; and visual verification on a low-end Android device. Do not mark the design foundation 100% complete until those visual and interaction checks are reviewed.
