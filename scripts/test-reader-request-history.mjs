@@ -1,0 +1,12 @@
+import assert from 'node:assert/strict';
+import fs from 'node:fs';
+const api=fs.readFileSync('src/index.js','utf8');
+const ui=fs.readFileSync('public/app.js','utf8');
+assert.match(api,/SELECT id,source_host,cost,status,created_at FROM novel_requests WHERE user_id=\? ORDER BY id DESC LIMIT 20/,'request history must be scoped to the signed-in user and bounded');
+assert.match(api,/requests:history\.results\|\|\[\]/,'request history must be returned to the reader');
+assert.match(ui,/Your request history/,'reader request page must expose request history');
+assert.match(ui,/Awaiting review/,'pending review state must be explained');
+assert.match(ui,/Approved/,'approved state must be explained');
+assert.match(ui,/Not approved/,'rejected state must be explained');
+assert.match(ui,/role="status" aria-live="polite"/,'submission feedback must be announced accessibly');
+console.log('Reader request history regression checks passed.');
