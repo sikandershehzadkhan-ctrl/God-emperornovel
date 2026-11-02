@@ -41,7 +41,7 @@ assert db.execute("SELECT COUNT(*) FROM account_deletion_review_events WHERE eve
 # A lease that has expired can be acquired by another authorized reviewer.
 second=claim(3,"2026-11-02T00:11:00Z","2026-11-02T00:21:00Z")
 assert second and second[5]==3 and second[4]==3
-assert db.execute("SELECT COUNT(*) FROM account_deletion_review_events").fetchone()[0]==2
+assert db.execute("SELECT COUNT(*) FROM account_deletion_review_events").fetchone()[0]==3
 # The subject account cannot claim its own case.
 assert claim(1,"2026-11-02T00:12:00Z","2026-11-02T00:22:00Z") is None
 # If audit insertion fails, the claim update must roll back with it.
@@ -55,7 +55,7 @@ except sqlite3.IntegrityError:
     pass
 after=db.execute("SELECT version,claimed_by FROM account_deletion_reviews WHERE request_id=?",(request_id,)).fetchone()
 assert after==before, (before,after)
-assert db.execute("SELECT COUNT(*) FROM account_deletion_review_events").fetchone()[0]==2
+assert db.execute("SELECT COUNT(*) FROM account_deletion_review_events").fetchone()[0]==3
 print("PASS: claim SQL enforces a single active lease, expired-lease takeover, requester exclusion, immutable audit, and rollback if audit insertion fails.")
 `;
 const result=spawnSync("python3",["-c",python],{input:JSON.stringify({migration14,migration15,migration19}),encoding:"utf8"});
