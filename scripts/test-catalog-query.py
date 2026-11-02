@@ -166,4 +166,7 @@ for filters, sort in cases:
     new_rows = run(NEW, filters, sort)
     assert old_rows == new_rows, (filters, sort, old_rows[:1], new_rows[:1])
     assert all(row["chapter_count"] == 37 for row in new_rows)
-print(f"PASS: {len(cases)} catalog query parity cases; relationship row multiplication removed.")
+assert run(NEW, {"q": "fantasy story"}, "updated"), "Multi-word search must match all terms across catalog text."
+assert run(NEW, {"q": "%"}, "updated") == [], "Percent must be treated as a literal search character, not a wildcard."
+assert run(NEW, {"q": "_"}, "updated") == [], "Underscore must be treated as a literal search character, not a wildcard."
+print(f"PASS: {len(cases)} catalog query parity cases plus multi-term and literal wildcard search; relationship row multiplication removed.")
