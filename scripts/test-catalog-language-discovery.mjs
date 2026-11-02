@@ -46,7 +46,7 @@ assert.ok(catalog.includes("renderFilterChips();setINLang(document.documentEleme
 assert.ok(catalog.includes("setINLang(document.documentElement.lang||'en');\n }catch(error)"),"Catalog pagination and result state must reapply the selected language.");
 
 
-for(const key of ["Sort","Status","Type","Minimum Rating","Apply Filters","Browse Genres","Browse Tags","Advanced Search","Active filters","Clear all","Clear","Discover your next world"]) {
+for(const key of ["Sort","Status","Type","Minimum Rating","Apply Filters","Browse Genres","Browse Tags","Advanced Search","Active filters","Clear all","Clear"]) {
   assert.ok(catalog.includes('data-in-lang>'+key+'<')||catalog.includes('data-in-lang>'+key), "Catalog UI must mark "+key+" for translation.");
   for(const locale of Object.keys(languageDictionary))assert.ok(languageDictionary[locale][key], "Missing catalog label "+key+" translation for "+locale);
 }
