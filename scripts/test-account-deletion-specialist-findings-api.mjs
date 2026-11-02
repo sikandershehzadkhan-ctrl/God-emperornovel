@@ -1,0 +1,24 @@
+import assert from "node:assert/strict";
+import { readFileSync } from "node:fs";
+
+const source=readFileSync(new URL("../src/index.js",import.meta.url),"utf8");
+const start=source.indexOf("const submitDeletionSpecialistFindings=p.match(");
+const end=source.indexOf("const claimDeletionReview=p.match(",start);
+assert.notEqual(start,-1,"specialist findings route must exist");
+assert.notEqual(end,-1,"specialist findings route must end before claim route");
+const route=source.slice(start,end);
+assert.match(route,/req\.headers\.get\("origin"\)!==url\.origin/,"mutations must enforce exact same-origin Origin");
+assert.match(route,/need\(u\)/,"submission must require authenticated account");
+assert.match(route,/consumeAuthRateLimit/,"submission must be rate limited");
+assert.match(route,/revoked_at IS NULL/,"only active reviewer assignments may authorize submissions");
+assert.match(route,/validateDispositionItems\(body\.items,permissions\)/,"dependency categories and outcomes must be permission-validated");
+assert.match(route,/expected_review_version/,"submission must require an optimistic review version");
+assert.match(route,/review\.state!=="review_in_progress"/,"submission must require an in-progress case");
+assert.match(route,/review\.claim_expires_at<=nowIso/,"submission must reject expired case leases");
+assert.match(route,/String\(review\.subject_user_id\)===String\(u\.id\)/,"requesters must not submit specialist findings");
+assert.match(route,/UPDATE account_deletion_reviews SET version=version\+1/,"review version must advance with the submission");
+assert.match(route,/env\.DB\.batch\(statements\)/,"review version and findings must be committed in one D1 batch");
+assert.match(route,/account_deletion_disposition_findings/,"findings must use the immutable findings store");
+assert.match(route,/finalization_enabled:false/,"submission must not enable deletion finalization");
+assert.doesNotMatch(route,/password_hash|session_token|chapter_content|financial_ledger.*SELECT/i,"submission must not access credentials, sessions, chapter content, or financial records");
+console.log("PASS: specialist findings API enforces same-origin, authentication, active specialist permissions, rate limits, optimistic versioning, active lease, requester exclusion, atomic D1 batching, and disabled finalization.");
