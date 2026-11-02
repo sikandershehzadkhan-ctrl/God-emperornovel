@@ -2250,6 +2250,23 @@ html[dir="rtl"] .homePage .homeStoryGrid .card{text-align:right}
  html[dir="rtl"] .homePage .nextCreatorBand{ text-align:right }
 }
 
+/* Homepage narrow-screen card resilience 17.48.
+   Let translated titles and metadata wrap instead of forcing tiny-card overflow. */
+.homePage .homeStoryGrid .cardBody,
+.homePage .homeStoryGrid .cardTitle,
+.homePage .homeStoryGrid .cardBody>.muted,
+.homePage .homeStoryGrid .meta{min-width:0;max-width:100%}
+.homePage .homeStoryGrid .cardBody>.muted{overflow-wrap:anywhere}
+.homePage .homeStoryGrid .meta{display:flex;flex-wrap:wrap;align-items:flex-start;gap:5px}
+.homePage .homeStoryGrid .meta span{max-width:100%;white-space:normal;overflow-wrap:anywhere;line-height:1.35}
+@media(max-width:390px){
+  .homePage .homeStoryGrid .cardTitle{font-size:13px;overflow-wrap:anywhere}
+  .homePage .homeStoryGrid .meta span{font-size:10px}
+}
+@media(prefers-reduced-motion:reduce){
+  .homePage .homeStoryGrid .cover img{scroll-behavior:auto}
+}
+
 /* Homepage off-screen rendering budget 17.47.
    Keep the hero eager; let modern browsers defer layout/paint work for long
    below-the-fold shelves until they approach the viewport. The intrinsic
