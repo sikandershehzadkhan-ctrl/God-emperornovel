@@ -9,6 +9,7 @@ const catalogEnd=app.indexOf("async function formatDirectory()",catalogAt);
 assert.ok(catalogAt>=0&&catalogEnd>catalogAt,"Catalog page must exist.");
 const catalog=app.slice(catalogAt,catalogEnd);
 assert.ok(catalog.includes('name="language" list="catalogLanguageOptions"'),"Catalog language filter must offer guided suggestions while remaining free-text.");
+assert.ok(catalog.includes('placeholder="Choose or type a language"')&&!catalog.includes('<select name="language"'),"Language discovery must keep custom language names available.");
 const catalogList=catalog.match(/<datalist id="catalogLanguageOptions">([\s\S]*?)<\/datalist>/);
 const authorList=app.match(/<datalist id="imperialLanguageOptions">([\s\S]*?)<\/datalist>/);
 assert.ok(catalogList&&authorList,"Catalog and author forms must expose language suggestions.");
