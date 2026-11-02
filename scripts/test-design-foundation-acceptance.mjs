@@ -89,6 +89,8 @@ assert.ok(foundation.includes("@media(forced-colors:active)"), "Forced-colors mo
 assert.ok(foundation.includes("touch-action:manipulation"), "Interactive controls must avoid delayed touch gestures");
 assert.ok(html.indexOf("/imperial-design-foundation.css") < html.indexOf("/imperial-design-system-17.25.0.css"), "Foundation stylesheet must load before the versioned primitives");
 assert.ok(adminHtml.includes('href="/imperial-design-foundation.css"'), "Admin command center must load the shared design foundation");
+assert.ok(adminHtml.includes('href="/imperial-design-system-17.25.0.css"'), "Admin command center must load the shared design tokens and primitives");
+assert.ok(adminHtml.indexOf("/imperial-design-foundation.css") < adminHtml.indexOf("/imperial-design-system-17.25.0.css"), "Admin design foundation must load before shared primitives");
 assert.ok(foundation.includes(".adminWrap .adminHero"), "Admin command center must receive scoped Imperial hero styling");
 assert.ok(foundation.includes(".adminWrap .adminNav button.active"), "Admin navigation must use the shared purple active state");
 assert.ok(foundation.includes(".adminWrap .adminTable"), "Admin data tables must receive responsive foundation styling");
