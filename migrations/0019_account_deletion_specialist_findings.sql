@@ -67,3 +67,17 @@ BEFORE DELETE ON account_deletion_disposition_findings
 BEGIN
   SELECT RAISE(ABORT, 'specialist findings are immutable');
 END;
+
+-- Each finding writes its own immutable review event in the same SQLite statement.
+-- A failed audit insert aborts the finding insert and the surrounding D1 batch.
+CREATE TRIGGER IF NOT EXISTS trg_account_deletion_finding_audit
+AFTER INSERT ON account_deletion_disposition_findings
+BEGIN
+  INSERT INTO account_deletion_review_events(
+    review_id,request_id,actor_id,event_type,from_state,to_state,review_version,metadata_json
+  ) VALUES (
+    NEW.review_id,NEW.request_id,NEW.reviewer_id,'disposition_proposed',
+    'review_in_progress','review_in_progress',NEW.review_version,
+    json_object('dependency_key',NEW.dependency_key,'revision',NEW.revision)
+  );
+END;
