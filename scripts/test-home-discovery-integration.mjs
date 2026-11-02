@@ -36,6 +36,12 @@ assert.ok(app.includes('"Follow the threads between worlds.":"تتبّع الر�
 assert.ok(app.includes('"Follow the threads between worlds.":"رشته‌های پیوند میان دنیاها را دنبال کنید."'),"Persian discovery headings must be translated within the Persian dictionary.");
 assert.ok(app.includes('data-in-lang-key="Follow the threads between worlds."')&&app.includes('data-in-lang-key="Stories with momentum."'),"Discovery and trending headings must participate in live locale switching.");
 assert.ok(app.includes('data-in-lang-key="The realm, right now."')&&app.includes('data-in-lang-key="Latest chapter updates"'),"Platform activity headings must participate in live locale switching.");
+assert.ok(app.includes('data-home-dynamic-key="Genre"')&&app.includes('data-home-dynamic-key="Theme"'),"Dynamic discovery genre and theme labels must be locale-aware.");
+assert.ok(app.includes('document.addEventListener("imperial:languagechange",localizeDiscovery)'),"Dynamic discovery chips must refresh when the selected language changes.");
+assert.ok(app.includes('data-home-dynamic-key="The catalog is still building its discovery map.'),"Discovery empty state must be locale-aware.");
+assert.ok(app.includes('data-home-dynamic-key="Connected discovery is temporarily unavailable."'),"Discovery error state must be locale-aware.");
+assert.ok(app.includes('document.dispatchEvent(new Event("imperial:languagechange"))'),"Language changes must notify asynchronously rendered homepage content.");
+
 assert.ok(app.includes('data-in-lang-key="A whole creative ecosystem built around the stories you love and the worlds you want to make."'),"Creator ecosystem introduction must be translatable.");
 
 assert.ok(app.includes('"ur":{"Home":"صفحہ اول"')&&app.includes('"hi":{"Home":"होम"')&&app.includes('"ar":{"Home":"الرئيسية"')&&app.includes('"fa":{"Home":"خانه"'),"Urdu, Hindi, Arabic, and Persian dictionaries must remain available.");
