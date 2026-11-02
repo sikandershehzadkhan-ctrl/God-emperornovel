@@ -608,7 +608,7 @@ async function api(req,env){
    return json({ok:true,review,lease_minutes:10});
   }catch(error){console.error("account deletion review claim failed",String(error?.message||error));return json({error:"The review case could not be safely claimed."},503)}
  }
- const deletionReviewDetail=p.match(/^\\/api\\/admin\\/account-deletion\\/reviews\\/(\\d+)$/);
+ const deletionReviewDetail=p.match(/^\/api\/admin\/account-deletion\/reviews\/(\d+)$/);
  if(deletionReviewDetail&&m==="GET"){
   const authError=need(u);if(authError)return authError;
   const requestId=Number(deletionReviewDetail[1]);
@@ -622,7 +622,7 @@ async function api(req,env){
   if(!permissions.includes("case:read:minimal"))return json({error:"An active account-deletion reviewer assignment is required."},403);
   const limited=await consumeAuthRateLimit(env,"account-deletion-review-case-detail",String(u.id),20,60);if(limited)return limited;
   try{
-   const row=await env.DB.prepare(`SELECT r.id AS request_id,r.user_id AS subject_user_id,u.username AS subject_username,r.status AS request_status,r.requested_at,r.scheduled_for,substr(r.review_reason,1,240) AS review_reason,v.id AS review_id,v.state AS review_state,v.version AS review_version,v.claimed_by,v.claim_expires_at,v.proposed_by,v.plan_digest,v.approved_by FROM account_deletion_requests r JOIN users u ON u.id=r.user_id LEFT JOIN account_deletion_reviews v ON v.request_id=r.id WHERE r.id=? AND r.status IN ('pending_deletion','review_required') LIMIT 1`).bind(requestId).first();
+   const row=await env.DB.prepare(`SELECT r.id AS request_id,r.user_id AS subject_user_id,u.username AS subject_username,r.status AS request_status,r.requested_at,r.scheduled_for,substr(r.review_reason,1,240) AS review_reason,v.id AS review_id,v.state AS review_state,v.version AS review_version,v.claim_expires_at,v.proposed_by,v.approved_by FROM account_deletion_requests r JOIN users u ON u.id=r.user_id LEFT JOIN account_deletion_reviews v ON v.request_id=r.id WHERE r.id=? AND r.status IN ('pending_deletion','review_required') LIMIT 1`).bind(requestId).first();
    if(!row||String(row.subject_user_id)===String(u.id))return json({error:"Review case not found."},404);
    let creatorOwnership=null;
    if(permissions.includes("creator:read:ownership")){
