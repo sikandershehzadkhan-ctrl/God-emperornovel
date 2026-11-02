@@ -6,6 +6,7 @@ const migration=readFileSync(new URL("../migrations/0014_account_deletion_reques
 const py=String.raw`
 import sqlite3,sys
 db=sqlite3.connect(":memory:")
+db.execute("PRAGMA foreign_keys=ON")
 db.executescript("CREATE TABLE users(id INTEGER PRIMARY KEY);")
 db.executescript(sys.stdin.read())
 db.execute("INSERT INTO users(id) VALUES(1)")
