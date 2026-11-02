@@ -163,4 +163,9 @@ assert.ok(app.includes("const READER_LANG=")&&app.includes("...(READER_LANG[c]||
 assert.ok(app.includes('document.querySelectorAll("[data-in-lang-option]")'),"Reader select options must refresh when the language changes.");
 assert.ok(app.includes("setINLang(document.documentElement.lang||localStorage.getItem('imperial_language')||'en')"),"Reader must apply the saved locale after its page markup is inserted.");
 
-console.log("Homepage and reader localization integration tests passed: versioned entry, live bounded graph, safe taxonomy links, escaped labels and graceful fallback.");
+const novelOverviewKeys=["Views","Rating","Chapters","Rights","REAL-TIME STORY ACTIVITY","Recorded reader views and community activity for this story.","Loading activity…","Refresh ↻","Overview","Community","View chapter list","Reader Community","Rate this novel","Join the discussion"];
+for(const key of novelOverviewKeys)assert.ok(app.includes('data-in-lang-key="'+key+'"'),"Novel overview text must expose locale key: "+key);
+assert.ok(app.includes("const NOVEL_LANG=")&&app.includes("...(NOVEL_LANG[c]||{})"),"Novel overview translations must be merged into the active interface locale.");
+assert.ok(app.includes("setINLang(document.documentElement.lang||localStorage.getItem('imperial_language')||'en');$('#libraryBtn').onclick"),"Novel overview must apply the saved locale after inserting its page markup.");
+
+console.log("Homepage, novel overview and reader localization integration tests passed: versioned entry, live bounded graph, safe taxonomy links, escaped labels and graceful fallback.");
