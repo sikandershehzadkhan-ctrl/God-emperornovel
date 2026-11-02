@@ -107,3 +107,7 @@
 .authorAnalyticsChapter strong{color:var(--in-purple-bright,#8b5cf6)}
 .authorAnalyticsFootnote{font-size:11px;margin:12px 0 0}
 @media(max-width:620px){.authorAnalyticsSummary{grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}.authorMetric{padding:11px}.authorAnalyticsLower{grid-template-columns:1fr;gap:16px}.authorAnalyticsStory>div:first-child{display:grid;gap:3px}}
+
+.authorPayoutNotice{display:grid;gap:5px;margin-top:12px;padding:12px 14px;border:1px solid var(--line,rgba(139,92,246,.22));border-radius:11px;background:var(--panel-soft,rgba(139,92,246,.035))}
+.authorPayoutNotice b{font-size:12px}
+.authorPayoutNotice span{font-size:11px;line-height:1.55;color:var(--muted,#687080)}
