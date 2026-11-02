@@ -581,3 +581,27 @@ html[data-theme="dark"] .menuDrawer {
     scroll-behavior: auto !important;
   }
 }
+
+
+/* RTL language support: preserve logical reading and navigation flow. */
+html[dir="rtl"] .nav,
+html[dir="rtl"] .navlinks,
+html[dir="rtl"] .navright,
+html[dir="rtl"] .mobileNav,
+html[dir="rtl"] .menuDrawer {
+  direction: rtl;
+}
+html[dir="rtl"] .menuDrawer {
+  right: 0;
+  left: auto;
+  border-right: 0;
+  border-left: 1px solid var(--ds-border-strong);
+  box-shadow: -18px 0 56px rgba(5, 8, 20, .28);
+}
+html[dir="rtl"] .menuDrawer .menuDrawerHead,
+html[dir="rtl"] .menuDrawer .menuDrawerFoot {
+  direction: rtl;
+}
+html[dir="rtl"] .menuDrawer > a:not(.menuDrawerBrand) {
+  text-align: right;
+}
