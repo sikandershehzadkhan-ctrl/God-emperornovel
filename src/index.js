@@ -794,6 +794,40 @@ if(p==="/api/author/feedback"&&m==="GET"){
   if(c.publication_status==='published')return json({error:'Move the chapter to draft before scheduling it again.'},409);if(c.novel_status!=='published')return json({error:'The novel must be approved and published before a chapter can be scheduled.'},409);if(!['original','public_domain','licensed','authorized'].includes(String(c.rights_status)))return json({error:'Novel rights are not eligible for publication'},403);
   const timestamp=Date.parse(String(b.publish_at||''));const now=Date.now();if(!Number.isFinite(timestamp)||timestamp<now+5*60*1000||timestamp>now+365*24*60*60*1000)return json({error:'Choose a publication time at least 5 minutes from now and within the next 365 days.'},400);const publishAt=new Date(timestamp).toISOString();await env.DB.prepare(`INSERT INTO scheduled_chapter_publications(chapter_id,publish_at,created_by,updated_at) VALUES(?,?,?,CURRENT_TIMESTAMP) ON CONFLICT(chapter_id) DO UPDATE SET publish_at=excluded.publish_at,created_by=excluded.created_by,updated_at=CURRENT_TIMESTAMP`).bind(id,publishAt,u.id).run();await audit(env,u,'author_chapter_scheduled',`chapter=${id};publish_at=${publishAt}`);return json({ok:true,message:'Chapter publication scheduled.',publish_at:publishAt})
  }
+ if(p==="/api/author/goals"&&m==="GET"){
+  const e=author(u);if(e)return e;
+  const rows=await env.DB.prepare(`SELECT g.novel_id,n.title novel_title,g.target_chapters,g.target_words,g.target_date,g.created_at,g.updated_at,
+   (SELECT COUNT(*) FROM chapters c WHERE c.novel_id=n.id) actual_chapters,
+   (SELECT COUNT(*) FROM chapters c WHERE c.novel_id=n.id AND c.publication_status='published') published_chapters
+   FROM author_story_goals g JOIN novels n ON n.id=g.novel_id
+   WHERE g.owner_user_id=? AND n.owner_user_id=? ORDER BY g.updated_at DESC LIMIT 100`).bind(u.id,u.id).all();
+  return json(rows.results||[])
+ }
+ if(p==="/api/author/goals"&&m==="PUT"){
+  const e=author(u);if(e)return e;
+  const b=await body(req),novelId=Number(b.novel_id);
+  if(!Number.isSafeInteger(novelId)||novelId<1)return json({error:'A valid story is required.'},400);
+  const targetChapters=Number(b.target_chapters??0),targetWords=Number(b.target_words??0);
+  if(!Number.isInteger(targetChapters)||targetChapters<0||targetChapters>10000)return json({error:'Chapter target must be a whole number from 0 to 10,000.'},400);
+  if(!Number.isInteger(targetWords)||targetWords<0||targetWords>5000000)return json({error:'Word target must be a whole number from 0 to 5,000,000.'},400);
+  const rawDate=String(b.target_date??'').trim();
+  if(rawDate&&!/^\\d{4}-\\d{2}-\\d{2}$/.test(rawDate))return json({error:'Target date must use YYYY-MM-DD.'},400);
+  if(rawDate&&new Date(rawDate+'T00:00:00Z').toISOString().slice(0,10)!==rawDate)return json({error:'Target date is not a valid calendar date.'},400);
+  const owned=await env.DB.prepare('SELECT id FROM novels WHERE id=? AND owner_user_id=?').bind(novelId,u.id).first();
+  if(!owned)return json({error:'Story not found.'},404);
+  if(targetChapters===0&&targetWords===0&&!rawDate){
+   await env.DB.prepare('DELETE FROM author_story_goals WHERE novel_id=? AND owner_user_id=?').bind(novelId,u.id).run();
+   await audit(env,u,'author_story_goal_cleared',`novel=${novelId}`);
+   return json({ok:true,cleared:true})
+  }
+  await env.DB.prepare(`INSERT INTO author_story_goals(novel_id,owner_user_id,target_chapters,target_words,target_date,updated_at)
+   VALUES(?,?,?,?,?,CURRENT_TIMESTAMP) ON CONFLICT(novel_id) DO UPDATE SET
+   target_chapters=excluded.target_chapters,target_words=excluded.target_words,target_date=excluded.target_date,
+   updated_at=CURRENT_TIMESTAMP WHERE author_story_goals.owner_user_id=excluded.owner_user_id`)
+   .bind(novelId,u.id,targetChapters,targetWords,rawDate||null).run();
+  await audit(env,u,'author_story_goal_saved',`novel=${novelId};chapters=${targetChapters};words=${targetWords}`);
+  return json({ok:true})
+ }
  if(p==="/api/author/planning"&&m==="GET"){
   const e=author(u);if(e)return e;
   const rows=await env.DB.prepare(`SELECT * FROM (
