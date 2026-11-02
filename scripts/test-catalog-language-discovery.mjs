@@ -74,4 +74,19 @@ assert.ok(searchPage.includes('data-in-lang-placeholder="Search the storyverse..
 assert.ok(searchPage.includes("data-in-lang>Search</button>"),"Search action must be localizable.");
 assert.ok(searchPage.includes("setINLang(document.documentElement.lang||'en')"),"Search page must apply the selected language after dynamic rendering.");
 
-console.log("Homepage, catalog, genre/tag directories, search and 14-language reader localization checks passed.");
+
+const formatDirAt=app.indexOf("async function formatDirectory()");
+const formatLandingAt=app.indexOf("async function formatLanding(",formatDirAt);
+const afterFormatAt=app.indexOf("\nasync function ",formatLandingAt+10);
+assert.ok(formatDirAt>=0&&formatLandingAt>formatDirAt&&afterFormatAt>formatLandingAt,"Format directory and landing pages must exist.");
+const formatDirectory=app.slice(formatDirAt,formatLandingAt),formatLanding=app.slice(formatLandingAt,afterFormatAt);
+for(const key of ["Explore by Format","One Imperial Library, with a dedicated path for every kind of story world.","Stories & prose","Comics & illustrated stories","Screen adaptations","Audio","Interactive worlds","Format tradition","Experience","Explore published works classified in this format.","Only eligible, rights-cleared catalog entries are shown.","Format not found","Choose a supported format from the Imperial Library directory.","All formats"]) {
+  for(const locale of Object.keys(languageDictionary))assert.ok(languageDictionary[locale][key],"Missing format translation for "+key+" in "+locale);
+}
+assert.ok(formatDirectory.includes('class="eyebrow" data-in-lang'),"Format directory group names must be localized.");
+assert.ok(formatDirectory.includes("sub.dataset.inLang=''")&&formatDirectory.includes("setINLang(document.documentElement.lang||'en')"),"Format directory heading and subtitle must apply the selected language.");
+assert.ok(formatLanding.includes('role="note" data-in-lang'),"Format landing rights/discovery notice must be localized.");
+assert.ok(formatLanding.includes('data-in-lang>Only eligible, rights-cleared catalog entries are shown.'),"Format landing eligibility note must be localized.");
+assert.ok(formatLanding.includes("sub.dataset.inLang=''")&&formatLanding.includes("setINLang(document.documentElement.lang||'en')"),"Format landing subtitle and controls must apply the selected language.");
+
+console.log("Homepage, catalog, discovery directories, format pages and 14-language reader localization checks passed.");
