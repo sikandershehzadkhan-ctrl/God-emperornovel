@@ -25,5 +25,5 @@ assert.match(app, /window\.addEventListener\('online',updateReaderNetwork\);wind
 assert.match(app, /if\(window\.__imperialReaderNetworkHandler\)\{window\.removeEventListener\('online',window\.__imperialReaderNetworkHandler\);window\.removeEventListener\('offline',window\.__imperialReaderNetworkHandler\);\}/, 'Reader network listeners must be removed before a new load.');
 assert.match(app, /Promise\.allSettled\(\[api\('\/api\/history'/, 'Reader history and bookmark sync must be tracked together so failed activity can retry after reconnect.');
 assert.match(app, /if\(results\.some\(result=>result\.status==='rejected'\)\)activitySyncPending=true/, 'Failed reader activity sync must remain pending for reconnection.');
-assert.ok(app.includes("retry.className='comicPageRetry'"), 'Failed comic images must expose a user-triggered retry control.');
+assert.ok(app.includes("retry.className='comicPageRetry secondary'"), 'Failed comic images must expose a user-triggered retry control.');
 console.log('Chapter delivery checks passed: bounded retries, accessible recovery, stale-response protection, listener cleanup, bookmark click locking, stable layout, and reduced motion.');
