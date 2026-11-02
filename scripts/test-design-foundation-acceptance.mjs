@@ -4,6 +4,7 @@ import fs from "node:fs";
 const css = fs.readFileSync("public/imperial-design-system-17.25.0.css", "utf8");
 const foundation = fs.readFileSync("public/imperial-design-foundation.css", "utf8");
 const html = fs.readFileSync("public/index.html", "utf8");
+const adminHtml = fs.readFileSync("public/admin.html", "utf8");
 
 function block(selector) {
   const start = css.lastIndexOf(selector);
@@ -87,5 +88,11 @@ assert.ok(foundation.includes("overflow-x:clip"), "Global shell must prevent acc
 assert.ok(foundation.includes("@media(forced-colors:active)"), "Forced-colors mode must retain visible keyboard focus");
 assert.ok(foundation.includes("touch-action:manipulation"), "Interactive controls must avoid delayed touch gestures");
 assert.ok(html.indexOf("/imperial-design-foundation.css") < html.indexOf("/imperial-design-system-17.25.0.css"), "Foundation stylesheet must load before the versioned primitives");
+assert.ok(adminHtml.includes('href="/imperial-design-foundation.css"'), "Admin command center must load the shared design foundation");
+assert.ok(css.includes(".adminWrap .adminHero"), "Admin command center must receive scoped Imperial hero styling");
+assert.ok(css.includes(".adminWrap .adminNav button.active"), "Admin navigation must use the shared purple active state");
+assert.ok(css.includes(".adminWrap .adminTable"), "Admin data tables must receive responsive foundation styling");
+assert.ok(css.includes(".adminWrap .adminNav button{min-height:44px"), "Admin navigation actions must meet the 44px touch-target baseline");
+assert.ok(css.includes(".adminWrap .mini.gold"), "Legacy admin gold action styling must be neutralized inside the Imperial command center");
 
 console.log("Imperial design foundation acceptance passed: six theme token maps, WCAG AA text/link contrast, focus contrast, reduced motion, RTL, safe areas and stylesheet order.");
