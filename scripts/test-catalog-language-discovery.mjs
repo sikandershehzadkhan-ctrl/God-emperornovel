@@ -20,16 +20,16 @@ assert.ok(catalog.includes("for(const [k,v] of f.entries())"),"Catalog form must
 assert.ok(worker.includes('if(language){sql+=" AND LOWER(n.language)=LOWER(?)";a.push(language)}'),"Catalog language matching must remain case-insensitive and parameterized.");
 assert.equal(app,shipped,"Served JavaScript must match the source.");
 
-const languageBlock=app.match(/const IN_LANG=(\\{[\\s\\S]*?\\});function setINLang/);
+const languageBlock=app.match(/const IN_LANG=(\{[\s\S]*?\});function setINLang/);
 assert.ok(languageBlock,"Interface language dictionary must be available.");
 const languageDictionary=JSON.parse(languageBlock[1]);
 assert.equal(Object.keys(languageDictionary).length,14,"The interface must retain all 14 supported UI languages.");
 const readerAt=app.indexOf("async function reader()");
-const readerEnd=app.indexOf("\\n}\\nasync function authPage",readerAt);
+const readerEnd=app.indexOf("\n}\nasync function authPage",readerAt);
 assert.ok(readerAt>=0&&readerEnd>readerAt,"Reader implementation must exist.");
 const reader=app.slice(readerAt,readerEnd);
 for(const key of ["Chapter","← Chapters","Chapter List","Close","Theme","Line spacing","Text width","Compact","Comfort","Relaxed","Focused","Standard","Wide","Keep reading","Next Chapter →","Novel Overview","← Previous","Next →","Unlock Chapter","Open Crown Vault","Chapter locked","Authorized chapter"]) {
-  assert.ok(reader.includes('data-in-lang>'+key+'<')||reader.includes('data-in-lang>'+key+'<')||reader.includes('data-in-lang>'+key), "Reader UI must mark "+key+" for translation.");
+  assert.ok(reader.includes('data-in-lang>'+key+'<')||reader.includes('data-in-lang>'+key), "Reader UI must mark "+key+" for translation.");
   for(const locale of Object.keys(languageDictionary))assert.ok(languageDictionary[locale][key], "Missing "+key+" translation for "+locale);
 }
 assert.ok(app.includes("document.querySelectorAll('[data-in-lang]')"),"Language switching must translate dynamically rendered reader labels.");
