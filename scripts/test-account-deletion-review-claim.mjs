@@ -8,6 +8,7 @@ const end=source.indexOf('if(p==="/api/admin/account-deletion/reviews"&&m==="GET
 assert.notEqual(end,-1,"claim endpoint must be bounded before queue route");
 const route=source.slice(start,end);
 assert.match(route,/need\(u\)/,"claim endpoint must require authentication");
+assert.match(route,/req\.headers\.get\("origin"\)!==url\.origin/,"claim mutation must enforce exact same-origin Origin");
 assert.match(route,/account-deletion-review-claim",String\(u\.id\),10,60/,"claims must be rate limited per reviewer");
 assert.match(route,/Number\.isSafeInteger\(requestId\)/,"request IDs must be validated");
 assert.match(route,/revoked_at IS NULL/,"only active reviewer assignments may claim");
