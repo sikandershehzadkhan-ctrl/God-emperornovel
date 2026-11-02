@@ -37,6 +37,11 @@ const controlLabels={catalogSort:"Sort",catalogStatus:"Status",catalogKind:"Type
 for(const [id,label] of Object.entries(controlLabels))assert.ok(catalogSource.includes('<label class="filterLabel" for="'+id+'">'+label+'</label>')&&catalogSource.includes('id="'+id+'"'),"Discover filter must use an explicitly associated label: "+id);
 assert.ok(catalogSource.includes('id="catalogQuery" name="q" type="search"'),"Discover search must have a stable control id.");
 assert.ok(catalogSource.includes('role="group" aria-label="Active catalog filters"'),"Active filter chips must be exposed as a named group.");
+assert.ok(catalogSource.includes("Number.isSafeInteger(requestedPage)")&&catalogSource.includes("Math.min(requestedPage,100000)"),"Discover must normalize malformed and excessively large page parameters.");
+assert.ok(catalogSource.includes("d.has_more===true"),"Discover must show Next only when the API confirms more results exist.");
+assert.ok(worker.includes('requestedPage=Number(q.get("page")||1)')&&worker.includes("Number.isSafeInteger(requestedPage)")&&worker.includes("Math.min(requestedPage,100000)"),"Catalog API must clamp invalid and excessive page values before calculating offsets.");
+assert.ok(worker.includes("limit+1,offset")&&worker.includes("has_more:hasMore")&&worker.includes("results:rows.slice(0,limit)"),"Catalog API must fetch one look-ahead row and return accurate has_more metadata.");
+
 const designCss=await readFile("public/imperial-design-foundation.css","utf8");
 assert.ok(designCss.includes(".catalogTop .filterGroup :is(input,select):focus-visible")&&designCss.includes("@media(max-width:420px)"),"Discover controls must expose keyboard focus and a compact-phone layout.");
 
