@@ -75,8 +75,10 @@ function stopHomePulsePolling(){
 }
 async function home(){
  homePulseGeneration++;
+ const pageGeneration=homePulseGeneration;
  stopHomePulsePolling();
  const root=$('#app');
+ const isCurrentHome=()=>pageGeneration===homePulseGeneration&&root.isConnected&&!!root.querySelector('.homePage');
  root.innerHTML=`<div class="page homePage"><div class="wrap">
   <section class="hero nextHero imperialArchiveHero">
    <div class="nextHeroGlow" aria-hidden="true"></div>
@@ -142,8 +144,8 @@ async function home(){
  homeDiscoveryLanguageHandler=localizeDiscovery;
  document.addEventListener("imperial:languagechange",homeDiscoveryLanguageHandler);
  void (async()=>{
-  const renderHomeStories=(selector,rows,empty)=>{const el=$(selector);el.setAttribute("aria-busy","false");el.classList.toggle("singleStory",rows.length===1);el.classList.toggle("multiStory",rows.length>1);el.innerHTML=rows.length?rows.map(card).join():`<div class="empty homeCatalogEmpty" style="grid-column:1/-1" data-in-lang-key="${empty}">${empty}</div>`;setINLang(document.documentElement.lang||"en")};
-  const renderHomeShelfError=selector=>{const el=$(selector);el.setAttribute("aria-busy","false");el.innerHTML=`<div class="notice" role="alert" style="grid-column:1/-1"><b data-in-lang-key="Story shelves could not be loaded.">Story shelves could not be loaded.</b><p data-in-lang-key="Please try again in a moment.">Please try again in a moment.</p><a class="secondary" href="/" data-in-lang-key="Try again">Try again</a></div>`;setINLang(document.documentElement.lang||"en")};
+  const renderHomeStories=(selector,rows,empty)=>{if(!isCurrentHome())return;const el=$(selector);if(!el)return;el.setAttribute("aria-busy","false");el.classList.toggle("singleStory",rows.length===1);el.classList.toggle("multiStory",rows.length>1);el.innerHTML=rows.length?rows.map(card).join():`<div class="empty homeCatalogEmpty" style="grid-column:1/-1" data-in-lang-key="${empty}">${empty}</div>`;setINLang(document.documentElement.lang||"en")};
+  const renderHomeShelfError=selector=>{if(!isCurrentHome())return;const el=$(selector);if(!el)return;el.setAttribute("aria-busy","false");el.innerHTML=`<div class="notice" role="alert" style="grid-column:1/-1"><b data-in-lang-key="Story shelves could not be loaded.">Story shelves could not be loaded.</b><p data-in-lang-key="Please try again in a moment.">Please try again in a moment.</p><a class="secondary" href="/" data-in-lang-key="Try again">Try again</a></div>`;setINLang(document.documentElement.lang||"en")};
   const validRows=payload=>Array.isArray(payload?.results)?payload.results.filter(row=>row&&Number.isSafeInteger(Number(row.id))&&Number(row.id)>0):[];
   const [trendResult,latestResult]=await Promise.allSettled([
    apiWithTimeout('/api/novels?sort=trending&limit=10'),
@@ -151,6 +153,7 @@ async function home(){
   ]);
   const trendRows=trendResult.status==="fulfilled"?validRows(trendResult.value):[];
   const latestRows=latestResult.status==="fulfilled"?validRows(latestResult.value):[];
+  if(!isCurrentHome())return;
   const trendingNovelIds=new Set(trendRows.map(row=>Number(row.id)));
   const distinctLatestRows=latestRows.filter(row=>!trendingNovelIds.has(Number(row.id)));
   if(trendResult.status==="fulfilled")renderHomeStories('#trend',trendRows,'The catalog is growing. Be among the first to discover what comes next.');
@@ -161,12 +164,14 @@ async function home(){
  void (async()=>{
  try{
   const graph=await apiWithTimeout('/api/discovery/graph?limit=60',{},10000);
+  if(!isCurrentHome())return;
   const nodes=Array.isArray(graph.nodes)?graph.nodes:[];
   const seen=new Set();
   const links=nodes.filter(node=>(node.type==='genre'||node.type==='tag')&&String(node.label||'').trim()&&String(node.slug||'').trim()).filter(node=>{const key=node.type+':'+node.slug;if(seen.has(key))return false;seen.add(key);return true}).slice(0,12);
   const target=$('#homeConnections');
   if(target)target.innerHTML=links.length?links.map(node=>'<a class="homeConnectionChip" href="/catalog?'+node.type+'='+encodeURIComponent(node.slug)+'"><span class="homeConnectionType" data-home-dynamic-key="'+(node.type==='genre'?'Genre':'Theme')+'">'+(node.type==='genre'?'Genre':'Theme')+'</span><b>'+esc(node.label)+'</b><span aria-hidden="true">↗</span></a>').join(''):'<div class="homeConnectionEmpty" data-home-dynamic-key="The catalog is still building its discovery map. Explore published stories while more genre and theme connections are added.">The catalog is still building its discovery map. Explore published stories while more genre and theme connections are added.</div>';localizeDiscovery();
  }catch(error){
+  if(!isCurrentHome())return;
   const target=$('#homeConnections');
   if(target)target.innerHTML='<div class="homeConnectionEmpty"><span data-home-dynamic-key="Connected discovery is temporarily unavailable.">Connected discovery is temporarily unavailable.</span> <a href="/catalog" data-home-dynamic-key="Browse the catalog">Browse the catalog</a>.</div>';localizeDiscovery();
  }
