@@ -182,6 +182,7 @@ async function home(){
      apiWithTimeout('/api/platform/overview',{},10000),
      apiWithTimeout('/api/health',{},10000)
     ]);
+    if(!document.querySelector('.homePage'))return;
     if(healthResult.status==='fulfilled'){
      const service=healthResult.value||{},healthy=service.ok===true&&service.database===true;
      if(health){health.innerHTML=healthy?'<span data-in-lang-key="Operational · ">Operational · </span>'+esc(service.version||'version unknown'):'<span data-in-lang-key="Service issue · database unavailable">Service issue · database unavailable</span>';health.dataset.state=healthy?'healthy':'degraded';setINLang(document.documentElement.lang||'en')}
