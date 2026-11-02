@@ -6,7 +6,7 @@ const foundation = fs.readFileSync("public/imperial-design-foundation.css", "utf
 const html = fs.readFileSync("public/index.html", "utf8");
 
 function block(selector) {
-  const start = css.indexOf(selector);
+  const start = css.lastIndexOf(selector);
   assert.notEqual(start, -1, "Missing theme rule: " + selector);
   const open = css.indexOf("{", start);
   const close = css.indexOf("}", open);
