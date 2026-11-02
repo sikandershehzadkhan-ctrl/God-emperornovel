@@ -820,6 +820,7 @@ try {
   const winningClaim=claims.find(x=>x.response.status===200);
   assert.equal(winningClaim.data.ok,true);
   assert.equal(winningClaim.data.lease_minutes,10);
+  assert.equal(winningClaim.data.review.state,"review_in_progress","A successful case claim must enter active review");
   const reviewId=Number(winningClaim.data.review.id);
   executeLocalSql("UPDATE account_deletion_reviews SET claim_expires_at='2000-01-01T00:00:00.000Z',version=version+1 WHERE id="+reviewId);
   const takeoverReviewer=claims[0].response.status===200?recipient:moderator;
@@ -847,6 +848,7 @@ try {
   assert.equal(creatorDetail.data.creator_ownership.evidence_contents_exposed,false);
   assert.equal(Number(creatorDetail.data.creator_ownership.novel_count),0);
   assert.ok(creatorDetail.data.events.some(event=>event.event_type==="case_claimed"),"Case details must include the minimized claim history");
+  assert.ok(creatorDetail.data.events.some(event=>event.event_type==="state_changed"&&event.to_state==="review_in_progress"),"The transition into active review must be recorded in the immutable timeline");
   assert.doesNotMatch(JSON.stringify(creatorDetail.data),/email|password_hash|session_token|rights_evidence|chapter_content/i,
     "Case details must not disclose credentials, contact data, raw rights evidence, or chapter content");
   const repeatClaim=await request(baseUrl,"/api/admin/account-deletion/reviews/"+requestId+"/claim",{
