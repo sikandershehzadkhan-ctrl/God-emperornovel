@@ -93,6 +93,8 @@ assert.ok(adminHtml.includes('href="/imperial-design-system-17.25.0.css"'), "Adm
 assert.ok(adminHtml.indexOf("/imperial-design-foundation.css") < adminHtml.indexOf("/imperial-design-system-17.25.0.css"), "Admin design foundation must load before shared primitives");
 assert.ok(foundation.includes(".adminWrap .adminHero"), "Admin command center must receive scoped Imperial hero styling");
 assert.ok(foundation.includes(".adminWrap .adminNav button.active"), "Admin navigation must use the shared purple active state");
+assert.ok(foundation.includes("html[data-theme=\"dark\"] .adminWrap,\nhtml[data-theme=\"midnight\"] .adminWrap,\nhtml[data-theme=\"imperial\"] .adminWrap,\nhtml[data-theme=\"cosmic\"] .adminWrap{--admin-active-foreground:#111426}"), "Dark-theme admin active navigation must use a dark foreground against the light purple active surface");
+assert.ok(foundation.includes("color:var(--admin-active-foreground)"), "Admin active navigation foreground must adapt to the active theme");
 assert.ok(foundation.includes(".adminWrap .adminTable"), "Admin data tables must receive responsive foundation styling");
 assert.ok(foundation.includes(".adminWrap .adminNav button{min-height:44px"), "Admin navigation actions must meet the 44px touch-target baseline");
 assert.ok(foundation.includes(".adminWrap .mini.gold"), "Legacy admin gold action styling must be neutralized inside the Imperial command center");
