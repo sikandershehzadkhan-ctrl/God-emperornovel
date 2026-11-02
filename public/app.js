@@ -70,7 +70,7 @@ async function home(){
     
     <h1><span data-in-lang>Open a world.</span><br><span data-in-lang>Shape an empire.</span></h1>
     <p class="nextHeroLead" data-in-lang>Discover stories worth staying up for, then create the worlds only you can imagine.</p>
-    <form class="heroSearch" action="/search" method="get" role="search"><span aria-hidden="true">${iconSvg("search")}</span><input name="q" type="search" placeholder="Search titles, tropes, worlds..." data-in-lang-placeholder="Search titles, tropes, worlds..." aria-label="Search novels, genres and authors"><button type="submit"><span data-in-lang>Find your story</span> <span aria-hidden="true">↗</span></button></form>
+    <form class="heroSearch" action="/search" method="get" role="search"><span aria-hidden="true">${iconSvg("search")}</span><input name="q" type="search" placeholder="Search titles, tropes, worlds..." data-in-lang-placeholder="Search titles, tropes, worlds..." aria-label="Search titles, tropes, worlds..."><button type="submit"><span data-in-lang>Find your story</span> <span aria-hidden="true">↗</span></button></form>
     <div class="heroTags"><a href="/genres?genre=Fantasy">Fantasy</a><a href="/genres?genre=Progression">Progression</a><a href="/genres?genre=Romance">Romance</a><a href="/genres?genre=Isekai">Isekai</a></div>
     <div class="heroPromise">Read • Create • Conquer <span class="promiseText" data-in-lang>Original. Authorized. Reader-first.</span></div>
    </div>
