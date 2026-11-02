@@ -17,6 +17,13 @@ function declarations(source) {
   return Object.fromEntries([...source.matchAll(/(--[\w-]+)\s*:\s*([^;]+);/g)]
     .map((match) => [match[1], match[2].trim()]));
 }
+function resolveToken(value, tokens, seen = new Set()) {
+  const reference = String(value || "").match(/^var\\((--[\\w-]+)\\)$/);
+  if (!reference) return value;
+  if (seen.has(reference[1])) return "";
+  seen.add(reference[1]);
+  return resolveToken(tokens[reference[1]], tokens, seen);
+}
 function color(value) {
   const match = String(value || "").match(/^#([0-9a-f]{6})$/i);
   if (!match) return null;
@@ -54,15 +61,15 @@ for (const [name, tokens] of Object.entries(themes)) {
   for (const token of ["--in-surface-canvas", "--in-text-primary", "--in-text-secondary", "--in-action-secondary", "--in-focus"]) {
     assert.ok(tokens[token], name + " theme is missing " + token);
   }
-  const background = color(tokens["--in-surface-canvas"]);
+  const background = color(resolveToken(tokens["--in-surface-canvas"], tokens));
   assert.ok(background, name + " canvas must resolve to a six-digit hex color");
   for (const token of ["--in-text-primary", "--in-text-secondary", "--in-action-secondary"]) {
-    const foreground = color(tokens[token]);
+    const foreground = color(resolveToken(tokens[token], tokens));
     assert.ok(foreground, name + " " + token + " must resolve to a six-digit hex color");
     const value = contrast(foreground, background);
     assert.ok(value >= 4.5, name + " " + token + " contrast is " + value.toFixed(2) + ":1; expected WCAG AA 4.5:1");
   }
-  const focus = color(tokens["--in-focus"]);
+  const focus = color(resolveToken(tokens["--in-focus"], tokens));
   assert.ok(focus && contrast(focus, background) >= 3, name + " focus indicator must reach 3:1 contrast");
 }
 
