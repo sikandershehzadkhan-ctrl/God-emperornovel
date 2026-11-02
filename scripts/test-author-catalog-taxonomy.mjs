@@ -19,4 +19,16 @@ assert.ok(create.includes("genreSlugs=readSlugs(b.genre_slugs)") && create.inclu
 assert.ok(create.includes("genreSlugs.length>8||tagSlugs.length>12"), "Draft creation must cap taxonomy selections.");
 assert.ok(create.includes("validateSlugs('genres',genreSlugs)") && create.includes("validateSlugs('tags',tagSlugs)"), "Only official taxonomy slugs may be attached.");
 assert.ok(create.includes("INSERT OR IGNORE INTO novel_genres") && create.includes("INSERT OR IGNORE INTO novel_tags") && create.includes("env.DB.batch(metadataStatements)"), "Validated taxonomy relationships must be persisted in a D1 batch.");
+const authorListStart = worker.indexOf('if(p==="/api/author/novels"&&m==="GET")');
+const authorListEnd = worker.indexOf('if(p==="/api/author/novels"&&m==="POST")', authorListStart);
+const authorList = worker.slice(authorListStart, authorListEnd);
+assert.ok(authorList.includes("genre_slugs") && authorList.includes("tag_slugs"), "Author story list must return saved taxonomy slugs for editing.");
+const patchStart = worker.indexOf('if(/^\\/api\\/author\\/novels\\/\\d+$/.test(p)&&m==="PATCH")');
+const patchEnd = worker.indexOf('if(p==="/api/author/chapters"&&m==="GET")', patchStart);
+assert.ok(patchStart >= 0 && patchEnd > patchStart, "Author story update route must exist.");
+const patch = worker.slice(patchStart, patchEnd);
+assert.ok(patch.includes("Object.hasOwn(b,'genre_slugs')") && patch.includes("Object.hasOwn(b,'tag_slugs')"), "Story updates must preserve existing taxonomy when metadata fields are omitted.");
+assert.ok(patch.includes("validateSlugs('genres',genreSlugs)") && patch.includes("validateSlugs('tags',tagSlugs)"), "Story updates must validate official taxonomy slugs.");
+assert.ok(patch.includes("DELETE FROM novel_genres") && patch.includes("DELETE FROM novel_tags") && patch.includes("env.DB.batch("), "Story updates must replace genre and tag relationships.");
+assert.ok(author.includes('name="genre_slugs" list="authorGenreOptions"') && author.includes('name="tag_slugs" list="authorTagOptions"'), "Existing story edit forms must expose genre and tag fields.");
 console.log("PASS: Author Studio captures official genres and tags, and draft creation validates and stores taxonomy relationships.");
