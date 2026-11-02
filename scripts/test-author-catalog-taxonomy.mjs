@@ -1,0 +1,22 @@
+import assert from "node:assert/strict";
+import { readFile } from "node:fs/promises";
+
+const app = await readFile("public/app.js", "utf8");
+const worker = await readFile("src/index.js", "utf8");
+const authorStart = app.indexOf("async function authorStudio()");
+const authorEnd = app.indexOf("async function authorPublic()", authorStart);
+assert.ok(authorStart >= 0 && authorEnd > authorStart, "Author Studio source must be available.");
+const author = app.slice(authorStart, authorEnd);
+assert.ok(author.includes('id="storyGenres" name="genre_slugs"') && author.includes('id="authorGenreOptions"'), "Author Studio must offer official genre suggestions.");
+assert.ok(author.includes('id="storyTags" name="tag_slugs"') && author.includes('id="authorTagOptions"'), "Author Studio must offer official tag suggestions.");
+assert.ok(author.includes("api('/api/genres')") && author.includes("api('/api/tags')"), "Author Studio must load live taxonomy options.");
+assert.ok(author.includes("Promise.allSettled("), "Taxonomy suggestion failures must not block story creation.");
+const createStart = worker.indexOf('if(p==="/api/author/novels"&&m==="POST")');
+const createEnd = worker.indexOf('if(/^\\/api\\/author\\/novels\\/\\d+\\/submit$/.test(p)', createStart);
+assert.ok(createStart >= 0 && createEnd > createStart, "Author draft creation route must exist.");
+const create = worker.slice(createStart, createEnd);
+assert.ok(create.includes("genreSlugs=readSlugs(b.genre_slugs)") && create.includes("tagSlugs=readSlugs(b.tag_slugs)"), "Draft creation must normalize genre and tag selections.");
+assert.ok(create.includes("genreSlugs.length>8||tagSlugs.length>12"), "Draft creation must cap taxonomy selections.");
+assert.ok(create.includes("validateSlugs('genres',genreSlugs)") && create.includes("validateSlugs('tags',tagSlugs)"), "Only official taxonomy slugs may be attached.");
+assert.ok(create.includes("INSERT OR IGNORE INTO novel_genres") && create.includes("INSERT OR IGNORE INTO novel_tags") && create.includes("env.DB.batch(metadataStatements)"), "Validated taxonomy relationships must be persisted in a D1 batch.");
+console.log("PASS: Author Studio captures official genres and tags, and draft creation validates and stores taxonomy relationships.");
