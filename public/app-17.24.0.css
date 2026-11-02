@@ -186,3 +186,6 @@
 .authorReadinessFootnote{font-size:11px;margin:10px 0 0}
 .authorWorkFocus{outline:2px solid var(--in-sapphire,#4f8cff);outline-offset:3px}
 @media(max-width:520px){.authorReadinessHeading{display:grid;gap:5px}.authorReadinessHeading>b{white-space:normal}}
+
+.authorPlanningSignals{display:flex;flex-wrap:wrap;gap:5px;margin-top:7px}
+.authorPlanningSignals span{font-size:10px;line-height:1.4;padding:4px 7px;border-radius:7px;background:var(--panel,#fff);color:var(--muted,#687080);border:1px solid var(--line,rgba(139,92,246,.15))}
