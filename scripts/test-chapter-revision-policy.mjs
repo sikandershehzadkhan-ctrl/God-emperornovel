@@ -16,10 +16,23 @@ assert.ok(patch.includes("validateComicChapterContent(content)"), "Edited comic 
 assert.ok(patch.includes("content.length>100000"), "Edited chapter content must have a size limit.");
 const history = source.slice(revisionsAt, source.indexOf('if(/^\\/api\\/author\\/chapters\\/\\d+\\/publish$/.test(p)&&m==="POST")', revisionsAt));
 assert.ok(history.includes("You do not own this chapter"), "Revision history must enforce the same ownership boundary.");
-assert.ok(history.includes("ORDER BY id DESC LIMIT 30"), "Revision history must be bounded and newest-first.");
+assert.ok(history.includes("ORDER BY id DESC LIMIT 10"), "Revision history must be bounded and newest-first.");
 for (const field of ["chapter_id", "chapter_number", "title", "content", "is_locked", "ticket_cost", "editor_user_id", "created_at"]) {
   assert.ok(migration.includes(field), "Revision snapshots must retain " + field + ".");
 }
 assert.ok(migration.includes("ON DELETE CASCADE"), "Chapter deletion must remove its dependent revisions.");
 assert.ok(migration.includes("idx_chapter_revisions_chapter_created"), "Revision history must have a chapter/time index.");
-console.log("Chapter revision policy checks passed.");
+const app = fs.readFileSync("public/app.js", "utf8");
+const shipped = fs.readFileSync("public/app-17.24.0.js", "utf8");
+const css = fs.readFileSync("public/app-17.24.0.css", "utf8");
+for (const [label, browser] of [["source", app], ["served asset", shipped]]) {
+  assert.ok(browser.includes("async function openAuthorChapterManager"), label + " must provide the chapter management view.");
+  assert.ok(browser.includes("authorManageChapters"), label + " must expose chapter management from each story.");
+  assert.ok(browser.includes("authorChapterEditForm"), label + " must provide chapter editing.");
+  assert.ok(browser.includes("method:'PATCH'"), label + " must save chapter edits through the owner-scoped API.");
+  assert.ok(browser.includes("/revisions"), label + " must expose revision history.");
+  assert.ok(browser.includes("A revision snapshot is created automatically"), label + " must explain automatic snapshots.");
+}
+assert.equal(app, shipped, "Source and served app assets must remain identical.");
+assert.ok(css.includes(".authorChapterManager") && css.includes(".authorRevisionItem"), "Chapter management and revision history need responsive styling.");
+console.log("Chapter revision policy and UI checks passed.");
