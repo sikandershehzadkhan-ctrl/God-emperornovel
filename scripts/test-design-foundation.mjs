@@ -304,3 +304,9 @@ assert.ok(css.includes('body .mobileNav a[href="/account"]{')&&css.includes("dis
 assert.ok(css.includes("body .mobileNav{")&&css.includes("position:fixed!important")&&css.includes("inset:auto 0 0 0!important"),"Mobile navigation must remain fixed to the viewport bottom.");
 assert.ok(css.includes("env(safe-area-inset-bottom)"),"Mobile navigation must respect device safe-area insets.");
 assert.ok(css.includes("body .footerInner{padding-bottom:calc(76px + env(safe-area-inset-bottom))}"),"Footer content must remain reachable above the fixed mobile navigation.");
+
+/* Homepage narrow-screen story-card overflow regression checks. */
+for(const selector of [".homePage .homeStoryGrid .cardBody,",".homePage .homeStoryGrid .cardTitle,",".homePage .homeStoryGrid .meta{display:flex;flex-wrap:wrap;align-items:flex-start;gap:5px}",".homePage .homeStoryGrid .meta span{max-width:100%;white-space:normal;overflow-wrap:anywhere;line-height:1.35}"]){
+  assert.ok(css.includes(selector),"Homepage story cards must support narrow translated content without horizontal overflow: "+selector);
+}
+assert.ok(css.includes("@media(max-width:390px){\n  .homePage .homeStoryGrid .cardTitle{font-size:13px;overflow-wrap:anywhere}"),"Very narrow phones must wrap long story titles and compact metadata safely");
