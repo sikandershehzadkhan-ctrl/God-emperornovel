@@ -22,5 +22,5 @@ assert.match(route,/env\.DB\.batch\(\[/,"review creation, claim, and event must 
 assert.match(route,/INSERT INTO account_deletion_review_events[\s\S]*'case_claimed'[\s\S]*changes\(\)=1/,"claim audit event must be conditional on the successful claim");
 assert.match(route,/eventChanges!==1/,"missing audit event must fail the request");
 assert.match(route,/return json\(\{error:"This case is unavailable or is currently claimed by another reviewer\."\},409\)/,"claim conflicts must not leak case data");
-assert.match(route,/finalization|DELETE FROM account_deletion_requests/,"claim route must not perform finalization or deletion");
+assert.doesNotMatch(route,/finalization|DELETE FROM account_deletion_requests/,"claim route must not perform finalization or deletion");
 console.log("PASS: account deletion review claims require explicit active permission, use ten-minute versioned leases, reject self-claims and active competing leases, and atomically append audit events.");
