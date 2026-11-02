@@ -76,6 +76,7 @@ assert.ok(css.includes(".homeStoryGrid .card:focus-visible"),"Story cards must h
 assert.equal((html.match(/imperial-design-foundation\.css/g)||[]).length,1,"Design foundation must be linked exactly once");
 assert.ok(html.indexOf("imperial-glass.css")<html.indexOf("imperial-design-foundation.css"),"Foundation must load after legacy global styles");
 assert.equal(sourceApp,releaseApp,"Editable and versioned browser bundles must remain synchronized");
+assert.ok(sourceApp.includes('class="imperialHeroSeal"><img src="/imperial-novel-app-icon.svg" alt="" width="184" height="184" loading="eager" decoding="async" fetchpriority="high"'),"Above-the-fold imperial crest must load eagerly at high priority");
 assert.match(html,/<script src="\/app-17\.23\.0\.js" defer fetchpriority="high"><\/script>/,"The deferred application entry bundle must receive high fetch priority so the homepage shell is not needlessly delayed.");
 for(const label of ["Home","Discover","Trending","Rankings","Library","Community","Create"]){
   assert.ok(sourceApp.includes(">"+label+"</a>"),"Primary desktop navigation must include "+label);
