@@ -20,7 +20,7 @@ assert.ok(app.includes('[data-in-lang-key]'),"Explicitly marked homepage text no
 assert.ok(app.includes('[data-in-lang-placeholder]'),"Search placeholders must update when the interface language changes.");
 assert.ok(homepageLoader.includes('setINLang(document.documentElement.lang||"en");'),"Saved locale must be applied after homepage markup is inserted into the document.");
 assert.ok(app.includes('data-in-lang-key="Open a world."')&&app.includes('data-in-lang-key="Shape an empire."'),"The homepage hero headline must expose translation-safe text spans.");
-const localeMatch=app.match(/const IN_LANG=(\\{[\\s\\S]*?\\});function setINLang/);
+const localeMatch=app.match(/const IN_LANG=(\{[\s\S]*?\});function setINLang/);
 assert.ok(localeMatch,"The language dictionary must remain a single parseable object.");
 const localeDictionary=JSON.parse(localeMatch[1]);
 assert.equal(Object.keys(localeDictionary).length,14,"The existing fourteen interface locales must be retained.");
