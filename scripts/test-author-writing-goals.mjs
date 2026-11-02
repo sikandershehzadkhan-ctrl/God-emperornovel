@@ -72,4 +72,11 @@ assert.ok(app.includes("authorGoalRows.map")&&app.includes("authorReadinessRows.
 assert.ok(app.includes("authorPlanningSignals")&&app.includes("readiness items need attention"),"Planning queue must surface writing targets and readiness attention.");
 assert.ok(app.includes("await Promise.all([loadAuthorGoals(),loadAuthorReadiness()])"),"Goal and readiness data must load concurrently before planning queue composition.");
 
-console.log("Author writing goals, private notes, editorial readiness and planning integration checks passed.");
+
+assert.ok(notesRoute.includes('if(authorNote&&m==="PATCH")'),"Private notes API must support authenticated updates.");
+assert.ok(app.includes("authorNoteEditForm")&&shipped.includes("authorNoteEditForm"),"Creators must have an inline private-note editor.");
+assert.ok(app.includes("method:'PATCH'")&&shipped.includes("method:'PATCH'"),"Inline note edits must call the owner-scoped PATCH endpoint.");
+assert.ok(app.includes("Private note updated.")&&shipped.includes("Private note updated."),"Successful note edits must provide feedback.");
+assert.ok(css.includes(".authorNoteEditForm")&&css.includes(".authorNoteActions"),"Private note editing controls must be styled.");
+
+console.log("Author writing goals, editable private notes, editorial readiness and planning integration checks passed.");
