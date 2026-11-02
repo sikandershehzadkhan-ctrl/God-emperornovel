@@ -9,6 +9,20 @@ async function apiWithTimeout(path,opt={},timeoutMs=12000){
  catch(error){if(error?.name==='AbortError')throw new Error('The request took too long. Please try again.');throw error}
  finally{clearTimeout(timer)}
 }
+async function apiGetWithRetry(path,attempts=3){
+ let lastError;
+ for(let attempt=0;attempt<attempts;attempt++){
+  try{return await apiWithTimeout(path,{method:'GET'})}
+  catch(error){
+   lastError=error;
+   const status=Number(error?.status||0);
+   const retryable=!status||status===408||status===429||status>=500;
+   if(!retryable||attempt===attempts-1)throw error;
+   await new Promise(resolve=>setTimeout(resolve,350*(attempt+1)));
+  }
+ }
+ throw lastError||new Error('Unable to load this chapter. Please try again.');
+}
 function iconSvg(name){const p={search:'<circle cx="11" cy="11" r="7"/><path d="m20 20-4-4"/>',home:'<path d="m3 10 9-7 9 7"/><path d="M5 9v11h14V9"/><path d="M9 20v-6h6v6"/>',compass:'<circle cx="12" cy="12" r="10"/><path d="m16 8-3 6-5 2 2-5 6-3Z"/>',library:'<path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2Z"/>',pen:'<path d="m15 5 4 4"/><path d="M4 20h4L19 9a2.8 2.8 0 0 0-4-4L4 16v4Z"/>',users:'<path d="M16 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="10" cy="7" r="4"/><path d="M20 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/>',bell:'<path d="M18 8a6 6 0 0 0-12 0c0 7-3 7-3 9h18c0-2-3-2-3-9"/><path d="M10 21h4"/>',user:'<circle cx="12" cy="8" r="5"/><path d="M20 21a8 8 0 0 0-16 0"/>',trending:'<path d="m3 17 6-6 4 4 8-9"/><path d="M15 6h6v6"/>',genres:'<path d="m12 3 9 5-9 5-9-5 9-5Z"/><path d="m3 12 9 5 9-5M3 16l9 5 9-5"/>',rank:'<path d="M8 21h8M12 17v4"/><path d="M7 4h10l-1 8a4 4 0 0 1-8 0L7 4Z"/><path d="M7 6H4v2a4 4 0 0 0 4 4M17 6h3v2a4 4 0 0 1-4 4"/>',crown:'<path d="m2 8 5 4 5-8 5 8 5-4-2 12H4L2 8Z"/><path d="M4 16h16"/>',sparkles:'<path d="m12 3 1.9 5.8L20 11l-6.1 2.2L12 19l-1.9-5.8L4 11l6.1-2.2L12 3Z"/><path d="m19 14 1.2 2.8L23 18l-2.8 1.2L19 22l-1.2-2.8L15 18l2.8-1.2L19 14Z"/>'};return '<svg class="imperialIcon" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false">'+(p[name]||p.sparkles)+'</svg>'}
 function img(url,title=''){
   const t=String(title||'').toLowerCase();
@@ -186,10 +200,21 @@ async function loadComments(id){
 async function chapters(){const id=location.pathname.split('/')[2];const n=await api('/api/novels/'+id);const root=$('#app');root.innerHTML=pageStart(n.title,'Complete chapter archive')+`<div class="toolbar"><a class="primary" href="/read/${id}/1">Start at Chapter 1</a><button id="batch" class="secondary">Batch Unlock</button></div><div class="chapterList">${n.chapters.map(ch=>chapterRow(ch,id)).join('')}</div></div></div>`;$('#batch').onclick=async()=>{try{const count=Number(prompt('Batch size: 10, 25, 50 or 100','10'));if(![10,25,50,100].includes(count))return;const d=await api('/api/novels/'+id+'/batch-unlock',{method:'POST',body:JSON.stringify({count,start_chapter:1})});alert(`Unlocked ${d.unlocked} chapters for ${d.cost} Imperial Crowns. Balance: ${d.tickets} Imperial Crowns`);location.reload()}catch(e){alert(e.message)}}}
 async function reader(){
  const parts=location.pathname.split('/');const id=parts[2],num=Math.max(1,Number(parts[3]||1));
- const n=await api('/api/novels/'+id);const ch=n.chapters.find(x=>Number(x.chapter_number)===num);if(!ch){location.href='/novel/'+id+'/chapters';return}
- const d=await api('/api/chapters/'+ch.id);const total=n.chapters.length;
- const stored=Number(localStorage.getItem('readerProgress:'+id)||0);const chapterPct=Math.min(100,Math.max(0,Number.isFinite(stored)&&num===Number(localStorage.getItem('readerProgressChapter:'+id))?stored:0));
  const root=$('#app');
+ root.innerHTML='<section class="readerLoadState" role="status" aria-live="polite"><span class="readerLoadSpinner" aria-hidden="true"></span><h1>Preparing your chapter</h1><p>Loading the novel and checking chapter access…</p></section>';
+ let n,ch,d;
+ try{
+  n=await apiGetWithRetry('/api/novels/'+id);
+  ch=n.chapters.find(x=>Number(x.chapter_number)===num);
+  if(!ch){location.href='/novel/'+id+'/chapters';return}
+  d=await apiGetWithRetry('/api/chapters/'+ch.id);
+ }catch(error){
+  root.innerHTML=`<section class="readerLoadState readerLoadError" role="alert"><h1>Chapter could not load</h1><p>${esc(error?.message||'A temporary connection problem occurred.')}</p><button id="retryChapterLoad" class="primary" type="button">Try again</button><a class="secondary" href="/novel/${encodeURIComponent(id)}/chapters">Back to chapters</a></section>`;
+  $('#retryChapterLoad').onclick=()=>reader();
+  return;
+ }
+ const total=n.chapters.length;
+ const stored=Number(localStorage.getItem('readerProgress:'+id)||0);const chapterPct=Math.min(100,Math.max(0,Number.isFinite(stored)&&num===Number(localStorage.getItem('readerProgressChapter:'+id))?stored:0));
  const chapterList=n.chapters.map(x=>`<a class="readerChapterItem ${Number(x.chapter_number)===num?'current':''}" href="/read/${id}/${Number(x.chapter_number)}"><span>Chapter ${Number(x.chapter_number)}</span><span>${esc(x.title)} ${x.is_locked?'🔒':''}</span></a>`).join('');
  const bookmarked=Number(n.bookmark||0)===num;
  const initialNovelProgress=Math.min(100,Math.round((num/Math.max(total,1))*100));
