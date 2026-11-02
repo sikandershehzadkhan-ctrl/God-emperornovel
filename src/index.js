@@ -811,7 +811,7 @@ if(p==="/api/author/feedback"&&m==="GET"){
   if(!Number.isInteger(targetChapters)||targetChapters<0||targetChapters>10000)return json({error:'Chapter target must be a whole number from 0 to 10,000.'},400);
   if(!Number.isInteger(targetWords)||targetWords<0||targetWords>5000000)return json({error:'Word target must be a whole number from 0 to 5,000,000.'},400);
   const rawDate=String(b.target_date??'').trim();
-  if(rawDate&&!/^\\d{4}-\\d{2}-\\d{2}$/.test(rawDate))return json({error:'Target date must use YYYY-MM-DD.'},400);
+  if(rawDate&&!/^\d{4}-\d{2}-\d{2}$/.test(rawDate))return json({error:'Target date must use YYYY-MM-DD.'},400);
   if(rawDate&&new Date(rawDate+'T00:00:00Z').toISOString().slice(0,10)!==rawDate)return json({error:'Target date is not a valid calendar date.'},400);
   if(targetChapters===0&&targetWords===0&&!rawDate){
    const removed=await env.DB.prepare('DELETE FROM author_story_goals WHERE novel_id=? AND owner_user_id=? AND EXISTS(SELECT 1 FROM novels WHERE id=? AND owner_user_id=?)').bind(novelId,u.id,novelId,u.id).run();
