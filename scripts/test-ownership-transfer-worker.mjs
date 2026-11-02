@@ -831,6 +831,24 @@ try {
     "Expired-lease takeover must increment the review version");
   assert.equal(takeover.data.review.claimed_by,takeoverReviewer.user.id,
     "Expired-lease takeover must assign the case to the second reviewer");
+  const unassignedDetail=await request(baseUrl,"/api/admin/account-deletion/reviews/"+requestId,{cookie:owner.cookie});
+  assert.equal(unassignedDetail.response.status,403,"Accounts without a reviewer assignment must not read case details");
+  const requesterDetail=await request(baseUrl,"/api/admin/account-deletion/reviews/"+requestId,{cookie:spectator.cookie});
+  assert.equal(requesterDetail.response.status,404,"The requester must not inspect their own review case");
+  const supportDetail=await request(baseUrl,"/api/admin/account-deletion/reviews/"+requestId,{cookie:moderator.cookie});
+  assert.equal(supportDetail.response.status,200,JSON.stringify(supportDetail.data));
+  assert.equal(supportDetail.data.read_only,true);
+  assert.equal(supportDetail.data.finalization_enabled,false);
+  assert.equal(supportDetail.data.creator_ownership,null,"Support reviewers must not receive creator ownership metadata");
+  assert.equal(supportDetail.data.sections.creator_ownership,false);
+  const creatorDetail=await request(baseUrl,"/api/admin/account-deletion/reviews/"+requestId,{cookie:recipient.cookie});
+  assert.equal(creatorDetail.response.status,200,JSON.stringify(creatorDetail.data));
+  assert.equal(creatorDetail.data.sections.creator_ownership,true,"Creator-rights reviewers must receive only their permitted ownership summary");
+  assert.equal(creatorDetail.data.creator_ownership.evidence_contents_exposed,false);
+  assert.equal(Number(creatorDetail.data.creator_ownership.novel_count),0);
+  assert.ok(creatorDetail.data.events.some(event=>event.event_type==="case_claimed"),"Case details must include the minimized claim history");
+  assert.doesNotMatch(JSON.stringify(creatorDetail.data),/email|password_hash|session_token|rights_evidence|chapter_content/i,
+    "Case details must not disclose credentials, contact data, raw rights evidence, or chapter content");
   const repeatClaim=await request(baseUrl,"/api/admin/account-deletion/reviews/"+requestId+"/claim",{
     method:"POST",cookie:moderator.cookie,origin:baseUrl
   });
