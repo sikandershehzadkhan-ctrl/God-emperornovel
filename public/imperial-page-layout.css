@@ -325,3 +325,302 @@ html[data-theme="dark"] .stat b {
     width: min(48%, 160px);
   }
 }
+
+
+/* Route-family surfaces: catalog, taxonomy, profiles, and account workspaces. */
+.catalogTop,
+.authorHero,
+.form.panel,
+.panel {
+  min-width: 0;
+  border-color: var(--ds-border);
+  border-radius: var(--radius-lg);
+  background: var(--ds-surface);
+  color: var(--ds-text);
+  box-shadow: var(--shadow-card);
+}
+
+.catalogTop {
+  padding: clamp(14px, 2vw, 22px);
+}
+
+.catalogSearch {
+  min-width: 0;
+  margin-bottom: 14px;
+}
+
+.catalogSearch .search {
+  width: 100%;
+  min-height: 48px;
+  border: 1px solid var(--ds-border-strong);
+  border-radius: var(--radius-md);
+  background: var(--ds-surface-raised);
+}
+
+.catalogSearch input {
+  width: 100%;
+  min-width: 0;
+  background: transparent;
+  color: var(--ds-text);
+}
+
+.filterRow {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 150px), 1fr));
+  gap: 10px;
+}
+
+.filterGroup {
+  display: grid;
+  min-width: 0;
+  gap: 6px;
+}
+
+.filterLabel {
+  color: var(--ds-text-muted);
+  font-size: .78rem;
+  font-weight: 650;
+}
+
+.filterGroup select {
+  width: 100%;
+  min-width: 0;
+}
+
+.catalogGrid,
+.catalogResults,
+.genreGrid {
+  min-width: 0;
+}
+
+.catalogCard {
+  min-width: 0;
+  overflow: hidden;
+  border: 1px solid var(--ds-border);
+  border-radius: var(--radius-lg);
+  background: var(--ds-surface);
+  color: var(--ds-text);
+  box-shadow: var(--shadow-card);
+  transition: border-color var(--motion-fast) var(--ease-standard), transform var(--motion-fast) var(--ease-standard);
+}
+
+.catalogCard:hover {
+  border-color: var(--imperial-purple);
+  transform: translateY(-2px);
+}
+
+.catalogCover {
+  position: relative;
+  overflow: hidden;
+  aspect-ratio: 3 / 4;
+  background: var(--ds-surface-muted);
+}
+
+.catalogCover img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.catalogBody {
+  min-width: 0;
+  padding: 12px;
+}
+
+.catalogTitle {
+  color: var(--ds-text);
+  font-family: var(--font-display);
+  font-weight: 750;
+  line-height: 1.35;
+  overflow-wrap: anywhere;
+}
+
+.catalogStats {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px 10px;
+  color: var(--ds-text-muted);
+  font-size: .78rem;
+  font-variant-numeric: tabular-nums;
+}
+
+.catalogTags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 5px;
+  margin-top: 9px;
+}
+
+.catalogTags .pill,
+.genreCard .pill {
+  max-width: 100%;
+  overflow-wrap: anywhere;
+}
+
+.genreCard {
+  display: flex;
+  min-width: 0;
+  min-height: 132px;
+  flex-direction: column;
+  justify-content: center;
+  gap: 8px;
+  padding: clamp(14px, 2vw, 22px);
+  border: 1px solid var(--ds-border);
+  border-radius: var(--radius-lg);
+  background: var(--ds-surface);
+  color: var(--ds-text);
+  text-decoration: none;
+  transition: border-color var(--motion-fast) var(--ease-standard), background-color var(--motion-fast) var(--ease-standard), transform var(--motion-fast) var(--ease-standard);
+}
+
+.genreCard:hover {
+  border-color: var(--imperial-purple);
+  background: var(--imperial-purple-soft);
+  transform: translateY(-2px);
+}
+
+.genreCard h3 {
+  margin: 0;
+  color: var(--ds-text);
+  font-family: var(--font-display);
+}
+
+.genreGlyph {
+  color: var(--imperial-purple);
+}
+
+.tabs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  padding: 5px;
+  border: 1px solid var(--ds-border);
+  border-radius: var(--radius-lg);
+  background: var(--ds-surface-muted);
+}
+
+.tabs a {
+  min-height: 42px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 8px 14px;
+  border-radius: var(--radius-md);
+  color: var(--ds-text-muted);
+  text-decoration: none;
+}
+
+.tabs a.active,
+.tabs a[aria-current="page"] {
+  background: var(--ds-surface);
+  color: var(--imperial-purple-hover);
+  box-shadow: var(--shadow-card);
+}
+
+.authorHero {
+  display: flex;
+  align-items: center;
+  gap: 18px;
+  padding: clamp(18px, 3vw, 28px);
+}
+
+.authorAvatar {
+  width: 64px;
+  height: 64px;
+  flex: 0 0 64px;
+  display: grid;
+  place-items: center;
+  border: 1px solid var(--ds-border);
+  border-radius: 50%;
+  background: var(--imperial-purple-soft);
+  color: var(--imperial-purple);
+  font-size: 1.6rem;
+}
+
+.authorHero h2 {
+  margin: 0 0 6px;
+  color: var(--ds-text);
+  font-family: var(--font-display);
+}
+
+.authorHero p {
+  margin: 0;
+  color: var(--ds-text-muted);
+}
+
+.form.panel {
+  width: min(100%, 560px);
+  margin-inline: auto;
+  padding: clamp(18px, 4vw, 32px);
+}
+
+html[data-theme="dark"] :where(.catalogTop, .catalogCard, .genreCard, .authorHero, .form.panel, .panel) {
+  border-color: var(--ds-border);
+  background-color: var(--ds-surface);
+  color: var(--ds-text);
+}
+
+html[data-theme="dark"] .catalogTitle,
+html[data-theme="dark"] .genreCard h3,
+html[data-theme="dark"] .authorHero h2 {
+  color: var(--ds-text);
+}
+
+html[data-theme="dark"] .genreCard:hover {
+  background: rgba(139, 92, 246, .14);
+}
+
+@media (max-width: 760px) {
+  .catalogTop {
+    padding: 12px;
+  }
+
+  .filterRow {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .catalogBody {
+    padding: 9px;
+  }
+
+  .catalogStats {
+    gap: 5px 8px;
+    font-size: .72rem;
+  }
+
+  .genreCard {
+    min-height: 116px;
+    padding: 14px;
+  }
+
+  .tabs {
+    overflow-x: auto;
+    flex-wrap: nowrap;
+    scrollbar-width: thin;
+    overscroll-behavior-x: contain;
+  }
+
+  .tabs a {
+    flex: 0 0 auto;
+    white-space: nowrap;
+  }
+}
+
+@media (max-width: 380px) {
+  .filterRow {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .authorHero {
+    align-items: flex-start;
+    gap: 12px;
+  }
+
+  .authorAvatar {
+    width: 48px;
+    height: 48px;
+    flex-basis: 48px;
+    font-size: 1.25rem;
+  }
+}
