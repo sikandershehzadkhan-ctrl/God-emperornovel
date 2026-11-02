@@ -18,7 +18,7 @@ function declarations(source) {
     .map((match) => [match[1], match[2].trim()]));
 }
 function resolveToken(value, tokens, seen = new Set()) {
-  const reference = String(value || "").match(/^var\\((--[\\w-]+)\\)$/);
+  const reference = String(value || "").match(/^var\((--[\w-]+)\)$/);
   if (!reference) return value;
   if (seen.has(reference[1])) return "";
   seen.add(reference[1]);
