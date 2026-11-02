@@ -69,3 +69,19 @@ Status: design only. This document does not authorize or implement account erasu
 - Automatic erasure of backups or external provider records.
 
 This design must be reviewed against applicable Pakistani law and any other jurisdictions in which Imperial Novel operates before a finalization implementation is approved.
+
+## First implementation boundary
+
+The first reversible API milestone is implemented in the development branch with migration `0014_account_deletion_requests.sql`:
+
+- `GET /api/me/deletion-request` returns only the authenticated account's latest request.
+- `POST /api/me/deletion-request` requires an authenticated session and the current password, then creates one idempotent request with a 30-day scheduled date.
+- `POST /api/me/deletion-request/cancel` cancels only that authenticated account's active request.
+- Per-IP and per-account rate limits protect request and cancellation operations.
+- Accounts that own novels enter `review_required`; other accounts enter `pending_deletion`.
+- A partial unique index permits only one active request per account. The foreign key uses `ON DELETE RESTRICT` so an ordinary user-row delete cannot silently discard the request history.
+- The request and cancellation APIs do not delete, anonymize, transfer, or modify novels, chapters, financial records, sessions, or user profile data. No scheduled finalizer exists.
+
+The local Worker/D1 integration suite now exercises unauthenticated denial, incorrect-password denial, creator review routing, duplicate-request idempotency, cross-account cancellation denial, cancellation, and creator-content preservation. A separate SQLite migration test checks active-request uniqueness, re-request after cancellation, and restrictive user-row retention.
+
+This is an API foundation, not a finished account-deletion user experience. The account settings interface, verified notification, session policy, legal retention review, dependency-resolution workflow, and manually approved finalization process remain outstanding. In particular, the 30-day date is not permission for automatic erasure.
