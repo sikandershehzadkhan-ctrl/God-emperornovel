@@ -23,6 +23,9 @@ assert.ok(homepageLoader.includes("void (async()=>{"),"Catalog and discovery req
 assert.ok(homepageLoader.includes("void refreshPlatformPulse();"),"The initial live overview must not block homepage navigation from becoming interactive.");
 assert.ok(!homepageLoader.includes("await refreshPlatformPulse();"),"Homepage boot must not wait for the real-time panel's network response.");
 assert.ok(homepageLoader.includes("Promise.all([apiWithTimeout('/api/novels?sort=trending&limit=10'),apiWithTimeout('/api/novels?sort=updated&limit=10')])"),"Trending and latest catalog shelves must load concurrently.");
+const trendingSectionIndex=homepageLoader.indexOf('<section class="section nextShelf">');
+const platformPulseSectionIndex=homepageLoader.indexOf('<section class="platformPulse"');
+assert.ok(trendingSectionIndex>=0&&platformPulseSectionIndex>trendingSectionIndex,"Reader-facing trending stories must appear before platform activity metrics in the homepage flow.");
 assert.ok(homepageLoader.includes("const trendingNovelIds=new Set(trendRows.map(row=>Number(row.id))"),"Homepage must identify novels already displayed in the trending shelf.");
 assert.ok(homepageLoader.includes("const distinctLatestRows=latestRows.filter(row=>!trendingNovelIds.has(Number(row.id)))"),"Latest-updates shelf must not repeat novels already shown in trending.");
 assert.ok(homepageLoader.includes("renderHomeStories('#latest',distinctLatestRows"),"Latest-updates shelf must render the de-duplicated list.");
