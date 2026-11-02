@@ -31,4 +31,25 @@ assert.ok(app.includes("esc(story.title")&&shipped.includes("esc(story.title"),"
 assert.ok(app.includes("authorGoalClear")&&shipped.includes("authorGoalClear"),"Creators must be able to clear goals.");
 assert.ok(css.includes(".authorGoalFields")&&css.includes("@media(max-width:560px)"),"Writing goal controls must have a phone layout.");
 assert.equal(app,shipped,"Source and served app JavaScript must remain identical.");
-console.log("Author writing goals policy, ownership, migration, UI and asset parity checks passed.");
+
+const notesAt=worker.indexOf('if(p==="/api/author/notes"&&m==="GET")');
+assert.ok(notesAt>=0,"Private creator notes GET route must exist.");
+const notesRoute=worker.slice(notesAt,worker.indexOf('if(p==="/api/author/planning"',notesAt));
+assert.ok(notesRoute.includes("const e=author(u)"),"Private note endpoints must require author access.");
+assert.ok(notesRoute.includes("pn.owner_user_id=? AND n.owner_user_id=?"),"Private note reads must be owner-scoped.");
+assert.ok(notesRoute.includes("SELECT ?,n.id,?,? FROM novels n WHERE n.id=? AND n.owner_user_id=?"),"Note creation must atomically verify story ownership.");
+assert.ok(notesRoute.includes("c.id=? AND c.novel_id=n.id"),"Chapter notes must verify the chapter belongs to the selected story.");
+assert.ok(notesRoute.includes("note.length>4000"),"Private notes must be length-bounded.");
+assert.ok(notesRoute.includes("author_private_notes.novel_id AND n.owner_user_id=?"),"Note updates and deletes must recheck story ownership.");
+assert.ok(notesRoute.includes("author_private_note_created")&&notesRoute.includes("author_private_note_updated")&&notesRoute.includes("author_private_note_deleted"),"Private note mutations must be audit logged.");
+assert.ok(app.includes("authorNotesPanel")&&shipped.includes("authorNotesPanel"),"Author Studio must render the private notes panel.");
+assert.ok(app.includes("api('/api/author/notes'")&&shipped.includes("api('/api/author/notes'"),"Private notes UI must use the authenticated API.");
+assert.ok(app.includes("esc(n.note||'')")&&shipped.includes("esc(n.note||''"),"Private note content must be escaped before rendering.");
+assert.ok(app.includes("authorNoteDelete")&&shipped.includes("authorNoteDelete"),"Creators must be able to delete their notes.");
+assert.ok(css.includes(".authorNoteForm")&&css.includes(".authorNoteItem"),"Private notes must have styled form and list states.");
+const notesMigration=fs.readFileSync("migrations/0015_author_private_notes.sql","utf8");
+assert.ok(notesMigration.includes("FOREIGN KEY(owner_user_id) REFERENCES users(id) ON DELETE CASCADE"),"Private notes must cascade with account deletion.");
+assert.ok(notesMigration.includes("CHECK(length(note) BETWEEN 1 AND 4000)"),"D1 must enforce private note length.");
+assert.ok(notesMigration.includes("idx_author_private_notes_owner_story_updated")&&notesMigration.includes("idx_author_private_notes_chapter"),"Private note lookup indexes must exist.");
+
+console.log("Author writing goals and private notes policy, ownership, migration, UI and asset parity checks passed.");
