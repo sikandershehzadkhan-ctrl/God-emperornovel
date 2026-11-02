@@ -14,7 +14,8 @@ for (const locale of locales) {
   for (const key of keys) assert.ok(dictionaries[locale][key], 'Missing ' + locale + ' translation: ' + key);
 }
 assert.equal(Object.keys(dictionaries).length, 14);
-assert.equal(Object.keys(dictionaries.en).length, 42);
+assert.equal(Object.keys(dictionaries.en).length, 54);
+for (const key of ["THE CURRENT ROTATION","NOT JUST ANOTHER READER","Spot story signals, explore metadata and find creators worth inviting. Rights review stays in control.","Read the signals ↗","Shape your premise, build a story bible and draft chapters in a focused studio.","Build your world ↗","Find your people, trade theories and make a fandom feel alive.","Join the conversation ↗","A rights-first gateway for approved sources, creator attribution and future partnerships.","Explore the portal ↗","YOUR IDEAS DESERVE A WORLD","FRESH FROM THE REALM"]) for (const locale of locales) assert.ok(dictionaries[locale][key], 'Missing ' + locale + ' translation: ' + key);
 assert.ok(app.includes('const applyHomeLanguage='), 'Homepage translation helper missing');
 assert.ok(app.includes('new MutationObserver(()=>applyHomeLanguage())'), 'Homepage async catalog updates must be re-localized');
 assert.ok(app.includes('if(e.textContent!==(t[key]||key))e.textContent=t[key]||key'), 'Shared localization must avoid repeated DOM mutations');
