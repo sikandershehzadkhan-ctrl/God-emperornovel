@@ -43,7 +43,7 @@ function contrast(first, second) {
 }
 
 const root = declarations(block(":root"));
-const dark = declarations(block('html[data-theme="dark"]'));
+const dark = declarations(block('html[data-theme="dark"],'));
 const midnight = declarations(block('html[data-theme="midnight"]'));
 const imperial = declarations(block('html[data-theme="imperial"]'));
 const cosmic = declarations(block('html[data-theme="cosmic"]'));
