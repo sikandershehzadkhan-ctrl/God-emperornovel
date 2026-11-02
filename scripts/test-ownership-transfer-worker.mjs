@@ -44,6 +44,7 @@ async function waitForWorker(baseUrl) {
 async function request(baseUrl, path, options = {}) {
   const headers = {};
   if (options.cookie) headers.cookie = options.cookie;
+  if (options.origin) headers.origin = options.origin;
   if (options.body !== undefined) headers["content-type"] = "application/json";
   const response = await fetch(baseUrl + path, {
     method: options.method || "GET", headers,
@@ -783,6 +784,68 @@ try {
   const readerDeletion=await request(baseUrl,"/api/me/deletion-request",{method:"POST",cookie:spectator.cookie,body:{password:"Integration-Test-Password-2026!"}});
   assert.equal(readerDeletion.response.status,201,JSON.stringify(readerDeletion.data));
   assert.equal(readerDeletion.data.request.status,"pending_deletion","Non-creator accounts enter cooling-off state");
+
+  // Account-deletion review claims are exercised through the real local Worker + isolated D1.
+  const requestId=Number(readerDeletion.data.request.id);
+  const missingOriginAssignment=await request(baseUrl,"/api/admin/account-deletion/reviewer-roles",{
+    method:"POST",cookie:administrator.cookie,body:{user_id:moderator.user.id,role_key:"support_reviewer"}
+  });
+  assert.equal(missingOriginAssignment.response.status,403,"Reviewer role mutations must reject requests without same-origin proof");
+  for (const [target,role] of [
+    [moderator,"support_reviewer"],
+    [recipient,"creator_rights_reviewer"],
+    [spectator,"support_reviewer"]
+  ]) {
+    const assigned=await request(baseUrl,"/api/admin/account-deletion/reviewer-roles",{
+      method:"POST",cookie:administrator.cookie,origin:baseUrl,
+      body:{user_id:target.user.id,role_key:role}
+    });
+    assert.equal(assigned.response.status,201,JSON.stringify(assigned.data));
+  }
+  const unassignedQueue=await request(baseUrl,"/api/admin/account-deletion/reviews",{cookie:owner.cookie});
+  assert.equal(unassignedQueue.response.status,403,"An unassigned account must not read the deletion review queue");
+  const assignedQueue=await request(baseUrl,"/api/admin/account-deletion/reviews",{cookie:moderator.cookie});
+  assert.equal(assignedQueue.response.status,200,JSON.stringify(assignedQueue.data));
+  assert.ok(assignedQueue.data.reviews.some(row=>Number(row.request_id)===requestId),"The active deletion request must appear in the minimal review queue");
+  const selfClaim=await request(baseUrl,"/api/admin/account-deletion/reviews/"+requestId+"/claim",{
+    method:"POST",cookie:spectator.cookie,origin:baseUrl
+  });
+  assert.equal(selfClaim.response.status,409,"The requester must not claim their own deletion case");
+  const claims=await Promise.all([
+    request(baseUrl,"/api/admin/account-deletion/reviews/"+requestId+"/claim",{method:"POST",cookie:moderator.cookie,origin:baseUrl}),
+    request(baseUrl,"/api/admin/account-deletion/reviews/"+requestId+"/claim",{method:"POST",cookie:recipient.cookie,origin:baseUrl})
+  ]);
+  assert.deepEqual(claims.map(x=>x.response.status).sort(),[200,409],"Exactly one competing reviewer must acquire the active lease");
+  const winningClaim=claims.find(x=>x.response.status===200);
+  assert.equal(winningClaim.data.ok,true);
+  assert.equal(winningClaim.data.lease_minutes,10);
+  const reviewId=Number(winningClaim.data.review.id);
+  const auditBeforeExpiry=executeLocalSql("SELECT COUNT(*) AS count FROM account_deletion_review_events WHERE review_id="+reviewId);
+  assert.equal(Number(auditBeforeExpiry[0].count),1,"Successful claim must append exactly one immutable event");
+  executeLocalSql("UPDATE account_deletion_reviews SET claim_expires_at='2000-01-01T00:00:00.000Z',version=version+1 WHERE id="+reviewId);
+  const takeoverReviewer=claims[0].response.status===200?recipient:moderator;
+  const takeover=await request(baseUrl,"/api/admin/account-deletion/reviews/"+requestId+"/claim",{
+    method:"POST",cookie:takeoverReviewer.cookie,origin:baseUrl
+  });
+  assert.equal(takeover.response.status,200,JSON.stringify(takeover.data));
+  assert.equal(Number(takeover.data.review.version),Number(winningClaim.data.review.version)+2,
+    "Expired-lease takeover must increment the review version");
+  const auditAfterTakeover=executeLocalSql("SELECT COUNT(*) AS count FROM account_deletion_review_events WHERE review_id="+reviewId);
+  assert.equal(Number(auditAfterTakeover[0].count),2,"Expired-lease takeover must preserve the first event and append another");
+  const repeatClaim=await request(baseUrl,"/api/admin/account-deletion/reviews/"+requestId+"/claim",{
+    method:"POST",cookie:moderator.cookie,origin:baseUrl
+  });
+  assert.equal(repeatClaim.response.status,409,"An unexpired lease must block a second claim");
+  const roleList=await request(baseUrl,"/api/admin/account-deletion/reviewer-roles",{cookie:administrator.cookie});
+  assert.equal(roleList.response.status,200);
+  const moderatorAssignment=roleList.data.assignments.find(row=>Number(row.user_id)===Number(moderator.user.id)&&row.role_key==="support_reviewer"&&!row.revoked_at);
+  assert.ok(moderatorAssignment,"Reviewer assignment must be visible to administrators");
+  const revoke=await request(baseUrl,"/api/admin/account-deletion/reviewer-roles/"+moderatorAssignment.id+"/revoke",{
+    method:"POST",cookie:administrator.cookie,origin:baseUrl
+  });
+  assert.equal(revoke.response.status,200,JSON.stringify(revoke.data));
+  const revokedQueue=await request(baseUrl,"/api/admin/account-deletion/reviews",{cookie:moderator.cookie});
+  assert.equal(revokedQueue.response.status,403,"Revoked reviewers must lose queue access immediately");
   const readerCancel=await request(baseUrl,"/api/me/deletion-request/cancel",{method:"POST",cookie:spectator.cookie});
   assert.equal(readerCancel.response.status,200);
   assert.equal(readerCancel.data.request.status,"cancelled");
