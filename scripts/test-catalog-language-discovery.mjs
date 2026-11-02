@@ -47,4 +47,17 @@ assert.ok(catalog.includes("renderFilterChips();setINLang(document.documentEleme
 assert.ok(catalog.includes('data-in-lang>← Previous')&&catalog.includes('data-in-lang>Next →'),"Catalog pagination labels must be localizable.");
 assert.equal(app,shipped,"Served JavaScript must match the source.");
 
-console.log("Catalog discovery, localized catalog controls and 14-language reader interface checks passed.");
+
+const homeAt=app.indexOf("async function home()");
+const homeEnd=app.indexOf("\\nasync function ",homeAt+10);
+assert.ok(homeAt>=0&&homeEnd>homeAt,"Homepage implementation must exist.");
+const home=app.slice(homeAt,homeEnd);
+for(const key of ["Open a world.","Shape an empire.","Discover stories worth staying up for, then create the worlds only you can imagine.","Search titles, tropes, worlds...","Find your story","Original. Authorized. Reader-first.","Start with the kind of story","you love.","Novels and fanfiction are at the heart of Imperial Novel. Explore other formats whenever you're ready.","All formats"]) {
+  assert.ok(home.includes("data-in-lang>"+key)||home.includes("data-in-lang-placeholder=\\""+key+"\\""),"Homepage must mark "+key+" for localization.");
+  for(const locale of Object.keys(languageDictionary))assert.ok(languageDictionary[locale][key],"Missing homepage translation for "+key+" in "+locale);
+}
+assert.ok(app.includes("document.querySelectorAll('[data-in-lang-placeholder]')"),"Language switching must translate homepage search placeholders.");
+assert.ok(app.includes("input[aria-label]"),"Homepage search accessibility label must follow the selected language.");
+assert.ok(home.includes("setINLang(document.documentElement.lang||\\"en\\")"),"Homepage must apply the selected language after rendering.");
+
+console.log("Homepage, catalog discovery and 14-language reader localization checks passed.");
