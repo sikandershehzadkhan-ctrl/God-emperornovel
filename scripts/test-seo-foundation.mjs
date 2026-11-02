@@ -91,4 +91,10 @@ const unsafeImage=applySeoMetadata('<html><head></head></html>',{title:"Test",ca
 assert.match(unsafeImage,/og:image" content="https:\/\/imperial\.example\/imperial-novel-app-icon\.svg/);
 const privatePage=applySeoMetadata('<html><head><title>Account</title></head></html>',{title:"Account",robots:"noindex,nofollow"});
 assert.match(privatePage,/name="robots" content="noindex,nofollow"/);
+const workerSource=readFileSync("src/index.js","utf8");
+assert.match(workerSource,/if\(p===\"\/\"&&pageStatus===200\)\{structuredData=\{\"@type\":\"WebSite\"/,"The public homepage must emit WebSite structured data.");
+assert.match(workerSource,/\"@type\":\"SearchAction\"/,"Homepage structured data must describe the site's actual search endpoint.");
+assert.match(workerSource,/\/search\?q=\{search_term_string\}/,"SearchAction must point to the supported site search route.");
+assert.match(workerSource,/\"query-input\":\"required name=search_term_string\"/,"SearchAction must declare its required query input.");
+
 console.log("SEO/AEO metadata, AI crawler policies, safe cover previews, canonical URLs, JSON-LD and dynamic novel/author sitemap tests passed.");
