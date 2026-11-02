@@ -169,15 +169,16 @@ async function home(){
   if(target)target.innerHTML='<div class="homeConnectionEmpty"><span data-home-dynamic-key="Connected discovery is temporarily unavailable.">Connected discovery is temporarily unavailable.</span> <a href="/catalog" data-home-dynamic-key="Browse the catalog">Browse the catalog</a>.</div>';localizeDiscovery();
  }
  })();
- let platformPulseRequest=null,platformPulseHasData=false,platformPulseLastUpdated='';
+ let platformPulseRequest=null,platformPulseRequestGeneration=-1,platformPulseHasData=false,platformPulseLastUpdated='';
  async function refreshPlatformPulse(){
   const pulseGeneration=homePulseGeneration;
   const updated=$('#platformPulseUpdated'),health=$('#platformPulseHealth'),metrics=$('#platformPulseMetrics'),updates=$('#platformPulseUpdates'),trending=$('#platformPulseTrending'),refreshButton=$('#platformPulseRefresh');
   if(!metrics||!updates||!trending)return;
-  if(platformPulseRequest)return platformPulseRequest;
+  if(platformPulseRequest&&platformPulseRequestGeneration===pulseGeneration)return platformPulseRequest;
   if(refreshButton){refreshButton.disabled=true;refreshButton.textContent='Refreshing…';refreshButton.dataset.inLangKey='Refreshing…'}setINLang(document.documentElement.lang||'en');
   if(updated)updated.textContent=platformPulseHasData?'Refreshing · last successful update '+platformPulseLastUpdated:'Refreshing real-time data…';if(!platformPulseHasData&&updated)updated.dataset.inLangKey='Refreshing real-time data…';setINLang(document.documentElement.lang||'en');
   if(!platformPulseHasData)metrics.setAttribute('aria-busy','true');
+  platformPulseRequestGeneration=pulseGeneration;
   platformPulseRequest=(async()=>{
    try{
     const [overviewResult,healthResult]=await Promise.allSettled([
@@ -233,7 +234,7 @@ async function home(){
      trending.innerHTML='<p class="muted" data-in-lang-key="Trend data unavailable right now.">Trend data unavailable right now.</p>';setINLang(document.documentElement.lang||'en');
     }
    }finally{
-    platformPulseRequest=null;
+    if(platformPulseRequestGeneration===pulseGeneration)platformPulseRequest=null;
     if(refreshButton){refreshButton.disabled=false;refreshButton.textContent='Refresh ↻';delete refreshButton.dataset.inLangKey}setINLang(document.documentElement.lang||'en');
    }
   })();
