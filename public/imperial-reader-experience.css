@@ -538,3 +538,102 @@
     transition: none;
   }
 }
+
+
+/* Reader comfort refinement: predictable controls, calm measure, and resilient text. */
+.readerPrefs {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 168px), 1fr));
+  align-items: end;
+  gap: 12px;
+}
+
+.readerPrefs label {
+  display: grid;
+  min-width: 0;
+  gap: 7px;
+  line-height: 1.4;
+}
+
+.readerPrefs select {
+  width: 100%;
+  min-width: 0;
+  font: inherit;
+  cursor: pointer;
+}
+
+.readerContent {
+  font-kerning: normal;
+  font-variant-ligatures: common-ligatures;
+  hanging-punctuation: first last;
+  text-rendering: optimizeLegibility;
+  scroll-margin-block: 1rem;
+}
+
+.readerContent p {
+  text-wrap: pretty;
+  orphans: 3;
+  widows: 3;
+}
+
+.readerContent a {
+  color: var(--imperial-purple-hover, var(--imperial-purple));
+  text-decoration-line: underline;
+  text-decoration-thickness: .08em;
+  text-underline-offset: .18em;
+  overflow-wrap: anywhere;
+}
+
+.readerContent :where(h2, h3, h4) {
+  margin-block: 1.8em .7em;
+  color: inherit;
+  line-height: 1.35;
+  text-wrap: balance;
+}
+
+.readerContent :where(pre, code) {
+  max-width: 100%;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}
+
+.readerPrefs select:focus-visible,
+.readerChapterItem:focus-visible {
+  outline: 3px solid var(--imperial-sapphire);
+  outline-offset: 3px;
+}
+
+@media (max-width: 760px) {
+  .readerPrefs {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 10px;
+    padding-block: 14px;
+  }
+
+  .readerPrefs label {
+    font-size: .78rem;
+  }
+
+  .readerContent {
+    letter-spacing: 0;
+    line-height: 1.82;
+  }
+
+  .readerContent p {
+    margin-bottom: 1.25em;
+  }
+
+  .readerChapterItem {
+    min-height: 46px;
+  }
+}
+
+@media (max-width: 380px) {
+  .readerPrefs {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .readerContent {
+    overflow-wrap: break-word;
+  }
+}
