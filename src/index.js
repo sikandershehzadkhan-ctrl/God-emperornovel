@@ -583,7 +583,7 @@ async function api(req,env){
    return json({ok:true,assignment});
   }catch(error){console.error("reviewer role revocation failed",String(error?.message||error));return json({error:"Reviewer assignment could not be safely revoked."},503)}
  }
- const submitDeletionSpecialistFindings=p.match(/^\\/api\\/admin\\/account-deletion\\/reviews\\/(\\d+)\\/disposition-findings$/);
+ const submitDeletionSpecialistFindings=p.match(/^\/api\/admin\/account-deletion\/reviews\/(\d+)\/disposition-findings$/);
  if(submitDeletionSpecialistFindings&&m==="POST"){
   if(req.headers.get("origin")!==url.origin)return json({error:"A same-origin request is required."},403);
   const authError=need(u);if(authError)return authError;
