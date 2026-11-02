@@ -15,6 +15,7 @@ import { validateAuthorApplication, validateAuthorApplicationDecision } from "./
 import { canPublishChapter, validateNovelOwnerAssignment } from "./creator-ownership-policy.mjs";
 import { CONTENT_FORMATS, CONTENT_FORMAT_IDS } from "./content-formats.mjs";
 import { permissionsForRoles } from "./account-deletion-review-policy.mjs";
+import { validateDispositionItems } from "./account-deletion-disposition-policy.mjs";
 const json=(d,s=200,h={})=>new Response(JSON.stringify(d),{status:s,headers:{"content-type":"application/json;charset=UTF-8","cache-control":"no-store",...h}});
 const now=()=>Math.floor(Date.now()/1000);
 const b64=a=>btoa(String.fromCharCode(...new Uint8Array(a))).replaceAll("+","-").replaceAll("/","_").replaceAll("=","");
@@ -581,6 +582,53 @@ async function api(req,env){
    await audit(env,u,"account_deletion_reviewer_role_revoked",`assignment=${assignmentId};target=${assignment.user_id};role=${assignment.role_key}`);
    return json({ok:true,assignment});
   }catch(error){console.error("reviewer role revocation failed",String(error?.message||error));return json({error:"Reviewer assignment could not be safely revoked."},503)}
+ }
+ const submitDeletionSpecialistFindings=p.match(/^\\/api\\/admin\\/account-deletion\\/reviews\\/(\\d+)\\/disposition-findings$/);
+ if(submitDeletionSpecialistFindings&&m==="POST"){
+  if(req.headers.get("origin")!==url.origin)return json({error:"A same-origin request is required."},403);
+  const authError=need(u);if(authError)return authError;
+  const limited=await consumeAuthRateLimit(env,"account-deletion-specialist-findings",String(u.id),12,60);if(limited)return limited;
+  const requestId=Number(submitDeletionSpecialistFindings[1]);
+  if(!Number.isSafeInteger(requestId)||requestId<=0)return json({error:"Invalid deletion review request."},400);
+  const contentLength=Number(req.headers.get("content-length")||0);
+  if(contentLength>16384)return json({error:"The specialist submission is too large."},413);
+  let body;
+  try{body=await req.json()}catch{return json({error:"A valid JSON body is required."},400)}
+  if(!body||typeof body!=="object"||Array.isArray(body)||
+     !Number.isSafeInteger(body.expected_review_version)||body.expected_review_version<=0){
+   return json({error:"A valid expected_review_version and findings are required."},400);
+  }
+  let reviewerRoles=[];
+  try{
+   const assigned=await env.DB.prepare("SELECT role_key FROM account_deletion_reviewer_assignments WHERE user_id=? AND revoked_at IS NULL").bind(u.id).all();
+   reviewerRoles=(assigned.results||[]).map(row=>row.role_key);
+  }catch(error){console.error("specialist finding authorization unavailable",String(error?.message||error));return json({error:"Reviewer authorization is temporarily unavailable."},503)}
+  const permissions=permissionsForRoles(reviewerRoles);
+  const validated=validateDispositionItems(body.items,permissions);
+  if(!validated.ok)return json({error:validated.error},400);
+  const nowIso=new Date().toISOString();
+  try{
+   const review=await env.DB.prepare("SELECT v.id,v.request_id,v.subject_user_id,v.state,v.version,v.claim_expires_at,v.claimed_by FROM account_deletion_reviews v JOIN account_deletion_requests r ON r.id=v.request_id WHERE v.request_id=? AND r.status IN ('pending_deletion','review_required') LIMIT 1").bind(requestId).first();
+   if(!review||String(review.subject_user_id)===String(u.id))return json({error:"Review case not found."},404);
+   if(review.state!=="review_in_progress"||!review.claimed_by||!review.claim_expires_at||review.claim_expires_at<=nowIso)return json({error:"The case must have an active review lease before specialist findings can be submitted."},409);
+   if(Number(review.version)!==body.expected_review_version)return json({error:"The review changed. Reload the case and retry with its current version."},409);
+   const latest=await env.DB.prepare("SELECT dependency_key,MAX(revision) AS revision FROM account_deletion_disposition_findings WHERE review_id=? GROUP BY dependency_key").bind(review.id).all();
+   const revisions=new Map((latest.results||[]).map(item=>[item.dependency_key,Number(item.revision)]));
+   const nextVersion=body.expected_review_version+1;
+   const statements=[
+    env.DB.prepare("UPDATE account_deletion_reviews SET version=version+1,updated_at=? WHERE id=? AND request_id=? AND version=? AND state='review_in_progress' AND claimed_by IS NOT NULL AND claim_expires_at>? AND subject_user_id<>? AND EXISTS(SELECT 1 FROM account_deletion_requests r WHERE r.id=account_deletion_reviews.request_id AND r.user_id=account_deletion_reviews.subject_user_id AND r.status IN ('pending_deletion','review_required')) RETURNING id,version").bind(nowIso,review.id,requestId,body.expected_review_version,nowIso,u.id)
+   ];
+   for(const item of validated.items){
+    const revision=(revisions.get(item.dependency_key)||0)+1;
+    statements.push(env.DB.prepare("INSERT INTO account_deletion_disposition_findings(review_id,request_id,dependency_key,revision,reviewer_id,review_version,outcome,reason,evidence_ref,policy_reference) SELECT id,request_id,?,?,?,?,?,?,?,? FROM account_deletion_reviews WHERE id=? AND request_id=? AND version=? AND state='review_in_progress' AND claimed_by IS NOT NULL AND claim_expires_at>? RETURNING id,dependency_key,revision").bind(item.dependency_key,revision,u.id,nextVersion,item.outcome,item.reason,item.evidence_ref,item.policy_reference,review.id,requestId,nextVersion,nowIso));
+   }
+   const results=await env.DB.batch(statements);
+   const updated=results?.[0]?.results?.[0];
+   if(!updated)return json({error:"The review lease or version changed. No findings were accepted."},409);
+   const findings=results.slice(1).flatMap(result=>result?.results||[]);
+   if(findings.length!==validated.items.length)return json({error:"The specialist submission could not be fully recorded."},503);
+   return json({ok:true,review_id:review.id,request_id:requestId,review_version:Number(updated.version),findings,read_only:true,finalization_enabled:false});
+  }catch(error){console.error("specialist disposition submission failed",String(error?.message||error));return json({error:"Specialist findings could not be safely recorded."},503)}
  }
  const claimDeletionReview=p.match(/^\/api\/admin\/account-deletion\/reviews\/(\d+)\/claim$/);
  if(claimDeletionReview&&m==="POST"){
