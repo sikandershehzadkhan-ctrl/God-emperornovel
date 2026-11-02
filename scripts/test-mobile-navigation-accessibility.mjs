@@ -34,4 +34,21 @@ for (const [label, snippet] of drawerChecks) {
   }
 }
 console.log('Drawer keyboard checks passed: inert closed state, focus entry, Escape, Tab containment, and focus restoration.');
+if (!/document\.documentElement\.dir=\(c===\"ur\"\|\|c===\"ar\"\)\?\"rtl\":\"ltr\"/.test(app)) {
+  console.error('Urdu and Arabic must activate RTL document direction.');
+  process.exit(1);
+}
+if (!/html\[dir=rtl\] \.mobileNav\s*\{[^}]*direction:\s*rtl/s.test(styles)) {
+  console.error('RTL mobile navigation must explicitly follow right-to-left reading order.');
+  process.exit(1);
+}
+if (!/\.commentReply\s*\{[^}]*margin-inline-start/s.test(styles)) {
+  console.error('Nested community replies must use direction-aware logical spacing.');
+  process.exit(1);
+}
+if (!/html\[dir=rtl\] \.comicPageComposerGrid\s*\{[^}]*direction:\s*rtl/s.test(styles)) {
+  console.error('RTL creator page composer must follow right-to-left reading order.');
+  process.exit(1);
+}
+console.log('RTL checks passed: Urdu/Arabic direction, mobile navigation, creator composer, and logical reply indentation.');
 console.log('Mobile navigation accessibility checks passed: six current-page states, 44px touch targets, and visible keyboard focus.');
