@@ -79,4 +79,9 @@ assert.ok(app.includes("method:'PATCH'")&&shipped.includes("method:'PATCH'"),"In
 assert.ok(app.includes("Private note updated.")&&shipped.includes("Private note updated."),"Successful note edits must provide feedback.");
 assert.ok(css.includes(".authorNoteEditForm")&&css.includes(".authorNoteActions"),"Private note editing controls must be styled.");
 
-console.log("Author writing goals, editable private notes, editorial readiness and planning integration checks passed.");
+
+assert.ok(app.includes("authorNoteChapter")&&shipped.includes("authorNoteChapter"),"Creators must be able to attach notes to a selected chapter.");
+assert.ok(app.includes("api('/api/author/chapters?novel_id='")&&shipped.includes("api('/api/author/chapters?novel_id='"),"Chapter choices must be loaded through the authenticated owner-scoped chapter API.");
+assert.ok(app.includes("chapter_id:chapter")&&shipped.includes("chapter_id:chapter"),"New private notes must submit their optional chapter attachment.");
+
+console.log("Author writing goals, editable chapter-linked private notes, editorial readiness and planning integration checks passed.");
