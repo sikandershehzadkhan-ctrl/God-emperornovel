@@ -35,3 +35,15 @@
 .comicPageComposerGrid input:focus-visible,.comicPageComposerGrid button:focus-visible,.comicComposerPageActions button:focus-visible{outline:2px solid var(--in-sapphire,#4f8cff);outline-offset:2px}
 .comicComposerPage{display:grid;grid-template-columns:58px minmax(0,1fr) auto;align-items:center;gap:10px;margin:8px 0;padding:9px;border:1px solid var(--line,rgba(139,92,246,.18));border-radius:12px;background:rgba(255,255,255,.025);min-width:0}.comicComposerPage>img{width:58px;height:72px;object-fit:cover;border-radius:6px;background:#080a12}.comicComposerPage>img.comicPreviewError{opacity:.25}.comicComposerPage>div:nth-child(2){display:grid;gap:2px;min-width:0}.comicComposerPage small{overflow-wrap:anywhere;color:var(--muted,#a3abc2);font-size:11px}.comicComposerPageActions{display:flex;gap:4px;flex-wrap:wrap;justify-content:flex-end}.comicComposerPageActions button{min-height:34px;padding:5px 8px;font-size:11px}.comicAuthorBuilder [data-page-status]{margin:10px 0 0;font-size:11px;line-height:1.5;color:var(--muted,#a3abc2)}
 @media(max-width:620px){.comicPageComposerGrid{grid-template-columns:1fr}.comicPageComposerGrid label:nth-child(3){grid-column:auto}.comicComposerPage{grid-template-columns:48px minmax(0,1fr)}.comicComposerPage>img{width:48px;height:62px}.comicComposerPageActions{grid-column:1/-1;justify-content:flex-start}.comicAuthorBuilder{padding:12px}}
+
+
+/* Creator journey guide: clarify the planning-to-publication workflow. */
+.creatorPathGuide{margin:16px 0}
+.creatorPathGuide h2{margin:7px 0}
+.creatorPathGrid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;margin:16px 0}
+.creatorPathGrid article{min-width:0;padding:14px;border:1px solid var(--line,rgba(139,92,246,.22));border-radius:13px;background:var(--panel-soft,rgba(139,92,246,.035))}
+.creatorPathGrid article>span{font-size:11px;font-weight:800;letter-spacing:.08em;color:var(--in-purple-bright,#8b5cf6)}
+.creatorPathGrid h3{margin:7px 0 5px;font-size:16px}
+.creatorPathGrid p{margin:0;color:var(--muted,#687080);font-size:13px;line-height:1.55}
+.creatorRightsNote{margin-top:12px}
+@media(max-width:640px){.creatorPathGrid{grid-template-columns:1fr}.creatorPathGrid article{padding:12px}}
