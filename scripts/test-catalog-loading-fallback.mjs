@@ -36,6 +36,7 @@ for(const label of ["Sort catalog","Filter by publication status","Filter by sto
 const controlLabels={catalogSort:"Sort",catalogStatus:"Status",catalogKind:"Type",catalogMinRating:"Minimum Rating",catalogGenre:"Genre",catalogTag:"Tag",catalogLanguage:"Language"};
 for(const [id,label] of Object.entries(controlLabels))assert.ok(catalogSource.includes('<label class="filterLabel" for="'+id+'">'+label+'</label>')&&catalogSource.includes('id="'+id+'"'),"Discover filter must use an explicitly associated label: "+id);
 assert.ok(catalogSource.includes('id="catalogQuery" name="q" type="search"'),"Discover search must have a stable control id.");
+assert.ok(catalogSource.includes('id="catalogQuery" name="q" type="search" maxlength="120"'),"Discover search input must enforce the API query-length limit.");
 assert.ok(catalogSource.includes('role="group" aria-label="Active catalog filters"'),"Active filter chips must be exposed as a named group.");
 assert.ok(catalogSource.includes("Number.isSafeInteger(requestedPage)")&&catalogSource.includes("Math.min(requestedPage,100000)"),"Discover must normalize malformed and excessively large page parameters.");
 assert.ok(catalogSource.includes("d.has_more===true"),"Discover must show Next only when the API confirms more results exist.");
