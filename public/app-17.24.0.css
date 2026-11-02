@@ -189,3 +189,9 @@
 
 .authorPlanningSignals{display:flex;flex-wrap:wrap;gap:5px;margin-top:7px}
 .authorPlanningSignals span{font-size:10px;line-height:1.4;padding:4px 7px;border-radius:7px;background:var(--panel,#fff);color:var(--muted,#687080);border:1px solid var(--line,rgba(139,92,246,.15))}
+
+.authorNoteActions{display:flex;gap:7px;flex-wrap:wrap;margin-top:8px}
+.authorNoteEditForm{display:grid;gap:9px;margin-top:10px;padding:10px;border:1px solid var(--line,rgba(139,92,246,.2));border-radius:10px}
+.authorNoteEditForm[hidden],.authorNoteActions[hidden]{display:none}
+.authorNoteEditForm label{display:grid;gap:6px;font-size:12px;color:var(--muted,#687080)}
+.authorNoteEditForm textarea{width:100%;box-sizing:border-box;resize:vertical;padding:10px;border:1px solid var(--line,rgba(139,92,246,.2));border-radius:9px;background:var(--panel,transparent);color:inherit;font:inherit;line-height:1.5}
