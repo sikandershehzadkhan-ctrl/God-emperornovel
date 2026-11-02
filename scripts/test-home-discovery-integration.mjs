@@ -63,7 +63,7 @@ const homeCss=css;
 assert.ok(homeCss.includes(".homePage .nextFeatureDeck{grid-template-columns:minmax(0,1fr)"),"Localized feature tiles must stack cleanly on mobile.");
 assert.ok(homeCss.includes("overflow-wrap:anywhere"),"Long translated homepage copy must not force horizontal overflow.");
 assert.ok(homeCss.includes(".homePage .homeFormatShelf,")&&homeCss.includes(".homePage .nextReaderPromise{")&&homeCss.includes("content-visibility:auto;"),"Long below-the-fold homepage shelves must use progressive rendering.");
-assert.ok(homeCss.includes("contain-intrinsic-size:auto 520px;")&&homeCss.includes("@media(max-width:760px)")&&homeCss.includes("contain-intrinsic-size:auto 900px;"),"Deferred homepage sections must reserve responsive intrinsic space to limit scroll jumps.");
+assert.ok(homeCss.includes("contain-intrinsic-size:auto 520px;")&&homeCss.includes("@media(max-width:760px)")&&/contain-intrinsic-size:auto 900px(?:;|})/.test(homeCss),"Deferred homepage sections must reserve responsive intrinsic space to limit scroll jumps.");
 const deferredStart=homeCss.indexOf("Homepage off-screen rendering budget");
 const deferredEnd=homeCss.indexOf("@media(max-width:760px)",deferredStart);
 const deferredCss=homeCss.slice(deferredStart,deferredEnd);
