@@ -900,3 +900,224 @@ html[data-theme="dark"] .formatProfile strong {
     transform: none;
   }
 }
+
+
+/* Rankings, community discovery, and creator workspace refinement. */
+.quickGrid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 14px;
+  margin: 22px 0 30px;
+}
+.quickCard {
+  display: flex;
+  min-width: 0;
+  align-items: center;
+  gap: 13px;
+  padding: 17px;
+  border: 1px solid var(--ds-border);
+  border-radius: var(--radius-lg);
+  background: var(--ds-surface);
+  color: var(--ds-text);
+  box-shadow: var(--shadow-card);
+  transition: border-color var(--motion-normal) var(--ease-standard), transform var(--motion-normal) var(--ease-standard), box-shadow var(--motion-normal) var(--ease-standard);
+}
+.quickCard:hover {
+  border-color: var(--ds-border-strong);
+  box-shadow: var(--shadow-overlay);
+  transform: translateY(-2px);
+}
+.quickCard > span {
+  display: grid;
+  flex: 0 0 42px;
+  width: 42px;
+  height: 42px;
+  place-items: center;
+  border: 1px solid rgba(109, 59, 232, .2);
+  border-radius: 13px;
+  background: var(--ds-accent-soft);
+  color: var(--ds-accent);
+  font-size: 21px;
+}
+.quickCard b,
+.quickCard small { display: block; }
+.quickCard b { color: var(--ds-text); font-size: .94rem; }
+.quickCard small { margin-top: 4px; color: var(--ds-text-muted); line-height: 1.45; }
+
+.tabs {
+  display: flex;
+  width: fit-content;
+  max-width: 100%;
+  flex-wrap: wrap;
+  gap: 5px;
+  margin: 20px 0 26px;
+  padding: 5px;
+  border: 1px solid var(--ds-border);
+  border-radius: 999px;
+  background: var(--ds-surface-muted);
+}
+.period {
+  display: inline-flex;
+  min-height: 40px;
+  align-items: center;
+  justify-content: center;
+  padding: 0 17px;
+  border-radius: 999px;
+  color: var(--ds-text-muted);
+  font-size: .88rem;
+  font-weight: 650;
+  cursor: pointer;
+  text-decoration: none;
+}
+.period:hover { color: var(--ds-text); }
+.period.active {
+  background: var(--ds-surface-raised);
+  color: var(--ds-accent);
+  box-shadow: 0 1px 5px rgba(20, 18, 38, .10);
+}
+#lbNovels,
+#lbAuthors { align-items: stretch; }
+#lbNovels > .panel,
+#lbAuthors > .panel {
+  position: relative;
+  min-width: 0;
+  padding: 20px;
+  border: 1px solid var(--ds-border);
+  border-radius: var(--radius-lg);
+  background: var(--ds-surface);
+  box-shadow: var(--shadow-card);
+}
+.rankBadge {
+  display: inline-grid;
+  min-width: 42px;
+  height: 36px;
+  place-items: center;
+  margin-bottom: 13px;
+  padding: 0 10px;
+  border: 1px solid rgba(109, 59, 232, .22);
+  border-radius: 11px;
+  background: var(--ds-accent-soft);
+  color: var(--ds-accent);
+  font-weight: 800;
+  font-variant-numeric: tabular-nums;
+}
+#lbNovels .cardTitle,
+#lbAuthors h3 { margin: 0 0 8px; color: var(--ds-text); font-family: var(--font-display); }
+#lbNovels .meta,
+#lbAuthors .meta { display: flex; flex-wrap: wrap; gap: 8px 13px; margin: 14px 0; color: var(--ds-text-muted); font-size: .82rem; }
+#lbNovels .ghost,
+#lbAuthors .ghost { display: inline-flex; margin-top: 4px; }
+
+.communityGrid { min-width: 0; }
+.unlockBanner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 22px;
+  margin-top: 32px;
+  padding: clamp(20px, 3vw, 32px);
+  border: 1px solid rgba(109, 59, 232, .22);
+  border-radius: var(--radius-xl);
+  background: linear-gradient(120deg, var(--ds-accent-soft), var(--ds-surface) 72%);
+}
+.unlockBanner h2 { margin: 7px 0; color: var(--ds-text); font-family: var(--font-display); }
+.unlockBanner p { max-width: 62ch; margin: 0; color: var(--ds-text-muted); line-height: 1.6; }
+
+.authorStudioLayout {
+  display: grid;
+  grid-template-columns: minmax(250px, .78fr) minmax(0, 1.22fr);
+  gap: 18px;
+  align-items: start;
+  margin-top: 22px;
+}
+.authorStudioIntro,
+.authorCreateForm,
+.authorWorksPanel {
+  min-width: 0;
+  padding: clamp(18px, 2.4vw, 26px);
+  border: 1px solid var(--ds-border);
+  border-radius: var(--radius-lg);
+  background: var(--ds-surface);
+  box-shadow: var(--shadow-card);
+}
+.authorStudioIntro { position: sticky; top: 92px; }
+.authorStudioIntro h2,
+.authorCreateForm h2,
+.authorWorksPanel h2 { color: var(--ds-text); font-family: var(--font-display); letter-spacing: -.025em; }
+.authorStudioIntro p { line-height: 1.7; }
+.authorCreateForm { display: flex; flex-direction: column; gap: 10px; }
+.authorCreateForm > h2 { margin: 0 0 6px; }
+.authorCreateForm .fieldLabel { margin-top: 8px; color: var(--ds-text-muted); font-size: .84rem; font-weight: 700; }
+.authorCreateForm input,
+.authorCreateForm select,
+.authorCreateForm textarea {
+  width: 100%;
+  min-width: 0;
+  min-height: 46px;
+  border: 1px solid var(--ds-border-strong);
+  border-radius: var(--radius-md);
+  background: var(--ds-surface-raised);
+  color: var(--ds-text);
+}
+.authorCreateForm textarea { min-height: 100px; resize: vertical; }
+.authorFormGrid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; }
+.authorFormGrid > div { display: flex; min-width: 0; flex-direction: column; gap: 8px; }
+.authorWorksPanel { grid-column: 1 / -1; }
+.authorWorksList { display: grid; gap: 12px; }
+.authorWork {
+  min-width: 0;
+  padding: 17px;
+  border: 1px solid var(--ds-border);
+  border-radius: var(--radius-md);
+  background: var(--ds-surface-raised);
+}
+.authorWorkTop { display: flex; align-items: flex-start; justify-content: space-between; gap: 12px; }
+.authorWorkTop h3 { margin: 5px 0; color: var(--ds-text); overflow-wrap: anywhere; }
+.authorStatus {
+  flex: 0 0 auto;
+  padding: 6px 10px;
+  border: 1px solid var(--ds-border);
+  border-radius: 999px;
+  background: var(--ds-surface-muted);
+  color: var(--ds-text-muted);
+  font-size: .75rem;
+  font-weight: 750;
+}
+.authorStatus.status-published { border-color: rgba(24, 145, 95, .28); color: #16865b; }
+.authorStatus.status-review { border-color: rgba(47, 111, 219, .28); color: #3975ce; }
+.authorWorkActions { display: flex; flex-wrap: wrap; gap: 9px; margin-top: 14px; }
+.authorWorkActions > * { min-height: 40px; }
+
+html[data-theme="dark"] .quickCard,
+html[data-theme="dark"] #lbNovels > .panel,
+html[data-theme="dark"] #lbAuthors > .panel,
+html[data-theme="dark"] .authorStudioIntro,
+html[data-theme="dark"] .authorCreateForm,
+html[data-theme="dark"] .authorWorksPanel,
+html[data-theme="dark"] .authorWork {
+  border-color: var(--ds-border);
+  background: var(--ds-surface);
+}
+html[data-theme="dark"] .unlockBanner { background: linear-gradient(120deg, rgba(109, 59, 232, .18), var(--ds-surface) 75%); }
+
+@media (max-width: 900px) {
+  .quickGrid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .authorStudioLayout { grid-template-columns: minmax(0, 1fr); }
+  .authorStudioIntro { position: static; }
+  .authorWorksPanel { grid-column: auto; }
+}
+@media (max-width: 600px) {
+  .quickGrid { gap: 9px; }
+  .quickCard { align-items: flex-start; gap: 9px; padding: 12px; }
+  .quickCard > span { flex-basis: 34px; width: 34px; height: 34px; font-size: 17px; }
+  .quickCard small { font-size: .75rem; }
+  .tabs { width: 100%; justify-content: space-between; }
+  .period { flex: 1 1 auto; padding-inline: 10px; font-size: .8rem; }
+  .unlockBanner { align-items: flex-start; flex-direction: column; }
+  .authorFormGrid { grid-template-columns: minmax(0, 1fr); }
+  .authorWorkTop { flex-direction: column; }
+  .authorWorkActions > * { flex: 1 1 auto; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .quickCard:hover { transform: none; }
+}
