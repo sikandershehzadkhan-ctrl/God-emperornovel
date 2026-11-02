@@ -18,7 +18,6 @@ assert.deepEqual(values(catalogList[1]),values(authorList[1]),"Discovery and cre
 for(const language of ["English","Urdu","Hindi","Chinese (Simplified)","Chinese (Traditional)","Japanese","Korean","Arabic","Spanish","French","Indonesian","Portuguese","German","Russian","Turkish","Thai","Vietnamese","Bengali","Persian","Italian","Polish","Filipino"])assert.ok(values(catalogList[1]).includes(language),"Missing language suggestion: "+language);
 assert.ok(catalog.includes("for(const [k,v] of f.entries())"),"Catalog form must preserve the selected language filter in its query.");
 assert.ok(worker.includes('if(language){sql+=" AND LOWER(n.language)=LOWER(?)";a.push(language)}'),"Catalog language matching must remain case-insensitive and parameterized.");
-assert.equal(app,shipped,"Served JavaScript must match the source.");
 
 const languageBlock=app.match(/const IN_LANG=(\{[\s\S]*?\});function setINLang/);
 assert.ok(languageBlock,"Interface language dictionary must be available.");
@@ -45,19 +44,18 @@ assert.ok(catalog.includes("catalogTitle.dataset.inLang=''"),"Catalog heading mu
 for(const locale of Object.keys(languageDictionary))assert.ok(languageDictionary[locale]["Discover your next world"],"Missing catalog heading translation for "+locale);
 assert.ok(catalog.includes("renderFilterChips();setINLang(document.documentElement.lang||'en')"),"Dynamic active filter chips must apply the selected language.");
 assert.ok(catalog.includes('data-in-lang>← Previous')&&catalog.includes('data-in-lang>Next →'),"Catalog pagination labels must be localizable.");
-assert.equal(app,shipped,"Served JavaScript must match the source.");
-
 
 const homeAt=app.indexOf("async function home()");
-const homeEnd=app.indexOf("\\nasync function ",homeAt+10);
+const homeEnd=app.indexOf("\nasync function ",homeAt+10);
 assert.ok(homeAt>=0&&homeEnd>homeAt,"Homepage implementation must exist.");
 const home=app.slice(homeAt,homeEnd);
 for(const key of ["Open a world.","Shape an empire.","Discover stories worth staying up for, then create the worlds only you can imagine.","Search titles, tropes, worlds...","Find your story","Original. Authorized. Reader-first.","Start with the kind of story","you love.","Novels and fanfiction are at the heart of Imperial Novel. Explore other formats whenever you're ready.","All formats"]) {
-  assert.ok(home.includes("data-in-lang>"+key)||home.includes("data-in-lang-placeholder=\\""+key+"\\""),"Homepage must mark "+key+" for localization.");
+  assert.ok(home.includes("data-in-lang>"+key)||home.includes('data-in-lang-placeholder="'+key+'"'),"Homepage must mark "+key+" for localization.");
   for(const locale of Object.keys(languageDictionary))assert.ok(languageDictionary[locale][key],"Missing homepage translation for "+key+" in "+locale);
 }
 assert.ok(app.includes("document.querySelectorAll('[data-in-lang-placeholder]')"),"Language switching must translate homepage search placeholders.");
 assert.ok(app.includes("input[aria-label]"),"Homepage search accessibility label must follow the selected language.");
-assert.ok(home.includes("setINLang(document.documentElement.lang||\\"en\\")"),"Homepage must apply the selected language after rendering.");
+assert.ok(home.includes('setINLang(document.documentElement.lang||"en")'),"Homepage must apply the selected language after rendering.");
+assert.equal(app,shipped,"Served JavaScript must match the source.");
 
 console.log("Homepage, catalog discovery and 14-language reader localization checks passed.");
