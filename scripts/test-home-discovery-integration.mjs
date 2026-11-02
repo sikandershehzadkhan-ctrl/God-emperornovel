@@ -95,7 +95,8 @@ assert.ok(homepageLoader.includes('setINLang(document.documentElement.lang||"en"
 assert.ok(homepageLoader.includes("void (async()=>{"),"Catalog and discovery requests must run as independent non-blocking homepage tasks.");
 assert.ok(homepageLoader.includes("void refreshPlatformPulse();"),"The initial live overview must not block homepage navigation from becoming interactive.");
 const pulseLoader=homepageLoader.slice(homepageLoader.indexOf("function refreshPlatformPulse()"),homepageLoader.indexOf("async function trendFactory"));
-assert.ok(pulseLoader.includes("if(!document.querySelector('.homePage'))return;"),"Late live overview responses must not mutate detached homepage UI after navigation.");
+assert.ok(pulseLoader.includes("pulseGeneration!==homePulseGeneration||!document.querySelector('.homePage')"),"Late live overview responses must not mutate detached or newly re-entered homepage UI after navigation.");
+assert.ok(app.includes("homePulseGeneration++")&&app.includes("let homePulseTimer=null,homePulseVisibilityHandler=null,homePulseGeneration=0"),"Each homepage visit must receive a fresh generation so old requests cannot update a later visit.");
 assert.ok(app.includes("function stopHomePulsePolling()")&&app.includes("document.removeEventListener('visibilitychange',homePulseVisibilityHandler)"),"Homepage polling lifecycle must release its interval and visibility listener.");
 
 assert.ok(!homepageLoader.includes("await refreshPlatformPulse();"),"Homepage boot must not wait for the real-time panel's network response.");
