@@ -57,7 +57,7 @@ assert.ok(sourceApp.includes('aria-label="Trending stories" aria-busy="true"'),"
 assert.ok(sourceApp.includes('aria-label="Recently updated stories" aria-busy="true"'),"Latest shelf must expose its loading state to assistive technology");
 assert.ok(sourceApp.includes('class="skeletonCard" aria-hidden="true"'),"Decorative skeleton placeholders must be hidden from assistive technology");
 assert.ok(sourceApp.includes('el.setAttribute("aria-busy","false")'),"Story shelf must clear its busy state after rendering results");
-assert.ok(sourceApp.includes("$('#trend').setAttribute('aria-busy','false');$('#latest').setAttribute('aria-busy','false')"),"Story shelf must clear its busy state after a loading error");
+assert.ok(sourceApp.includes('const renderHomeShelfError=selector=>')&&sourceApp.includes('el.setAttribute("aria-busy","false")'),"Each failed story shelf must clear its busy state independently");
 assert.ok(css.includes("aspect-ratio:.76"),"Loading placeholders must reserve a stable story-card footprint");
 assert.ok(css.includes("@media(prefers-reduced-motion:reduce){.skeletonCard{animation:none;background:var(--in-surface)}}"),"Story loading animation must respect reduced-motion preferences");
 assert.ok(css.includes("Homepage story cards: editorial hierarchy"),"Homepage story-card refinement must remain in the design foundation");
