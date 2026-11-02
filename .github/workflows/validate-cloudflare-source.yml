@@ -114,6 +114,9 @@ jobs:
           print(f'PASS: {len(paths)} migrations applied to fresh SQLite.')
           PY
 
+      - name: Test server-enforced reader activity revisions
+        run: python3 scripts/test-reader-activity-revisions.py
+
       - name: Test catalog query aggregation parity
         run: python3 scripts/test-catalog-query.py
 
