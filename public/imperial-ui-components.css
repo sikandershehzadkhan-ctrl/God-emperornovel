@@ -508,3 +508,76 @@ html[data-theme="dark"] .menuToggle[aria-expanded="true"] {
     transition-duration: .01ms !important;
   }
 }
+
+
+/* Mobile drawer: use the shared Imperial surface system and preserve a clear
+   keyboard focus indicator even where legacy hover styles are more specific. */
+.menuDrawer {
+  background: var(--ds-surface-raised);
+  color: var(--ds-text);
+  border-right: 1px solid var(--ds-border-strong);
+  box-shadow: 18px 0 56px rgba(5, 8, 20, .28);
+  padding-top: max(20px, env(safe-area-inset-top));
+  padding-bottom: max(18px, env(safe-area-inset-bottom));
+}
+
+.menuDrawer .menuDrawerHead {
+  border-bottom-color: var(--ds-border);
+}
+
+.menuDrawer .menuDrawerBrand span {
+  color: var(--ds-text);
+}
+
+.menuDrawer .menuDrawerBrand small,
+.menuDrawer .menuDrawerLabel {
+  color: var(--imperial-sapphire);
+}
+
+.menuDrawer .menuDrawerLabel {
+  font-weight: 750;
+}
+
+.menuDrawer > a:not(.menuDrawerBrand) {
+  color: var(--ds-text);
+  border-color: transparent;
+  border-radius: var(--radius-md);
+}
+
+.menuDrawer > a:not(.menuDrawerBrand):hover {
+  border-color: var(--ds-border);
+  background: var(--ds-surface-muted);
+  color: var(--imperial-purple-hover);
+}
+
+.menuDrawer > a:not(.menuDrawerBrand):focus-visible,
+.menuDrawer .menuDrawerBrand:focus-visible,
+.menuDrawer .menuClose:focus-visible {
+  outline: 3px solid var(--imperial-sapphire);
+  outline-offset: 3px;
+  border-color: var(--imperial-sapphire);
+}
+
+.menuDrawer .menuClose {
+  border-color: var(--ds-border-strong);
+  background: var(--ds-surface);
+  color: var(--ds-text);
+}
+
+.menuDrawer .menuDrawerFoot {
+  border-top-color: var(--ds-border);
+  color: var(--ds-text-muted);
+}
+
+html[data-theme="dark"] .menuDrawer {
+  background: var(--ds-surface-raised);
+  border-right-color: var(--ds-border-strong);
+  color: var(--ds-text);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .menuDrawer,
+  .menuDrawer * {
+    scroll-behavior: auto !important;
+  }
+}
