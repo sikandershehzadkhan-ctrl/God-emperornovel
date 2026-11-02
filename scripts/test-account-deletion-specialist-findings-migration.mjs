@@ -12,7 +12,7 @@ db.executescript("""
 CREATE TABLE users(id INTEGER PRIMARY KEY);
 CREATE TABLE account_deletion_requests(id INTEGER PRIMARY KEY,user_id INTEGER NOT NULL,status TEXT NOT NULL,FOREIGN KEY(user_id) REFERENCES users(id) ON DELETE RESTRICT);
 INSERT INTO users(id) VALUES(1),(2),(3),(4);
-INSERT INTO account_deletion_requests(id,user_id,status) VALUES(10,1,'review_required'),(11,4,'review_required');
+INSERT INTO account_deletion_requests(id,user_id,status) VALUES(10,1,'review_required'),(11,4,'review_required'),(12,1,'review_required'),(13,1,'review_required');
 """)
 `+String.raw`
 db.executescript(sys.stdin.read())
@@ -20,8 +20,8 @@ future=(datetime.now(timezone.utc)+timedelta(days=1)).isoformat()
 past=(datetime.now(timezone.utc)-timedelta(days=1)).isoformat()
 db.execute("INSERT INTO account_deletion_reviews(id,request_id,subject_user_id,state,version,claimed_by,claim_expires_at) VALUES(100,10,1,'review_in_progress',2,2,?)",(future,))
 db.execute("INSERT INTO account_deletion_reviews(id,request_id,subject_user_id,state,version,claimed_by,claim_expires_at) VALUES(101,11,4,'review_in_progress',2,2,?)",(future,))
-db.execute("INSERT INTO account_deletion_reviews(id,request_id,subject_user_id,state,version,claimed_by,claim_expires_at) VALUES(102,10,1,'review_in_progress',2,2,?)",(past,))
-db.execute("INSERT INTO account_deletion_reviews(id,request_id,subject_user_id,state,version) VALUES(103,10,1,'review_required',2)")
+db.execute("INSERT INTO account_deletion_reviews(id,request_id,subject_user_id,state,version,claimed_by,claim_expires_at) VALUES(102,12,1,'review_in_progress',2,2,?)",(past,))
+db.execute("INSERT INTO account_deletion_reviews(id,request_id,subject_user_id,state,version) VALUES(103,13,1,'review_required',2)")
 insert="INSERT INTO account_deletion_disposition_findings(review_id,request_id,dependency_key,revision,reviewer_id,review_version,outcome,reason,policy_reference) VALUES(100,10,?, ?,3,2,'retain','Preserve pending specialist review','policy-v1')"
 db.execute(insert,("creator_rights",1))
 db.execute(insert,("financial_ledger",1))
