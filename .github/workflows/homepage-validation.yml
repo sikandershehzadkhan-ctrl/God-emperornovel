@@ -1,0 +1,43 @@
+name: Imperial Novel Homepage Validation
+
+on:
+  push:
+    branches:
+      - feature/homepage-lifecycle-performance-17-41
+  pull_request:
+    branches:
+      - feature/imperial-design-architecture-seo
+
+permissions:
+  contents: read
+
+concurrency:
+  group: homepage-validation-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  validate-homepage:
+    name: Homepage build, regression suite and Cloudflare dry-run
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js 22
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - name: Install locked dependencies
+        run: npm ci
+
+      - name: Run application build and registered regression tests
+        run: npm run build
+
+      - name: Check Cloudflare Worker and D1 configuration
+        run: npm run check:cloudflare-readiness
+
+      - name: Validate Cloudflare Worker bundle without deployment
+        run: npx --yes wrangler@4 deploy --dry-run
