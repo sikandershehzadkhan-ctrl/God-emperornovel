@@ -9,4 +9,5 @@ assert.match(ui,/Awaiting review/,'pending review state must be explained');
 assert.match(ui,/Approved/,'approved state must be explained');
 assert.match(ui,/Not approved/,'rejected state must be explained');
 assert.match(ui,/role="status" aria-live="polite"/,'submission feedback must be announced accessibly');
+assert.equal(ui,fs.readFileSync('public/app-17.23.0.js','utf8'),'reader bundles must remain byte-identical');
 console.log('Reader request history regression checks passed.');
