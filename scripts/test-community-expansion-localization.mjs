@@ -15,6 +15,8 @@ for (const locale of locales) {
 }
 assert.equal(Object.keys(dictionaries).length, 14);
 assert.ok(app.includes('const localizeDiscovery='), 'Dynamic discovery localization helper missing');
+assert.ok(app.includes('async function discoveryPage(kind){'), 'Community discovery handler must remain async');
+assert.ok(!app.includes('async const COMMUNITY_EXPANSION_LANG='), 'Invalid async const declaration must not exist');
 assert.ok(app.includes('new MutationObserver(()=>localizeDiscovery())'), 'Dynamic discovery observer missing');
 assert.ok(app.includes("async function authorApplicationPage(user){"), 'Creator application must remain async');
 assert.ok(!app.includes('async const AUTHOR_STUDIO_LANG='), 'Invalid async const declaration must not exist');
