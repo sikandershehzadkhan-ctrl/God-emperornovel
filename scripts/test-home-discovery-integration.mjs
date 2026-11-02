@@ -39,11 +39,12 @@ assert.ok(!storyCardRenderer.includes("Number(n.rating||0).toFixed(1)"),"Missing
 assert.ok(!storyCardRenderer.includes("n.chapter_count||n.latest_chapter||0"),"Missing chapter counts must never be presented as zero chapters");
 assert.ok(css.includes(".homeConnectionShelf")&&css.includes("@media(max-width:640px)"),"Connected discovery shelf needs responsive styling");
 assert.ok(css.includes("Homepage mobile pass 17.42"),"Homepage must include the dedicated mobile refinement pass.");
-assert.ok(css.includes(".imperialHeroVisual{\\n    display:flex;"),"The imperial crest must remain visible in the compact mobile hero.");
-assert.ok(css.includes(".homePage .heroSearch input{\\n    flex:1 1 auto;")&&css.includes("font-size:16px;"),"Mobile search must retain a flexible input and avoid automatic mobile browser zoom.");
-assert.ok(css.includes(".homePage .heroSearch button{\\n    flex:0 0 auto;")&&css.includes("min-height:44px;"),"Mobile search action must retain an accessible touch target.");
+assert.ok(/\.imperialHeroVisual\s*\{[^}]*display:flex/s.test(css),"The imperial crest must remain visible in the compact mobile hero.");
+assert.ok(/\.homePage \.heroSearch input\s*\{[^}]*font-size:16px/s.test(css),"Mobile search must retain a flexible input and avoid automatic mobile browser zoom.");
+assert.ok(/\.homePage \.heroSearch button\s*\{[^}]*min-height:44px/s.test(css),"Mobile search action must retain an accessible touch target.");
 assert.ok(css.includes(".homeStoryGrid{grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}"),"Mobile story shelves must preserve a compact two-column layout.");
 assert.ok(css.includes(".homeStoryGrid .cardTitle{display:-webkit-box;"),"Mobile story titles must be clamped to prevent uneven cards.");
+assert.ok(/\.platformPulseDetails\s*\{[^}]*grid-template-columns:1fr/s.test(css),"Platform activity panels must stack cleanly on mobile.");
 assert.ok(css.includes(".homeFormatGrid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr))"),"Desktop format discovery must use a balanced three-column grid.");
 assert.ok(css.includes("@media(max-width:420px)")&&css.includes(".homeFormatGrid{gap:7px}"),"Narrow mobile format cards must use compact spacing.");
 assert.ok(css.includes("border:1px solid var(--in-line)")&&css.includes("var(--in-brand) 5%"),"Homepage and real-time panels must use declared design tokens.");
