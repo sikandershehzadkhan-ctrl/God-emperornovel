@@ -52,4 +52,19 @@ assert.ok(notesMigration.includes("FOREIGN KEY(owner_user_id) REFERENCES users(i
 assert.ok(notesMigration.includes("CHECK(length(note) BETWEEN 1 AND 4000)"),"D1 must enforce private note length.");
 assert.ok(notesMigration.includes("idx_author_private_notes_owner_story_updated")&&notesMigration.includes("idx_author_private_notes_chapter"),"Private note lookup indexes must exist.");
 
-console.log("Author writing goals and private notes policy, ownership, migration, UI and asset parity checks passed.");
+
+const readinessAt=worker.indexOf('if(p==="/api/author/readiness"&&m==="GET")');
+assert.ok(readinessAt>=0,"Deterministic editorial readiness route must exist.");
+const readinessRoute=worker.slice(readinessAt,worker.indexOf('if(p==="/api/author/planning"',readinessAt));
+assert.ok(readinessRoute.includes("const e=author(u)"),"Readiness checks must require author access.");
+assert.ok(readinessRoute.includes("FROM novels n WHERE n.owner_user_id=?"),"Readiness checks must be scoped to owned stories.");
+assert.ok(readinessRoute.includes("CONTENT_FORMAT_IDS.has"),"Format readiness must use the canonical supported-format registry.");
+assert.ok(readinessRoute.includes("rights_evidence")&&readinessRoute.includes("public_domain"),"Rights evidence checks must be based on recorded rights status.");
+assert.ok(readinessRoute.includes("TRIM(COALESCE(c.content,''))=''"),"Draft completeness must inspect actual stored chapter content.");
+assert.ok(readinessRoute.includes("attention_count"),"Readiness response must report deterministic attention counts.");
+assert.ok(app.includes("authorReadinessPanel")&&shipped.includes("authorReadinessPanel"),"Author Studio must render editorial readiness.");
+assert.ok(app.includes("api('/api/author/readiness')")&&shipped.includes("api('/api/author/readiness')"),"Readiness UI must use the authenticated API.");
+assert.ok(app.includes("do not certify literary quality")&&shipped.includes("do not certify literary quality"),"UI must disclose the checks' limits.");
+assert.ok(css.includes(".readinessMark")&&css.includes(".authorReadinessStory"),"Readiness results must have responsive presentation.");
+
+console.log("Author writing goals, private notes and editorial readiness policy, ownership, migration, UI and asset parity checks passed.");
