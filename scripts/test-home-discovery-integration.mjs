@@ -14,6 +14,17 @@ assert.equal(html.split("/app-17.23.0.js").length-1,1,"HTML must reference the c
 assert.ok(app.includes("id=\"homeConnections\""),"Homepage must expose the connected discovery region");
 assert.ok(app.includes("imperialHeroVisual")&&app.includes("/imperial-novel-app-icon.svg"),"Homepage hero must feature the approved Imperial black-sun and empty-throne crest.");
 assert.ok(app.includes("A NEW ERA OF STORYTELLING")&&app.includes("THE IMPERIAL CREST"),"Homepage hero must establish a distinct editorial identity.");
+assert.ok(app.includes('c=Object.prototype.hasOwnProperty.call(IN_LANG,c)?c:"en"'),"Unsupported stored locale values must safely fall back to English.");
+assert.ok(app.includes('(c==="ur"||c==="ar"||c==="fa")?"rtl":"ltr"'),"Urdu, Arabic, and Persian must use right-to-left document direction.");
+assert.ok(app.includes('[data-in-lang-key]'),"Explicitly marked homepage text nodes must participate in live locale switching.");
+assert.ok(app.includes('[data-in-lang-placeholder]'),"Search placeholders must update when the interface language changes.");
+assert.ok(app.includes('data-in-lang-key="Open a world."')&&app.includes('data-in-lang-key="Shape an empire."'),"The homepage hero headline must expose translation-safe text spans.");
+assert.ok(app.includes('"ur":{"Home":"صفحہ اول"')&&app.includes('"hi":{"Home":"होम"')&&app.includes('"ar":{"Home":"الرئيسية"')&&app.includes('"fa":{"Home":"خانه"'),"Urdu, Hindi, Arabic, and Persian dictionaries must remain available.");
+assert.ok(app.includes('"Discover stories worth staying up for, then create the worlds only you can imagine.":"ایسی کہانیاں'),"Urdu homepage hero copy must be translated.");
+assert.ok(app.includes('"Discover stories worth staying up for, then create the worlds only you can imagine.":"اكتشف قصصاً'),"Arabic homepage hero copy must be translated.");
+assert.ok(css.includes("Homepage internationalization and RTL layout pass 17.45"),"Homepage must include a dedicated RTL layout refinement.");
+assert.ok(css.includes('html[dir="rtl"] .homePage .heroSearch input{text-align:right}'),"RTL homepage search input must align to the reading direction.");
+
 assert.ok(app.includes("class=\"imperialHeroAuthor\" href=\"/become-an-author\"")&&app.includes("class=\"imperialHeroBrowse\" href=\"/catalog\""),"Homepage hero must provide direct creator onboarding and library discovery actions.");
 assert.ok(css.includes(".imperialHeroVisual")&&css.includes("@media(max-width:760px)"),"Imperial crest composition must have responsive mobile behavior.");
 assert.ok(css.includes("prefers-reduced-motion:reduce")&&css.includes(".imperialHeroSeal{transform:none}"),"Hero crest must respect reduced-motion preferences.");
