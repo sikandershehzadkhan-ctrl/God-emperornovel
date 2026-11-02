@@ -104,7 +104,7 @@ assert.ok(homepageLoader.includes('setINLang(document.documentElement.lang||"en"
 assert.ok(homepageLoader.includes("void (async()=>{"),"Catalog and discovery requests must run as independent non-blocking homepage tasks.");
 assert.ok(homepageLoader.includes("const pageGeneration=homePulseGeneration;")&&homepageLoader.includes("const isCurrentHome=()=>pageGeneration===homePulseGeneration&&root.isConnected&&!!root.querySelector('.homePage')"),"Each homepage visit must own a lifecycle guard that detects navigation away and later re-entry.");
 assert.ok(homepageLoader.includes("if(!isCurrentHome())return;const el=$(selector);if(!el)return;"),"Asynchronous story shelf rendering must stop safely when its homepage has been detached.");
-assert.ok(homepageLoader.includes("if(!isCurrentHome())return;const target=$('#homeConnections');"),"Discovery graph failures must not write into a page after navigation.");
+assert.ok(homepageLoader.includes("if(!isCurrentHome())return;\n  const target=$('#homeConnections');"),"Discovery graph failures must not write into a page after navigation.");
 assert.ok(homepageLoader.includes("if(!isCurrentHome())return;\n  const trendingNovelIds="),"Late trending/latest responses must be discarded after the visitor leaves the homepage.");
 assert.ok(homepageLoader.includes("if(!isCurrentHome())return;\n  const nodes=Array.isArray(graph.nodes)?graph.nodes:[];"),"Late discovery graph responses must be discarded after the visitor leaves the homepage.");
 
