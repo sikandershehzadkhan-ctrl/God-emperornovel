@@ -26,4 +26,14 @@ assert.match(app, /if\(window\.__imperialReaderNetworkHandler\)\{window\.removeE
 assert.match(app, /Promise\.allSettled\(\[api\('\/api\/history'/, 'Reader history and bookmark sync must be tracked together so failed activity can retry after reconnect.');
 assert.match(app, /if\(results\.some\(result=>result\.status==='rejected'\)\)activitySyncPending=true/, 'Failed reader activity sync must remain pending for reconnection.');
 assert.ok(app.includes("retry.className='comicPageRetry secondary'"), 'Failed comic images must expose a user-triggered retry control.');
+
+assert.ok(app.includes("const READER_ACTIVITY_QUEUE_KEY='imperial_reader_activity_v1'"), 'Offline activity must use a dedicated session-scoped queue.'); 
+assert.match(app, /sessionStorage\.setItem\(READER_ACTIVITY_QUEUE_KEY,JSON\.stringify\(queue\)\)/, 'Queued activity must survive reader reloads within the active tab session.'); 
+assert.match(app, /queue\.records=queue\.records\.slice\(-20\)/, 'The pending activity queue must have a strict record cap.'); 
+assert.match(app, /Date\.now\(\)-Number\(queue\.createdAt\|\|0\)>7\*24\*60\*60\*1000/, 'Expired queued activity must be discarded.'); 
+assert.match(app, /const me=await api\('\/api\/me'\);[\s\S]*?if\(!me\.user\)/, 'Queued activity must verify the current authenticated account before replay.'); 
+assert.match(app, /currentUserId!==String\(queue\.userId\)/, 'Queued activity must never replay across account changes.'); 
+assert.match(app, /sessionStorage\.removeItem\('imperial_reader_account_id'\);sessionStorage\.removeItem\(READER_ACTIVITY_QUEUE_KEY\)/, 'Signing out must clear the account identity and queued reader activity.'); 
+assert.match(app, /queueReaderActivity\(Number\(id\),num\)/, 'Reader activity must enter the account-bound recovery queue.'); 
+
 console.log('Chapter delivery checks passed: bounded retries, accessible recovery, stale-response protection, listener cleanup, bookmark click locking, stable layout, and reduced motion.');
