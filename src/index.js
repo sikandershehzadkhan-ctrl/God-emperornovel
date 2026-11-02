@@ -692,16 +692,22 @@ async function api(req,env){
     (SELECT COUNT(*) FROM chapters c WHERE c.novel_id=n.id AND c.publication_status='published') published_chapters,
     (SELECT COUNT(*) FROM chapters c WHERE c.novel_id=n.id AND c.publication_status='draft') draft_chapters,
     (SELECT COALESCE(SUM(v.views),0) FROM chapter_views v JOIN chapters c ON c.id=v.chapter_id WHERE c.novel_id=n.id) chapter_views,
-    (SELECT COUNT(*) FROM unlocks x JOIN chapters c ON c.id=x.chapter_id WHERE c.novel_id=n.id) unlocks
+    (SELECT COUNT(*) FROM unlocks x JOIN chapters c ON c.id=x.chapter_id WHERE c.novel_id=n.id) unlocks,
+    (SELECT COALESCE(SUM(x.cost),0) FROM unlocks x JOIN chapters c ON c.id=x.chapter_id WHERE c.novel_id=n.id AND x.cost>0) reader_crown_spend,
+    (SELECT COUNT(*) FROM unlocks x JOIN chapters c ON c.id=x.chapter_id WHERE c.novel_id=n.id AND x.cost>0) paid_unlocks,
+    (SELECT COUNT(DISTINCT x.user_id) FROM unlocks x JOIN chapters c ON c.id=x.chapter_id WHERE c.novel_id=n.id AND x.cost>0) paying_readers,
+    (SELECT MAX(x.unlocked_at) FROM unlocks x JOIN chapters c ON c.id=x.chapter_id WHERE c.novel_id=n.id AND x.cost>0) last_paid_unlock_at
     FROM novels n WHERE n.owner_user_id=? ORDER BY n.views DESC,n.updated_at DESC LIMIT 100`).bind(u.id).all(),
    env.DB.prepare(`SELECT c.id,c.novel_id,n.title novel_title,c.chapter_number,c.title chapter_title,
-    COALESCE(v.views,0) views,(SELECT COUNT(*) FROM unlocks x WHERE x.chapter_id=c.id) unlocks
+    COALESCE(v.views,0) views,(SELECT COUNT(*) FROM unlocks x WHERE x.chapter_id=c.id) unlocks,
+    (SELECT COALESCE(SUM(x.cost),0) FROM unlocks x WHERE x.chapter_id=c.id AND x.cost>0) reader_crown_spend,
+    (SELECT COUNT(*) FROM unlocks x WHERE x.chapter_id=c.id AND x.cost>0) paid_unlocks
     FROM chapters c JOIN novels n ON n.id=c.novel_id LEFT JOIN chapter_views v ON v.chapter_id=c.id
     WHERE n.owner_user_id=? AND c.publication_status='published'
     ORDER BY views DESC,unlocks DESC,c.id DESC LIMIT 10`).bind(u.id).all()
   ]);
   const novels=novelRows.results||[],sum=key=>novels.reduce((total,row)=>total+Number(row[key]||0),0);
-  return json({generated_at:new Date().toISOString(),scope:"lifetime_counters",totals:{novels:novels.length,published_novels:novels.filter(n=>n.publication_status==="published").length,published_chapters:sum("published_chapters"),draft_chapters:sum("draft_chapters"),novel_views:sum("views"),chapter_views:sum("chapter_views"),ratings:sum("rating_count"),unlocks:sum("unlocks")},novels,top_chapters:chapterRows.results||[]})
+  return json({generated_at:new Date().toISOString(),scope:"lifetime_counters",totals:{novels:novels.length,published_novels:novels.filter(n=>n.publication_status==="published").length,published_chapters:sum("published_chapters"),draft_chapters:sum("draft_chapters"),novel_views:sum("views"),chapter_views:sum("chapter_views"),ratings:sum("rating_count"),unlocks:sum("unlocks"),reader_crown_spend:sum("reader_crown_spend"),paid_unlocks:sum("paid_unlocks")},novels,top_chapters:chapterRows.results||[]})
  }
 if(p==="/api/author/novels"&&m==="GET"){
   const e=author(u);if(e)return e;
