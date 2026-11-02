@@ -84,7 +84,7 @@ async function home(){
    <div class="imperialHeroVisual" aria-hidden="true">
     <div class="imperialHeroOrbit imperialHeroOrbitOne"></div>
     <div class="imperialHeroOrbit imperialHeroOrbitTwo"></div>
-    <div class="imperialHeroSeal"><img src="/imperial-novel-app-icon.svg" alt="" width="184" height="184" decoding="async"></div>
+    <div class="imperialHeroSeal"><img src="/imperial-novel-app-icon.svg" alt="" width="184" height="184" loading="eager" decoding="async" fetchpriority="high"></div>
     <div class="imperialHeroCaption"><span data-in-lang-key="THE IMPERIAL CREST">THE IMPERIAL CREST</span><b data-in-lang-key="Read. Create. Conquer.">Read. Create. Conquer.</b></div>
     <div class="imperialHeroAxes"><span>READ</span><span>CREATE</span><span>CONNECT</span></div>
    </div>
