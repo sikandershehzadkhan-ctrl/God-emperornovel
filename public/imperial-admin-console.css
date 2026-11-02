@@ -132,3 +132,22 @@ html[dir="rtl"] .adminForm textarea {
 html[dir="rtl"] .adminTabs {
   justify-content: flex-start;
 }
+
+
+/* Apply RTL direction to the actual admin console component names. */
+html[dir="rtl"] .adminWrap,
+html[dir="rtl"] .adminNav,
+html[dir="rtl"] .adminSection,
+html[dir="rtl"] .agentGrid,
+html[dir="rtl"] .adminMsg {
+  direction: rtl;
+}
+html[dir="rtl"] .adminNav {
+  justify-content: flex-start;
+}
+html[dir="rtl"] .adminTable {
+  direction: rtl;
+}
+html[dir="rtl"] .adminForm label {
+  text-align: right;
+}
