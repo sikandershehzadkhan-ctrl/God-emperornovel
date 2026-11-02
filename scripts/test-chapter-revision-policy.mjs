@@ -36,8 +36,10 @@ for (const [label, browser] of [["source", app], ["served asset", shipped]]) {
   assert.ok(browser.includes("/publish',{method:'POST'"), label + " must call the owner-scoped publication endpoint.");
   assert.ok(browser.includes("Move to draft"), label + " must allow an author to unpublish a chapter.");
   assert.ok(browser.includes("Publish chapter"), label + " must allow an author to publish a chapter.");
-  assert.ok(browser.includes("$('.authorChapterHistoryToggle',manager).forEach"), label + " must bind all revision-history controls.");
-  assert.doesNotMatch(browser, /(?<!\$)\$\('\.authorChapterHistoryToggle',manager\)\.forEach/, label + " must not use a single-element selector for revision-history controls.");
+  for (const selector of ["authorChapterEditToggle", "authorChapterEditCancel", "authorChapterEditForm", "authorChapterPublishToggle", "authorChapterHistoryToggle"]) {
+    assert.ok(browser.includes("$$('."+selector+"',manager).forEach"), label + " must bind every " + selector + " control as a collection.");
+  }
+  assert.ok(!/(?<!\$)\$\('\.authorChapter(?:EditToggle|EditCancel|EditForm|PublishToggle|HistoryToggle)',manager\)\.forEach/.test(browser), label + " must not use single-element selectors for chapter manager collections.");
 }
 assert.equal(app, shipped, "Source and served app assets must remain identical.");
 assert.ok(css.includes(".authorChapterManager") && css.includes(".authorRevisionItem"), "Chapter management and revision history need responsive styling.");
