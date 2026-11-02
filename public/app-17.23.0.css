@@ -74,3 +74,9 @@ html[dir=rtl] .commentReply{margin-inline-start:28px;margin-left:0}
 .readerLoadSpinner{width:28px;height:28px;border:3px solid color-mix(in srgb,currentColor 18%,transparent);border-top-color:var(--accent,#6654d9);border-radius:50%;animation:readerLoadSpin .8s linear infinite}
 @keyframes readerLoadSpin{to{transform:rotate(360deg)}}
 @media(prefers-reduced-motion:reduce){.readerLoadSpinner{animation:none;border-top-color:currentColor}}
+
+
+/* Reader offline state and recoverable comic image failures. */
+.readerNetworkStatus{position:sticky;top:0;z-index:20;padding:10px 16px;text-align:center;background:var(--surface-2,#eee);color:var(--text,inherit);border-bottom:1px solid var(--border,rgba(127,127,127,.25));font-size:.9rem}
+.comicPageRetry{display:inline-flex;align-items:center;justify-content:center;min-height:44px;margin:12px 0;padding:9px 16px;border-radius:10px}
+.comicPageError img{opacity:.45}
