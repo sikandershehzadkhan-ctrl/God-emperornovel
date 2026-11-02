@@ -34,7 +34,7 @@ rejected("INSERT INTO account_deletion_disposition_findings(review_id,request_id
 rejected("INSERT INTO account_deletion_disposition_findings(review_id,request_id,dependency_key,revision,reviewer_id,review_version,outcome,reason,policy_reference) VALUES(102,10,'ai_projects',1,3,2,'retain','Reason','policy')")
 rejected("INSERT INTO account_deletion_disposition_findings(review_id,request_id,dependency_key,revision,reviewer_id,review_version,outcome,reason,policy_reference) VALUES(103,10,'ai_projects',1,3,2,'retain','Reason','policy')")
 rejected(insert,("creator_rights",3))
-rejected(insert,("creator_rights",2))
+rejected(insert,("creator_rights",1))
 rejected("UPDATE account_deletion_disposition_findings SET reason='tampered' WHERE review_id=100")
 rejected("DELETE FROM account_deletion_disposition_findings WHERE review_id=100")
 db.execute("UPDATE account_deletion_reviews SET version=version+1 WHERE id=100")
