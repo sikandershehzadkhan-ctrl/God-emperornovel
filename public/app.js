@@ -24,6 +24,7 @@ async function apiGetWithRetry(path,attempts=3){
  throw lastError||new Error('Unable to load this chapter. Please try again.');
 }
 const READER_ACTIVITY_QUEUE_KEY='imperial_reader_activity_v1';
+const READER_ACTIVITY_VERSION_CACHE_PREFIX='imperial_reader_activity_version_v1:';
 function readReaderActivityQueue(){
  try{
   const raw=sessionStorage.getItem(READER_ACTIVITY_QUEUE_KEY);if(!raw)return null;
@@ -35,6 +36,19 @@ function readReaderActivityQueue(){
 function writeReaderActivityQueue(queue){
  try{sessionStorage.setItem(READER_ACTIVITY_QUEUE_KEY,JSON.stringify(queue));return true}catch(e){return false}
 }
+function readerActivityVersionCacheKey(userId,novelId){return READER_ACTIVITY_VERSION_CACHE_PREFIX+String(userId)+':'+String(novelId)}
+async function getReaderActivityVersion(novelId,userId){
+ const key=readerActivityVersionCacheKey(userId,novelId);let cached=null;
+ try{const raw=sessionStorage.getItem(key);if(raw)cached=JSON.parse(raw)}catch{}
+ if(navigator.onLine){
+  const fresh=await api('/api/reader-activity-version?novel_id='+encodeURIComponent(novelId));
+  const version={history_version:Number(fresh.history_version||0),bookmark_version:Number(fresh.bookmark_version||0)};
+  try{sessionStorage.setItem(key,JSON.stringify(version))}catch{}
+  return version;
+ }
+ if(cached&&Number.isSafeInteger(Number(cached.history_version))&&Number.isSafeInteger(Number(cached.bookmark_version)))return {history_version:Number(cached.history_version),bookmark_version:Number(cached.bookmark_version)};
+ return null;
+}
 let readerActivityFlushPromise=null;
 async function flushReaderActivityQueue(expectedUserId){
  if(readerActivityFlushPromise)return readerActivityFlushPromise;
@@ -45,24 +59,30 @@ async function flushReaderActivityQueue(expectedUserId){
   const currentUserId=String(me.user.id);
   if(currentUserId!==String(queue.userId)){sessionStorage.removeItem(READER_ACTIVITY_QUEUE_KEY);sessionStorage.setItem('imperial_reader_account_id',currentUserId);return}
   while(queue?.records?.length){
-   const record=queue.records[0];
-   await Promise.all([
-    api('/api/history',{method:'POST',body:JSON.stringify({novel_id:record.novel_id,chapter_number:record.chapter_number})}),
-    api('/api/bookmark',{method:'POST',body:JSON.stringify({novel_id:record.novel_id,chapter_number:record.chapter_number})})
-   ]);
+   const record=queue.records[0],tasks=[];
+   if(record.history_pending!==false)tasks.push({kind:'history',promise:api('/api/history',{method:'POST',body:JSON.stringify({novel_id:record.novel_id,chapter_number:record.chapter_number,history_version:Number(record.history_version||0)})})});
+   if(record.bookmark_pending!==false)tasks.push({kind:'bookmark',promise:api('/api/bookmark',{method:'POST',body:JSON.stringify({novel_id:record.novel_id,chapter_number:record.chapter_number,bookmark_version:Number(record.bookmark_version||0)})})});
+   const results=await Promise.all(tasks.map(task=>task.promise.then(value=>({status:'fulfilled',value}),reason=>({status:'rejected',reason}))));
+   let retryError=null;
+   results.forEach((result,index)=>{
+    const kind=tasks[index].kind;
+    if(result.status==='fulfilled'||(result.reason?.status===409&&result.reason?.data?.code==='stale_activity_version'))record[kind+'_pending']=false;
+    else retryError=retryError||result.reason;
+   });
    queue=readReaderActivityQueue();if(!queue||String(queue.userId)!==currentUserId)return;
-   queue.records=queue.records.filter(item=>!(Number(item.novel_id)===Number(record.novel_id)&&Number(item.chapter_number)===Number(record.chapter_number)));
+   const current=queue.records.find(item=>Number(item.novel_id)===Number(record.novel_id)&&Number(item.chapter_number)===Number(record.chapter_number));
+   if(current){current.history_pending=record.history_pending;current.bookmark_pending=record.bookmark_pending;if(current.history_pending===false&&current.bookmark_pending===false)queue.records=queue.records.filter(item=>item!==current)}
    if(queue.records.length)writeReaderActivityQueue(queue);else sessionStorage.removeItem(READER_ACTIVITY_QUEUE_KEY);
+   if(retryError)throw retryError;
   }
  })().finally(()=>{readerActivityFlushPromise=null});
  return readerActivityFlushPromise;
 }
 async function discardQueuedReaderActivityForNovel(novelId){
  if(readerActivityFlushPromise){try{await readerActivityFlushPromise}catch{}}
- const queue=readReaderActivityQueue();if(!queue)return;
- queue.records=queue.records.filter(item=>Number(item.novel_id)!==Number(novelId));
- if(queue.records.length)writeReaderActivityQueue(queue);
- else{try{sessionStorage.removeItem(READER_ACTIVITY_QUEUE_KEY)}catch{}}
+ const queue=readReaderActivityQueue();
+ if(queue){queue.records=queue.records.filter(item=>Number(item.novel_id)!==Number(novelId));if(queue.records.length)writeReaderActivityQueue(queue);else{try{sessionStorage.removeItem(READER_ACTIVITY_QUEUE_KEY)}catch{}}}
+ let userId='';try{userId=sessionStorage.getItem('imperial_reader_account_id')||'';if(userId)sessionStorage.removeItem(readerActivityVersionCacheKey(userId,novelId))}catch{}
 }
 async function queueReaderActivity(novelId,chapterNumber){
  let userId='';try{userId=sessionStorage.getItem('imperial_reader_account_id')||''}catch{}
@@ -71,10 +91,11 @@ async function queueReaderActivity(novelId,chapterNumber){
   try{sessionStorage.setItem('imperial_reader_account_id',userId)}catch{}
  }
  if(!userId)return false;
+ const versions=await getReaderActivityVersion(novelId,userId);if(!versions)return false;
  let queue=readReaderActivityQueue();
  if(queue&&String(queue.userId)!==userId){try{sessionStorage.removeItem(READER_ACTIVITY_QUEUE_KEY)}catch{}queue=null}
  queue=queue||{userId,createdAt:Date.now(),records:[]};
- const record={novel_id:Number(novelId),chapter_number:Number(chapterNumber)};
+ const record={novel_id:Number(novelId),chapter_number:Number(chapterNumber),history_version:versions.history_version,bookmark_version:versions.bookmark_version,history_pending:true,bookmark_pending:true};
  queue.records=queue.records.filter(item=>Number(item.novel_id)!==record.novel_id);
  queue.records.push(record);queue.records=queue.records.slice(-20);
  if(!writeReaderActivityQueue(queue))return false;
@@ -296,7 +317,7 @@ async function reader(){
  $('#fontDown').onclick=()=>{size=Math.max(15,size-1);localStorage.setItem('readerSize',size);content.style.fontSize=size+'px'};
  $('#fontUp').onclick=()=>{size=Math.min(30,size+1);localStorage.setItem('readerSize',size);content.style.fontSize=size+'px'};
  const drawer=$('#chapterDrawer');$('#chapterMenu').onclick=()=>{drawer.hidden=!drawer.hidden;$('#chapterMenu').setAttribute('aria-expanded',String(!drawer.hidden))};$('#closeChapterMenu').onclick=()=>{drawer.hidden=true;$('#chapterMenu').setAttribute('aria-expanded','false')};
- let bookmarkSaving=false;$('#bookmarkBtn').onclick=async()=>{const button=$('#bookmarkBtn');if(bookmarkSaving||!button)return;bookmarkSaving=true;button.disabled=true;try{const me=await api('/api/me');if(loadToken!==window.__imperialReaderLoadToken)return;if(me.user){await api('/api/bookmark',{method:'POST',body:JSON.stringify({novel_id:Number(id),chapter_number:num})});if(loadToken!==window.__imperialReaderLoadToken)return;const now=!button.classList.contains('saved');button.classList.toggle('saved',now);button.textContent=now?'★':'☆';}else{localStorage.setItem('readerBookmark:'+id,String(num));button.classList.add('saved');button.textContent='★'}}catch(e){if(loadToken===window.__imperialReaderLoadToken)alert(e.message)}finally{bookmarkSaving=false;if(loadToken===window.__imperialReaderLoadToken&&button.isConnected)button.disabled=false}};
+ let bookmarkSaving=false;$('#bookmarkBtn').onclick=async()=>{const button=$('#bookmarkBtn');if(bookmarkSaving||!button)return;bookmarkSaving=true;button.disabled=true;try{const me=await api('/api/me');if(loadToken!==window.__imperialReaderLoadToken)return;if(me.user){const versions=await getReaderActivityVersion(Number(id),String(me.user.id));if(!versions)throw new Error('Bookmark revision is unavailable while offline. Reconnect and try again.');await api('/api/bookmark',{method:'POST',body:JSON.stringify({novel_id:Number(id),chapter_number:num,bookmark_version:versions.bookmark_version})});if(loadToken!==window.__imperialReaderLoadToken)return;const now=!button.classList.contains('saved');button.classList.toggle('saved',now);button.textContent=now?'★':'☆';}else{localStorage.setItem('readerBookmark:'+id,String(num));button.classList.add('saved');button.textContent='★'}}catch(e){if(loadToken===window.__imperialReaderLoadToken)alert(e.message)}finally{bookmarkSaving=false;if(loadToken===window.__imperialReaderLoadToken&&button.isConnected)button.disabled=false}};
  if($('#unlock'))$('#unlock').onclick=async()=>{try{await api('/api/chapters/'+ch.id+'/unlock',{method:'POST'});location.reload()}catch(e){alert(e.message)}};
  let activitySyncPromise=null,activitySyncPending=!!d.unlocked;
  const syncReaderActivity=()=>{if(!d.unlocked||activitySyncPromise)return activitySyncPromise;activitySyncPromise=queueReaderActivity(Number(id),num).then(synced=>{activitySyncPending=!synced}).catch(()=>{activitySyncPending=true}).finally(()=>{activitySyncPromise=null});return activitySyncPromise};
