@@ -26,6 +26,7 @@ assert.ok(app.includes('"Discover stories worth staying up for, then create the 
 assert.ok(app.includes('"Discover stories worth staying up for, then create the worlds only you can imagine.":"داستان‌هایی کشف کنید'),"Persian homepage hero copy must be nested in the Persian locale dictionary.");
 assert.ok(css.includes("Homepage internationalization and RTL layout pass 17.45"),"Homepage must include a dedicated RTL layout refinement.");
 assert.ok(css.includes('html[dir="rtl"] .homePage .heroSearch input{text-align:right}'),"RTL homepage search input must align to the reading direction.");
+assert.ok(css.includes('html[dir="rtl"] .homePage .nextHeroCopy,'),"RTL hero alignment must target the real homepage copy container.");
 
 assert.ok(app.includes("class=\"imperialHeroAuthor\" href=\"/become-an-author\"")&&app.includes("class=\"imperialHeroBrowse\" href=\"/catalog\""),"Homepage hero must provide direct creator onboarding and library discovery actions.");
 assert.ok(css.includes(".imperialHeroVisual")&&css.includes("@media(max-width:760px)"),"Imperial crest composition must have responsive mobile behavior.");
