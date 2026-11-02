@@ -14,6 +14,7 @@ import { createDonationReferenceIndexEnsurer } from "./donation-reference-index.
 import { validateAuthorApplication, validateAuthorApplicationDecision } from "./author-application-policy.mjs";
 import { canPublishChapter, validateNovelOwnerAssignment } from "./creator-ownership-policy.mjs";
 import { CONTENT_FORMATS, CONTENT_FORMAT_IDS } from "./content-formats.mjs";
+import { permissionsForRoles } from "./account-deletion-review-policy.mjs";
 const json=(d,s=200,h={})=>new Response(JSON.stringify(d),{status:s,headers:{"content-type":"application/json;charset=UTF-8","cache-control":"no-store",...h}});
 const now=()=>Math.floor(Date.now()/1000);
 const b64=a=>btoa(String.fromCharCode(...new Uint8Array(a))).replaceAll("+","-").replaceAll("/","_").replaceAll("=","");
@@ -536,7 +537,13 @@ async function api(req,env){
   return json({ok:true,request:result});
  }
  if(p==="/api/admin/account-deletion/reviews"&&m==="GET"){
-  const authError=admin(u);if(authError)return authError;
+  const authError=need(u);if(authError)return authError;
+  let reviewerRoles;
+  try{
+   const assigned=await env.DB.prepare("SELECT role_key FROM account_deletion_reviewer_assignments WHERE user_id=? AND revoked_at IS NULL").bind(u.id).all();
+   reviewerRoles=(assigned.results||[]).map(row=>row.role_key);
+  }catch(error){console.error("account deletion reviewer authorization unavailable",String(error?.message||error));return json({error:"Reviewer authorization is temporarily unavailable."},503)}
+  if(!permissionsForRoles(reviewerRoles).includes("queue:read"))return json({error:"An active account-deletion reviewer assignment is required."},403);
   const limited=await consumeAuthRateLimit(env,"account-deletion-review-queue",String(u.id),30,60);if(limited)return limited;
   const requestedState=String(url.searchParams.get("state")||"").trim();
   const allowedStates=["review_required","review_in_progress","awaiting_user_action","blocked_retention","review_approved","finalization_eligible"];
