@@ -131,3 +131,19 @@
 @media(max-width:420px){.authorFeedbackFilters{grid-template-columns:1fr}}
 
 .authorFeedbackLimit{grid-column:1/-1;font-size:11px;color:var(--muted,#687080);margin:0}
+
+/* Author writing goals: compact, accessible and phone-first. */
+.authorGoalsPanel{margin:16px 0}
+.authorGoalsList{display:grid;gap:10px;margin-top:12px}
+.authorGoalItem{display:grid;gap:11px;padding:13px;border:1px solid var(--line,rgba(139,92,246,.2));border-radius:12px;background:var(--panel-soft,rgba(139,92,246,.025))}
+.authorGoalHeading{display:flex;justify-content:space-between;align-items:flex-start;gap:10px}
+.authorGoalHeading h3{margin:0;font-size:15px;overflow-wrap:anywhere}
+.authorGoalHeading span{font-size:11px;color:var(--muted,#687080);white-space:nowrap}
+.authorGoalFields{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:9px}
+.authorGoalFields label{display:grid;gap:5px;font-size:11px;color:var(--muted,#687080)}
+.authorGoalFields input{width:100%;min-width:0;box-sizing:border-box;padding:9px 10px;border:1px solid var(--line,rgba(139,92,246,.2));border-radius:9px;background:var(--panel,transparent);color:inherit;font:inherit;font-size:13px}
+.authorGoalActions{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.authorGoalActions button{min-height:36px}
+.authorGoalStatus{font-size:11px;color:var(--muted,#687080)}
+.authorGoalsFootnote{font-size:11px;margin:10px 0 0}
+@media(max-width:560px){.authorGoalFields{grid-template-columns:1fr 1fr}.authorGoalFields label:last-child{grid-column:1/-1}.authorGoalHeading{display:grid;gap:4px}}
