@@ -59,3 +59,8 @@ html[dir=rtl] .comicComposerPage{direction:rtl}
 html[dir=rtl] input,html[dir=rtl] textarea,html[dir=rtl] select{text-align:start}
 html[dir=rtl] .commentReply{margin-inline-start:28px;margin-left:0}
 @media(max-width:700px){html[dir=rtl] .commentReply{margin-inline-start:12px;margin-left:0}}
+
+
+/* 17.26 reader performance: defer off-screen comic page rendering on mobile and desktop. */
+.comicPage{content-visibility:auto;contain-intrinsic-size:auto 1000px}
+@media(max-width:760px){.comicPage{contain-intrinsic-size:auto 720px}}
