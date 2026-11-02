@@ -2249,3 +2249,32 @@ html[dir="rtl"] .homePage .homeStoryGrid .card{text-align:right}
  html[dir="rtl"] .homePage .sectionHead{align-items:flex-start}
  html[dir="rtl"] .homePage .nextCreatorBand{ text-align:right }
 }
+
+/* Homepage off-screen rendering budget 17.47.
+   Keep the hero eager; let modern browsers defer layout/paint work for long
+   below-the-fold shelves until they approach the viewport. The intrinsic
+   estimates prevent large scroll jumps while deferred content is skipped. */
+.homePage .homeFormatShelf,
+.homePage .homeConnectionShelf,
+.homePage .nextShelf,
+.homePage .platformPulse,
+.homePage .nextFeatureDeck,
+.homePage .nextCreatorBand,
+.homePage .nextReaderPromise{
+  content-visibility:auto;
+  contain-intrinsic-size:auto 520px;
+}
+.homePage .homeConnectionShelf{contain-intrinsic-size:auto 390px}
+.homePage .platformPulse{contain-intrinsic-size:auto 760px}
+.homePage .nextFeatureDeck{contain-intrinsic-size:auto 480px}
+.homePage .nextCreatorBand{contain-intrinsic-size:auto 230px}
+.homePage .nextReaderPromise{contain-intrinsic-size:auto 150px}
+@media(max-width:760px){
+  .homePage .homeFormatShelf{contain-intrinsic-size:auto 470px}
+  .homePage .homeConnectionShelf{contain-intrinsic-size:auto 420px}
+  .homePage .nextShelf{contain-intrinsic-size:auto 650px}
+  .homePage .platformPulse{contain-intrinsic-size:auto 900px}
+  .homePage .nextFeatureDeck{contain-intrinsic-size:auto 760px}
+  .homePage .nextCreatorBand{contain-intrinsic-size:auto 280px}
+  .homePage .nextReaderPromise{contain-intrinsic-size:auto 190px}
+}
