@@ -1,0 +1,94 @@
+import assert from "node:assert/strict";
+import { readFileSync } from "node:fs";
+import { applySeoMetadata, authorProfilePath, buildRobotsTxt, buildSitemapXml, buildSitemapIndexXml, canonicalOrigin, canonicalPath, getPageSeo, robotsForPath } from "../src/seo.mjs";
+
+const workerConfig=readFileSync("wrangler.toml","utf8");
+assert.match(workerConfig,/run_worker_first\s*=\s*\[[^\]]*"\/robots\.txt"/s,"robots.txt must be routed through the Worker before static assets.");
+assert.match(workerConfig,/run_worker_first\s*=\s*\[[^\]]*"\/sitemap\*"/s,"All dynamic sitemap index and shard paths must be routed through the Worker.");
+const origin="https://imperial.example";
+assert.equal(canonicalOrigin(origin),origin);
+assert.equal(canonicalPath("/discover"),"/catalog");
+assert.equal(canonicalPath("/formats"),"/formats");
+assert.equal(canonicalPath("/discover/"),"/catalog");
+assert.equal(canonicalPath("/format/manhwa/"),"/format/manhwa");
+assert.equal(canonicalPath("/novel/12/"),"/novel/12");
+assert.equal(canonicalPath("/"),"/");
+assert.equal(authorProfilePath("Sikander Khan"),"/author/Sikander%20Khan");
+assert.equal(authorProfilePath("Sikander & Co."),"/author/Sikander%20%26%20Co.");
+assert.equal(authorProfilePath("  "), "");
+assert.equal(canonicalOrigin("http://evil.example"),"https://god-emperornovel.sikandershehzadkhan.workers.dev");
+
+const robots=buildRobotsTxt(origin);
+assert.match(robots,/Sitemap: https:\/\/imperial\.example\/sitemap\.xml/);
+assert.match(robots,/Disallow: \/admin/);
+assert.match(robots,/Disallow: \/api\//);
+assert.match(robots,/Disallow: \/author\$/);
+assert.match(robots,/Disallow: \/\*\?\*/);
+assert.match(robots,/User-agent: OAI-SearchBot\nAllow: \/\n/);
+assert.match(robots,/User-agent: GPTBot\nDisallow: \/\n/);
+assert.match(robots,/User-agent: Google-Extended\nDisallow: \/\n/);
+const trainingAllowed=buildRobotsTxt(origin,{allowOaiSearch:true,allowModelTraining:true});
+assert.match(trainingAllowed,/User-agent: GPTBot\nAllow: \/\n/);
+assert.match(trainingAllowed,/User-agent: Google-Extended\nAllow: \/\n/);
+const searchDisabled=buildRobotsTxt(origin,{allowOaiSearch:false});
+assert.match(searchDisabled,/User-agent: OAI-SearchBot\nDisallow: \/\n/);
+
+assert.match(getPageSeo("/catalog").title,/Discover Novels/);
+assert.match(getPageSeo("/become-an-author").title,/Become an Author/);
+assert.match(getPageSeo("/become-an-author").description,/creator tools|editorial review/i);
+assert.equal(robotsForPath("/become-an-author"),"index,follow");
+assert.equal(robotsForPath("/author"),"noindex,nofollow");
+assert.match(getPageSeo("/formats").title,/Explore Story Formats/);
+assert.match(getPageSeo("/search").title,/Search Stories/);
+assert.match(getPageSeo("/format/manhwa").title,/Manhwa/);
+assert.equal(robotsForPath("/search"),"noindex,nofollow");
+assert.equal(robotsForPath("/account"),"noindex,nofollow");
+assert.equal(robotsForPath("/author"),"noindex,nofollow");
+assert.equal(robotsForPath("/fandom/unknown"),"noindex,nofollow");
+assert.equal(robotsForPath("/author/some-writer"),"index,follow");
+assert.equal(robotsForPath("/catalog",404),"noindex,nofollow");
+assert.equal(robotsForPath("/read/12/5",200,true),"noindex,nofollow");
+assert.match(getPageSeo("/author/some-writer").title,/Imperial Novel/);
+
+const sitemap=buildSitemapXml(origin,[{id:12,updated_at:"2026-10-30T12:00:00Z"},{id:"13"},{id:"bad"},{id:0},{id:12}],[{author:"Sikander Khan"},{author:"Sikander & Co."},{author:"Sikander Khan"},{author:""}],[{novel_id:12,chapter_number:3,updated_at:"2026-10-31T10:00:00Z"},{novel_id:"bad",chapter_number:2},{novel_id:12,chapter_number:0}]);
+assert.match(sitemap,/<loc>https:\/\/imperial\.example\/novel\/12<\/loc><lastmod>2026-10-30<\/lastmod>/);
+assert.match(sitemap,/<loc>https:\/\/imperial\.example\/novel\/13<\/loc>/);
+assert.match(sitemap,/<loc>https:\/\/imperial\.example\/read\/12\/3<\/loc><lastmod>2026-10-31<\/lastmod>/);
+assert.doesNotMatch(sitemap,/read\/12\/0/);
+assert.equal((sitemap.match(/\/novel\/12/g)||[]).length,1);
+assert.doesNotMatch(sitemap,/\/novel\/bad/);
+assert.match(sitemap,/<loc>https:\/\/imperial\.example\/formats<\/loc>/);
+assert.match(sitemap,/\/format\/original/);
+assert.match(sitemap,/become-an-author/);
+assert.ok(!sitemap.includes("<loc>https://imperial.example/author</loc>"));
+assert.match(sitemap,/\/format\/audiobook/);
+assert.equal((sitemap.match(/\/format\//g)||[]).length,15);
+const sitemapIndex=buildSitemapIndexXml(origin,["/sitemap-static.xml","/sitemap-novels-0.xml","/sitemap-authors-0.xml","/sitemap-chapters-0.xml"]);
+assert.match(sitemapIndex,/<sitemapindex/);
+assert.match(sitemapIndex,/sitemap-chapters-0\.xml/);
+assert.match(sitemap,/\/author\/Sikander%20Khan/);
+assert.match(sitemap,/\/author\/Sikander%20%26%20Co\./);
+assert.equal((sitemap.match(/\/author\/Sikander%20Khan/g)||[]).length,1);
+
+const page=applySeoMetadata('<html><head><title>Old</title><meta name="description" content="old"><meta property="og:title" content="old"></head></html>',{
+ title:'A <Story> & More',description:'A useful story description.',canonical:origin+'/novel/12',robots:'index,follow',image:'/covers/novel-12.webp',structuredData:{'@type':'Book',name:'A <Novel>',author:{'@type':'Person',name:'Writer'}}
+});
+assert.match(page,/<title>A &lt;Story&gt; &amp; More<\/title>/);
+assert.match(page,/name="description" content="A useful story description\."/);
+assert.match(page,/property="og:title" content="A &lt;Story&gt; &amp; More"/);
+assert.match(page,/rel="canonical" href="https:\/\/imperial\.example\/novel\/12"/);
+assert.match(page,/property="og:url" content="https:\/\/imperial\.example\/novel\/12"/);
+assert.match(page,/property="og:image" content="https:\/\/imperial\.example\/covers\/novel-12\.webp"/);
+assert.match(page,/name="twitter:image" content="https:\/\/imperial\.example\/covers\/novel-12\.webp"/);
+assert.match(page,/application\/ld\+json/);
+assert.match(page,/schema\.org/);
+assert.ok(page.includes('"@type":"Book"'));
+assert.ok(page.includes('A \\u003cNovel>'));
+assert.doesNotMatch(page,/SearchAction/);
+assert.equal((page.match(/name="description"/g)||[]).length,1);
+
+const unsafeImage=applySeoMetadata('<html><head></head></html>',{title:"Test",canonical:origin+"/test",image:"javascript:alert(1)"});
+assert.match(unsafeImage,/og:image" content="https:\/\/imperial\.example\/imperial-novel-app-icon\.svg/);
+const privatePage=applySeoMetadata('<html><head><title>Account</title></head></html>',{title:"Account",robots:"noindex,nofollow"});
+assert.match(privatePage,/name="robots" content="noindex,nofollow"/);
+console.log("SEO/AEO metadata, AI crawler policies, safe cover previews, canonical URLs, JSON-LD and dynamic novel/author sitemap tests passed.");
