@@ -41,4 +41,12 @@ for (const [label, browser] of [["source", app], ["served asset", shipped]]) {
 }
 assert.equal(app, shipped, "Source and served app assets must remain identical.");
 assert.ok(css.includes(".authorChapterManager") && css.includes(".authorRevisionItem"), "Chapter management and revision history need responsive styling.");
+const publishAt = source.indexOf('if(/^\\/api\\/author\\/chapters\\/\\d+\\/publish$/.test(p)&&m==="POST")');
+assert.ok(publishAt >= 0, "Author chapter publication endpoint must exist.");
+const publish = source.slice(publishAt, source.indexOf('if(p==="/api/admin/publishing"', publishAt));
+assert.ok(publish.includes("You do not own this chapter"), "Chapter publishing must enforce story ownership.");
+assert.ok(publish.includes("['draft','published']"), "Chapter publication status must be limited to draft or published.");
+assert.ok(publish.includes("rights_status"), "Chapter publication must check the novel's rights status.");
+assert.ok(publish.includes("author_chapter_published"), "Publishing must be audit logged.");
+assert.ok(publish.includes("author_chapter_unpublished"), "Unpublishing must be audit logged.");
 console.log("Chapter revision policy and UI checks passed.");
