@@ -546,6 +546,7 @@ async function api(req,env){
   }catch(error){console.error("reviewer role list unavailable",String(error?.message||error));return json({error:"Reviewer assignments are temporarily unavailable."},503)}
  }
  if(p==="/api/admin/account-deletion/reviewer-roles"&&m==="POST"){
+  if(req.headers.get("origin")!==url.origin)return json({error:"A same-origin request is required."},403);
   const authError=admin(u);if(authError)return authError;
   const limited=await consumeAuthRateLimit(env,"account-deletion-reviewer-role-assign",String(u.id),10,3600);if(limited)return limited;
   const input=await body(req),targetId=Number(input.user_id),role=String(input.role_key||"").trim();
@@ -565,6 +566,7 @@ async function api(req,env){
  }
  const revokeReviewerRole=p.match(/^\/api\/admin\/account-deletion\/reviewer-roles\/(\d+)\/revoke$/);
  if(revokeReviewerRole&&m==="POST"){
+  if(req.headers.get("origin")!==url.origin)return json({error:"A same-origin request is required."},403);
   const authError=admin(u);if(authError)return authError;
   const limited=await consumeAuthRateLimit(env,"account-deletion-reviewer-role-revoke",String(u.id),20,3600);if(limited)return limited;
   const assignmentId=Number(revokeReviewerRole[1]);
@@ -582,6 +584,7 @@ async function api(req,env){
  }
  const claimDeletionReview=p.match(/^\\/api\\/admin\\/account-deletion\\/reviews\\/(\\d+)\\/claim$/);
  if(claimDeletionReview&&m==="POST"){
+  if(req.headers.get("origin")!==url.origin)return json({error:"A same-origin request is required."},403);
   const authError=need(u);if(authError)return authError;
   const limited=await consumeAuthRateLimit(env,"account-deletion-review-claim",String(u.id),10,60);if(limited)return limited;
   const requestId=Number(claimDeletionReview[1]);
