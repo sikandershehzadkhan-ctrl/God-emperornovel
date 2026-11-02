@@ -32,7 +32,7 @@ def rejected(sql,args=()):
  try: db.execute(sql,args); raise AssertionError("invalid approval accepted")
  except sqlite3.IntegrityError: pass
 insert="INSERT INTO account_deletion_disposition_approvals(plan_id,review_id,request_id,approver_id,approved_plan_digest,approval_policy_version) VALUES(?,100,10,?,?,'approval-v1')"
-rejected(insert,(plan1,3,digest1),"")
+rejected(insert,(plan1,3,digest1))
 rejected(insert,(plan2,2,digest2))
 rejected(insert,(plan2,1,digest2))
 rejected(insert,(plan2,3,digest1))
