@@ -36,6 +36,9 @@ jobs:
       - name: Run application build and registered regression tests
         run: npm run build
 
+      - name: Verify catalog SQL filter and pagination query parity
+        run: python3 scripts/test-catalog-query.py
+
       - name: Check Cloudflare Worker and D1 configuration
         run: npm run check:cloudflare-readiness
 
