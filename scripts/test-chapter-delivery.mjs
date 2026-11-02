@@ -29,7 +29,10 @@ assert.ok(app.includes("retry.className='comicPageRetry secondary'"), 'Failed co
 
 assert.ok(app.includes("const READER_ACTIVITY_QUEUE_KEY='imperial_reader_activity_v1'"), 'Offline activity must use a dedicated session-scoped queue.'); 
 assert.match(app, /sessionStorage\.setItem\(READER_ACTIVITY_QUEUE_KEY,JSON\.stringify\(queue\)\)/, 'Queued activity must survive reader reloads within the active tab session.'); 
-assert.match(app, /queue\.records=queue\.records\.slice\(-20\)/, 'The pending activity queue must have a strict record cap.'); 
+assert.match(app, /queue\.records=queue\.records\.slice\(-20\)/, 'The pending activity queue must have a strict record cap.');
+assert.match(app, /if\(navigator\.onLine\)\{await flushReaderActivityQueue\(userId\);return !readReaderActivityQueue\(\)\?\.records\?\.length\}\s*return false;/, 'Offline queueing must remain pending until the queue has actually flushed.');
+assert.match(app, /then\(synced=>\{activitySyncPending=!synced\}\)/, 'A queued but unsent offline record must trigger synchronization on reconnect.');
+assert.match(app, /while\(queue\?\.records\?\.length\)\{\s*const record=queue\.records\[0\]/, 'The flusher must also process records added while a sync batch is in progress.'); 
 assert.match(app, /Date\.now\(\)-Number\(queue\.createdAt\|\|0\)>7\*24\*60\*60\*1000/, 'Expired queued activity must be discarded.'); 
 assert.match(app, /const me=await api\('\/api\/me'\);[\s\S]*?if\(!me\.user\)/, 'Queued activity must verify the current authenticated account before replay.'); 
 assert.match(app, /currentUserId!==String\(queue\.userId\)/, 'Queued activity must never replay across account changes.'); 
