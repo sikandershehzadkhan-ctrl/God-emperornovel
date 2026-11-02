@@ -32,6 +32,12 @@ for (const [label, browser] of [["source", app], ["served asset", shipped]]) {
   assert.ok(browser.includes("method:'PATCH'"), label + " must save chapter edits through the owner-scoped API.");
   assert.ok(browser.includes("/revisions"), label + " must expose revision history.");
   assert.ok(browser.includes("A revision snapshot is created automatically"), label + " must explain automatic snapshots.");
+  assert.ok(browser.includes("authorChapterPublishToggle"), label + " must expose chapter publication controls.");
+  assert.ok(browser.includes("/publish',{method:'POST'"), label + " must call the owner-scoped publication endpoint.");
+  assert.ok(browser.includes("Move to draft"), label + " must allow an author to unpublish a chapter.");
+  assert.ok(browser.includes("Publish chapter"), label + " must allow an author to publish a chapter.");
+  assert.ok(browser.includes("$('.authorChapterHistoryToggle',manager).forEach"), label + " must bind all revision-history controls.");
+  assert.ok(!browser.includes("$('.authorChapterHistoryToggle',manager).forEach"), label + " must not use a single-element selector for revision-history controls.");
 }
 assert.equal(app, shipped, "Source and served app assets must remain identical.");
 assert.ok(css.includes(".authorChapterManager") && css.includes(".authorRevisionItem"), "Chapter management and revision history need responsive styling.");
