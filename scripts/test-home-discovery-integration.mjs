@@ -155,4 +155,12 @@ assert.ok(worker.includes("FROM history h JOIN novels n"),"Reader activity must 
 assert.ok(worker.includes("unlocked_at>=datetime('now','-7 days')"),"Trending momentum must use recorded seven-day chapter unlocks");
 assert.ok(worker.includes("c.updated_at DESC,c.id DESC LIMIT 8"),"Latest updates must come from published chapter update timestamps");
 
-console.log("Homepage connected-discovery integration tests passed: versioned entry, live bounded graph, safe taxonomy links, escaped labels and graceful fallback.");
+const readerControls=["← Chapters","Chapter","Bookmark chapter","Cycle reader theme","Reader settings and chapter navigation","Chapter List","Close","Theme","Line spacing","Text width"];
+for(const key of readerControls)assert.ok(app.includes('data-in-lang-key="'+key+'"')||app.includes('data-in-lang-aria-label="'+key+'"'),"Reader control must expose locale key: "+key);
+const readerOptions=["Light","Dark","Midnight","Sepia","Imperial","Cosmic","Compact","Comfort","Relaxed","Focused","Standard","Wide"];
+assert.ok(readerOptions.every(key=>app.includes('data-in-lang-option="'+key+'"')),"Reader theme and typography options must be localizable.");
+assert.ok(app.includes("const READER_LANG=")&&app.includes("...(READER_LANG[c]||{})"),"Reader dictionaries must be merged into the active interface locale.");
+assert.ok(app.includes('document.querySelectorAll("[data-in-lang-option]")'),"Reader select options must refresh when the language changes.");
+assert.ok(app.includes("setINLang(document.documentElement.lang||localStorage.getItem('imperial_language')||'en')"),"Reader must apply the saved locale after its page markup is inserted.");
+
+console.log("Homepage and reader localization integration tests passed: versioned entry, live bounded graph, safe taxonomy links, escaped labels and graceful fallback.");
