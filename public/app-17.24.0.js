@@ -385,7 +385,10 @@ async function authorStudio(){
    const novels=Array.isArray(data.novels)?data.novels:[];
    analyticsStories.innerHTML=novels.length?novels.map(n=>'<article class="authorAnalyticsStory"><div><b>'+esc(n.title||'Untitled story')+'</b><span>'+esc(String(n.publication_status||'draft').replaceAll('_',' '))+'</span></div><div class="authorAnalyticsNumbers"><span>'+Number(n.views||0).toLocaleString()+' novel views</span><span>'+Number(n.chapter_views||0).toLocaleString()+' chapter views</span><span>'+Number(n.unlocks||0).toLocaleString()+' unlocks</span><span>'+Number(n.reader_crown_spend||0).toLocaleString()+' Crowns spent</span><span>'+Number(n.paid_unlocks||0).toLocaleString()+' paid unlocks</span><span>'+Number(n.paying_readers||0).toLocaleString()+' paying readers</span><span>'+Number(n.rating_count||0).toLocaleString()+' ratings · '+Number(n.rating||0).toFixed(1)+'/5</span></div></article>').join(''):'<div class="empty">Create your first story to start building creator insights.</div>';
    const chapters=Array.isArray(data.top_chapters)?data.top_chapters:[];
-   analyticsChapters.innerHTML=chapters.length?chapters.map(c=>'<article class="authorAnalyticsChapter"><div><b>'+esc(c.novel_title||'Untitled story')+'</b><span>Chapter '+Number(c.chapter_number)+' · '+esc(c.chapter_title||'Untitled chapter')+'</span></div><strong>'+Number(c.views||0).toLocaleString()+' views</strong><small>'+Number(c.unlocks||0).toLocaleString()+' unlocks</small><small>'+Number(c.reader_crown_spend||0).toLocaleString()+' Crown async function loadAuthorFeedback(){
+   analyticsChapters.innerHTML=chapters.length?chapters.map(c=>'<article class="authorAnalyticsChapter"><div><b>'+esc(c.novel_title||'Untitled story')+'</b><span>Chapter '+Number(c.chapter_number)+' · '+esc(c.chapter_title||'Untitled chapter')+'</span></div><strong>'+Number(c.views||0).toLocaleString()+' views</strong><small>'+Number(c.unlocks||0).toLocaleString()+' unlocks</small><small>'+Number(c.reader_crown_spend||0).toLocaleString()+' Crowns spent</small></article>').join(''):'<div class="empty">Published chapter activity will appear here when readers open chapters.</div>';
+  }catch(error){analyticsSummary.innerHTML='<div class="notice">Performance insights could not load. Check your connection and refresh.</div>';analyticsStories.innerHTML='';analyticsChapters.innerHTML=''}
+ }
+ async function loadAuthorFeedback(){
   feedbackSummary.innerHTML='<div class="empty">Loading reader feedback…</div>';feedbackList.innerHTML='';
   try{
    const data=await api('/api/author/feedback');const items=Array.isArray(data.items)?data.items:[];
@@ -396,9 +399,6 @@ async function authorStudio(){
     feedbackList.innerHTML=filtered.map(item=>'<article class="authorFeedbackItem"><div class="authorFeedbackTop"><b>'+esc(item.novel_title||'Untitled story')+'</b><span>'+esc(item.kind==='rating'?'★ '+Number(item.rating||0)+'/5':'Reader comment')+'</span></div><p>'+(item.kind==='comment'?esc(item.body||''):'A reader submitted a rating for this story.')+'</p><div class="authorFeedbackMeta"><span>'+esc(item.username||'Reader')+'</span><time>'+esc(item.created_at||'')+'</time></div></article>').join('');
    };
    type.onchange=render;search.oninput=render;render();
-  }catch(error){feedbackSummary.innerHTML='<div class="notice">Reader feedback could not load. Check your connection and refresh.</div>';feedbackList.innerHTML=''}
- }
- rating for this story.')+'</p><div class="authorFeedbackMeta"><span>'+esc(item.username||'Reader')+'</span><time>'+esc(item.created_at||'')+'</time></div></article>').join('');
   }catch(error){feedbackSummary.innerHTML='<div class="notice">Reader feedback could not load. Check your connection and refresh.</div>';feedbackList.innerHTML=''}
  }
  async function loadChapterPlanning(){
