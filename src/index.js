@@ -580,6 +580,31 @@ async function api(req,env){
    return json({ok:true,assignment});
   }catch(error){console.error("reviewer role revocation failed",String(error?.message||error));return json({error:"Reviewer assignment could not be safely revoked."},503)}
  }
+ const claimDeletionReview=p.match(/^\\/api\\/admin\\/account-deletion\\/reviews\\/(\\d+)\\/claim$/);
+ if(claimDeletionReview&&m==="POST"){
+  const authError=need(u);if(authError)return authError;
+  const limited=await consumeAuthRateLimit(env,"account-deletion-review-claim",String(u.id),10,60);if(limited)return limited;
+  const requestId=Number(claimDeletionReview[1]);
+  if(!Number.isSafeInteger(requestId)||requestId<=0)return json({error:"Invalid deletion review request."},400);
+  let reviewerRoles=[];
+  try{
+   const assigned=await env.DB.prepare("SELECT role_key FROM account_deletion_reviewer_assignments WHERE user_id=? AND revoked_at IS NULL").bind(u.id).all();
+   reviewerRoles=(assigned.results||[]).map(row=>row.role_key);
+  }catch(error){console.error("account deletion claim authorization unavailable",String(error?.message||error));return json({error:"Reviewer authorization is temporarily unavailable."},503)}
+  if(!permissionsForRoles(reviewerRoles).includes("case:claim"))return json({error:"An active reviewer assignment with case-claim permission is required."},403);
+  const claimedAt=new Date(),claimExpiresAt=new Date(claimedAt.getTime()+10*60*1000).toISOString();
+  try{
+   const results=await env.DB.batch([
+    env.DB.prepare("INSERT INTO account_deletion_reviews(request_id,subject_user_id,state) SELECT id,user_id,'review_required' FROM account_deletion_requests WHERE id=? AND status IN ('pending_deletion','review_required') ON CONFLICT(request_id) DO NOTHING").bind(requestId),
+    env.DB.prepare("UPDATE account_deletion_reviews SET claimed_by=?,claim_expires_at=?,state=CASE WHEN state='review_required' THEN 'review_in_progress' ELSE state END,version=version+1,updated_at=? WHERE request_id=? AND subject_user_id<>? AND state IN ('review_required','review_in_progress','awaiting_user_action','blocked_retention') AND (claimed_by IS NULL OR claim_expires_at<=?) AND EXISTS(SELECT 1 FROM account_deletion_requests r WHERE r.id=account_deletion_reviews.request_id AND r.user_id=account_deletion_reviews.subject_user_id AND r.status IN ('pending_deletion','review_required')) RETURNING id,request_id,subject_user_id,state,version,claimed_by,claim_expires_at").bind(u.id,claimExpiresAt,claimedAt.toISOString(),requestId,u.id,claimedAt.toISOString()),
+    env.DB.prepare("INSERT INTO account_deletion_review_events(review_id,request_id,actor_id,event_type,from_state,to_state,review_version,metadata_json) SELECT id,request_id,?,'case_claimed',CASE WHEN version=1 THEN 'review_required' ELSE state END,state,version,'{}' FROM account_deletion_reviews WHERE request_id=? AND claimed_by=? AND claim_expires_at=? AND version=(SELECT MAX(version) FROM account_deletion_reviews WHERE request_id=?) AND changes()=1").bind(u.id,requestId,u.id,claimExpiresAt,requestId)
+   ]);
+   const review=results?.[1]?.results?.[0],eventChanges=Number(results?.[2]?.meta?.changes??results?.[2]?.changes??0);
+   if(!review||eventChanges!==1)return json({error:"This case is unavailable or is currently claimed by another reviewer."},409);
+   await audit(env,u,"account_deletion_review_case_claimed",`request=${requestId};review=${review.id};version=${review.version}`);
+   return json({ok:true,review,lease_minutes:10});
+  }catch(error){console.error("account deletion review claim failed",String(error?.message||error));return json({error:"The review case could not be safely claimed."},503)}
+ }
  if(p==="/api/admin/account-deletion/reviews"&&m==="GET"){
   const authError=need(u);if(authError)return authError;
   let reviewerRoles;
