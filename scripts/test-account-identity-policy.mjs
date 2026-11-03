@@ -11,7 +11,7 @@ for (const username of ["ab", "a".repeat(25), "two words", "admin", "API", "../r
 assert.equal(validateUsernameChange({ username: "OldName" }, "oldname").ok, false);
 assert.equal(validateUsernameChange({ username: ["admin"] }, "oldname").ok, false);
 
-const migration = fs.readFileSync("migrations/0017_username_change_cooldown.sql", "utf8");
+const migration = fs.readFileSync("migrations/0013_username_change_cooldown.sql", "utf8");
 assert.match(migration, /username_changed_at TEXT NOT NULL DEFAULT ''/);
 assert.match(migration, /CREATE TABLE IF NOT EXISTS username_history/);
 assert.match(migration, /trg_users_username_history/);
