@@ -5,6 +5,7 @@ const app = readFileSync("public/app.js", "utf8");
 const versioned = readFileSync("public/app-17.23.0.js", "utf8");
 const worker = readFileSync("src/index.js", "utf8");
 const progressMigration = readFileSync("migrations/0013_reader_progress.sql", "utf8");
+const readerCss = readFileSync("public/imperial-design-foundation.css", "utf8");
 const libraryStart = app.indexOf("async function library(");
 const libraryEnd = app.indexOf("async function history(", libraryStart);
 assert.ok(libraryStart >= 0 && libraryEnd > libraryStart, "Library renderer must exist");
@@ -58,6 +59,12 @@ assert.ok(reader.includes("fetch('/api/reader-progress'") && reader.includes("ke
   "Reader progress must flush during page exit where the browser permits it");
 assert.match(reader, /synced to your account/,
   "Signed-in reader UI must disclose account synchronization");
+
+
+assert.match(readerCss, /@media\(max-width:480px\)[\s\S]*?readerActions\{grid-template-columns:minmax\(0,1fr\) minmax\(0,1fr\)\}/,
+  "Reader navigation must reflow into two usable columns on narrow phones");
+assert.match(readerCss, /readerActions a,.readerFooterCard>a\{[\s\S]*?min-height:44px/,
+  "Reader navigation links must meet the 44px touch-target minimum");
 
 assert.equal(versioned, app, "The cache-versioned reader bundle must remain byte-for-byte synchronized with app.js");
 console.log("PASS: reader progress labels distinguish local scroll position from account-synced chapter history.");
