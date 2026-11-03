@@ -380,3 +380,18 @@ Remaining accounting gates:
 - Payment webhooks are stated to remain disabled. Do not describe submitted payment references as automatically verified or balances as cash.
 
 **Disposition:** PR #129 and PR #88 remain draft, unmerged, and not production-ready. No production D1 data was queried or changed, and no deployment was performed. Resolve ownership-transfer semantics, build executable lifecycle/concurrency fixtures, and canonicalize all migration numbers before considering integration.
+
+
+## CI follow-up: PR #88 media review fixture (2026-11-04)
+
+A fresh inspection of PR #88's latest previously recorded Cloudflare Source Validation run (run `41282920462`, head `d58faf28bd83b7700f6263fe19636923ea59224e`) found a concrete test-fixture defect:
+- The test inserted a media asset owned by user 1, then attempted to approve it using reviewer user 1.
+- Migration `0015_media_rights_review_audit.sql` correctly rejects that action with `media owners cannot review their own assets`.
+- The failure occurred in `scripts/test-media-asset-registry.py`; build, Worker dry-run, safety invariants, and the fresh 21-migration SQLite chain had passed earlier in that same run. Subsequent tests were skipped because the job stopped at this failure.
+
+Correction committed to PR #88 branch `feature/media-publication-gates-0013`:
+- Commit: `bce15461f4eab3ca28870c398c0bae32b9110ee4`
+- The fixture now creates a separate admin reviewer and uses that account for both the immutable review row and `reviewed_by_user_id`.
+- The updated file was fetched back and verified to contain the independent reviewer fixture.
+
+**Validation status:** no post-fix Cloudflare Source Validation run was visible at the time of this update. Therefore the fixture correction is committed but not yet CI-verified. PR #88 remains draft/unmerged, and its migration collision and production gates remain unchanged.
