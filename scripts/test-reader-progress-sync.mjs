@@ -14,6 +14,7 @@ assert.ok(server.includes('h.progress_percent'), 'History API must return synchr
 assert.ok(server.includes('Number.isInteger(progress)||progress<0||progress>100'), 'Progress API must reject invalid progress values');
 assert.ok(server.includes('c.novel_id=? AND c.chapter_number=? AND c.publication_status=\\'published\\' AND n.publication_status=\\'published\\''), 'Progress writes must be scoped to an actually published chapter');
 assert.ok(reader.includes('progress_percent:pct'), 'Reader must send scroll progress to the server');
+assert.ok(reader.indexOf('const readReaderSetting=') < reader.indexOf("readReaderSetting('readerProgress:'), 'Storage helpers must initialize before progress recovery reads settings');
 assert.ok(reader.includes('saved.progress_percent'), 'Reader must restore synchronized server progress');
 assert.ok(reader.includes('Math.abs(pct-lastSyncedPct)>=5||pct===100||now-lastSyncAt>=3000'), 'Progress sync must be throttled rather than posting on every scroll event');
 assert.ok(reader.includes("writeReaderSetting('readerProgress:'+id,pct)"), 'Local progress recovery must remain available');
