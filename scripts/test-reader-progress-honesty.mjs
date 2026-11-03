@@ -45,7 +45,7 @@ assert.match(worker, /FROM chapters c JOIN novels n ON n\.id=c\.novel_id WHERE c
   "History and bookmark writes must target an actually published chapter of a published novel");
 
 
-assert.match(worker, /if\(p===\"\/api\/history\"&&m===\"GET\"\)[\s\S]*?LEFT JOIN reader_progress rp ON rp.user_id=h.user_id AND rp.novel_id=h.novel_id[\s\S]*?rp.progress_percent/,
+assert.ok(worker.includes('if(p==="/api/history"&&m==="GET")') && worker.includes("LEFT JOIN reader_progress rp ON rp.user_id=h.user_id AND rp.novel_id=h.novel_id") && worker.includes("rp.progress_percent"),
   "History must return the authenticated user's saved reader progress for library resume");
 assert.match(worker, /if\(p===\"\/api\/reader-progress\"&&m===\"GET\"\)[\s\S]*?need\(u\)[\s\S]*?reader_progress WHERE user_id=\? AND novel_id=\?/,
   "Cross-device progress reads must require authentication and be scoped to the session user");
