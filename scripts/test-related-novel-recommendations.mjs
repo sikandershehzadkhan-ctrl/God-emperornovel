@@ -24,5 +24,6 @@ assert.ok(worker.includes('import { buildRelatedNovelRecommendationsQuery, relat
 assert.ok(worker.includes("buildRelatedNovelRecommendationsQuery()).bind(...relatedNovelRecommendationBindings(u.id))"));
 assert.ok(worker.includes("if(rows.length)return json(rows);const related="));
 assert.ok(worker.includes("if(related.length)return json(related);const fallback="));
+assert.ok(worker.includes("n.id NOT IN(SELECT novel_id FROM history WHERE user_id=?)") && worker.includes(".bind(u.id,u.id).all()).results;return json(fallback.map"));
 
 console.log("PASS: related-story recommendations use private follow/history seeds, rights-cleared published candidates, shared taxonomy/author/format signals, deterministic ranking and bounded output.");
