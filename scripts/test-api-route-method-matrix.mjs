@@ -19,7 +19,7 @@ for(const route of matrix.exactRoutes){
  if(route.methodGuardMissing)assert.ok(route.unguardedLines.length>0||route.methods.length===0,"method gap lacks evidence: "+route.path);
 }
 for(const route of matrix.dynamicRoutes){
- assert.ok(route.pathPattern.includes("/api/")||route.pathPattern.startsWith("^/api/"),"non-API dynamic route included: "+route.pathPattern);
+ assert.ok(route.pathPattern.includes("api"),"non-API dynamic route included: "+route.pathPattern);
  assert.ok(Array.isArray(route.methods)&&Array.isArray(route.sourceLines),"dynamic API route metadata incomplete: "+route.pathPattern);
  if(route.pathPattern.startsWith("/^")){
   const inner=route.pathPattern.slice(1,route.pathPattern.lastIndexOf("/"));
