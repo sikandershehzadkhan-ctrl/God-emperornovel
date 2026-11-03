@@ -1,0 +1,18 @@
+import assert from "node:assert/strict";
+import { renderHomepageHtml } from "../src/homepage-ssr.mjs";
+
+const rendered = renderHomepageHtml([
+  { id: 7, title: "The <Glass> Throne", author: "A & B", cover_url: "https://covers.example/book.jpg" },
+  { id: 8, title: "Second Story", author: "Writer", cover_url: "//unsafe.example/cover.jpg" }
+]);
+assert.match(rendered.header, /<nav aria-label="Primary navigation">/);
+assert.match(rendered.content, /<h1>Open a world\.<br>Shape an empire\.<\/h1>/);
+assert.match(rendered.content, /type="search"/);
+assert.match(rendered.content, /href="\/novel\/7"/);
+assert.match(rendered.content, /The &lt;Glass&gt; Throne/);
+assert.match(rendered.content, /A &amp; B/);
+assert.match(rendered.content, /src="\/story-cover-placeholder\.svg"/);
+assert.match(rendered.footer, /Rights &amp; Copyright/);
+assert.doesNotMatch(rendered.content, /href="\/novel\/NaN"/);
+assert.match(renderHomepageHtml([]).content, /New stories are being prepared/);
+console.log("Homepage SSR markup, search, navigation, safe story data, cover fallback and empty-state tests passed.");
