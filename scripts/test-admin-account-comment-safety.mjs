@@ -11,7 +11,9 @@ assert.ok(admin.includes('if(!keys.length)'),"admin patch must reject empty upda
 assert.ok(admin.includes('if(has("verified"))'),"verification must update only when explicitly supplied");
 assert.ok(admin.includes('if(has("banned"))'),"ban state must update only when explicitly supplied");
 assert.ok(admin.includes("SELECT COUNT(*) FROM users WHERE role='admin' AND banned=0"),"last active admin guard missing");
-assert.ok(admin.includes('audit(env,u,"admin_user_update"'),"admin account changes must be audited");
+assert.ok(admin.includes("env.DB.batch(["),"account mutation and audit must be committed atomically");
+assert.ok(admin.includes("INSERT INTO audit_logs(user_id,action,details) SELECT ?,?,? WHERE changes()=1"),"audit record must be conditional on successful account mutation");
+assert.ok(!admin.includes('audit(env,u,"admin_user_update"'),"best-effort audit helper must not be used for admin account mutations");
 assert.ok(!admin.includes('b.verified?1:0,b.banned?1:0'),"legacy destructive PATCH defaults must not return");
 for(const method of ["GET","POST"]){
  const marker='if(p==="/api/comments"&&m==="'+method+'")';
