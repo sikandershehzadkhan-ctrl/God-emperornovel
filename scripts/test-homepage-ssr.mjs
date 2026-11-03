@@ -56,6 +56,8 @@ assert.ok(client.includes("latestRows=(l.results||[]).filter(row=>!trendIds.has(
 assert.ok(versionedClient.includes("latestRows=(l.results||[]).filter(row=>!trendIds.has(String(row.id)))"), "versioned production bundle must also deduplicate homepage shelves");
 assert.match(worker, /if\(p===\"\/\"\)/);
 assert.match(worker, /LIMIT 6/);
+assert.ok(worker.includes("FROM unlocks ux JOIN chapters cx ON cx.id=ux.chapter_id WHERE cx.novel_id=novels.id AND ux.unlocked_at>=datetime('now','-7 days')"), "server-rendered homepage stories must use the same seven-day unlock signal as the trending catalog");
+assert.ok(worker.includes("ORDER BY (SELECT COUNT(*) FROM unlocks ux JOIN chapters cx ON cx.id=ux.chapter_id"), "server-rendered homepage ranking must not silently fall back to newest-created stories");
 assert.ok(worker.includes("ORDER BY (SELECT COUNT(*) FROM unlocks ux JOIN chapters cx ON cx.id=ux.chapter_id WHERE cx.novel_id=novels.id AND ux.unlocked_at>=datetime('now','-7 days')) DESC,id DESC LIMIT 6"), "no-script homepage stories must use the same seven-day unlock ranking as the trending catalog");
 assert.match(worker, /rights_status IN/);
 assert.ok(luxuryCss.includes('html[data-theme="light"] .eyebrow,') && luxuryCss.includes("color: #0F52BA;"), "light-theme homepage eyebrow text must use accessible sapphire");
