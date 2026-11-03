@@ -23,6 +23,9 @@ const worker = await readFile(new URL("../src/index.js", import.meta.url), "utf8
 assert.ok(worker.includes('import { buildRelatedNovelRecommendationsQuery, relatedNovelRecommendationBindings } from "./related-novel-policy.mjs";'));
 assert.ok(worker.includes("buildRelatedNovelRecommendationsQuery()).bind(...relatedNovelRecommendationBindings(u.id))"));
 assert.ok(worker.includes("if(rows.length)return json(rows);const related="));
+assert.ok(worker.includes("AND NOT EXISTS (SELECT 1 FROM follows f WHERE f.user_id=? AND f.novel_id=n.id)"));
+assert.ok(worker.includes("AND NOT EXISTS (SELECT 1 FROM history h WHERE h.user_id=? AND h.novel_id=n.id)"));
+assert.ok(worker.includes("LIMIT 20\\`).bind(u.id,u.id,u.id).all()).results;"), "Stored recommendations must bind the authenticated user for both exclusion checks.");
 assert.ok(worker.includes("if(related.length)return json(related);const fallback="));
 assert.ok(worker.includes("n.id NOT IN(SELECT novel_id FROM history WHERE user_id=?)") && worker.includes(".bind(u.id,u.id).all()).results;return json(fallback.map"));
 
