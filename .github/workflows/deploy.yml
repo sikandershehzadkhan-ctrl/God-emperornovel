@@ -6,7 +6,7 @@ on:
   workflow_dispatch:
     inputs:
       confirm_production_deploy:
-        description: "Type true to apply reviewed additive D1 migrations 0009-0011 and deploy after the read-only audit and release review"
+        description: "Type true to apply reviewed D1 migrations 0009-0013 (with schema-gated 0012) and deploy after the read-only audit and release review"
         required: true
         default: "false"
         type: choice
@@ -148,6 +148,15 @@ jobs:
             exit 1
           fi
 
+          echo "Preflight: inspect the current reader-rating constraint before the one-time 1-10 conversion."
+          rating_output="$(d1_command "SELECT CASE WHEN NOT EXISTS(SELECT 1 FROM sqlite_master WHERE type='table' AND name='ratings') THEN 'missing' WHEN (SELECT sql FROM sqlite_master WHERE type='table' AND name='ratings') LIKE '%BETWEEN 1 AND 10%' THEN 'ten_point' WHEN (SELECT sql FROM sqlite_master WHERE type='table' AND name='ratings') LIKE '%BETWEEN 1 AND 5%' THEN 'five_point' ELSE 'unrecognized' END AS status;")"
+          rating_status="$(printf '%s' "$rating_output" | read_status)"
+          printf '%s\n' "$rating_output"
+          if [ "$rating_status" != "five_point" ] && [ "$rating_status" != "ten_point" ]; then
+            echo "::error::Production ratings schema is missing or unrecognized. Stop for manual review; do not run the one-time rating conversion."
+            exit 1
+          fi
+
           echo "Applying idempotent catalog filter indexes (migration 0009)."
           npx --yes wrangler@4 d1 execute "$db" --remote --file=migrations/0009_catalog_filter_indexes.sql
 
@@ -161,15 +170,25 @@ jobs:
           fi
           npx --yes wrangler@4 d1 execute "$db" --remote --file=migrations/0011_author_applications.sql
 
+          if [ "$rating_status" = "five_point" ]; then
+            echo "Converting legacy 1-5 reader ratings to the 1-10 scale (migration 0012)."
+            npx --yes wrangler@4 d1 execute "$db" --remote --file=migrations/0012_ten_point_ratings.sql
+          else
+            echo "The 1-10 rating constraint is already present; skipping one-time migration 0012."
+          fi
+
+          echo "Applying idempotent account-scoped reader progress storage (migration 0013)."
+          npx --yes wrangler@4 d1 execute "$db" --remote --file=migrations/0013_reader_progress.sql
+
           echo "Post-migration verification before Worker deployment."
-          ready_output="$(d1_command "SELECT CASE WHEN EXISTS(SELECT 1 FROM sqlite_master WHERE type='index' AND name='idx_novel_genres_genre_novel') AND EXISTS(SELECT 1 FROM sqlite_master WHERE type='index' AND name='idx_novel_tags_tag_novel') AND EXISTS(SELECT 1 FROM sqlite_master WHERE type='index' AND name='idx_unlocks_chapter_time') AND EXISTS(SELECT 1 FROM sqlite_master WHERE type='index' AND name='idx_novels_published_views') AND EXISTS(SELECT 1 FROM sqlite_master WHERE type='index' AND name='idx_novels_published_rating') AND EXISTS(SELECT 1 FROM sqlite_master WHERE type='index' AND name='idx_novels_published_created') AND EXISTS(SELECT 1 FROM sqlite_master WHERE type='table' AND name='author_applications') AND (SELECT COUNT(*) FROM pragma_table_info('author_applications') WHERE name IN ('id','user_id','display_name','bio','experience','portfolio_url','sample_work','preferred_formats','rights_confirmed','status','review_notes','reviewed_by','reviewed_at','created_at','updated_at'))=15 AND EXISTS(SELECT 1 FROM sqlite_master WHERE type='index' AND name='idx_author_applications_one_pending') AND EXISTS(SELECT 1 FROM sqlite_master WHERE type='index' AND name='idx_author_applications_status_created') AND EXISTS(SELECT 1 FROM sqlite_master WHERE type='index' AND name='idx_author_applications_user_created') THEN 'ready' ELSE 'missing' END AS status;")"
+          ready_output="$(d1_command "SELECT CASE WHEN EXISTS(SELECT 1 FROM sqlite_master WHERE type='index' AND name='idx_novel_genres_genre_novel') AND EXISTS(SELECT 1 FROM sqlite_master WHERE type='index' AND name='idx_novel_tags_tag_novel') AND EXISTS(SELECT 1 FROM sqlite_master WHERE type='index' AND name='idx_unlocks_chapter_time') AND EXISTS(SELECT 1 FROM sqlite_master WHERE type='index' AND name='idx_novels_published_views') AND EXISTS(SELECT 1 FROM sqlite_master WHERE type='index' AND name='idx_novels_published_rating') AND EXISTS(SELECT 1 FROM sqlite_master WHERE type='index' AND name='idx_novels_published_created') AND EXISTS(SELECT 1 FROM sqlite_master WHERE type='table' AND name='author_applications') AND (SELECT COUNT(*) FROM pragma_table_info('author_applications') WHERE name IN ('id','user_id','display_name','bio','experience','portfolio_url','sample_work','preferred_formats','rights_confirmed','status','review_notes','reviewed_by','reviewed_at','created_at','updated_at'))=15 AND EXISTS(SELECT 1 FROM sqlite_master WHERE type='index' AND name='idx_author_applications_one_pending') AND EXISTS(SELECT 1 FROM sqlite_master WHERE type='index' AND name='idx_author_applications_status_created') AND EXISTS(SELECT 1 FROM sqlite_master WHERE type='index' AND name='idx_author_applications_user_created') AND EXISTS(SELECT 1 FROM sqlite_master WHERE type='table' AND name='reader_progress') AND (SELECT COUNT(*) FROM pragma_table_info('reader_progress') WHERE name IN ('user_id','novel_id','chapter_number','progress_percent','updated_at'))=5 AND EXISTS(SELECT 1 FROM sqlite_master WHERE type='index' AND name='idx_reader_progress_user_updated') AND (SELECT sql FROM sqlite_master WHERE type='table' AND name='ratings') LIKE '%BETWEEN 1 AND 10%' THEN 'ready' ELSE 'missing' END AS status;")"
           ready_status="$(printf '%s' "$ready_output" | read_status)"
           printf '%s\n' "$ready_output"
           if [ "$ready_status" != "ready" ]; then
             echo "::error::Required production D1 structures were not verified. Worker deployment is blocked."
             exit 1
           fi
-          echo "PASS: migrations 0009-0011 are present and verified before Worker deployment."
+          echo "PASS: migrations 0009-0013 and the 1-10 rating schema are present and verified before Worker deployment."
 
 
       - name: Deploy Worker and static assets
@@ -178,21 +197,21 @@ jobs:
           CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
 
-      - name: Verify catalog and author-application D1 migrations after deployment
+      - name: Verify reader progress, ten-point ratings, catalog and author-application D1 migrations after deployment
         shell: bash
         env:
           CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
         run: |
           set -euo pipefail
-          output="$(npx --yes wrangler@4 d1 execute god-emperornovel-db --remote --command "SELECT CASE WHEN EXISTS(SELECT 1 FROM sqlite_master WHERE type='index' AND name='idx_novel_genres_genre_novel') AND EXISTS(SELECT 1 FROM sqlite_master WHERE type='index' AND name='idx_novel_tags_tag_novel') AND EXISTS(SELECT 1 FROM sqlite_master WHERE type='index' AND name='idx_unlocks_chapter_time') AND EXISTS(SELECT 1 FROM sqlite_master WHERE type='index' AND name='idx_novels_published_views') AND EXISTS(SELECT 1 FROM sqlite_master WHERE type='index' AND name='idx_novels_published_rating') AND EXISTS(SELECT 1 FROM sqlite_master WHERE type='index' AND name='idx_novels_published_created') AND EXISTS(SELECT 1 FROM sqlite_master WHERE type='table' AND name='author_applications') AND EXISTS(SELECT 1 FROM sqlite_master WHERE type='index' AND name='idx_author_applications_one_pending') AND EXISTS(SELECT 1 FROM sqlite_master WHERE type='index' AND name='idx_author_applications_status_created') AND EXISTS(SELECT 1 FROM sqlite_master WHERE type='index' AND name='idx_author_applications_user_created') THEN 'ready' ELSE 'missing' END AS readiness;")"
+          output="$(npx --yes wrangler@4 d1 execute god-emperornovel-db --remote --command "SELECT CASE WHEN EXISTS(SELECT 1 FROM sqlite_master WHERE type='index' AND name='idx_novel_genres_genre_novel') AND EXISTS(SELECT 1 FROM sqlite_master WHERE type='index' AND name='idx_novel_tags_tag_novel') AND EXISTS(SELECT 1 FROM sqlite_master WHERE type='index' AND name='idx_unlocks_chapter_time') AND EXISTS(SELECT 1 FROM sqlite_master WHERE type='index' AND name='idx_novels_published_views') AND EXISTS(SELECT 1 FROM sqlite_master WHERE type='index' AND name='idx_novels_published_rating') AND EXISTS(SELECT 1 FROM sqlite_master WHERE type='index' AND name='idx_novels_published_created') AND EXISTS(SELECT 1 FROM sqlite_master WHERE type='table' AND name='author_applications') AND EXISTS(SELECT 1 FROM sqlite_master WHERE type='index' AND name='idx_author_applications_one_pending') AND EXISTS(SELECT 1 FROM sqlite_master WHERE type='index' AND name='idx_author_applications_status_created') AND EXISTS(SELECT 1 FROM sqlite_master WHERE type='index' AND name='idx_author_applications_user_created') AND EXISTS(SELECT 1 FROM sqlite_master WHERE type='table' AND name='reader_progress') AND EXISTS(SELECT 1 FROM sqlite_master WHERE type='index' AND name='idx_reader_progress_user_updated') AND (SELECT COUNT(*) FROM pragma_table_info('reader_progress') WHERE name IN ('user_id','novel_id','chapter_number','progress_percent','updated_at'))=5 AND (SELECT sql FROM sqlite_master WHERE type='table' AND name='ratings') LIKE '%BETWEEN 1 AND 10%' THEN 'ready' ELSE 'missing' END AS readiness;")"
           printf '%s\n' "$output"
           readiness="$(printf '%s' "$output" | node -e 'let s="";process.stdin.on("data",d=>s+=d).on("end",()=>{const m=s.match(/"readiness"\s*:\s*"([^"]+)"/);console.log(m?m[1]:"unknown")})')"
           if [ "$readiness" != "ready" ]; then
             echo "::error::Required catalog indexes or author application schema are missing after deployment."
             exit 1
           fi
-          echo "Verified catalog filter/sort indexes and author application schema in production D1."
+          echo "Verified catalog indexes, author applications, 1-10 ratings and account-scoped reader progress in production D1."
 
       - name: Verify live Worker health after deployment
         shell: bash
