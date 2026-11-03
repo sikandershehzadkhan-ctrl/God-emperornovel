@@ -1,22 +1,32 @@
-const PRIVATE_NOVEL_FIELDS = new Set([
-  "owner_user_id",
-  "source_url",
-  "rights_evidence",
-  "rights_notes",
-  "rights_verified_by",
-  "rights_verified_at",
-  "review_feedback",
-  "reviewed_by",
-  "reviewed_at"
+const PUBLIC_NOVEL_FIELDS = new Set([
+  "id",
+  "title",
+  "alt_titles",
+  "author",
+  "description",
+  "status",
+  "kind",
+  "language",
+  "cover_url",
+  "rights_status",
+  "views",
+  "rating",
+  "created_at",
+  "updated_at",
+  "publication_status",
+  "genres",
+  "tags",
+  "chapter_count",
+  "latest_chapter"
 ]);
 
 /**
- * Return only catalog-safe novel fields to public readers.
- * Keep the source row untouched for internal author and review workflows.
+ * Explicit allowlist for unauthenticated catalog and novel-detail responses.
+ * New database columns stay private until deliberately reviewed and added.
  */
 export function toPublicNovel(novel) {
   if (!novel || typeof novel !== "object" || Array.isArray(novel)) return {};
   return Object.fromEntries(
-    Object.entries(novel).filter(([key]) => !PRIVATE_NOVEL_FIELDS.has(key))
+    Object.entries(novel).filter(([key]) => PUBLIC_NOVEL_FIELDS.has(key))
   );
 }
