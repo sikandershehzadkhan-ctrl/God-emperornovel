@@ -72,6 +72,11 @@ assert.ok(homepageCss.includes('html[dir="rtl"] .footerLinks'), "homepage footer
 assert.ok(homepageSourceCss.includes('html[dir="rtl"] .homePage .heroSearch'), "source homepage stylesheet must include RTL search layout");
 assert.ok(homepageSourceCss.includes('html[dir="rtl"] .homePage .homeFormatGrid'), "source homepage stylesheet must include RTL format layout");
 assert.ok(homepageSourceCss.includes('html[dir="rtl"] .footerLinks'), "source homepage stylesheet must include RTL footer layout");
+assert.ok(homepageCss.includes("@media(max-width:760px){.wrap,.homePage .wrap{width:calc(100% - 28px)}"), "homepage must provide a narrow-screen layout with safe side gutters");
+assert.ok(homepageCss.includes(".homeStoryGrid{grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}"), "homepage story cards must collapse to two columns on mobile");
+assert.ok(homepageCss.includes("@media(max-width:390px){.wrap,.homePage .wrap{width:calc(100% - 22px)}"), "homepage must tighten its layout on compact phones");
+assert.ok(homepageCss.includes(".heroSearch button{font-size:0;width:42px;padding:0}.heroSearch button span{font-size:16px}"), "compact-phone search action must remain visible as a 42px icon target");
+assert.ok(homepageCss.includes("@media(prefers-reduced-motion:reduce)"), "homepage stylesheet must respect the operating system reduced-motion preference");
 
 const rendered = renderHomepageHtml([
   { id: 7, title: "The <Glass> Throne", author: "A & B", cover_url: "https://covers.example/book.jpg" },
