@@ -494,7 +494,7 @@
       "status": "observed",
       "screen_mapping": "observed-shell-and-client-renderer",
       "component_mapping": "renderer, DOM anchors, action families and API references inventoried; full component tree/handler tests pending",
-      "api_mapping": "pending",
+      "api_mapping": "GET/POST /api/author/novels; GET/POST/PATCH /api/author/chapters; GET /api/author/analytics; owner checks inspected; endpoint schemas/tests pending",
       "permission_mapping": "pending",
       "tests": "pending"
     },
@@ -508,7 +508,7 @@
       "status": "observed",
       "screen_mapping": "observed-shell-and-client-renderer",
       "component_mapping": "renderer, DOM anchors, action families and API references inventoried; full component tree/handler tests pending",
-      "api_mapping": "pending",
+      "api_mapping": "GET /api/author/applications/me; POST /api/author/applications; GET/PATCH admin review family inspected",
       "permission_mapping": "pending",
       "tests": "pending"
     },
@@ -564,7 +564,7 @@
       "status": "observed-dynamic",
       "screen_mapping": "observed-shell-and-client-renderer",
       "component_mapping": "renderer, DOM anchors, action families and API references inventoried; full component tree/handler tests pending",
-      "api_mapping": "pending",
+      "api_mapping": "GET /api/novels?author=...; public author listing; handler schema and visibility checks pending",
       "permission_mapping": "pending",
       "tests": "pending"
     },
