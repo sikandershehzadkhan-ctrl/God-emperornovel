@@ -77,6 +77,11 @@ assert.ok(homepageCss.includes(".homeStoryGrid{grid-template-columns:repeat(2,mi
 assert.ok(homepageCss.includes("@media(max-width:390px){.wrap,.homePage .wrap{width:calc(100% - 22px)}"), "homepage must tighten its layout on compact phones");
 assert.ok(homepageCss.includes(".heroSearch button{font-size:0;width:42px;padding:0}.heroSearch button span{font-size:16px}"), "compact-phone search action must remain visible as a 42px icon target");
 assert.ok(homepageCss.includes("@media(prefers-reduced-motion:reduce)"), "homepage stylesheet must respect the operating system reduced-motion preference");
+assert.ok(homepageSourceCss.includes("@media(max-width:760px){.wrap,.homePage .wrap{width:calc(100% - 28px)}"), "source homepage stylesheet must retain narrow-screen gutters");
+assert.ok(homepageSourceCss.includes(".homeStoryGrid{grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}"), "source homepage stylesheet must retain the two-column mobile story grid");
+assert.ok(homepageSourceCss.includes("@media(max-width:390px){.wrap,.homePage .wrap{width:calc(100% - 22px)}"), "source homepage stylesheet must retain compact-phone gutters");
+assert.ok(homepageSourceCss.includes(".heroSearch button{font-size:0;width:42px;padding:0}.heroSearch button span{font-size:16px}"), "source homepage stylesheet must retain the compact-phone search action");
+assert.ok(homepageSourceCss.includes("@media(prefers-reduced-motion:reduce)"), "source homepage stylesheet must respect reduced-motion preferences");
 
 const rendered = renderHomepageHtml([
   { id: 7, title: "The <Glass> Throne", author: "A & B", cover_url: "https://covers.example/book.jpg" },
