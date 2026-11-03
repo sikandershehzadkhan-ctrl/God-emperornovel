@@ -45,3 +45,32 @@ They cannot both be applied as independent migrations under the same D1 migratio
 ## Release gate
 
 Do not merge the profile/account and Author Studio branches together until the migration inventory, sequence, and disposable-database rehearsal are complete. This note is a guardrail, not evidence that the features are production-ready.
+
+
+## Additional account-branch audit findings (verified)
+
+A deeper comparison of `feature/account-username-security-17-24` found two more release blockers:
+
+### Duplicate migration payloads within the account branch
+
+- `0013_username_change_cooldown.sql` and `0017_username_change_cooldown.sql` both add `users.username_changed_at`, create `username_history`, and install the username-history/collision triggers. They are separate migration files with the same schema intent. If both are included in one fresh migration chain, the second `ALTER TABLE users ADD COLUMN username_changed_at` will fail because the column already exists.
+- `0014_account_preferences.sql` and `0018_account_preferences.sql` have the same content blob and both add `users.preferences_json`. Applying both likewise fails on the duplicate column.
+
+These are not just cross-branch filename collisions. The account branch itself contains duplicate numbered migrations. The branch must be reconciled before a full-chain rehearsal can pass.
+
+### Historical username protection does not cover account registration
+
+The account branch's `/api/auth/register` handler inserts directly into `users` after checking syntax and rate limits. It does not check `username_history`. The migration's database trigger `trg_users_reject_historical_username_reuse` is defined only `BEFORE UPDATE OF username`, not `BEFORE INSERT ON users`.
+
+The username-change endpoint does query `username_history`, so the gap is specific to new registrations. A new user could potentially claim a name previously held by another account.
+
+Recommended fix before release:
+1. Add a case-insensitive `BEFORE INSERT ON users` trigger rejecting names present in `username_history`, so the invariant is enforced even if an API pre-check is bypassed.
+2. Add an API pre-check for a clear conflict response, while treating the database trigger as authoritative.
+3. Extend `scripts/test-account-identity-migration.py` to attempt a new user insert using a historical name and assert an integrity error.
+4. Extend `scripts/test-account-identity-policy.mjs` to assert the insert trigger exists and registration is protected.
+5. Reconcile duplicate `0013/0017` and `0014/0018` files only after establishing which migration numbers have been applied anywhere. Never delete or rewrite an applied migration.
+
+## Updated release gate
+
+The account branch is not ready for migration rehearsal until its duplicate migration payloads are resolved. The registration historical-name gap must also be fixed and tested before account identity work is considered security-complete.
