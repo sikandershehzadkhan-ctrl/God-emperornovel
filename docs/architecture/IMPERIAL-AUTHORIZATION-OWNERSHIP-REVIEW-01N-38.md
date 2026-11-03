@@ -28,6 +28,13 @@ The reviewed AI project collection is filtered by the current account ID. Projec
 - Connector authorization requests derive requester identity from the authenticated session. Admin review requires a pending request and rights evidence/terms/notes; approved connectors remain disabled until separately enabled.
 - Admin ticket adjustments update the target balance and conditionally create a ledger entry; runtime consistency tests remain necessary.
 
+## Taxonomy and voting access review
+
+- Public taxonomy reads return approved entries only; pending and rejected proposals are blocked from public discovery.
+- Taxonomy proposals are currently anonymous. The handler accepts `creator_id` and `creator_name` from the request body, which permits spoofed attribution. No rate limit is visible in this handler.
+- Taxonomy moderation reads and decisions are admin-gated; reviewer identity is taken from the authenticated admin session and proposals must still be pending.
+- Public voting exposes request URL, source host, status, timestamp, vote count and requester username. Vote creation/removal is authenticated and scoped to the session user ID.
+
 ## Findings
 
 1. Cross-account integration tests are still required. SQL ownership predicates are visible, but static inspection does not prove runtime isolation.
