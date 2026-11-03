@@ -553,7 +553,7 @@ async function api(req,env){
   return json({personalized:false,results:rows.map(toPublicNovel)});
  }
  if(p==="/api/vote-novels"&&m==="GET"){
-  const rows=(await env.DB.prepare(`SELECT r.id,r.url,r.source_host,r.status,r.created_at,COALESCE(v.votes,0) votes,u.username FROM novel_requests r LEFT JOIN users u ON u.id=r.user_id LEFT JOIN (SELECT request_id,COUNT(*) votes FROM request_votes GROUP BY request_id) v ON v.request_id=r.id WHERE r.status IN ('pending','approved') ORDER BY votes DESC,r.created_at DESC LIMIT 100`).all()).results||[];
+  const rows=(await env.DB.prepare(`SELECT r.id,r.url,r.source_host,r.status,r.created_at,COALESCE(v.votes,0) votes FROM novel_requests r LEFT JOIN (SELECT request_id,COUNT(*) votes FROM request_votes GROUP BY request_id) v ON v.request_id=r.id WHERE r.status IN ('pending','approved') ORDER BY votes DESC,r.created_at DESC LIMIT 100`).all()).results||[];
   return json(rows);
  }
  if(p==="/api/vote-novels"&&m==="POST"){
