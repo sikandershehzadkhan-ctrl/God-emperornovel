@@ -42,9 +42,9 @@ assert.ok(relevance.sql.includes("THEN 6"));
 assert.ok(relevance.sql.includes("THEN 7"));
 assert.ok(relevance.sql.includes("ELSE 8 END"));
 assert.deepEqual(relevance.values, [
-  "fantasy_50%", "fantasy\\_50\\%", "fantasy_50%", "%fantasy\\_50\\%",
+  "fantasy_50%", "fantasy\\_50\\%%", "fantasy_50%", "%fantasy\\_50\\%%",
   "fantasy_50%", "fantasy_50%", "fantasy_50%", "fantasy_50%",
-  "fantasy\\_50\\%", "fantasy\\_50\\%", "fantasy\\_50\\%", "fantasy\\_50\\%"
+  "fantasy\\_50\\%%", "fantasy\\_50\\%%", "fantasy\\_50\\%%", "fantasy\\_50\\%%"
 ]);
 assert.deepEqual(buildCatalogSearchOrder("  "), { sql: "", values: [] });
 assert.ok(worker.includes('import { buildCatalogSearchPredicate, buildCatalogSearchOrder } from "./catalog-search-policy.mjs";'));
