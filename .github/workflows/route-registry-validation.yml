@@ -18,6 +18,7 @@ on:
       - "scripts/test-admin-account-d1.py"
       - "scripts/test-api-csrf-taxonomy-safety.mjs"
       - "scripts/test-ai-project-actor-ownership.mjs"
+      - "scripts/test-donation-approval-d1.py"
       - ".github/workflows/route-registry-validation.yml"
   push:
     branches:
@@ -37,6 +38,7 @@ on:
       - "scripts/test-admin-account-d1.py"
       - "scripts/test-api-csrf-taxonomy-safety.mjs"
       - "scripts/test-ai-project-actor-ownership.mjs"
+      - "scripts/test-donation-approval-d1.py"
       - ".github/workflows/route-registry-validation.yml"
 
 permissions:
@@ -62,6 +64,9 @@ jobs:
 
       - name: Test administrator account D1 transaction invariants
         run: python scripts/test-admin-account-d1.py
+
+      - name: Test donation approval and ticket ledger D1 invariants
+        run: python scripts/test-donation-approval-d1.py
 
       - name: Validate HTML route manifest
         run: node scripts/test-route-registry.mjs
