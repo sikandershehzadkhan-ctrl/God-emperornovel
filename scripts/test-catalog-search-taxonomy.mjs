@@ -1,6 +1,6 @@
 import assert from "node:assert/strict";
 import { readFile } from "node:fs/promises";
-import { buildCatalogSearchPredicate } from "../src/catalog-search-policy.mjs";
+import { buildCatalogSearchPredicate, buildCatalogSearchOrder } from "../src/catalog-search-policy.mjs";
 
 const empty = buildCatalogSearchPredicate([]);
 assert.equal(empty.sql, "");
@@ -31,3 +31,23 @@ assert.ok(worker.includes('const search=buildCatalogSearchPredicate(searchTerms)
 assert.ok(worker.includes("FROM novels n WHERE n.publication_status='published'"), "Search must retain the published-content visibility boundary.");
 
 console.log("PASS: catalog search matches title/author/description/aliases and genre/tag taxonomy with parameterized, escaped, bounded terms and preserves the published-content boundary.");
+
+
+const relevance = buildCatalogSearchOrder("Fantasy_50%");
+assert.equal(relevance.values.length, 12);
+assert.ok(relevance.sql.indexOf("LOWER(n.title)=?") < relevance.sql.indexOf("LOWER(g.name)=?"));
+assert.ok(relevance.sql.includes("THEN 4"));
+assert.ok(relevance.sql.includes("THEN 5"));
+assert.ok(relevance.sql.includes("THEN 6"));
+assert.ok(relevance.sql.includes("THEN 7"));
+assert.ok(relevance.sql.includes("ELSE 8 END"));
+assert.deepEqual(relevance.values, [
+  "fantasy_50%", "fantasy\\_50\\%", "fantasy_50%", "%fantasy\\_50\\%",
+  "fantasy_50%", "fantasy_50%", "fantasy_50%", "fantasy_50%",
+  "fantasy\\_50\\%", "fantasy\\_50\\%", "fantasy\\_50\\%", "fantasy\\_50\\%"
+]);
+assert.deepEqual(buildCatalogSearchOrder("  "), { sql: "", values: [] });
+assert.ok(worker.includes('import { buildCatalogSearchPredicate, buildCatalogSearchOrder } from "./catalog-search-policy.mjs";'));
+assert.ok(worker.includes("const relevance=buildCatalogSearchOrder(term);order=relevance.sql+","+selectedOrder;a.push(...relevance.values)"));
+
+console.log("PASS: catalog relevance ranks exact/prefix genre and tag matches after title/author matches using escaped parameters and pagination-safe EXISTS clauses.");
