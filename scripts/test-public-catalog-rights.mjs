@@ -34,12 +34,16 @@ const protectedReaderRoutes = [
   ["/api/library\"&&m===\"GET\"", "Library results must hide works without cleared rights."],
   ["/api/library\"&&m===\"POST\"", "Library writes must reject works without cleared rights."],
   ["/api/bookmarks\"&&m===\"GET\"", "Bookmark results must hide works without cleared rights."],
-  ["/api/reaction\"&&m===\"GET\"", "Reaction reads must reject works without cleared rights."],
-  ["/api/reaction\"&&m===\"POST\"", "Reaction writes must reject works without cleared rights."],
+  ["/api/novel-reactions\"&&m===\"GET\"", "Reaction reads must reject works without cleared rights."],
+  ["/api/novel-reactions\"&&m===\"POST\"", "Reaction writes must reject works without cleared rights."],
   ["/api/rating\"&&m===\"GET\"", "Rating reads must reject works without cleared rights."],
   ["/api/rating\"&&m===\"POST\"", "Rating writes must reject works without cleared rights."],
   ["/api/follow\"&&m===\"POST\"", "Follow writes must reject works without cleared rights."]
 ];
+protectedReaderRoutes.push(
+  ["/api/comments\\"&&m===\\"GET\\"", "Comment reads must reject works without cleared rights."],
+  ["/api/comments\\"&&m===\\"POST\\"", "Comment writes must reject works without cleared rights."]
+);
 for (const [marker, message] of protectedReaderRoutes) {
   const line = routeLines.find((candidate) => candidate.includes(marker));
   assert.ok(line && line.includes(rights), message);
