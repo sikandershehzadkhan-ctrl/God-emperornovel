@@ -6,7 +6,7 @@
   "auditDate": "2026-11-03",
   "scope": "Static dispatcher scan. Observed method guards only; not a complete permission or runtime contract.",
   "exactRouteCount": 74,
-  "dynamicRouteCount": 3,
+  "dynamicRouteCount": 14,
   "exactRoutes": [
     {
       "path": "/api/health",
@@ -935,12 +935,155 @@
   ],
   "dynamicRoutes": [
     {
+      "pathPattern": "/^\\/api\\/novels\\/(\\d+)$/",
+      "methods": [],
+      "sourceLines": [
+        459,
+        459
+      ],
+      "methodGuardMissing": true,
+      "methodGuard": "explicit",
+      "authorization": "requires handler-level review"
+    },
+    {
+      "pathPattern": "/^\\/api\\/chapters\\/(\\d+)$/",
+      "methods": [],
+      "sourceLines": [
+        460,
+        460
+      ],
+      "methodGuardMissing": true,
+      "methodGuard": "explicit",
+      "authorization": "requires handler-level review"
+    },
+    {
+      "pathPattern": "/^\\/api\\/novels\\/(\\d+)\\/batch-unlock$/",
+      "methods": [
+        "POST"
+      ],
+      "sourceLines": [
+        462,
+        462
+      ],
+      "methodGuardMissing": false,
+      "methodGuard": "explicit",
+      "authorization": "requires handler-level review"
+    },
+    {
+      "pathPattern": "/^\\/api\\/admin\\/users\\/(\\d+)$/",
+      "methods": [
+        "PATCH"
+      ],
+      "sourceLines": [
+        612,
+        612
+      ],
+      "methodGuardMissing": false,
+      "methodGuard": "explicit",
+      "authorization": "requires handler-level review"
+    },
+    {
+      "pathPattern": "/^\\/api\\/author\\/ai\\/projects\\/(\\d+)$/",
+      "methods": [
+        "GET",
+        "PATCH"
+      ],
+      "sourceLines": [
+        633,
+        634,
+        638
+      ],
+      "methodGuardMissing": false,
+      "methodGuard": "explicit",
+      "authorization": "requires handler-level review"
+    },
+    {
+      "pathPattern": "/^\\/api\\/admin\\/publishing\\/novels\\/(\\d+)$/",
+      "methods": [
+        "PATCH"
+      ],
+      "sourceLines": [
+        772,
+        772
+      ],
+      "methodGuardMissing": false,
+      "methodGuard": "explicit",
+      "authorization": "requires handler-level review"
+    },
+    {
+      "pathPattern": "/^\\/api\\/admin\\/publishing\\/chapters(?:\\/(\\d+))?$/",
+      "methods": [
+        "GET"
+      ],
+      "sourceLines": [
+        773,
+        774
+      ],
+      "methodGuardMissing": false,
+      "methodGuard": "explicit",
+      "authorization": "requires handler-level review"
+    },
+    {
+      "pathPattern": "/^\\/api\\/admin\\/publishing\\/chapters\\/(\\d+)$/",
+      "methods": [
+        "PATCH",
+        "DELETE"
+      ],
+      "sourceLines": [
+        781,
+        782,
+        806
+      ],
+      "methodGuardMissing": false,
+      "methodGuard": "explicit",
+      "authorization": "requires handler-level review"
+    },
+    {
+      "pathPattern": "/^\\/api\\/admin\\/donations\\/(\\d+)$/",
+      "methods": [
+        "PATCH"
+      ],
+      "sourceLines": [
+        822,
+        822
+      ],
+      "methodGuardMissing": false,
+      "methodGuard": "explicit",
+      "authorization": "requires handler-level review"
+    },
+    {
+      "pathPattern": "/^\\/api\\/admin\\/reports\\/(\\d+)$/",
+      "methods": [
+        "PATCH"
+      ],
+      "sourceLines": [
+        824,
+        824
+      ],
+      "methodGuardMissing": false,
+      "methodGuard": "explicit",
+      "authorization": "requires handler-level review"
+    },
+    {
+      "pathPattern": "/^\\/api\\/admin\\/connector-authorization-requests\\/(\\d+)$/",
+      "methods": [
+        "PATCH"
+      ],
+      "sourceLines": [
+        835,
+        835
+      ],
+      "methodGuardMissing": false,
+      "methodGuard": "explicit",
+      "authorization": "requires handler-level review"
+    },
+    {
       "pathPattern": "^/api/chapters/{chapterId}/unlock$",
       "methods": [
         "POST"
       ],
       "sourceLines": [
-        462
+        461
       ],
       "methodGuardMissing": false,
       "methodGuard": "explicit",
