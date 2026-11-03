@@ -35,6 +35,12 @@ The reviewed AI project collection is filtered by the current account ID. Projec
 - Taxonomy moderation reads and decisions are admin-gated; reviewer identity is taken from the authenticated admin session and proposals must still be pending.
 - Public voting exposes request URL, source host, status, timestamp, vote count and requester username. Vote creation/removal is authenticated and scoped to the session user ID.
 
+## Cache and browser request protections
+
+- The shared JSON response helper defaults to `Cache-Control: no-store`; the HTML response also sets `no-store`.
+- The sitemap is the explicit public-cache exception and selects only published, rights-eligible novels and chapters.
+- The login cookie is `HttpOnly`, `Secure`, and `SameSite=Lax`. No explicit Origin or CSRF-token check is visible in the reviewed request pipeline, so cross-site browser POST behavior still needs a dedicated test. SameSite is a useful baseline, not a substitute for verification.
+
 ## Findings
 
 1. Cross-account integration tests are still required. SQL ownership predicates are visible, but static inspection does not prove runtime isolation.
