@@ -2,9 +2,10 @@ import assert from "node:assert/strict";
 import { readFile } from "node:fs/promises";
 import { renderHomepageHtml } from "../src/homepage-ssr.mjs";
 
-const [worker, client, indexHtml] = await Promise.all([
+const [worker, client, versionedClient, indexHtml] = await Promise.all([
   readFile(new URL("../src/index.js", import.meta.url), "utf8"),
   readFile(new URL("../public/app.js", import.meta.url), "utf8"),
+  readFile(new URL("../public/app-17.23.0.js", import.meta.url), "utf8"),
   readFile(new URL("../public/index.html", import.meta.url), "utf8")
 ]);
 assert.match(worker, /renderHomepageHtml\(homepageNovels\)/);
@@ -12,6 +13,10 @@ assert.match(worker, /publication_status=.published./);
 assert.match(worker, /<main id="app"/);
 assert.match(client, /serverRenderedHome=location\.pathname==='\/'/);
 assert.match(client, /data-imperial-ssr-header/);
+assert.equal(versionedClient, client, "versioned production bundle must include the same SSR-preserving boot logic");
+assert.match(worker, /if\(p===\"\/\"\)/);
+assert.match(worker, /LIMIT 6/);
+assert.match(worker, /rights_status IN/);
 
 
 const rendered = renderHomepageHtml([
@@ -20,6 +25,8 @@ const rendered = renderHomepageHtml([
 ]);
 assert.match(rendered.header, /<nav class="navlinks" aria-label="Primary navigation">/);
 assert.match(rendered.header, /data-imperial-ssr-mobile-nav/);
+assert.match(rendered.header, /href="\/become-an-author"/);
+assert.match(rendered.header, /href="\/search"/);
 assert.match(rendered.content, /<h1>Open a world\.<br>Shape an empire\.<\/h1>/);
 assert.match(rendered.content, /type="search"/);
 assert.match(rendered.content, /href="\/novel\/7"/);
