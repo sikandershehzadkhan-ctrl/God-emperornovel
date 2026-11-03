@@ -3,7 +3,7 @@ export function createRuntimeFeatureSchemaEnsurer() {
   return async function ensureRuntimeFeatureSchema(env) {
     if (!ready) ready = (async () => {
       const marker = await env.DB.prepare("SELECT value FROM app_settings WHERE key='runtime_feature_schema_version' LIMIT 1").first();
-      if (marker?.value === "1") return;
+      if (marker?.value === "2") return;
 
       const statements = [
         "CREATE TABLE IF NOT EXISTS auth_rate_limits (scope TEXT NOT NULL,key_hash TEXT NOT NULL,window_start INTEGER NOT NULL,attempts INTEGER NOT NULL DEFAULT 0,PRIMARY KEY(scope,key_hash))",
@@ -27,7 +27,10 @@ export function createRuntimeFeatureSchemaEnsurer() {
 
       await env.DB.prepare("DELETE FROM auth_rate_limits WHERE window_start<?")
         .bind(Math.floor(Date.now() / 1000) - 172800).run();
-      await env.DB.prepare("INSERT OR REPLACE INTO app_settings(key,value) VALUES('runtime_feature_schema_version','1')").run();
+      // Preserve the earliest report per account/comment pair before enforcing uniqueness.
+      await env.DB.prepare("DELETE FROM comment_reports WHERE id NOT IN (SELECT MIN(id) FROM comment_reports GROUP BY user_id,comment_id)").run();
+      await env.DB.prepare("CREATE UNIQUE INDEX IF NOT EXISTS idx_comment_reports_user_comment ON comment_reports(user_id,comment_id)").run();
+      await env.DB.prepare("INSERT OR REPLACE INTO app_settings(key,value) VALUES('runtime_feature_schema_version','2')").run();
     })();
 
     try {
