@@ -36,7 +36,7 @@ for (const [label, pattern] of [
   ["RTL menu drawer positioning", /html\[dir="rtl"\] \.menuDrawer\{[\s\S]*?inset-inline-start:0;[\s\S]*?inset-inline-end:auto/],
 ]) assert.match(css, pattern, label + " must be present");
 
-assert.match(app, /document\.documentElement\.dir=\(c==="ur"\|\|c==="ar"\)\?"rtl":"ltr"/,
+assert.match(app, /document\.documentElement\.dir=\(c==="ur"\|\|c==="ar"\|\|c==="fa"\)\?"rtl":"ltr"/,
   "Urdu and Arabic interface languages must set the document direction");
 
 assert.match(css, /html\[dir="rtl"\] \.chapterDrawer\{[\s\S]*?inset-inline-start:0;[\s\S]*?border-right:1px solid/,
