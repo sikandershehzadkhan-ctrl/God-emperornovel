@@ -22,8 +22,8 @@ for (const file of files) {
     `Duplicate migration sequence ${sequence}: ${numberOwners.get(sequence)} and ${file}`);
   numberOwners.set(sequence, file);
 
-  // Normalize comments and formatting while preserving token order and literal case.
-  // This catches equivalent SQL copied under another sequence with different indentation.
+  // Normalize line endings and whitespace while preserving SQL literals and statement order.
+  // This catches equivalent payloads copied under another sequence with different indentation.
   const sql = readFileSync(join(directory, file), 'utf8')
     .replace(/\r\n/g, '\n')
     .replace(/\s+/g, ' ')
