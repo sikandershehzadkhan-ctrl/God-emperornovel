@@ -466,3 +466,22 @@ Reviewed PR #88's Comic Page Manager, reader rendering, author media library, ad
 - Add a real browser fixture with several page sizes and image failure cases, then test the page manager and reader on mobile viewport sizes.
 
 **Disposition:** the creator and reader UI foundation exists in PR #88, but it is not a verified end-to-end comic publishing experience. Keep managed-media publishing blocked until trusted image processing, real private R2 verification, and browser QA are complete. No production deployment or database/storage changes were made.
+
+
+## Comic reader keyboard and touch navigation improvement (2026-11-04)
+
+Implemented on PR #88 branch `feature/media-publication-gates-0013`:
+- Added keyboard arrow navigation in single-page mode, scoped to the focused comic reader and ignoring interactive controls and editable fields.
+- Added horizontal touch-swipe navigation with a 48px minimum movement and a 1.25 horizontal-to-vertical dominance threshold to avoid treating ordinary vertical scrolling as a page turn.
+- Added focusability, `aria-keyshortcuts`, and an accessible reader label explaining the available controls.
+- Updated the live page counter in the existing polite live region to announce page position and navigation hints.
+- Synchronized `public/app-17.23.0.js` exactly with `public/app.js`.
+- Extended `scripts/test-comic-reader-rendering.py` to assert keyboard, touch, and focus/ARIA affordances, and added the test to the package build gate.
+
+Commits:
+- Source: `f92f6c0aa997da8f656cab9528ca5ac95dac2946`
+- Runtime bundle: `e1c771ccbf701dbd5dc474e570b95c23a7bd7921`
+- Reader tests: `0ea72a9bfebbae79af747edbd60319de84617727`
+- Build gate: `89b25138a199f115462a30b0f75fafb9fe0de98a`
+
+Post-commit repository fetch confirmed source and versioned runtime are byte-for-byte identical, the keyboard/swipe assertions exist, and the package build invokes the new reader test. No GitHub Actions run for the new branch head was visible at review time, so CI and browser interaction remain unverified. The change is committed to the feature branch only, not merged or deployed.
