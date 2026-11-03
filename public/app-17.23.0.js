@@ -28,6 +28,7 @@ function img(url,title=''){
   return url?esc(url):'/story-cover-placeholder.svg'
 }
 function ratingText(value){const rating=Number(value);return Number.isFinite(rating)&&rating>=1&&rating<=5?Math.round(rating)+'/5':'Not rated'}
+function uniqueLatestStories(trendingRows,latestRows){const trendingIds=new Set((trendingRows||[]).map(row=>row?.id).filter(id=>id!==null&&id!==undefined).map(String));return (latestRows||[]).filter(row=>row?.id===null||row?.id===undefined||!trendingIds.has(String(row.id)))}
 function card(n){return `<a class="card" href="/novel/${n.id}"><div class="cover"><img src="${img(n.cover_url,n.title)}" alt="${esc(n.title)} cover" loading="lazy" decoding="async" fetchpriority="low" onerror="this.onerror=null;this.src='/story-cover-placeholder.svg'"></div><div class="cardBody"><div class="cardTitle">${esc(n.title)}</div><div class="muted">${esc(n.author||'Unknown author')}</div><div class="meta"><span>★ ${ratingText(n.rating)}</span><span>◷ ${Number(n.chapter_count||n.latest_chapter||0)} ch.</span></div></div></a>`}
 function chapterRow(ch,id){return `<a class="chapter" href="/read/${id}/${ch.chapter_number}"><span class="chapterNo">${ch.chapter_number}</span><span><b>${esc(ch.title)}</b><br><span class="muted">${ch.is_locked?'Locked · '+ch.ticket_cost+' Imperial Crowns':'Free to read'}</span></span><span class="lock">${ch.is_locked?'⌑':'›'}</span></a>`}
 const COMIC_FORMATS=new Set(['manga','manhwa','manhua','webtoon','comic','graphic_novel']);
@@ -111,9 +112,10 @@ async function home(){
  try{
   const [t,l]=await Promise.all([apiWithTimeout('/api/novels?sort=trending&limit=10'),apiWithTimeout('/api/novels?sort=updated&limit=10')]);
   const trendRows=t.results||[],latestRows=l.results||[];
+  const distinctLatestRows=uniqueLatestStories(trendRows,latestRows);
   const renderHomeStories=(selector,rows,empty)=>{const el=$(selector);el.classList.toggle('singleStory',rows.length===1);el.classList.toggle('multiStory',rows.length>1);el.innerHTML=rows.length?rows.map(card).join():`<div class="empty homeCatalogEmpty" style="grid-column:1/-1">${empty}</div>`};
   renderHomeStories('#trend',trendRows,'The catalog is growing. Be among the first to discover what comes next.');
-  renderHomeStories('#latest',latestRows,'No new updates yet. Explore the catalog and find your first world.');
+  renderHomeStories('#latest',distinctLatestRows,'No new updates yet. Explore the catalog and find your first world.');
  }catch(error){
   const notice=`<div class="notice" role="alert" style="grid-column:1/-1"><b>Story shelves could not be loaded.</b><p>${esc(error.message||'Please try again in a moment.')}</p><a class="secondary" href="/">Try again</a></div>`;
   $('#trend').innerHTML=notice;$('#latest').innerHTML=notice;
