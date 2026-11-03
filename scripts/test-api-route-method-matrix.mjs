@@ -14,7 +14,7 @@ assert.ok(matrix.dynamicRoutes.length>=10,"API dynamic route inventory unexpecte
 const paths=matrix.exactRoutes.map(x=>x.path);
 assert.equal(new Set(paths).size,paths.length,"duplicate API exact route");
 for(const route of matrix.exactRoutes){
- assert.ok(source.includes(JSON.stringify(route.path)),"Worker source missing exact API path: "+route.path);
+ assert.ok((source.includes(JSON.stringify(route.path))||source.includes("'"+route.path+"'")),"Worker source missing exact API path: "+route.path);
  assert.ok(Array.isArray(route.methods)&&Array.isArray(route.sourceLines),"API route metadata incomplete: "+route.path);
  if(route.methodGuardMissing)assert.ok(route.unguardedLines.length>0||route.methods.length===0,"method gap lacks evidence: "+route.path);
 }
