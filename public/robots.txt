@@ -1,5 +1,3 @@
 User-agent: *
 Allow: /
-Disallow: /api/
-
 Sitemap: https://god-emperornovel.sikandershehzadkhan.workers.dev/sitemap.xml
