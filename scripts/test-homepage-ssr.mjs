@@ -19,11 +19,11 @@ for (const selector of [
   'class="homeFormatHeading"', 'id="homeFormatTitle"', 'class="homeFormatCard"',
   'class="section nextShelf"', 'class="sectionHead"'
 ]) {
-  assert.ok(homepageTemplate.includes(selector), `homepage localization target ${selector} must exist in the actual client-rendered template`);assert.ok(homepageTemplate.includes(selector), `homepage localization target ${selector} must exist in the actual client-rendered template`);
+  assert.ok(homepageTemplate.includes(selector), `homepage localization target ${selector} must exist in the actual client-rendered template`);
+}
 assert.equal((homepageTemplate.match(/class="section nextShelf"/g)||[]).length,2,"client homepage must contain separate trending and latest-updates shelves");
 for (const locale of ["ur","ar","fa"]) {
   assert.ok(client.includes(locale+":{eyebrow:"), "latest-updates translations must define eyebrow, title and lead for "+locale);
-}
 }
 assert.ok(homepageTemplate.includes('id="trend"') && homepageTemplate.includes('id="latest"'), "homepage story shelves must remain present alongside localized headings");
 assert.ok(homepageTemplate.includes("translateHomepage(document.documentElement.lang||'en');"), "the rendered client homepage must apply the selected language after its template is inserted");
