@@ -92,7 +92,7 @@ const rendered = renderHomepageHtml([
 ]);
 assert.match(rendered.header, /<a class="skipLink ssrSkipLink" href="#app">Skip to main content<\\/a>/, "SSR must expose a keyboard-accessible skip link to the main landmark");
 assert.equal((rendered.content.match(/<h1(?:\\s|>)/g) || []).length, 1, "SSR homepage must expose exactly one primary heading");
-assert.match(rendered.content, /<main id="app"/, "the document shell must provide the skip-link destination as the main landmark");
+assert.match(indexHtml, /<main id="app"/, "the document shell must provide the skip-link destination as the main landmark");
 assert.match(rendered.content, /<section class="homeFormatShelf" aria-labelledby="ssr-home-formats">/, "format shelf must have an accessible section name");
 assert.match(rendered.content, /<section class="section nextShelf" aria-labelledby="ssr-home-stories">/, "story shelf must have an accessible section name");
 assert.match(rendered.header, /<nav class="navlinks" aria-label="Primary navigation">/);
