@@ -84,3 +84,10 @@ The dedicated `route-registry-validation.yml` workflow now runs:
 Both checks passed on the route-registry branch. The broader source-validation workflow also passed on the same PR revision. Production deployment remains manual and was not invoked.
 
 **No runtime API handler, database schema, production secret, or live Worker was changed by this audit.**
+
+
+## Detail API method guard follow-up (3 November 2026)
+
+The numeric novel and chapter detail API handlers now explicitly require `GET` before any database access or view-count write. Other methods receive HTTP 405. A regression test, `scripts/test-detail-api-method-guards.mjs`, verifies both guards precede database work and is part of the route-registry CI workflow.
+
+This closes the specific method-ambiguity identified during source review. It does not certify every API handler; the remaining path-only branches still need individual method and side-effect review.
