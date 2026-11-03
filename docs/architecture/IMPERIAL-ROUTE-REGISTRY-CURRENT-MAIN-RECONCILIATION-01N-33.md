@@ -162,7 +162,7 @@ A route is not complete merely because the Worker returns a shell or an API hand
 |---|---|
 | Canonical naming and namespace rules | Documented |
 | Current mainline exact HTML dispatch | Reconciled: 33 exact paths |
-| Current mainline dynamic HTML dispatch | Reconciled: 5 dynamic families |
+| Current mainline dynamic HTML dispatch | Reconciled: 6 dynamic families |
 | Sitemap endpoint family | Reconciled |
 | Current mainline exact API path comparisons | Reconciled: 74 static comparisons |
 | Existing route conflicts | Identified with safe compatibility rules |
