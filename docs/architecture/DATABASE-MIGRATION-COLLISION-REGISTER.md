@@ -91,6 +91,25 @@ The following duplicates/overlaps were observed from the changed-file patches:
 8. Run the Cloudflare build and D1 migration validation on the integrated branch.
 9. Stage the migration against a disposable/staging D1 first. Production rollout requires backup, explicit release approval, monitoring and a documented recovery plan.
 
+## Focused data-preservation review: ratings and reader progress
+
+Reviewed the actual SQL and regression tests at PR #171 head `574b37bab1eb0426bc0032f79eceb3c4ca0a4588`, and the competing ratings migration at PR #123 head `5a2e5b8f3b7db97cbf878e71c0acd9c1f1716eb5`.
+
+### Rating migration conflict: do not apply either migration yet
+
+- PR #171 `0012_ten_point_ratings.sql` rebuilds `ratings`, maps values 1–5 to 2,4,6,8,10, drops the original table, renames the replacement, and recomputes `novels.rating`.
+- PR #123 `0017_ten_point_ratings.sql` also rebuilds `ratings`, but copies existing values unchanged where they are between 1 and 10, silently excluding any out-of-range rows before dropping the old table.
+- These are not equivalent transformations. PR #171 assumes every stored value 1–5 belongs to an old five-point scale. PR #123 assumes values 1–10 are already ten-point values.
+- The PR #171 Worker source and rating regression test already enforce/expect whole-number ratings from 1 to 10. If production has accepted ten-point votes before the migration, PR #171 would double the value of every existing 1–5 vote. Conversely, PR #123's filtered copy would discard invalid legacy rows without archiving them or reporting a count.
+- Both scripts use a table rebuild. The reviewed SQL does not explicitly preserve arbitrary indexes, triggers, or foreign-key relationships attached to the old `ratings` table. Those must be inventoried and recreated/verified where applicable.
+- PR #171's regression test checks the intended mapping in SQL text, but does not by itself prove preservation of representative live rows, table dependencies, or mixed historical scale data.
+
+**Required resolution before canonicalization:** inspect actual production rating values and schema dependencies using a read-only, aggregate/metadata-only audit; determine whether historic rows have reliable scale provenance. If provenance cannot distinguish five-point and ten-point rows, do not automatically remap ambiguous values. Design a forward-only migration with an explicit preservation/archive policy, pre/post row-count checks, rating distribution checks, and table-dependency verification. Do not run a destructive table rebuild until that rehearsal passes.
+
+### Reader progress migration review
+
+PR #171 `0013_reader_progress.sql` creates one row per `(user_id, novel_id)`, constrains chapter number and percentage, and indexes user/update time. It does not declare foreign keys to users/novels in the reviewed SQL. Its application tests assert account-scoped API reads/writes and local-vs-server timestamp reconciliation. Before integration, add disposable-database tests for orphan prevention or cleanup policy, user deletion, novel deletion, concurrent updates, and stale offline writes. The current source-level regression test is useful but is not a substitute for those data and concurrency tests.
+
 ## Cross-PR integration gate (reviewed 2026-11-04)
 
 GitHub's `mergeable` field describes Git's ability to merge source changes; it does not establish that independent D1 migration histories are compatible. Treat these as separate gates.
