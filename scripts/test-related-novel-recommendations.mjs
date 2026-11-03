@@ -16,6 +16,10 @@ assert.ok(sql.includes("n.rights_status IN ('original','public_domain','licensed
 assert.ok(sql.includes("NOT EXISTS (SELECT 1 FROM seeds s WHERE s.novel_id=n.id)"));
 assert.ok(sql.includes("genre_overlap*12 + tag_overlap*8 + author_overlap*4 + format_overlap*2"));
 assert.ok(sql.includes("LIMIT 12"));
+
+const schema = await readFile(new URL("../src/index.js", import.meta.url), "utf8");
+assert.ok(schema.includes("CREATE INDEX IF NOT EXISTS idx_novel_genres_genre_novel ON novel_genres(genre_id,novel_id)"), "Genre overlap lookups must have a reverse taxonomy index.");
+assert.ok(schema.includes("CREATE INDEX IF NOT EXISTS idx_novel_tags_tag_novel ON novel_tags(tag_id,novel_id)"), "Tag overlap lookups must have a reverse taxonomy index.");
 assert.ok(sql.includes("c.publication_status='published'"), "Related recommendations must count only published chapters.");
 assert.deepEqual(relatedNovelRecommendationBindings(42), [42, 42]);
 assert.deepEqual(relatedNovelRecommendationBindings("user-7"), ["user-7", "user-7"]);
