@@ -91,6 +91,34 @@ The following duplicates/overlaps were observed from the changed-file patches:
 8. Run the Cloudflare build and D1 migration validation on the integrated branch.
 9. Stage the migration against a disposable/staging D1 first. Production rollout requires backup, explicit release approval, monitoring and a documented recovery plan.
 
+## Cross-PR integration gate (reviewed 2026-11-04)
+
+GitHub's `mergeable` field describes Git's ability to merge source changes; it does not establish that independent D1 migration histories are compatible. Treat these as separate gates.
+
+| Pull request | Migration contribution / overlap | Integration disposition |
+|---|---|---|
+| #118 | `0012_runtime_feature_schema.sql` | Hold; same sequence as media, reader, profile, and other feature branches. |
+| #120 | `0012_runtime_feature_schema.sql` and reader/ratings migration slots (including intentional no-op reservations) | Hold; integration base has multiple cross-branch overlaps. |
+| #123 | Community runtime migration and reader/ratings sequence, including data cleanup and ratings-table rebuild | Hold; preserve its cleanup/rebuild semantics for a dedicated data-preservation rehearsal. |
+| #124 | Account lifecycle and ownership-transfer migrations beginning at `0009` | Hold; its early sequence overlaps migrations already on `main`. |
+| #129 | `0013_scheduled_chapter_publications.sql` | Hold; sequence 0013 is independently used by several branches. |
+| #130 | `0014_author_story_goals.sql`, `0015_author_private_notes.sql` | Hold; sequence numbers overlap other feature migrations. |
+| #171 | `0012_ten_point_ratings.sql`, `0013_reader_progress.sql` | Hold; #120/#123 and other branches use conflicting sequence slots. Its GitHub mergeability does not clear the D1 gate. |
+| #173 | `0012_user_profiles.sql` | Hold; sequence 0012 conflicts with multiple independent migrations. |
+| #174 | Profile/account identity migrations, including duplicate cooldown/preferences slots within its own branch | Hold; stacked on #173 and requires both source and migration consolidation. |
+| #177 | Migration sequence/payload guard and fresh SQLite chain rehearsal | Keep as a validation-only draft until the integration process is established. |
+
+### Required canonicalization sequence
+
+1. Obtain the actual production D1 schema and migration-history evidence through an explicitly authorized read-only audit. The current repository workflow can perform this, but it has not been dispatched in this work.
+2. Compare the production schema with `main` and the actual SQL payloads. A missing migration-ledger row alone is not proof that SQL was never applied because the current deploy workflow executes SQL files directly.
+3. Create one integration branch from the verified production-compatible baseline. Do not merge independent feature branches merely because GitHub reports them mergeable.
+4. Assign each genuinely new schema change a unique forward-only migration number in that integration branch. Preserve the original SQL intent, dependencies, constraints, triggers, indexes, and data transformations. Never rewrite a migration already applied in production.
+5. Rehearse the complete chain on a disposable database seeded with representative legacy data. Verify row preservation, intentional cleanup counts, foreign keys, indexes, triggers, constraints, and application-level tests.
+6. Only after the rehearsal and source CI pass should the integration PR be considered for human review. Production deployment remains a separate, explicitly approved operation.
+
+**Current decision:** no feature PR is promoted to a canonical migration branch by this register alone. The actual production baseline is still unknown, so renumbering or consolidation would be premature.
+
 ## Production inventory and release workflow findings
 
 A source review of `.github/workflows/audit-production-d1.yml`, `.github/workflows/deploy.yml` and `wrangler.toml` found the following operational constraints:
