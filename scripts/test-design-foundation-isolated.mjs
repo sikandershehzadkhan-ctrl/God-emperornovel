@@ -3,8 +3,13 @@ import { readFileSync, readdirSync } from "node:fs";
 
 const pages = readdirSync("public").filter((name) => name.endsWith(".html"));
 const stylesheet = "/imperial-design-foundation.css";
-const missing = pages.filter((name) => !readFileSync("public/" + name, "utf8").includes('href="' + stylesheet + '"'));
+const pageSources = Object.fromEntries(pages.map((name) => [name, readFileSync("public/" + name, "utf8")]));
+const missing = pages.filter((name) => !pageSources[name].includes('href="' + stylesheet + '"'));
 assert.deepEqual(missing, [], "Every public HTML route must load the shared design foundation");
+const missingViewport = pages.filter((name) => !/<meta\\s+name=["']viewport["']\\s+content=/i.test(pageSources[name]));
+assert.deepEqual(missingViewport, [], "Every public HTML route must declare a mobile viewport");
+const missingLanguage = pages.filter((name) => !/<html\\b[^>]*\\blang=["'][a-z]{2}(?:-[A-Z]{2})?["']/i.test(pageSources[name]));
+assert.deepEqual(missingLanguage, [], "Every public HTML route must declare a document language");
 
 const author = readFileSync("public/author.html", "utf8");
 const admin = readFileSync("public/admin.html", "utf8");
@@ -27,6 +32,19 @@ for (const [label, pattern] of [
   ["44px touch target baseline", /min-height:44px/],
 ]) assert.match(css, pattern, label + " must be present");
 
+
+
+for (const [label, pattern] of [
+  ["tablet navigation breakpoint", /@media\\(max-width:760px\\)/],
+  ["compact-phone header breakpoint", /@media\\(max-width:390px\\)/],
+  ["very-narrow-phone layout breakpoint", /@media\\(max-width:340px\\)/],
+  ["safe-area-aware mobile navigation", /padding:[^;]*env\\(safe-area-inset-bottom\\)/],
+  ["horizontal overflow containment", /html,body\\{max-width:100%;overflow-x:clip\\}/],
+  ["RTL menu drawer positioning", /html\\[dir="rtl"\\] \\.menuDrawer\\{[\\s\\S]*?inset-inline-start:0;[\\s\\S]*?inset-inline-end:auto/],
+]) assert.match(css, pattern, label + " must be present");
+
+assert.match(app, /document\\.documentElement\\.dir=\\(c==="ur"\\|\\|c==="ar"\\)\\?"rtl":"ltr"/,
+  "Urdu and Arabic interface languages must set the document direction");
 
 function luminance(hex) {
   const channels = hex.slice(1).match(/.{2}/g).map((value) => parseInt(value, 16) / 255)
