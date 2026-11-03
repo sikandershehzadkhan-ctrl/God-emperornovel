@@ -55,6 +55,8 @@ for (const [theme, block] of Object.entries(themeBlocks)) {
   }
 }
 
+assert.match(css, /:is\(html\[data-theme="dark"\],html\[data-theme="midnight"\],html\[data-theme="imperial"\],html\[data-theme="cosmic"\]\)/, "Dark-surface component refinements must cover every dark theme");
+
 for (const theme of ["light", "dark", "sepia", "midnight", "imperial", "cosmic"]) {
   assert.ok(css.includes(`html[data-theme="${theme}"]`), "Missing global theme: " + theme);
 }
