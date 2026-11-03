@@ -1,5 +1,10 @@
 import assert from "node:assert/strict";
+import { readFile } from "node:fs/promises";
 import { toPublicNovel } from "../src/public-novel.mjs";
+
+const workerSource = await readFile(new URL("../src/index.js", import.meta.url), "utf8");
+assert.match(workerSource, /\.map\(x=>toPublicNovel\(\{\.\.\.x,status:/, "public catalog results must pass through the field-minimizing projection");
+assert.match(workerSource, /\.\.\.toPublicNovel\(\{\.\.\.n,status:/, "public novel detail responses must pass through the field-minimizing projection");
 
 const source = {
   id: 41, title: "Public story", author: "Writer",
