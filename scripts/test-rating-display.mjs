@@ -18,4 +18,6 @@ for (const [value, expected] of cases) assert.equal(ratingText(value), expected,
 
 assert.equal((source.match(/ratingText\(n\.rating\)/g) || []).length, 6, 'All six public rating surfaces must use the shared formatter');
 assert.ok(!source.includes('Number(n.rating||0).toFixed(1)'), 'Missing ratings must never be rendered as fabricated 0.0 values');
+assert.ok(!source.includes('Number(x.rating||0).toFixed(1)'), 'Author leaderboard ratings must not fabricate 0.0 values');
+assert.ok(source.includes('ratingText(x.rating)'), 'Author leaderboard must use the shared truthful rating formatter');
 console.log('Rating display regression passed: 1–5 scale, whole-number labels, missing/invalid ratings, and source/served parity.');
