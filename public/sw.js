@@ -1,4 +1,3 @@
-// Profile editor release: reinstall the worker to refresh the unchanged versioned app URL.
 const CACHE='imperial-novel-v17.24.0';
 const CORE=['/','/manifest-17.24.0.webmanifest','/style-17.24.0.css','/app-17.24.0.css','/imperial-luxury-17.24.0.css','/imperial-formats-17.24.0.css','/imperial-comic-reader-17.24.0.css','/imperial-glass.css','/app-17.24.0.js','/imperial-novel-app-icon.svg'];
 self.addEventListener('install',event=>event.waitUntil(caches.open(CACHE).then(cache=>cache.addAll(CORE)).then(()=>self.skipWaiting())));
