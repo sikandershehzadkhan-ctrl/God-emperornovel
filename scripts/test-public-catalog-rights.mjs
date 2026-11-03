@@ -4,6 +4,9 @@ import { readFile } from "node:fs/promises";
 const worker = await readFile(new URL("../src/index.js", import.meta.url), "utf8");
 const rights = "rights_status IN ('original','public_domain','licensed','authorized')";
 
+const omniLocal = worker.slice(worker.indexOf("async function omniLocal"), worker.indexOf("async function omniConnectorSearch"));
+assert.ok(omniLocal.includes("publication_status='published' AND rights_status IN ('original','public_domain','licensed','authorized')"), "OmniPortal local search must return only published, rights-cleared novels.");
+
 const novelDetail = worker.slice(worker.indexOf('let nm=p.match(/^\\/api\\/novels\\/'), worker.indexOf('let cm=p.match(/^\\/api\\/chapters\\/'));
 assert.ok(novelDetail.includes("publication_status=\\'published\\' AND " + rights), "Public novel detail must require published and rights-cleared status.");
 
