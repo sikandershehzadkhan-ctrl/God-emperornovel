@@ -17,6 +17,7 @@ on:
       - "scripts/test-community-taxonomy-security.mjs"
       - "scripts/test-admin-account-d1.py"
       - "scripts/test-api-csrf-taxonomy-safety.mjs"
+      - "scripts/test-ai-project-actor-ownership.mjs"
       - ".github/workflows/route-registry-validation.yml"
   push:
     branches:
@@ -35,6 +36,7 @@ on:
       - "scripts/test-community-taxonomy-security.mjs"
       - "scripts/test-admin-account-d1.py"
       - "scripts/test-api-csrf-taxonomy-safety.mjs"
+      - "scripts/test-ai-project-actor-ownership.mjs"
       - ".github/workflows/route-registry-validation.yml"
 
 permissions:
@@ -75,6 +77,9 @@ jobs:
 
       - name: Validate API CSRF and taxonomy attribution safeguards
         run: node scripts/test-api-csrf-taxonomy-safety.mjs
+
+      - name: Validate AI project actor ownership
+        run: node scripts/test-ai-project-actor-ownership.mjs
 
       - name: Validate community taxonomy attribution and rate limiting
         run: node scripts/test-community-taxonomy-security.mjs
