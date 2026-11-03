@@ -4,7 +4,7 @@
   "sourceBlob": "237f4461135eb77258b7184e361ce9dfd9a140e9",
   "auditDate": "2026-11-03",
   "scope": "Partial handler-level source review; not a full authorization certification.",
-  "reviewedRouteCount": 38,
+  "reviewedRouteCount": 40,
   "pendingDisclosure": "All other exact and dynamic API routes remain pending handler-level review.",
   "routes": [
     {
@@ -418,6 +418,31 @@
         "anonymous voting denied",
         "closed request voting denied"
       ]
+    },
+    {
+      "path": "/api/comments",
+      "method": "GET",
+      "access": "public with optional session personalization",
+      "ownerRule": "comment query currently filters only by novel_id and visible status; publication and rights eligibility of parent novel are not enforced in this handler",
+      "evidence": "SELECT comments WHERE c.novel_id=? AND c.status='visible'; no join or publication_status/rights_status predicate",
+      "tests": [
+        "draft novel comments are not publicly readable",
+        "rights-ineligible novel comments are not publicly readable",
+        "published eligible novel comments remain readable"
+      ]
+    },
+    {
+      "path": "/api/comments",
+      "method": "POST",
+      "access": "authenticated",
+      "ownerRule": "comment author is session u.id, but parent novel publication and rights eligibility are not checked before insert",
+      "evidence": "need(u); validates novel_id/body and optional visible parent comment; INSERT binds u.id and nid without querying novels",
+      "tests": [
+        "cannot comment on draft novel",
+        "cannot comment on rights-ineligible novel",
+        "cannot comment on missing novel",
+        "cannot comment on unpublished chapter-only content"
+      ]
     }
   ],
   "findings": [
@@ -504,6 +529,13 @@
       "status": "needs-decision",
       "detail": "The admin override on AI project routes allows an admin to run a project owned by another author, while ai_chapter_jobs.owner_user_id and ai_generation_runs.owner_user_id are populated with the acting admin's u.id. The project remains owned by the original author. This mixes project ownership and actor attribution in fields named owner_user_id.",
       "action": "Decide whether admins may generate on behalf of creators. If yes, store project owner and actor/reviewer separately; otherwise remove the admin override from generation actions. Add tests for owner-visible job history and audit attribution."
+    },
+    {
+      "id": "AUTH-013",
+      "severity": "medium",
+      "status": "needs-mitigation",
+      "detail": "The public comments GET handler filters by comment visibility and caller-supplied novel_id but does not constrain the parent novel to published, rights-eligible content. The authenticated POST handler also inserts against the supplied novel_id without verifying that the novel exists and is published and rights-eligible. This may expose comments associated with draft or rights-ineligible works and permits orphan/invalid comment attempts; actual impact depends on surrounding schema and route reachability.",
+      "action": "Join/validate the parent novel in both handlers using publication_status='published' and the approved rights-status allowlist. Add integration tests for draft, missing, and rights-ineligible novel IDs before changing runtime behavior."
     }
   ]
 }
