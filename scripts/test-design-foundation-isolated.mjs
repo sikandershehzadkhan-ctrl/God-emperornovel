@@ -72,6 +72,15 @@ for (const [theme, block] of Object.entries(themeBlocks)) {
 
 assert.match(css, /:is\(html\[data-theme="dark"\],html\[data-theme="midnight"\],html\[data-theme="imperial"\],html\[data-theme="cosmic"\]\)/, "Dark-surface component refinements must cover every dark theme");
 
+assert.match(css, /html\[data-high-contrast="true"\]/,
+  "The saved high-contrast preference must strengthen interface separation");
+assert.match(css, /html\[data-high-contrast="true"\][\s\S]*?outline-width:3px/,
+  "High-contrast mode must strengthen keyboard focus visibility");
+assert.match(css, /html\[data-reduced-motion="true"\] \*/,
+  "The saved reduced-motion preference must disable motion independently of OS settings");
+assert.match(css, /html\[data-reduced-motion="true"\][\s\S]*?transform:none!important/,
+  "Reduced-motion mode must suppress hover movement");
+
 for (const theme of ["light", "dark", "sepia", "midnight", "imperial", "cosmic"]) {
   assert.ok(css.includes(`html[data-theme="${theme}"]`), "Missing global theme: " + theme);
 }
