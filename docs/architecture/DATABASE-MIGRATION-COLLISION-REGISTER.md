@@ -485,3 +485,22 @@ Commits:
 - Build gate: `89b25138a199f115462a30b0f75fafb9fe0de98a`
 
 Post-commit repository fetch confirmed source and versioned runtime are byte-for-byte identical, the keyboard/swipe assertions exist, and the package build invokes the new reader test. No GitHub Actions run for the new branch head was visible at review time, so CI and browser interaction remain unverified. The change is committed to the feature branch only, not merged or deployed.
+
+
+## Novel text reader progress reliability improvement (2026-11-04)
+
+Implemented on PR #88 feature branch `feature/media-publication-gates-0013`:
+- Reading progress is now measured against the chapter article's content bounds, rather than the entire document height. This avoids unrelated header/footer height shifting the saved chapter percentage.
+- Scroll updates are sampled through `requestAnimationFrame` rather than writing local storage on every raw scroll event.
+- Progress is persisted on page-hide as well as during scrolling, and local-storage failures are caught so privacy/storage restrictions do not break reading.
+- Restore waits for in-chapter images and document fonts to settle, then uses two animation frames before calculating the chapter-relative scroll target. This reduces incorrect restore positions caused by late layout shifts.
+- Added `scripts/test-reader-progress-layout.mjs` and inserted it into the package build gate.
+- Synchronized `public/app-17.23.0.js` byte-for-byte with `public/app.js`.
+
+Commits:
+- Reader source: `526b32cc495d86117724fb168e30633da012f483`
+- Progress test: `17457637adbc7b70cd1f344647ff2d1d6ce2bc26`
+- Runtime bundle: `ab08636ba6d006fca8cd723e90db45ed78c1433c`
+- Build gate: `fa12fbb394d561966271ea36d978f35de6ca493c`
+
+Post-commit repository fetch confirms source/runtime byte equality, the new test file exists, and the build invokes it. GitHub Actions did not show a run for the current feature head at the time of verification. The change has not been run in a real browser; CI and device testing remain pending. This is local chapter scroll progress, not a claim of server-synced percentage progress. Server history still records the latest chapter separately.
