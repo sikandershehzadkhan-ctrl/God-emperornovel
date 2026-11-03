@@ -18,7 +18,7 @@ assert.equal(versionedClient, client, "versioned production bundle must include 
 const rtlDirectionRule = 'document.documentElement.dir=(c==="ur"||c==="ar"||c==="fa")?"rtl":"ltr";';
 assert.ok(client.includes(rtlDirectionRule), "Urdu, Arabic and Persian must all activate RTL direction");
 assert.ok(versionedClient.includes(rtlDirectionRule), "versioned production bundle must preserve RTL direction for Urdu, Arabic and Persian");
-const languageSelect = client.match(/<select id="imperialLanguageSelect"[\\s\\S]*?<\\/select>/)?.[0] || "";
+const languageSelect = client.match(/<select id="imperialLanguageSelect"[\s\S]*?<\/select>/)?.[0] || "";
 const languageCodes = [...languageSelect.matchAll(/<option value="([^"]+)"/g)].map(([, code]) => code);
 assert.equal(languageCodes.length, 14, "the homepage shell must expose all 14 supported interface languages");
 assert.ok(languageCodes.includes("fa"), "Persian must remain selectable in the language menu");
