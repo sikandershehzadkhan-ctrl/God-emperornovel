@@ -536,6 +536,13 @@
       "status": "needs-mitigation",
       "detail": "The public comments GET handler filters by comment visibility and caller-supplied novel_id but does not constrain the parent novel to published, rights-eligible content. The authenticated POST handler also inserts against the supplied novel_id without verifying that the novel exists and is published and rights-eligible. This may expose comments associated with draft or rights-ineligible works and permits orphan/invalid comment attempts; actual impact depends on surrounding schema and route reachability.",
       "action": "Join/validate the parent novel in both handlers using publication_status='published' and the approved rights-status allowlist. Add integration tests for draft, missing, and rights-ineligible novel IDs before changing runtime behavior."
+    },
+    {
+      "id": "AUTH-014",
+      "severity": "low",
+      "status": "needs-decision",
+      "detail": "The current rating API accepts and rounds whole-number ratings from 1 to 5, while the product requirements specify a whole-number 1-to-10 scale. The source also contains a second legacy POST /api/rating handler after the first matching handler, creating duplicate route logic with inconsistent rights eligibility checks; the first matching handler returns, so the later block appears unreachable in the current dispatch flow.",
+      "action": "Resolve the product rating contract before migration. Inventory schema constraints, UI controls, stored ratings and all consumers; design an explicit migration/normalization plan and remove the duplicate legacy handler only with regression tests. Do not change the scale by simply widening the API bound."
     }
   ]
 }
