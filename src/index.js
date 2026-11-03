@@ -597,7 +597,7 @@ async function api(req,env){
   if(status && ['ongoing','completed'].includes(status)){sql+=" AND n.status=?";a.push(status)}
   if(kind){sql+=" AND n.kind=?";a.push(kind)}
   if(language){sql+=" AND LOWER(n.language)=LOWER(?)";a.push(language)}
-  if(author){sql+=" AND LOWER(n.author)=LOWER(?)";a.push(author)}
+  if(author){sql+=" AND LOWER(n.author)=LOWER(?) AND n.rights_status IN ('original','public_domain','licensed','authorized')";a.push(author)}
   if(minRating>0){sql+=" AND n.rating>=?";a.push(Math.min(10,minRating))}
   const selectedOrder=sort==="views"?"n.views DESC":sort==="rating"?"n.rating DESC":sort==="chapters"?"chapter_count DESC":sort==="newest"?"n.created_at DESC":sort==="trending"?"(SELECT COUNT(*) FROM unlocks ux JOIN chapters cx ON cx.id=ux.chapter_id WHERE cx.novel_id=n.id AND ux.unlocked_at>=datetime('now','-7 days')) DESC":"n.updated_at DESC";
   let order=selectedOrder;if(searchTerms.length&&sort==="updated"){const relevance=buildCatalogSearchOrder(term);order=relevance.sql+","+selectedOrder;a.push(...relevance.values)}
