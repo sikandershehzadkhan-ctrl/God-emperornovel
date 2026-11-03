@@ -1,0 +1,21 @@
+import fs from 'node:fs';
+import assert from 'node:assert/strict';
+
+const app = fs.readFileSync('public/app.js', 'utf8');
+const served = fs.readFileSync('public/app-17.24.0.js', 'utf8');
+const html = fs.readFileSync('public/index.html', 'utf8');
+const start = app.indexOf('async function reader(){');
+assert.ok(start >= 0, 'Reader route must exist');
+const end = app.indexOf('\nasync function ', start + 30);
+assert.ok(end > start, 'Reader route boundary must exist');
+const reader = app.slice(start, end);
+const bookmarkHandler = reader.indexOf("$('#bookmarkBtn').onclick=async()=>");
+assert.ok(bookmarkHandler >= 0, 'Explicit bookmark control handler must exist');
+const historyWrite = reader.indexOf("api('/api/history',{method:'POST'");
+assert.ok(historyWrite >= 0, 'Opening an unlocked chapter must continue recording reading history');
+assert.ok(!reader.includes("api('/api/bookmark',{method:'POST'"), 'Opening a chapter must never silently create a bookmark');
+assert.ok(reader.slice(bookmarkHandler).includes("api('/api/bookmark',{method:'POST'"), 'Bookmark persistence must occur from the explicit bookmark action');
+assert.ok(reader.includes("localStorage.setItem('readerBookmark:'"), 'Guest bookmark action must remain locally available');
+assert.equal(app, served, 'Served versioned application asset must match source app.js');
+assert.ok(html.includes('/app-17.24.0.js'), 'Public entry must load the synchronized versioned asset');
+console.log('Reader bookmark intent passed: visits record history, bookmark writes require explicit action, guest behavior and source/served parity verified.');
