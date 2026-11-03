@@ -46,7 +46,7 @@ html[data-theme="light"] body{
   -webkit-font-smoothing:antialiased;
   text-rendering:optimizeLegibility;
 }
-:is(html[data-theme="dark"],html[data-theme="midnight"],html[data-theme="imperial"],html[data-theme="cosmic"]){
+html[data-theme="dark"]{
   color-scheme:dark;
   --in-brand:#B78AE2;
   --in-brand-hover:#C9A8EC;
