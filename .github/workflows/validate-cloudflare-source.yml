@@ -2,7 +2,7 @@ name: Imperial Novel Cloudflare Source Validation
 
 on:
   pull_request:
-    branches: [main, 'feature/profile-identity-17-23', 'feature/account-username-security-17-24', 'feature/creator-onboarding-guide-17-24', 'feature/author-scheduled-chapters-17-25']
+    branches: [main, 'feature/profile-identity-17-23', 'feature/account-username-security-17-24', 'feature/creator-onboarding-guide-17-24', 'feature/author-scheduled-chapters-17-25', 'integration/author-scheduled-canonical-17-25']
   push:
     branches: [main]
     paths:
