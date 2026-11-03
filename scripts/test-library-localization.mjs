@@ -26,7 +26,7 @@ const library=app.slice(libraryAt,libraryAt+12000);
 assert.ok(library.includes("api('/api/bookmark',{method:'DELETE'"),"Library must remove bookmarks through the authenticated API.");
 assert.ok(library.includes('class="ghost removeBookmark"'),"Saved bookmarks must expose a remove action.");
 assert.ok(library.includes("Number(x.progress_percent)||0"),"Continue Reading must display saved chapter progress.");
-assert.ok(library.includes("Math.round(Number(x.rating))")&&!library.includes("toFixed(1)"),"Library ratings must use whole-number values and avoid fabricated zero ratings.");
+assert.ok(library.includes("Math.round(Number(x.rating))+'/5'")&&library.includes("Number(x.rating)<=5")&&!library.includes("toFixed(1)"),"Library ratings must use whole-number values and avoid fabricated zero ratings.");
 assert.ok(library.includes("$('#savedCount').textContent=remaining"),"Removing a story must update the visible library count.");
 assert.ok(library.includes("if(!remaining)$('#savedList').innerHTML"),"Removing the final story must render the empty-library state.");
 console.log('Library localization passed: 14 locales, 22 UI strings, library/history scope guard, and source/served parity.');
