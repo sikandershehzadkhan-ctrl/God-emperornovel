@@ -11,6 +11,18 @@ const [worker, client, versionedClient, indexHtml, luxuryCss, homepageCss, homep
   readFile(new URL("../public/style-17.23.0.css", import.meta.url), "utf8"),
   readFile(new URL("../public/style.css", import.meta.url), "utf8")
 ]);
+const homepageTemplate = client.slice(client.indexOf("async function home(){"), client.indexOf("async function trendFactory(){"));
+assert.ok(homepageTemplate.length > 0, "client homepage template must be available for localization selector checks");
+for (const selector of [
+  'class="nextHeroCopy"', 'class="nextHeroLead"', 'class="heroSearch"',
+  'class="heroTags"', 'class="promiseText"', 'class="homeFormatShelf"',
+  'class="homeFormatHeading"', 'id="homeFormatTitle"', 'class="homeFormatCard"',
+  'class="nextShelf"', 'class="sectionHead"'
+]) {
+  assert.ok(homepageTemplate.includes(selector), `homepage localization target ${selector} must exist in the actual client-rendered template`);
+}
+assert.ok(homepageTemplate.includes('id="trend"') && homepageTemplate.includes('id="latest"'), "homepage story shelves must remain present alongside localized headings");
+assert.ok(homepageTemplate.includes("translateHomepage(document.documentElement.lang||'en');"), "the rendered client homepage must apply the selected language after its template is inserted");
 assert.ok(client.includes("function translateHomepage(c)"), "homepage fixed copy must have a dedicated localization pass");
 assert.ok(client.includes("HOME_LANG={"), "homepage Urdu, Arabic and Persian translations must be defined");
 assert.ok(client.includes("translateHomepage(c);"), "homepage localization must run whenever the interface language changes");
