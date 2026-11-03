@@ -479,10 +479,10 @@
       "seo_policy": "noindex",
       "status": "observed",
       "screen_mapping": "observed-dedicated-admin-shell-and-inline-console",
-      "component_mapping": "admin shell, tabs, controls and API paths inventoried; server permission audit pending",
+      "component_mapping": "Admin shell, tabs, controls, and API paths inventoried; Community tab comment-report panel wired to report-specific moderation API; browser interaction QA pending",
       "api_mapping": "Admin APIs inventoried; includes GET/PATCH generic reports and GET/PATCH comment reports with admin gates, allowlisted states, affected-row checks and audit events",
       "permission_mapping": "admin(u) server-side gate on every /api/admin/* moderation route; client-side admin shell gate is not a security boundary",
-      "tests": "source-policy regression script added to build chain; execution and end-to-end D1 tests pending"
+      "tests": "Admin report moderation and UI source-policy regression scripts added to build chain; execution and authenticated browser/D1 verification pending"
     },
     {
       "pattern": "/author",
@@ -764,6 +764,7 @@
     "phase_01n_6": "policy-draft",
     "phase_01n_7": "pending",
     "phase_01n_8": "pending",
-    "phase_01n_17": "source-and-policy-test-committed; runtime-verification-pending"
+    "phase_01n_17": "source-and-policy-test-committed; runtime-verification-pending",
+    "phase_01n_18": "admin-comment-report-panel-connected; source-validation-pending"
   }
 }
