@@ -28,7 +28,7 @@ assert.ok(worker.includes('SELECT id,delta,reason,reference,created_at FROM tick
 assert.ok(!worker.includes("\\`SELECT n.*"), "Recommendation SQL must use valid template literal delimiters.");
 assert.ok(worker.includes("AND NOT EXISTS (SELECT 1 FROM follows f WHERE f.user_id=? AND f.novel_id=n.id)"));
 assert.ok(worker.includes("AND NOT EXISTS (SELECT 1 FROM history h WHERE h.user_id=? AND h.novel_id=n.id)"));
-assert.ok(worker.includes("LIMIT 20\\`).bind(u.id,u.id,u.id).all()).results;"), "Stored recommendations must bind the authenticated user for both exclusion checks.");
+assert.ok(worker.includes("LIMIT 20`).bind(u.id,u.id,u.id).all()).results;"), "Stored recommendations must bind the authenticated user for both exclusion checks.");
 assert.ok(worker.includes("if(related.length)return json(related);const fallback="));
 assert.ok(worker.includes("LEFT JOIN chapters c ON c.novel_id=n.id AND c.publication_status='published' WHERE r.user_id=?"), "Stored recommendations must count only published chapters.");
 assert.ok(worker.includes("LEFT JOIN chapters c ON c.novel_id=n.id AND c.publication_status='published' WHERE n.publication_status='published'"), "Popularity fallback must count only published chapters.");
