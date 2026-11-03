@@ -2,13 +2,14 @@ import assert from "node:assert/strict";
 import { readFile } from "node:fs/promises";
 import { renderHomepageHtml } from "../src/homepage-ssr.mjs";
 
-const [worker, client, versionedClient, indexHtml, luxuryCss, homepageCss] = await Promise.all([
+const [worker, client, versionedClient, indexHtml, luxuryCss, homepageCss, homepageSourceCss] = await Promise.all([
   readFile(new URL("../src/index.js", import.meta.url), "utf8"),
   readFile(new URL("../public/app.js", import.meta.url), "utf8"),
   readFile(new URL("../public/app-17.23.0.js", import.meta.url), "utf8"),
   readFile(new URL("../public/index.html", import.meta.url), "utf8"),
   readFile(new URL("../public/imperial-luxury-17.23.0.css", import.meta.url), "utf8"),
-  readFile(new URL("../public/style-17.23.0.css", import.meta.url), "utf8")
+  readFile(new URL("../public/style-17.23.0.css", import.meta.url), "utf8"),
+  readFile(new URL("../public/style.css", import.meta.url), "utf8")
 ]);
 assert.match(worker, /renderHomepageHtml\(homepageNovels\)/);
 assert.match(worker, /publication_status=.published./);
@@ -38,6 +39,9 @@ assert.ok(homepageCss.includes('html[dir="rtl"] .homePage .heroSearch input'), "
 assert.ok(homepageCss.includes('html[dir="rtl"] .homePage .homeFormatGrid'), "homepage format grid must support RTL direction");
 assert.ok(homepageCss.includes('html[dir="rtl"] .homePage .sectionHead'), "homepage shelf headings must support RTL direction");
 assert.ok(homepageCss.includes('html[dir="rtl"] .footerLinks'), "homepage footer navigation must support RTL direction");
+assert.ok(homepageSourceCss.includes('html[dir="rtl"] .homePage .heroSearch'), "source homepage stylesheet must include RTL search layout");
+assert.ok(homepageSourceCss.includes('html[dir="rtl"] .homePage .homeFormatGrid'), "source homepage stylesheet must include RTL format layout");
+assert.ok(homepageSourceCss.includes('html[dir="rtl"] .footerLinks'), "source homepage stylesheet must include RTL footer layout");
 
 const rendered = renderHomepageHtml([
   { id: 7, title: "The <Glass> Throne", author: "A & B", cover_url: "https://covers.example/book.jpg" },
