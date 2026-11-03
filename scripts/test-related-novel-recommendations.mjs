@@ -23,6 +23,8 @@ const worker = await readFile(new URL("../src/index.js", import.meta.url), "utf8
 assert.ok(worker.includes('import { buildRelatedNovelRecommendationsQuery, relatedNovelRecommendationBindings } from "./related-novel-policy.mjs";'));
 assert.ok(worker.includes("buildRelatedNovelRecommendationsQuery()).bind(...relatedNovelRecommendationBindings(u.id))"));
 assert.ok(worker.includes("if(rows.length)return json(rows);const related="));
+assert.ok(worker.includes('SELECT id,delta,reason,reference,created_at FROM ticket_ledger WHERE user_id=? ORDER BY created_at DESC LIMIT 100'), "Ticket ledger route must remain intact before recommendations.");
+assert.ok(!worker.includes("\\`SELECT n.*"), "Recommendation SQL must use valid template literal delimiters.");
 assert.ok(worker.includes("AND NOT EXISTS (SELECT 1 FROM follows f WHERE f.user_id=? AND f.novel_id=n.id)"));
 assert.ok(worker.includes("AND NOT EXISTS (SELECT 1 FROM history h WHERE h.user_id=? AND h.novel_id=n.id)"));
 assert.ok(worker.includes("LIMIT 20\\`).bind(u.id,u.id,u.id).all()).results;"), "Stored recommendations must bind the authenticated user for both exclusion checks.");
