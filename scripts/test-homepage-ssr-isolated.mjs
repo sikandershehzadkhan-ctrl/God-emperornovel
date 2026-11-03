@@ -54,6 +54,7 @@ assert.ok(source.includes("const serverRenderedHome=!!root.querySelector('[data-
 assert.ok(source.includes("if(!serverRenderedHome)root.innerHTML="), "homepage client renderer must preserve SSR content instead of replacing it");
 assert.ok(source.includes("if(!el)return;"), "client story refresh must tolerate missing shelf nodes");
 assert.ok(worker.includes("ORDER BY updated_at DESC,id DESC LIMIT 6"), "SSR latest shelf must use the actual latest-update ordering");
+assert.ok(worker.includes("WITH trending AS (SELECT id FROM novels") && worker.includes("AND id NOT IN (SELECT id FROM trending)"), "latest SSR query must exclude the trending shelf before selecting its records");
 for (const marker of ["[data-imperial-ssr-header]", "[data-imperial-ssr-footer]", "[data-imperial-ssr-mobile-nav]", ".ssrSkipLink"]) {
   assert.ok(source.includes("document.querySelector('" + marker + "')?.remove()"), "client boot must remove duplicate SSR shell marker " + marker);
 }
