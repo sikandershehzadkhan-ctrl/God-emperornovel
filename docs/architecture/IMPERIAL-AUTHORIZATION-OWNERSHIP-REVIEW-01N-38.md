@@ -72,3 +72,14 @@ The public `GET /api/comments` handler selects visible comments by caller-suppli
 The current source accepts whole-number ratings from 1 to 5, while the recorded product requirement is a whole-number 1-to-10 scale. A second legacy `POST /api/rating` handler appears later in the same request dispatch path; it also accepts 1 to 5 but omits the published/rights-eligible novel check present in the earlier handler. The earlier matching handler returns a response, so the later block appears unreachable under the current sequential dispatch. This is a maintainability and contract-consistency finding, not evidence that the weaker branch is currently reachable.
 
 Do not widen the API bound in isolation. First inspect database CHECK constraints, existing rating values, frontend controls, sorting/filtering consumers, imported data, and any serialized rating displays. Then define a migration that preserves historical meaning and add end-to-end tests for accepted values, averages, distribution, sorting and eligibility.
+
+
+## Admin account PATCH semantics and last-admin protection (AUTH-015 / AUTH-016)
+
+The current `PATCH /api/admin/users/:id` handler computes `verified` and `banned` from truthiness of request-body fields and writes both columns on every request. If an administrator sends a role-only patch, omitted `verified` and `banned` values become `0`; this can silently clear verification or unban an account. This is a concrete partial-update semantics defect visible in source.
+
+The handler blocks self-demotion but does not visibly enforce a last-active-admin invariant when another administrator demotes or bans the final remaining administrator. This can remove the platform's administrative recovery path.
+
+**Required remediation:** parse a strict allowlisted patch DTO, preserve omitted fields, reject empty updates, verify the target row exists, and write an immutable audit event recording actor, target, and before/after values. Enforce the last-active-admin rule within a transaction or equivalent atomic D1 operation so concurrent changes cannot bypass it.
+
+**Required tests:** role-only patch preserves verification and ban state; verified-only patch preserves role and ban state; banned-only patch preserves role and verification; unknown fields are rejected; empty patch is rejected; missing target returns not found; last admin cannot be demoted or banned; concurrent attempts cannot leave zero active admins.
