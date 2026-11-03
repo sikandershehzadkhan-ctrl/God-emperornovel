@@ -15,17 +15,16 @@ assert.match(worker, /<main id="app"/);
 assert.match(client, /serverRenderedHome=location\.pathname==='\/'/);
 assert.match(client, /data-imperial-ssr-header/);
 assert.equal(versionedClient, client, "versioned production bundle must include the same SSR-preserving boot logic");
-assert.match(client, /trendIds=new Set\\(trendRows\\.map\\(row=>String\\(row\\.id\\)\\)\\)/, "trending story IDs must be collected before rendering the latest shelf");
-assert.match(client, /latestRows=\\(l\\.results\\|\\|\\[\\]\\)\\.filter\\(row=>!trendIds\\.has\\(String\\(row\\.id\\)\\)\\)/, "latest shelf must exclude stories already shown in trending");
-assert.match(versionedClient, /latestRows=\\(l\\.results\\|\\|\\[\\]\\)\\.filter\\(row=>!trendIds\\.has\\(String\\(row\\.id\\)\\)\\)/, "versioned production bundle must also deduplicate homepage shelves");
+assert.ok(client.includes("trendIds=new Set(trendRows.map(row=>String(row.id)))"), "trending story IDs must be collected before rendering the latest shelf");
+assert.ok(client.includes("latestRows=(l.results||[]).filter(row=>!trendIds.has(String(row.id)))"), "latest shelf must exclude stories already shown in trending");
+assert.ok(versionedClient.includes("latestRows=(l.results||[]).filter(row=>!trendIds.has(String(row.id)))"), "versioned production bundle must also deduplicate homepage shelves");
 assert.match(worker, /if\(p===\"\/\"\)/);
 assert.match(worker, /LIMIT 6/);
 assert.match(worker, /rights_status IN/);
-assert.match(luxuryCss, /html\\[data-theme="light"\\] \\.eyebrow,[\\s\\S]*?color: #0F52BA;/, "light-theme homepage eyebrow text must use an accessible sapphire color");
-assert.match(luxuryCss, /html\\[data-theme="light"\\] \\.nextFeatureIntro h2 span \\{\\s*color: #6A0DAD;/, "light-theme feature heading accent must use an accessible imperial purple");
-assert.match(luxuryCss, /html\\[data-theme="light"\\] \\.footerBrand \\{\\s*color: #0B1215;/, "light-theme footer brand must use readable obsidian text");
-assert.match(luxuryCss, /html\\[data-theme="light"\\] a\\.skipLink:not\\(\\.primary\\):not\\(\\.secondary\\):not\\(\\.pill\\):not\\(\\.brand\\) \\{[\\s\\S]*?color: #FFFFFF;[\\s\\S]*?background: #0B1215;/, "light-theme skip link must retain readable foreground and background contrast");
-
+assert.ok(luxuryCss.includes('html[data-theme="light"] .eyebrow,') && luxuryCss.includes("color: #0F52BA;"), "light-theme homepage eyebrow text must use accessible sapphire");
+assert.ok(luxuryCss.includes('html[data-theme="light"] .nextFeatureIntro h2 span {\n  color: #6A0DAD;'), "light-theme feature heading accent must use accessible imperial purple");
+assert.ok(luxuryCss.includes('html[data-theme="light"] .footerBrand {\n  color: #0B1215;'), "light-theme footer brand must use readable obsidian text");
+assert.ok(luxuryCss.includes('html[data-theme="light"] a.skipLink:not(.primary):not(.secondary):not(.pill):not(.brand) {\n  color: #FFFFFF;\n  background: #0B1215;'), "light-theme skip link must retain readable foreground and background contrast");
 
 const rendered = renderHomepageHtml([
   { id: 7, title: "The <Glass> Throne", author: "A & B", cover_url: "https://covers.example/book.jpg" },
