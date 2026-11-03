@@ -132,3 +132,8 @@ The shared design foundation is now explicitly loaded by the standalone Catalog,
 Automated source regression assertions were added to `scripts/test-design-foundation.mjs` for all four template stylesheet references, stylesheet order and shared normalization selectors.
 
 **Manual QA remains pending.** These source changes have not been visually verified at the viewport/zoom matrix above, and the current PR head has no GitHub check runs reported yet. Do not mark the design foundation production-ready or deploy until the build/regression workflow, responsive visual review, keyboard/screen-reader checks and release verification pass.
+
+
+### 17.49 selector activation correction
+
+A source audit found that the author/admin templates had bare `<body>` elements, so the new route-scoped CSS selectors were not matching. Added the explicit `authorStudioPage` and `adminDashboardPage` body hooks and removed duplicate shared stylesheet references in Admin. Added regression assertions for both body hooks and exactly-once stylesheet loading. This is a source-level correction; browser visual verification and CI are still required.
