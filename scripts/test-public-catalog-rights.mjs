@@ -41,8 +41,8 @@ const protectedReaderRoutes = [
   ["/api/follow\"&&m===\"POST\"", "Follow writes must reject works without cleared rights."]
 ];
 protectedReaderRoutes.push(
-  ["/api/comments\\"&&m===\\"GET\\"", "Comment reads must reject works without cleared rights."],
-  ["/api/comments\\"&&m===\\"POST\\"", "Comment writes must reject works without cleared rights."]
+  ['/api/comments"&&m="GET"', "Comment reads must reject works without cleared rights."],
+  ['/api/comments"&&m="POST"', "Comment writes must reject works without cleared rights."]
 );
 for (const [marker, message] of protectedReaderRoutes) {
   const line = routeLines.find((candidate) => candidate.includes(marker));
