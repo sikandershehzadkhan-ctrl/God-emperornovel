@@ -410,7 +410,7 @@
       "status": "observed",
       "screen_mapping": "observed-shell-and-client-renderer",
       "component_mapping": "renderer, DOM anchors, action families and API references inventoried; full component tree/handler tests pending",
-      "api_mapping": "GET leaderboard/tier/random/vote list; POST vote; request_votes PK verified",
+      "api_mapping": "GET leaderboard/tier/random/vote list; POST vote; request_votes PK verified; POST /api/report: authenticated, published target validation, chapter-parent match, 10/user/hour limit (static regression test added; execution pending)",
       "permission_mapping": "pending",
       "tests": "pending"
     },
