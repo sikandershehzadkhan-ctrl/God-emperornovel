@@ -38,7 +38,7 @@ assert.match(rendered.footer, /Rights &amp; Copyright/);
 const capped = renderHomepageHtml(Array.from({ length: 9 }, (_, index) => ({ id: index + 1, title: `Story ${index + 1}` }))).content;
 assert.equal((capped.match(/class="card"/g) || []).length, 6, "SSR must render no more than six story cards");
 const safeLocalCover = renderHomepageHtml([{ id: 10, title: "Local cover", cover_url: "/uploads/cover.webp" }]).content;
-assert.match(safeLocalCover, /src="\\/uploads\\/cover\\.webp"/, "same-origin cover paths should be preserved");
+assert.ok(safeLocalCover.includes('src="/uploads/cover.webp"'), "same-origin cover paths should be preserved");
 const noJsDocument = indexHtml
   .replace("<body>", "<body>" + rendered.header)
   .replace(/(<main id="app"[^>]*>)[\s\S]*?(<\/main>)/, (_match, opening, closing) => opening + rendered.content + closing)
