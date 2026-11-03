@@ -17,7 +17,7 @@ for (const selector of [
   'class="nextHeroCopy"', 'class="nextHeroLead"', 'class="heroSearch"',
   'class="heroTags"', 'class="promiseText"', 'class="homeFormatShelf"',
   'class="homeFormatHeading"', 'id="homeFormatTitle"', 'class="homeFormatCard"',
-  'class="nextShelf"', 'class="sectionHead"'
+  'class="section nextShelf"', 'class="sectionHead"'
 ]) {
   assert.ok(homepageTemplate.includes(selector), `homepage localization target ${selector} must exist in the actual client-rendered template`);
 }
