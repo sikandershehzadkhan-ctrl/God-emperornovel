@@ -41,6 +41,3 @@ CREATE TABLE IF NOT EXISTS request_votes (
 );
 CREATE INDEX IF NOT EXISTS idx_request_votes_request
   ON request_votes(request_id);
-
-ALTER TABLE comments ADD COLUMN parent_id INTEGER;
-ALTER TABLE comments ADD COLUMN edited_at TEXT;
