@@ -80,6 +80,7 @@ assert.match(rendered.header, /href="\/author"/);
 assert.match(rendered.header, /href="\/search"/);
 assert.match(rendered.content, /<h1>Open a world\.<br>Shape an empire\.<\/h1>/);
 assert.match(rendered.content, /type="search"/);
+assert.match(rendered.content, /<form class="heroSearch" action="\\/search" method="get"/, "no-script homepage search must use the same search route as the client homepage");
 assert.match(rendered.content, /class="sr" for="ssr-home-search"/);
 assert.match(rendered.content, /href="\/novel\/7"/);
 assert.match(rendered.content, /The &lt;Glass&gt; Throne/);
