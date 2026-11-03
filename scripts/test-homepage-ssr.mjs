@@ -60,6 +60,8 @@ assert.ok(worker.includes("FROM unlocks ux JOIN chapters cx ON cx.id=ux.chapter_
 assert.ok(worker.includes("ORDER BY (SELECT COUNT(*) FROM unlocks ux JOIN chapters cx ON cx.id=ux.chapter_id"), "server-rendered homepage ranking must not silently fall back to newest-created stories");
 assert.ok(worker.includes("ORDER BY (SELECT COUNT(*) FROM unlocks ux JOIN chapters cx ON cx.id=ux.chapter_id WHERE cx.novel_id=novels.id AND ux.unlocked_at>=datetime('now','-7 days')) DESC,id DESC LIMIT 6"), "no-script homepage stories must use the same seven-day unlock ranking as the trending catalog");
 assert.match(worker, /rights_status IN/);
+assert.ok(worker.includes("rights_status IN ('original','public_domain','licensed','authorized')"), "SSR homepage must only select stories with an explicitly permitted rights status");
+assert.ok(worker.includes('catch(error){console.error("homepage server-rendered catalog unavailable",error)}\\n const serverMarkup=renderHomepageHtml(homepageNovels);'), "homepage SSR must fail soft to its safe empty state when the D1 catalog query fails");
 assert.ok(luxuryCss.includes('html[data-theme="light"] .eyebrow,') && luxuryCss.includes("color: #0F52BA;"), "light-theme homepage eyebrow text must use accessible sapphire");
 assert.ok(luxuryCss.includes('html[data-theme="light"] .nextFeatureIntro h2 span {\n  color: #6A0DAD;'), "light-theme feature heading accent must use accessible imperial purple");
 assert.ok(luxuryCss.includes('html[data-theme="light"] .footerBrand {\n  color: #0B1215;'), "light-theme footer brand must use readable obsidian text");
