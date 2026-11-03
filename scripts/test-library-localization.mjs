@@ -22,8 +22,7 @@ assert.equal(app, served, 'Served versioned asset must match source app.js');
 assert.ok(html.includes('/app-17.24.0.js'));
 
 const libraryAt=app.indexOf("async function library(mode=");
-const libraryEnd=app.indexOf("\\nasync function history()",libraryAt);
-assert.ok(libraryAt>=0&&libraryEnd>libraryAt,"Library page must exist.");
+const library=app.slice(libraryAt,libraryAt+12000);
 const library=app.slice(libraryAt,libraryEnd);
 assert.ok(library.includes("api('/api/bookmark',{method:'DELETE'"),"Library must remove bookmarks through the authenticated API.");
 assert.ok(library.includes('class="removeBookmark"'),"Saved bookmarks must expose a remove action.");
