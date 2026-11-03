@@ -434,3 +434,35 @@ Assurance gaps:
 - No Actions run for the corrected head SHA was visible in the branch's recent run list. Treat the correction as committed but unverified by CI until a new run completes.
 
 **Disposition:** retain private media publishing gates; do not claim active uploads, safe image processing, or public comic publishing. Retain Crown ledger protections; do not enable cash payments, withdrawals or revenue payouts. No production R2 bucket or D1 data was accessed or changed.
+
+
+## Comic reader and creator workflow review (2026-11-04)
+
+Reviewed PR #88's Comic Page Manager, reader rendering, author media library, administrator rights-review UI, and SQLite page-authoring fixture.
+
+### Implemented UI capabilities found
+
+- Comic-format story cards expose a page-management entry point; it loads chapters and the creator's ready + rights-approved private media, fetches existing ordered pages, and saves page order through the owner-scoped API.
+- Page manager supports moving/removing pages, alt text and captions, and blocks editing chapters that are not drafts.
+- The reader renders an ordered page sequence, escapes alt text/captions, lazy-loads later pages, and offers vertical-scroll and single-page modes.
+- Creator media library shows per-asset state, rights state and quota, and disables upload/deletion when private storage is not configured.
+- Admin review UI checks admin role, displays the review queue and storage health, and requires explicit rights confirmation.
+- These are source-level implementation observations and UI source-pattern tests; they are not a browser-driven accessibility/usability test or a live R2 test.
+
+### New test fixture defect and correction
+
+- `scripts/test-comic-page-authoring.py` created each asset and then inserted its approval review using the asset owner as reviewer.
+- Migration `0015_media_rights_review_audit.sql` correctly rejects that self-review through `trg_media_asset_reviews_require_independent_reviewer`.
+- Corrected the test in PR #88 branch `feature/media-publication-gates-0013`, commit `44650a4d6ea9ba1a23f6f8751bc2bd6bd736f1d9`: a separate admin reviewer is inserted and used to approve both the creator's and intruder's fixture assets.
+- The updated file was fetched back and verified. No CI run for this corrected commit was visible in the branch's recent Actions run list; this correction is committed but not CI-verified.
+
+### Reader and author experience gaps to close
+
+- No browser-driven test currently proves real image loading, page navigation, narrow-screen behavior, keyboard-only operation, screen-reader announcements, or recovery from slow/failed image requests.
+- Single-page mode has previous/next controls, but no touch swipe or keyboard arrow navigation was found in the reviewed viewer initializer.
+- The client renderer accepts any same-origin absolute path, while the server's managed-media policy expects the narrower `/api/media/{positive-id}` form. Align client validation with the server policy for managed media while retaining explicitly supported legacy HTTPS images.
+- Add a no-assets state that explains why uploads are unavailable (private R2 binding and trusted image processing), without presenting disabled controls as broken.
+- Add visual and assistive-technology checks for 44px touch targets, focus visibility, page position announcements, image alt text quality, reduced motion, and low-bandwidth loading.
+- Add a real browser fixture with several page sizes and image failure cases, then test the page manager and reader on mobile viewport sizes.
+
+**Disposition:** the creator and reader UI foundation exists in PR #88, but it is not a verified end-to-end comic publishing experience. Keep managed-media publishing blocked until trusted image processing, real private R2 verification, and browser QA are complete. No production deployment or database/storage changes were made.
