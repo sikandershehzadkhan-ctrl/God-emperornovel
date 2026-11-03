@@ -571,6 +571,8 @@ async function api(req,env){
   const e=need(u);if(e)return e;
   const origin=req.headers.get("origin");
   if((origin&&origin!==url.origin)||req.headers.get("sec-fetch-site")==="cross-site")return json({error:"Cross-site profile updates are not allowed."},403);
+  const limited=await consumeAuthRateLimit(env,"profile-update",String(u.id),20,3600);if(limited)return limited;
+  const contentLength=Number(req.headers.get("content-length")||0);if(contentLength>12000)return json({error:"Profile update is too large."},413);
   const checked=validateUserProfile(await body(req));
   if(!checked.ok)return json({error:checked.error},400);
   const v=checked.value;
