@@ -1,0 +1,37 @@
+
+/* 16.15 Community */
+.communityGrid{display:grid;grid-template-columns:minmax(220px,.8fr) minmax(280px,1.4fr);gap:14px}
+.ratingStars{display:flex;gap:5px;margin:10px 0}.ratingStar{border:0;background:transparent;font-size:32px;line-height:1;cursor:pointer;color:var(--muted,#777);padding:2px}.ratingStar.selected,.ratingStar:hover{color:var(--gold2,#d8aa55)}
+.commentItem{padding:14px;border:1px solid rgba(255,255,255,.08);border-radius:14px;background:rgba(255,255,255,.025);margin:9px 0}.commentReply{margin-left:28px}.commentHead{display:flex;gap:10px;align-items:center;flex-wrap:wrap}.commentItem p{white-space:pre-wrap;overflow-wrap:anywhere}.commentActions{display:flex;gap:7px;flex-wrap:wrap}.commentActions .ghost{padding:6px 9px;font-size:12px}
+@media(max-width:700px){.communityGrid{grid-template-columns:1fr}.commentReply{margin-left:12px}.ratingStar{font-size:29px}}
+
+
+/* Imperial Novel: shared interaction polish, aligned with the purple / sapphire / white / obsidian system. */
+:root{--brand-purple:var(--in-purple,#8b5cf6);--brand-sapphire:var(--in-sapphire,#4f8cff);--brand-black:var(--in-obsidian,#080a12)}
+.themeToggle{accent-color:var(--brand-purple)}
+.themeToggle:hover{border-color:var(--brand-sapphire);box-shadow:0 0 0 1px rgba(79,140,255,.2)}
+.ratingStar.selected,.ratingStar:hover{color:var(--brand-sapphire,#4f8cff)}
+.ratingStar:focus-visible,.commentActions button:focus-visible{outline:3px solid var(--brand-sapphire,#4f8cff);outline-offset:3px}
+@media(prefers-reduced-motion:reduce){*,*::before,*::after{scroll-behavior:auto!important;animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important}}
+
+.reactReactionList{display:flex;flex-wrap:wrap;gap:8px;align-items:center}.reactReactionList .novelReaction{min-height:42px;min-width:54px;padding:8px 12px;border-radius:999px;display:inline-flex;align-items:center;justify-content:center;gap:7px}.reactReactionList .novelReaction[aria-pressed=true]{border-color:#6A0DAD;background:rgba(106,13,173,.12);color:var(--text,#171321)}.reactReactionList .novelReaction:disabled{opacity:.65;cursor:wait}.reactReactionError{flex-basis:100%;font-size:.85rem;color:var(--danger,#a33)}
+
+.ratingIslandSummary{margin:0;color:var(--muted,#687080);font-size:.92rem}.ratingIslandSummary strong{color:var(--text,#171321);font-variant-numeric:tabular-nums}.ratingIsland .ratingStars{margin:10px 0 6px}.ratingIsland .ratingStar:disabled{opacity:.65;cursor:wait}
+
+/* Creator application layout: compact, readable and phone-first. */
+.authorApplicationPanel{max-width:760px;margin:20px auto}
+.authorApplicationPanel h2{margin-top:8px}
+.authorApplicationPanel .fieldLabel{display:block;margin:16px 0 7px}
+.authorApplicationPanel input:not([type=checkbox]),.authorApplicationPanel textarea{width:100%;box-sizing:border-box}
+.authorApplicationFormats{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;margin:18px 0;padding:14px;border:1px solid var(--line);border-radius:12px}
+.authorApplicationFormats legend{padding:0 6px;color:var(--muted);font-weight:700}
+.authorApplicationFormats .checkRow{margin:0}
+@media(max-width:640px){.authorApplicationFormats{grid-template-columns:1fr}}
+
+/* 17.23 Creator Studio: accessible, mobile-first comic page sequencing. */
+.comicAuthorBuilder{margin:14px 0;padding:16px;border:1px solid var(--line,rgba(139,92,246,.25));border-radius:16px;background:linear-gradient(145deg,rgba(139,92,246,.07),rgba(79,140,255,.035))}
+.comicAuthorBuilderHead{display:flex;align-items:flex-start;justify-content:space-between;gap:12px;margin-bottom:14px}.comicAuthorBuilderHead b{font-size:15px}.comicAuthorBuilderHead p{margin:4px 0;color:var(--muted,#a3abc2);font-size:12px;line-height:1.5}.comicAuthorBuilderHead>span{flex:none;padding:5px 9px;border-radius:999px;background:rgba(139,92,246,.12);color:var(--in-purple-bright,#a78bfa);font-size:12px;font-weight:700}
+.comicPageComposerGrid{display:grid;grid-template-columns:minmax(0,1.4fr) minmax(0,1fr);gap:10px;align-items:end}.comicPageComposerGrid label{display:grid;gap:5px;font-size:12px;font-weight:650}.comicPageComposerGrid input{width:100%;min-width:0;padding:11px 12px;border:1px solid var(--line,rgba(139,92,246,.25));border-radius:10px;background:var(--panel,#101421);color:var(--text,#f5f7ff);font:inherit}.comicPageComposerGrid label:nth-child(3){grid-column:1/2}.comicPageComposerGrid button{min-height:42px}
+.comicPageComposerGrid input:focus-visible,.comicPageComposerGrid button:focus-visible,.comicComposerPageActions button:focus-visible{outline:2px solid var(--in-sapphire,#4f8cff);outline-offset:2px}
+.comicComposerPage{display:grid;grid-template-columns:58px minmax(0,1fr) auto;align-items:center;gap:10px;margin:8px 0;padding:9px;border:1px solid var(--line,rgba(139,92,246,.18));border-radius:12px;background:rgba(255,255,255,.025);min-width:0}.comicComposerPage>img{width:58px;height:72px;object-fit:cover;border-radius:6px;background:#080a12}.comicComposerPage>img.comicPreviewError{opacity:.25}.comicComposerPage>div:nth-child(2){display:grid;gap:2px;min-width:0}.comicComposerPage small{overflow-wrap:anywhere;color:var(--muted,#a3abc2);font-size:11px}.comicComposerPageActions{display:flex;gap:4px;flex-wrap:wrap;justify-content:flex-end}.comicComposerPageActions button{min-height:34px;padding:5px 8px;font-size:11px}.comicAuthorBuilder [data-page-status]{margin:10px 0 0;font-size:11px;line-height:1.5;color:var(--muted,#a3abc2)}
+@media(max-width:620px){.comicPageComposerGrid{grid-template-columns:1fr}.comicPageComposerGrid label:nth-child(3){grid-column:auto}.comicComposerPage{grid-template-columns:48px minmax(0,1fr)}.comicComposerPage>img{width:48px;height:62px}.comicComposerPageActions{grid-column:1/-1;justify-content:flex-start}.comicAuthorBuilder{padding:12px}}

@@ -1,5 +1,7 @@
 import { toPublicNovel } from "./public-novel.mjs";
 import { validateUserProfile } from "./user-profile-policy.mjs";
+import { validateUsernameChange } from "./account-identity-policy.mjs";
+import { defaultAccountPreferences, validateAccountPreferences } from "./account-preferences-policy.mjs";
 import { SITEMAP_PAGE_SIZE, renderSitemapIndex, renderStaticSitemap, renderNovelSitemap, renderChapterSitemap } from "./sitemap.mjs";
 import { validateComicChapterContent } from "./comic-chapter-policy.mjs";
 import { hashPassword, verifyPassword } from "./auth-password.mjs";
@@ -422,7 +424,7 @@ async function api(req,env){
  if(p==="/api/admin/taxonomy"&&m==='GET'){const e=admin(u);if(e)return e;return json((await env.DB.prepare("SELECT * FROM taxonomy_submissions ORDER BY CASE status WHEN 'pending' THEN 0 ELSE 1 END,created_at DESC LIMIT 300").all()).results||[])}
  if(p==="/api/admin/taxonomy"&&m==='POST')return adminTaxonomy(req,env,u);
  if(p==="/api/health"){let db=true;try{await env.DB.prepare("SELECT 1").first()}catch{db=false}return json({ok:db,service:env.SITE_NAME||"Imperial Novel",version:env.APP_VERSION||"5.0.0",database:db,time:new Date().toISOString()})}
- if(p==="/api/auth/register"&&m==="POST"){const ip=String(req.headers.get("cf-connecting-ip")||"unknown").trim().slice(0,128);const limited=await consumeAuthRateLimit(env,"register-ip",ip,5,3600);if(limited)return limited;const b=await body(req),username=String(b.username||"").trim(),email=String(b.email||"").trim().toLowerCase(),password=String(b.password||"");if(!/^[a-zA-Z0-9_]{3,24}$/.test(username))return json({error:"Username must be 3-24 letters, numbers or underscores"},400);if(!email.includes("@"))return json({error:"Enter a valid email"},400);if(password.length<8||password.length>1024)return json({error:"Password must be between 8 and 1024 characters"},400);const passwordHash=await hashPassword(password);try{await env.DB.prepare("INSERT INTO users(username,email,password_hash) VALUES(?,?,?)").bind(username,email,passwordHash).run()}catch{return json({error:"Username or email already exists"},409)}return json({ok:true,message:"Account created. You can now sign in."})}
+ if(p==="/api/auth/register"&&m==="POST"){const ip=String(req.headers.get("cf-connecting-ip")||"unknown").trim().slice(0,128);const limited=await consumeAuthRateLimit(env,"register-ip",ip,5,3600);if(limited)return limited;const b=await body(req),username=String(b.username||"").trim(),email=String(b.email||"").trim().toLowerCase(),password=String(b.password||"");if(!/^[a-zA-Z0-9_]{3,24}$/.test(username))return json({error:"Username must be 3-24 letters, numbers or underscores"},400);if(!email.includes("@"))return json({error:"Enter a valid email"},400);if(password.length<8||password.length>1024)return json({error:"Password must be between 8 and 1024 characters"},400);const historical=await env.DB.prepare("SELECT 1 AS reserved FROM username_history WHERE old_username=? COLLATE NOCASE LIMIT 1").bind(username).first();if(historical)return json({error:"That username is reserved because it was previously used by another account."},409);const passwordHash=await hashPassword(password);try{await env.DB.prepare("INSERT INTO users(username,email,password_hash) VALUES(?,?,?)").bind(username,email,passwordHash).run()}catch(error){if(String(error?.message||error).toLowerCase().includes("username is reserved"))return json({error:"That username is reserved because it was previously used by another account."},409);return json({error:"Username or email already exists"},409)}return json({ok:true,message:"Account created. You can now sign in."})}
  if(p==="/api/auth/login"&&m==="POST"){const ip=String(req.headers.get("cf-connecting-ip")||"unknown").trim().slice(0,128);const ipLimited=await consumeAuthRateLimit(env,"login-ip",ip,30,900);if(ipLimited)return ipLimited;const b=await body(req),email=String(b.email||"").trim().toLowerCase().slice(0,254);const emailLimited=await consumeAuthRateLimit(env,"login-email",email,10,900);if(emailLimited)return emailLimited;const x=await env.DB.prepare("SELECT * FROM users WHERE email=?").bind(email).first();if(!x)return json({error:"Invalid email or password"},401);const password=String(b.password||"");if(!await verifyPassword(password,x.password_hash))return json({error:"Invalid email or password"},401);if(!String(x.password_hash||"").startsWith("pbkdf2-sha256$")){try{const upgradedHash=await hashPassword(password);await env.DB.prepare("UPDATE users SET password_hash=? WHERE id=? AND password_hash=?").bind(upgradedHash,x.id,x.password_hash).run()}catch(error){console.error("legacy password hash upgrade failed",error)}}await env.DB.prepare("DELETE FROM auth_rate_limits WHERE scope=? AND key_hash=?").bind("login-email",await digest("imperial-auth-rate-v1:login-email:"+email)).run();const token=rnd(32);await env.DB.prepare("INSERT INTO sessions(token_hash,user_id,expires_at) VALUES(?,?,?)").bind(await digest(token),x.id,now()+2592000).run();return json({ok:true,user:{id:x.id,username:x.username,email:x.email,role:x.role,tickets:x.tickets}},200,{"set-cookie":`session=${encodeURIComponent(token)}; Path=/; HttpOnly; Secure; SameSite=Lax; Max-Age=2592000`})}
  if(p==="/api/auth/logout"&&m==="POST"){const c=cookies(req.headers.get("cookie"));if(c.session)await env.DB.prepare("DELETE FROM sessions WHERE token_hash=?").bind(await digest(c.session)).run();return json({ok:true},200,{"set-cookie":"session=; Path=/; HttpOnly; Secure; SameSite=Lax; Max-Age=0"})}
  if(p==="/api/me")return json({user:u?{id:u.id,username:u.username,email:u.email,role:u.role,tickets:u.tickets,verified:u.verified}:null});
@@ -556,6 +558,114 @@ async function api(req,env){
  if(p==="/api/tickets/ledger"&&m==="GET"){const e=need(u);if(e)return e;return json((await env.DB.prepare("SELECT id,delta,reason,reference,created_at FROM ticket_ledger WHERE user_id=? ORDER BY created_at DESC LIMIT 100").bind(u.id).all()).results)}
  if(p==="/api/recommendations"&&m==="GET"){const e=need(u);if(e)return e;await ensureOmniTables(env);const rows=(await env.DB.prepare(`SELECT n.*,r.reason,r.score,GROUP_CONCAT(DISTINCT g.name) genres,COUNT(DISTINCT c.id) chapter_count FROM recommendations r JOIN novels n ON n.id=r.novel_id LEFT JOIN novel_genres ng ON ng.novel_id=n.id LEFT JOIN genres g ON g.id=ng.genre_id LEFT JOIN chapters c ON c.novel_id=n.id WHERE r.user_id=? AND n.publication_status='published' AND n.rights_status IN ('original','public_domain','licensed','authorized') GROUP BY n.id,r.id ORDER BY r.score DESC,r.created_at DESC LIMIT 20`).bind(u.id).all()).results;if(rows.length)return json(rows.map(x=>({...toPublicNovel(x),reason:x.reason,score:x.score})));const fallback=(await env.DB.prepare(`SELECT n.*,GROUP_CONCAT(DISTINCT g.name) genres,COUNT(DISTINCT c.id) chapter_count FROM novels n LEFT JOIN novel_genres ng ON ng.novel_id=n.id LEFT JOIN genres g ON g.id=ng.genre_id LEFT JOIN chapters c ON c.novel_id=n.id WHERE n.publication_status='published' AND n.rights_status IN ('original','public_domain','licensed','authorized') AND n.id NOT IN(SELECT novel_id FROM follows WHERE user_id=?) GROUP BY n.id ORDER BY n.rating DESC,n.views DESC LIMIT 12`).bind(u.id).all()).results;return json(fallback.map((x,i)=>({...toPublicNovel(x),reason:'Popular with Imperial readers',score:100-i}))) }
  if(p==="/api/follows"&&m==="GET"){const e=need(u);if(e)return e;return json((await env.DB.prepare(`SELECT n.*,f.created_at FROM follows f JOIN novels n ON n.id=f.novel_id WHERE f.user_id=? AND n.publication_status='published' AND n.rights_status IN ('original','public_domain','licensed','authorized') ORDER BY f.created_at DESC`).bind(u.id).all()).results.map(toPublicNovel))}
+ if(p==="/api/account/username"&&m==="POST"){
+  const e=need(u);if(e)return e;
+  const origin=req.headers.get("origin");
+  if((origin&&origin!==url.origin)||req.headers.get("sec-fetch-site")==="cross-site")return json({error:"Cross-site account changes are not allowed."},403);
+  const contentLength=Number(req.headers.get("content-length")||0);
+  if(contentLength>4096)return json({error:"Request is too large."},413);
+  const limited=await consumeAuthRateLimit(env,"username-change",String(u.id),5,3600);if(limited)return limited;
+  const b=await body(req),checked=validateUsernameChange(b,u.username);
+  if(!checked.ok)return json({error:checked.error},400);
+  const password=typeof b.current_password==="string"?b.current_password:"";
+  if(!password||password.length>1024)return json({error:"Enter your current password to confirm this change."},400);
+  const account=await env.DB.prepare("SELECT password_hash,username_changed_at FROM users WHERE id=?").bind(u.id).first();
+  if(!account||!await verifyPassword(password,account.password_hash))return json({error:"Current password is incorrect."},401);
+  if(account.username_changed_at){
+   const elapsed=await env.DB.prepare("SELECT julianday('now')-julianday(?) days").bind(account.username_changed_at).first();
+   if(Number(elapsed?.days??0)<30)return json({error:"Username changes are available once every 30 days."},429);
+  }
+  const collision=await env.DB.prepare("SELECT id FROM users WHERE username=? COLLATE NOCASE AND id<>? UNION ALL SELECT user_id AS id FROM username_history WHERE old_username=? COLLATE NOCASE AND user_id<>? LIMIT 1").bind(checked.value,u.id,checked.value,u.id).first();
+  if(collision)return json({error:"That username is already in use."},409);
+  try{
+   const result=await env.DB.prepare("UPDATE users SET username=?,username_changed_at=CURRENT_TIMESTAMP WHERE id=? AND (username_changed_at='' OR julianday('now')>=julianday(username_changed_at,'+30 days'))").bind(checked.value,u.id).run();
+   const changed=Number(result?.meta?.changes??result?.changes??0);
+   if(changed!==1)return json({error:"Username change cooldown is active. Please try again later."},429);
+  }catch(error){
+   if(/unique|constraint/i.test(String(error?.message||error)))return json({error:"That username is already in use."},409);
+   throw error;
+  }
+  await audit(env,u,"account.username_changed",JSON.stringify({from:u.username,to:checked.value}));
+  return json({ok:true,username:checked.value,message:"Username updated. Your existing account and reading data are unchanged."});
+ }
+ if(p==="/api/account/sessions"&&m==="GET"){
+  const e=need(u);if(e)return e;
+  const c=cookies(req.headers.get("cookie"));
+  if(!c.session)return json({error:"Your current session could not be verified."},401);
+  const currentHash=await digest(c.session);
+  const rows=(await env.DB.prepare("SELECT token_hash,created_at,expires_at FROM sessions WHERE user_id=? AND expires_at>? ORDER BY created_at DESC LIMIT 20").bind(u.id,now()).all()).results||[];
+  const total=await env.DB.prepare("SELECT COUNT(*) n FROM sessions WHERE user_id=? AND expires_at>?").bind(u.id,now()).first();
+  return json({sessions:rows.map(row=>({created_at:row.created_at,expires_at:row.expires_at,current:row.token_hash===currentHash})),total:Number(total?.n||0),limit:20});
+ }
+ if(p==="/api/account/sessions/revoke-others"&&m==="POST"){
+  const e=need(u);if(e)return e;
+  const origin=req.headers.get("origin");
+  if((origin&&origin!==url.origin)||req.headers.get("sec-fetch-site")==="cross-site")return json({error:"Cross-site account changes are not allowed."},403);
+  const contentLength=Number(req.headers.get("content-length")||0);
+  if(contentLength>4096)return json({error:"Request is too large."},413);
+  const limited=await consumeAuthRateLimit(env,"session-revoke",String(u.id),3,900);if(limited)return limited;
+  const c=cookies(req.headers.get("cookie"));
+  if(!c.session)return json({error:"Your current session could not be verified."},401);
+  const b=await body(req),password=typeof b.current_password==="string"?b.current_password:"";
+  if(!password||password.length>1024)return json({error:"Enter your current password to confirm this action."},400);
+  const account=await env.DB.prepare("SELECT password_hash FROM users WHERE id=?").bind(u.id).first();
+  if(!account||!await verifyPassword(password,account.password_hash))return json({error:"Current password is incorrect."},401);
+  const currentHash=await digest(c.session);
+  const result=await env.DB.prepare("DELETE FROM sessions WHERE user_id=? AND token_hash<>?").bind(u.id,currentHash).run();
+  const revoked=Number(result?.meta?.changes??result?.changes??0);
+  await audit(env,u,"account.sessions_revoked",JSON.stringify({revoked}));
+  return json({ok:true,revoked,message:revoked===1?"1 other session was signed out.":revoked+" other sessions were signed out."});
+ }
+ if(p==="/api/account/password"&&m==="POST"){
+  const e=need(u);if(e)return e;
+  const origin=req.headers.get("origin");
+  if((origin&&origin!==url.origin)||req.headers.get("sec-fetch-site")==="cross-site")return json({error:"Cross-site account changes are not allowed."},403);
+  const contentLength=Number(req.headers.get("content-length")||0);
+  if(contentLength>4096)return json({error:"Request is too large."},413);
+  const limited=await consumeAuthRateLimit(env,"password-change",String(u.id),3,900);if(limited)return limited;
+  const b=await body(req);
+  const currentPassword=typeof b.current_password==="string"?b.current_password:"";
+  const newPassword=typeof b.new_password==="string"?b.new_password:"";
+  const confirmPassword=typeof b.confirm_password==="string"?b.confirm_password:"";
+  if(!currentPassword||currentPassword.length>1024)return json({error:"Enter your current password."},400);
+  if(newPassword.length<8||newPassword.length>1024)return json({error:"New password must be between 8 and 1024 characters."},400);
+  if(newPassword!==confirmPassword)return json({error:"New passwords do not match."},400);
+  const account=await env.DB.prepare("SELECT password_hash FROM users WHERE id=?").bind(u.id).first();
+  if(!account||!await verifyPassword(currentPassword,account.password_hash))return json({error:"Current password is incorrect."},401);
+  if(await verifyPassword(newPassword,account.password_hash))return json({error:"Choose a password you are not already using."},400);
+  const passwordHash=await hashPassword(newPassword);
+  const changed=await env.DB.prepare("UPDATE users SET password_hash=? WHERE id=? AND password_hash=?").bind(passwordHash,u.id,account.password_hash).run();
+  const updated=Number(changed?.meta?.changes??changed?.changes??0);
+  if(updated!==1)return json({error:"Password could not be changed. Please sign in again and retry."},409);
+  const c=cookies(req.headers.get("cookie"));
+  if(c.session){
+   const currentHash=await digest(c.session);
+   await env.DB.prepare("DELETE FROM sessions WHERE user_id=? AND token_hash<>?").bind(u.id,currentHash).run();
+  }
+  await audit(env,u,"account.password_changed","Password updated; other sessions revoked.");
+  return json({ok:true,message:"Password updated. Other signed-in sessions were signed out."});
+ }
+ if(p==="/api/account/preferences"&&m==="GET"){
+  const e=need(u);if(e)return e;
+  const row=await env.DB.prepare("SELECT preferences_json FROM users WHERE id=?").bind(u.id).first();
+  let stored={};try{const parsed=JSON.parse(row?.preferences_json||"{}");if(parsed&&typeof parsed==="object"&&!Array.isArray(parsed))stored=parsed}catch{stored={}}
+  const checked=validateAccountPreferences(stored);
+  const hasSaved=checked.ok&&Object.keys(stored).length>0;
+  return json({preferences:checked.ok?checked.value:defaultAccountPreferences(),has_saved:hasSaved});
+ }
+ if(p==="/api/account/preferences"&&m==="PUT"){
+  const e=need(u);if(e)return e;
+  const origin=req.headers.get("origin");
+  if((origin&&origin!==url.origin)||req.headers.get("sec-fetch-site")==="cross-site")return json({error:"Cross-site account changes are not allowed."},403);
+  const contentLength=Number(req.headers.get("content-length")||0);
+  if(contentLength>4096)return json({error:"Request is too large."},413);
+  const limited=await consumeAuthRateLimit(env,"account-preferences",String(u.id),60,3600);if(limited)return limited;
+  const checked=validateAccountPreferences(await body(req));
+  if(!checked.ok)return json({error:checked.error},400);
+  await env.DB.prepare("UPDATE users SET preferences_json=? WHERE id=?").bind(JSON.stringify(checked.value),u.id).run();
+  await audit(env,u,"account.preferences_updated",JSON.stringify({site_theme:checked.value.site_theme,reader_theme:checked.value.reader_theme}));
+  return json({ok:true,preferences:checked.value,message:"Preferences synced to your account."});
+ }
  if(p==="/api/profile"&&m==="GET"){
   const e=need(u);if(e)return e;
   const [profile,historyCount,followingCount,unlockCount,ledger]=await Promise.all([
@@ -584,7 +694,7 @@ async function api(req,env){
  if(p.startsWith("/api/public-profile/")&&m==="GET"){
   let username="";try{username=decodeURIComponent(p.slice("/api/public-profile/".length)).trim()}catch{return json({error:"Profile not found."},404)}
   if(!/^[a-zA-Z0-9_]{3,24}$/.test(username))return json({error:"Profile not found."},404);
-  const profile=await env.DB.prepare("SELECT username,display_name,bio,avatar_url,website_url,location,role,show_reading_stats FROM users WHERE username=? COLLATE NOCASE AND profile_visibility='public' AND banned=0 LIMIT 1").bind(username).first();
+  const profile=await env.DB.prepare("SELECT id,username,display_name,bio,avatar_url,website_url,location,role,show_reading_stats FROM users WHERE username=? COLLATE NOCASE AND profile_visibility='public' AND banned=0 LIMIT 1").bind(username).first();
   if(!profile)return json({error:"Profile not found."},404);
   let stats=null,works=[];
   if(Number(profile.show_reading_stats)===1){
@@ -597,7 +707,7 @@ async function api(req,env){
   const isAuthor=profile.role==="author"||profile.role==="admin";
   if(isAuthor){
    const authorName=profile.display_name||profile.username;
-   const rows=(await env.DB.prepare("SELECT * FROM novels WHERE LOWER(author) IN (LOWER(?),LOWER(?)) AND publication_status='published' AND rights_status IN ('original','public_domain','licensed','authorized') ORDER BY updated_at DESC LIMIT 24").bind(authorName,profile.username).all()).results||[];
+   const rows=(await env.DB.prepare("SELECT * FROM novels WHERE (owner_user_id=? OR (owner_user_id IS NULL AND (LOWER(author) IN (LOWER(?),LOWER(?)) OR LOWER(author) IN (SELECT LOWER(old_username) FROM username_history WHERE user_id=?)))) AND publication_status='published' AND rights_status IN ('original','public_domain','licensed','authorized') ORDER BY updated_at DESC LIMIT 24").bind(profile.id,authorName,profile.username,profile.id).all()).results||[];
    works=rows.map(toPublicNovel);
   }
   return json({profile:{username:profile.username,display_name:profile.display_name||profile.username,bio:profile.bio,avatar_url:profile.avatar_url,website_url:profile.website_url,location:profile.location,is_author:isAuthor},stats,works});
