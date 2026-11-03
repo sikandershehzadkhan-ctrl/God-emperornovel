@@ -65,3 +65,10 @@ The public `GET /api/comments` handler selects visible comments by caller-suppli
 **Required tests:** public reads must not expose comments for draft or rights-ineligible novels; authenticated users must not create comments for missing, draft, or rights-ineligible novels; normal comments on published, rights-eligible novels must continue to work.
 
 **Recommended remediation:** enforce the same published + rights-status allowlist used by public catalog/discovery queries in both read and write handlers, and return a consistent not-found response for ineligible parent novels.
+
+
+## Rating contract consistency (AUTH-014)
+
+The current source accepts whole-number ratings from 1 to 5, while the recorded product requirement is a whole-number 1-to-10 scale. A second legacy `POST /api/rating` handler appears later in the same request dispatch path; it also accepts 1 to 5 but omits the published/rights-eligible novel check present in the earlier handler. The earlier matching handler returns a response, so the later block appears unreachable under the current sequential dispatch. This is a maintainability and contract-consistency finding, not evidence that the weaker branch is currently reachable.
+
+Do not widen the API bound in isolation. First inspect database CHECK constraints, existing rating values, frontend controls, sorting/filtering consumers, imported data, and any serialized rating displays. Then define a migration that preserves historical meaning and add end-to-end tests for accepted values, averages, distribution, sorting and eligibility.
