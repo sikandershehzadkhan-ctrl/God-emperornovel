@@ -91,6 +91,49 @@ The following duplicates/overlaps were observed from the changed-file patches:
 8. Run the Cloudflare build and D1 migration validation on the integrated branch.
 9. Stage the migration against a disposable/staging D1 first. Production rollout requires backup, explicit release approval, monitoring and a documented recovery plan.
 
+## Focused review: chapter revision concurrency and financial ledger controls
+
+Reviewed PR #129 at `3f814b5b45cbe4cc9ae15f932e3a88fb9e0719b2` and PR #88 at `d58faf28bd83b7700f6263fe19636923ea59224e`.
+
+### PR #129: chapter revisions and scheduled publication
+
+Positive findings:
+- Chapter editing snapshots the prior chapter values and updates the chapter in one D1 batch. The snapshot is conditional on a material change and records chapter number, title, body, lock state, ticket cost, editor, and timestamp.
+- Revision-history reads are owner-scoped, newest-first, and bounded to the latest ten entries.
+- Schedule rows are one-per-chapter, indexed by due time, and cascade when the chapter is deleted.
+- Schedule creation checks author ownership, published novel status, rights eligibility, and a bounded time window. It supports rescheduling and cancellation.
+- The scheduled processor rechecks that the chapter is still draft and that the novel is still published with eligible rights before publishing. The conditional update prevents two workers from publishing the same draft twice. The 15-minute cron cadence is explicitly surfaced in the UI.
+
+Important gap:
+- The chapter PATCH route first reads the chapter/novel and checks the current owner, then its later revision INSERT and chapter UPDATE statements are keyed by chapter ID, not guarded again by the current novel owner. A concurrent ownership transfer between the initial authorization read and the write batch creates a time-of-check/time-of-use window: the former owner may still write after losing ownership.
+- Fix both write statements with a database-side ownership predicate tied to the authenticated user, and require the expected current owner in the same write batch. The snapshot should only be inserted if the guarded chapter update is eligible, and a zero-row update must return a conflict without reporting success.
+- Review other author write endpoints for the same read-authorize-then-write pattern, especially publish, schedule, delete, and media operations.
+- Revision history has no retention/size policy. The UI reads only ten rows, but old chapter bodies can accumulate indefinitely. Define bounded retention or storage quotas without deleting legally required or author-requested recovery history.
+- The chapter revision migration does not add an explicit CHECK for nonnegative `ticket_cost`; the API validates it, but database-level validation would protect other write paths.
+- The scheduled publication tests are predominantly source-contract checks. Add disposable SQLite/D1-compatible behavior tests for concurrent edits, transfer during an edit, cancel-vs-cron races, chapter deletion, rights revocation, novel unpublishing, and duplicate cron execution.
+
+**Disposition:** do not treat author write authorization as race-safe until the owner predicate is moved into the mutation statements and tested.
+
+### PR #88: ticket ledger, donations, adjustments, refunds
+
+Positive findings:
+- Donation review records are immutable and attributable. The later independent-review migration rejects donor self-approval at the database boundary.
+- Donation approval posts the reviewed Crown amount to the user's balance and ticket ledger through database triggers. Repeating an already-finalized status does not post a second credit.
+- Administrator adjustments have unique idempotency keys, immutable audit rows, and trigger-owned balance plus ledger posting. The Worker endpoint rejects self-credit, validates a reason and uses rate limiting.
+- Novel-request refunds are one-per-request, require a rejected paid request, an independent admin, and an amount matching the original request cost. A trigger posts the balance credit and ledger row together. The Worker uses a conditional pending-to-rejected transition and inserts the refund only when that transition changed one row.
+- Payment reconciliation is explicitly read-only and reports normalized duplicate provider references, finalized donations without reviews, donation/ledger mismatches, and unmatched payment ledger entries. Ticket reconciliation is also read-only and reports account-vs-ledger discrepancies and orphan ledger rows.
+
+Open risks / integration gates:
+- The donation self-review protection is introduced by migration `0020_donation_independent_review.sql`, which replaces the earlier trigger. A database that applies `0018_donation_review_audit.sql` but not `0020_donation_independent_review.sql` remains vulnerable to direct-SQL self-review. The canonical migration plan must preserve this dependency and prove the final trigger definition.
+- Donation approval amount is a manually reviewed Crown credit, not proof that a payment provider settled the same amount. Keep provider receipt verification as a human operational control until authenticated provider webhooks/reconciliation exist. Never describe a pending donation as paid or an approved Crown credit as cash income.
+- The payment ledger lookup index on `ticket_ledger(reference)` is deliberately non-unique. Before considering uniqueness, inspect historical duplicate references and verify all payment, adjustment, and refund reason/reference conventions. Do not impose uniqueness blindly.
+- The reconciliation module is read-only and bounded in its detailed result sets. Its summary counts are useful, but it does not repair mismatches. Treat every discrepancy as an investigation case, not an invitation to auto-adjust user balances.
+- Refund database validation verifies request status, user, amount, and admin role at insertion. The operational path must still ensure the original request charge exists in the ledger and that the request was actually charged before approving a refund. Add a precondition/reconciliation check for the original charge, and test deleted/suspended user edge cases and role changes.
+- Ticket balances use numeric storage in legacy schemas. Confirm integer-only Crown invariants across all credit, charge, unlock, refund, and migration paths before applying stricter constraints.
+- PR #88's migration files `0018` through `0021` collide by number with other open PR migrations. Their ordering and dependencies cannot be inferred from filenames alone.
+
+**Disposition:** strong database-level posting controls are present in the reviewed migrations, but no payment/refund migration may be deployed until the complete ordered migration chain, historical ledger reconciliation, and provider-reference audit pass on a representative staging copy.
+
 ## Focused review: author-private data, creator transfers, deletion workflow, and community cleanup
 
 Reviewed SQL and application/test source at PR #130 head `84e3541d6b588110669cb2161dcb6eb5af788435`, PR #124 head `161e66652208a516248ca8867b35b6a52c3280e8`, and PR #118 head `1f69507f32cd1589fe076ad69381b8d8a6ba7d0b`.
