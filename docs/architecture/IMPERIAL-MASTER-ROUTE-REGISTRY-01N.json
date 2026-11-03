@@ -158,7 +158,7 @@
       "status": "observed",
       "screen_mapping": "observed-shell-and-client-renderer",
       "component_mapping": "renderer, DOM anchors, action families and API references inventoried; full component tree/handler tests pending",
-      "api_mapping": "pending",
+      "api_mapping": "GET/POST /api/vote-novels",
       "permission_mapping": "pending",
       "tests": "pending"
     },
@@ -242,7 +242,7 @@
       "status": "observed",
       "screen_mapping": "observed-shell-and-client-renderer",
       "component_mapping": "renderer, DOM anchors, action families and API references inventoried; full component tree/handler tests pending",
-      "api_mapping": "pending",
+      "api_mapping": "GET/POST /api/library; GET /api/history; GET /api/bookmarks; GET /api/follows",
       "permission_mapping": "pending",
       "tests": "pending"
     },
@@ -256,7 +256,7 @@
       "status": "observed",
       "screen_mapping": "observed-shell-and-client-renderer",
       "component_mapping": "renderer, DOM anchors, action families and API references inventoried; full component tree/handler tests pending",
-      "api_mapping": "pending",
+      "api_mapping": "GET/POST /api/history",
       "permission_mapping": "pending",
       "tests": "pending"
     },
@@ -270,7 +270,7 @@
       "status": "observed",
       "screen_mapping": "observed-shell-and-client-renderer",
       "component_mapping": "renderer, DOM anchors, action families and API references inventoried; full component tree/handler tests pending",
-      "api_mapping": "pending",
+      "api_mapping": "GET /api/follows; POST /api/follow",
       "permission_mapping": "pending",
       "tests": "pending"
     },
@@ -284,7 +284,7 @@
       "status": "observed",
       "screen_mapping": "observed-shell-and-client-renderer",
       "component_mapping": "renderer, DOM anchors, action families and API references inventoried; full component tree/handler tests pending",
-      "api_mapping": "pending",
+      "api_mapping": "GET /api/notifications; POST /api/notifications/read",
       "permission_mapping": "pending",
       "tests": "pending"
     },
@@ -354,7 +354,7 @@
       "status": "observed",
       "screen_mapping": "observed-shell-and-client-renderer",
       "component_mapping": "renderer, DOM anchors, action families and API references inventoried; full component tree/handler tests pending",
-      "api_mapping": "pending",
+      "api_mapping": "GET /api/tickets/ledger",
       "permission_mapping": "pending",
       "tests": "pending"
     },
@@ -410,7 +410,7 @@
       "status": "observed",
       "screen_mapping": "observed-shell-and-client-renderer",
       "component_mapping": "renderer, DOM anchors, action families and API references inventoried; full component tree/handler tests pending",
-      "api_mapping": "pending",
+      "api_mapping": "GET /api/leaderboard; GET /api/tier-list; GET /api/random; GET /api/vote-novels; POST /api/vote-novels",
       "permission_mapping": "pending",
       "tests": "pending"
     },
@@ -480,7 +480,7 @@
       "status": "observed",
       "screen_mapping": "observed-dedicated-admin-shell-and-inline-console",
       "component_mapping": "admin shell, tabs, controls and API paths inventoried; server permission audit pending",
-      "api_mapping": "pending",
+      "api_mapping": "GET/PATCH admin community comments and reports; server admin role gates inspected",
       "permission_mapping": "pending",
       "tests": "pending"
     },
@@ -522,7 +522,7 @@
       "status": "observed-dynamic",
       "screen_mapping": "observed-shell-and-client-renderer",
       "component_mapping": "core DOM anchors and action/API families inventoried; full component tree and handlers pending",
-      "api_mapping": "pending",
+      "api_mapping": "GET/POST /api/novel-reactions; GET/POST /api/comments; POST /api/comments/like; POST /api/comments/report; GET/POST /api/rating; POST /api/report",
       "permission_mapping": "pending",
       "tests": "pending"
     },
@@ -536,7 +536,7 @@
       "status": "observed-dynamic",
       "screen_mapping": "observed-shell-and-client-renderer",
       "component_mapping": "core DOM anchors and action/API families inventoried; full component tree and handlers pending",
-      "api_mapping": "pending",
+      "api_mapping": "GET /api/novels/:id; published chapter list and eligibility checks",
       "permission_mapping": "pending",
       "tests": "pending"
     },
@@ -550,7 +550,7 @@
       "status": "observed-dynamic",
       "screen_mapping": "observed-shell-and-client-renderer",
       "component_mapping": "core DOM anchors and action/API families inventoried; full component tree and handlers pending",
-      "api_mapping": "pending",
+      "api_mapping": "GET /api/chapters/:id; POST /api/chapters/:id/unlock; POST /api/novels/:id/batch-unlock; POST /api/history; POST /api/reading-position; POST /api/bookmark",
       "permission_mapping": "pending",
       "tests": "pending"
     },
