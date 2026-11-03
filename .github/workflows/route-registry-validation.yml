@@ -14,6 +14,7 @@ on:
       - "docs/architecture/IMPERIAL-AUTHORIZATION-OWNERSHIP-MATRIX-01N-38.json"
       - "scripts/test-authorization-ownership-matrix.mjs"
       - "scripts/test-admin-account-comment-safety.mjs"
+      - "scripts/test-admin-account-d1.py"
       - ".github/workflows/route-registry-validation.yml"
   push:
     branches:
@@ -46,6 +47,14 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: 22
+
+      - name: Set up Python for SQLite integration checks
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.x"
+
+      - name: Test administrator account D1 transaction invariants
+        run: python scripts/test-admin-account-d1.py
 
       - name: Validate HTML route manifest
         run: node scripts/test-route-registry.mjs
