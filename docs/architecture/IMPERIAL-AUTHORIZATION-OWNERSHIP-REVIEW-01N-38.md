@@ -88,3 +88,8 @@ The handler blocks self-demotion but does not visibly enforce a last-active-admi
 ### Detail API method follow-up
 
 The `/api/novels/:id` and `/api/chapters/:id` detail handlers now reject non-GET methods with 405 before database access and before view-count writes. The new static regression test passes in the route-registry workflow. This is a targeted correction, not proof that all API handlers have correct method guards.
+
+
+### Public vote-board privacy follow-up
+
+The public `GET /api/vote-novels` response no longer joins the users table or returns requester usernames. It continues to return request metadata and aggregate vote counts required by the public voting interface. The UI does not consume requester usernames. A regression test is included in the route-registry CI workflow. This is data minimization; request URL and source host remain public because they are part of the requested community feature and should still be reviewed against abuse/privacy policy.
