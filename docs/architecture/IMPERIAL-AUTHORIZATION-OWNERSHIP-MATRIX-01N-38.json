@@ -4,7 +4,7 @@
   "sourceBlob": "237f4461135eb77258b7184e361ce9dfd9a140e9",
   "auditDate": "2026-11-03",
   "scope": "Partial handler-level source review; not a full authorization certification.",
-  "reviewedRouteCount": 12,
+  "reviewedRouteCount": 19,
   "pendingDisclosure": "All other exact and dynamic API routes remain pending handler-level review.",
   "routes": [
     {
