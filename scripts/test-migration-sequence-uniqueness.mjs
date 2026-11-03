@@ -22,9 +22,14 @@ for (const file of files) {
     `Duplicate migration sequence ${sequence}: ${numberOwners.get(sequence)} and ${file}`);
   numberOwners.set(sequence, file);
 
-  // Normalize only line endings and surrounding whitespace. SQL comments and
-  // statement order remain significant.
-  const sql = readFileSync(join(directory, file), 'utf8').replace(/\r\n/g, '\n').trim();
+  // Normalize comments and formatting while preserving token order and literal case.
+  // This catches equivalent SQL copied under another sequence with different indentation.
+  const sql = readFileSync(join(directory, file), 'utf8')
+    .replace(/\r\n/g, '\n')
+    .replace(/--[^\n]*/g, '')
+    .replace(/\/\*[\s\S]*?\*\//g, '')
+    .replace(/\s+/g, ' ')
+    .trim();
   assert.ok(sql.length > 0, `Migration must not be empty: ${file}`);
 
   const digest = createHash('sha256').update(sql).digest('hex');
