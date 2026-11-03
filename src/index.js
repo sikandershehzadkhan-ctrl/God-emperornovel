@@ -658,7 +658,7 @@ async function api(req,env){
   return json({ok:true});
  }
  if(/^\/api\/author\/ai\/projects\/\d+\/blueprint$/.test(p)&&m==="POST"){
-  const e=author(u);if(e)return e;if(!String(env.OPENAI_API_KEY||'').trim())return json({error:'AI generation is not configured. Manual Chapter Studio remains available.'},503);await ensureAuthorAISchema(env);const id=Number(p.split('/')[5]);const row=await env.DB.prepare('SELECT * FROM ai_author_projects WHERE id=?').bind(id).first();if(!row)return json({error:'AI project not found'},404);if(u.role!=='admin'&&Number(row.owner_user_id)!==Number(u.id))return json({error:'You do not own this project'},403);
+  const e=author(u);if(e)return e;if(!String(env.OPENAI_API_KEY||'').trim())return json({error:'AI generation is not configured. Manual Chapter Studio remains available.'},503);await ensureAuthorAISchema(env);const id=Number(p.split('/')[5]);const row=await env.DB.prepare('SELECT * FROM ai_author_projects WHERE id=?').bind(id).first();if(!row)return json({error:'AI project not found'},404);if(Number(row.owner_user_id)!==Number(u.id))return json({error:'Only the project owner can generate its Story Bible.'},403);
   const blueprint=localStoryBlueprint({...row,...aiJson(row.settings_json),title:row.name});
   const ai=await callAuthorModel(env,'You are the planning agent for a rights-aware novel platform. Create an original story bible from the supplied project fields. Never copy protected text or claim access to external sites. Return valid JSON with premise, characters, world, arcs and continuity rules.',JSON.stringify({name:row.name,genre:row.genre,fandom:row.fandom,premise:row.premise,protagonist:row.protagonist,settings:aiJson(row.settings_json)}),2200);
   if(ai.error||!ai.text)return json({error:ai.error||'The AI provider returned no Story Bible. Nothing was saved.'},502);
@@ -669,7 +669,7 @@ async function api(req,env){
   return json({ok:true,provider,blueprint:output});
  }
  if(/^\/api\/author\/ai\/projects\/\d+\/run$/.test(p)&&m==="POST"){
-  const e=author(u);if(e)return e;if(!String(env.OPENAI_API_KEY||'').trim())return json({error:"AI generation is not configured. Manual Chapter Studio remains available."},503);await ensureAuthorAISchema(env);const id=Number(p.split('/')[5]);const row=await env.DB.prepare('SELECT * FROM ai_author_projects WHERE id=?').bind(id).first();if(!row)return json({error:'AI project not found'},404);if(u.role!=='admin'&&Number(row.owner_user_id)!==Number(u.id))return json({error:'You do not own this project'},403);
+  const e=author(u);if(e)return e;if(!String(env.OPENAI_API_KEY||'').trim())return json({error:"AI generation is not configured. Manual Chapter Studio remains available."},503);await ensureAuthorAISchema(env);const id=Number(p.split('/')[5]);const row=await env.DB.prepare('SELECT * FROM ai_author_projects WHERE id=?').bind(id).first();if(!row)return json({error:'AI project not found'},404);if(Number(row.owner_user_id)!==Number(u.id))return json({error:'Only the project owner can run generation jobs.'},403);
   if(row.status==='running')return json({error:'Project is already running'},409);
   await env.DB.prepare("UPDATE ai_author_projects SET status='running',updated_at=CURRENT_TIMESTAMP WHERE id=?").bind(id).run();
   const next=Number(row.chapters_generated||0)+1, target=Number(row.chapters_target||0);
