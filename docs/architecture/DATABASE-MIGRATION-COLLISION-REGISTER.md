@@ -395,3 +395,42 @@ Correction committed to PR #88 branch `feature/media-publication-gates-0013`:
 - The updated file was fetched back and verified to contain the independent reviewer fixture.
 
 **Validation status:** no post-fix Cloudflare Source Validation run was visible at the time of this update. Therefore the fixture correction is committed but not yet CI-verified. PR #88 remains draft/unmerged, and its migration collision and production gates remain unchanged.
+
+
+## Focused media-storage and Crown-ledger assurance review (2026-11-04)
+
+Reviewed PR #88's media storage setup, upload policy, media API tests, storage quota tests, donation approval, administrator adjustments, request refunds, ticket reconciliation, and chapter unlock checks.
+
+### Media storage: secure staging boundary, not production-ready publishing
+
+- The private media setup document explicitly requires an administrator-provisioned private R2 bucket binding. If absent, upload returns 503; no public bucket URL is exposed.
+- Upload validates a 20 MiB size cap, allowed image MIME types and magic-byte signatures, uses opaque private object keys, and leaves rights pending. It does not mark an asset ready or rights-approved.
+- Creator quota is 100 MiB and platform quota 1 GiB, enforced by database triggers; rejected objects continue consuming quota until confirmed deletion.
+- Reader delivery checks ready + approved state, published chapter + novel, and unlock entitlement for locked chapters.
+- The release documentation explicitly states there is no trusted decoder/re-encoder yet. Signature checks do not sanitize images, remove metadata, constrain pixel count, or define safe animation handling. Consequently no upload route promotes files to ready and managed images cannot be published. Keep that gate closed until a trusted image-processing pipeline exists.
+- Current media test suite includes executable SQLite quota and constraint tests, JavaScript signature/metadata tests, and extensive API source-pattern assertions. The API source-pattern tests are not end-to-end R2/Worker tests; they do not prove real object cleanup behavior against a live bucket. Do not provision or expose a public bucket as a shortcut.
+
+### Crown accounting and unlock assurance
+
+Positive findings:
+- Administrator adjustments use a unique idempotency key, reject self-credit, and database triggers post balance + ledger atomically; immutable history is enforced.
+- Donation approval requires an attributable independent reviewer, records immutable review history, and posts reviewed Crowns plus one ledger entry through the same status transition.
+- Novel-request refunds are one-time per request, require a rejected paid request and matching amount, reject self-refund, and atomically post balance + ledger.
+- Single and batch unlock source includes conditional debit, entitlement insertion only after successful debit, server-derived pricing, and matching ledger entries.
+- Ticket reconciliation is admin-only, rate-limited and read-only; it compares account balances with ledger totals and counts orphan ledger entries.
+
+Assurance gaps:
+- The ticket-unlock and ticket-reconciliation regression scripts are source-pattern checks, not executable D1 concurrency/reconciliation fixtures. They do not prove race behavior under concurrent unlock attempts, concurrent retries, or exact balance/ledger invariants over realistic account histories.
+- Administrator adjustment and refund tests execute SQLite trigger behavior for duplicate/invalid requests, but do not simulate parallel requests or Worker/D1 batch retry semantics.
+- Donation approval tests exercise the SQLite status transition and idempotent repeat, but not simultaneous reviewer submissions or provider-side payment settlement.
+- The payment reconciliation fixture is synthetic and does not prove real provider references or cash settlement.
+- Build a representative legacy ledger fixture before integration: opening balances, ticket purchases/credits, chapter unlocks, batches, refunds, admin adjustments, duplicate references, orphan entries and deleted/retained users. Assert for every account that `users.tickets = SUM(ticket_ledger.delta)` under the chosen opening-balance policy, and preserve before/after totals.
+- Add executable concurrency tests using the actual supported D1/SQLite transaction semantics, including two simultaneous unlocks for one chapter, competing batch unlocks, repeated idempotency keys, duplicate donation review, and refund retry. Verify one entitlement and one ledger debit per purchased chapter.
+
+### PR #88 CI follow-up
+
+- The original Cloudflare Source Validation run failed at `scripts/test-media-asset-registry.py` because its fixture attempted creator self-review, correctly blocked by migration trigger `trg_media_asset_reviews_require_independent_reviewer`.
+- The fixture was corrected in commit `bce15461f4eab3ca28870c398c0bae32b9110ee4` to use a separate admin reviewer. The corrected file was fetched back and verified.
+- No Actions run for the corrected head SHA was visible in the branch's recent run list. Treat the correction as committed but unverified by CI until a new run completes.
+
+**Disposition:** retain private media publishing gates; do not claim active uploads, safe image processing, or public comic publishing. Retain Crown ledger protections; do not enable cash payments, withdrawals or revenue payouts. No production R2 bucket or D1 data was accessed or changed.
