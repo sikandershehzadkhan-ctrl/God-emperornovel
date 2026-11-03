@@ -60,6 +60,10 @@ assert.match(reader, /api\('\/api\/reader-progress\?novel_id='/,
 assert.ok(reader.includes("fetch('/api/reader-progress'") && reader.includes("keepalive:true"), "Reader progress must flush during page exit where the browser permits it");
 assert.match(reader, /synced to your account/,
   "Signed-in reader UI must disclose account synchronization");
+assert.ok(reader.includes("readerProgressPendingAt:") && reader.includes("localPendingAt>remoteSavedAt"),
+  "Offline local progress must be reconciled against the server's saved timestamp before restoring");
+assert.ok(worker.includes("STRFTIME('%Y-%m-%dT%H:%M:%fZ','now')"),
+  "Server progress writes must use precise timestamps for cross-device reconciliation");
 
 
 assert.ok(readerCss.includes(".readerPage .readerActions{grid-template-columns:minmax(0,1fr) minmax(0,1fr);"),
