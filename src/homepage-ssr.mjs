@@ -4,8 +4,13 @@ const escapeHtml = value => String(value ?? "").replace(/[&<>"']/g, character =>
 
 function safeCover(value) {
   const source = String(value ?? "").trim();
-  if ((source.startsWith("/") && !source.startsWith("//") && !source.includes("\\")) ||
-      /^https:\/\/[^\s"'<>]+$/i.test(source)) return source;
+  if (source.startsWith("/") && !source.startsWith("//") && !source.includes("\\")) return source;
+  if (/^https:\/\//i.test(source)) {
+    try {
+      const remote = new URL(source);
+      if (remote.protocol === "https:" && remote.hostname && !remote.username && !remote.password) return source;
+    } catch {}
+  }
   return "/story-cover-placeholder.svg";
 }
 
