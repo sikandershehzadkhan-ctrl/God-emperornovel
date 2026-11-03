@@ -28,6 +28,9 @@ for (const locale of ["ur","ar","fa"]) {
 assert.ok(homepageTemplate.includes('id="trend"') && homepageTemplate.includes('id="latest"'), "homepage story shelves must remain present alongside localized headings");
 assert.ok(homepageTemplate.includes("translateHomepage(document.documentElement.lang||'en');"), "the rendered client homepage must apply the selected language after its template is inserted");
 assert.ok(client.includes("function translateHomepage(c)"), "homepage fixed copy must have a dedicated localization pass");
+assert.ok(client.includes('const putEyebrow=(el,value)=>{if(!el||value==null)return;const dot=el.querySelector(".eyebrowDot");el.textContent=value;if(dot)el.prepend(dot)};'),"localized eyebrow copy must preserve decorative dot markers instead of deleting nested markup");
+assert.ok(client.includes('putEyebrow(root.querySelector(".homeFormatHeading .eyebrow"),d.formatEyebrow);'),"format shelf localization must preserve its eyebrow marker");
+assert.ok(client.includes("if(eyebrow)putEyebrow(eyebrow,d.rotation);")&&client.includes("if(eyebrow)putEyebrow(eyebrow,latestCopy.eyebrow);"),"both story shelf translations must preserve eyebrow markers");
 assert.ok(client.includes("HOME_LANG={"), "homepage Urdu, Arabic and Persian translations must be defined");
 assert.ok(client.includes("const HOME_LATEST={"), "latest-updates shelf must have dedicated Urdu, Arabic and Persian translations");
 assert.ok(client.includes('const latest=shelves[1],latestCopy=HOME_LATEST[c]'), "homepage localization must translate the second, latest-updates shelf independently");
