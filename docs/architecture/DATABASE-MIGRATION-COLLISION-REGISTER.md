@@ -134,6 +134,42 @@ Open risks / integration gates:
 
 **Disposition:** strong database-level posting controls are present in the reviewed migrations, but no payment/refund migration may be deployed until the complete ordered migration chain, historical ledger reconciliation, and provider-reference audit pass on a representative staging copy.
 
+## Focused review: chapter revisions and scheduled publication
+
+Reviewed PR #129 at head `3f814b5b45cbe4cc9ae15f932e3a88fb9e0719b2`, including both migrations, Worker routes, regression tests, and the changed production deployment workflow.
+
+### Chapter revision snapshots
+
+Positive findings:
+- The edit route checks the current novel owner (or admin) before editing.
+- It inserts a snapshot of the previous chapter state and updates the chapter in one D1 batch; the snapshot is conditional on an actual content/metadata change.
+- The snapshot retains chapter number, title, content, lock state, ticket cost, editor ID and timestamp.
+- Revision history is owner-scoped, newest-first, and limited to ten records.
+- Deleting a chapter cascades its revision history; deleting an editor user sets the editor reference to NULL.
+
+Open issues:
+- The authorization check occurs in a read before the write batch. The snapshot INSERT and chapter UPDATE themselves do not repeat the novel-owner predicate. If ownership changes between the check and batch, a stale author session could potentially write after losing ownership. Recheck ownership inside each write statement or use a transactionally guarded write pattern, and test the ownership-change race.
+- There is no retention cap on stored revision rows. The API only returns ten, but every changed save can continue adding full chapter-body copies. Define retention/quotas and ensure creator export and account deletion account for revision content.
+- Revision history exposes full historical chapter content to the current owner and admins. That is reasonable for editing, but verify admin access is audited and does not bypass a rights dispute or legal hold.
+- Tests currently assert SQL source patterns and UI affordances. Add SQLite behavior tests for unchanged saves, repeated edits, ownership change between authorization and write, editor deletion, chapter deletion, and revision retention.
+
+### Scheduled chapter publication
+
+Positive findings:
+- Scheduling is owner-scoped, requires a published novel and eligible rights, accepts only a time 5 minutes to 365 days ahead, and supports cancellation/rescheduling.
+- The cron worker rechecks that the chapter remains draft and the novel remains published with eligible rights before publishing.
+- Schedule deletion and audit insertion are conditioned on a successful chapter update; the creator is notified after successful publication.
+- The schedule table has one row per chapter and cascades on chapter deletion.
+
+Open issues:
+- The due query silently excludes schedules whose novel is no longer published or whose rights become ineligible. Those schedules remain stored indefinitely and are never surfaced by this processor. Add an explicit blocked/needs-review state or a fail-closed cancellation path with an audit event and creator notification; do not silently leave overdue schedules stuck.
+- The schedule stores `created_by`, but the processor notifies that original user even if novel ownership has since transferred. Define transfer behavior: cancel and notify the old creator, reassign only with explicit consent, or preserve the original creator as schedule author while notifying the current owner too.
+- The Worker processes at most 100 due rows per invocation. Confirm the 15-minute cron and repeated invocations drain backlogs safely, and add metrics/alerting for overdue schedules.
+- The batch relies on sequential `changes()` checks to conditionally delete the schedule and write the audit record. Validate this exact behavior against the deployed D1 runtime, including a failed chapter update and a retry; unit/source checks alone are insufficient.
+- The deployment workflow in this PR directly applies migrations `0012_chapter_revisions.sql` and `0013_scheduled_chapter_publications.sql`. These sequence numbers collide with several other open PRs and do not represent a safe globally ordered migration chain. The workflow must not be dispatched until the canonical migration history is reconciled and production schema has been read-only audited.
+
+**Disposition:** useful revision and scheduling foundations, but the ownership race, stale/blocked schedule lifecycle, unbounded body snapshots, and migration collision prevent production approval. No production workflow was dispatched and no D1 was modified.
+
 ## Focused review: author-private data, creator transfers, deletion workflow, and community cleanup
 
 Reviewed SQL and application/test source at PR #130 head `84e3541d6b588110669cb2161dcb6eb5af788435`, PR #124 head `161e66652208a516248ca8867b35b6a52c3280e8`, and PR #118 head `1f69507f32cd1589fe076ad69381b8d8a6ba7d0b`.
