@@ -23,7 +23,6 @@ assert.ok(html.includes('/app-17.24.0.js'));
 
 const libraryAt=app.indexOf("async function library(mode=");
 const library=app.slice(libraryAt,libraryAt+12000);
-const library=app.slice(libraryAt,libraryEnd);
 assert.ok(library.includes("api('/api/bookmark',{method:'DELETE'"),"Library must remove bookmarks through the authenticated API.");
 assert.ok(library.includes('class="removeBookmark"'),"Saved bookmarks must expose a remove action.");
 assert.ok(library.includes("Number(x.progress_percent)||0"),"Continue Reading must display saved chapter progress.");
