@@ -35,9 +35,15 @@ The migration is additive and non-destructive. It does not delete, rewrite, or r
 
 Added `scripts/test-report-lifecycle-migration.mjs` and included it in the package build validation chain. It checks the expected tables, index names, and non-destructive migration policy.
 
+## Verification status
+
+- The six new index definitions were executed successfully against an isolated in-memory SQLite fixture matching the two report table shapes.
+- The migration 0019 deduplication and unique-index behavior was also exercised against an isolated SQLite fixture: earliest duplicate retained, separate accounts retained, and a repeated account/comment insert rejected.
+- These isolated checks are not a full replay of the repository migration chain or a D1 integration test.
+
 ## Verification still required
 
-- The new source-policy test has not yet been executed.
+- The new repository source-policy test has not yet been executed.
 - No SQLite/D1 integration run has applied the complete migration sequence.
 - No production schema introspection or `PRAGMA foreign_key_check` was performed.
 - The migration gap at `0012` and runtime/core schema divergence must be reconciled before claiming fresh-install and upgrade parity.
