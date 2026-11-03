@@ -9,6 +9,8 @@ Base: homepage SSR candidate `45f5b9e2d8143da207bdb73885fecc30ec2a8f76`
 - Public HTML templates: 25
 - Global themes: light, dark, sepia, midnight, imperial, cosmic
 - Persistent accessibility preferences: reduced motion, high contrast, compact cards
+- Author Studio and Admin action controls enforce 44px minimum height
+- Saved global theme initializes the mounted navigation toggle's icon and accessible label
 - Runtime parity: `public/app.js` and `public/app-17.23.0.js`
 - Regression suite: `scripts/test-design-foundation-isolated.mjs`
 - Gates: `npm run build` and `npm run check:cloudflare-readiness`
@@ -16,7 +18,7 @@ Base: homepage SSR candidate `45f5b9e2d8143da207bdb73885fecc30ec2a8f76`
 ## Required release QA
 
 1. Run the full Cloudflare Source Validation workflow.
-2. Confirm the design regression suite passes.
+2. Confirm the design regression suite passes, including 44px author/admin targets and saved-theme toggle initialization.
 3. Inspect desktop and mobile layouts at 1440px and 390px.
 4. Inspect Urdu and Arabic RTL layouts.
 5. Confirm all six themes apply and persist after reload.
