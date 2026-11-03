@@ -57,11 +57,11 @@ def seed():
     db.execute("DELETE FROM audit_logs")
     db.execute("DELETE FROM users")
     db.executemany(
-        "INSERT INTO users(username,email,password_hash,role,verified,banned) VALUES(?,?,?,?,?,?)",
+        "INSERT INTO users(id,username,email,password_hash,role,verified,banned) VALUES(?,?,?,?,?,?,?)",
         [
-            ("root-a", "a@example.test", "hash", "admin", 1, 0),
-            ("root-b", "b@example.test", "hash", "admin", 0, 0),
-            ("member", "m@example.test", "hash", "user", 1, 1),
+            (1, "root-a", "a@example.test", "hash", "admin", 1, 0),
+            (2, "root-b", "b@example.test", "hash", "admin", 0, 0),
+            (3, "member", "m@example.test", "hash", "user", 1, 1),
         ],
     )
     db.commit()
