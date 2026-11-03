@@ -77,7 +77,7 @@ The following duplicates/overlaps were observed from the changed-file patches:
 - **Data cleanup:** PR #123's runtime schema migration archives and deletes invalid/duplicate comment reports and removes orphan interactions. The effects need a before/after row-count report on a disposable copy.
 - **Account branch dependency:** PR #174 currently targets the profile branch rather than `main`. Preserve this dependency or rebase deliberately after migration ownership is settled.
 - **Creator account lifecycle:** PR #124 contains a multi-migration deletion/ownership-transfer workflow. Its dependencies on users, novels, chapters, roles and audit records must be verified against the actual baseline and other security migrations.
-- **Migration guard correctness:** the existing duplicate-payload guard normalizes all whitespace, including whitespace inside SQL string literals and quoted identifiers. Replace that normalizer with a quote-aware SQL canonicalizer or use a conservative exact-byte hash plus a separate reviewed duplicate report. Do not let the guard claim semantic equivalence it cannot prove.
+- **Migration guard correctness:** PR #177 now replaces the unsafe whitespace normalizer with a quote-aware canonicalizer that preserves whitespace inside string literals and quoted identifiers, and includes regression self-checks. It is a conservative lexical duplicate check, not a full SQL semantic-equivalence engine.
 
 ## Required safe integration procedure
 
@@ -91,13 +91,20 @@ The following duplicates/overlaps were observed from the changed-file patches:
 8. Run the Cloudflare build and D1 migration validation on the integrated branch.
 9. Stage the migration against a disposable/staging D1 first. Production rollout requires backup, explicit release approval, monitoring and a documented recovery plan.
 
+## Validation update (2026-11-04)
+
+- PR #177 adds a quote-aware duplicate-payload guard and runs it as part of the package build.
+- PR #177 adds `scripts/test-migration-chain.py`, which applies the checked-in `main` migration chain to disposable in-memory SQLite and checks `PRAGMA integrity_check` plus `PRAGMA foreign_key_check`.
+- Cloudflare Source Validation passed on PR #177 head `2710bc6e43dac973ffbfd1278b4fe7b2f55520a6`; Graphify also passed. The SQLite rehearsal step passed.
+- This verifies only the current checked-in baseline on a fresh database. It does not validate colliding feature-branch migrations or production D1's applied state.
+
 ## Current disposition
 
-- **Merge readiness:** blocked for the colliding migration branches until the inventory and canonical sequence are complete.
+- **Merge readiness:** blocked for colliding migration branches until the inventory and canonical sequence are complete.
 - **Production D1:** no change authorized or performed by this audit.
 - **Production deployment:** no change authorized or performed by this audit.
 - **Known applied migration history:** not available from repository files alone; must be read from each D1 environment.
-- **Next implementation milestone:** a quote-aware migration integrity test plus a disposable full-chain rehearsal, followed by a canonical integration branch.
+- **Next implementation milestone:** obtain a read-only applied-migration inventory for staging and production, then build one canonical integration branch and rehearse it against representative legacy data.
 
 ## Evidence and limitations
 
