@@ -32,7 +32,7 @@ assert.ok(rendered.content.includes("A &amp; B"), "author names must be HTML-esc
 assert.ok(rendered.content.includes("/story-cover-placeholder.svg"), "protocol-relative cover URLs must be rejected");
 assert.ok(rendered.content.includes("https://covers.example/book.jpg"), "valid HTTPS cover URLs must be retained");
 assert.equal((rendered.content.match(/class="card"/g) || []).length, 8, "SSR must cap each story shelf at six valid records after deduplication");
-assert.equal((rendered.content.match(/href="\\/novel\\/7"/g) || []).length, 1, "trending and latest shelves must not repeat the same novel");
+assert.equal(rendered.content.split('href="/novel/7"').length - 1, 1, "trending and latest shelves must not repeat the same novel");
 assert.ok(rendered.content.includes('id="trend"') && rendered.content.includes('id="latest"'), "SSR must expose both story shelves for safe client refresh");
 assert.ok(rendered.content.includes("nextFeatureDeck") && rendered.content.includes("nextCreatorBand") && rendered.content.includes("nextReaderPromise"), "SSR must preserve the complete homepage feature sections");
 assert.ok(rendered.content.includes("Latest story"), "SSR must render the latest shelf independently");
