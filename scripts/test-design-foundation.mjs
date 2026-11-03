@@ -1,5 +1,5 @@
 import assert from "node:assert/strict";
-import { readFileSync } from "node:fs";
+import { readFileSync, readdirSync } from "node:fs";
 
 const css=readFileSync("public/imperial-design-foundation.css","utf8");
 const html=readFileSync("public/index.html","utf8");
@@ -334,4 +334,13 @@ for(const selector of ["body.adminDashboardPage .panel","body.adminDashboardPage
 }
 for(const token of ["--in-canvas:","--in-ink:","--in-surface:","--in-line:","--in-line-strong:","--in-radius-lg:","--in-content:","--in-shadow:","--in-focus:"]){
   assert.ok(foundationCss.includes(token),"Shared route styles require defined token "+token);
+}
+
+
+// Every standalone HTML surface must participate in the same global design system.
+for(const filename of readdirSync("public").filter(name=>name.endsWith(".html"))){
+  const page=readFileSync("public/"+filename,"utf8");
+  assert.ok(page.includes('href="/imperial-design-foundation.css"'),filename+" must load the shared Imperial design foundation");
+  assert.ok(page.includes('href="/imperial-design-system-17.25.0.css"'),filename+" must load the shared semantic component tokens");
+  assert.ok(page.indexOf('href="/imperial-design-foundation.css"')>page.lastIndexOf("<style>"),filename+" must load shared styles after inline page styles");
 }
