@@ -27,6 +27,34 @@ for (const [label, pattern] of [
   ["44px touch target baseline", /min-height:44px/],
 ]) assert.match(css, pattern, label + " must be present");
 
+
+function luminance(hex) {
+  const channels = hex.slice(1).match(/.{2}/g).map((value) => parseInt(value, 16) / 255)
+    .map((value) => value <= 0.04045 ? value / 12.92 : ((value + 0.055) / 1.055) ** 2.4);
+  return 0.2126 * channels[0] + 0.7152 * channels[1] + 0.0722 * channels[2];
+}
+function contrast(foreground, background) {
+  const values = [luminance(foreground), luminance(background)].sort((a, b) => b - a);
+  return (values[0] + 0.05) / (values[1] + 0.05);
+}
+const themeBlocks = {
+  light: css.match(/:root\\s*\\{([^}]*)\\}/)?.[1],
+  ...Object.fromEntries(["dark", "sepia", "midnight", "imperial", "cosmic"].map((theme) => [
+    theme, css.match(new RegExp('html\\\\[data-theme="' + theme + '"\\\\]\\\\s*\\\\{([^}]*)\\\\}'))?.[1],
+  ])),
+};
+for (const [theme, block] of Object.entries(themeBlocks)) {
+  assert.ok(block, "Missing token block for " + theme);
+  const tokens = Object.fromEntries([...block.matchAll(/--in-(ink|muted|subtle|canvas|surface|surface-raised):\\s*(#[0-9A-Fa-f]{6})/g)].map((match) => [match[1], match[2]]));
+  for (const foreground of ["ink", "muted", "subtle"]) {
+    for (const background of ["canvas", "surface", "surface-raised"]) {
+      assert.ok(tokens[foreground] && tokens[background], "Missing " + foreground + "/" + background + " token for " + theme);
+      assert.ok(contrast(tokens[foreground], tokens[background]) >= 4.5,
+        theme + " " + foreground + " on " + background + " must meet WCAG AA normal-text contrast");
+    }
+  }
+}
+
 for (const theme of ["light", "dark", "sepia", "midnight", "imperial", "cosmic"]) {
   assert.ok(css.includes(`html[data-theme="${theme}"]`), "Missing global theme: " + theme);
 }
