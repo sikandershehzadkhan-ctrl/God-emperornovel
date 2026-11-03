@@ -843,7 +843,7 @@ async function html(req,env){const u=new URL(req.url);let file="index.html",titl
  }catch(error){console.error("homepage server-rendered catalog unavailable",error)}
  const serverMarkup=renderHomepageHtml(homepageNovels);
  text=text.replace("<body>","<body>"+serverMarkup.header);
- text=text.replace(/(<main id="app"[^>]*>)[\s\S]*(<\/main>)/,(_match,opening,closing)=>opening+serverMarkup.content+closing);
+ text=text.replace(/(<main id="app"[^>]*>)[\s\S]*?(<\/main>)/,(_match,opening,closing)=>opening+serverMarkup.content+closing);
  text=text.replace("</body>",serverMarkup.footer+"</body>");
 }return new Response(text,{headers:{"content-type":"text/html;charset=UTF-8","cache-control":"no-store","x-content-type-options":"nosniff","referrer-policy":"strict-origin-when-cross-origin","x-frame-options":"SAMEORIGIN","permissions-policy":"camera=(),microphone=(),geolocation=()","content-security-policy":"default-src 'self'; img-src 'self' data: https:; style-src 'self' 'unsafe-inline'; script-src 'self' 'unsafe-inline'; connect-src 'self' https:; frame-ancestors 'self'"}})}
 const escapeHtml=s=>String(s).replaceAll("&","&amp;").replaceAll("<","&lt;").replaceAll(">","&gt;").replaceAll('"',"&quot;");
