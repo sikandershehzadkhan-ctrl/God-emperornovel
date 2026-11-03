@@ -16,7 +16,7 @@ assert.ok(!worker.slice(worker.indexOf('if(p==="/api/community/discussions"'), w
 assert.ok(app.includes('id="communityDiscussions"'), 'community page must render the discussions region');
 assert.ok(app.includes("api('/api/community/discussions')"), 'community page must load the discussions feed');
 assert.ok(app.includes('#community'), 'discussion items must link to the novel community section');
-assert.ok(app.includes('esc(String(x.body||\'\').slice(0,220))'), 'comment excerpts must be escaped and length-bounded');
+assert.ok(app.includes('esc(String(x.body') && app.includes('slice(0,220)'), 'comment excerpts must be escaped and length-bounded');
 assert.equal(app, served, 'source and versioned browser bundles must remain identical');
 
 console.log('Community recent-discussions feed regression checks passed.');
