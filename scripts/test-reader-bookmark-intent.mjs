@@ -20,7 +20,7 @@ assert.ok(reader.includes("setAttribute('aria-pressed',String(bookmarked))"), 'B
 const server = fs.readFileSync('src/index.js', 'utf8');
 assert.ok(server.includes('if(p==="/api/bookmark"&&m==="DELETE")'), 'Server must support bookmark removal');
 assert.ok(server.includes('DELETE FROM bookmarks WHERE user_id=? AND novel_id=? AND chapter_number=?'), 'Bookmark removal must be scoped to the authenticated owner and selected chapter');
-assert.ok(reader.includes("localStorage.setItem('readerBookmark:'"), 'Guest bookmark action must remain locally available');
+assert.ok(reader.slice(bookmarkHandler).includes("writeReaderSetting(key,num)"), 'Guest bookmark action must remain locally available through safe storage');
 assert.ok(reader.includes("localStorage.getItem('readerBookmark:'+id)"), 'Guest bookmark state must be restored when the chapter is reopened');
 assert.ok(reader.includes('const readReaderSetting='), 'Reader preferences must tolerate unavailable browser storage');
 assert.ok(reader.includes('const writeReaderSetting='), 'Reader preference writes must tolerate unavailable browser storage');
