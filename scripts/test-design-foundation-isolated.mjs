@@ -83,6 +83,14 @@ assert.match(css, /html\[data-reduced-motion="true"\] \*/,
 assert.match(css, /html\[data-reduced-motion="true"\][\s\S]*?transform:none!important/,
   "Reduced-motion mode must suppress hover movement");
 
+
+assert.match(css, /html\\[data-compact-cards="true"\\] \\.catalogGrid[\\s\\S]*?gap:9px/,
+  "Compact-card preference must densify discovery grids");
+assert.match(css, /html\\[data-compact-cards="true"\\] \\.catalogCover[\\s\\S]*?aspect-ratio:\\.84/,
+  "Compact-card preference must reduce cover height");
+assert.match(css, /html\\[data-compact-cards="true"\\] \\.catalogBody[\\s\\S]*?padding:9px/,
+  "Compact-card preference must reduce card padding");
+
 for (const theme of ["light", "dark", "sepia", "midnight", "imperial", "cosmic"]) {
   assert.ok(css.includes(`html[data-theme="${theme}"]`), "Missing global theme: " + theme);
 }
