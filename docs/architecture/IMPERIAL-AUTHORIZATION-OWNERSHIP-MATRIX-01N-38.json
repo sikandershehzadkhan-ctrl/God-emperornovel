@@ -4,7 +4,7 @@
   "sourceBlob": "237f4461135eb77258b7184e361ce9dfd9a140e9",
   "auditDate": "2026-11-03",
   "scope": "Partial handler-level source review; not a full authorization certification.",
-  "reviewedRouteCount": 19,
+  "reviewedRouteCount": 24,
   "pendingDisclosure": "All other exact and dynamic API routes remain pending handler-level review.",
   "routes": [
     {
@@ -203,6 +203,59 @@
       "tests": [
         "author A cannot publish author B chapter",
         "ineligible rights cannot publish"
+      ]
+    },
+    {
+      "path": "/api/author/ai/projects",
+      "method": "GET",
+      "access": "author or admin",
+      "ownerRule": "project collection filtered by owner_user_id = u.id",
+      "evidence": "author(u); SELECT ai_author_projects WHERE p.owner_user_id=? bound to u.id",
+      "tests": [
+        "author A cannot list author B AI projects"
+      ]
+    },
+    {
+      "path": "/api/author/ai/projects",
+      "method": "POST",
+      "access": "author or admin with configured AI provider",
+      "ownerRule": "new project owner_user_id is u.id; linked novel must be owned by current user unless admin",
+      "evidence": "author(u); linked novel owner comparison; INSERT binds owner_user_id to u.id",
+      "tests": [
+        "body cannot assign another project owner",
+        "cannot link another author's novel"
+      ]
+    },
+    {
+      "path": "/api/author/ai/projects/:id",
+      "method": "GET|PATCH",
+      "access": "author or admin",
+      "ownerRule": "loads project and compares owner_user_id to u.id unless admin",
+      "evidence": "author(u); SELECT project by id; explicit owner check in GET and PATCH",
+      "tests": [
+        "author A cannot read author B project",
+        "author A cannot edit author B project"
+      ]
+    },
+    {
+      "path": "/api/author/ai/projects/:id/run",
+      "method": "POST",
+      "access": "author or admin with configured AI provider",
+      "ownerRule": "loads project and compares owner_user_id to u.id unless admin",
+      "evidence": "author(u); project owner comparison before changing project status or creating job",
+      "tests": [
+        "author A cannot run author B project",
+        "missing AI configuration returns unavailable without creating output"
+      ]
+    },
+    {
+      "path": "/api/author/ai/projects/:id/jobs",
+      "method": "GET",
+      "access": "author or admin",
+      "ownerRule": "loads project owner and compares owner_user_id to u.id unless admin",
+      "evidence": "author(u); SELECT project owner; explicit owner check before listing jobs",
+      "tests": [
+        "author A cannot read author B generation jobs"
       ]
     }
   ],
