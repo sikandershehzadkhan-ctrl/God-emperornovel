@@ -20,6 +20,7 @@ const app = readFileSync("public/app.js", "utf8");
 assert.match(app, /const IMPERIAL_THEMES=\['light','dark','sepia','midnight','imperial','cosmic'\]/, "All six global themes must be selectable");
 assert.match(app, /localStorage\.setItem\('imperial_theme',chosen\)/, "Selected theme must persist");
 assert.match(app, /Current theme:/, "Theme control must announce its current and next theme");
+assert.ok(app.includes("shell();applyImperialTheme(document.documentElement.dataset.theme||'light');"), "Theme toggle label and icon must initialize after the navigation shell is mounted");
 assert.match(app, /id="setSiteTheme"[^>]*>[\s\S]*?<option value="cosmic">Cosmic<\/option>/, "Settings must expose all six global themes");
 assert.match(app, /applyImperialTheme\(\$\('#setSiteTheme'\)\.value\)/, "Settings must apply the selected global theme");
 assert.match(app, /imperial_reduced_motion.*imperial_high_contrast.*imperial_compact_cards/, "Accessibility preferences must be restored from local storage during app initialization");
