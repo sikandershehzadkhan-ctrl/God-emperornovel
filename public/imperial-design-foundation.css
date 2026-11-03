@@ -2075,3 +2075,25 @@ body.authorStudioPage a:focus-visible,body.authorStudioPage button:focus-visible
 body.authorStudioPage img,body.adminDashboardPage img{max-width:100%;height:auto}
 @media(max-width:760px){body.authorStudioPage .wrap,body.adminDashboardPage .adminWrap{width:calc(100% - 24px);padding-inline:0}body.authorStudioPage .grid,body.adminDashboardPage .adminGrid{grid-template-columns:minmax(0,1fr)!important}body.authorStudioPage .top{align-items:flex-start}body.authorStudioPage .card,body.authorStudioPage .panel,body.adminDashboardPage .adminCard,body.adminDashboardPage .adminPanel{min-width:0}}
 @media(prefers-reduced-motion:reduce){body.authorStudioPage *,body.authorStudioPage *::before,body.authorStudioPage *::after,body.adminDashboardPage *,body.adminDashboardPage *::before,body.adminDashboardPage *::after{scroll-behavior:auto!important;animation-duration:.01ms!important;transition-duration:.01ms!important}}
+
+
+/* 17.50: align the actual Admin workspace primitives with the shared design tokens. */
+body.adminDashboardPage .adminWrap{max-width:var(--in-content);padding:24px 16px 100px}
+body.adminDashboardPage .adminHero{background:linear-gradient(135deg,#fff 0%,#f8f5ff 100%)!important;border:1px solid var(--in-line)!important;border-radius:var(--in-radius-lg)!important;box-shadow:var(--in-shadow)!important}
+body.adminDashboardPage .adminHero h1{color:var(--in-ink);letter-spacing:-.035em}
+body.adminDashboardPage .adminHero p,body.adminDashboardPage .muted2{color:var(--in-muted)}
+body.adminDashboardPage .panel,body.adminDashboardPage .adminCard,body.adminDashboardPage .adminSection{min-width:0;background:var(--in-surface)!important;color:var(--in-ink)!important;border:1px solid var(--in-line)!important;border-radius:var(--in-radius-lg)!important;box-shadow:var(--in-shadow)!important}
+body.adminDashboardPage .adminNav{display:flex;gap:8px;overflow-x:auto;overscroll-behavior-x:contain;padding:8px 2px 12px;scrollbar-width:thin}
+body.adminDashboardPage .adminNav button{flex:0 0 auto;min-height:44px;border:1px solid var(--in-line);border-radius:var(--in-radius-pill);background:var(--in-surface);color:var(--in-muted);font:600 14px/1.2 inherit;padding:10px 14px}
+body.adminDashboardPage .adminNav button.active{background:var(--in-brand-soft);border-color:rgba(106,13,173,.28);color:var(--in-brand)}
+body.adminDashboardPage .adminTable{max-width:100%;border-color:var(--in-line)}
+body.adminDashboardPage .adminTable th{color:var(--in-muted);background:#F7F8FA;font-size:12px;letter-spacing:.035em;text-transform:uppercase}
+body.adminDashboardPage .adminTable td,body.adminDashboardPage .adminTable th{border-color:var(--in-line);padding:11px 12px;vertical-align:middle}
+body.adminDashboardPage .field label{color:var(--in-muted);font-weight:650}
+body.adminDashboardPage .ghost,body.adminDashboardPage .linkBtn{border:1px solid var(--in-line-strong);background:var(--in-surface);color:var(--in-ink)}
+body.adminDashboardPage .primary{background:var(--in-brand);color:#fff}
+body.adminDashboardPage .adminWrap :where(button,a,input,select,textarea,[tabindex]):focus-visible{outline:3px solid var(--in-focus);outline-offset:3px}
+body.authorStudioPage .field label{color:var(--in-muted);font-weight:650}
+body.authorStudioPage .novelHead{gap:12px;align-items:flex-start}
+body.authorStudioPage .brand{font-size:clamp(21px,3vw,28px)}
+@media(max-width:760px){body.adminDashboardPage .adminWrap{width:100%;padding:16px 12px 88px}body.adminDashboardPage .adminGrid{grid-template-columns:minmax(0,1fr)!important}body.adminDashboardPage .adminHero{padding:18px}body.adminDashboardPage .adminHero h1{font-size:clamp(25px,7vw,34px)}body.adminDashboardPage .panel,body.adminDashboardPage .adminCard,body.adminDashboardPage .adminSection{padding:14px}body.adminDashboardPage .adminTable{min-width:640px}body.authorStudioPage .novelHead{flex-wrap:wrap}}
