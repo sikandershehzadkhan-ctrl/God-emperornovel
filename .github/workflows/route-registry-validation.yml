@@ -1,0 +1,41 @@
+name: Validate Imperial Novel Route Registry
+
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - "src/index.js"
+      - "public/app.js"
+      - "public/app-*.js"
+      - "docs/architecture/IMPERIAL-ROUTE-REGISTRY-01N.json"
+      - "scripts/test-route-registry.mjs"
+      - ".github/workflows/route-registry-validation.yml"
+  push:
+    branches:
+      - "route-registry/**"
+    paths:
+      - "src/index.js"
+      - "public/app.js"
+      - "public/app-*.js"
+      - "docs/architecture/IMPERIAL-ROUTE-REGISTRY-01N.json"
+      - "scripts/test-route-registry.mjs"
+      - ".github/workflows/route-registry-validation.yml"
+
+permissions:
+  contents: read
+
+jobs:
+  route-registry:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Check out source
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Validate route manifest against Worker and client source
+        run: node scripts/test-route-registry.mjs
