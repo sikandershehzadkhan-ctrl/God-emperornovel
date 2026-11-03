@@ -46,7 +46,7 @@ html[data-theme="light"] body{
   -webkit-font-smoothing:antialiased;
   text-rendering:optimizeLegibility;
 }
-html[data-theme="dark"]{
+:is(html[data-theme="dark"],html[data-theme="midnight"],html[data-theme="imperial"],html[data-theme="cosmic"]){
   color-scheme:dark;
   --in-brand:#B78AE2;
   --in-brand-hover:#C9A8EC;
@@ -68,7 +68,7 @@ html[data-theme="dark"]{
   --in-shadow:0 10px 30px rgba(0,0,0,.18);
   --in-shadow-menu:0 24px 64px rgba(0,0,0,.45);
 }
-html[data-theme="dark"] body{
+:is(html[data-theme="dark"],html[data-theme="midnight"],html[data-theme="imperial"],html[data-theme="cosmic"]) body{
   color:var(--in-ink);
   background:var(--in-canvas);
   font-family:Inter,ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
@@ -254,8 +254,8 @@ input:focus,select:focus,textarea:focus{border-color:var(--in-focus);box-shadow:
 }
 html[data-theme="light"] .hero.nextHero,
 html[data-theme="light"] .hero.imperialArchiveHero{background:#fff;color:var(--in-ink)}
-html[data-theme="dark"] .hero.nextHero,
-html[data-theme="dark"] .hero.imperialArchiveHero{background:#111A1F;color:var(--in-ink)}
+:is(html[data-theme="dark"],html[data-theme="midnight"],html[data-theme="imperial"],html[data-theme="cosmic"]) .hero.nextHero,
+:is(html[data-theme="dark"],html[data-theme="midnight"],html[data-theme="imperial"],html[data-theme="cosmic"]) .hero.imperialArchiveHero{background:#111A1F;color:var(--in-ink)}
 .hero.nextHero:before,.hero.nextHero:after,
 .hero.imperialArchiveHero:before,.hero.imperialArchiveHero:after{pointer-events:none}
 .hero.nextHero h1,.hero.imperialArchiveHero h1{font-weight:800;letter-spacing:-.055em}
@@ -454,19 +454,19 @@ html[data-theme="dark"] .hero.imperialArchiveHero{background:#111A1F;color:var(-
 .skeletonCard::before{top:0;height:76%}
 .skeletonCard::after{bottom:0;height:18%;left:10%;right:10%;border-radius:7px}
 
-html[data-theme="dark"] .homePage .hero.imperialArchiveHero{background:var(--in-surface);border-color:var(--in-line);border-top-color:var(--in-brand)}
-html[data-theme="dark"] .homePage .hero.imperialArchiveHero h1{color:var(--in-ink)}
-html[data-theme="dark"] .homePage .hero.imperialArchiveHero h1 span{-webkit-text-fill-color:var(--in-brand);color:var(--in-brand)}
-html[data-theme="dark"] .homePage .heroSearch{background:var(--in-surface-raised);border-color:var(--in-line)}
-html[data-theme="dark"] .homePage .heroSearch input{background:transparent;color:var(--in-ink)}
-html[data-theme="dark"] .homePage .heroSearch button{background:var(--in-brand);color:#fff}
-html[data-theme="dark"] .homeFormatShelf,
-html[data-theme="dark"] .homeFormatCard,
-html[data-theme="dark"] .homeFormatPrimary,
-html[data-theme="dark"] .nextFeatureTile,
-html[data-theme="dark"] .nextCreatorBand,
-html[data-theme="dark"] .nextReaderPromise{background:var(--in-surface);border-color:var(--in-line)}
-html[data-theme="dark"] .homeFormatPrimary{background:var(--in-brand-soft)}
+:is(html[data-theme="dark"],html[data-theme="midnight"],html[data-theme="imperial"],html[data-theme="cosmic"]) .homePage .hero.imperialArchiveHero{background:var(--in-surface);border-color:var(--in-line);border-top-color:var(--in-brand)}
+:is(html[data-theme="dark"],html[data-theme="midnight"],html[data-theme="imperial"],html[data-theme="cosmic"]) .homePage .hero.imperialArchiveHero h1{color:var(--in-ink)}
+:is(html[data-theme="dark"],html[data-theme="midnight"],html[data-theme="imperial"],html[data-theme="cosmic"]) .homePage .hero.imperialArchiveHero h1 span{-webkit-text-fill-color:var(--in-brand);color:var(--in-brand)}
+:is(html[data-theme="dark"],html[data-theme="midnight"],html[data-theme="imperial"],html[data-theme="cosmic"]) .homePage .heroSearch{background:var(--in-surface-raised);border-color:var(--in-line)}
+:is(html[data-theme="dark"],html[data-theme="midnight"],html[data-theme="imperial"],html[data-theme="cosmic"]) .homePage .heroSearch input{background:transparent;color:var(--in-ink)}
+:is(html[data-theme="dark"],html[data-theme="midnight"],html[data-theme="imperial"],html[data-theme="cosmic"]) .homePage .heroSearch button{background:var(--in-brand);color:#fff}
+:is(html[data-theme="dark"],html[data-theme="midnight"],html[data-theme="imperial"],html[data-theme="cosmic"]) .homeFormatShelf,
+:is(html[data-theme="dark"],html[data-theme="midnight"],html[data-theme="imperial"],html[data-theme="cosmic"]) .homeFormatCard,
+:is(html[data-theme="dark"],html[data-theme="midnight"],html[data-theme="imperial"],html[data-theme="cosmic"]) .homeFormatPrimary,
+:is(html[data-theme="dark"],html[data-theme="midnight"],html[data-theme="imperial"],html[data-theme="cosmic"]) .nextFeatureTile,
+:is(html[data-theme="dark"],html[data-theme="midnight"],html[data-theme="imperial"],html[data-theme="cosmic"]) .nextCreatorBand,
+:is(html[data-theme="dark"],html[data-theme="midnight"],html[data-theme="imperial"],html[data-theme="cosmic"]) .nextReaderPromise{background:var(--in-surface);border-color:var(--in-line)}
+:is(html[data-theme="dark"],html[data-theme="midnight"],html[data-theme="imperial"],html[data-theme="cosmic"]) .homeFormatPrimary{background:var(--in-brand-soft)}
 @media(max-width:900px){
   .homePage .hero.imperialArchiveHero::before{right:-12%;opacity:.8}
   .homePage .hero.imperialArchiveHero::after{right:calc(clamp(260px,34vw,440px)*.34)}
@@ -787,8 +787,8 @@ html[data-theme="dark"] .homeFormatPrimary{background:var(--in-brand-soft)}
   padding:6px 9px;border:1px solid var(--in-line);border-radius:999px;
   color:var(--in-muted);font-size:8px;font-weight:850;letter-spacing:.13em;
 }
-html[data-theme="dark"] .imperialHeroVisual::before{border-color:rgba(167,139,250,.24);background:radial-gradient(circle,rgba(139,92,246,.13),transparent 68%)}
-html[data-theme="dark"] .imperialHeroSeal{box-shadow:0 24px 70px rgba(0,0,0,.4),0 0 0 9px rgba(139,92,246,.08)}
+:is(html[data-theme="dark"],html[data-theme="midnight"],html[data-theme="imperial"],html[data-theme="cosmic"]) .imperialHeroVisual::before{border-color:rgba(167,139,250,.24);background:radial-gradient(circle,rgba(139,92,246,.13),transparent 68%)}
+:is(html[data-theme="dark"],html[data-theme="midnight"],html[data-theme="imperial"],html[data-theme="cosmic"]) .imperialHeroSeal{box-shadow:0 24px 70px rgba(0,0,0,.4),0 0 0 9px rgba(139,92,246,.08)}
 @media(max-width:900px) and (min-width:761px){
   .homePage .hero.imperialArchiveHero{grid-template-columns:minmax(0,1fr) minmax(190px,.62fr);gap:10px;padding:36px}
   .imperialHeroVisual{width:100%;min-height:300px;padding-inline:8px}
@@ -858,11 +858,11 @@ html[data-theme="dark"] .imperialHeroSeal{box-shadow:0 24px 70px rgba(0,0,0,.4),
 .platformPulseRow:focus-visible,.homeFormatCard:focus-visible,.homeConnectionChip:focus-visible{
   outline:2px solid var(--in-focus);outline-offset:3px
 }
-html[data-theme="dark"] .homeFormatShelf{
+:is(html[data-theme="dark"],html[data-theme="midnight"],html[data-theme="imperial"],html[data-theme="cosmic"]) .homeFormatShelf{
   background:linear-gradient(145deg,var(--in-surface),rgba(106,13,173,.12));
   border-color:var(--in-line)
 }
-html[data-theme="dark"] .homeFormatCard{background:var(--in-surface);border-color:var(--in-line)}
+:is(html[data-theme="dark"],html[data-theme="midnight"],html[data-theme="imperial"],html[data-theme="cosmic"]) .homeFormatCard{background:var(--in-surface);border-color:var(--in-line)}
 @media(max-width:980px){
   .homeFormatGrid{grid-template-columns:repeat(2,minmax(0,1fr))}
 }
@@ -913,7 +913,7 @@ html[data-theme="dark"] .homeFormatCard{background:var(--in-surface);border-colo
 .novelLivePulseMetric{min-width:0;padding:11px;border:1px solid var(--in-line);border-radius:11px;background:var(--in-canvas)}
 .novelLivePulseMetric b{display:block;color:var(--in-ink);font-size:clamp(17px,2vw,22px);font-variant-numeric:tabular-nums;letter-spacing:-.035em;overflow-wrap:anywhere}
 .novelLivePulseMetric span{display:block;margin-top:4px;color:var(--in-muted);font-size:10px;line-height:1.35}
-html[data-theme="dark"] .novelLivePulseMetric{background:var(--in-surface-raised)}
+:is(html[data-theme="dark"],html[data-theme="midnight"],html[data-theme="imperial"],html[data-theme="cosmic"]) .novelLivePulseMetric{background:var(--in-surface-raised)}
 @media(max-width:980px){.novelLivePulseMetrics{grid-template-columns:repeat(3,minmax(0,1fr))}}
 @media(max-width:600px){
  .novelLivePulse{padding:12px}
@@ -1609,28 +1609,28 @@ html[data-theme="dark"] .novelLivePulseMetric{background:var(--in-surface-raised
   font-size:clamp(17px,1.35vw,19px);
   letter-spacing:.002em;
 }
-html[data-theme="dark"] .homePage .hero.imperialArchiveHero{
+:is(html[data-theme="dark"],html[data-theme="midnight"],html[data-theme="imperial"],html[data-theme="cosmic"]) .homePage .hero.imperialArchiveHero{
   background:
     radial-gradient(ellipse at 88% 48%,rgba(117,65,200,.18),transparent 43%),
     linear-gradient(118deg,#0E1220 0%,#111827 58%,#101D34 100%);
   border-color:rgba(194,176,255,.17);
 }
-html[data-theme="dark"] .homePage .hero.imperialArchiveHero::before{
+:is(html[data-theme="dark"],html[data-theme="midnight"],html[data-theme="imperial"],html[data-theme="cosmic"]) .homePage .hero.imperialArchiveHero::before{
   opacity:.72;
   background:
     radial-gradient(circle,transparent 0 27%,rgba(183,138,226,.35) 27.15% 27.45%,transparent 27.6% 46%,rgba(120,169,255,.28) 46.15% 46.45%,transparent 46.6% 63%,rgba(183,138,226,.25) 63.15% 63.45%,transparent 63.6%),
     repeating-conic-gradient(from 0deg at 50% 50%,transparent 0deg 14deg,rgba(183,138,226,.08) 14.15deg 14.5deg,transparent 14.65deg 30deg);
 }
-html[data-theme="dark"] .homePage .hero.imperialArchiveHero::after{
+:is(html[data-theme="dark"],html[data-theme="midnight"],html[data-theme="imperial"],html[data-theme="cosmic"]) .homePage .hero.imperialArchiveHero::after{
   border-color:rgba(183,138,226,.4);
   background:linear-gradient(145deg,rgba(117,65,200,.22),rgba(57,123,232,.16));
   box-shadow:0 18px 60px rgba(117,65,200,.16),inset 0 0 0 7px rgba(15,20,34,.72);
 }
-html[data-theme="dark"] .homeFormatShelf,
-html[data-theme="dark"] .homeStoryGrid .card,
-html[data-theme="dark"] .nextFeatureTile,
-html[data-theme="dark"] .genreCard,
-html[data-theme="dark"] .formatGroup{
+:is(html[data-theme="dark"],html[data-theme="midnight"],html[data-theme="imperial"],html[data-theme="cosmic"]) .homeFormatShelf,
+:is(html[data-theme="dark"],html[data-theme="midnight"],html[data-theme="imperial"],html[data-theme="cosmic"]) .homeStoryGrid .card,
+:is(html[data-theme="dark"],html[data-theme="midnight"],html[data-theme="imperial"],html[data-theme="cosmic"]) .nextFeatureTile,
+:is(html[data-theme="dark"],html[data-theme="midnight"],html[data-theme="imperial"],html[data-theme="cosmic"]) .genreCard,
+:is(html[data-theme="dark"],html[data-theme="midnight"],html[data-theme="imperial"],html[data-theme="cosmic"]) .formatGroup{
   box-shadow:0 12px 32px rgba(0,0,0,.16);
 }
 @media(max-width:760px){
@@ -1651,7 +1651,7 @@ html[data-theme="dark"] .formatGroup{
   .homePage .heroSearch button{padding-inline:13px}
   .homePage .section{margin-top:32px}
   .nextFeatureTile{min-height:205px}
-  html[data-theme="dark"] .homePage .hero.imperialArchiveHero{
+  :is(html[data-theme="dark"],html[data-theme="midnight"],html[data-theme="imperial"],html[data-theme="cosmic"]) .homePage .hero.imperialArchiveHero{
     background:
       radial-gradient(ellipse at 100% 8%,rgba(117,65,200,.18),transparent 45%),
       #0E1220;
@@ -1738,10 +1738,10 @@ html[data-theme="dark"] .formatGroup{
 #lbNovels .meta,#lbAuthors .meta{font-size:11px;line-height:1.5}
 .genreCard,.tagTile,.formatLink{transition:transform 160ms ease,border-color 160ms ease,background 160ms ease}
 .genreCard:hover,.tagTile:hover,.formatLink:hover{transform:translateY(-2px);border-color:color-mix(in srgb,var(--in-brand) 36%,var(--in-line))}
-html[data-theme="dark"] .catalogCard{box-shadow:0 8px 22px rgba(0,0,0,.2)}
-html[data-theme="dark"] .catalogCard:hover{box-shadow:0 14px 30px rgba(0,0,0,.32)}
-html[data-theme="dark"] .catalogCover::after{background:linear-gradient(180deg,transparent,rgba(0,0,0,.48))}
-html[data-theme="dark"] #lbNovels>.panel,html[data-theme="dark"] #lbAuthors>.panel{background:linear-gradient(145deg,var(--in-surface),var(--in-canvas))}
+:is(html[data-theme="dark"],html[data-theme="midnight"],html[data-theme="imperial"],html[data-theme="cosmic"]) .catalogCard{box-shadow:0 8px 22px rgba(0,0,0,.2)}
+:is(html[data-theme="dark"],html[data-theme="midnight"],html[data-theme="imperial"],html[data-theme="cosmic"]) .catalogCard:hover{box-shadow:0 14px 30px rgba(0,0,0,.32)}
+:is(html[data-theme="dark"],html[data-theme="midnight"],html[data-theme="imperial"],html[data-theme="cosmic"]) .catalogCover::after{background:linear-gradient(180deg,transparent,rgba(0,0,0,.48))}
+:is(html[data-theme="dark"],html[data-theme="midnight"],html[data-theme="imperial"],html[data-theme="cosmic"]) #lbNovels>.panel,:is(html[data-theme="dark"],html[data-theme="midnight"],html[data-theme="imperial"],html[data-theme="cosmic"]) #lbAuthors>.panel{background:linear-gradient(145deg,var(--in-surface),var(--in-canvas))}
 @media(max-width:640px){
  .catalogGrid{gap:10px}
  .catalogCard{border-radius:12px}
@@ -1777,9 +1777,9 @@ html[data-theme="dark"] #lbNovels>.panel,html[data-theme="dark"] #lbAuthors>.pan
 .authorEditForm,.authorChapterForm{padding:14px;border-radius:12px}
 .authorAnalyticsTools select{min-height:42px}
 .authorAnalyticsUpdated{line-height:1.5}
-html[data-theme="dark"] .authorStudioIntro{background:radial-gradient(circle at 100% 0%,rgba(133,91,218,.18),transparent 45%),linear-gradient(125deg,#171326,#151E32)}
-html[data-theme="dark"] .authorAnalyticsPanel,html[data-theme="dark"] .authorCreateForm,html[data-theme="dark"] .authorWorksPanel{background:var(--in-surface);border-color:var(--in-line)}
-html[data-theme="dark"] .authorWork{background:var(--in-canvas)}
+:is(html[data-theme="dark"],html[data-theme="midnight"],html[data-theme="imperial"],html[data-theme="cosmic"]) .authorStudioIntro{background:radial-gradient(circle at 100% 0%,rgba(133,91,218,.18),transparent 45%),linear-gradient(125deg,#171326,#151E32)}
+:is(html[data-theme="dark"],html[data-theme="midnight"],html[data-theme="imperial"],html[data-theme="cosmic"]) .authorAnalyticsPanel,:is(html[data-theme="dark"],html[data-theme="midnight"],html[data-theme="imperial"],html[data-theme="cosmic"]) .authorCreateForm,:is(html[data-theme="dark"],html[data-theme="midnight"],html[data-theme="imperial"],html[data-theme="cosmic"]) .authorWorksPanel{background:var(--in-surface);border-color:var(--in-line)}
+:is(html[data-theme="dark"],html[data-theme="midnight"],html[data-theme="imperial"],html[data-theme="cosmic"]) .authorWork{background:var(--in-canvas)}
 @media(max-width:640px){
  .authorAnalyticsPanel,.authorCreateForm,.authorWorksPanel{border-radius:13px}
  .authorCreateForm :is(input,select,textarea),.authorEditForm :is(input,select,textarea),.authorChapterForm :is(input,select,textarea){min-height:46px;font-size:16px}
@@ -1808,8 +1808,8 @@ html[data-theme="dark"] .authorWork{background:var(--in-canvas)}
 .communityGrid textarea{line-height:1.6}
 .communityGrid :is(input,textarea,select):focus-visible{outline:2px solid var(--in-focus);outline-offset:2px;box-shadow:0 0 0 3px color-mix(in srgb,var(--in-focus) 12%,transparent)}
 .communityGrid .ratingStar{min-width:38px;min-height:38px}
-html[data-theme="dark"] .communityGrid>.panel{background:var(--in-surface);border-color:var(--in-line)}
-html[data-theme="dark"] .communityGrid .commentItem{background:var(--in-canvas)}
+:is(html[data-theme="dark"],html[data-theme="midnight"],html[data-theme="imperial"],html[data-theme="cosmic"]) .communityGrid>.panel{background:var(--in-surface);border-color:var(--in-line)}
+:is(html[data-theme="dark"],html[data-theme="midnight"],html[data-theme="imperial"],html[data-theme="cosmic"]) .communityGrid .commentItem{background:var(--in-canvas)}
 @media(max-width:600px){
  .communityGrid>.panel{padding:14px}
  .communityGrid .commentItem{margin:9px 0}
@@ -1841,8 +1841,8 @@ html[data-theme="dark"] .communityGrid .commentItem{background:var(--in-canvas)}
 .accountGrid .metricGrid{gap:10px}
 .accountGrid .metric{border-radius:12px}
 .accountGrid .statline{min-height:44px}
-html[data-theme="dark"] .accountMenu,html[data-theme="dark"] .accountGrid .card{background:var(--in-surface);border-color:var(--in-line)}
-html[data-theme="dark"] .accountGrid .metric{background:var(--in-canvas)}
+:is(html[data-theme="dark"],html[data-theme="midnight"],html[data-theme="imperial"],html[data-theme="cosmic"]) .accountMenu,:is(html[data-theme="dark"],html[data-theme="midnight"],html[data-theme="imperial"],html[data-theme="cosmic"]) .accountGrid .card{background:var(--in-surface);border-color:var(--in-line)}
+:is(html[data-theme="dark"],html[data-theme="midnight"],html[data-theme="imperial"],html[data-theme="cosmic"]) .accountGrid .metric{background:var(--in-canvas)}
 @media(max-width:760px){
  .accountMenu{overflow-x:auto;overscroll-behavior-inline:contain;scrollbar-width:thin}
  .accountMenu a,.accountMenu button{flex:0 0 auto;white-space:nowrap}
@@ -2042,7 +2042,7 @@ html[dir="rtl"] .menuDrawer.is-open{
   color:var(--in-action-primary);
 }
 .adminWrap{--admin-active-foreground:#fff}
-html[data-theme="dark"] .adminWrap,
+:is(html[data-theme="dark"],html[data-theme="midnight"],html[data-theme="imperial"],html[data-theme="cosmic"]) .adminWrap,
 html[data-theme="midnight"] .adminWrap,
 html[data-theme="imperial"] .adminWrap,
 html[data-theme="cosmic"] .adminWrap{--admin-active-foreground:#111426}
