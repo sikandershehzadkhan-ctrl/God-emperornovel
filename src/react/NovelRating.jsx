@@ -75,7 +75,7 @@ function RatingIsland({ novelId }) {
       <p className="ratingIslandSummary" aria-live="polite">
         <strong>{count > 0 ? `${average.toFixed(1)} / 10` : "Not rated yet"}</strong>
         <span> · {count.toLocaleString()} {count === 1 ? "rating" : "ratings"}</span>
-        {selected > 0 && <span> · Your rating: {selected}/5</span>}
+        {selected > 0 && <span> · Your rating: {selected}/10</span>}
       </p>
       {error && <p className="commentStatus" role="alert">{error}</p>}
     </div>
