@@ -2224,3 +2224,23 @@ body.adminDashboardPage .linkBtn,
 body.adminDashboardPage .ghost {
   min-height:44px;
 }
+
+
+/* Reader narrow-phone refinement: preserve readable controls and uncramped navigation. */
+.readerActions a,.readerFooterCard>a{
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  min-height:44px;
+}
+@media(max-width:480px){
+  .readerPage .readerMeta{align-items:flex-start;flex-direction:column;gap:6px}
+  .readerPage .readerProgressText{text-align:start;overflow-wrap:anywhere}
+  .readerPage .readerActions{grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:8px}
+  .readerPage .readerActions>div:nth-child(2){grid-column:1/-1;grid-row:1;text-align:center}
+  .readerPage .readerActions>div:first-child{grid-column:1;grid-row:2}
+  .readerPage .readerActions>div:last-child{grid-column:2;grid-row:2;text-align:end}
+  .readerPage .readerActions a{box-sizing:border-box;max-width:100%;padding-inline:10px;white-space:normal;text-align:center}
+  .readerPage .readerFooterCard{align-items:flex-start;flex-wrap:wrap;gap:12px}
+  .readerPage .readerFooterCard>a{width:100%;box-sizing:border-box}
+}
