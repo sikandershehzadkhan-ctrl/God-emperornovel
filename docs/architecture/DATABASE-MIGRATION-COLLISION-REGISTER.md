@@ -91,6 +91,57 @@ The following duplicates/overlaps were observed from the changed-file patches:
 8. Run the Cloudflare build and D1 migration validation on the integrated branch.
 9. Stage the migration against a disposable/staging D1 first. Production rollout requires backup, explicit release approval, monitoring and a documented recovery plan.
 
+## Focused review: author-private data, creator transfers, deletion workflow, and community cleanup
+
+Reviewed SQL and application/test source at PR #130 head `84e3541d6b588110669cb2161dcb6eb5af788435`, PR #124 head `161e66652208a516248ca8867b35b6a52c3280e8`, and PR #118 head `1f69507f32cd1589fe076ad69381b8d8a6ba7d0b`.
+
+### PR #130: owner scoping is present in application routes, but transfer semantics are unresolved
+
+Positive findings:
+- Goal reads require both `author_story_goals.owner_user_id` and current `novels.owner_user_id` to match the session user.
+- Goal creation/upsert uses an `INSERT ... SELECT` from a novel owned by the session user and prevents overwriting another stored owner's goal.
+- Private-note reads, creates, updates, and deletes recheck the session owner and current novel owner. Note creation also verifies that an optional chapter belongs to the selected novel.
+- Regression tests assert several of these conditions.
+
+Open issue:
+- Both tables store an owner ID separately from the novel. PR #124's ownership-transfer trigger changes `novels.owner_user_id`, but does not define what happens to `author_story_goals.owner_user_id` or `author_private_notes.owner_user_id`.
+- After a successful transfer, existing rows remain assigned to the former owner. The current PR #130 read queries require the row owner and current novel owner to match, so those rows become invisible to both former and new owners. This may be correct for private notes, but the product/data-retention policy must explicitly decide whether goals/notes remain with the creator, transfer to the new owner, or are archived/exported.
+- The schema does not enforce that `author_private_notes.chapter_id`, when present, belongs to the same `novel_id` in that note. The current API checks this on creation, but a composite database constraint/trigger would protect other write paths too.
+- Required tests: transfer with existing goals and notes; verify former-owner access is revoked as intended; verify new-owner access follows the chosen policy; ensure no cross-owner leakage; verify deletion/export behavior.
+
+**Disposition:** application-level ownership checks look deliberately scoped in the reviewed routes. Do not call this data lifecycle complete until ownership-transfer behavior is explicitly decided and tested.
+
+### PR #124: account deletion review and creator transfer
+
+Positive findings:
+- Deletion requests are workflow records, not direct erasure commands; active requests are unique per user and have a cooling-off schedule.
+- Review records bind request and subject IDs, use version increments, and retain append-only review events.
+- Approval records are immutable and bind an independent approver to the exact plan digest. The reviewed SQL prevents the subject and proposer from acting as approver.
+- Ownership transfer acceptance is guarded in a SQLite trigger: the invitation identity is immutable, expiry is checked, current ownership is rechecked, recipient eligibility and rights evidence are checked, and the novel update must affect exactly one row.
+- SQLite tests exercise accepted transfer and rejection for banned/non-author recipients, stale ownership, expired invitations, changed invitation identity, and missing rights evidence.
+
+Open issues / required validation:
+- `novel_ownership_transfers` intentionally stores actor IDs without foreign keys, preserving numeric audit history. Document the retention rationale and ensure account export/deletion policy handles these IDs as retained audit references rather than active account data.
+- The trigger protects acceptance, but request creation, cancellation, rejection, expiry, and authorization still depend on Worker policy. Test every transition against stale owner/session state and replay attempts.
+- Account-deletion tables use RESTRICT relationships, intentionally preventing erasure while review evidence depends on the subject. A future finalization workflow must define how legally required audit evidence is minimized/pseudonymized without breaking referential integrity. The current migrations explicitly do not enable finalization or erasure.
+- Ensure account deletion cannot proceed while creator-owned works, pending transfers, ticket balances, financial records, or legal-retention obligations require a separate disposition.
+- Validate the full ordered migration chain before relying on these SQL tests in isolation; this PR's migration numbering collides with existing `main` history.
+
+### PR #118: community data cleanup
+
+Positive findings:
+- Duplicate and orphan comment reports are copied into `comment_reports_legacy_duplicates` before deletion, retaining report IDs, reporter/comment IDs, reason, details, status, original timestamp, archive timestamp, and archive reason.
+- Duplicate report resolution keeps the earliest row per user/comment.
+- The migration adds parent-validation triggers and cleanup/cascade triggers for legacy interaction tables that predate foreign keys.
+- The dedicated SQLite test exercises deletion of parent records and verifies cleanup behavior.
+
+Data-loss / operational gate:
+- Orphan or duplicate `comment_likes`, `novel_reactions`, and `request_votes` are deleted rather than archived. Their parent references are invalid, so they cannot contribute to valid current engagement, but their removal still changes historical raw counts. Capture before/after counts by table and reason in staging, and ensure analytics never represented these invalid rows as valid engagement.
+- The cleanup migration mutates existing community tables. It must be rehearsed against a representative copy and produce explicit counts for archived reports, removed reports, removed likes, reactions, and votes before production consideration.
+- Verify the archive table's access policy: it is moderation/audit evidence, not public API data. Confirm ordinary readers and authors cannot query archived report details.
+
+**Disposition:** no production migration execution until the data cleanup counts and archive access boundaries are validated.
+
 ## Focused data-preservation review: ratings and reader progress
 
 Reviewed the actual SQL and regression tests at PR #171 head `574b37bab1eb0426bc0032f79eceb3c4ca0a4588`, and the competing ratings migration at PR #123 head `5a2e5b8f3b7db97cbf878e71c0acd9c1f1716eb5`.
