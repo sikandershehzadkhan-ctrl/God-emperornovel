@@ -53,7 +53,7 @@ assert.match(app, /async function publicProfile\(/);
 assert.match(app, /p==='\/profile'/);
 assert.match(app, /\/u\//);
 assert.equal(app, fs.readFileSync("public/app-17.23.0.js", "utf8"), "Source and served app bundles must remain byte-identical.");
-assert.match(app, /async function authorPublic\\(/);
+assert.match(app, /async function authorPublic\(/);
 assert.ok(app.includes("/api/public-profile/"), "Author pages use the privacy-gated public profile endpoint.");
 assert.ok(app.includes("View full public profile"), "Author pages link to the public account profile.");
 console.log("User profile validation, privacy, route, and bundle checks passed.");
