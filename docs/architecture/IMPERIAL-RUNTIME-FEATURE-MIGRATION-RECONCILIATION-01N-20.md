@@ -20,11 +20,11 @@ Added `migrations/0012_runtime_feature_schema.sql` as the fresh-install counterp
 - Comment likes and lookup index.
 - Novel reactions with their existing user/novel foreign-key cascades.
 - Defensive `request_votes` declaration, matching the existing 0008/runtime convergence.
-- Comment parent/edit metadata columns.
+- Comment parent/edit metadata remains runtime-managed. It is intentionally not added by migration 0012 because older Workers may already have added those columns before the ordered migration is applied; SQLite lacks a portable `ADD COLUMN IF NOT EXISTS` form for this migration path.
 
 Comment reports are deliberately excluded from 0012. Migration 0019 remains their single schema/uniqueness owner. Report rows are not deleted, archived, or cascaded by this migration. Migration 0020 owns report lifecycle indexes.
 
-Added `scripts/test-runtime-feature-migration-parity.mjs` to the package build chain. It checks the ordered migration ownership boundaries and required table/index/column declarations.
+Added `scripts/test-runtime-feature-migration-parity.mjs` to the package build chain. It checks the ordered migration ownership boundaries and required table/index declarations, while confirming that comment metadata columns remain owned by the idempotent runtime initializer.
 
 ## Validation status
 
