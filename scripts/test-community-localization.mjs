@@ -4,7 +4,7 @@ import assert from 'node:assert/strict';
 const app = fs.readFileSync('public/app.js', 'utf8');
 const served = fs.readFileSync('public/app-17.24.0.js', 'utf8');
 const html = fs.readFileSync('public/index.html', 'utf8');
-const match = app.match(/const COMMUNITY_LANG=(\{[\s\S]*?\});\nfunction setINLang/);
+const match = app.match(/const COMMUNITY_LANG=(\{[\s\S]*?\});\s*const RANKING_LANG=/);
 assert.ok(match, 'Community locale dictionary must be present');
 const dictionaries = JSON.parse(match[1]);
 const locales = ['en','ur','hi','zh-CN','zh-TW','es','fr','id','ja','ko','pt-BR','ar','vi','fa'];
