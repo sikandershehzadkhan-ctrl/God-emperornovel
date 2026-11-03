@@ -362,7 +362,7 @@ async function ensureCommunityTaxonomySchema(env){
  created_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,reviewed_at TEXT,reviewer_id INTEGER,
  UNIQUE(type,slug))`).run();
 }
-async async function communityTaxonomy(req,env,u){
+async function communityTaxonomy(req,env,u){
  const u=new URL(req.url), method=req.method;
  if(method==='GET'){
   const type=String(u.searchParams.get('type')||'').toLowerCase();
