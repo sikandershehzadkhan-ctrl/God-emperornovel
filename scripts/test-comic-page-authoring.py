@@ -9,6 +9,8 @@ for path in sorted(Path("migrations").glob("*.sql")):
 for username in ("owner", "intruder"):
     db.execute("INSERT INTO users(username,email,password_hash) VALUES(?,?,?)",
                (username, f"{username}@example.test", "hash"))
+db.execute("INSERT INTO users(username,email,password_hash,role) VALUES(?,?,?,?)",
+           ("independent-reviewer", "reviewer@example.test", "hash", "admin"))
 db.execute("INSERT INTO novels(title,author,kind,owner_user_id) VALUES('Comic','owner','webtoon',1)")
 db.execute("INSERT INTO chapters(novel_id,chapter_number,title,content,publication_status) VALUES(1,1,'Episode 1','','draft')")
 db.execute("INSERT INTO chapters(novel_id,chapter_number,title,content,publication_status) VALUES(1,2,'Episode 2','','draft')")
@@ -18,9 +20,9 @@ def asset(owner, key):
                         VALUES(?,?, 'image/webp', 1024)""", (owner, key))
     asset_id = cur.lastrowid
     db.execute("""INSERT INTO media_asset_reviews(media_asset_id,reviewer_user_id,decision,note)
-                  VALUES(?,?, 'approved','License evidence checked')""", (asset_id, owner))
+                  VALUES(?,?, 'approved','License evidence checked')""", (asset_id, 3))
     db.execute("""UPDATE media_assets SET status='ready',rights_status='approved',
-                  reviewed_by_user_id=? WHERE id=?""", (owner, asset_id))
+                  reviewed_by_user_id=? WHERE id=?""", (3, asset_id))
     return asset_id
 
 a1 = asset(1, "private/owner/page-1")
