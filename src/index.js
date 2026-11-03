@@ -947,12 +947,61 @@ if(p==="/api/author/feedback"&&m==="GET"){
   const locked=!!b.is_locked,cost=Number(b.ticket_cost||0);if(cost<0)return json({error:'Ticket cost cannot be negative'},400);
   try{const r=await env.DB.prepare(`INSERT INTO chapters(novel_id,chapter_number,title,content,is_locked,ticket_cost,publication_status) VALUES(?,?,?,?,?,?, 'draft')`).bind(nid,num,title,content,locked?1:0,cost).run();await env.DB.prepare('UPDATE novels SET updated_at=CURRENT_TIMESTAMP WHERE id=?').bind(nid).run();await audit(env,u,'author_chapter_created',`novel=${nid};chapter=${num}`);return json({ok:true,id:Number(r.meta.last_row_id),message:'Chapter saved as draft.'},201)}catch(err){return json({error:'Chapter number already exists or could not be saved'},409)}
  }
+ if(/^\/api\/author\/chapters\/\d+\/pages$/.test(p)&&m==="GET"){
+  const e=author(u);if(e)return e;
+  const chapterId=Number(p.split("/")[4]);
+  if(!Number.isSafeInteger(chapterId)||chapterId<1)return json({error:"Invalid chapter id."},400);
+  const chapter=await env.DB.prepare("SELECT c.id,c.novel_id,n.owner_user_id,n.kind FROM chapters c JOIN novels n ON n.id=c.novel_id WHERE c.id=?").bind(chapterId).first();
+  if(!chapter)return json({error:"Chapter not found."},404);
+  if(u.role!=="admin"&&Number(chapter.owner_user_id)!==Number(u.id))return json({error:"You do not own this chapter."},403);
+  const pages=(await env.DB.prepare("SELECT cp.id,cp.media_asset_id,cp.page_number,cp.alt_text,cp.caption,a.mime_type,a.size_bytes FROM comic_chapter_pages cp JOIN media_assets a ON a.id=cp.media_asset_id WHERE cp.chapter_id=? ORDER BY cp.page_number").bind(chapterId).all()).results||[];
+  return json({chapter_id:chapterId,pages:pages.map(x=>({...x,src:"/api/media/"+x.media_asset_id}))});
+ }
+ if(/^\/api\/author\/chapters\/\d+\/pages$/.test(p)&&m==="PUT"){
+  const e=author(u);if(e)return e;
+  const chapterId=Number(p.split("/")[4]);
+  if(!Number.isSafeInteger(chapterId)||chapterId<1)return json({error:"Invalid chapter id."},400);
+  const limit=await consumeAuthRateLimit(env,"comic-pages-write",String(u.id),30,3600);if(limit)return limit;
+  const chapter=await env.DB.prepare("SELECT c.id,c.novel_id,c.publication_status,n.owner_user_id,n.kind FROM chapters c JOIN novels n ON n.id=c.novel_id WHERE c.id=?").bind(chapterId).first();
+  if(!chapter)return json({error:"Chapter not found."},404);
+  if(u.role!=="admin"&&Number(chapter.owner_user_id)!==Number(u.id))return json({error:"You do not own this chapter."},403);
+  if(chapter.publication_status!=="draft")return json({error:"Move this chapter to draft before changing its comic pages."},409);
+  if(!["manga","manhwa","manhua","webtoon","comic","graphic_novel"].includes(String(chapter.kind||"").toLowerCase()))return json({error:"Comic pages can only be attached to a comic-format novel."},409);
+  const b=await body(req),pages=b.pages;
+  if(!Array.isArray(pages)||pages.length>300)return json({error:"Provide an array of no more than 300 comic pages."},400);
+  const normalized=[],seen=new Set();
+  for(let i=0;i<pages.length;i++){
+   const item=pages[i]||{},assetId=Number(item.media_asset_id);
+   if(!Number.isSafeInteger(assetId)||assetId<1||seen.has(assetId))return json({error:"Each page must reference a unique valid media asset."},400);
+   seen.add(assetId);
+   const alt=String(item.alt_text||"").trim(),caption=String(item.caption||"").trim();
+   if(alt.length>300||caption.length>500)return json({error:"Page alt text is limited to 300 characters and captions to 500."},400);
+   normalized.push({assetId,alt,caption});
+  }
+  if(normalized.length){
+   const ids=normalized.map(x=>x.assetId),placeholders=ids.map(()=>"?").join(",");
+   const eligible=await env.DB.prepare("SELECT id FROM media_assets WHERE owner_user_id=? AND status='ready' AND rights_status='approved' AND id IN ("+placeholders+")").bind(chapter.owner_user_id,...ids).all();
+   if((eligible.results||[]).length!==ids.length)return json({error:"Every page must use your own image with completed processing and approved rights."},409);
+  }
+  try{
+   const comicContent=JSON.stringify({type:"imperial_comic_chapter",version:1,pages:normalized.map(x=>({src:"/api/media/"+x.assetId,alt:x.alt,caption:x.caption}))});
+   const statements=[env.DB.prepare("DELETE FROM comic_chapter_pages WHERE chapter_id=?").bind(chapterId),...normalized.map((x,i)=>env.DB.prepare("INSERT INTO comic_chapter_pages(chapter_id,media_asset_id,page_number,alt_text,caption) VALUES(?,?,?,?,?)").bind(chapterId,x.assetId,i+1,x.alt,x.caption)),env.DB.prepare("UPDATE chapters SET content=?,updated_at=CURRENT_TIMESTAMP WHERE id=? AND publication_status='draft'").bind(comicContent,chapterId),env.DB.prepare("UPDATE novels SET updated_at=CURRENT_TIMESTAMP WHERE id=?").bind(chapter.novel_id)];
+   await env.DB.batch(statements);
+  }catch(err){console.error("comic page save failed",err);return json({error:"Comic pages could not be saved. Existing page order was preserved."},409)}
+  try{await audit(env,u,"comic_chapter_pages_saved",`chapter=${chapterId};pages=${normalized.length}`)}catch(err){console.error("comic page audit event failed",err)}
+  return json({ok:true,chapter_id:chapterId,page_count:normalized.length,message:"Comic page order saved."});
+ }
  if(/^\/api\/author\/chapters\/\d+$/.test(p)&&m==="PATCH"){
   const e=author(u);if(e)return e;const id=Number(p.split('/').pop()),b=await body(req);
   const c=await env.DB.prepare(`SELECT c.*,n.owner_user_id,n.kind FROM chapters c JOIN novels n ON n.id=c.novel_id WHERE c.id=?`).bind(id).first();if(!c)return json({error:'Chapter not found'},404);if(u.role!=="admin"&&Number(c.owner_user_id)!==Number(u.id))return json({error:'You do not own this chapter'},403);
   const num=Number(b.chapter_number??c.chapter_number),title=String(b.title??c.title).trim(),content=String(b.content??c.content);const cost=Number(b.ticket_cost??c.ticket_cost),locked=b.is_locked===undefined?Number(c.is_locked):b.is_locked?1:0;
   if(!Number.isInteger(num)||num<1||!title||!content||content.length>100000||!Number.isInteger(cost)||cost<0)return json({error:'Invalid chapter data'},400);
-  if(["manga","manhwa","manhua","webtoon","comic","graphic_novel"].includes(String(c.kind||"").toLowerCase())){const comicCheck=validateComicChapterContent(content);if(!comicCheck.ok)return json({error:comicCheck.error},400)}
+  if(c.publication_status!=="draft")return json({error:"Move this chapter to draft before editing its content or metadata."},409);
+  if(["manga","manhwa","manhua","webtoon","comic","graphic_novel"].includes(String(c.kind||"").toLowerCase())){
+   const comicCheck=validateComicChapterContent(content);if(!comicCheck.ok)return json({error:comicCheck.error},400);
+   const linked=(await env.DB.prepare("SELECT media_asset_id,alt_text,caption FROM comic_chapter_pages WHERE chapter_id=? ORDER BY page_number").bind(id).all()).results||[];
+   if(linked.length){const canonical=JSON.stringify({type:"imperial_comic_chapter",version:1,pages:linked.map(x=>({src:"/api/media/"+x.media_asset_id,alt:x.alt_text||"",caption:x.caption||""}))});if(content!==canonical)return json({error:"This chapter uses private managed pages. Edit its page sequence through Comic Page Manager."},409)}
+  }
   const dup=await env.DB.prepare('SELECT id FROM chapters WHERE novel_id=? AND chapter_number=? AND id<>?').bind(c.novel_id,num,id).first();if(dup)return json({error:'Another chapter already uses that chapter number.'},409);
   await env.DB.batch([
    env.DB.prepare(`INSERT INTO chapter_revisions(chapter_id,chapter_number,title,content,is_locked,ticket_cost,editor_user_id) SELECT id,chapter_number,title,content,is_locked,ticket_cost,? FROM chapters WHERE id=? AND (chapter_number<>? OR title<>? OR content<>? OR is_locked<>? OR ticket_cost<>?)`).bind(u.id,id,num,title,content,locked,cost),
@@ -967,8 +1016,12 @@ if(p==="/api/author/feedback"&&m==="GET"){
   return json((await env.DB.prepare('SELECT id,chapter_id,chapter_number,title,content,is_locked,ticket_cost,created_at FROM chapter_revisions WHERE chapter_id=? ORDER BY id DESC LIMIT 10').bind(id).all()).results||[])
  }
  if(/^\/api\/author\/chapters\/\d+\/publish$/.test(p)&&m==="POST"){
-  const e=author(u);if(e)return e;const id=Number(p.split('/')[3]),b=await body(req);const c=await env.DB.prepare(`SELECT c.*,n.owner_user_id,n.rights_status FROM chapters c JOIN novels n ON n.id=c.novel_id WHERE c.id=?`).bind(id).first();if(!c)return json({error:'Chapter not found'},404);if(u.role!=="admin"&&Number(c.owner_user_id)!==Number(u.id))return json({error:'You do not own this chapter'},403);
+  const e=author(u);if(e)return e;const id=Number(p.split('/')[3]),b=await body(req);const c=await env.DB.prepare(`SELECT c.*,n.owner_user_id,n.rights_status,n.kind FROM chapters c JOIN novels n ON n.id=c.novel_id WHERE c.id=?`).bind(id).first();if(!c)return json({error:'Chapter not found'},404);if(u.role!=="admin"&&Number(c.owner_user_id)!==Number(u.id))return json({error:'You do not own this chapter'},403);
   const status=String(b.publication_status||'published');if(!['draft','published'].includes(status))return json({error:'Invalid publication status'},400);if(status==='published'&&!['original','public_domain','licensed','authorized'].includes(String(c.rights_status)))return json({error:'Novel rights are not eligible for publication'},403);
+  if(status==='published'&&["manga","manhwa","manhua","webtoon","comic","graphic_novel"].includes(String(c.kind||"").toLowerCase())){
+   const pageCount=await env.DB.prepare("SELECT COUNT(*) AS page_count FROM comic_chapter_pages cp JOIN media_assets a ON a.id=cp.media_asset_id WHERE cp.chapter_id=? AND a.status='ready' AND a.rights_status='approved'").bind(id).first();
+   if(Number(pageCount?.page_count||0)<1)return json({error:"Comic chapters require at least one processed, rights-approved private page before publication."},409);
+  }
   await env.DB.batch([env.DB.prepare('UPDATE chapters SET publication_status=?,updated_at=CURRENT_TIMESTAMP WHERE id=?').bind(status,id),env.DB.prepare('DELETE FROM scheduled_chapter_publications WHERE chapter_id=?').bind(id),env.DB.prepare('UPDATE novels SET updated_at=CURRENT_TIMESTAMP WHERE id=?').bind(c.novel_id)]);await audit(env,u,status==='published'?'author_chapter_published':'author_chapter_unpublished',`chapter=${id}`);return json({ok:true,message:status==='published'?'Chapter published.':'Chapter moved to draft.'})
  }
  if(/^\/api\/author\/chapters\/\d+\/schedule$/.test(p)&&m==="POST"){
