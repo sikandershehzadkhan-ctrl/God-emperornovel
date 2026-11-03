@@ -13,6 +13,8 @@ assert.deepEqual(missingLanguage, [], "Every public HTML route must declare a do
 
 const author = readFileSync("public/author.html", "utf8");
 const admin = readFileSync("public/admin.html", "utf8");
+const worker = readFileSync("src/index.js", "utf8");
+assert.ok(worker.includes('if(p==="/author"||file==="author.html")text=text.replace("<body>",\'<body class="authorStudioPage">\');'), "The routed /author page must receive the Author Studio design scope even though it serves the homepage template");
 assert.match(author, /<body[^>]*class=["'][^"']*authorStudioPage/, "Author Studio needs its scoped design hook");
 assert.match(admin, /<body[^>]*class=["'][^"']*adminDashboardPage/, "Admin needs its scoped design hook");
 
