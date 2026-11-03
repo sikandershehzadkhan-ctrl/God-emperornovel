@@ -107,6 +107,17 @@ assert.match(rendered.content, /href="\/novel\/7"/);
 assert.match(rendered.content, /The &lt;Glass&gt; Throne/);
 assert.match(rendered.content, /A &amp; B/);
 assert.match(rendered.content, /src="\/story-cover-placeholder\.svg"/);
+const quotedText = renderHomepageHtml([{ id: "13", title: 'A "Quoted" & <Brave> Writer\'s Tale', author: 'Author "One" & <Two>' }]).content;
+assert.ok(quotedText.includes('A &quot;Quoted&quot; &amp; &lt;Brave&gt; Writer&#39;s Tale'), "SSR must escape quotes, apostrophes, ampersands and angle brackets in story titles");
+assert.ok(quotedText.includes('Author &quot;One&quot; &amp; &lt;Two&gt;'), "SSR must escape quotes and markup characters in author names");
+assert.doesNotMatch(quotedText, /<Brave>|<Two>/, "escaped story metadata must never become live HTML elements");
+const invalidIds = renderHomepageHtml([
+  { id: "not-a-number", title: "Invalid first" },
+  { id: -1, title: "Invalid second" },
+  { id: 14, title: "Valid after invalid rows" }
+]).content;
+assert.ok(invalidIds.includes('href="/novel/14"'), "invalid database IDs must be discarded without hiding later valid stories");
+assert.equal((invalidIds.match(/class="card"/g) || []).length, 1, "invalid database IDs must not create story cards");
 assert.match(rendered.footer, /Rights &amp; Copyright/);
 const capped = renderHomepageHtml(Array.from({ length: 9 }, (_, index) => ({ id: index + 1, title: `Story ${index + 1}` }))).content;
 assert.equal((capped.match(/class="card"/g) || []).length, 6, "SSR must render no more than six story cards");
