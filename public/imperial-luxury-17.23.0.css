@@ -576,3 +576,36 @@ html[data-theme="dark"] .navlinks a.active,
 html[data-theme="dark"] .mobileNav a.active{color:#FFFFFF;background:rgba(106,13,173,.22)}
 html[data-theme="dark"] a:not(.primary):not(.secondary):not(.pill):not(.brand){color:#8DB8FF}
 html[data-theme="dark"] a:not(.primary):not(.secondary):not(.pill):not(.brand):hover{color:#B78AE2}
+
+
+/* Homepage light-theme contrast repair (WCAG AA).
+   Keep the Imperial sapphire/purple identity while ensuring text is readable
+   on the white surfaces used by the light theme. */
+html[data-theme="light"] {
+  --cyan: #0F52BA;
+  --cyan2: #0F52BA;
+  --violet: #6A0DAD;
+  --violet2: #6A0DAD;
+  --violet4: #6A0DAD;
+  --lime: #397000;
+  --gold2: #5B21B6;
+}
+html[data-theme="light"] .eyebrow,
+html[data-theme="light"] .promiseText,
+html[data-theme="light"] .heroPromise > span,
+html[data-theme="light"] .nextFeatureTile .featureInlineLink,
+html[data-theme="light"] .featureInlineLink span {
+  color: #0F52BA;
+}
+html[data-theme="light"] .nextFeatureIntro h2 span {
+  color: #6A0DAD;
+}
+html[data-theme="light"] .footerBrand {
+  color: #0B1215;
+}
+
+html[data-theme="light"] a.skipLink:not(.primary):not(.secondary):not(.pill):not(.brand) {
+  color: #FFFFFF;
+  background: #0B1215;
+  border-color: #0F52BA;
+}
