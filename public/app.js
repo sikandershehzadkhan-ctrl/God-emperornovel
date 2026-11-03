@@ -186,7 +186,7 @@ async function catalog(){const root=$('#app');const qs=new URLSearchParams(locat
    grid.removeAttribute('aria-busy');
    const pager=$('#pager');pager.innerHTML='';
    if(d.page>1){p.set('page',d.page-1);pager.insertAdjacentHTML('beforeend',`<a class="secondary" href="/catalog?${p}">← Previous</a>`)}
-   if(items.length===d.limit){p.set('page',d.page+1);pager.insertAdjacentHTML('beforeend',`<a class="primary" href="/catalog?${p}">Next →</a>`)}
+   if(d.has_more===true){p.set('page',d.page+1);pager.insertAdjacentHTML('beforeend',`<a class="primary" href="/catalog?${p}">Next →</a>`)}
   }catch(error){
    count.textContent='Catalog temporarily unavailable';grid.removeAttribute('aria-busy');$('#pager').innerHTML='';
    grid.innerHTML=`<div class="notice" role="alert" style="grid-column:1/-1"><h2>We could not load the catalog.</h2><p>${esc(error.message||'Please try again in a moment.')}</p><button class="primary" id="catalogRetry" type="button">Try again</button></div>`;
