@@ -524,3 +524,23 @@ Commits:
 - Test assertion correction: `67bd96d0f570b5ab694de90a681c6c759badde09`
 
 This is backend storage/API foundation only. The reader UI has not yet been wired to fetch and save these positions. No live schema has been bootstrapped, no production D1 has been accessed, and no deployment has occurred. Build/CI and real D1 concurrency tests remain pending.
+
+
+## Reader UI integration with cross-device reading positions (2026-11-04)
+
+Implemented on `feature/media-publication-gates-0013`:
+- Reader attempts authenticated GET of `/api/reading-position` and prefers the saved server percentage when it refers to the chapter currently open; local position remains the fallback.
+- Authenticated readers can create their first remote position and subsequent scroll progress is debounced before POST.
+- Every update carries the last known revision. HTTP 409 stops automatic retries and displays a reload message rather than silently overwriting another device's newer position.
+- Opening a chapter older than the server's saved chapter disables remote writes from that older chapter, preventing a simple backward navigation from replacing a later chapter position.
+- The local reader position remains available if the account is logged out or remote API is unavailable.
+- Versioned runtime bundle was synchronized byte-for-byte with source.
+- Extended reader regression checks for server fetch, first-time save, revision use, stale conflict handling and later-chapter protection.
+
+Commits:
+- Reader UI integration: `d19adcc5a89b0c9694f77ae29c2d2f050a022d01`
+- First-save and chapter-order protection: `5b0fc1125c8b123b7867f7e5aa2ebe2b827178b6`
+- Runtime bundle: `d6e5aa36aa3611ecdb8cd21d2d0cb7f5306e51f5`
+- Regression coverage: `8ca03ad7846a1448d288d916aaeeb4b62e8939e8`
+
+Post-commit fetch confirmed source/runtime byte equality and that the reader regression test remains wired into the package build. The current branch has not been run through a real browser/device session or D1 concurrency integration test. GitHub Actions result for these latest commits was not yet verified. No deployment or production database access occurred.
