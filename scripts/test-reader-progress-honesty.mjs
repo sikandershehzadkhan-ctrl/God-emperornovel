@@ -12,7 +12,7 @@ assert.ok(libraryStart >= 0 && libraryEnd > libraryStart, "Library renderer must
 const library = app.slice(libraryStart, libraryEnd);
 assert.match(library, /account-synced chapter history, reading progress and bookmarks/i,
   "Library copy must describe account-synced scroll progress accurately");
-assert.match(library, /progress_percent!==null[\s\S]*?progress_chapter/ ,
+assert.ok(library.includes("x.progress_chapter||x.chapter_number") && library.includes("x.progress_percent"),
   "Continue Reading must display and resume the saved chapter progress when available");
 assert.match(library, /Scroll position is saved on this device/i,
   "Library must disclose that scroll percentage is device-local");
