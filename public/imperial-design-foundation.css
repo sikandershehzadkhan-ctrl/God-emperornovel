@@ -2187,3 +2187,29 @@ html[data-reduced-motion="true"] .skeletonPulse{
   animation:none!important;
   background:var(--in-surface-raised)!important;
 }
+
+
+/* Compact-card preference: denser discovery without shrinking interactive targets. */
+html[data-compact-cards="true"] .catalogGrid,
+html[data-compact-cards="true"] .homeStoryGrid,
+html[data-compact-cards="true"] .accountGrid .grid{
+  gap:9px;
+}
+html[data-compact-cards="true"] .catalogBody,
+html[data-compact-cards="true"] .homeStoryGrid .cardBody,
+html[data-compact-cards="true"] .accountGrid .cardBody{
+  padding:9px;
+}
+html[data-compact-cards="true"] .catalogCover,
+html[data-compact-cards="true"] .accountGrid .card .cover{
+  aspect-ratio:.84;
+}
+html[data-compact-cards="true"] .catalogTitle,
+html[data-compact-cards="true"] .homeStoryGrid .cardTitle{
+  font-size:12px;
+  line-height:1.35;
+}
+html[data-compact-cards="true"] .catalogStats,
+html[data-compact-cards="true"] .homeStoryGrid .meta{
+  gap:5px;
+}
