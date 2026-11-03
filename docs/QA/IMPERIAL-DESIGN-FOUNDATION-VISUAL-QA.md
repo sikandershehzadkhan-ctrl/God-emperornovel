@@ -137,3 +137,14 @@ Automated source regression assertions were added to `scripts/test-design-founda
 ### 17.49 selector activation correction
 
 A source audit found that the author/admin templates had bare `<body>` elements, so the new route-scoped CSS selectors were not matching. Added the explicit `authorStudioPage` and `adminDashboardPage` body hooks and removed duplicate shared stylesheet references in Admin. Added regression assertions for both body hooks and exactly-once stylesheet loading. This is a source-level correction; browser visual verification and CI are still required.
+
+
+## 17.51 platform-wide route coverage — 3 November 2026
+
+Extended the shared foundation and semantic component token stylesheets to every standalone public HTML template in `public/`, including account, authentication, library/history/following, search, genres/tags, fandom, requests, tickets, public author profiles, legal pages, OmniPortal, community taxonomy and 404. Existing homepage, reader, catalog, novel detail, Author Studio and Admin pages retain their existing shared links.
+
+The Admin route was normalized against the actual template primitives (`.panel`, `.adminSection`, `.adminHero`, `.adminNav`, `.adminTable`, and `.field`) rather than only hypothetical component names. Admin navigation now has horizontally scrollable mobile tabs and minimum 44px controls; tables retain a deliberate horizontal scroll surface on narrow screens.
+
+The design regression test now enumerates every `public/*.html` file and asserts both shared stylesheets are present and loaded after inline page styles. It also checks route body hooks, Admin component selectors, and token definitions.
+
+**Release status remains open:** source coverage is expanded, but the test suite has not been executed in this environment, GitHub has not reported checks for the latest PR head, and live production has not been updated. Manual visual QA remains required for each route family, all six themes, RTL, keyboard navigation and narrow-screen layouts.
