@@ -4,6 +4,7 @@ import { readFileSync } from "node:fs";
 const app = readFileSync("public/app.js", "utf8");
 const versioned = readFileSync("public/app-17.23.0.js", "utf8");
 const worker = readFileSync("src/index.js", "utf8");
+const progressMigration = readFileSync("migrations/0013_reader_progress.sql", "utf8");
 const libraryStart = app.indexOf("async function library(");
 const libraryEnd = app.indexOf("async function history(", libraryStart);
 assert.ok(libraryStart >= 0 && libraryEnd > libraryStart, "Library renderer must exist");
@@ -41,6 +42,22 @@ assert.match(worker, /if\(p===\"\/api\/history\"&&m===\"POST\"\)[\s\S]*?Number\.
   "History writes must reject missing, fractional, unsafe or non-positive identifiers");
 assert.match(worker, /FROM chapters c JOIN novels n ON n\.id=c\.novel_id WHERE c\.novel_id=\? AND c\.chapter_number=\? AND c\.publication_status='published' AND n\.publication_status='published'/,
   "History and bookmark writes must target an actually published chapter of a published novel");
+
+
+assert.match(worker, /if\(p===\"\/api\/reader-progress\"&&m===\"GET\"\)[\s\S]*?need\(u\)[\s\S]*?reader_progress WHERE user_id=\? AND novel_id=\?/,
+  "Cross-device progress reads must require authentication and be scoped to the session user");
+assert.match(worker, /if\(p===\"\/api\/reader-progress\"&&m===\"POST\"\)[\s\S]*?Number\.isSafeInteger\(progressPercent\)[\s\S]*?progressPercent>100[\s\S]*?reader_progress\(user_id,novel_id,chapter_number,progress_percent/,
+  "Cross-device progress writes must validate bounded integer percentages and use account-scoped upserts");
+assert.match(progressMigration, /PRIMARY KEY \(user_id, novel_id\)/,
+  "Reader progress must have one latest reading position per account and novel");
+assert.match(progressMigration, /CHECK \(progress_percent BETWEEN 0 AND 100\)/,
+  "Reader progress storage must constrain percentages to 0 through 100");
+assert.match(reader, /api\('\/api\/reader-progress\?novel_id='/,
+  "Signed-in readers must load saved progress from their account");
+assert.match(reader, /keepalive:true[\s\S]*?\/api\/reader-progress/,
+  "Reader progress must flush during page exit where the browser permits it");
+assert.match(reader, /synced to your account/,
+  "Signed-in reader UI must disclose account synchronization");
 
 assert.equal(versioned, app, "The cache-versioned reader bundle must remain byte-for-byte synchronized with app.js");
 console.log("PASS: reader progress labels distinguish local scroll position from account-synced chapter history.");
