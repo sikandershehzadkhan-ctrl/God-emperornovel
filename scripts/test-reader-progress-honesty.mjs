@@ -29,6 +29,14 @@ assert.match(reader, /readerProgress:\x27\+id/,
 
 assert.match(worker, /if\(p===\"\/api\/bookmark\"&&m===\"POST\"\)[\s\S]*?Number\.isSafeInteger\(novelId\)[\s\S]*?Number\.isSafeInteger\(chapterNumber\)/,
   "Bookmark writes must reject missing, fractional, unsafe or non-positive identifiers");
+assert.match(worker, /if\(p===\"\/api\/bookmark\"&&m===\"DELETE\"\)[\s\S]*?DELETE FROM bookmarks WHERE user_id=\? AND novel_id=\? AND chapter_number=\?/,
+  "Bookmark removal must be scoped to the authenticated user and exact novel/chapter");
+assert.match(reader, /method:saved\?'DELETE':'POST'/,
+  "Signed-in readers must be able to explicitly add and remove their current chapter bookmark");
+assert.doesNotMatch(reader, /api\('\/api\/bookmark',\{method:'POST',body:JSON\.stringify\(\{novel_id:Number\(id\),chapter_number:num\}\)\}\)\.catch/,
+  "Opening a chapter must not silently overwrite the user's deliberate bookmark");
+assert.match(reader, /readerBookmark:\x27\+id/,
+  "Guest bookmark state must remain device-local and available to the reader");
 assert.match(worker, /if\(p===\"\/api\/history\"&&m===\"POST\"\)[\s\S]*?Number\.isSafeInteger\(novelId\)[\s\S]*?Number\.isSafeInteger\(chapterNumber\)/,
   "History writes must reject missing, fractional, unsafe or non-positive identifiers");
 assert.match(worker, /FROM chapters c JOIN novels n ON n\.id=c\.novel_id WHERE c\.novel_id=\? AND c\.chapter_number=\? AND c\.publication_status='published' AND n\.publication_status='published'/,
