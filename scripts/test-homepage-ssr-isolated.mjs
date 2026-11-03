@@ -34,6 +34,7 @@ assert.ok(worker.includes("LIMIT 6"), "SSR query must be bounded");
 assert.ok(worker.includes('const serverMarkup=renderHomepageHtml(homepageNovels);'), "Worker must render a safe empty state even if the catalog query fails");
 assert.ok(worker.includes('text=text.replace("<body>","<body>"+serverMarkup.header);'), "Worker must include the SSR header before the app");
 assert.ok(worker.includes("serverMarkup.content"), "Worker must replace the app boot shell with rendered story content");
+assert.ok(worker.includes("[\\s\\S]*?"), "SSR replacement must stop at the first closing app landmark");
 assert.ok(worker.includes('text=text.replace("</body>",serverMarkup.footer+"</body>");'), "Worker must include the SSR footer");
 
 assert.ok(source.includes("const serverRenderedHome=location.pathname==='/'&&!!root.querySelector('[data-imperial-ssr-home]')"), "client boot must detect SSR homepage markup");
