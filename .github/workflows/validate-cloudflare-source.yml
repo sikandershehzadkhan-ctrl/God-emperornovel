@@ -114,6 +114,63 @@ jobs:
           print(f'PASS: {len(paths)} migrations applied to fresh SQLite.')
           PY
 
+      - name: Test media asset registry constraints
+        run: python3 scripts/test-media-asset-registry.py
+
+      - name: Test media storage quotas
+        run: python3 scripts/test-media-storage-quotas.py
+
+      - name: Test media publication and rights lifecycle gates
+        run: python3 scripts/test-media-publication-gates.py
+
+      - name: Test comic media owner isolation
+        run: python3 scripts/test-media-owner-guards.py
+
+      - name: Test comic page authoring database guards
+        run: python3 scripts/test-comic-page-authoring.py
+
+      - name: Test comic page authoring API boundaries
+        run: python3 scripts/test-comic-page-authoring-api.py
+
+      - name: Test Author Studio comic page manager interface
+        run: python3 scripts/test-comic-page-manager-ui.py
+
+      - name: Test private comic reader rendering
+        run: python3 scripts/test-comic-reader-rendering.py
+
+      - name: Test chapter publishing lifecycle security gates
+        run: python3 scripts/test-chapter-publishing-guards.py
+
+      - name: Test same-origin mutation request security
+        run: node scripts/test-request-security.mjs
+
+      - name: Test ticket unlock charging and rate limits
+        run: python3 scripts/test-ticket-unlock-security.py
+
+      - name: Test read-only ticket ledger reconciliation
+        run: python3 scripts/test-ticket-ledger-reconciliation.py
+
+      - name: Test read-only donation and payment reconciliation
+        run: python3 scripts/test-payment-reconciliation.py
+
+      - name: Test immutable donation reviews and atomic Crown posting
+        run: python3 scripts/test-donation-review-atomicity.py
+
+      - name: Test idempotent administrator Crown adjustments
+        run: python3 scripts/test-admin-ticket-adjustment-atomicity.py
+
+      - name: Test media upload byte and metadata policy
+        run: node scripts/test-media-upload-policy.mjs
+
+      - name: Test private media API security boundaries
+        run: python3 scripts/test-media-api-security.py
+
+      - name: Test administrator media review interface
+        run: python3 scripts/test-admin-media-review-ui.py
+
+      - name: Test creator media library interface
+        run: python3 scripts/test-author-media-library-ui.py
+
       - name: Test catalog query aggregation parity
         run: python3 scripts/test-catalog-query.py
 
@@ -125,6 +182,12 @@ jobs:
 
       - name: Test atomic novel request charging
         run: python3 scripts/test-novel-request-charge-atomic.py
+
+      - name: Test atomic novel request refunds
+        run: node scripts/test-novel-request-refund-atomic.mjs
+
+      - name: Test database-enforced novel request refunds
+        run: python3 scripts/test-novel-request-refund-db.py
 
       - name: Confirm validation only
         run: echo "Validation passed. This workflow does not deploy or modify production D1.";
