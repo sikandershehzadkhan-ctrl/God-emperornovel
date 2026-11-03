@@ -16,7 +16,7 @@ function fakeDb(marker) {
   };
 }
 
-const fastDb = fakeDb({ value: "2" });
+const fastDb = fakeDb({ value: "1" });
 await createRuntimeFeatureSchemaEnsurer()({ DB: fastDb });
 assert.equal(fastDb.calls.length, 1);
 assert.match(fastDb.calls[0], /runtime_feature_schema_version/);
