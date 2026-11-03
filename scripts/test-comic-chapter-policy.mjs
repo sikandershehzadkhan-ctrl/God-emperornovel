@@ -2,6 +2,8 @@ import assert from "node:assert/strict";
 import { validateComicChapterContent } from "../src/comic-chapter-policy.mjs";
 const payload=pages=>JSON.stringify({type:"imperial_comic_chapter",version:1,pages});
 assert.equal(validateComicChapterContent(payload([{src:"https://cdn.example.com/01.webp",alt:"Page one",caption:""}])).ok,true);
+for(const src of ["/api/media/1","/api/media/987654"])assert.equal(validateComicChapterContent(payload([{src}])).ok,true,src);
+for(const src of ["/api/media/0","/api/media/-1","/api/media/1/extra","//evil.example/image.webp","/api/media/1\\\\..\\\\secret"])assert.equal(validateComicChapterContent(payload([{src}])).ok,false,src);
 for(const src of ["http://cdn.example.com/a.png","javascript:alert(1)","data:image/png;base64,AAAA","https://user:pass@cdn.example.com/a.png","https://localhost/a.png","https://127.0.0.1/a.png","https://192.168.1.1/a.png","https://cdn.example.local/a.png","https://cdn.example.com:8443/a.png"])assert.equal(validateComicChapterContent(payload([{src}])).ok,false,src);
 assert.equal(validateComicChapterContent("not json").ok,false);
 assert.equal(validateComicChapterContent(payload([])).ok,false);
