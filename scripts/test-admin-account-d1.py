@@ -41,12 +41,12 @@ def patch(actor_id, target_id, *, role=None, verified=None, banned=None):
         db.execute("BEGIN")
         cur = db.execute(sql, (*values, target_id, next_role, next_banned))
         updated = cur.rowcount
+        # Model D1's conditional audit insert from the successful update count.
         audit = db.execute(
-            "INSERT INTO audit_logs(user_id,action,details) "
-            "SELECT ?,?,? WHERE changes()=1",
+            "INSERT INTO audit_logs(user_id,action,details) VALUES(?,?,?)",
             (actor_id, "admin_user_update", "{}"),
-        )
-        logged = audit.rowcount
+        ) if updated == 1 else None
+        logged = audit.rowcount if audit is not None else 0
         db.commit()
         return updated, logged
     except Exception:
