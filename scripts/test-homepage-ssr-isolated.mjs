@@ -59,4 +59,5 @@ assert.ok(source.includes('document.documentElement.dir=(c==="ur"||c==="ar"||c==
 assert.ok(css.includes('html[dir="rtl"] [data-imperial-ssr-home] .heroSearch'), "source stylesheet must support SSR RTL hero search");
 assert.ok(versionedCss.includes('html[dir="rtl"] [data-imperial-ssr-home] .homeStoryGrid'), "served stylesheet must support SSR RTL story grids");
 assert.ok(luxuryCss.includes('html[data-theme="light"] .eyebrow') && luxuryCss.includes("#0F52BA"), "light-theme homepage eyebrow contrast must use readable sapphire");
+assert.ok(css.includes(".imperialHeroVisual") && css.includes(".imperialHeroSeal img"), "SSR hero crest must have responsive visual styling");
 console.log("Homepage SSR, rights filtering, safe rendering, client handoff, localization, and RTL regression passed.");
