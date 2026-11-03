@@ -1,0 +1,982 @@
+{
+  "schemaVersion": 1,
+  "name": "Imperial Novel API route method inventory",
+  "sourceBranch": "main",
+  "sourceBlob": "237f4461135eb77258b7184e361ce9dfd9a140e9",
+  "auditDate": "2026-11-03",
+  "scope": "Static dispatcher scan. Observed method guards only; not a complete permission or runtime contract.",
+  "exactRouteCount": 74,
+  "dynamicRouteCount": 3,
+  "exactRoutes": [
+    {
+      "path": "/api/health",
+      "methods": [
+        "GET"
+      ],
+      "sourceLines": [
+        413,
+        423
+      ],
+      "unguardedLines": [
+        423
+      ],
+      "methodGuardMissing": true,
+      "authorization": "requires handler-level review"
+    },
+    {
+      "path": "/api/agents",
+      "methods": [
+        "GET"
+      ],
+      "sourceLines": [
+        417
+      ],
+      "unguardedLines": [],
+      "methodGuardMissing": false,
+      "authorization": "requires handler-level review"
+    },
+    {
+      "path": "/api/admin/agents",
+      "methods": [
+        "GET"
+      ],
+      "sourceLines": [
+        418
+      ],
+      "unguardedLines": [],
+      "methodGuardMissing": false,
+      "authorization": "requires handler-level review"
+    },
+    {
+      "path": "/api/admin/agents/run",
+      "methods": [
+        "POST"
+      ],
+      "sourceLines": [
+        419
+      ],
+      "unguardedLines": [],
+      "methodGuardMissing": false,
+      "authorization": "requires handler-level review"
+    },
+    {
+      "path": "/api/taxonomy",
+      "methods": [],
+      "sourceLines": [
+        420
+      ],
+      "unguardedLines": [
+        420
+      ],
+      "methodGuardMissing": true,
+      "authorization": "requires handler-level review"
+    },
+    {
+      "path": "/api/admin/taxonomy",
+      "methods": [
+        "GET",
+        "POST"
+      ],
+      "sourceLines": [
+        421,
+        422
+      ],
+      "unguardedLines": [],
+      "methodGuardMissing": false,
+      "authorization": "requires handler-level review"
+    },
+    {
+      "path": "/api/auth/register",
+      "methods": [
+        "POST"
+      ],
+      "sourceLines": [
+        424
+      ],
+      "unguardedLines": [],
+      "methodGuardMissing": false,
+      "authorization": "requires handler-level review"
+    },
+    {
+      "path": "/api/auth/login",
+      "methods": [
+        "POST"
+      ],
+      "sourceLines": [
+        425
+      ],
+      "unguardedLines": [],
+      "methodGuardMissing": false,
+      "authorization": "requires handler-level review"
+    },
+    {
+      "path": "/api/auth/logout",
+      "methods": [
+        "POST"
+      ],
+      "sourceLines": [
+        426
+      ],
+      "unguardedLines": [],
+      "methodGuardMissing": false,
+      "authorization": "requires handler-level review"
+    },
+    {
+      "path": "/api/me",
+      "methods": [],
+      "sourceLines": [
+        427
+      ],
+      "unguardedLines": [
+        427
+      ],
+      "methodGuardMissing": true,
+      "authorization": "requires handler-level review"
+    },
+    {
+      "path": "/api/config",
+      "methods": [],
+      "sourceLines": [
+        428
+      ],
+      "unguardedLines": [
+        428
+      ],
+      "methodGuardMissing": true,
+      "authorization": "requires handler-level review"
+    },
+    {
+      "path": "/api/genres",
+      "methods": [],
+      "sourceLines": [
+        429
+      ],
+      "unguardedLines": [
+        429
+      ],
+      "methodGuardMissing": true,
+      "authorization": "requires handler-level review"
+    },
+    {
+      "path": "/api/tags",
+      "methods": [],
+      "sourceLines": [
+        430
+      ],
+      "unguardedLines": [
+        430
+      ],
+      "methodGuardMissing": true,
+      "authorization": "requires handler-level review"
+    },
+    {
+      "path": "/api/public-authors",
+      "methods": [],
+      "sourceLines": [
+        431
+      ],
+      "unguardedLines": [
+        431
+      ],
+      "methodGuardMissing": true,
+      "authorization": "requires handler-level review"
+    },
+    {
+      "path": "/api/sources",
+      "methods": [],
+      "sourceLines": [
+        436
+      ],
+      "unguardedLines": [
+        436
+      ],
+      "methodGuardMissing": true,
+      "authorization": "requires handler-level review"
+    },
+    {
+      "path": "/api/omni/status",
+      "methods": [],
+      "sourceLines": [
+        437
+      ],
+      "unguardedLines": [
+        437
+      ],
+      "methodGuardMissing": true,
+      "authorization": "requires handler-level review"
+    },
+    {
+      "path": "/api/omni/search",
+      "methods": [],
+      "sourceLines": [
+        438
+      ],
+      "unguardedLines": [
+        438
+      ],
+      "methodGuardMissing": true,
+      "authorization": "requires handler-level review"
+    },
+    {
+      "path": "/api/omni/resolve",
+      "methods": [],
+      "sourceLines": [
+        439
+      ],
+      "unguardedLines": [
+        439
+      ],
+      "methodGuardMissing": true,
+      "authorization": "requires handler-level review"
+    },
+    {
+      "path": "/api/omni/import",
+      "methods": [
+        "POST"
+      ],
+      "sourceLines": [
+        440
+      ],
+      "unguardedLines": [],
+      "methodGuardMissing": false,
+      "authorization": "requires handler-level review"
+    },
+    {
+      "path": "/api/omni/jobs",
+      "methods": [
+        "GET"
+      ],
+      "sourceLines": [
+        441
+      ],
+      "unguardedLines": [],
+      "methodGuardMissing": false,
+      "authorization": "requires handler-level review"
+    },
+    {
+      "path": "/api/omni/smart-unlock",
+      "methods": [],
+      "sourceLines": [
+        442
+      ],
+      "unguardedLines": [
+        442
+      ],
+      "methodGuardMissing": true,
+      "authorization": "requires handler-level review"
+    },
+    {
+      "path": "/api/formats",
+      "methods": [
+        "GET"
+      ],
+      "sourceLines": [
+        444
+      ],
+      "unguardedLines": [],
+      "methodGuardMissing": false,
+      "authorization": "requires handler-level review"
+    },
+    {
+      "path": "/api/novels",
+      "methods": [],
+      "sourceLines": [
+        446
+      ],
+      "unguardedLines": [
+        446
+      ],
+      "methodGuardMissing": true,
+      "authorization": "requires handler-level review"
+    },
+    {
+      "path": "/api/bookmark",
+      "methods": [
+        "POST"
+      ],
+      "sourceLines": [
+        463
+      ],
+      "unguardedLines": [],
+      "methodGuardMissing": false,
+      "authorization": "requires handler-level review"
+    },
+    {
+      "path": "/api/history",
+      "methods": [
+        "GET",
+        "POST"
+      ],
+      "sourceLines": [
+        464,
+        465
+      ],
+      "unguardedLines": [],
+      "methodGuardMissing": false,
+      "authorization": "requires handler-level review"
+    },
+    {
+      "path": "/api/library",
+      "methods": [
+        "GET",
+        "POST"
+      ],
+      "sourceLines": [
+        466,
+        467
+      ],
+      "unguardedLines": [],
+      "methodGuardMissing": false,
+      "authorization": "requires handler-level review"
+    },
+    {
+      "path": "/api/bookmarks",
+      "methods": [
+        "GET"
+      ],
+      "sourceLines": [
+        468
+      ],
+      "unguardedLines": [],
+      "methodGuardMissing": false,
+      "authorization": "requires handler-level review"
+    },
+    {
+      "path": "/api/novel-reactions",
+      "methods": [
+        "GET",
+        "POST"
+      ],
+      "sourceLines": [
+        469,
+        470
+      ],
+      "unguardedLines": [],
+      "methodGuardMissing": false,
+      "authorization": "requires handler-level review"
+    },
+    {
+      "path": "/api/comments",
+      "methods": [
+        "GET",
+        "POST"
+      ],
+      "sourceLines": [
+        471,
+        472
+      ],
+      "unguardedLines": [],
+      "methodGuardMissing": false,
+      "authorization": "requires handler-level review"
+    },
+    {
+      "path": "/api/comments/like",
+      "methods": [
+        "POST"
+      ],
+      "sourceLines": [
+        473
+      ],
+      "unguardedLines": [],
+      "methodGuardMissing": false,
+      "authorization": "requires handler-level review"
+    },
+    {
+      "path": "/api/comments/report",
+      "methods": [
+        "POST"
+      ],
+      "sourceLines": [
+        474
+      ],
+      "unguardedLines": [],
+      "methodGuardMissing": false,
+      "authorization": "requires handler-level review"
+    },
+    {
+      "path": "/api/rating",
+      "methods": [
+        "GET",
+        "POST"
+      ],
+      "sourceLines": [
+        475,
+        476,
+        503
+      ],
+      "unguardedLines": [],
+      "methodGuardMissing": false,
+      "authorization": "requires handler-level review"
+    },
+    {
+      "path": "/api/admin/community/comments",
+      "methods": [
+        "GET",
+        "PATCH"
+      ],
+      "sourceLines": [
+        477,
+        478
+      ],
+      "unguardedLines": [],
+      "methodGuardMissing": false,
+      "authorization": "requires handler-level review"
+    },
+    {
+      "path": "/api/admin/community/reports",
+      "methods": [
+        "GET",
+        "PATCH"
+      ],
+      "sourceLines": [
+        479,
+        480
+      ],
+      "unguardedLines": [],
+      "methodGuardMissing": false,
+      "authorization": "requires handler-level review"
+    },
+    {
+      "path": "/api/donations",
+      "methods": [
+        "POST"
+      ],
+      "sourceLines": [
+        482
+      ],
+      "unguardedLines": [],
+      "methodGuardMissing": false,
+      "authorization": "requires handler-level review"
+    },
+    {
+      "path": "/api/payment/webhook",
+      "methods": [
+        "POST"
+      ],
+      "sourceLines": [
+        499
+      ],
+      "unguardedLines": [],
+      "methodGuardMissing": false,
+      "authorization": "requires handler-level review"
+    },
+    {
+      "path": "/api/requests",
+      "methods": [
+        "POST",
+        "GET"
+      ],
+      "sourceLines": [
+        500,
+        501
+      ],
+      "unguardedLines": [],
+      "methodGuardMissing": false,
+      "authorization": "requires handler-level review"
+    },
+    {
+      "path": "/api/follow",
+      "methods": [
+        "POST"
+      ],
+      "sourceLines": [
+        502
+      ],
+      "unguardedLines": [],
+      "methodGuardMissing": false,
+      "authorization": "requires handler-level review"
+    },
+    {
+      "path": "/api/community/discussions",
+      "methods": [
+        "GET"
+      ],
+      "sourceLines": [
+        504
+      ],
+      "unguardedLines": [],
+      "methodGuardMissing": false,
+      "authorization": "requires handler-level review"
+    },
+    {
+      "path": "/api/leaderboard",
+      "methods": [
+        "GET"
+      ],
+      "sourceLines": [
+        516
+      ],
+      "unguardedLines": [],
+      "methodGuardMissing": false,
+      "authorization": "requires handler-level review"
+    },
+    {
+      "path": "/api/tier-list",
+      "methods": [
+        "GET"
+      ],
+      "sourceLines": [
+        524
+      ],
+      "unguardedLines": [],
+      "methodGuardMissing": false,
+      "authorization": "requires handler-level review"
+    },
+    {
+      "path": "/api/random",
+      "methods": [
+        "GET"
+      ],
+      "sourceLines": [
+        529
+      ],
+      "unguardedLines": [],
+      "methodGuardMissing": false,
+      "authorization": "requires handler-level review"
+    },
+    {
+      "path": "/api/made-for-you",
+      "methods": [
+        "GET"
+      ],
+      "sourceLines": [
+        533
+      ],
+      "unguardedLines": [],
+      "methodGuardMissing": false,
+      "authorization": "requires handler-level review"
+    },
+    {
+      "path": "/api/vote-novels",
+      "methods": [
+        "GET",
+        "POST"
+      ],
+      "sourceLines": [
+        541,
+        545
+      ],
+      "unguardedLines": [],
+      "methodGuardMissing": false,
+      "authorization": "requires handler-level review"
+    },
+    {
+      "path": "/api/notifications",
+      "methods": [
+        "GET"
+      ],
+      "sourceLines": [
+        552
+      ],
+      "unguardedLines": [],
+      "methodGuardMissing": false,
+      "authorization": "requires handler-level review"
+    },
+    {
+      "path": "/api/notifications/read",
+      "methods": [
+        "POST"
+      ],
+      "sourceLines": [
+        553
+      ],
+      "unguardedLines": [],
+      "methodGuardMissing": false,
+      "authorization": "requires handler-level review"
+    },
+    {
+      "path": "/api/report",
+      "methods": [
+        "POST"
+      ],
+      "sourceLines": [
+        554
+      ],
+      "unguardedLines": [],
+      "methodGuardMissing": false,
+      "authorization": "requires handler-level review"
+    },
+    {
+      "path": "/api/tickets/ledger",
+      "methods": [
+        "GET"
+      ],
+      "sourceLines": [
+        555
+      ],
+      "unguardedLines": [],
+      "methodGuardMissing": false,
+      "authorization": "requires handler-level review"
+    },
+    {
+      "path": "/api/recommendations",
+      "methods": [
+        "GET"
+      ],
+      "sourceLines": [
+        556
+      ],
+      "unguardedLines": [],
+      "methodGuardMissing": false,
+      "authorization": "requires handler-level review"
+    },
+    {
+      "path": "/api/follows",
+      "methods": [
+        "GET"
+      ],
+      "sourceLines": [
+        557
+      ],
+      "unguardedLines": [],
+      "methodGuardMissing": false,
+      "authorization": "requires handler-level review"
+    },
+    {
+      "path": "/api/profile",
+      "methods": [
+        "GET"
+      ],
+      "sourceLines": [
+        558
+      ],
+      "unguardedLines": [],
+      "methodGuardMissing": false,
+      "authorization": "requires handler-level review"
+    },
+    {
+      "path": "/api/author/applications/me",
+      "methods": [
+        "GET"
+      ],
+      "sourceLines": [
+        559
+      ],
+      "unguardedLines": [],
+      "methodGuardMissing": false,
+      "authorization": "requires handler-level review"
+    },
+    {
+      "path": "/api/author/applications",
+      "methods": [
+        "POST"
+      ],
+      "sourceLines": [
+        565
+      ],
+      "unguardedLines": [],
+      "methodGuardMissing": false,
+      "authorization": "requires handler-level review"
+    },
+    {
+      "path": "/api/admin/author-applications",
+      "methods": [
+        "GET"
+      ],
+      "sourceLines": [
+        581
+      ],
+      "unguardedLines": [],
+      "methodGuardMissing": false,
+      "authorization": "requires handler-level review"
+    },
+    {
+      "path": "/api/admin/stats",
+      "methods": [],
+      "sourceLines": [
+        610
+      ],
+      "unguardedLines": [
+        610
+      ],
+      "methodGuardMissing": true,
+      "authorization": "requires handler-level review"
+    },
+    {
+      "path": "/api/admin/users",
+      "methods": [
+        "GET"
+      ],
+      "sourceLines": [
+        611
+      ],
+      "unguardedLines": [],
+      "methodGuardMissing": false,
+      "authorization": "requires handler-level review"
+    },
+    {
+      "path": "/api/author/ai/status",
+      "methods": [
+        "GET"
+      ],
+      "sourceLines": [
+        615
+      ],
+      "unguardedLines": [],
+      "methodGuardMissing": false,
+      "authorization": "requires handler-level review"
+    },
+    {
+      "path": "/api/author/ai/projects",
+      "methods": [
+        "GET",
+        "POST"
+      ],
+      "sourceLines": [
+        619,
+        623
+      ],
+      "unguardedLines": [],
+      "methodGuardMissing": false,
+      "authorization": "requires handler-level review"
+    },
+    {
+      "path": "/api/author/ai/benchmarks",
+      "methods": [
+        "GET",
+        "POST"
+      ],
+      "sourceLines": [
+        690,
+        696
+      ],
+      "unguardedLines": [],
+      "methodGuardMissing": false,
+      "authorization": "requires handler-level review"
+    },
+    {
+      "path": "/api/author/novels",
+      "methods": [
+        "GET",
+        "POST"
+      ],
+      "sourceLines": [
+        701,
+        705
+      ],
+      "unguardedLines": [],
+      "methodGuardMissing": false,
+      "authorization": "requires handler-level review"
+    },
+    {
+      "path": "/api/author/chapters",
+      "methods": [
+        "GET",
+        "POST"
+      ],
+      "sourceLines": [
+        733,
+        737
+      ],
+      "unguardedLines": [],
+      "methodGuardMissing": false,
+      "authorization": "requires handler-level review"
+    },
+    {
+      "path": "/api/admin/publishing",
+      "methods": [
+        "GET"
+      ],
+      "sourceLines": [
+        757
+      ],
+      "unguardedLines": [],
+      "methodGuardMissing": false,
+      "authorization": "requires handler-level review"
+    },
+    {
+      "path": "/api/admin/publishing/novels",
+      "methods": [
+        "POST"
+      ],
+      "sourceLines": [
+        758
+      ],
+      "unguardedLines": [],
+      "methodGuardMissing": false,
+      "authorization": "requires handler-level review"
+    },
+    {
+      "path": "/api/admin/publishing/chapters/reorder",
+      "methods": [
+        "POST"
+      ],
+      "sourceLines": [
+        805
+      ],
+      "unguardedLines": [],
+      "methodGuardMissing": false,
+      "authorization": "requires handler-level review"
+    },
+    {
+      "path": "/api/admin/publishing/chapters",
+      "methods": [
+        "POST"
+      ],
+      "sourceLines": [
+        820
+      ],
+      "unguardedLines": [],
+      "methodGuardMissing": false,
+      "authorization": "requires handler-level review"
+    },
+    {
+      "path": "/api/admin/donations",
+      "methods": [
+        "GET"
+      ],
+      "sourceLines": [
+        821
+      ],
+      "unguardedLines": [],
+      "methodGuardMissing": false,
+      "authorization": "requires handler-level review"
+    },
+    {
+      "path": "/api/admin/reports",
+      "methods": [
+        "GET"
+      ],
+      "sourceLines": [
+        823
+      ],
+      "unguardedLines": [],
+      "methodGuardMissing": false,
+      "authorization": "requires handler-level review"
+    },
+    {
+      "path": "/api/admin/tickets",
+      "methods": [
+        "POST"
+      ],
+      "sourceLines": [
+        825
+      ],
+      "unguardedLines": [],
+      "methodGuardMissing": false,
+      "authorization": "requires handler-level review"
+    },
+    {
+      "path": "/api/admin/connectors",
+      "methods": [
+        "GET",
+        "PATCH",
+        "POST"
+      ],
+      "sourceLines": [
+        826,
+        827,
+        831
+      ],
+      "unguardedLines": [],
+      "methodGuardMissing": false,
+      "authorization": "requires handler-level review"
+    },
+    {
+      "path": "/api/admin/omni/health",
+      "methods": [
+        "POST"
+      ],
+      "sourceLines": [
+        828
+      ],
+      "unguardedLines": [],
+      "methodGuardMissing": false,
+      "authorization": "requires handler-level review"
+    },
+    {
+      "path": "/api/admin/connectors/cleanup",
+      "methods": [
+        "POST"
+      ],
+      "sourceLines": [
+        829
+      ],
+      "unguardedLines": [],
+      "methodGuardMissing": false,
+      "authorization": "requires handler-level review"
+    },
+    {
+      "path": "/api/connector-authorization-requests",
+      "methods": [
+        "POST"
+      ],
+      "sourceLines": [
+        830
+      ],
+      "unguardedLines": [],
+      "methodGuardMissing": false,
+      "authorization": "requires handler-level review"
+    },
+    {
+      "path": "/api/admin/requests",
+      "methods": [
+        "GET"
+      ],
+      "sourceLines": [
+        832
+      ],
+      "unguardedLines": [],
+      "methodGuardMissing": false,
+      "authorization": "requires handler-level review"
+    },
+    {
+      "path": "/api/admin/connector-authorization-requests",
+      "methods": [
+        "GET"
+      ],
+      "sourceLines": [
+        834
+      ],
+      "unguardedLines": [],
+      "methodGuardMissing": false,
+      "authorization": "requires handler-level review"
+    }
+  ],
+  "dynamicRoutes": [
+    {
+      "pathPattern": "^/api/chapters/{chapterId}/unlock$",
+      "methods": [
+        "POST"
+      ],
+      "sourceLines": [
+        462
+      ],
+      "methodGuardMissing": false,
+      "methodGuard": "explicit",
+      "authorization": "signed-in reader gate"
+    },
+    {
+      "pathPattern": "^/api/admin/author-applications/{applicationId}$",
+      "methods": [
+        "PATCH"
+      ],
+      "sourceLines": [
+        588,
+        589
+      ],
+      "methodGuardMissing": false,
+      "methodGuard": "explicit",
+      "authorization": "admin gate"
+    },
+    {
+      "pathPattern": "^/api/admin/requests/{requestId}$",
+      "methods": [
+        "PATCH"
+      ],
+      "sourceLines": [
+        833
+      ],
+      "methodGuardMissing": false,
+      "methodGuard": "explicit",
+      "authorization": "admin gate"
+    }
+  ],
+  "globalNotes": [
+    "The API dispatcher does not show a universal method allowlist before route dispatch.",
+    "Path-only handlers are not automatically safe: delegated helpers may enforce their own method rules, which must be checked separately.",
+    "A method not explicitly matched may fall through to another path-only handler or ultimately 404; do not assume 405 behavior.",
+    "Authorization labels are not inferred for exact routes. Verify anonymous, reader, author, owner, moderator, admin and cross-owner behavior separately.",
+    "This matrix does not inspect DTO exposure, cache headers, CSRF, rate limits, body size, or database transaction semantics."
+  ]
+}
