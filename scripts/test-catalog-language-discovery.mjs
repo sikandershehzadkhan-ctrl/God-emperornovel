@@ -19,7 +19,7 @@ for(const language of ["English","Urdu","Hindi","Chinese (Simplified)","Chinese 
 assert.ok(catalog.includes("for(const [k,v] of f.entries())"),"Catalog form must preserve the selected language filter in its query.");
 assert.ok(worker.includes('if(language){sql+=" AND LOWER(n.language)=LOWER(?)";a.push(language)}'),"Catalog language matching must remain case-insensitive and parameterized.");
 
-const languageBlock=app.match(/const IN_LANG=(\{[\s\S]*?\});\s*function setINLang/);
+const languageBlock=app.match(/const IN_LANG=(\{[\s\S]*?\});\s*const COMMUNITY_LANG=/);
 assert.ok(languageBlock,"Interface language dictionary must be available.");
 const languageDictionary=JSON.parse(languageBlock[1]);
 assert.equal(Object.keys(languageDictionary).length,14,"The interface must retain all 14 supported UI languages.");
