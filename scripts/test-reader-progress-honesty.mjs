@@ -10,8 +10,10 @@ const libraryStart = app.indexOf("async function library(");
 const libraryEnd = app.indexOf("async function history(", libraryStart);
 assert.ok(libraryStart >= 0 && libraryEnd > libraryStart, "Library renderer must exist");
 const library = app.slice(libraryStart, libraryEnd);
-assert.match(library, /account-synced chapter history and bookmarks/i,
-  "Library copy must describe the server-synced data accurately");
+assert.match(library, /account-synced chapter history, reading progress and bookmarks/i,
+  "Library copy must describe account-synced scroll progress accurately");
+assert.match(library, /progress_percent!==null[\s\S]*?progress_chapter/ ,
+  "Continue Reading must display and resume the saved chapter progress when available");
 assert.match(library, /Scroll position is saved on this device/i,
   "Library must disclose that scroll percentage is device-local");
 
