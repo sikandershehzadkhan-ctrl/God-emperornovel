@@ -30,6 +30,7 @@ on:
       - "docs/architecture/IMPERIAL-AUTHORIZATION-OWNERSHIP-MATRIX-01N-38.json"
       - "scripts/test-authorization-ownership-matrix.mjs"
       - "scripts/test-admin-account-comment-safety.mjs"
+      - "scripts/test-admin-account-d1.py"
       - ".github/workflows/route-registry-validation.yml"
 
 permissions:
