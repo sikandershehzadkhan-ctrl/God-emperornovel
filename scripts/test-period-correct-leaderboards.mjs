@@ -18,6 +18,7 @@ assert.match(route, /u\.unlocked_at>=datetime\('now','-\$\{days\} days'\)/, 'nov
 assert.match(route, /COUNT\(u\.chapter_id\) unlocks/, 'author rankings must be based on unlock events');
 assert.match(route, /JOIN chapters c ON c\.novel_id=n\.id AND c\.publication_status='published' JOIN unlocks u/, 'author unlocks must come from published chapters');
 assert.match(route, /rankingMetric:'chapter_unlocks'/, 'API must identify the ranking metric');
+assert.match(worker, /CREATE INDEX IF NOT EXISTS idx_unlocks_chapter_time ON unlocks\(chapter_id,unlocked_at\)/, 'chapter unlock ranking joins must have a chapter/time index');
 assert.doesNotMatch(route, /ORDER BY views DESC,rating DESC/, 'author rankings must not silently use lifetime views for period tabs');
 
 assert.match(app, /Ranked by chapter unlocks in the selected period\./, 'novel leaderboard must explain its metric');
