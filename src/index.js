@@ -1,4 +1,5 @@
 import { toPublicNovel } from "./public-novel.mjs";
+import { validateUserProfile } from "./user-profile-policy.mjs";
 import { SITEMAP_PAGE_SIZE, renderSitemapIndex, renderStaticSitemap, renderNovelSitemap, renderChapterSitemap } from "./sitemap.mjs";
 import { validateComicChapterContent } from "./comic-chapter-policy.mjs";
 import { hashPassword, verifyPassword } from "./auth-password.mjs";
@@ -555,7 +556,50 @@ async function api(req,env){
  if(p==="/api/tickets/ledger"&&m==="GET"){const e=need(u);if(e)return e;return json((await env.DB.prepare("SELECT id,delta,reason,reference,created_at FROM ticket_ledger WHERE user_id=? ORDER BY created_at DESC LIMIT 100").bind(u.id).all()).results)}
  if(p==="/api/recommendations"&&m==="GET"){const e=need(u);if(e)return e;await ensureOmniTables(env);const rows=(await env.DB.prepare(`SELECT n.*,r.reason,r.score,GROUP_CONCAT(DISTINCT g.name) genres,COUNT(DISTINCT c.id) chapter_count FROM recommendations r JOIN novels n ON n.id=r.novel_id LEFT JOIN novel_genres ng ON ng.novel_id=n.id LEFT JOIN genres g ON g.id=ng.genre_id LEFT JOIN chapters c ON c.novel_id=n.id WHERE r.user_id=? AND n.publication_status='published' AND n.rights_status IN ('original','public_domain','licensed','authorized') GROUP BY n.id,r.id ORDER BY r.score DESC,r.created_at DESC LIMIT 20`).bind(u.id).all()).results;if(rows.length)return json(rows.map(x=>({...toPublicNovel(x),reason:x.reason,score:x.score})));const fallback=(await env.DB.prepare(`SELECT n.*,GROUP_CONCAT(DISTINCT g.name) genres,COUNT(DISTINCT c.id) chapter_count FROM novels n LEFT JOIN novel_genres ng ON ng.novel_id=n.id LEFT JOIN genres g ON g.id=ng.genre_id LEFT JOIN chapters c ON c.novel_id=n.id WHERE n.publication_status='published' AND n.rights_status IN ('original','public_domain','licensed','authorized') AND n.id NOT IN(SELECT novel_id FROM follows WHERE user_id=?) GROUP BY n.id ORDER BY n.rating DESC,n.views DESC LIMIT 12`).bind(u.id).all()).results;return json(fallback.map((x,i)=>({...toPublicNovel(x),reason:'Popular with Imperial readers',score:100-i}))) }
  if(p==="/api/follows"&&m==="GET"){const e=need(u);if(e)return e;return json((await env.DB.prepare(`SELECT n.*,f.created_at FROM follows f JOIN novels n ON n.id=f.novel_id WHERE f.user_id=? AND n.publication_status='published' AND n.rights_status IN ('original','public_domain','licensed','authorized') ORDER BY f.created_at DESC`).bind(u.id).all()).results.map(toPublicNovel))}
- if(p==="/api/profile"&&m==="GET"){const e=need(u);if(e)return e;const [lib,fol,unl,led]=await Promise.all([env.DB.prepare("SELECT COUNT(*) n FROM history WHERE user_id=?").bind(u.id).first(),env.DB.prepare("SELECT COUNT(*) n FROM follows WHERE user_id=?").bind(u.id).first(),env.DB.prepare("SELECT COUNT(*) n FROM unlocks WHERE user_id=?").bind(u.id).first(),env.DB.prepare("SELECT COALESCE(SUM(delta),0) n FROM ticket_ledger WHERE user_id=?").bind(u.id).first()]);return json({user:{id:u.id,username:u.username,email:u.email,role:u.role,tickets:u.tickets,verified:u.verified},stats:{history:Number(lib.n),following:Number(fol.n),unlocks:Number(unl.n),ticketFlow:Number(led.n)}})}
+ if(p==="/api/profile"&&m==="GET"){
+  const e=need(u);if(e)return e;
+  const [profile,historyCount,followingCount,unlockCount,ledger]=await Promise.all([
+   env.DB.prepare("SELECT id,username,email,role,tickets,verified,display_name,bio,avatar_url,website_url,location,profile_visibility,show_reading_stats,profile_updated_at FROM users WHERE id=?").bind(u.id).first(),
+   env.DB.prepare("SELECT COUNT(*) n FROM history WHERE user_id=?").bind(u.id).first(),
+   env.DB.prepare("SELECT COUNT(*) n FROM follows WHERE user_id=?").bind(u.id).first(),
+   env.DB.prepare("SELECT COUNT(*) n FROM unlocks WHERE user_id=?").bind(u.id).first(),
+   env.DB.prepare("SELECT COALESCE(SUM(delta),0) n FROM ticket_ledger WHERE user_id=?").bind(u.id).first()
+  ]);
+  return json({user:profile,stats:{history:Number(historyCount.n),following:Number(followingCount.n),unlocks:Number(unlockCount.n),ticketFlow:Number(ledger.n)}});
+ }
+ if(p==="/api/profile"&&m==="PUT"){
+  const e=need(u);if(e)return e;
+  const origin=req.headers.get("origin");
+  if((origin&&origin!==url.origin)||req.headers.get("sec-fetch-site")==="cross-site")return json({error:"Cross-site profile updates are not allowed."},403);
+  const checked=validateUserProfile(await body(req));
+  if(!checked.ok)return json({error:checked.error},400);
+  const v=checked.value;
+  await env.DB.prepare("UPDATE users SET display_name=?,bio=?,avatar_url=?,website_url=?,location=?,profile_visibility=?,show_reading_stats=?,profile_updated_at=CURRENT_TIMESTAMP WHERE id=?")
+   .bind(v.display_name,v.bio,v.avatar_url,v.website_url,v.location,v.profile_visibility,v.show_reading_stats,u.id).run();
+  await audit(env,u,"profile.updated",JSON.stringify({visibility:v.profile_visibility,reading_stats:v.show_reading_stats===1}));
+  return json({ok:true,message:"Profile updated."});
+ }
+ if(p.startsWith("/api/public-profile/")&&m==="GET"){
+  let username="";try{username=decodeURIComponent(p.slice("/api/public-profile/".length)).trim()}catch{return json({error:"Profile not found."},404)}
+  if(!/^[a-zA-Z0-9_]{3,24}$/.test(username))return json({error:"Profile not found."},404);
+  const profile=await env.DB.prepare("SELECT username,display_name,bio,avatar_url,website_url,location,role,show_reading_stats FROM users WHERE username=? COLLATE NOCASE AND profile_visibility='public' AND banned=0 LIMIT 1").bind(username).first();
+  if(!profile)return json({error:"Profile not found."},404);
+  let stats=null,works=[];
+  if(Number(profile.show_reading_stats)===1){
+   const [historyCount,followingCount]=await Promise.all([
+    env.DB.prepare("SELECT COUNT(*) n FROM history WHERE user_id=(SELECT id FROM users WHERE username=? COLLATE NOCASE)").bind(profile.username).first(),
+    env.DB.prepare("SELECT COUNT(*) n FROM follows WHERE user_id=(SELECT id FROM users WHERE username=? COLLATE NOCASE)").bind(profile.username).first()
+   ]);
+   stats={readingHistory:Number(historyCount.n),following:Number(followingCount.n)};
+  }
+  const isAuthor=profile.role==="author"||profile.role==="admin";
+  if(isAuthor){
+   const authorName=profile.display_name||profile.username;
+   const rows=(await env.DB.prepare("SELECT * FROM novels WHERE LOWER(author) IN (LOWER(?),LOWER(?)) AND publication_status='published' AND rights_status IN ('original','public_domain','licensed','authorized') ORDER BY updated_at DESC LIMIT 24").bind(authorName,profile.username).all()).results||[];
+   works=rows.map(toPublicNovel);
+  }
+  return json({profile:{username:profile.username,display_name:profile.display_name||profile.username,bio:profile.bio,avatar_url:profile.avatar_url,website_url:profile.website_url,location:profile.location,is_author:isAuthor},stats,works});
+ }
  if(p==="/api/author/applications/me"&&m==="GET"){
   const e=need(u);if(e)return e;
   const row=await env.DB.prepare("SELECT id,display_name,bio,experience,portfolio_url,preferred_formats,status,review_notes,created_at,reviewed_at FROM author_applications WHERE user_id=? ORDER BY created_at DESC,id DESC LIMIT 1").bind(u.id).first();
