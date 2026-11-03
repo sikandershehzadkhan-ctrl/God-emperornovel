@@ -11,6 +11,10 @@ const [worker, client, versionedClient, indexHtml, luxuryCss, homepageCss, homep
   readFile(new URL("../public/style-17.23.0.css", import.meta.url), "utf8"),
   readFile(new URL("../public/style.css", import.meta.url), "utf8")
 ]);
+assert.ok(client.includes("function translateHomepage(c)"), "homepage fixed copy must have a dedicated localization pass");
+assert.ok(client.includes("HOME_LANG={"), "homepage Urdu, Arabic and Persian translations must be defined");
+assert.ok(client.includes("translateHomepage(c);"), "homepage localization must run whenever the interface language changes");
+assert.ok(client.includes("location.pathname!==\"/\""), "homepage localization must not alter dynamic novel or author content on other routes");
 assert.match(worker, /renderHomepageHtml\(homepageNovels\)/);
 assert.match(worker, /publication_status=.published./);
 assert.match(worker, /<main id="app"/);
