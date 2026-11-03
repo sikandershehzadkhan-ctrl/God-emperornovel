@@ -134,6 +134,33 @@ Open risks / integration gates:
 
 **Disposition:** strong database-level posting controls are present in the reviewed migrations, but no payment/refund migration may be deployed until the complete ordered migration chain, historical ledger reconciliation, and provider-reference audit pass on a representative staging copy.
 
+## Focused review: Crown ledger, donations, administrator adjustments, and refunds
+
+Reviewed PR #88 at head `d58faf28bd83b7700f6263fe19636923ea59224e`, including migrations 0018-0021 and its Worker payment/ticket routes. These migration numbers collide with unrelated migrations in other open PRs and are not safe to apply as a sequence.
+
+### Positive findings
+
+- Donation approval records an immutable reviewer decision with a required note; the Worker rejects self-review, and migration 0020 adds a database-level independent-review check.
+- Donation credit and ledger posting are triggered by the pending-to-approved status transition, preventing repeat posting on ordinary status retries.
+- Admin Crown adjustments have unique idempotency keys, immutable audit records, and a database trigger that posts both balance and ledger changes.
+- Paid novel-request refunds have a unique request reference, immutable records, and a database trigger that credits the account and appends the ledger row together.
+- Automated payment webhooks are explicitly disabled pending provider signature, amount/currency, event identity, and replay validation. Manual donation review remains the stated path.
+- The code includes admin reconciliation endpoints for account balances versus ledger totals.
+
+### Critical integration and accounting gates
+
+1. **Migration identity collision:** PR #88 uses migration numbers 0018-0021, while other branches use the same numbers for unrelated schemas (including comment reports, account-deletion workflows, and username/account-preference changes). Never apply these files by number until a canonical migration chain is assembled.
+2. **Balance precision mismatch:** the foundational schema defines `users.tickets`, `ticket_ledger.delta`, unlock costs, and request costs as REAL. New adjustment/refund paths validate integer amounts, but legacy balances and ledger rows can still contain fractional values. Define a forward-only precision policy and reconcile existing fractional values before claiming integer-only Crown accounting.
+3. **Donation legacy rows:** the approval trigger protects new pending-to-final transitions, but legacy donations already marked approved may have no corresponding `donation_reviews` row. Do not backfill or re-credit them blindly. Reconcile donation status, review evidence, account credit, and ledger posting as separate facts.
+4. **Trigger deployment dependency:** donation approval depends on the review row being inserted before the status transition in the same batch. Validate D1 batch transaction behavior and ensure a failed second statement rolls back the review insert and status transition together.
+5. **Admin adjustment authorization:** the adjustment trigger posts any valid row inserted into `admin_ticket_adjustments`; the trigger itself does not verify the actor's current admin role. The API checks admin authorization, but direct SQL writers or compromised privileged paths could bypass that application check. Add a database-side role/banned-state guard and test demotion/revocation races.
+6. **Refund authorization:** the refund trigger verifies that the referenced actor is currently an admin and is not the beneficiary, plus matching rejected request and amount. Confirm the request transition and refund insert are atomic, and test retries, duplicate requests, changed request amount, admin demotion, and concurrent review.
+7. **Account deletion retention:** immutable donation reviews, admin adjustments, and refunds use RESTRICT references to users. Account deletion must preserve or legally minimize financial audit records without orphaning them or exposing private payment references.
+8. **Ledger integrity:** the current reconciliation compares current balances with the sum of all ledger deltas, but that is not proof of correctness if legacy rows are missing, duplicated, or were posted outside the ledger. Before any repair, snapshot aggregate totals, duplicate references, orphan rows, negative balances, fractional balances, and per-reason distributions. Repairs must be separately approved and append-only.
+9. **Payment references:** the donation migration intentionally adds a non-unique payment-ledger reference index rather than imposing uniqueness over historical rows. Preserve this conservative choice until a duplicate audit proves a unique constraint safe.
+
+**Disposition:** these are promising accounting controls, not production-ready financial infrastructure. No money movement, ticket adjustment, migration, or production reconciliation was executed during this review. Keep automated payment confirmation disabled until a real provider-specific verification design and tests exist.
+
 ## Focused review: chapter revisions and scheduled publication
 
 Reviewed PR #129 at head `3f814b5b45cbe4cc9ae15f932e3a88fb9e0719b2`, including both migrations, Worker routes, regression tests, and the changed production deployment workflow.
