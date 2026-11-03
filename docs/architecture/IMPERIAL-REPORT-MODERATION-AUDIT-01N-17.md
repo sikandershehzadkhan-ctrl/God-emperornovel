@@ -30,12 +30,13 @@
    - Queue ordering prioritizes open, then reviewing, then completed states.
 
 4. Added `scripts/test-admin-report-moderation.mjs` and wired it into the build validation chain.
+5. Phase 01N.18 connected the existing Admin comment-report panel to `GET /api/admin/comment-reports` and `PATCH /api/admin/comment-reports/:id`, including a `reviewing` action and visible orphan context. Added `scripts/test-admin-comment-report-ui.mjs` to the build chain.
 
 ## Remaining verification
 
-- The new source-policy test has been added but has **not** been executed.
+- The source-policy and Admin UI integration tests have been added but have **not** been executed.
 - No end-to-end administrator session test has been run.
 - No D1 integration test has verified behavior with orphaned comment/user/novel references.
-- The admin page still needs a dedicated comment-report panel or a deliberate combined queue UI.
+- The existing Admin Community tab already contained a comment-report panel, but it called an older endpoint and expected incompatible field names. Phase 01N.18 corrected it to call the new endpoints and render the actual response fields. A browser-level administrator session test remains pending.
 - Review metadata columns (reviewer ID and review timestamp) are not yet stored on each report row; the audit log is the current record of who changed status.
 - Orphan cleanup is intentionally not automated. Reports should be retained for moderation/audit rather than silently deleted.
