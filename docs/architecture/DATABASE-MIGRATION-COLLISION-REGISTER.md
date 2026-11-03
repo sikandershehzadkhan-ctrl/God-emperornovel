@@ -325,3 +325,58 @@ A source review of `.github/workflows/audit-production-d1.yml`, `.github/workflo
 ## Evidence and limitations
 
 This register was assembled from GitHub's current `main` migration tree and changed-file lists/patches for the PRs listed above. It is a source-control audit, not a live D1 inspection. PR contents can change; refresh the inventory before integration. The register intentionally does not prescribe migration renumbering because the applied migration state is unknown.
+
+
+## Focused publishing and Crown-accounting review (2026-11-04)
+
+Reviewed PR #129 at head `3f814b5b45cbe4cc9ae15f932e3a88fb9e0719b2` and PR #88 at head `d58faf28bd83b7700f6263fe19636923ea59224e`, including the actual migration SQL, Worker source, and regression-test implementations.
+
+### PR #129: chapter revisions
+
+Positive findings:
+- Chapter edits are owner-scoped through the chapter's novel, and the prior chapter state is inserted into `chapter_revisions` in the same D1 batch as the chapter update.
+- Revision-history reads repeat the ownership check and are bounded to the latest 10 entries.
+- The edit path revalidates comic content and applies a content-size bound.
+- Chapter deletion cascades to its revision rows.
+
+Ownership-transfer privacy issue:
+- Revision rows are attached to `chapter_id`, not to an immutable creator/owner identity. Their `editor_user_id` records the editor, but the reviewed history endpoint authorizes access using the novel's current owner.
+- PR #124's ownership-transfer flow changes `novels.owner_user_id`; it does not define a revision-history disposition. After a transfer, the new owner may gain access to previous chapter snapshots, including draft text written by the former owner, while the former owner loses access. This is a creator-confidentiality and rights-policy decision, not merely a UI issue.
+- Before integration, choose and enforce a policy: preserve history as novel property with explicit transfer disclosure/consent; keep prior-owner revisions private and exportable; or create a reviewed handover/archive process. Add transfer lifecycle tests proving who can read old snapshots before and after transfer. Do not silently widen access.
+
+### PR #129: scheduled publication
+
+Positive findings:
+- Scheduling is owner-scoped, requires a published/approved novel and eligible rights status, bounds the requested time (5 minutes to 365 days), supports reschedule/cancel, and uses an indexed due-time lookup.
+- The cron processor rechecks novel publication and rights eligibility when a schedule becomes due, rather than trusting only the original scheduling decision.
+- The processor ties schedule removal and audit insertion to a successful chapter publication and sends an in-app notification after success.
+- The UI correctly discloses the 15-minute cron cadence; it does not promise exact-to-the-second publication.
+
+Ownership-transfer / notification issue:
+- A schedule is keyed by chapter and stores `created_by`, but the reviewed migration does not bind it to an ownership-transfer generation or immutable novel owner. The transfer workflow does not explicitly cancel, reassign, or preserve schedules.
+- If a novel is transferred while a schedule is pending, the new owner can inherit the pending publication while the scheduled-publication notification still targets the original `created_by`. This can publish content under a new owner without an explicit handover decision and notify the former creator.
+- Define transfer behavior for pending schedules (cancel and require new-owner rescheduling, or explicitly transfer with consent and update notification recipient). Add tests for transfer before due time, transfer at due time, revoked rights, repeated cron execution, and notification recipient correctness.
+
+### PR #129: tests and deployment gate
+
+- The chapter-revision and schedule tests are predominantly source-pattern assertions. They check that expected SQL/API strings and UI controls exist, but do not execute a realistic transfer lifecycle or concurrent cron/API race against a representative SQLite fixture.
+- PR #129 modifies the production deploy workflow to execute migrations `0012_chapter_revisions.sql` and `0013_scheduled_chapter_publications.sql`. Those sequence numbers collide with multiple independent feature branches already inventoried above. This workflow change must not be promoted until canonical migration sequencing and the production baseline are resolved.
+- PR #129 is draft and unmerged. Its passing checks, as reported in its PR body, do not clear the cross-PR migration gate.
+
+### PR #88: Crown and payment accounting
+
+Positive findings:
+- Donation approval requires an attributable review, and a database trigger posts the user's Crown balance increase and matching `ticket_ledger` credit as part of the same status update.
+- Donation reviews are immutable; the later independent-review migration blocks donor self-approval at the database boundary.
+- Administrator Crown adjustments use unique idempotency keys and database-triggered balance/ledger posting, with immutable adjustment history.
+- Novel-request refunds require an independently authorized admin, a rejected paid request, exact user and amount matching, and a unique request ID. Balance and ledger posting occur from the refund insert trigger; refund history is immutable.
+- The payment reconciliation module is read-only and reports normalized duplicate provider references, finalized donations without reviews, donation/ledger inconsistencies, and unmatched payment-ledger entries. The separate ticket reconciliation endpoint compares account balances with ledger totals and reports orphan ledger rows.
+
+Remaining accounting gates:
+- These mechanisms account for Crown credits and refunds; they do not establish an external cash settlement, verified EasyPaisa integration, cash refund, creator revenue share, or payout ledger. Keep those features explicitly disabled/unavailable until a provider integration and settlement model are independently implemented and verified.
+- The payment reconciliation fixture is synthetic SQLite data. It proves detection of selected anomaly classes, not that production payment records are clean or that provider references are independently verified.
+- Before any live accounting migration, rehearse the full migration chain with legacy donation, ticket, unlock, request, adjustment, and refund records. Check pre/post user balances, ledger sums, duplicate references, orphan rows, trigger behavior, retry/idempotency, and concurrent approval/refund attempts.
+- Review retention and deletion behavior for immutable donation reviews, administrator adjustments, and refunds. Their RESTRICT foreign keys intentionally preserve evidence; account deletion must have a lawful, documented disposition path rather than bypassing those constraints.
+- Payment webhooks are stated to remain disabled. Do not describe submitted payment references as automatically verified or balances as cash.
+
+**Disposition:** PR #129 and PR #88 remain draft, unmerged, and not production-ready. No production D1 data was queried or changed, and no deployment was performed. Resolve ownership-transfer semantics, build executable lifecycle/concurrency fixtures, and canonicalize all migration numbers before considering integration.
