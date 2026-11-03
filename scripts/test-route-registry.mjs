@@ -30,7 +30,7 @@ for(const r of manifest.routes){
  if(["home","catalog","formatDirectory","genres","tags","search","library","history","following","tickets","omni","settings","account","authorStudio","trendFactory","formatLanding","chapters","novel","reader","authorPublic","authPage"].includes(name))assert.ok(client.includes(name),"client renderer missing: "+name+" at "+r.path);
 }
 for(const p of manifest.sitemaps)assert.ok(worker.includes(JSON.stringify(p)),"sitemap endpoint missing: "+p);
-const noindex=worker.match(/const noindex=new Set\\(\\[([\\s\\S]*?)\\]\\)/);
+const noindex=worker.match(/const noindex=new Set\(\[([\s\S]*?)\]\)/);
 assert.ok(noindex,"Worker noindex set not found");
 for(const p of manifest.noindexExact)assert.ok(noindex[1].includes(JSON.stringify(p)),"Worker noindex policy missing: "+p);
 console.log("Route registry validated: "+manifest.routes.length+" exact routes, "+manifest.patterns.length+" dynamic patterns, "+manifest.sitemaps.length+" sitemap endpoints.");
