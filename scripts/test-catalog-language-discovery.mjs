@@ -33,7 +33,7 @@ for(const key of ["Chapter","← Chapters","Chapter List","Close","Theme","Line 
   for(const locale of Object.keys(languageDictionary))assert.ok(languageDictionary[locale][key], "Missing "+key+" translation for "+locale);
 }
 assert.ok(app.includes("document.querySelectorAll('[data-in-lang]')"),"Language switching must translate dynamically rendered reader labels.");
-assert.ok(reader.includes("setINLang(document.documentElement.lang||'en')"),"Reader must apply the selected language after rendering.");
+assert.ok(reader.includes("setINLang(document.documentElement.lang||'en')")||reader.includes("const readerLanguage=document.documentElement.lang||'en';setINLang(readerLanguage)"),"Reader must apply the selected language after rendering.");
 assert.ok(reader.includes("content.dir=/^(ur|ar|fa|persian|arabic|urdu)$/i.test(String(n.language||''))"),"Chapter text direction must follow the story language, not only the interface language.");
 
 for(const key of ["Sort","Status","Type","Minimum Rating","Apply Filters","Browse Genres","Browse Tags","Advanced Search","Active filters","Clear all","Clear"]) {
