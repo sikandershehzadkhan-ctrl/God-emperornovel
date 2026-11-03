@@ -46,4 +46,9 @@ assert.doesNotMatch(noJsDocument, /class="bootFallback"/);
 
 assert.doesNotMatch(rendered.content, /href="\/novel\/NaN"/);
 assert.match(renderHomepageHtml([]).content, /New stories are being prepared/);
+assert.match(renderHomepageHtml([{ id: "not-an-id", title: "Hidden invalid row" }]).content, /New stories are being prepared/);
+const hostile = renderHomepageHtml([{ id: 9, title: '"<img src=x onerror=alert(1)>', author: '<svg onload=alert(1)>', cover_url: "javascript:alert(1)" }]).content;
+assert.doesNotMatch(hostile, /<img src=x onerror=alert\(1\)>/);
+assert.doesNotMatch(hostile, /<svg onload=/);
+assert.match(hostile, /src="\/story-cover-placeholder\.svg"/);
 console.log("Homepage SSR markup, search, navigation, safe story data, cover fallback and empty-state tests passed.");
