@@ -26,4 +26,23 @@ for (const [label, ending] of publicListQueries) {
 const follows = worker.slice(worker.indexOf('if(p==="/api/follows"&&m==="GET")'), worker.indexOf('if(p==="/api/profile"&&m==="GET")'));
 assert.ok(follows.includes("n.publication_status='published' AND n." + rights), "Followed-novel listings must respect the public rights boundary.");
 
+const routeLines = worker.split("\n");
+const protectedReaderRoutes = [
+  ["/api/history\"&&m===\"GET\"", "Reading history must hide works without cleared rights."],
+  ["/api/history\"&&m===\"POST\"", "History writes must reject works without cleared rights."],
+  ["/api/reading-position\"&&m===\"POST\"", "Reading-position writes must reject works without cleared rights."],
+  ["/api/library\"&&m===\"GET\"", "Library results must hide works without cleared rights."],
+  ["/api/library\"&&m===\"POST\"", "Library writes must reject works without cleared rights."],
+  ["/api/bookmarks\"&&m===\"GET\"", "Bookmark results must hide works without cleared rights."],
+  ["/api/reaction\"&&m===\"GET\"", "Reaction reads must reject works without cleared rights."],
+  ["/api/reaction\"&&m===\"POST\"", "Reaction writes must reject works without cleared rights."],
+  ["/api/rating\"&&m===\"GET\"", "Rating reads must reject works without cleared rights."],
+  ["/api/rating\"&&m===\"POST\"", "Rating writes must reject works without cleared rights."],
+  ["/api/follow\"&&m===\"POST\"", "Follow writes must reject works without cleared rights."]
+];
+for (const [marker, message] of protectedReaderRoutes) {
+  const line = routeLines.find((candidate) => candidate.includes(marker));
+  assert.ok(line && line.includes(rights), message);
+}
+
 console.log("PASS: public novel detail, chapter content, discovery lists and followed novels expose only published, rights-cleared works.");
