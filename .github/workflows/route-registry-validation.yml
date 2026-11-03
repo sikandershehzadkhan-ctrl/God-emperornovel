@@ -11,6 +11,8 @@ on:
       - "docs/architecture/IMPERIAL-API-ROUTE-METHOD-MATRIX-01N-37.json"
       - "scripts/test-route-registry.mjs"
       - "scripts/test-api-route-method-matrix.mjs"
+      - "docs/architecture/IMPERIAL-AUTHORIZATION-OWNERSHIP-MATRIX-01N-38.json"
+      - "scripts/test-authorization-ownership-matrix.mjs"
       - ".github/workflows/route-registry-validation.yml"
   push:
     branches:
@@ -46,3 +48,6 @@ jobs:
 
       - name: Validate API method inventory
         run: node scripts/test-api-route-method-matrix.mjs
+
+      - name: Validate authorization and ownership register
+        run: node scripts/test-authorization-ownership-matrix.mjs
