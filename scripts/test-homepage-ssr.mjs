@@ -44,8 +44,7 @@ assert.match(worker, /<main id="app"/);
 assert.match(client, /serverRenderedHome=location\.pathname==='\/'/);
 assert.match(client, /data-imperial-ssr-header/);
 const bootStart = client.indexOf("async function boot(){");
-const bootEnd = client.indexOf("\\n", bootStart);
-const bootCode = client.slice(bootStart, bootEnd > bootStart ? bootEnd : undefined);
+const bootCode = client.slice(bootStart);
 const cleanupMarkers = ["[data-imperial-ssr-header]", "[data-imperial-ssr-footer]", "[data-imperial-ssr-mobile-nav]", ".ssrSkipLink"];
 for (const marker of cleanupMarkers) {
   assert.ok(bootCode.includes(`document.querySelector('${marker}')?.remove()`), `client boot must remove the SSR ${marker} before creating its interactive shell`);
