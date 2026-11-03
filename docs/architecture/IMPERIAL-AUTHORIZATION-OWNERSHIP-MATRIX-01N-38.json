@@ -4,7 +4,7 @@
   "sourceBlob": "237f4461135eb77258b7184e361ce9dfd9a140e9",
   "auditDate": "2026-11-03",
   "scope": "Partial handler-level source review; not a full authorization certification.",
-  "reviewedRouteCount": 24,
+  "reviewedRouteCount": 32,
   "pendingDisclosure": "All other exact and dynamic API routes remain pending handler-level review.",
   "routes": [
     {
@@ -257,6 +257,98 @@
       "tests": [
         "author A cannot read author B generation jobs"
       ]
+    },
+    {
+      "path": "/api/admin/donations",
+      "method": "GET",
+      "access": "admin",
+      "ownerRule": "platform-wide donation records gated by admin(u)",
+      "evidence": "admin(u) before SELECT donations joined to account usernames",
+      "tests": [
+        "non-admin receives 403",
+        "response excludes payment secrets not needed for review"
+      ]
+    },
+    {
+      "path": "/api/admin/donations/:id",
+      "method": "PATCH",
+      "access": "admin",
+      "ownerRule": "admin gate; pending-only transition; credit target derived from stored donation record and approval policy",
+      "evidence": "admin(u); parseManualDonationApproval(b,d); conditional pending status update; user ticket credit and ledger insert chained in DB batch",
+      "tests": [
+        "non-admin denied",
+        "replay of processed donation denied",
+        "body cannot change donation owner",
+        "ticket credit and ledger are atomic"
+      ]
+    },
+    {
+      "path": "/api/admin/reports",
+      "method": "GET",
+      "access": "admin",
+      "ownerRule": "platform-wide report queue gated by admin(u)",
+      "evidence": "admin(u) before SELECT reports with reporter and novel metadata",
+      "tests": [
+        "non-admin receives 403"
+      ]
+    },
+    {
+      "path": "/api/admin/reports/:id",
+      "method": "PATCH",
+      "access": "admin",
+      "ownerRule": "admin gate and status allowlist",
+      "evidence": "admin(u); status allowlist; update by report id",
+      "tests": [
+        "non-admin denied",
+        "unknown report id returns safe result",
+        "moderation mutation creates audit event"
+      ]
+    },
+    {
+      "path": "/api/admin/tickets",
+      "method": "POST",
+      "access": "admin",
+      "ownerRule": "target account chosen by admin; ticket ledger row only inserted if account balance update changed one row",
+      "evidence": "admin(u); validates user_id and amount; DB batch updates users then conditional ticket_ledger insert; audit event",
+      "tests": [
+        "non-admin denied",
+        "unknown user receives 404",
+        "balance and ledger remain consistent"
+      ]
+    },
+    {
+      "path": "/api/connector-authorization-requests",
+      "method": "POST",
+      "access": "authenticated",
+      "ownerRule": "requester user_id comes from session u.id, connector is selected by validated database id",
+      "evidence": "need(u); connector existence check; INSERT user_id=u.id; audit and admin notification",
+      "tests": [
+        "anonymous denied",
+        "requester cannot spoof user_id",
+        "duplicate pending request behavior verified"
+      ]
+    },
+    {
+      "path": "/api/admin/connector-authorization-requests",
+      "method": "GET",
+      "access": "admin",
+      "ownerRule": "global authorization queue gated by admin(u)",
+      "evidence": "admin(u) before joined connector and requester listing",
+      "tests": [
+        "non-admin receives 403"
+      ]
+    },
+    {
+      "path": "/api/admin/connector-authorization-requests/:id",
+      "method": "PATCH",
+      "access": "admin",
+      "ownerRule": "admin gate; pending-only decision; connector rights state changed with request review",
+      "evidence": "admin(u); pending-state check; evidence requirement before approval; DB batch writes review and connector rights state",
+      "tests": [
+        "non-admin denied",
+        "review replay denied",
+        "connector remains disabled after approval"
+      ]
     }
   ],
   "findings": [
@@ -294,6 +386,27 @@
       "status": "pending",
       "detail": "Remaining API routes, CSRF/origin, DTO allowlists, private caching and runtime object isolation are not certified.",
       "action": "Continue handler review and runtime integration tests."
+    },
+    {
+      "id": "AUTH-006",
+      "severity": "medium",
+      "status": "needs-review",
+      "detail": "Admin report status mutation has no audit(env,u,...) call in the reviewed handler, unlike several adjacent moderation/payment actions.",
+      "action": "Add an audit event with report id and status transition; verify this action is included in admin activity history."
+    },
+    {
+      "id": "AUTH-007",
+      "severity": "medium",
+      "status": "needs-review",
+      "detail": "Admin account PATCH does not visibly audit role, verification, or ban changes and does not establish last-admin protection.",
+      "action": "Add immutable before/after admin audit records and a last-active-admin invariant."
+    },
+    {
+      "id": "AUTH-008",
+      "severity": "medium",
+      "status": "needs-tests",
+      "detail": "Donation approval uses a conditional status transition and linked ticket/ledger writes, but atomicity and failure recovery need integration tests against D1 batch semantics.",
+      "action": "Test duplicate approval, missing target user, and partial failure behavior using an isolated D1 test database."
     }
   ]
 }
