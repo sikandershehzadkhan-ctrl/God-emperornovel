@@ -504,3 +504,23 @@ Commits:
 - Build gate: `fa12fbb394d561966271ea36d978f35de6ca493c`
 
 Post-commit repository fetch confirms source/runtime byte equality, the new test file exists, and the build invokes it. GitHub Actions did not show a run for the current feature head at the time of verification. The change has not been run in a real browser; CI and device testing remain pending. This is local chapter scroll progress, not a claim of server-synced percentage progress. Server history still records the latest chapter separately.
+
+
+## Cross-device reading-position API foundation (2026-11-04)
+
+Implemented on `feature/media-publication-gates-0013`:
+- Runtime feature schema advances its marker from version 1 to version 2 and creates a separate `reading_positions` table. No numbered migration was added, avoiding the currently unresolved numbered-migration collision queue.
+- One row per user/novel stores chapter number, chapter percentage, monotonically increasing revision and update timestamp. Database checks constrain chapter number and percentage; user and novel foreign keys cascade on deletion.
+- Authenticated GET is scoped by the current user and only returns positions for published novels.
+- Authenticated POST validates positive IDs, bounded percentage and nonnegative expected revision; it verifies the target chapter and novel are published.
+- Writes use a conditional upsert on the expected revision. A stale device receives HTTP 409 and the current position, rather than silently overwriting a newer device's state.
+- Added `scripts/test-reading-position-api.mjs` and wired it into the package build.
+
+Commits:
+- Runtime schema: `663e5911bd2c17d775d6d51236eeb67410b3af98`
+- API: `129e9a39bbc9887cd83da36cab1746fc59a0f46e`
+- Invariant test: `c6cc88c55d38a0debbf1a6b6adabfbe400d8a5e5`
+- Build gate: `eab79986c71bf752dc5ac7969dec88c2fb925e8a`
+- Test assertion correction: `67bd96d0f570b5ab694de90a681c6c759badde09`
+
+This is backend storage/API foundation only. The reader UI has not yet been wired to fetch and save these positions. No live schema has been bootstrapped, no production D1 has been accessed, and no deployment has occurred. Build/CI and real D1 concurrency tests remain pending.
