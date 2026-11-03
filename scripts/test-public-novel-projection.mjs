@@ -5,6 +5,11 @@ import { toPublicNovel } from "../src/public-novel.mjs";
 const workerSource = await readFile(new URL("../src/index.js", import.meta.url), "utf8");
 assert.match(workerSource, /\.map\(x=>toPublicNovel\(\{\.\.\.x,status:/, "public catalog results must pass through the field-minimizing projection");
 assert.match(workerSource, /\.\.\.toPublicNovel\(\{\.\.\.n,status:/, "public novel detail responses must pass through the field-minimizing projection");
+assert.match(workerSource, /personalized:true,results:rows\.map\(toPublicNovel\)/, "personalized story results must use the public field allowlist");
+assert.match(workerSource, /personalized:false,results:rows\.map\(toPublicNovel\)/, "anonymous recommendation fallback must use the public field allowlist");
+assert.match(workerSource, /rows\.map\(x=>\(\{\.\.\.toPublicNovel\(x\),reason:x\.reason,score:x\.score\}\)\)/, "stored recommendations must preserve ranking metadata while filtering novel fields");
+assert.match(workerSource, /fallback\.map\(\(x,i\)=>\(\{\.\.\.toPublicNovel\(x\),reason:/, "popular recommendation fallback must filter novel fields");
+assert.match(workerSource, /ORDER BY f\.created_at DESC`\)\.bind\(u\.id\)\.all\(\)\)\.results\.map\(toPublicNovel\)/, "followed story responses must use the public field allowlist");
 
 const source = {
   id: 41, title: "Public story", alt_titles: "", author: "Writer",
