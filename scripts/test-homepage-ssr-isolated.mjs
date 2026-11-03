@@ -17,7 +17,11 @@ const rendered = renderHomepageHtml({
     { id: "invalid", title: "Invalid ID" },
     ...Array.from({ length: 7 }, (_, i) => ({ id: 20 + i, title: "Story " + i, author: "Writer" }))
   ],
-  latest: [{ id: 9, title: "Latest story", author: "Writer", cover_url: "/covers/latest.jpg", chapter_count: 1 }]
+  latest: [
+    { id: 9, title: "Latest story", author: "Writer", cover_url: "/covers/latest.jpg", chapter_count: 1 },
+    { id: 7, title: "Trending duplicate", author: "Writer", cover_url: "/covers/duplicate.jpg" },
+    { id: 10, title: "Second latest", author: "Writer", cover_url: "/covers/second.jpg" }
+  ]
 });
 assert.ok(rendered.header.includes('data-imperial-ssr-header'), "SSR header marker must exist");
 assert.ok(rendered.header.includes('data-imperial-ssr-mobile-nav'), "SSR mobile navigation must exist");
@@ -27,7 +31,8 @@ assert.ok(rendered.content.includes("&lt;script&gt;alert(1)&lt;/script&gt;"), "n
 assert.ok(rendered.content.includes("A &amp; B"), "author names must be HTML-escaped");
 assert.ok(rendered.content.includes("/story-cover-placeholder.svg"), "protocol-relative cover URLs must be rejected");
 assert.ok(rendered.content.includes("https://covers.example/book.jpg"), "valid HTTPS cover URLs must be retained");
-assert.equal((rendered.content.match(/class="card"/g) || []).length, 7, "SSR must cap each story shelf at six valid records");
+assert.equal((rendered.content.match(/class="card"/g) || []).length, 8, "SSR must cap each story shelf at six valid records after deduplication");
+assert.equal((rendered.content.match(/href="\\/novel\\/7"/g) || []).length, 1, "trending and latest shelves must not repeat the same novel");
 assert.ok(rendered.content.includes('id="trend"') && rendered.content.includes('id="latest"'), "SSR must expose both story shelves for safe client refresh");
 assert.ok(rendered.content.includes("nextFeatureDeck") && rendered.content.includes("nextCreatorBand") && rendered.content.includes("nextReaderPromise"), "SSR must preserve the complete homepage feature sections");
 assert.ok(rendered.content.includes("Latest story"), "SSR must render the latest shelf independently");
