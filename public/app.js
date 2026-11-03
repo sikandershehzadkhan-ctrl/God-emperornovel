@@ -197,7 +197,7 @@ async function reader(){
  const n=await api('/api/novels/'+id);const ch=n.chapters.find(x=>Number(x.chapter_number)===num);if(!ch){location.href='/novel/'+id+'/chapters';return}
  const d=await api('/api/chapters/'+ch.id);const total=n.chapters.length;
  let remotePosition=null,remoteRevision=0,remoteSyncEnabled=false,remoteConflict=false,remoteSaveTimer=0;
- try{const saved=await api('/api/reading-position?novel_id='+encodeURIComponent(id));remotePosition=saved.position;if(remotePosition){remoteRevision=Number(remotePosition.revision)||0;remoteSyncEnabled=true}}catch(error){if(error?.status!==401)console.warn('Reading position sync unavailable:',error)}
+ try{const saved=await api('/api/reading-position?novel_id='+encodeURIComponent(id));remotePosition=saved.position;remoteSyncEnabled=true;if(remotePosition){remoteRevision=Number(remotePosition.revision)||0;if(Number(remotePosition.chapter_number)>num)remoteSyncEnabled=false}}catch(error){if(error?.status!==401)console.warn('Reading position sync unavailable:',error)}
  let stored=0;try{stored=Number(localStorage.getItem('readerProgress:'+id)||0)}catch(e){}
  const localPct=Math.min(100,Math.max(0,Number.isFinite(stored)&&num===Number((()=>{try{return localStorage.getItem('readerProgressChapter:'+id)}catch(e){return 0}})())?stored:0));
  const remotePct=remotePosition&&Number(remotePosition.chapter_number)===num?Number(remotePosition.percent):null;
