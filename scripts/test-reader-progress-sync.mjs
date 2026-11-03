@@ -1,0 +1,21 @@
+import fs from 'node:fs';
+import assert from 'node:assert/strict';
+
+const server = fs.readFileSync('src/index.js', 'utf8');
+const app = fs.readFileSync('public/app.js', 'utf8');
+const served = fs.readFileSync('public/app-17.24.0.js', 'utf8');
+const migration = fs.readFileSync('migrations/0016_reader_progress_sync.sql', 'utf8');
+const start = app.indexOf('async function reader(){');
+const end = app.indexOf('\\nasync function ', start + 30);
+assert.ok(start >= 0 && end > start, 'Reader route must exist');
+const reader = app.slice(start, end);
+assert.ok(migration.includes('progress_percent INTEGER NOT NULL DEFAULT 0 CHECK(progress_percent BETWEEN 0 AND 100)'), 'Progress migration must constrain stored values to 0–100');
+assert.ok(server.includes('h.progress_percent'), 'History API must return synchronized progress');
+assert.ok(server.includes('Number.isInteger(progress)||progress<0||progress>100'), 'Progress API must reject invalid progress values');
+assert.ok(server.includes('c.novel_id=? AND c.chapter_number=? AND c.publication_status=\\'published\\' AND n.publication_status=\\'published\\''), 'Progress writes must be scoped to an actually published chapter');
+assert.ok(reader.includes('progress_percent:pct'), 'Reader must send scroll progress to the server');
+assert.ok(reader.includes('saved.progress_percent'), 'Reader must restore synchronized server progress');
+assert.ok(reader.includes('Math.abs(pct-lastSyncedPct)>=5||pct===100||now-lastSyncAt>=3000'), 'Progress sync must be throttled rather than posting on every scroll event');
+assert.ok(reader.includes("writeReaderSetting('readerProgress:'+id,pct)"), 'Local progress recovery must remain available');
+assert.equal(app, served, 'Served reader bundle must match source app.js');
+console.log('Reader progress sync passed: bounded server persistence, published-chapter ownership checks, throttled updates and local fallback verified.');
