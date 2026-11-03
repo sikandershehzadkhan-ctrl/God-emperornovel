@@ -18,10 +18,10 @@ for (const [label, pattern] of [
   ["visible keyboard focus", /:focus-visible/],
   ["reduced-motion support", /prefers-reduced-motion/],
   ["44px touch target baseline", /min-height:44px/],
-  ["sepia global theme", /html\\[data-theme="sepia"\\]/],
-  ["midnight global theme", /html\\[data-theme="midnight"\\]/],
-  ["imperial global theme", /html\\[data-theme="imperial"\\]/],
-  ["cosmic global theme", /html\\[data-theme="cosmic"\\]/],
 ]) assert.match(css, pattern, label + " must be present");
 
-console.log("Design foundation coverage passed for " + pages.length + " public HTML routes.");
+for (const theme of ["light", "dark", "sepia", "midnight", "imperial", "cosmic"]) {
+  assert.ok(css.includes(`html[data-theme="${theme}"]`), "Missing global theme: " + theme);
+}
+
+console.log("Design foundation coverage passed for " + pages.length + " public HTML routes and six global themes.");
