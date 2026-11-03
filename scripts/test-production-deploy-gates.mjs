@@ -7,14 +7,17 @@ assert.ok(workflow.includes("confirm_production_deploy"), "Production deploy mus
 assert.ok(workflow.includes("inputs.confirm_production_deploy == 'true'"), "Production job must be gated by the explicit true confirmation.");
 assert.ok(!/^\s*push:/m.test(workflow) && !/^\s*pull_request:/m.test(workflow), "Pushes and pull requests must never auto-deploy production.");
 assert.ok(workflow.includes("npx --yes wrangler@4 deploy --dry-run"), "Production bundle must be validated before deployment.");
-assert.ok(workflow.includes("Verify catalog and author-application D1 migrations after deployment"), "Production deployment must verify additive catalog and creator migrations.");
+assert.ok(workflow.includes("Verify reader progress, ten-point ratings, catalog and author-application D1 migrations after deployment"), "Production deployment must verify additive catalog and creator migrations.");
 assert.ok(workflow.includes("Apply and verify additive D1 migrations before Worker deployment"), "Production D1 migrations must run before publishing the Worker.");
-for (const migration of ["migrations/0009_catalog_filter_indexes.sql", "migrations/0010_catalog_sort_indexes.sql", "migrations/0011_author_applications.sql"]) {
+for (const migration of ["migrations/0009_catalog_filter_indexes.sql", "migrations/0010_catalog_sort_indexes.sql", "migrations/0011_author_applications.sql", "migrations/0012_ten_point_ratings.sql", "migrations/0013_reader_progress.sql"]) {
   assert.ok(workflow.includes("--file=" + migration), "Pre-deploy migration step must apply " + migration);
 }
 assert.ok(workflow.indexOf("Validate Cloudflare bundle without deploying") < workflow.indexOf("Apply and verify additive D1 migrations before Worker deployment"), "Validate the Worker bundle before mutating production D1.");
 assert.ok(workflow.indexOf("Apply and verify additive D1 migrations before Worker deployment") < workflow.indexOf("Deploy Worker and static assets"), "D1 schema must be ready before the Worker is deployed.");
 assert.ok(workflow.includes("author_applications exists with an incomplete or unrecognized schema"), "Partial author application schemas must fail closed.");
+assert.ok(workflow.includes("BETWEEN 1 AND 10") && workflow.includes("BETWEEN 1 AND 5"), "Rating migration must be schema-gated and must not rerun after the ten-point constraint exists.");
+assert.ok(workflow.includes("reader_progress") && workflow.includes("idx_reader_progress_user_updated"), "Reader progress migration must be applied and verified before Worker deployment.");
+assert.ok(workflow.includes("reader_progress") && workflow.includes("ratings"), "Post-deploy verification must include reader progress and ten-point ratings.");
 
 for (const index of [
   "idx_novel_genres_genre_novel",
