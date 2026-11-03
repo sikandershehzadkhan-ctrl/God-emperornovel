@@ -22,4 +22,12 @@ for(const method of ["GET","POST"]){
  const handler=source.slice(start,end);
  assert.ok(handler.includes("publication_status='published' AND rights_status IN ('original','public_domain','licensed','authorized')"),"comment "+method+" must enforce published rights-eligible parent novels");
 }
+
+const reportStart = source.indexOf('let ar=p.match(/^\\/api\\/admin\\/reports\\/(\\d+)$/)');
+const reportEnd = source.indexOf('if(p==="\/api\/admin\/tickets"', reportStart);
+assert.ok(reportStart >= 0 && reportEnd > reportStart, "admin report status handler must exist");
+const reportRoute = source.slice(reportStart, reportEnd);
+assert.ok(reportRoute.includes("const changed=Number(result?.meta?.changes??result?.changes??0)"), "report updates must check affected rows");
+assert.ok(reportRoute.includes("await audit(env,u,'report_status_updated'"), "report status changes must be audited");
+
 console.log("Admin account PATCH and comment parent eligibility static safety checks passed.");
