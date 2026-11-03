@@ -29,8 +29,11 @@ function storyCards(novels = []) {
 const emptyShelf = message => `<div class="empty homeCatalogEmpty" style="grid-column:1/-1">${message}</div>`;
 
 export function renderHomepageHtml(data = {}) {
-  const trending = storyCards(data.trending);
-  const latest = storyCards(data.latest);
+  const trendingRows = Array.isArray(data.trending) ? data.trending.filter(row => Number.isSafeInteger(Number(row?.id)) && Number(row.id) > 0).slice(0, 6) : [];
+  const trendingIds = new Set(trendingRows.map(row => Number(row.id)));
+  const latestRows = Array.isArray(data.latest) ? data.latest.filter(row => Number.isSafeInteger(Number(row?.id)) && Number(row.id) > 0 && !trendingIds.has(Number(row.id))).slice(0, 6) : [];
+  const trending = storyCards(trendingRows);
+  const latest = storyCards(latestRows);
   return {
     header: `<a class="skipLink ssrSkipLink" href="#app">Skip to main content</a><header class="top" data-imperial-ssr-header><div class="wrap nav"><a class="brand" href="/"><img class="mark markImg" src="/imperial-novel-app-icon.svg" alt="" width="42" height="42"><span class="brandText"><b>IMPERIAL NOVEL</b><small>Read • Create • Conquer</small></span></a><nav class="navlinks" aria-label="Primary navigation"><a href="/catalog">Discover</a><a href="/formats">Formats</a><a href="/genres">Genres</a><a href="/community">Community</a><a href="/leaderboard">Rankings</a><a href="/omniportal">OmniPortal</a><a href="/library">Library</a></nav><nav class="navlinks" aria-label="Account navigation"><a href="/search">Search</a><a href="/notifications">Notifications</a><a href="/account">Account</a></nav></div></header><nav class="mobileNav" data-imperial-ssr-mobile-nav aria-label="Primary mobile navigation"><a class="active" href="/">Home</a><a href="/catalog">Discover</a><a href="/library">Library</a><a href="/author">Create</a><a href="/community">Community</a><a href="/account">Profile</a></nav>`,
     content: `<div class="page homePage" data-imperial-ssr-home><div class="wrap">
