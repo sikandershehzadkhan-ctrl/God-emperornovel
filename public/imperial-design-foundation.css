@@ -2213,3 +2213,14 @@ html[data-compact-cards="true"] .catalogStats,
 html[data-compact-cards="true"] .homeStoryGrid .meta{
   gap:5px;
 }
+
+/* Touch-target convergence: author/admin action buttons meet the 44px minimum. */
+body.authorStudioPage button,
+body.authorStudioPage .button,
+body.adminDashboardPage button,
+body.adminDashboardPage .button,
+body.adminDashboardPage .mini,
+body.adminDashboardPage .linkBtn,
+body.adminDashboardPage .ghost {
+  min-height:44px;
+}
