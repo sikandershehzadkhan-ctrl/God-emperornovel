@@ -43,6 +43,15 @@ assert.match(worker, /publication_status=.published./);
 assert.match(worker, /<main id="app"/);
 assert.match(client, /serverRenderedHome=location\.pathname==='\/'/);
 assert.match(client, /data-imperial-ssr-header/);
+const bootStart = client.indexOf("async function boot(){");
+const bootEnd = client.indexOf("\\n", bootStart);
+const bootCode = client.slice(bootStart, bootEnd > bootStart ? bootEnd : undefined);
+const cleanupMarkers = ["[data-imperial-ssr-header]", "[data-imperial-ssr-footer]", "[data-imperial-ssr-mobile-nav]", ".ssrSkipLink"];
+for (const marker of cleanupMarkers) {
+  assert.ok(bootCode.includes(`document.querySelector('${marker}')?.remove()`), `client boot must remove the SSR ${marker} before creating its interactive shell`);
+}
+assert.ok(bootCode.indexOf("document.querySelector('[data-imperial-ssr-header]')?.remove()") < bootCode.indexOf("shell();"), "SSR navigation and skip-link cleanup must happen before the client shell is inserted");
+assert.ok(bootCode.includes("const serverRenderedHome=location.pathname==='/'&&!!root.querySelector('[data-imperial-ssr-home]')"), "SSR cleanup must only activate when the server-rendered homepage is actually present");
 assert.equal(versionedClient, client, "versioned production bundle must include the same SSR-preserving boot logic");
 const rtlDirectionRule = 'document.documentElement.dir=(c==="ur"||c==="ar"||c==="fa")?"rtl":"ltr";';
 assert.ok(client.includes(rtlDirectionRule), "Urdu, Arabic and Persian must all activate RTL direction");
