@@ -411,6 +411,17 @@ async function seed(env){
 }
 async function api(req,env){
  const url=new URL(req.url),p=url.pathname,m=req.method;
+ // Reject browser-originated cross-site state changes before session lookup or
+ // route execution. SameSite=Lax remains defense-in-depth, not the sole CSRF guard.
+ if(!["GET","HEAD","OPTIONS"].includes(m)){
+  const origin=req.headers.get("Origin");
+  if(origin){
+   let originMatches=false;
+   try{originMatches=new URL(origin).origin===url.origin}catch{}
+   if(!originMatches)return json({error:"Cross-origin request rejected."},403);
+  }
+  if(req.headers.get("Sec-Fetch-Site")==="cross-site")return json({error:"Cross-site request rejected."},403);
+ }
  // Health checks must not trigger schema bootstrap, rate-limit DDL, community setup,
  // or session reads. Keep this path fast and side-effect-free for platform probes.
  if(p==="/api/health"&&m==="GET"){let db=true;try{await env.DB.prepare("SELECT 1").first()}catch{db=false}return json({ok:db,service:env.SITE_NAME||"Imperial Novel",version:env.APP_VERSION||"5.0.0",database:db,time:new Date().toISOString()})}
