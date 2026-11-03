@@ -22,6 +22,8 @@ assert.match(app, /localStorage\.setItem\('imperial_theme',chosen\)/, "Selected 
 assert.match(app, /Current theme:/, "Theme control must announce its current and next theme");
 assert.match(app, /id="setSiteTheme"[^>]*>[\s\S]*?<option value="cosmic">Cosmic<\/option>/, "Settings must expose all six global themes");
 assert.match(app, /applyImperialTheme\(\$\('#setSiteTheme'\)\.value\)/, "Settings must apply the selected global theme");
+assert.match(app, /imperial_reduced_motion.*imperial_high_contrast.*imperial_compact_cards/, "Accessibility preferences must be restored from local storage during app initialization");
+assert.match(app, /root\.dataset\.reducedMotion=String\(reduced\);root\.dataset\.highContrast=String\(high\)/, "Restored accessibility preferences must reach global document state");
 
 const css = readFileSync("public/imperial-design-foundation.css", "utf8");
 for (const [label, pattern] of [
