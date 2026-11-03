@@ -34,7 +34,7 @@ assert.equal(validateAccountPreferences({ ...defaults, line_height: 1.7 }).ok, f
 assert.equal(validateAccountPreferences({ ...defaults, text_width: 900 }).ok, false);
 assert.equal(validateAccountPreferences({ ...defaults, reduced_motion: "true" }).ok, false);
 
-const migration = fs.readFileSync("migrations/0018_account_preferences.sql", "utf8");
+const migration = fs.readFileSync("migrations/0014_account_preferences.sql", "utf8");
 assert.match(migration, /preferences_json TEXT NOT NULL DEFAULT '\{\}'/);
 
 const worker = fs.readFileSync("src/index.js", "utf8");
