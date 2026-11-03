@@ -126,7 +126,7 @@ assert.ok(safeLocalCover.includes('src="/uploads/cover.webp"'), "same-origin cov
 const safeRemoteCover = renderHomepageHtml([{ id: 11, title: "Remote cover", cover_url: "https://cdn.example/story.webp" }]).content;
 assert.ok(safeRemoteCover.includes('src="https://cdn.example/story.webp"'), "HTTPS cover URLs should be preserved");
 assert.match(safeRemoteCover, /alt="Remote cover cover" width="240" height="320" loading="lazy" decoding="async"/, "story cover images must have descriptive alt text, intrinsic dimensions and non-blocking loading");
-for (const unsafeCover of ["http://insecure.example/cover.jpg", "data:image/svg+xml,<svg></svg>", "//external.example/cover.jpg", "/\\\\external.example/cover.jpg"]) {
+for (const unsafeCover of ["http://insecure.example/cover.jpg", "data:image/svg+xml,<svg></svg>", "//external.example/cover.jpg", "/\\\\external.example/cover.jpg", "https://reader:secret@cdn.example/cover.jpg", "https://"]) {
   const unsafeCoverMarkup = renderHomepageHtml([{ id: 12, title: "Fallback cover", cover_url: unsafeCover }]).content;
   assert.ok(unsafeCoverMarkup.includes('src="/story-cover-placeholder.svg"'), `unsafe cover URL ${unsafeCover} must use the local placeholder`);
 }
