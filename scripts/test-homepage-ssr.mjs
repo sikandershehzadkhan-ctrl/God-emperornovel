@@ -104,6 +104,16 @@ assert.match(indexHtml, /<main id="app"/, "the document shell must provide the s
 assert.match(rendered.content, /<section class="homeFormatShelf" aria-labelledby="ssr-home-formats">/, "format shelf must have an accessible section name");
 assert.match(rendered.content, /<section class="section nextShelf" aria-labelledby="ssr-home-stories">/, "story shelf must have an accessible section name");
 assert.match(rendered.header, /<nav class="navlinks" aria-label="Primary navigation">/);
+for (const [label, href] of [["Discover", "/catalog"], ["Formats", "/formats"], ["Genres", "/genres"], ["Community", "/community"], ["Rankings", "/leaderboard"], ["OmniPortal", "/omniportal"], ["Library", "/library"]]) {
+  assert.ok(rendered.header.includes(`<a href="${href}">${label}</a>`), `SSR primary navigation must include the client-shell destination ${label}`);
+}
+for (const href of ["/search", "/notifications", "/account"]) {
+  assert.ok(rendered.header.includes(`href="${href}"`), `SSR account navigation must preserve ${href}`);
+}
+for (const href of ["/formats", "/genres", "/omniportal", "/trend-factory"]) {
+  assert.ok(client.includes(`href="${href}"`), `interactive shell must retain the ${href} destination`);
+}
+assert.ok(rendered.footer.includes('<a href="/trend-factory">Trend Factory</a>'), "SSR footer must include the Trend Factory destination available in the client footer");
 assert.match(rendered.header, /data-imperial-ssr-mobile-nav/);
 assert.match(rendered.header, /href="\/author"/);
 assert.match(rendered.header, /href="\/search"/);
