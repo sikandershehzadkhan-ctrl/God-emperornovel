@@ -62,6 +62,10 @@ assert.match(reader, /synced to your account/,
   "Signed-in reader UI must disclose account synchronization");
 assert.ok(reader.includes("content.dir='auto'"),
   "Chapter content direction must follow its own first strong text character, independently of UI language");
+assert.ok(worker.includes("ORDER BY chapter_number DESC LIMIT 1") && worker.includes("ORDER BY chapter_number LIMIT 1"),
+  "Previous and next chapter APIs must select the nearest published chapter on each side");
+assert.ok(reader.includes("d.previous.chapter_number") && reader.includes("d.next.chapter_number"),
+  "Reader navigation must use the API's actual previous and next chapter numbers");
 assert.ok(reader.includes("readerProgressPendingAt:") && reader.includes("localPendingAt>remoteSavedAt"),
   "Offline local progress must be reconciled against the server's saved timestamp before restoring");
 assert.ok(worker.includes("STRFTIME('%Y-%m-%dT%H:%M:%fZ','now')"),
