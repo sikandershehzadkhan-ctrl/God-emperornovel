@@ -91,3 +91,10 @@ Both checks passed on the route-registry branch. The broader source-validation w
 The numeric novel and chapter detail API handlers now explicitly require `GET` before any database access or view-count write. Other methods receive HTTP 405. A regression test, `scripts/test-detail-api-method-guards.mjs`, verifies both guards precede database work and is part of the route-registry CI workflow.
 
 This closes the specific method-ambiguity identified during source review. It does not certify every API handler; the remaining path-only branches still need individual method and side-effect review.
+
+
+## Read-only API method guard follow-up (3 November 2026)
+
+The following endpoints now explicitly return HTTP 405 for non-GET methods before endpoint work: `/api/health`, `/api/me`, `/api/config`, `/api/genres`, `/api/tags`, `/api/public-authors`, `/api/sources`, `/api/omni/status`, `/api/omni/search`, `/api/omni/resolve`, and `/api/omni/smart-unlock`. The novel/chapter detail routes are separately guarded. Regression tests cover the 11 read-only endpoints plus the two detail endpoints.
+
+This is a targeted method-contract improvement. Other path-only branches and routes with multiple verbs still require review for allowed methods, authorization, side effects, and response caching.
