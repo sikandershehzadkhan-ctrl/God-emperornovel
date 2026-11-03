@@ -10,12 +10,15 @@ const versionedCss = await readFile(new URL("../public/style-17.23.0.css", impor
 const luxuryCss = await readFile(new URL("../public/imperial-luxury-17.23.0.css", import.meta.url), "utf8");
 
 assert.equal(source, served, "editable and served application bundles must remain identical");
-const rendered = renderHomepageHtml([
-  { id: 7, title: "<script>alert(1)</script>", author: "A & B", cover_url: "//unsafe.example/cover.jpg" },
-  { id: 8, title: "Safe story", author: "Writer", cover_url: "https://covers.example/book.jpg" },
-  { id: "invalid", title: "Invalid ID" },
-  ...Array.from({ length: 7 }, (_, i) => ({ id: 20 + i, title: "Story " + i, author: "Writer" }))
-]);
+const rendered = renderHomepageHtml({
+  trending: [
+    { id: 7, title: "<script>alert(1)</script>", author: "A & B", cover_url: "//unsafe.example/cover.jpg", chapter_count: 2 },
+    { id: 8, title: "Safe story", author: "Writer", cover_url: "https://covers.example/book.jpg", chapter_count: 3 },
+    { id: "invalid", title: "Invalid ID" },
+    ...Array.from({ length: 7 }, (_, i) => ({ id: 20 + i, title: "Story " + i, author: "Writer" }))
+  ],
+  latest: [{ id: 9, title: "Latest story", author: "Writer", cover_url: "/covers/latest.jpg", chapter_count: 1 }]
+});
 assert.ok(rendered.header.includes('data-imperial-ssr-header'), "SSR header marker must exist");
 assert.ok(rendered.header.includes('data-imperial-ssr-mobile-nav'), "SSR mobile navigation must exist");
 assert.ok(rendered.header.includes('class="skipLink ssrSkipLink"'), "SSR must include a keyboard skip link");
@@ -24,9 +27,13 @@ assert.ok(rendered.content.includes("&lt;script&gt;alert(1)&lt;/script&gt;"), "n
 assert.ok(rendered.content.includes("A &amp; B"), "author names must be HTML-escaped");
 assert.ok(rendered.content.includes("/story-cover-placeholder.svg"), "protocol-relative cover URLs must be rejected");
 assert.ok(rendered.content.includes("https://covers.example/book.jpg"), "valid HTTPS cover URLs must be retained");
-assert.equal((rendered.content.match(/class="card"/g) || []).length, 6, "SSR must cap the story shelf at six valid records");
-const empty = renderHomepageHtml([]);
-assert.ok(empty.content.includes("New stories are being prepared."), "empty catalog must produce a truthful empty state");
+assert.equal((rendered.content.match(/class="card"/g) || []).length, 7, "SSR must cap each story shelf at six valid records");
+assert.ok(rendered.content.includes('id="trend"') && rendered.content.includes('id="latest"'), "SSR must expose both story shelves for safe client refresh");
+assert.ok(rendered.content.includes("nextFeatureDeck") && rendered.content.includes("nextCreatorBand") && rendered.content.includes("nextReaderPromise"), "SSR must preserve the complete homepage feature sections");
+assert.ok(rendered.content.includes("Latest story"), "SSR must render the latest shelf independently");
+const empty = renderHomepageHtml({ trending: [], latest: [] });
+assert.ok(empty.content.includes("The catalog is growing."), "empty trending catalog must produce a truthful empty state");
+assert.ok(empty.content.includes("No new updates yet."), "empty latest catalog must produce a truthful empty state");
 
 assert.ok(worker.includes('import { renderHomepageHtml } from "./homepage-ssr.mjs";'), "Worker must import the SSR renderer");
 assert.ok(worker.includes("publication_status='published' AND rights_status IN ('original','public_domain','licensed','authorized')"), "SSR query must restrict to published rights-cleared stories");
@@ -38,6 +45,10 @@ assert.ok(worker.includes("[\\s\\S]*?"), "SSR replacement must stop at the first
 assert.ok(worker.includes('text=text.replace("</body>",serverMarkup.footer+"</body>");'), "Worker must include the SSR footer");
 
 assert.ok(source.includes("const serverRenderedHome=location.pathname==='/'&&!!root.querySelector('[data-imperial-ssr-home]')"), "client boot must detect SSR homepage markup");
+assert.ok(source.includes("const serverRenderedHome=!!root.querySelector('[data-imperial-ssr-home]');"), "homepage renderer must detect existing SSR markup");
+assert.ok(source.includes("if(!serverRenderedHome)root.innerHTML="), "homepage client renderer must preserve SSR content instead of replacing it");
+assert.ok(source.includes("if(!el)return;"), "client story refresh must tolerate missing shelf nodes");
+assert.ok(worker.includes("ORDER BY updated_at DESC,id DESC LIMIT 6"), "SSR latest shelf must use the actual latest-update ordering");
 for (const marker of ["[data-imperial-ssr-header]", "[data-imperial-ssr-footer]", "[data-imperial-ssr-mobile-nav]", ".ssrSkipLink"]) {
   assert.ok(source.includes("document.querySelector('" + marker + "')?.remove()"), "client boot must remove duplicate SSR shell marker " + marker);
 }
