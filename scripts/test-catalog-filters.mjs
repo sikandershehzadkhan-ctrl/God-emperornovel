@@ -1,0 +1,11 @@
+import assert from 'node:assert/strict';
+import fs from 'node:fs';
+const app=fs.readFileSync('public/app.js','utf8');
+const worker=fs.readFileSync('src/index.js','utf8');
+const served=fs.readFileSync('public/app-17.23.0.js','utf8');
+assert.equal(app,served,'Served runtime must match app source');
+assert.ok(app.includes("author:qs.get('author')||''"),'Author query must hydrate into catalog filters');
+assert.ok(app.includes('name="author"')&&app.includes('value="${esc(vals.author)}"'),'Catalog must expose a prefilled author filter');
+assert.ok(app.includes("author:'Author'"),'Author filter must have an accessible active-filter label');
+assert.ok(worker.includes('if(author){sql+=" AND LOWER(n.author)=LOWER(?)";a.push(author)}'),'API must apply author filtering case-insensitively with a bound parameter');
+console.log('Catalog author filter regression passed.');
