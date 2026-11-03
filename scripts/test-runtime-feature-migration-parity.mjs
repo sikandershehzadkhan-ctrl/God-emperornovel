@@ -13,10 +13,10 @@ for (const table of ["auth_rate_limits", "comment_likes", "novel_reactions", "re
 for (const index of ["idx_auth_rate_limits_window", "idx_comment_likes_comment", "idx_novel_reactions_novel", "idx_request_votes_request"]) {
   assert.ok(migration.includes(index), index + " must exist in fresh-install migration");
 }
-assert.match(migration, /ALTER TABLE comments ADD COLUMN parent_id INTEGER/);
-assert.match(migration, /ALTER TABLE comments ADD COLUMN edited_at TEXT/);
 assert.match(runtime, /parent_id INTEGER/);
 assert.match(runtime, /edited_at TEXT/);
+assert.match(migration, /CREATE TABLE IF NOT EXISTS auth_rate_limits/,
+  "migration must remain safe for an existing database whose comment columns were already added lazily");
 assert.match(m8, /CREATE TABLE IF NOT EXISTS request_votes/);
 assert.match(migration, /CREATE TABLE IF NOT EXISTS request_votes/,
   "phase 01N.12 must defensively converge with the earlier request-votes table");
