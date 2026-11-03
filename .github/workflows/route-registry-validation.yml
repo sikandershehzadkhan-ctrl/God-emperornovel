@@ -13,6 +13,7 @@ on:
       - "scripts/test-api-route-method-matrix.mjs"
       - "docs/architecture/IMPERIAL-AUTHORIZATION-OWNERSHIP-MATRIX-01N-38.json"
       - "scripts/test-authorization-ownership-matrix.mjs"
+      - "scripts/test-admin-account-comment-safety.mjs"
       - ".github/workflows/route-registry-validation.yml"
   push:
     branches:
@@ -53,3 +54,6 @@ jobs:
 
       - name: Validate authorization and ownership register
         run: node scripts/test-authorization-ownership-matrix.mjs
+
+      - name: Validate admin account and comment safety invariants
+        run: node scripts/test-admin-account-comment-safety.mjs
