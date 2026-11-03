@@ -319,3 +319,10 @@ assert.ok(adminHtml.indexOf('href="/imperial-design-foundation.css"')>adminHtml.
 for(const selector of ["body.authorStudioPage,body.adminDashboardPage","body.authorStudioPage input","body.adminDashboardPage input","body.authorStudioPage a:focus-visible","@media(max-width:760px){body.authorStudioPage .wrap"]){
   assert.ok(foundationCss.includes(selector),"Shared foundation must normalize standalone routes with "+selector);
 }
+
+
+// Route body hooks are required: page-specific normalization must actually match the standalone templates.
+assert.match(authorHtml,/<body\\s+class=["']authorStudioPage["']>/,"Author Studio must opt into its shared route normalization");
+assert.match(adminHtml,/<body\\s+class=["']adminDashboardPage["']>/,"Admin Command Center must opt into its shared route normalization");
+assert.equal((adminHtml.match(/href=["']\\/imperial-design-foundation\\.css["']/g)||[]).length,1,"Admin must load the shared foundation exactly once");
+assert.equal((adminHtml.match(/href=["']\\/imperial-design-system-17\\.25\\.0\\.css["']/g)||[]).length,1,"Admin must load shared semantic tokens exactly once");
