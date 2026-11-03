@@ -37,6 +37,16 @@ for (const column of ["display_name", "bio", "avatar_url", "website_url", "locat
 const worker = fs.readFileSync("src/index.js", "utf8");
 assert.match(worker, /p==="\/api\/profile"&&m==="PUT"/);
 assert.match(worker, /\/api\/public-profile\//);
+const publicStart = worker.indexOf('if(p.startsWith("/api/public-profile/")');
+const publicEnd = worker.indexOf('if(p==="/api/author/applications/me"', publicStart);
+assert.ok(publicStart >= 0 && publicEnd > publicStart, "Public profile API route must be present.");
+const publicProjection = worker.slice(publicStart, publicEnd);
+assert.ok(publicProjection.includes("profile_visibility='public'"), "Private profiles must not resolve publicly.");
+assert.ok(publicProjection.includes("show_reading_stats"), "Reading statistics must respect owner consent.");
+assert.ok(!publicProjection.includes("email"), "Public profile projection must never expose email.");
+assert.ok(!publicProjection.includes("tickets"), "Public profile projection must never expose Crown balances.");
+assert.ok(!publicProjection.includes("password"), "Public profile projection must never expose authentication data.");
+assert.ok(publicProjection.includes("rights_status IN ('original','public_domain','licensed','authorized')"), "Author works must be rights-eligible.");
 const app = fs.readFileSync("public/app.js", "utf8");
 assert.match(app, /async function profilePage\(/);
 assert.match(app, /async function publicProfile\(/);
