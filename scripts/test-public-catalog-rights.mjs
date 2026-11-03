@@ -38,7 +38,10 @@ const protectedReaderRoutes = [
   ["/api/novel-reactions\"&&m===\"POST\"", "Reaction writes must reject works without cleared rights."],
   ["/api/rating\"&&m===\"GET\"", "Rating reads must reject works without cleared rights."],
   ["/api/rating\"&&m===\"POST\"", "Rating writes must reject works without cleared rights."],
-  ["/api/follow\"&&m===\"POST\"", "Follow writes must reject works without cleared rights."]
+  ["/api/follow\"&&m===\"POST\"", "Follow writes must reject works without cleared rights."],
+  ["/api/omni/smart-unlock", "Smart unlock must reject works without cleared rights."],
+  ["/unlock$/.test(p)&&m===\"POST\"", "Single chapter unlock must reject works without cleared rights."],
+  ["/batch-unlock", "Batch chapter unlock must reject works without cleared rights."]
 ];
 protectedReaderRoutes.push(
   ['/api/comments"&&m==="GET"', "Comment reads must reject works without cleared rights."],
