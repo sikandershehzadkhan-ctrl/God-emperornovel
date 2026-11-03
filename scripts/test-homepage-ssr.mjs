@@ -14,6 +14,7 @@ const [worker, client, versionedClient, indexHtml, luxuryCss, homepageCss, homep
 assert.ok(client.includes("function translateHomepage(c)"), "homepage fixed copy must have a dedicated localization pass");
 assert.ok(client.includes("HOME_LANG={"), "homepage Urdu, Arabic and Persian translations must be defined");
 assert.ok(client.includes("translateHomepage(c);"), "homepage localization must run whenever the interface language changes");
+assert.ok(client.includes("translateHomepage(document.documentElement.lang||'en');"), "saved language must be applied after the client homepage replaces SSR markup");
 assert.ok(client.includes("location.pathname!==\"/\""), "homepage localization must not alter dynamic novel or author content on other routes");
 assert.match(worker, /renderHomepageHtml\(homepageNovels\)/);
 assert.match(worker, /publication_status=.published./);
