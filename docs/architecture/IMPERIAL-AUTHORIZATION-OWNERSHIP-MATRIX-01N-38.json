@@ -543,6 +543,20 @@
       "status": "needs-decision",
       "detail": "The current rating API accepts and rounds whole-number ratings from 1 to 5, while the product requirements specify a whole-number 1-to-10 scale. The source also contains a second legacy POST /api/rating handler after the first matching handler, creating duplicate route logic with inconsistent rights eligibility checks; the first matching handler returns, so the later block appears unreachable in the current dispatch flow.",
       "action": "Resolve the product rating contract before migration. Inventory schema constraints, UI controls, stored ratings and all consumers; design an explicit migration/normalization plan and remove the duplicate legacy handler only with regression tests. Do not change the scale by simply widening the API bound."
+    },
+    {
+      "id": "AUTH-015",
+      "severity": "high",
+      "status": "needs-mitigation",
+      "detail": "The admin user PATCH handler writes verified and banned as b.verified ? 1 : 0 and b.banned ? 1 : 0. A request intended only to change a role can therefore silently clear verification and/or unban an account when those fields are omitted. This does not preserve PATCH semantics and may alter unrelated account security state.",
+      "action": "Validate a strict allowlisted patch DTO; update only fields explicitly present; reject empty patches; test role-only, verified-only, banned-only and mixed updates while asserting all omitted fields remain unchanged."
+    },
+    {
+      "id": "AUTH-016",
+      "severity": "high",
+      "status": "needs-mitigation",
+      "detail": "The admin user PATCH handler prevents an administrator from removing their own admin role, but it does not visibly prevent demoting or banning the last remaining active administrator. A second administrator could remove the final admin account's privileges and lock the platform out of admin operations.",
+      "action": "Enforce a transactional last-active-admin invariant for role demotion and ban changes; test concurrent demotions and bans against an isolated D1 database, and preserve an audited recovery path."
     }
   ]
 }
