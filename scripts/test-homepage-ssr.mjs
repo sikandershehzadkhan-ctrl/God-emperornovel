@@ -17,7 +17,7 @@ const rendered = renderHomepageHtml([
   { id: 7, title: "The <Glass> Throne", author: "A & B", cover_url: "https://covers.example/book.jpg" },
   { id: 8, title: "Second Story", author: "Writer", cover_url: "//unsafe.example/cover.jpg" }
 ]);
-assert.match(rendered.header, /<nav aria-label="Primary navigation">/);
+assert.match(rendered.header, /<nav class="navlinks" aria-label="Primary navigation">/);
 assert.match(rendered.content, /<h1>Open a world\.<br>Shape an empire\.<\/h1>/);
 assert.match(rendered.content, /type="search"/);
 assert.match(rendered.content, /href="\/novel\/7"/);
