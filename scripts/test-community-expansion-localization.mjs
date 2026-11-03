@@ -4,7 +4,7 @@ import assert from 'node:assert/strict';
 const app = fs.readFileSync('public/app.js', 'utf8');
 const served = fs.readFileSync('public/app-17.24.0.js', 'utf8');
 const html = fs.readFileSync('public/index.html', 'utf8');
-const match = app.match(/const COMMUNITY_EXPANSION_LANG=(\{[\s\S]*?\});\s*function simplePage/);
+const match = app.match(/const COMMUNITY_EXPANSION_LANG=(\{[\s\S]*?\});\s*async function discoveryPage/);
 assert.ok(match, 'Community expansion locale dictionary must be present');
 const dictionaries = JSON.parse(match[1]);
 const locales = ['en','ur','hi','zh-CN','zh-TW','es','fr','id','ja','ko','pt-BR','ar','vi','fa'];
