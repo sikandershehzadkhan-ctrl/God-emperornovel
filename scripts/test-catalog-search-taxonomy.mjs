@@ -48,6 +48,6 @@ assert.deepEqual(relevance.values, [
 ]);
 assert.deepEqual(buildCatalogSearchOrder("  "), { sql: "", values: [] });
 assert.ok(worker.includes('import { buildCatalogSearchPredicate, buildCatalogSearchOrder } from "./catalog-search-policy.mjs";'));
-assert.ok(worker.includes("const relevance=buildCatalogSearchOrder(term);order=relevance.sql+","+selectedOrder;a.push(...relevance.values)"));
+assert.ok(worker.includes('const relevance=buildCatalogSearchOrder(term);order=relevance.sql+","+selectedOrder;a.push(...relevance.values)'));
 
 console.log("PASS: catalog relevance ranks exact/prefix genre and tag matches after title/author matches using escaped parameters and pagination-safe EXISTS clauses.");
