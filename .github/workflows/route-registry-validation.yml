@@ -28,6 +28,7 @@ on:
       - "scripts/test-api-route-method-matrix.mjs"
       - "docs/architecture/IMPERIAL-AUTHORIZATION-OWNERSHIP-MATRIX-01N-38.json"
       - "scripts/test-authorization-ownership-matrix.mjs"
+      - "scripts/test-admin-account-comment-safety.mjs"
       - ".github/workflows/route-registry-validation.yml"
 
 permissions:
