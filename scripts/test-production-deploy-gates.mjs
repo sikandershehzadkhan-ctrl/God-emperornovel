@@ -10,12 +10,16 @@ assert.ok(workflow.includes("npx --yes wrangler@4 deploy --dry-run"), "Productio
 assert.ok(workflow.includes("Verify catalog and author-application D1 migrations after deployment"), "Production deployment must verify additive catalog and creator migrations.");
 assert.ok(workflow.includes("idx_chapter_revisions_chapter_created") && workflow.includes("idx_scheduled_chapter_publications_due"), "Production deployment must verify chapter revision and scheduling indexes.");
 assert.ok(workflow.includes("Apply and verify additive D1 migrations before Worker deployment"), "Production D1 migrations must run before publishing the Worker.");
-for (const migration of ["migrations/0009_catalog_filter_indexes.sql", "migrations/0010_catalog_sort_indexes.sql", "migrations/0011_author_applications.sql", "migrations/0012_chapter_revisions.sql", "migrations/0013_scheduled_chapter_publications.sql"]) {
+for (const migration of ["migrations/0009_catalog_filter_indexes.sql", "migrations/0010_catalog_sort_indexes.sql", "migrations/0011_author_applications.sql", "migrations/0012_chapter_revisions.sql", "migrations/0013_scheduled_chapter_publications.sql", "migrations/0014_author_story_goals.sql", "migrations/0015_author_private_notes.sql", "migrations/0016_reader_progress_sync.sql"]) {
   assert.ok(workflow.includes("--file=" + migration), "Pre-deploy migration step must apply " + migration);
 }
 assert.ok(workflow.indexOf("Validate Cloudflare bundle without deploying") < workflow.indexOf("Apply and verify additive D1 migrations before Worker deployment"), "Validate the Worker bundle before mutating production D1.");
 assert.ok(workflow.indexOf("Apply and verify additive D1 migrations before Worker deployment") < workflow.indexOf("Deploy Worker and static assets"), "D1 schema must be ready before the Worker is deployed.");
 assert.ok(workflow.includes("author_applications exists with an incomplete or unrecognized schema"), "Partial author application schemas must fail closed.");
+assert.ok(workflow.includes("progress_percent"), "Production deployment must verify the reader progress column.");
+assert.ok(workflow.includes("Skipping non-repeatable migration 0016"), "Reader progress migration must not be re-applied after its column exists.");
+assert.ok(workflow.includes("idx_history_user_updated"), "Production deployment must verify the reader history index.");
+assert.ok(workflow.includes("0009-0016"), "Manual production confirmation must describe the complete additive migration range.");
 
 for (const index of [
   "idx_novel_genres_genre_novel",
