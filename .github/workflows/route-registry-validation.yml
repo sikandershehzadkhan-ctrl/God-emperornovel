@@ -16,6 +16,7 @@ on:
       - "scripts/test-admin-account-comment-safety.mjs"
       - "scripts/test-community-taxonomy-security.mjs"
       - "scripts/test-admin-account-d1.py"
+      - "scripts/test-api-csrf-taxonomy-safety.mjs"
       - ".github/workflows/route-registry-validation.yml"
   push:
     branches:
@@ -33,6 +34,7 @@ on:
       - "scripts/test-admin-account-comment-safety.mjs"
       - "scripts/test-community-taxonomy-security.mjs"
       - "scripts/test-admin-account-d1.py"
+      - "scripts/test-api-csrf-taxonomy-safety.mjs"
       - ".github/workflows/route-registry-validation.yml"
 
 permissions:
@@ -70,6 +72,9 @@ jobs:
 
       - name: Validate admin account and comment safety invariants
         run: node scripts/test-admin-account-comment-safety.mjs
+
+      - name: Validate API CSRF and taxonomy attribution safeguards
+        run: node scripts/test-api-csrf-taxonomy-safety.mjs
 
       - name: Validate community taxonomy attribution and rate limiting
         run: node scripts/test-community-taxonomy-security.mjs
