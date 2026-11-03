@@ -10,7 +10,7 @@ function safeCover(value) {
 }
 
 export function renderHomepageHtml(novels = []) {
-  const rows = Array.isArray(novels) ? novels.slice(0, 6) : [];
+  const rows = Array.isArray(novels) ? novels.filter(novel => Number.isSafeInteger(Number(novel?.id)) && Number(novel.id) >= 1).slice(0, 6) : [];
   const cards = rows.length ? rows.map(novel => {
     const id = Number(novel?.id);
     if (!Number.isSafeInteger(id) || id < 1) return "";
