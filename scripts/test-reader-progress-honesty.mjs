@@ -58,7 +58,6 @@ assert.match(progressMigration, /CHECK \(progress_percent BETWEEN 0 AND 100\)/,
 assert.match(reader, /api\('\/api\/reader-progress\?novel_id='/,
   "Signed-in readers must load saved progress from their account");
 assert.ok(reader.includes("fetch('/api/reader-progress'") && reader.includes("keepalive:true"), "Reader progress must flush during page exit where the browser permits it");
-  "Reader progress must flush during page exit where the browser permits it");
 assert.match(reader, /synced to your account/,
   "Signed-in reader UI must disclose account synchronization");
 
