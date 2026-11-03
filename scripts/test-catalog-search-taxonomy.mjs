@@ -1,4 +1,5 @@
 import assert from "node:assert/strict";
+import { readFile } from "node:fs/promises";
 import { buildCatalogSearchPredicate } from "../src/catalog-search-policy.mjs";
 
 const empty = buildCatalogSearchPredicate([]);
@@ -24,4 +25,9 @@ assert.ok(!escaped.sql.includes("50%_"));
 const bounded = buildCatalogSearchPredicate(["one", "two", "three", "four", "five", "six", "seven", "eight", "ignored"]);
 assert.equal(bounded.values.length, 64);
 
-console.log("PASS: catalog search matches title/author/description/aliases and genre/tag taxonomy with parameterized, escaped, bounded terms.");
+const worker = await readFile(new URL("../src/index.js", import.meta.url), "utf8");
+assert.ok(worker.includes('import { buildCatalogSearchPredicate } from "./catalog-search-policy.mjs";'));
+assert.ok(worker.includes('const search=buildCatalogSearchPredicate(searchTerms);sql+=" AND "+search.sql;a.push(...search.values)'));
+assert.ok(worker.includes("FROM novels n WHERE n.publication_status='published'"), "Search must retain the published-content visibility boundary.");
+
+console.log("PASS: catalog search matches title/author/description/aliases and genre/tag taxonomy with parameterized, escaped, bounded terms and preserves the published-content boundary.");
