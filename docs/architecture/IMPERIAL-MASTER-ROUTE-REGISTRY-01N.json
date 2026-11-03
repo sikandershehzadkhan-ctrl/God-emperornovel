@@ -480,9 +480,9 @@
       "status": "observed",
       "screen_mapping": "observed-dedicated-admin-shell-and-inline-console",
       "component_mapping": "Admin shell, tabs, controls, and API paths inventoried; Community tab comment-report panel wired to report-specific moderation API; browser interaction QA pending",
-      "api_mapping": "Admin APIs inventoried; includes GET/PATCH generic reports and GET/PATCH comment reports with admin gates, allowlisted states, affected-row checks and audit events",
+      "api_mapping": "Admin APIs inventoried; includes GET/PATCH generic reports and GET/PATCH comment reports with admin gates, allowlisted states, affected-row checks and audit events; report queues now have additive status/time and target lookup indexes (migration 0020)",
       "permission_mapping": "admin(u) server-side gate on every /api/admin/* moderation route; client-side admin shell gate is not a security boundary",
-      "tests": "Admin report moderation and UI source-policy regression scripts added to build chain; execution and authenticated browser/D1 verification pending"
+      "tests": "Admin report moderation and UI source-policy regression scripts added to build chain; execution and authenticated browser/D1 verification pending; report lifecycle migration policy test added to build chain, execution pending"
     },
     {
       "pattern": "/author",
@@ -765,6 +765,7 @@
     "phase_01n_7": "pending",
     "phase_01n_8": "pending",
     "phase_01n_17": "source-and-policy-test-committed; runtime-verification-pending",
-    "phase_01n_18": "admin-comment-report-panel-connected; source-validation-pending"
+    "phase_01n_18": "admin-comment-report-panel-connected; source-validation-pending",
+    "phase_01n_19": "report-lifecycle-index-migration-and-policy-test-committed; full-migration-and-D1-verification-pending"
   }
 }
