@@ -15,7 +15,7 @@ for (const locale of locales) {
 }
 assert.equal(Object.keys(dictionaries).length, 14, 'Unexpected settings locale count');
 assert.ok(app.includes('function settings()'), 'Settings page handler missing');
-assert.ok(app.includes("setINLang(language);$('#setSiteTheme').value"), 'Settings page must apply saved language after rendering');
+assert.ok(app.includes("setINLang(language);$('#setLanguage').value"), 'Settings page must apply saved language after rendering');
 assert.ok(app.includes("el.dataset.inLang=''"), 'Settings static labels must be marked for localization');
 assert.equal(app, served, 'Served versioned application asset must match source app.js');
 assert.ok(html.includes('/app-17.24.0.js'), 'Public entry must load the versioned application asset');
