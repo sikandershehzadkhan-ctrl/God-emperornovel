@@ -45,6 +45,8 @@ assert.match(css, /html\[dir="rtl"\] \.catalogCover \.statusBadge\{left:auto;rig
   "Catalog status badges must mirror in RTL");
 assert.match(css, /html\[dir="rtl"\] \.homeFormatArrow\{margin-left:0;margin-inline-start:auto\}/,
   "Format arrows must use the correct logical start edge in RTL");
+assert.match(css, /body\\.authorStudioPage button,[\\s\\S]*?body\\.adminDashboardPage \\.ghost \\{\\s*min-height:44px;/,
+  "Author Studio and Admin action controls must meet the 44px touch-target minimum");
 
 function luminance(hex) {
   const channels = hex.slice(1).match(/.{2}/g).map((value) => parseInt(value, 16) / 255)
