@@ -326,3 +326,12 @@ assert.ok(authorHtml.includes('<body class="authorStudioPage">'),"Author Studio 
 assert.ok(adminHtml.includes('<body class="adminDashboardPage">'),"Admin Command Center must opt into its shared route normalization");
 assert.equal(adminHtml.split('href="/imperial-design-foundation.css"').length-1,1,"Admin must load the shared foundation exactly once");
 assert.equal(adminHtml.split('href="/imperial-design-system-17.25.0.css"').length-1,1,"Admin must load shared semantic tokens exactly once");
+
+
+// Admin command-center primitives must match real template classes, not invented component names.
+for(const selector of ["body.adminDashboardPage .panel","body.adminDashboardPage .adminSection","body.adminDashboardPage .adminHero","body.adminDashboardPage .adminNav","body.adminDashboardPage .adminTable","body.adminDashboardPage .field label","body.authorStudioPage .novelHead"]){
+  assert.ok(foundationCss.includes(selector),"Shared foundation must style the real route primitive "+selector);
+}
+for(const token of ["--in-canvas:","--in-ink:","--in-surface:","--in-line:","--in-line-strong:","--in-radius-lg:","--in-content:","--in-shadow:","--in-focus:"]){
+  assert.ok(foundationCss.includes(token),"Shared route styles require defined token "+token);
+}
