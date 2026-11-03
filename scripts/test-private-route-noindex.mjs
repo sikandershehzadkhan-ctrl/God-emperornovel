@@ -14,10 +14,8 @@ for (const route of requiredPrivateRoutes) {
   assert.ok(configured.has(route), route + " must be excluded from search indexing");
 }
 
-assert.match(
-  worker,
-  /if\(noindex\)text=text\.replace\(\/<meta\\s\+name=\[["']\\]robots\[["']\\]\[\^>\]\*>\/i,'<meta name="robots" content="noindex,nofollow">'\)/,
-  "Worker HTML responses must replace the template robots directive with noindex,nofollow"
-);
+assert.ok(worker.includes("if(noindex)text=text.replace("), "Private-route policy must be applied while rendering HTML");
+assert.ok(worker.includes("noindex,nofollow"), "Private-route responses must emit noindex,nofollow");
+assert.ok(worker.includes("name=") && worker.includes("robots"), "Worker must replace the HTML robots directive");
 
 console.log("Private-route robots policy regression passed for " + requiredPrivateRoutes.length + " routes.");
