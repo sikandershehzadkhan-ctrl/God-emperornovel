@@ -686,7 +686,30 @@ async function api(req,env){
  }
  if(p==="/api/notifications"&&m==="GET"){const e=need(u);if(e)return e;return json((await env.DB.prepare("SELECT * FROM notifications WHERE user_id=? ORDER BY created_at DESC LIMIT 50").bind(u.id).all()).results)}
  if(p==="/api/notifications/read"&&m==="POST"){const e=need(u);if(e)return e;await env.DB.prepare("UPDATE notifications SET read_at=CURRENT_TIMESTAMP WHERE user_id=? AND read_at IS NULL").bind(u.id).run();return json({ok:true})}
- if(p==="/api/report"&&m==="POST"){const e=need(u);if(e)return e;const b=await body(req),reason=String(b.reason||"").trim();if(!reason||reason.length>300)return json({error:"Reason is required"},400);await env.DB.prepare("INSERT INTO reports(user_id,novel_id,chapter_id,reason,details) VALUES(?,?,?,?,?)").bind(u.id,b.novel_id||null,b.chapter_id||null,reason,String(b.details||"").slice(0,2000)).run();return json({ok:true,message:"Report submitted"})}
+ if(p==="/api/report"&&m==="POST"){
+  const e=need(u);if(e)return e;
+  const b=await body(req),reason=String(b.reason||"").trim(),details=String(b.details||"").trim();
+  const rawNovel=b.novel_id,rawChapter=b.chapter_id;
+  const novelId=rawNovel==null||rawNovel===""?null:Number(rawNovel);
+  const chapterId=rawChapter==null||rawChapter===""?null:Number(rawChapter);
+  if(!reason||reason.length>300)return json({error:"Reason must be between 1 and 300 characters"},400);
+  if(details.length>2000)return json({error:"Report details cannot exceed 2,000 characters"},400);
+  if(novelId===null&&chapterId===null)return json({error:"A novel or chapter target is required"},400);
+  if(novelId!==null&&(!Number.isSafeInteger(novelId)||novelId<1))return json({error:"Invalid novel target"},400);
+  if(chapterId!==null&&(!Number.isSafeInteger(chapterId)||chapterId<1))return json({error:"Invalid chapter target"},400);
+  if(novelId!==null){
+   const novel=await env.DB.prepare("SELECT id FROM novels WHERE id=? AND publication_status='published'").bind(novelId).first();
+   if(!novel)return json({error:"Published novel target not found"},404);
+  }
+  if(chapterId!==null){
+   const chapter=await env.DB.prepare("SELECT c.id,c.novel_id FROM chapters c JOIN novels n ON n.id=c.novel_id WHERE c.id=? AND c.publication_status='published' AND n.publication_status='published'").bind(chapterId).first();
+   if(!chapter)return json({error:"Published chapter target not found"},404);
+   if(novelId!==null&&Number(chapter.novel_id)!==novelId)return json({error:"Chapter does not belong to the supplied novel"},400);
+  }
+  const inserted=await env.DB.prepare("INSERT INTO reports(user_id,novel_id,chapter_id,reason,details) SELECT ?,?,?,?,? WHERE (SELECT COUNT(*) FROM reports WHERE user_id=? AND created_at>=datetime('now','-1 hour'))<10").bind(u.id,novelId,chapterId,reason,details,u.id).run();
+  if(Number(inserted?.meta?.changes||0)!==1)return json({error:"You have reached the report limit. Please try again later."},429);
+  return json({ok:true,message:"Report submitted"});
+ }
  if(p==="/api/tickets/ledger"&&m==="GET"){const e=need(u);if(e)return e;return json((await env.DB.prepare("SELECT id,delta,reason,reference,created_at FROM ticket_ledger WHERE user_id=? ORDER BY created_at DESC LIMIT 100").bind(u.id).all()).results)}
  if(p==="/api/recommendations"&&m==="GET"){const e=need(u);if(e)return e;await ensureOmniTables(env);const rows=(await env.DB.prepare(`SELECT n.*,r.reason,r.score,GROUP_CONCAT(DISTINCT g.name) genres,COUNT(DISTINCT c.id) chapter_count FROM recommendations r JOIN novels n ON n.id=r.novel_id LEFT JOIN novel_genres ng ON ng.novel_id=n.id LEFT JOIN genres g ON g.id=ng.genre_id LEFT JOIN chapters c ON c.novel_id=n.id WHERE r.user_id=? AND n.publication_status='published' GROUP BY n.id,r.id ORDER BY r.score DESC,r.created_at DESC LIMIT 20`).bind(u.id).all()).results;if(rows.length)return json(rows);const fallback=(await env.DB.prepare(`SELECT n.*,GROUP_CONCAT(DISTINCT g.name) genres,COUNT(DISTINCT c.id) chapter_count FROM novels n LEFT JOIN novel_genres ng ON ng.novel_id=n.id LEFT JOIN genres g ON g.id=ng.genre_id LEFT JOIN chapters c ON c.novel_id=n.id WHERE n.publication_status='published' AND n.id NOT IN(SELECT novel_id FROM follows WHERE user_id=?) GROUP BY n.id ORDER BY n.rating DESC,n.views DESC LIMIT 12`).bind(u.id).all()).results;return json(fallback.map((x,i)=>({...x,reason:'Popular with Imperial readers',score:100-i}))) }
  if(p==="/api/follows"&&m==="GET"){const e=need(u);if(e)return e;return json((await env.DB.prepare(`SELECT n.*,f.created_at FROM follows f JOIN novels n ON n.id=f.novel_id WHERE f.user_id=? AND n.publication_status='published' ORDER BY f.created_at DESC`).bind(u.id).all()).results)}
