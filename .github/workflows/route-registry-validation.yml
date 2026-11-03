@@ -18,6 +18,7 @@ on:
       - "scripts/test-admin-account-d1.py"
       - "scripts/test-api-csrf-taxonomy-safety.mjs"
       - "scripts/test-ai-project-actor-ownership.mjs"
+      - "scripts/test-detail-api-method-guards.mjs"
       - "scripts/test-donation-approval-d1.py"
       - ".github/workflows/route-registry-validation.yml"
   push:
@@ -38,6 +39,7 @@ on:
       - "scripts/test-admin-account-d1.py"
       - "scripts/test-api-csrf-taxonomy-safety.mjs"
       - "scripts/test-ai-project-actor-ownership.mjs"
+      - "scripts/test-detail-api-method-guards.mjs"
       - "scripts/test-donation-approval-d1.py"
       - ".github/workflows/route-registry-validation.yml"
 
@@ -85,6 +87,9 @@ jobs:
 
       - name: Validate AI project actor ownership
         run: node scripts/test-ai-project-actor-ownership.mjs
+
+      - name: Validate novel and chapter detail API method guards
+        run: node scripts/test-detail-api-method-guards.mjs
 
       - name: Validate community taxonomy attribution and rate limiting
         run: node scripts/test-community-taxonomy-security.mjs
