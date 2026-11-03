@@ -2,12 +2,13 @@ import assert from "node:assert/strict";
 import { readFile } from "node:fs/promises";
 import { renderHomepageHtml } from "../src/homepage-ssr.mjs";
 
-const [worker, client, versionedClient, indexHtml, luxuryCss] = await Promise.all([
+const [worker, client, versionedClient, indexHtml, luxuryCss, homepageCss] = await Promise.all([
   readFile(new URL("../src/index.js", import.meta.url), "utf8"),
   readFile(new URL("../public/app.js", import.meta.url), "utf8"),
   readFile(new URL("../public/app-17.23.0.js", import.meta.url), "utf8"),
   readFile(new URL("../public/index.html", import.meta.url), "utf8"),
-  readFile(new URL("../public/imperial-luxury-17.23.0.css", import.meta.url), "utf8")
+  readFile(new URL("../public/imperial-luxury-17.23.0.css", import.meta.url), "utf8"),
+  readFile(new URL("../public/style-17.23.0.css", import.meta.url), "utf8")
 ]);
 assert.match(worker, /renderHomepageHtml\(homepageNovels\)/);
 assert.match(worker, /publication_status=.published./);
@@ -32,6 +33,11 @@ assert.ok(luxuryCss.includes('html[data-theme="light"] .eyebrow,') && luxuryCss.
 assert.ok(luxuryCss.includes('html[data-theme="light"] .nextFeatureIntro h2 span {\n  color: #6A0DAD;'), "light-theme feature heading accent must use accessible imperial purple");
 assert.ok(luxuryCss.includes('html[data-theme="light"] .footerBrand {\n  color: #0B1215;'), "light-theme footer brand must use readable obsidian text");
 assert.ok(luxuryCss.includes('html[data-theme="light"] a.skipLink:not(.primary):not(.secondary):not(.pill):not(.brand) {\n  color: #FFFFFF;\n  background: #0B1215;'), "light-theme skip link must retain readable foreground and background contrast");
+assert.ok(homepageCss.includes('html[dir="rtl"] .homePage .heroSearch'), "homepage hero search must support RTL direction");
+assert.ok(homepageCss.includes('html[dir="rtl"] .homePage .heroSearch input'), "homepage search input text must align correctly in RTL");
+assert.ok(homepageCss.includes('html[dir="rtl"] .homePage .homeFormatGrid'), "homepage format grid must support RTL direction");
+assert.ok(homepageCss.includes('html[dir="rtl"] .homePage .sectionHead'), "homepage shelf headings must support RTL direction");
+assert.ok(homepageCss.includes('html[dir="rtl"] .footerLinks'), "homepage footer navigation must support RTL direction");
 
 const rendered = renderHomepageHtml([
   { id: 7, title: "The <Glass> Throne", author: "A & B", cover_url: "https://covers.example/book.jpg" },
