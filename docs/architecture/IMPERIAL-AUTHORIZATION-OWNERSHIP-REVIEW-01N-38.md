@@ -41,6 +41,10 @@ The reviewed AI project collection is filtered by the current account ID. Projec
 - The sitemap is the explicit public-cache exception and selects only published, rights-eligible novels and chapters.
 - The login cookie is `HttpOnly`, `Secure`, and `SameSite=Lax`. No explicit Origin or CSRF-token check is visible in the reviewed request pipeline, so cross-site browser POST behavior still needs a dedicated test. SameSite is a useful baseline, not a substitute for verification.
 
+## AI generation actor versus project owner
+
+The AI project generation endpoints permit the admin role to operate on a creator-owned project. However, generation job and run rows write the acting session user's ID into columns named `owner_user_id`, while the project itself remains owned by the creator. This may be intentional admin-on-behalf-of behavior, but the data model does not distinguish the project owner from the operator. Decide whether this admin capability should exist and separate actor attribution from ownership if retained.
+
 ## Findings
 
 1. Cross-account integration tests are still required. SQL ownership predicates are visible, but static inspection does not prove runtime isolation.
