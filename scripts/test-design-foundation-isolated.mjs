@@ -84,11 +84,11 @@ assert.match(css, /html\[data-reduced-motion="true"\][\s\S]*?transform:none!impo
   "Reduced-motion mode must suppress hover movement");
 
 
-assert.match(css, /html\\[data-compact-cards="true"\\] \\.catalogGrid[\\s\\S]*?gap:9px/,
+assert.ok(css.includes('html[data-compact-cards="true"] .catalogGrid') && css.includes('gap:9px'),
   "Compact-card preference must densify discovery grids");
-assert.match(css, /html\\[data-compact-cards="true"\\] \\.catalogCover[\\s\\S]*?aspect-ratio:\\.84/,
+assert.ok(css.includes('html[data-compact-cards="true"] .catalogCover') && css.includes('aspect-ratio:.84'),
   "Compact-card preference must reduce cover height");
-assert.match(css, /html\\[data-compact-cards="true"\\] \\.catalogBody[\\s\\S]*?padding:9px/,
+assert.ok(css.includes('html[data-compact-cards="true"] .catalogBody') && css.includes('padding:9px'),
   "Compact-card preference must reduce card padding");
 
 for (const theme of ["light", "dark", "sepia", "midnight", "imperial", "cosmic"]) {
