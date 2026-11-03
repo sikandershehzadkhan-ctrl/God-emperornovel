@@ -300,3 +300,22 @@ assert.ok(css.includes('body .mobileNav a[href="/account"]{')&&css.includes("dis
 assert.ok(css.includes("body .mobileNav{")&&css.includes("position:fixed!important")&&css.includes("inset:auto 0 0 0!important"),"Mobile navigation must remain fixed to the viewport bottom.");
 assert.ok(css.includes("env(safe-area-inset-bottom)"),"Mobile navigation must respect device safe-area insets.");
 assert.ok(css.includes("body .footerInner{padding-bottom:calc(76px + env(safe-area-inset-bottom))}"),"Footer content must remain reachable above the fixed mobile navigation.");
+
+
+/* Standalone route convergence: every legacy template must load the shared foundation after its own styles. */
+const [catalogHtml,novelHtml,authorHtml,adminHtml,foundationCss]=[
+  readFileSync("public/catalog.html","utf8"),
+  readFileSync("public/novel.html","utf8"),
+  readFileSync("public/author.html","utf8"),
+  readFileSync("public/admin.html","utf8"),
+  css
+];
+for(const [name,html] of [["catalog",catalogHtml],["novel detail",novelHtml],["author studio",authorHtml],["admin command center",adminHtml]]){
+  assert.ok(html.includes('href="/imperial-design-foundation.css"'),name+" must load the shared Imperial design foundation");
+  assert.ok(html.includes('href="/imperial-design-system-17.25.0.css"'),name+" must load the shared semantic component tokens");
+}
+assert.ok(authorHtml.indexOf('href="/imperial-design-foundation.css"')>authorHtml.lastIndexOf("<style>"),"Author Studio shared styles must load after its legacy inline styles");
+assert.ok(adminHtml.indexOf('href="/imperial-design-foundation.css"')>adminHtml.lastIndexOf("<style>"),"Admin shared styles must load after its legacy inline styles");
+for(const selector of ["body.authorStudioPage,body.adminDashboardPage","body.authorStudioPage input","body.adminDashboardPage input","body.authorStudioPage a:focus-visible","@media(max-width:760px){body.authorStudioPage .wrap"]){
+  assert.ok(foundationCss.includes(selector),"Shared foundation must normalize standalone routes with "+selector);
+}
