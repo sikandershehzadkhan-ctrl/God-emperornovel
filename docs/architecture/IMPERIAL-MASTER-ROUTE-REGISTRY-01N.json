@@ -746,6 +746,17 @@
       ],
       "issue": "Existing spelling differs from proposed product naming",
       "resolution": "Keep existing route until canonical migration and redirects are validated"
+    },
+    {
+      "id": "SCHEMA-001",
+      "paths": [
+        "migrations/0012_runtime_feature_schema.sql",
+        "migrations/0019_comment_report_uniqueness.sql",
+        "migrations/0020_report_lifecycle_indexes.sql",
+        "PR-118"
+      ],
+      "issue": "Open PR #118 proposes a competing 0012 with report archival and cascade behavior",
+      "resolution": "Reconcile migration ownership and preserve the explicit comment-report evidence policy before merge; do not merge both 0012 files blindly"
     }
   ],
   "explicit_non_goals": [
@@ -766,6 +777,7 @@
     "phase_01n_8": "pending",
     "phase_01n_17": "source-and-policy-test-committed; runtime-verification-pending",
     "phase_01n_18": "admin-comment-report-panel-connected; source-validation-pending",
-    "phase_01n_19": "report-lifecycle-index-migration-and-policy-test-committed; full-migration-and-D1-verification-pending"
+    "phase_01n_19": "report-lifecycle-index-migration-and-policy-test-committed; full-migration-and-D1-verification-pending",
+    "phase_01n_20": "runtime-feature-migration-0012-added; parity-test-committed; execution-and-full-migration-replay-pending"
   }
 }
