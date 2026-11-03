@@ -1,8 +1,8 @@
 from pathlib import Path
 
 app = Path("public/app.js").read_text(encoding="utf-8")
-runtime = Path("public/app-17.23.0.js").read_text(encoding="utf-8")
-css = Path("public/style-17.23.0.css").read_text(encoding="utf-8")
+runtime = Path("public/app-17.24.0.js").read_text(encoding="utf-8")
+css = Path("public/style-17.24.0.css").read_text(encoding="utf-8")
 checks = {
     "creator story cards expose comic page management": "data-open-comic-manager" in app and "Manage comic pages" in app,
     "manager is restricted to comic-format story cards": "COMIC_FORMATS.has(String(n.kind||'').toLowerCase())" in app,
