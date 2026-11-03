@@ -112,6 +112,14 @@ const capped = renderHomepageHtml(Array.from({ length: 9 }, (_, index) => ({ id:
 assert.equal((capped.match(/class="card"/g) || []).length, 6, "SSR must render no more than six story cards");
 const safeLocalCover = renderHomepageHtml([{ id: 10, title: "Local cover", cover_url: "/uploads/cover.webp" }]).content;
 assert.ok(safeLocalCover.includes('src="/uploads/cover.webp"'), "same-origin cover paths should be preserved");
+const safeRemoteCover = renderHomepageHtml([{ id: 11, title: "Remote cover", cover_url: "https://cdn.example/story.webp" }]).content;
+assert.ok(safeRemoteCover.includes('src="https://cdn.example/story.webp"'), "HTTPS cover URLs should be preserved");
+assert.match(safeRemoteCover, /alt="Remote cover cover" width="240" height="320" loading="lazy" decoding="async"/, "story cover images must have descriptive alt text, intrinsic dimensions and non-blocking loading");
+for (const unsafeCover of ["http://insecure.example/cover.jpg", "data:image/svg+xml,<svg></svg>", "//external.example/cover.jpg", "/\\\\external.example/cover.jpg"]) {
+  const unsafeCoverMarkup = renderHomepageHtml([{ id: 12, title: "Fallback cover", cover_url: unsafeCover }]).content;
+  assert.ok(unsafeCoverMarkup.includes('src="/story-cover-placeholder.svg"'), `unsafe cover URL ${unsafeCover} must use the local placeholder`);
+}
+
 const noJsDocument = indexHtml
   .replace("<body>", "<body>" + rendered.header)
   .replace(/(<main id="app"[^>]*>)[\s\S]*?(<\/main>)/, (_match, opening, closing) => opening + rendered.content + closing)
