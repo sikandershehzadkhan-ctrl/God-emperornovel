@@ -49,7 +49,7 @@ export function buildRelatedNovelRecommendationsQuery() {
         WHEN author_overlap>0 THEN 'More from an author you read'
         ELSE 'Same format as stories you read'
       END AS reason,
-      (SELECT COUNT(*) FROM chapters c WHERE c.novel_id=scored.id) AS chapter_count
+      (SELECT COUNT(*) FROM chapters c WHERE c.novel_id=scored.id AND c.publication_status='published') AS chapter_count
     FROM scored
     WHERE genre_overlap+tag_overlap+author_overlap+format_overlap>0
     ORDER BY score DESC, views DESC, updated_at DESC, id DESC
