@@ -480,9 +480,9 @@
       "status": "observed",
       "screen_mapping": "observed-dedicated-admin-shell-and-inline-console",
       "component_mapping": "admin shell, tabs, controls and API paths inventoried; server permission audit pending",
-      "api_mapping": "GET/PATCH admin community comments and reports; server admin role gates inspected",
-      "permission_mapping": "pending",
-      "tests": "pending"
+      "api_mapping": "Admin APIs inventoried; includes GET/PATCH generic reports and GET/PATCH comment reports with admin gates, allowlisted states, affected-row checks and audit events",
+      "permission_mapping": "admin(u) server-side gate on every /api/admin/* moderation route; client-side admin shell gate is not a security boundary",
+      "tests": "source-policy regression script added to build chain; execution and end-to-end D1 tests pending"
     },
     {
       "pattern": "/author",
@@ -685,7 +685,9 @@
       "/api/admin/publishing/chapters/:id",
       "/api/admin/publishing/chapters/reorder",
       "/api/admin/community/comments",
-      "/api/admin/community/reports"
+      "/api/admin/community/reports",
+      "/api/admin/comment-reports",
+      "/api/admin/comment-reports/:id"
     ],
     "operations": [
       "/api/health",
@@ -761,6 +763,7 @@
     "phase_01n_5": "pending",
     "phase_01n_6": "policy-draft",
     "phase_01n_7": "pending",
-    "phase_01n_8": "pending"
+    "phase_01n_8": "pending",
+    "phase_01n_17": "source-and-policy-test-committed; runtime-verification-pending"
   }
 }
