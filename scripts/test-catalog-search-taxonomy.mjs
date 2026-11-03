@@ -26,7 +26,7 @@ const bounded = buildCatalogSearchPredicate(["one", "two", "three", "four", "fiv
 assert.equal(bounded.values.length, 64);
 
 const worker = await readFile(new URL("../src/index.js", import.meta.url), "utf8");
-assert.ok(worker.includes('import { buildCatalogSearchPredicate } from "./catalog-search-policy.mjs";'));
+assert.ok(worker.includes('import { buildCatalogSearchPredicate, buildCatalogSearchOrder } from "./catalog-search-policy.mjs";'));
 assert.ok(worker.includes('const search=buildCatalogSearchPredicate(searchTerms);sql+=" AND "+search.sql;a.push(...search.values)'));
 assert.ok(worker.includes("FROM novels n WHERE n.publication_status='published'"), "Search must retain the published-content visibility boundary.");
 
