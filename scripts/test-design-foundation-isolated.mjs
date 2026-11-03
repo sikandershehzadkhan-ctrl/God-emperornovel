@@ -16,7 +16,7 @@ assert.match(app, /const IMPERIAL_THEMES=\['light','dark','sepia','midnight','im
 assert.match(app, /localStorage\.setItem\('imperial_theme',chosen\)/, "Selected theme must persist");
 assert.match(app, /Current theme:/, "Theme control must announce its current and next theme");
 assert.match(app, /id="setSiteTheme"[^>]*>[\s\S]*?<option value="cosmic">Cosmic<\/option>/, "Settings must expose all six global themes");
-assert.match(app, /applyImperialTheme\('\$\('#setSiteTheme'\)\.value\)/, "Settings must apply the selected global theme");
+assert.match(app, /applyImperialTheme\(\$\('#setSiteTheme'\)\.value\)/, "Settings must apply the selected global theme");
 
 const css = readFileSync("public/imperial-design-foundation.css", "utf8");
 for (const [label, pattern] of [
