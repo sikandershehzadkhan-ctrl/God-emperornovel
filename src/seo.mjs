@@ -1,6 +1,6 @@
 import { CONTENT_FORMATS } from "./content-formats.mjs";
 const DEFAULT_ORIGIN="https://god-emperornovel.sikandershehzadkhan.workers.dev";
-const STATIC_PUBLIC_PATHS=["/","/catalog","/formats","/genres","/tags","/community","/leaderboard","/omniportal","/become-an-author","/privacy","/terms","/copyright",...CONTENT_FORMATS.map(format=>"/format/"+format.id)];
+const STATIC_PUBLIC_PATHS=["/","/catalog","/authors","/formats","/genres","/tags","/community","/leaderboard","/omniportal","/become-an-author","/privacy","/terms","/copyright",...CONTENT_FORMATS.map(format=>"/format/"+format.id)];
 const PRIVATE_PREFIXES=["/api/","/admin","/account","/login","/register","/library","/history","/following","/settings","/notifications","/tickets","/requests","/author$"];
 
 export function canonicalOrigin(value){
@@ -116,6 +116,7 @@ export const seoStaticPaths=STATIC_PUBLIC_PATHS;
 const PAGE_SEO={
   "/":{title:"Imperial Novel | Read • Create • Conquer",description:"Discover original, licensed and authorized novels, comics and connected worlds. Read, create and explore on Imperial Novel."},
   "/catalog":{title:"Discover Novels & Stories | Imperial Novel",description:"Explore the Imperial Novel catalog. Discover original and authorized stories across genres, formats and reading worlds."},
+  "/authors":{title:"Discover Authors | Imperial Novel",description:"Meet creators behind published, rights-cleared stories in the Imperial Novel catalog."},
   "/formats":{title:"Explore Story Formats | Imperial Novel",description:"Browse novels, fanfiction, light novels, web novels, manga, manhwa, comics and other supported story formats in the Imperial Library."},
   "/genres":{title:"Explore Story Genres | Imperial Novel",description:"Browse story genres and discover your next novel on Imperial Novel."},
   "/tags":{title:"Explore Story Tags | Imperial Novel",description:"Find stories by topic, theme and tag in the Imperial Novel catalog."},
