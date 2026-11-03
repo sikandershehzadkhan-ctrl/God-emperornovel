@@ -1,5 +1,17 @@
 import assert from "node:assert/strict";
+import { readFile } from "node:fs/promises";
 import { renderHomepageHtml } from "../src/homepage-ssr.mjs";
+
+const [worker, client] = await Promise.all([
+  readFile(new URL("../src/index.js", import.meta.url), "utf8"),
+  readFile(new URL("../public/app.js", import.meta.url), "utf8")
+]);
+assert.match(worker, /renderHomepageHtml\(homepageNovels\)/);
+assert.match(worker, /publication_status=.published./);
+assert.match(worker, /<main id="app"/);
+assert.match(client, /serverRenderedHome=location\.pathname==='\/'/);
+assert.match(client, /data-imperial-ssr-header/);
+
 
 const rendered = renderHomepageHtml([
   { id: 7, title: "The <Glass> Throne", author: "A & B", cover_url: "https://covers.example/book.jpg" },
