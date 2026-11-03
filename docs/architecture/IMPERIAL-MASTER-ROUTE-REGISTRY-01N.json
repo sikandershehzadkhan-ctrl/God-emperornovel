@@ -171,7 +171,7 @@
       "seo_policy": "index-conditional",
       "status": "observed",
       "screen_mapping": "observed-shell-and-client-renderer",
-      "component_mapping": "pending",
+      "component_mapping": "renderer, DOM anchor and GET API reference inventoried",
       "api_mapping": "pending",
       "permission_mapping": "pending",
       "tests": "pending"
@@ -185,7 +185,7 @@
       "seo_policy": "index-conditional",
       "status": "observed",
       "screen_mapping": "observed-shell-and-client-renderer",
-      "component_mapping": "pending",
+      "component_mapping": "renderer, DOM anchor and GET API reference inventoried",
       "api_mapping": "pending",
       "permission_mapping": "pending",
       "tests": "pending"
@@ -199,7 +199,7 @@
       "seo_policy": "index-conditional",
       "status": "observed",
       "screen_mapping": "observed-shell-and-client-renderer",
-      "component_mapping": "renderer, DOM anchors, action families and API references inventoried; full component tree/handler tests pending",
+      "component_mapping": "renderer and GET API reference inventoried",
       "api_mapping": "pending",
       "permission_mapping": "pending",
       "tests": "pending"
@@ -213,7 +213,7 @@
       "seo_policy": "index-conditional",
       "status": "observed",
       "screen_mapping": "observed-shell-and-client-renderer",
-      "component_mapping": "renderer, DOM anchors, action families and API references inventoried; full component tree/handler tests pending",
+      "component_mapping": "renderer and GET API references inventoried",
       "api_mapping": "pending",
       "permission_mapping": "pending",
       "tests": "pending"
@@ -227,7 +227,7 @@
       "seo_policy": "noindex",
       "status": "observed",
       "screen_mapping": "observed-shell-and-client-renderer",
-      "component_mapping": "pending",
+      "component_mapping": "renderer, form controls and GET API reference inventoried",
       "api_mapping": "pending",
       "permission_mapping": "pending",
       "tests": "pending"
@@ -325,7 +325,7 @@
       "seo_policy": "noindex",
       "status": "observed",
       "screen_mapping": "observed-shell-and-client-renderer",
-      "component_mapping": "pending",
+      "component_mapping": "shared auth renderer, fields and POST endpoint inventoried; auth handler audit pending",
       "api_mapping": "pending",
       "permission_mapping": "pending",
       "tests": "pending"
@@ -339,7 +339,7 @@
       "seo_policy": "noindex",
       "status": "observed",
       "screen_mapping": "observed-shell-and-client-renderer",
-      "component_mapping": "pending",
+      "component_mapping": "shared auth renderer, fields and POST endpoint inventoried; auth handler audit pending",
       "api_mapping": "pending",
       "permission_mapping": "pending",
       "tests": "pending"
@@ -423,7 +423,7 @@
       "seo_policy": "noindex-review",
       "status": "observed",
       "screen_mapping": "observed-dedicated-shell; composition-pending",
-      "component_mapping": "pending",
+      "component_mapping": "proposal form, validation and POST contract inventoried; handler audit pending",
       "api_mapping": "pending",
       "permission_mapping": "pending",
       "tests": "pending"
@@ -437,7 +437,7 @@
       "seo_policy": "index",
       "status": "observed",
       "screen_mapping": "observed-static-shell",
-      "component_mapping": "pending",
+      "component_mapping": "static legal shell existence verified; content/legal review pending",
       "api_mapping": "pending",
       "permission_mapping": "pending",
       "tests": "pending"
@@ -451,7 +451,7 @@
       "seo_policy": "index",
       "status": "observed",
       "screen_mapping": "observed-static-shell",
-      "component_mapping": "pending",
+      "component_mapping": "static legal shell existence verified; content/legal review pending",
       "api_mapping": "pending",
       "permission_mapping": "pending",
       "tests": "pending"
@@ -465,7 +465,7 @@
       "seo_policy": "index",
       "status": "observed",
       "screen_mapping": "observed-static-shell",
-      "component_mapping": "pending",
+      "component_mapping": "static legal shell existence verified; content/legal review pending",
       "api_mapping": "pending",
       "permission_mapping": "pending",
       "tests": "pending"
@@ -479,7 +479,7 @@
       "seo_policy": "noindex",
       "status": "observed",
       "screen_mapping": "observed-dedicated-shell; composition-pending",
-      "component_mapping": "pending",
+      "component_mapping": "admin shell, tabs, controls and API paths inventoried; server permission audit pending",
       "api_mapping": "pending",
       "permission_mapping": "pending",
       "tests": "pending"
