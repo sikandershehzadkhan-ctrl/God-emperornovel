@@ -490,6 +490,13 @@
       "status": "needs-review",
       "detail": "Public vote listing includes requester username. This is public profile metadata exposure, but the intended disclosure policy is not documented in the handler.",
       "action": "Confirm usernames are intentionally public on the vote board; keep email and private account fields excluded."
+    },
+    {
+      "id": "AUTH-011",
+      "severity": "medium",
+      "status": "needs-verification",
+      "detail": "JSON responses default to Cache-Control no-store and HTML responses also use no-store, which is a strong privacy baseline. The sitemap is the explicit public-cache exception and filters to published, rights-eligible content. Cookie authentication uses SameSite=Lax, HttpOnly and Secure, but no explicit Origin/CSRF token check is visible in the reviewed request pipeline.",
+      "action": "Verify browser CSRF behavior with cross-site POST tests and review any future credentialed CORS changes; retain no-store on all account/admin responses."
     }
   ]
 }
