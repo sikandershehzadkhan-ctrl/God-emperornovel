@@ -8,10 +8,8 @@ on:
       - "public/app.js"
       - "public/app-*.js"
       - "docs/architecture/IMPERIAL-ROUTE-REGISTRY-01N.json"
+      - "docs/architecture/IMPERIAL-API-ROUTE-METHOD-MATRIX-01N-37.json"
       - "scripts/test-route-registry.mjs"
-      - "docs/architecture/IMPERIAL-API-ROUTE-METHOD-MATRIX-01N-37.json"
-      - "scripts/test-api-route-method-matrix.mjs"
-      - "docs/architecture/IMPERIAL-API-ROUTE-METHOD-MATRIX-01N-37.json"
       - "scripts/test-api-route-method-matrix.mjs"
       - ".github/workflows/route-registry-validation.yml"
   push:
@@ -22,7 +20,9 @@ on:
       - "public/app.js"
       - "public/app-*.js"
       - "docs/architecture/IMPERIAL-ROUTE-REGISTRY-01N.json"
+      - "docs/architecture/IMPERIAL-API-ROUTE-METHOD-MATRIX-01N-37.json"
       - "scripts/test-route-registry.mjs"
+      - "scripts/test-api-route-method-matrix.mjs"
       - ".github/workflows/route-registry-validation.yml"
 
 permissions:
@@ -41,5 +41,8 @@ jobs:
         with:
           node-version: 22
 
-      - name: Validate route manifest against Worker and client source
+      - name: Validate HTML route manifest
         run: node scripts/test-route-registry.mjs
+
+      - name: Validate API method inventory
+        run: node scripts/test-api-route-method-matrix.mjs
