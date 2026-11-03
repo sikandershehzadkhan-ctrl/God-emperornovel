@@ -91,6 +91,18 @@ The following duplicates/overlaps were observed from the changed-file patches:
 8. Run the Cloudflare build and D1 migration validation on the integrated branch.
 9. Stage the migration against a disposable/staging D1 first. Production rollout requires backup, explicit release approval, monitoring and a documented recovery plan.
 
+## Production inventory and release workflow findings
+
+A source review of `.github/workflows/audit-production-d1.yml`, `.github/workflows/deploy.yml` and `wrangler.toml` found the following operational constraints:
+
+- The production D1 audit is a manually dispatchable workflow. It requires the explicit `confirm_read_only_audit=yes` input and valid Cloudflare GitHub Actions secrets. It checks the configured D1 identity, credential presence, Time Travel bookmark, public Worker health, table/column inventories, and (when present) `d1_migrations` history.
+- The audit workflow is designed around SELECT and PRAGMA statements. It does not run migrations or deploy the Worker. Its workflow logs will contain database schema and aggregate operational information, so access to the GitHub Actions run should remain restricted to authorized maintainers.
+- The production deploy workflow is also manual and requires `confirm_production_deploy=true`. Its current implementation explicitly applies only `0009_catalog_filter_indexes.sql`, `0010_catalog_sort_indexes.sql`, and `0011_author_applications.sql` before deploying. It is not a general mechanism for applying the open feature-branch migrations.
+- The deploy workflow uses direct remote `d1 execute --file` calls for those three migrations rather than Wrangler's migration-ledger application command. Therefore the presence or absence of a `d1_migrations` record must not be assumed to prove that these SQL files were or were not executed. Compare the actual schema objects and the migration history together.
+- The checked-in D1 binding points to `god-emperornovel-db` with database ID `78493557-1142-45e6-96aa-2ba9f67e3be0`. Confirm that this is the intended environment before dispatching any workflow.
+
+**Operational rule:** Do not dispatch the production audit or deploy workflow as an automatic continuation step. The audit is read-only but accesses production operational metadata; it should be run only by an authorized maintainer after explicitly choosing the read-only audit input. Never dispatch production deploy as part of this migration reconciliation work.
+
 ## Validation update (2026-11-04)
 
 - PR #177 adds a quote-aware duplicate-payload guard and runs it as part of the package build.
