@@ -77,7 +77,8 @@ function canonicalizeSql(source) {
   }
 
   assert.notEqual(state, 'block-comment', 'Unterminated SQL block comment.');
-  assert.equal(state, 'normal', 'Unterminated SQL quoted token.');
+  assert.ok(state === 'normal' || state === 'line-comment',
+    'Unterminated SQL quoted token.');
   return result.trim();
 }
 
