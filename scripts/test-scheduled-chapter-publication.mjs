@@ -2,7 +2,7 @@ import assert from "node:assert/strict";
 import fs from "node:fs";
 
 const worker = fs.readFileSync("src/index.js", "utf8");
-const migration = fs.readFileSync("migrations/0013_scheduled_chapter_publications.sql", "utf8");
+const migration = fs.readFileSync("migrations/0017_scheduled_chapter_publications.sql", "utf8");
 const app = fs.readFileSync("public/app.js", "utf8");
 const shipped = fs.readFileSync("public/app-17.24.0.js", "utf8");
 const wrangler = fs.readFileSync("wrangler.toml", "utf8");
