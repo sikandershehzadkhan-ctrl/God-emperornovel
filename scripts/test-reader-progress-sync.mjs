@@ -12,6 +12,7 @@ assert.ok(migration.includes('progress_percent INTEGER NOT NULL DEFAULT 0 CHECK(
 assert.ok(server.includes('h.progress_percent'), 'History API must return synchronized progress');
 assert.ok(server.includes('Number.isInteger(progress)||progress<0||progress>100'), 'Progress API must reject invalid progress values');
 assert.ok(server.includes('c.publication_status=') && server.includes('n.publication_status='), 'Progress writes must require a published chapter and novel');
+assert.ok(server.includes('EXISTS(SELECT 1 FROM unlocks x WHERE x.user_id=? AND x.chapter_id=c.id)'), 'Progress writes must reject chapters the reader has not unlocked');
 assert.ok(reader.includes('progress_percent:pct'), 'Reader must send scroll progress to the server');
 assert.ok(reader.indexOf('const readReaderSetting=') < reader.indexOf("readReaderSetting('readerProgress:'), 'Storage helpers must initialize before progress recovery reads settings');
 assert.ok(reader.includes('saved.progress_percent'), 'Reader must restore synchronized server progress');
