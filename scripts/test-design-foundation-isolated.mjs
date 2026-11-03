@@ -36,6 +36,13 @@ for (const [label, pattern] of [
 assert.match(app, /document\.documentElement\.dir=\(c==="ur"\|\|c==="ar"\)\?"rtl":"ltr"/,
   "Urdu and Arabic interface languages must set the document direction");
 
+assert.match(css, /html\[dir="rtl"\] \.chapterDrawer\{[\s\S]*?inset-inline-start:0;[\s\S]*?border-right:1px solid/,
+  "Chapter drawer must mirror to the correct edge in RTL");
+assert.match(css, /html\[dir="rtl"\] \.catalogCover \.statusBadge\{left:auto;right:9px\}/,
+  "Catalog status badges must mirror in RTL");
+assert.match(css, /html\[dir="rtl"\] \.homeFormatArrow\{margin-left:0;margin-inline-start:auto\}/,
+  "Format arrows must use the correct logical start edge in RTL");
+
 function luminance(hex) {
   const channels = hex.slice(1).match(/.{2}/g).map((value) => parseInt(value, 16) / 255)
     .map((value) => value <= 0.04045 ? value / 12.92 : ((value + 0.055) / 1.055) ** 2.4);
