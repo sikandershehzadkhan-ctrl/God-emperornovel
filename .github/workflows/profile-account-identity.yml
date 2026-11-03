@@ -1,0 +1,68 @@
+name: Profile and account identity CI
+
+on:
+  push:
+    branches:
+      - feature/account-username-security-17-24
+    paths:
+      - "src/**"
+      - "public/app.js"
+      - "public/app-*.js"
+      - "migrations/**"
+      - "scripts/**"
+      - "package.json"
+      - "package-lock.json"
+      - "wrangler.toml"
+      - ".github/workflows/profile-account-identity.yml"
+  pull_request:
+    branches:
+      - main
+      - feature/profile-identity-17-23
+    paths:
+      - "src/**"
+      - "public/app.js"
+      - "public/app-*.js"
+      - "migrations/**"
+      - "scripts/test-account-identity-policy.mjs"
+      - "scripts/test-account-session-management.mjs"
+      - "scripts/test-account-preferences.mjs"
+      - "package.json"
+      - "package-lock.json"
+      - "wrangler.toml"
+      - ".github/workflows/profile-account-identity.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: profile-account-identity-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  cloudflare-build:
+    if: github.event_name != 'pull_request' || github.event.pull_request.head.ref == 'feature/account-username-security-17-24'
+    name: Profile identity tests and Cloudflare dry run
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - name: Checkout source
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js 22
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - name: Install locked dependencies
+        run: npm ci
+
+      - name: Check Cloudflare source readiness
+        run: npm run check:cloudflare-readiness
+
+      - name: Rehearse account identity D1 migration with SQLite
+        run: python3 scripts/test-account-identity-migration.py
+
+      - name: Run full application regression suite and Cloudflare dry run
+        run: npm run build:cloudflare
