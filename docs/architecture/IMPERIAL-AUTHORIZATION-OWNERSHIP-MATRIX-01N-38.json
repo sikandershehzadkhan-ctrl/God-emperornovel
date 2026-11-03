@@ -497,6 +497,13 @@
       "status": "needs-verification",
       "detail": "JSON responses default to Cache-Control no-store and HTML responses also use no-store, which is a strong privacy baseline. The sitemap is the explicit public-cache exception and filters to published, rights-eligible content. Cookie authentication uses SameSite=Lax, HttpOnly and Secure, but no explicit Origin/CSRF token check is visible in the reviewed request pipeline.",
       "action": "Verify browser CSRF behavior with cross-site POST tests and review any future credentialed CORS changes; retain no-store on all account/admin responses."
+    },
+    {
+      "id": "AUTH-012",
+      "severity": "medium",
+      "status": "needs-decision",
+      "detail": "The admin override on AI project routes allows an admin to run a project owned by another author, while ai_chapter_jobs.owner_user_id and ai_generation_runs.owner_user_id are populated with the acting admin's u.id. The project remains owned by the original author. This mixes project ownership and actor attribution in fields named owner_user_id.",
+      "action": "Decide whether admins may generate on behalf of creators. If yes, store project owner and actor/reviewer separately; otherwise remove the admin override from generation actions. Add tests for owner-visible job history and audit attribution."
     }
   ]
 }
