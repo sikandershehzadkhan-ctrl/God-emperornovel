@@ -386,7 +386,27 @@ async function authorStudio(){
  $('#refreshAuthorWorks').onclick=loadWorks;
  await loadWorks();
 }
-async function authorPublic(){const slug=decodeURIComponent(location.pathname.split('/').pop()||'').trim();const root=$('#app');root.innerHTML=pageStart('Author Profile','Published stories and public catalog activity.')+`<div id="authorProfile" class="panel">Loading author profile...</div></div></div>`;try{const d=await api('/api/novels?author='+encodeURIComponent(slug)+'&limit=50');const rows=d.results||[];if(!rows.length){$('#authorProfile').innerHTML=`<div class="empty"><h2>Author not found</h2><p>No published stories are currently associated with <b>${esc(slug)}</b>.</p><a class="primary" href="/catalog">Browse the Catalog</a></div>`;return}const author=rows[0].author||slug;$('#authorProfile').innerHTML=`<div class="authorHero"><div class="authorAvatar">♛</div><div><div class="eyebrow">PUBLIC AUTHOR</div><h2>${esc(author)}</h2><p>${rows.length} published ${rows.length===1?'story':'stories'} in the Imperial catalog.</p></div></div><div class="section"><div class="sectionHead"><div><h2>Published Stories</h2><p>Explore this author's available works.</p></div></div><div class="grid">${rows.map(card).join('')}</div></div>`}catch(e){$('#authorProfile').innerHTML=`<div class="notice">${esc(e.message||'Unable to load this author profile.')} <a href="/catalog">Return to Catalog</a></div>`}}
+async function authorPublic(){
+ const slug=decodeURIComponent(location.pathname.split('/').pop()||'').trim();const root=$('#app');
+ root.innerHTML=pageStart('Author Profile','Published stories and public catalog activity.')+'<div id="authorProfile" class="panel">Loading author profile...</div></div></div>';
+ try{
+  const d=await api('/api/novels?author='+encodeURIComponent(slug)+'&limit=50');const rows=d.results||[];
+  if(!rows.length){$('#authorProfile').innerHTML='<div class="empty"><h2>Author not found</h2><p>No published stories are currently associated with <b>'+esc(slug)+'</b>.</p><a class="primary" href="/catalog">Browse the Catalog</a></div>';return}
+  const author=rows[0].author||slug;
+  let identity=null;
+  try{const profileData=await api('/api/public-profile/'+encodeURIComponent(slug));if(profileData.profile?.is_author)identity=profileData.profile;}catch(error){/* Catalog authors without public account profiles keep the existing page. */}
+  let identityCard='';
+  if(identity){
+   const avatar=esc(identity.avatar_url||'/imperial-novel-app-icon.svg');
+   identityCard='<section class="panel"><div class="profileTop"><img class="avatar" src="'+avatar+'" alt="" referrerpolicy="no-referrer" onerror="this.onerror=null;this.src=\\'/imperial-novel-app-icon.svg\\'"><div><div class="eyebrow">PUBLIC ACCOUNT PROFILE</div><h2 style="margin:0">'+esc(identity.display_name||author)+'</h2><div class="muted">@'+esc(identity.username)+'</div></div></div>'+
+    (identity.bio?'<p style="white-space:pre-wrap;margin-top:18px">'+esc(identity.bio)+'</p>':'')+
+    (identity.location?'<p class="muted">⌖ '+esc(identity.location)+'</p>':'')+
+    (identity.website_url?'<p><a href="'+esc(identity.website_url)+'" target="_blank" rel="noopener noreferrer">Visit website ↗</a></p>':'')+
+    '<a class="secondary" href="/u/'+encodeURIComponent(identity.username)+'">View full public profile</a></section>';
+  }
+  $('#authorProfile').innerHTML='<div class="authorHero"><div class="authorAvatar">♛</div><div><div class="eyebrow">PUBLIC AUTHOR</div><h2>'+esc(author)+'</h2><p>'+rows.length+' published '+(rows.length===1?'story':'stories')+' in the Imperial catalog.</p></div></div>'+identityCard+'<div class="section"><div class="sectionHead"><div><h2>Published Stories</h2><p>Explore this author\'s available works.</p></div></div><div class="grid">'+rows.map(card).join('')+'</div></div>';
+ }catch(e){$('#authorProfile').innerHTML='<div class="notice">'+esc(e.message||'Unable to load this author profile.')+' <a href="/catalog">Return to Catalog</a></div>'}
+}
 async function publicProfile(){
  const username=decodeURIComponent(location.pathname.split('/').filter(Boolean).pop()||'');const root=$('#app');
  root.innerHTML=pageStart('Community Profile','A public identity in the Imperial Novel realm.')+`<div class="panel">Loading profile…</div></div></div>`;
