@@ -175,7 +175,7 @@ jobs:
 
           echo "Preflight: determine whether chapter reading progress is absent or already complete."
           progress_output="$(d1_command "SELECT CASE WHEN NOT EXISTS(SELECT 1 FROM sqlite_master WHERE type='table' AND name='history') THEN 'missing_table' WHEN EXISTS(SELECT 1 FROM pragma_table_info('history') WHERE name='progress_percent') THEN 'complete' ELSE 'absent' END AS status;")"
-          progress_status="$(printf '%s' "$progress_output" | read_status)"
+          printf '%s\n' "$progress_output"
           printf '%s\\n' "$progress_output"
           if [ "$progress_status" = "missing_table" ] || [ "$progress_status" = "unknown" ]; then
             echo "::error::The production history table is missing or unreadable. Stop before applying reader progress migration 0016."
