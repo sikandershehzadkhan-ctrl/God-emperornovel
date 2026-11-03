@@ -510,9 +510,9 @@
     {
       "id": "AUTH-010",
       "severity": "low",
-      "status": "needs-review",
-      "detail": "Public vote listing includes requester username. This is public profile metadata exposure, but the intended disclosure policy is not documented in the handler.",
-      "action": "Confirm usernames are intentionally public on the vote board; keep email and private account fields excluded."
+      "status": "mitigated-static-tested",
+      "detail": "Public vote-board response no longer returns requester usernames or joins users; it returns only request metadata and aggregate vote counts required by the UI. A static regression test is in CI.",
+      "action": "Review whether request URL and source host are appropriate public fields and apply abuse controls if needed."
     },
     {
       "id": "AUTH-011",
