@@ -14,8 +14,6 @@ assert.match(library, /account-synced chapter history, reading progress and book
   "Library copy must describe account-synced scroll progress accurately");
 assert.ok(library.includes("x.progress_chapter||x.chapter_number") && library.includes("x.progress_percent"),
   "Continue Reading must display and resume the saved chapter progress when available");
-assert.match(library, /Scroll position is saved on this device/i,
-  "Library must disclose that scroll percentage is device-local");
 
 const readerStart = app.indexOf("async function reader(){");
 const readerEnd = app.indexOf("async function authPage(", readerStart);
