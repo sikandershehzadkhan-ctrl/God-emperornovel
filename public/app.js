@@ -398,7 +398,7 @@ async function authorPublic(){
   let identityCard='';
   if(identity){
    const avatar=esc(identity.avatar_url||'/imperial-novel-app-icon.svg');
-   identityCard='<section class="panel"><div class="profileTop"><img class="avatar" src="'+avatar+'" alt="" referrerpolicy="no-referrer" onerror="this.onerror=null;this.src=\'/imperial-novel-app-icon.svg\'"><div><div class="eyebrow">PUBLIC ACCOUNT PROFILE</div><h2 style="margin:0">'+esc(identity.display_name||author)+'</h2><div class="muted">@'+esc(identity.username)+'</div></div></div>'+
+    identityCard='<section class="panel"><div class="profileTop"><img class="avatar" src="'+avatar+'" alt="" referrerpolicy="no-referrer" data-fallback="/imperial-novel-app-icon.svg" onerror="this.onerror=null;this.src=this.dataset.fallback"><div><div class="eyebrow">PUBLIC ACCOUNT PROFILE</div><h2 style="margin:0">'+esc(identity.display_name||author)+'</h2><div class="muted">@'+esc(identity.username)+'</div></div></div>'+
     (identity.bio?'<p style="white-space:pre-wrap;margin-top:18px">'+esc(identity.bio)+'</p>':'')+
     (identity.location?'<p class="muted">⌖ '+esc(identity.location)+'</p>':'')+
     (identity.website_url?'<p><a href="'+esc(identity.website_url)+'" target="_blank" rel="noopener noreferrer">Visit website ↗</a></p>':'')+
