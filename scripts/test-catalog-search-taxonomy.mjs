@@ -1,0 +1,26 @@
+import assert from "node:assert/strict";
+import { buildCatalogSearchPredicate } from "../src/catalog-search-policy.mjs";
+
+const empty = buildCatalogSearchPredicate([]);
+assert.equal(empty.sql, "");
+assert.deepEqual(empty.values, []);
+
+const combined = buildCatalogSearchPredicate(["Fantasy", "system"]);
+assert.equal((combined.sql.match(/EXISTS (/g) || []).length, 4);
+assert.equal((combined.sql.match(/LOWER\(g\.name\)/g) || []).length, 2);
+assert.equal((combined.sql.match(/LOWER\(t\.name\)/g) || []).length, 2);
+assert.equal(combined.values.length, 16);
+assert.deepEqual(combined.values.slice(0, 8), Array(8).fill("%fantasy%"));
+assert.deepEqual(combined.values.slice(8), Array(8).fill("%system%"));
+assert.ok(combined.sql.includes("ng.novel_id = n.id"));
+assert.ok(combined.sql.includes("nt.novel_id = n.id"));
+
+const escaped = buildCatalogSearchPredicate(["50%_\u005c\u005c"]);
+assert.equal(escaped.values[0], "%50\\%\\_\\\\%");
+assert.equal(escaped.values.length, 8);
+assert.ok(!escaped.sql.includes("50%_"));
+
+const bounded = buildCatalogSearchPredicate(["one", "two", "three", "four", "five", "six", "seven", "eight", "ignored"]);
+assert.equal(bounded.values.length, 64);
+
+console.log("PASS: catalog search matches title/author/description/aliases and genre/tag taxonomy with parameterized, escaped, bounded terms.");
