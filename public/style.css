@@ -1102,3 +1102,27 @@ html[data-theme="light"][data-high-contrast="true"]{--text:#080616;--muted:#3935
 html[data-reduced-motion="true"] *,html[data-reduced-motion="true"] *::before,html[data-reduced-motion="true"] *::after{animation-duration:.01ms!important;animation-iteration-count:1!important;scroll-behavior:auto!important;transition-duration:.01ms!important}
 html[data-compact-cards="true"] .novelGrid{gap:10px}html[data-compact-cards="true"] .novelCard{padding:10px}
 @media(max-width:620px){.settingsGridPro{grid-template-columns:minmax(0,1fr)}.settingsPanel .settingRow{align-items:flex-start;flex-wrap:wrap}.settingsPanel .settingRow select{width:100%;max-width:none}.settingsPanel .settingRow input[type=range]{width:calc(100% - 58px)}.settingsActions>*{flex:1 1 100%;text-align:center;justify-content:center}}
+
+/* Homepage RTL layout support for Urdu, Arabic and Persian. */
+html[dir="rtl"] .homePage,
+html[dir="rtl"] [data-imperial-ssr-home] { text-align: start; }
+html[dir="rtl"] .homePage .heroSearch,
+html[dir="rtl"] [data-imperial-ssr-home] .heroSearch { direction: rtl; padding: 7px 14px 7px 7px; }
+html[dir="rtl"] .homePage .heroSearch input,
+html[dir="rtl"] [data-imperial-ssr-home] .heroSearch input { text-align: right; }
+html[dir="rtl"] .homePage .heroTags,
+html[dir="rtl"] .homePage .homeFormatGrid,
+html[dir="rtl"] .homePage .homeStoryGrid,
+html[dir="rtl"] [data-imperial-ssr-home] .homeFormatGrid,
+html[dir="rtl"] [data-imperial-ssr-home] .homeStoryGrid { direction: rtl; }
+html[dir="rtl"] .homePage .sectionHead,
+html[dir="rtl"] .homePage .homeFormatHeading,
+html[dir="rtl"] .homePage .footerInner,
+html[dir="rtl"] [data-imperial-ssr-home] .sectionHead,
+html[dir="rtl"] [data-imperial-ssr-footer] .footerInner { direction: rtl; }
+html[dir="rtl"] .homePage .cardBody,
+html[dir="rtl"] [data-imperial-ssr-home] .cardBody { text-align: right; }
+html[dir="rtl"] .nav,
+html[dir="rtl"] .navlinks,
+html[dir="rtl"] .mobileNav,
+html[dir="rtl"] .footerLinks { direction: rtl; }
