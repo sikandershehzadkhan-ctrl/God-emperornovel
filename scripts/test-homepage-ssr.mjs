@@ -25,6 +25,9 @@ assert.ok(homepageTemplate.includes('id="trend"') && homepageTemplate.includes('
 assert.ok(homepageTemplate.includes("translateHomepage(document.documentElement.lang||'en');"), "the rendered client homepage must apply the selected language after its template is inserted");
 assert.ok(client.includes("function translateHomepage(c)"), "homepage fixed copy must have a dedicated localization pass");
 assert.ok(client.includes("HOME_LANG={"), "homepage Urdu, Arabic and Persian translations must be defined");
+assert.ok(client.includes("const HOME_LATEST={"), "latest-updates shelf must have dedicated Urdu, Arabic and Persian translations");
+assert.ok(client.includes('const latest=shelves[1],latestCopy=HOME_LATEST[c]'), "homepage localization must translate the second, latest-updates shelf independently");
+assert.ok(versionedClient.includes("const HOME_LATEST={"), "versioned production bundle must include latest-updates translations");
 assert.ok(client.includes("translateHomepage(c);"), "homepage localization must run whenever the interface language changes");
 assert.ok(client.includes("translateHomepage(document.documentElement.lang||'en');"), "saved language must be applied after the client homepage replaces SSR markup");
 assert.ok(client.includes("location.pathname!==\"/\""), "homepage localization must not alter dynamic novel or author content on other routes");
