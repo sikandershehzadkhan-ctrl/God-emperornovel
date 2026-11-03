@@ -109,6 +109,10 @@ assert.match(rendered.header, /href="\/author"/);
 assert.match(rendered.header, /href="\/search"/);
 assert.match(rendered.content, /<h1>Open a world\.<br>Shape an empire\.<\/h1>/);
 assert.match(rendered.content, /type="search"/);
+for (const genre of ["Fantasy", "Progression", "Romance", "Isekai"]) {
+  assert.ok(rendered.content.includes(`href="/genres?genre=${genre}"`), `SSR homepage genre tag must use the client homepage route for ${genre}`);
+}
+assert.ok(client.includes('href="/genres?genre=Fantasy"') && client.includes('href="/genres?genre=Progression"') && client.includes('href="/genres?genre=Romance"') && client.includes('href="/genres?genre=Isekai"'), "client homepage genre tags must retain the same genre destinations as SSR");
 assert.ok(rendered.content.includes('<form class="heroSearch" action="/search" method="get"'), "no-script homepage search must use the same search route as the client homepage");
 assert.match(rendered.content, /class="sr" for="ssr-home-search"/);
 assert.match(rendered.content, /href="\/novel\/7"/);
