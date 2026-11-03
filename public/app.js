@@ -39,7 +39,7 @@ function renderChapterContent(raw,kind){
  if(payload?.type!=='imperial_comic_chapter'||payload.version!==1||!Array.isArray(payload.pages)||!payload.pages.length)return fallback;
  const pages=payload.pages.slice(0,300).map((page,i)=>{
   const src=String(page?.src||'').trim();
-  const safeSrc=(src.startsWith('/')&&!src.startsWith('//')&&!src.includes('\'))||/^https:\/\/[^\s"'<>]+$/i.test(src);
+  const safeSrc=(src.startsWith('/')&&!src.startsWith('//')&&!src.includes('\\'))||/^https:\/\/[^\s"'<>]+$/i.test(src);
   const alt=esc(String(page?.alt||('Comic page '+(i+1))).slice(0,300));
   const caption=String(page?.caption||'').slice(0,500);
   if(!safeSrc)return '<div class="comicPageUnavailable" role="note">This page image has an invalid or unsupported address.</div>';
