@@ -29,6 +29,7 @@ const worker = await readFile(new URL("../src/index.js", import.meta.url), "utf8
 assert.ok(worker.includes('import { buildCatalogSearchPredicate, buildCatalogSearchOrder } from "./catalog-search-policy.mjs";'));
 assert.ok(worker.includes('const search=buildCatalogSearchPredicate(searchTerms);sql+=" AND "+search.sql;a.push(...search.values)'));
 assert.ok(worker.includes("FROM novels n WHERE n.publication_status='published'"), "Search must retain the published-content visibility boundary.");
+assert.ok(worker.includes("FROM novels n WHERE n.publication_status='published' AND n.rights_status IN ('original','public_domain','licensed','authorized')"), "Public catalog search must exclude works without cleared publication rights.");
 
 console.log("PASS: catalog search matches title/author/description/aliases and genre/tag taxonomy with parameterized, escaped, bounded terms and preserves the published-content boundary.");
 
