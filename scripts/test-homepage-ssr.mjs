@@ -2,11 +2,12 @@ import assert from "node:assert/strict";
 import { readFile } from "node:fs/promises";
 import { renderHomepageHtml } from "../src/homepage-ssr.mjs";
 
-const [worker, client, versionedClient, indexHtml] = await Promise.all([
+const [worker, client, versionedClient, indexHtml, luxuryCss] = await Promise.all([
   readFile(new URL("../src/index.js", import.meta.url), "utf8"),
   readFile(new URL("../public/app.js", import.meta.url), "utf8"),
   readFile(new URL("../public/app-17.23.0.js", import.meta.url), "utf8"),
-  readFile(new URL("../public/index.html", import.meta.url), "utf8")
+  readFile(new URL("../public/index.html", import.meta.url), "utf8"),
+  readFile(new URL("../public/imperial-luxury-17.23.0.css", import.meta.url), "utf8")
 ]);
 assert.match(worker, /renderHomepageHtml\(homepageNovels\)/);
 assert.match(worker, /publication_status=.published./);
@@ -14,9 +15,16 @@ assert.match(worker, /<main id="app"/);
 assert.match(client, /serverRenderedHome=location\.pathname==='\/'/);
 assert.match(client, /data-imperial-ssr-header/);
 assert.equal(versionedClient, client, "versioned production bundle must include the same SSR-preserving boot logic");
+assert.match(client, /trendIds=new Set\\(trendRows\\.map\\(row=>String\\(row\\.id\\)\\)\\)/, "trending story IDs must be collected before rendering the latest shelf");
+assert.match(client, /latestRows=\\(l\\.results\\|\\|\\[\\]\\)\\.filter\\(row=>!trendIds\\.has\\(String\\(row\\.id\\)\\)\\)/, "latest shelf must exclude stories already shown in trending");
+assert.match(versionedClient, /latestRows=\\(l\\.results\\|\\|\\[\\]\\)\\.filter\\(row=>!trendIds\\.has\\(String\\(row\\.id\\)\\)\\)/, "versioned production bundle must also deduplicate homepage shelves");
 assert.match(worker, /if\(p===\"\/\"\)/);
 assert.match(worker, /LIMIT 6/);
 assert.match(worker, /rights_status IN/);
+assert.match(luxuryCss, /html\\[data-theme="light"\\] \\.eyebrow,[\\s\\S]*?color: #0F52BA;/, "light-theme homepage eyebrow text must use an accessible sapphire color");
+assert.match(luxuryCss, /html\\[data-theme="light"\\] \\.nextFeatureIntro h2 span \\{\\s*color: #6A0DAD;/, "light-theme feature heading accent must use an accessible imperial purple");
+assert.match(luxuryCss, /html\\[data-theme="light"\\] \\.footerBrand \\{\\s*color: #0B1215;/, "light-theme footer brand must use readable obsidian text");
+assert.match(luxuryCss, /html\\[data-theme="light"\\] a\\.skipLink:not\\(\\.primary\\):not\\(\\.secondary\\):not\\(\\.pill\\):not\\(\\.brand\\) \\{[\\s\\S]*?color: #FFFFFF;[\\s\\S]*?background: #0B1215;/, "light-theme skip link must retain readable foreground and background contrast");
 
 
 const rendered = renderHomepageHtml([
