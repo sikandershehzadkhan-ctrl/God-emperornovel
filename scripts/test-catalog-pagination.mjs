@@ -1,0 +1,20 @@
+import assert from "node:assert/strict";
+import { readFileSync } from "node:fs";
+
+const worker = readFileSync("src/index.js", "utf8");
+const app = readFileSync("public/app.js", "utf8");
+const served = readFileSync("public/app-17.23.0.js", "utf8");
+const routeStart = worker.indexOf('if(p==="/api/novels")');
+const routeEnd = worker.indexOf('let nm=p.match(/^\\/api\\/novels', routeStart);
+assert.ok(routeStart >= 0 && routeEnd > routeStart, "Public catalog API route must exist");
+const route = worker.slice(routeStart, routeEnd);
+assert.match(route, /Number\.isSafeInteger\(rawPage\)/, "Invalid page values must be normalized");
+assert.match(route, /Number\.isSafeInteger\(rawLimit\)/, "Invalid page-size values must be normalized");
+assert.match(route, /Math\.min\(50,rawLimit\)/, "API page size must be capped at 50");
+assert.match(route, /\["updated","newest","trending","views","rating","chapters"\]\.includes\(rawSort\)/, "Unsupported sort values must fall back to updated");
+assert.match(route, /LIMIT \? OFFSET \?/, "Catalog query must remain parameterized");
+assert.match(route, /limit\+1/, "Catalog must fetch one extra row to determine whether another page exists");
+assert.match(route, /has_more:hasMore/, "Catalog API must expose an explicit has_more boolean");
+assert.match(app, /if\(d\.has_more===true\)/, "Next link must only render when the API confirms more rows");
+assert.equal(served, app, "Served versioned runtime must match editable app source");
+console.log("PASS: catalog pagination, query bounds, sort normalization and served bundle parity.");
