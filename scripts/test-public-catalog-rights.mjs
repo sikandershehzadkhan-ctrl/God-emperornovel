@@ -45,8 +45,9 @@ protectedReaderRoutes.push(
   ['/api/comments"&&m="POST"', "Comment writes must reject works without cleared rights."]
 );
 for (const [marker, message] of protectedReaderRoutes) {
-  const line = routeLines.find((candidate) => candidate.includes(marker));
-  assert.ok(line && line.includes(rights), message);
+  const lineIndex = routeLines.findIndex((candidate) => candidate.includes(marker));
+  const routeSource = lineIndex < 0 ? "" : routeLines.slice(lineIndex, lineIndex + 3).join(" ");
+  assert.ok(lineIndex >= 0 && routeSource.includes(rights), message);
 }
 
 console.log("PASS: public novel detail, chapter content, discovery lists and followed novels expose only published, rights-cleared works.");
