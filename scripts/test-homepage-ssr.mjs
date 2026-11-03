@@ -90,7 +90,7 @@ const rendered = renderHomepageHtml([
   { id: 7, title: "The <Glass> Throne", author: "A & B", cover_url: "https://covers.example/book.jpg" },
   { id: 8, title: "Second Story", author: "Writer", cover_url: "//unsafe.example/cover.jpg" }
 ]);
-assert.match(rendered.header, /<a class="skipLink ssrSkipLink" href="#app">Skip to main content<\\/a>/, "SSR must expose a keyboard-accessible skip link to the main landmark");
+assert.ok(rendered.header.includes('<a class="skipLink ssrSkipLink" href="#app">Skip to main content</a>'), "SSR must expose a keyboard-accessible skip link to the main landmark");
 assert.equal((rendered.content.match(/<h1(?:\\s|>)/g) || []).length, 1, "SSR homepage must expose exactly one primary heading");
 assert.match(indexHtml, /<main id="app"/, "the document shell must provide the skip-link destination as the main landmark");
 assert.match(rendered.content, /<section class="homeFormatShelf" aria-labelledby="ssr-home-formats">/, "format shelf must have an accessible section name");
