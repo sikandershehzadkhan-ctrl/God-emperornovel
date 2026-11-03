@@ -21,7 +21,7 @@ for (const locale of locales) {
   for (const key of keys) assert.ok(dictionaries[locale][key], 'Missing ' + locale + ' translation: ' + key);
 }
 assert.equal(Object.keys(dictionaries).length, 14, 'Unexpected community locale count');
-assert.ok(app.includes('setINLang(activeLanguage);'), 'Community page must apply saved language after rendering');
+assert.ok(app.includes('setINLang(activeLanguage)'), 'Community page must apply saved language after rendering');
 assert.ok(app.includes('data-in-lang>Trending Stories</h2>'), 'Trending heading must be marked for localization');
 assert.ok(app.includes('data-in-lang>No published novels yet.</div>'), 'Empty state must be localized');
 assert.equal(app, served, 'Served versioned application asset must match source app.js');
