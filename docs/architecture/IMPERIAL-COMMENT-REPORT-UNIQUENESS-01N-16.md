@@ -10,7 +10,7 @@ The comment-report endpoint used `INSERT OR IGNORE` and checked for an existing 
 ## Changes committed
 
 1. Added migration `0019_comment_report_uniqueness.sql`.
-   - Removes duplicate legacy rows while retaining the lowest report ID for each account/comment pair.
+   - Creates the table if a fresh D1 install does not already have it.\n   - Removes duplicate legacy rows while retaining the lowest report ID for each account/comment pair.
    - Creates unique index `idx_comment_reports_user_comment` on `(user_id, comment_id)`.
 
 2. Upgraded runtime schema marker from version 1 to version 2.
