@@ -2,7 +2,7 @@ import assert from "node:assert/strict";
 import { readFile } from "node:fs/promises";
 const worker=await readFile(new URL("../src/index.js",import.meta.url),"utf8");
 const robots=await readFile(new URL("../public/robots.txt",import.meta.url),"utf8");
-const privatePaths=["/admin","/account","/login","/register","/library","/history","/following","/tickets","/requests","/settings","/notifications","/author"];
+const privatePaths=["/admin","/account","/login","/register","/library","/history","/following","/tickets","/requests","/settings","/notifications","/author","/for-you","/made-for-you"];
 assert.ok(worker.includes('const noindex=new Set(["/admin","/account","/login","/register","/library","/history","/following","/tickets","/requests","/settings","/notifications","/author"]).has(p);'),"private HTML route list must be explicit and exact");
 assert.ok(worker.includes('<meta name="robots" content="noindex,nofollow">'),"private HTML pages must receive a noindex meta tag");
 assert.ok(worker.includes('"x-robots-tag":noindex?"noindex, nofollow":"index, follow"'),"private route indexing policy must be sent in the HTTP response headers");
