@@ -74,3 +74,12 @@ Recommended fix before release:
 ## Updated release gate
 
 The account branch is not ready for migration rehearsal until its duplicate migration payloads are resolved. The registration historical-name gap must also be fixed and tested before account identity work is considered security-complete.
+
+
+### Independent SQLite reproduction
+
+A minimal SQLite rehearsal using the observed migration SQL reproduced both defects:
+- Reapplying the duplicate username migration fails with `duplicate column name: username_changed_at`.
+- After one account changes from `oldname` to `newname`, inserting a second account with `oldname` succeeds under the current trigger set.
+
+This reproduction isolates the migration/trigger behavior. It is not a full application test and does not establish the production database's current state.
