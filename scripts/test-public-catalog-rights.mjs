@@ -7,6 +7,11 @@ const rights = "rights_status IN ('original','public_domain','licensed','authori
 const omniLocal = worker.slice(worker.indexOf("async function omniLocal"), worker.indexOf("async function omniConnectorSearch"));
 assert.ok(omniLocal.includes("publication_status='published' AND rights_status IN ('original','public_domain','licensed','authorized')"), "OmniPortal local search must return only published, rights-cleared novels.");
 
+const catalogRoute = worker.slice(worker.indexOf('if(p==="\/api\/novels")'), worker.indexOf('let nm=p.match'));
+assert.ok(catalogRoute.includes("n.publication_status='published' AND n." + rights), "Catalog search and taxonomy filters must start from published, rights-cleared novels.");
+const authorDirectory = worker.slice(worker.indexOf('if(p==="\/api\/public-authors")'), worker.indexOf('if(p==="/api/sources")'));
+assert.ok(authorDirectory.includes("publication_status='published' AND rights_status IN ('original','public_domain','licensed','authorized')"), "Public author discovery must count only published, rights-cleared novels.");
+
 const novelDetail = worker.slice(worker.indexOf('let nm=p.match(/^\\/api\\/novels\\/'), worker.indexOf('let cm=p.match(/^\\/api\\/chapters\\/'));
 assert.ok(novelDetail.includes("publication_status=\\'published\\' AND " + rights), "Public novel detail must require published and rights-cleared status.");
 
