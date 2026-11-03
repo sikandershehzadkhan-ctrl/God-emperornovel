@@ -24,6 +24,7 @@ assert.match(app, /id="setSiteTheme"[^>]*>[\s\S]*?<option value="cosmic">Cosmic<
 assert.match(app, /applyImperialTheme\(\$\('#setSiteTheme'\)\.value\)/, "Settings must apply the selected global theme");
 assert.match(app, /imperial_reduced_motion.*imperial_high_contrast.*imperial_compact_cards/, "Accessibility preferences must be restored from local storage during app initialization");
 assert.match(app, /root\.dataset\.reducedMotion=String\(reduced\);root\.dataset\.highContrast=String\(high\)/, "Restored accessibility preferences must reach global document state");
+assert.ok(app.includes("Strengthen borders and keyboard focus."), "High-contrast help text must accurately describe the implemented effect");
 
 const css = readFileSync("public/imperial-design-foundation.css", "utf8");
 for (const [label, pattern] of [
