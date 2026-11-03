@@ -123,3 +123,12 @@ Design Foundation sign-off requires:
 5. A fresh review of the changed files and confirmation that no production deployment occurred as part of QA.
 
 **Current decision: NOT SIGNED OFF.** The automated acceptance suite has passed on the recorded review head, but browser screenshots, actual Android behavior, zoom and assistive-technology checks remain unverified.
+
+
+## 17.48 route-convergence source update — 3 November 2026
+
+The shared design foundation is now explicitly loaded by the standalone Catalog, Novel Detail, Author Studio and Admin Command Center templates. The author/admin templates load the shared styles after their legacy inline styles so the shared route normalization can take effect. The foundation adds shared semantic surface, typography, form-control, focus-visible, touch-target, mobile reflow and reduced-motion rules for the standalone workspaces.
+
+Automated source regression assertions were added to `scripts/test-design-foundation.mjs` for all four template stylesheet references, stylesheet order and shared normalization selectors.
+
+**Manual QA remains pending.** These source changes have not been visually verified at the viewport/zoom matrix above, and the current PR head has no GitHub check runs reported yet. Do not mark the design foundation production-ready or deploy until the build/regression workflow, responsive visual review, keyboard/screen-reader checks and release verification pass.
