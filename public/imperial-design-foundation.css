@@ -2157,3 +2157,33 @@ html[dir="rtl"] .homeFormatArrow{margin-left:0;margin-inline-start:auto}
 html[dir="rtl"] .catalogCover .statusBadge{left:auto;right:9px}
 html[dir="rtl"] .catalogCover .formatBadge{right:auto;left:9px}
 html[dir="rtl"] .omniSourceState{text-align:left}
+
+
+/* User-controlled accessibility preferences, applied independently of OS settings. */
+html[data-high-contrast="true"]{
+  --in-line:color-mix(in srgb,var(--in-ink) 42%,transparent);
+  --in-line-strong:color-mix(in srgb,var(--in-ink) 68%,transparent);
+}
+html[data-high-contrast="true"] :where(.card,.catalogCard,.panel,.settingsPanel,.readerArticle,.readerBox,.readerTool,.homeFormatCard,.homeFormatPrimary,.nextFeatureTile,.nextCreatorBand,.nextReaderPromise,.omniStatusPanel,.omniSourceRow){
+  border-width:2px;
+}
+html[data-high-contrast="true"] :where(a,button,input,select,textarea,[role="button"]):focus-visible{
+  outline-width:3px!important;
+  outline-offset:3px!important;
+}
+html[data-reduced-motion="true"] *,
+html[data-reduced-motion="true"] *::before,
+html[data-reduced-motion="true"] *::after{
+  scroll-behavior:auto!important;
+  animation:none!important;
+  transition:none!important;
+}
+html[data-reduced-motion="true"] :where(.card:hover,.catalogCard:hover,.homeFormatCard:hover,.homeConnectionChip:hover,.nextFeatureTile:hover,.homeStoryGrid .card:hover){
+  transform:none!important;
+}
+html[data-reduced-motion="true"] .skeletonCard::before,
+html[data-reduced-motion="true"] .skeletonCard::after,
+html[data-reduced-motion="true"] .skeletonPulse{
+  animation:none!important;
+  background:var(--in-surface-raised)!important;
+}
