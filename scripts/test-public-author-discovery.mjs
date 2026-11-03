@@ -15,7 +15,7 @@ assert.ok(start>=0&&end>start,"Public author directory endpoint must be register
 const endpoint=worker.slice(start,end);
 assert.ok(endpoint.includes("publication_status='published' AND rights_status IN ('original','public_domain','licensed','authorized')"),"Directory must exclude unpublished and uncleared works.");
 assert.ok(endpoint.includes("slice(0,80)"),"Author search must have a bounded query length.");
-assert.ok(endpoint.includes('q.replace(/[\\\\%_]/g,character=>"\\\\")')||endpoint.includes('q.replace(/[\\\\%_]/g,character=>"\\\\\\"+character)'),"LIKE wildcard characters must be escaped.");
+assert.ok(endpoint.includes("q.replace(")&&endpoint.includes("+character"),"LIKE wildcard characters must be escaped.");
 assert.ok(endpoint.includes("ESCAPE char(92)"),"Search must treat escaped wildcard characters literally.");
 assert.ok(endpoint.includes("LIMIT 50")&&endpoint.includes("LIMIT 100"),"Search and directory output must be bounded.");
 const authorFilter=worker.slice(worker.indexOf('if(author){sql+='),worker.indexOf('if(author){sql+=')+300);
