@@ -25,7 +25,7 @@ const rendered = renderHomepageHtml([
 ]);
 assert.match(rendered.header, /<nav class="navlinks" aria-label="Primary navigation">/);
 assert.match(rendered.header, /data-imperial-ssr-mobile-nav/);
-assert.match(rendered.header, /href="\/become-an-author"/);
+assert.match(rendered.header, /href="\/author"/);
 assert.match(rendered.header, /href="\/search"/);
 assert.match(rendered.content, /<h1>Open a world\.<br>Shape an empire\.<\/h1>/);
 assert.match(rendered.content, /type="search"/);
