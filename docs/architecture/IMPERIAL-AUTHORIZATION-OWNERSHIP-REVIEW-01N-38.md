@@ -56,3 +56,12 @@ The AI project generation endpoints permit the admin role to operate on a creato
 ## Next validation
 
 Add two-account runtime tests for account-scoped reads and cross-user ID substitution on creator-owned novels, chapters, and AI projects. Review last-admin invariants and taxonomy submitter attribution before security sign-off.
+
+
+## Comment visibility and parent-content eligibility (AUTH-013)
+
+The public `GET /api/comments` handler selects visible comments by caller-supplied `novel_id` but does not join the parent novel or constrain its publication and rights status. The authenticated `POST /api/comments` handler validates the comment body and optional parent comment, then inserts using the supplied novel ID without first verifying that the parent novel exists, is published, and is rights-eligible. This is a source-level gap, not proof of an exploitable leak: confirm route reachability and data constraints in an isolated D1 integration test.
+
+**Required tests:** public reads must not expose comments for draft or rights-ineligible novels; authenticated users must not create comments for missing, draft, or rights-ineligible novels; normal comments on published, rights-eligible novels must continue to work.
+
+**Recommended remediation:** enforce the same published + rights-status allowlist used by public catalog/discovery queries in both read and write handlers, and return a consistent not-found response for ineligible parent novels.
