@@ -959,6 +959,7 @@ if(p==="/api/author/feedback"&&m==="GET"){
  }
  if(/^\/api\/author\/chapters\/\d+\/pages$/.test(p)&&m==="PUT"){
   const e=author(u);if(e)return e;
+  if(req.headers.get("origin")!==url.origin)return json({error:"Cross-origin request blocked"},403);
   const chapterId=Number(p.split("/")[4]);
   if(!Number.isSafeInteger(chapterId)||chapterId<1)return json({error:"Invalid chapter id."},400);
   const limit=await consumeAuthRateLimit(env,"comic-pages-write",String(u.id),30,3600);if(limit)return limit;
