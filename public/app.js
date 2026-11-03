@@ -77,6 +77,7 @@ function translateHomepage(c){
  const d=HOME_LANG[c];if(!d||location.pathname!=="/")return;
  const root=document.querySelector("#app");if(!root)return;
  const put=(selector,value)=>{const el=root.querySelector(selector);if(el&&value!=null)el.textContent=value};
+ const putEyebrow=(el,value)=>{if(!el||value==null)return;const dot=el.querySelector(".eyebrowDot");el.textContent=value;if(dot)el.prepend(dot)};
  const hero=root.querySelector(".nextHeroCopy h1");if(hero)hero.innerHTML=d.heroTitle;
  put(".nextHeroLead",d.heroLead);
  const input=root.querySelector(".heroSearch input");if(input){input.placeholder=d.searchPlaceholder;input.setAttribute("aria-label",d.searchLabel)}
@@ -84,18 +85,18 @@ function translateHomepage(c){
  root.querySelectorAll(".heroTags a").forEach((el,i)=>{if(d.tags[i])el.textContent=d.tags[i]});
  const promise=root.querySelector(".promiseText");if(promise)promise.textContent=d.promise;
  const format=root.querySelector(".homeFormatShelf");if(format){
-  put(".homeFormatHeading .eyebrow",d.formatEyebrow);put("#homeFormatTitle",d.formatTitle);
+  putEyebrow(root.querySelector(".homeFormatHeading .eyebrow"),d.formatEyebrow);put("#homeFormatTitle",d.formatTitle);
   put(".homeFormatHeading p",d.formatLead);
   const all=format.querySelector(".homeFormatHeading .ghost");if(all){all.textContent=d.allFormats+" ↗"}
   format.querySelectorAll(".homeFormatCard").forEach((el,i)=>{const name=el.querySelector("b"),desc=el.querySelector("small");if(name&&d.formatNames[i])name.textContent=d.formatNames[i];if(desc&&d.formatDescs[i])desc.textContent=d.formatDescs[i]});
  }
  const shelves=root.querySelectorAll(".nextShelf"),shelf=shelves[0];if(shelf){
   const head=shelf.querySelector(".sectionHead");
-  if(head){const eyebrow=head.querySelector(".eyebrow"),title=head.querySelector("h2"),lead=head.querySelector("p"),all=head.querySelector(".ghost");if(eyebrow)eyebrow.textContent=d.rotation;if(title)title.textContent=d.storiesTitle;if(lead)lead.textContent=d.storiesLead;if(all)all.textContent=d.exploreAll+" ↗"}
+  if(head){const eyebrow=head.querySelector(".eyebrow"),title=head.querySelector("h2"),lead=head.querySelector("p"),all=head.querySelector(".ghost");if(eyebrow)putEyebrow(eyebrow,d.rotation);if(title)title.textContent=d.storiesTitle;if(lead)lead.textContent=d.storiesLead;if(all)all.textContent=d.exploreAll+" ↗"}
  }
  const latest=shelves[1],latestCopy=HOME_LATEST[c];if(latest&&latestCopy){
   const head=latest.querySelector(".sectionHead");
-  if(head){const eyebrow=head.querySelector(".eyebrow"),title=head.querySelector("h2"),lead=head.querySelector("p");if(eyebrow)eyebrow.textContent=latestCopy.eyebrow;if(title)title.textContent=latestCopy.title;if(lead)lead.textContent=latestCopy.lead}
+  if(head){const eyebrow=head.querySelector(".eyebrow"),title=head.querySelector("h2"),lead=head.querySelector("p");if(eyebrow)putEyebrow(eyebrow,latestCopy.eyebrow);if(title)title.textContent=latestCopy.title;if(lead)lead.textContent=latestCopy.lead}
  }
 }
 function setINLang(c){const t={...IN_LANG.en,...(IN_LANG[c]||{})};try{localStorage.setItem("imperial_language",c)}catch(e){}document.documentElement.lang=c;document.documentElement.dir=(c==="ur"||c==="ar"||c==="fa")?"rtl":"ltr";const setLabel=(e,k)=>{const key=e.dataset.inLangKey||(e.dataset.inLangKey=k||e.textContent.trim());if(!t[key]){if(e.matches(".mobileNav a")){const n=[...e.childNodes].find(n=>n.nodeType===3&&n.textContent.trim());if(n)n.textContent=key}else e.textContent=key;return}if(e.matches(".mobileNav a")){const n=[...e.childNodes].find(n=>n.nodeType===3&&n.textContent.trim());if(n)n.textContent=t[key]}else e.textContent=t[key]};document.querySelectorAll(".navlinks a,.menuDrawer a span,.footerLinks a,.mobileNav a").forEach(e=>setLabel(e));document.querySelectorAll("[data-tooltip]").forEach(e=>{const key=e.dataset.inLangTooltip||(e.dataset.inLangTooltip=e.getAttribute("data-tooltip"));e.setAttribute("data-tooltip",t[key]||key)});document.querySelectorAll("button[aria-label],nav[aria-label],aside[aria-label]").forEach(e=>{if(e.id==="imperialMenuToggle")return;const key=e.dataset.inLangAria||(e.dataset.inLangAria=e.getAttribute("aria-label"));e.setAttribute("aria-label",t[key]||key)});document.querySelectorAll("[title]").forEach(e=>{if(e.matches("[data-theme-toggle]"))return;const key=e.dataset.inLangTitle||(e.dataset.inLangTitle=e.getAttribute("title"));e.setAttribute("title",t[key]||key)});const menuButton=document.querySelector("#imperialMenuToggle");if(menuButton){const key=menuButton.getAttribute("aria-expanded")==="true"?"Close navigation menu":"Open navigation menu";menuButton.setAttribute("aria-label",t[key]||key)}const themeButton=document.querySelector("[data-theme-toggle]");if(themeButton){const key=document.documentElement.dataset.theme==="dark"?"Switch to light mode":"Switch to dark mode";themeButton.setAttribute("aria-label",t[key]||key);themeButton.setAttribute("title",t[key]||key)}const drawerLabel=document.querySelector(".menuDrawerLabel");if(drawerLabel){const key=drawerLabel.dataset.inLangKey||(drawerLabel.dataset.inLangKey="Explore the realm");drawerLabel.textContent=t[key]||key}const footerTagline=document.querySelector(".footerInner>div:first-child>div");if(footerTagline){const key=footerTagline.dataset.inLangKey||(footerTagline.dataset.inLangKey="Original, licensed and authorized stories.");footerTagline.textContent=t[key]||key}translateHomepage(c);const s=document.querySelector("#imperialLanguageSelect");if(s&&s.value!==c)s.value=c}function initINLang(){let c="en";try{c=localStorage.getItem("imperial_language")||"en"}catch(e){}const s=document.querySelector("#imperialLanguageSelect");if(s){s.value=c;s.addEventListener("change",()=>setINLang(s.value))}setINLang(c)}
