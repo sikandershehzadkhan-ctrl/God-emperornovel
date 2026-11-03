@@ -4,7 +4,7 @@
   "sourceBlob": "237f4461135eb77258b7184e361ce9dfd9a140e9",
   "auditDate": "2026-11-03",
   "scope": "Partial handler-level source review; not a full authorization certification.",
-  "reviewedRouteCount": 32,
+  "reviewedRouteCount": 38,
   "pendingDisclosure": "All other exact and dynamic API routes remain pending handler-level review.",
   "routes": [
     {
@@ -349,6 +349,75 @@
         "review replay denied",
         "connector remains disabled after approval"
       ]
+    },
+    {
+      "path": "/api/taxonomy",
+      "method": "GET",
+      "access": "public",
+      "ownerRule": "returns approved genre/tag proposals only; status parameter must equal approved",
+      "evidence": "communityTaxonomy GET validates type and rejects status other than approved; SELECT filters status='approved'",
+      "tests": [
+        "pending proposals never appear in public response",
+        "rejected proposals never appear in public response"
+      ]
+    },
+    {
+      "path": "/api/taxonomy",
+      "method": "POST",
+      "access": "anonymous",
+      "ownerRule": "no account owner; creator_id and creator_name are accepted from request body",
+      "evidence": "communityTaxonomy POST has no getUser/need call; INSERT binds b.creator_id and b.creator_name directly",
+      "tests": [
+        "rate-limit anonymous submissions",
+        "spoofed creator_id/name cannot impersonate another account",
+        "duplicate pending taxonomy submission is rejected"
+      ]
+    },
+    {
+      "path": "/api/admin/taxonomy",
+      "method": "GET",
+      "access": "admin",
+      "ownerRule": "global taxonomy moderation queue gated by admin(u)",
+      "evidence": "admin(u) before SELECT taxonomy_submissions",
+      "tests": [
+        "non-admin receives 403",
+        "pending submitter details are admin-only"
+      ]
+    },
+    {
+      "path": "/api/admin/taxonomy",
+      "method": "POST",
+      "access": "admin",
+      "ownerRule": "reviewer_id is assigned from session u.id; only pending submissions can be reviewed",
+      "evidence": "adminTaxonomy admin(u); pending-state check; reviewer_id=u.id for approve/reject",
+      "tests": [
+        "non-admin denied",
+        "review replay denied",
+        "reviewer identity cannot be spoofed"
+      ]
+    },
+    {
+      "path": "/api/vote-novels",
+      "method": "GET",
+      "access": "public",
+      "ownerRule": "public vote list exposes pending/approved request metadata and requester username",
+      "evidence": "SELECT requests status IN ('pending','approved') LEFT JOIN users; LIMIT 100",
+      "tests": [
+        "response contains no email or private account fields",
+        "only eligible request statuses are public"
+      ]
+    },
+    {
+      "path": "/api/vote-novels",
+      "method": "POST",
+      "access": "authenticated",
+      "ownerRule": "vote row is keyed by request_id and session u.id; toggles only caller's vote",
+      "evidence": "need(u); SELECT/DELETE/INSERT request_votes bind u.id",
+      "tests": [
+        "account A cannot remove account B vote",
+        "anonymous voting denied",
+        "closed request voting denied"
+      ]
     }
   ],
   "findings": [
@@ -407,6 +476,20 @@
       "status": "needs-tests",
       "detail": "Donation approval uses a conditional status transition and linked ticket/ledger writes, but atomicity and failure recovery need integration tests against D1 batch semantics.",
       "action": "Test duplicate approval, missing target user, and partial failure behavior using an isolated D1 test database."
+    },
+    {
+      "id": "AUTH-009",
+      "severity": "medium",
+      "status": "needs-mitigation",
+      "detail": "Taxonomy proposals are intentionally accepted anonymously, but creator_id and creator_name are copied directly from the request body. This permits spoofed attribution and leaves anonymous submission abuse controls unproven.",
+      "action": "Keep public submissions if desired, but derive attribution only from a verified session and add per-IP rate limiting, moderation queue abuse controls, and spam tests."
+    },
+    {
+      "id": "AUTH-010",
+      "severity": "low",
+      "status": "needs-review",
+      "detail": "Public vote listing includes requester username. This is public profile metadata exposure, but the intended disclosure policy is not documented in the handler.",
+      "action": "Confirm usernames are intentionally public on the vote board; keep email and private account fields excluded."
     }
   ]
 }
