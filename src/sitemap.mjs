@@ -30,8 +30,10 @@ function urlEntry(origin, path, modified) {
 export function renderSitemapIndex(originValue, novelPages = 0, chapterPages = 0) {
   const origin = safeOrigin(originValue);
   const paths = ["/sitemap-static.xml"];
-  for (let page = 0; page < Math.min(50000, Math.max(0, Number(novelPages) || 0)); page++) paths.push(`/sitemap-novels.xml?page=${page}`);
-  for (let page = 0; page < Math.min(50000, Math.max(0, Number(chapterPages) || 0)); page++) paths.push(`/sitemap-chapters.xml?page=${page}`);
+  const novelPageCount = Math.min(49999, Math.max(0, Math.floor(Number(novelPages) || 0)));
+  const chapterPageCount = Math.min(49999 - novelPageCount, Math.max(0, Math.floor(Number(chapterPages) || 0)));
+  for (let page = 0; page < novelPageCount; page++) paths.push(`/sitemap-novels.xml?page=${page}`);
+  for (let page = 0; page < chapterPageCount; page++) paths.push(`/sitemap-chapters.xml?page=${page}`);
   return `<?xml version="1.0" encoding="UTF-8"?><sitemapindex xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">${paths.map(path => `<sitemap><loc>${xmlEscape(origin + path)}</loc></sitemap>`).join("")}</sitemapindex>`;
 }
 
