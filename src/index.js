@@ -499,6 +499,18 @@ async function api(req,env){
  if(p==="/api/requests"&&m==="GET"){const e=need(u);if(e)return e;const week=Math.floor(now()/604800),count=await env.DB.prepare("SELECT COUNT(*) n FROM novel_requests WHERE user_id=? AND week_key=?").bind(u.id,week).first();return json({used:Number(count.n),limit:3})}
  if(p==="/api/follow"&&m==="POST"){const e=need(u);if(e)return e;const b=await body(req),nid=Number(b.novel_id);if(!nid)return json({error:"Novel id required"},400);const f=await env.DB.prepare("SELECT 1 FROM follows WHERE user_id=? AND novel_id=?").bind(u.id,nid).first();if(f){await env.DB.prepare("DELETE FROM follows WHERE user_id=? AND novel_id=?").bind(u.id,nid).run();return json({following:false})}await env.DB.prepare("INSERT OR IGNORE INTO follows(user_id,novel_id) VALUES(?,?)").bind(u.id,nid).run();return json({following:true})}
  if(p==="/api/rating"&&m==="POST"){const e=need(u);if(e)return e;const b=await body(req),nid=Number(b.novel_id),rating=Math.round(Number(b.rating));if(!nid||rating<1||rating>5)return json({error:"Rating must be 1-5"},400);await env.DB.prepare("INSERT INTO ratings(user_id,novel_id,rating) VALUES(?,?,?) ON CONFLICT(user_id,novel_id) DO UPDATE SET rating=excluded.rating,updated_at=CURRENT_TIMESTAMP").bind(u.id,nid,rating).run();await env.DB.prepare("UPDATE novels SET rating=COALESCE((SELECT AVG(rating) FROM ratings WHERE novel_id=?),0) WHERE id=?").bind(nid,nid).run();return json({ok:true,rating})}
+ if(p==="/api/community/discussions"&&m==="GET"){
+  const rows=(await env.DB.prepare(`SELECT c.id,c.novel_id,c.body,c.created_at,u.username,n.title novel_title
+   FROM comments c
+   JOIN users u ON u.id=c.user_id
+   JOIN novels n ON n.id=c.novel_id
+   WHERE c.status='visible'
+    AND n.publication_status='published'
+    AND n.rights_status IN ('original','public_domain','licensed','authorized')
+   ORDER BY c.created_at DESC,c.id DESC
+   LIMIT 12`).all()).results||[];
+  return json(rows);
+ }
  if(p==="/api/leaderboard"&&m==="GET"){
   const period=String(url.searchParams.get('period')||'all');
   const days=period==='weekly'?7:period==='monthly'?30:0;
