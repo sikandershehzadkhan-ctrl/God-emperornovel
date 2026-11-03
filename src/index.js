@@ -11,6 +11,7 @@ import { validateAuthorApplication, validateAuthorApplicationDecision } from "./
 import { CONTENT_FORMATS, CONTENT_FORMAT_IDS } from "./content-formats.mjs";
 import { assessPublicationQuality } from "./content-quality-policy.mjs";
 import { buildDiscoveryGraph } from "./discovery-knowledge-graph.mjs";
+import { buildCatalogSearchPredicate } from "./catalog-search-policy.mjs";
 import { applySeoMetadata, buildRobotsTxt, buildSitemapXml, buildSitemapIndexXml, canonicalOrigin, canonicalPath, authorProfilePath, getPageSeo, robotsForPath } from "./seo.mjs";
 const json=(d,s=200,h={})=>new Response(JSON.stringify(d),{status:s,headers:{"content-type":"application/json;charset=UTF-8","cache-control":"no-store",...h}});
 const now=()=>Math.floor(Date.now()/1000);
@@ -587,7 +588,7 @@ async function api(req,env){
  if(p==="/api/novels"){
   const q=url.searchParams,term=(q.get("q")||"").trim().toLowerCase().replace(/\s+/g," ").slice(0,120),searchTerms=term.split(/\s+/).filter(Boolean).slice(0,8),genre=q.get("genre"),tag=q.get("tag"),status=q.get("status"),kind=q.get("kind"),language=q.get("language"),author=(q.get("author")||"").trim(),minRating=Number(q.get("min_rating")||0),sort=q.get("sort")||"updated",requestedPage=Number(q.get("page")||1),page=Number.isSafeInteger(requestedPage)&&requestedPage>0?Math.min(requestedPage,100000):1,requestedLimit=Number(q.get("limit")||24),limit=Number.isSafeInteger(requestedLimit)?Math.min(50,Math.max(1,requestedLimit)):24,offset=(page-1)*limit;
   let sql="SELECT n.*,(SELECT GROUP_CONCAT(DISTINCT g.name) FROM novel_genres ng JOIN genres g ON g.id=ng.genre_id WHERE ng.novel_id=n.id) genres,(SELECT GROUP_CONCAT(DISTINCT t.name) FROM novel_tags nt JOIN tags t ON t.id=nt.tag_id WHERE nt.novel_id=n.id) tags,(SELECT COUNT(*) FROM chapters c WHERE c.novel_id=n.id AND c.publication_status='published') chapter_count,(SELECT MAX(c.chapter_number) FROM chapters c WHERE c.novel_id=n.id AND c.publication_status='published') latest_chapter FROM novels n WHERE n.publication_status='published'",a=[];
-  if(searchTerms.length){for(const word of searchTerms){const escaped=word.replace(/[\\%_]/g,ch=>"\\"+ch),pattern="%"+escaped+"%";sql+=" AND (LOWER(n.title) LIKE ? ESCAPE char(92) OR LOWER(n.author) LIKE ? ESCAPE char(92) OR LOWER(n.description) LIKE ? ESCAPE char(92) OR LOWER(n.alt_titles) LIKE ? ESCAPE char(92))";a.push(pattern,pattern,pattern,pattern)}}
+  if(searchTerms.length){const search=buildCatalogSearchPredicate(searchTerms);sql+=" AND "+search.sql;a.push(...search.values)}
   if(genre){sql+=" AND n.id IN(SELECT ng.novel_id FROM novel_genres ng JOIN genres g ON g.id=ng.genre_id WHERE g.slug=?)";a.push(genre)}
   if(tag){sql+=" AND n.id IN(SELECT nt.novel_id FROM novel_tags nt JOIN tags t ON t.id=nt.tag_id WHERE t.slug=?)";a.push(tag)}
   if(status && ['ongoing','completed'].includes(status)){sql+=" AND n.status=?";a.push(status)}
