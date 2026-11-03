@@ -1,0 +1,246 @@
+{
+  "schemaVersion": 1,
+  "sourceBranch": "main",
+  "sourceBlob": "237f4461135eb77258b7184e361ce9dfd9a140e9",
+  "auditDate": "2026-11-03",
+  "scope": "Partial handler-level source review; not a full authorization certification.",
+  "reviewedRouteCount": 12,
+  "pendingDisclosure": "All other exact and dynamic API routes remain pending handler-level review.",
+  "routes": [
+    {
+      "path": "/api/notifications",
+      "method": "GET",
+      "access": "authenticated",
+      "ownerRule": "user_id is bound to session u.id",
+      "evidence": "need(u); SELECT notifications WHERE user_id=?",
+      "tests": [
+        "cross-account read denial"
+      ]
+    },
+    {
+      "path": "/api/notifications/read",
+      "method": "POST",
+      "access": "authenticated",
+      "ownerRule": "UPDATE filtered by session u.id",
+      "evidence": "need(u); UPDATE notifications WHERE user_id=? AND read_at IS NULL",
+      "tests": [
+        "cross-account update denial"
+      ]
+    },
+    {
+      "path": "/api/tickets/ledger",
+      "method": "GET",
+      "access": "authenticated",
+      "ownerRule": "user_id is bound to session u.id",
+      "evidence": "need(u); SELECT ticket_ledger WHERE user_id=?",
+      "tests": [
+        "cross-account ledger denial"
+      ]
+    },
+    {
+      "path": "/api/recommendations",
+      "method": "GET",
+      "access": "authenticated",
+      "ownerRule": "recommendations.user_id is bound to session u.id",
+      "evidence": "need(u); SELECT recommendations WHERE r.user_id=?",
+      "tests": [
+        "cross-account recommendation denial"
+      ]
+    },
+    {
+      "path": "/api/follows",
+      "method": "GET",
+      "access": "authenticated",
+      "ownerRule": "follows.user_id is bound to session u.id",
+      "evidence": "need(u); SELECT follows WHERE user_id=?",
+      "tests": [
+        "cross-account follows denial"
+      ]
+    },
+    {
+      "path": "/api/profile",
+      "method": "GET",
+      "access": "authenticated",
+      "ownerRule": "history, follows, unlocks and ledger aggregates all bind u.id",
+      "evidence": "need(u); four per-user aggregate queries use u.id",
+      "tests": [
+        "response is scoped to session account"
+      ]
+    },
+    {
+      "path": "/api/author/applications/me",
+      "method": "GET",
+      "access": "authenticated",
+      "ownerRule": "application user_id is bound to session u.id",
+      "evidence": "need(u); SELECT author_applications WHERE user_id=?",
+      "tests": [
+        "cross-account application denial"
+      ]
+    },
+    {
+      "path": "/api/author/applications",
+      "method": "POST",
+      "access": "authenticated user role only",
+      "ownerRule": "insert user_id is taken from u.id, not request body",
+      "evidence": "need(u); rejects roles other than user; INSERT binds u.id",
+      "tests": [
+        "non-reader role denied",
+        "body cannot override user_id"
+      ]
+    },
+    {
+      "path": "/api/admin/author-applications",
+      "method": "GET",
+      "access": "admin",
+      "ownerRule": "global applicant data protected by admin(u)",
+      "evidence": "admin(u) before global application query",
+      "tests": [
+        "non-admin receives 403"
+      ]
+    },
+    {
+      "path": "/api/admin/author-applications/:id",
+      "method": "PATCH",
+      "access": "admin",
+      "ownerRule": "admin gate and pending-state/eligible-user conditions",
+      "evidence": "admin(u); conditional pending update and role promotion checks",
+      "tests": [
+        "non-admin denied",
+        "review replay denied",
+        "banned applicant not promoted"
+      ]
+    },
+    {
+      "path": "/api/admin/stats",
+      "method": "GET",
+      "access": "admin",
+      "ownerRule": "global aggregates protected by admin(u)",
+      "evidence": "admin(u) before platform-wide counts",
+      "tests": [
+        "non-admin receives 403"
+      ]
+    },
+    {
+      "path": "/api/admin/users",
+      "method": "GET",
+      "access": "admin",
+      "ownerRule": "account directory protected by admin(u)",
+      "evidence": "admin(u) before listing account identifiers and emails",
+      "tests": [
+        "non-admin receives 403",
+        "password/session fields excluded"
+      ]
+    },
+    {
+      "path": "/api/admin/users/:id",
+      "method": "PATCH",
+      "access": "admin",
+      "ownerRule": "admin gate; prevents self-demotion",
+      "evidence": "admin(u); self-role removal check; role allowlist",
+      "tests": [
+        "non-admin denied",
+        "self-demotion denied",
+        "last-admin invariant reviewed"
+      ]
+    },
+    {
+      "path": "/api/author/novels",
+      "method": "GET",
+      "access": "author or admin",
+      "ownerRule": "novels filtered by owner_user_id = u.id",
+      "evidence": "author(u); SELECT novels WHERE n.owner_user_id=?",
+      "tests": [
+        "author A cannot list author B drafts"
+      ]
+    },
+    {
+      "path": "/api/author/novels",
+      "method": "POST",
+      "access": "author or admin",
+      "ownerRule": "new owner_user_id is u.id; status is draft",
+      "evidence": "author(u); INSERT binds owner_user_id to u.id and draft status",
+      "tests": [
+        "body cannot set another owner",
+        "cannot create directly published novel"
+      ]
+    },
+    {
+      "path": "/api/author/novels/:id",
+      "method": "PATCH",
+      "access": "author or admin",
+      "ownerRule": "loads target novel and compares owner_user_id unless admin",
+      "evidence": "author(u); SELECT by id; explicit owner comparison",
+      "tests": [
+        "author A cannot edit author B novel"
+      ]
+    },
+    {
+      "path": "/api/author/chapters",
+      "method": "GET|POST",
+      "access": "author or admin",
+      "ownerRule": "loads parent novel and compares owner_user_id unless admin",
+      "evidence": "GET and POST both load parent novel and compare owner_user_id",
+      "tests": [
+        "author A cannot read/create chapters under author B novel"
+      ]
+    },
+    {
+      "path": "/api/author/chapters/:id",
+      "method": "PATCH",
+      "access": "author or admin",
+      "ownerRule": "joins chapter to novel and compares parent owner_user_id",
+      "evidence": "chapter/novel join; explicit owner comparison before update",
+      "tests": [
+        "author A cannot edit author B chapter"
+      ]
+    },
+    {
+      "path": "/api/author/chapters/:id/publish",
+      "method": "POST",
+      "access": "author or admin",
+      "ownerRule": "parent owner check plus novel rights eligibility",
+      "evidence": "author(u); joined owner check; rights-status allowlist",
+      "tests": [
+        "author A cannot publish author B chapter",
+        "ineligible rights cannot publish"
+      ]
+    }
+  ],
+  "findings": [
+    {
+      "id": "AUTH-001",
+      "severity": "high",
+      "status": "needs-tests",
+      "detail": "Cross-account integration tests are not evidenced by source inspection.",
+      "action": "Add two-account tests for notifications, ledger, recommendations, follows, profile and applications."
+    },
+    {
+      "id": "AUTH-002",
+      "severity": "high",
+      "status": "needs-review",
+      "detail": "Self-demotion is blocked, but last-admin protection and full audit logging for admin user mutation are not established.",
+      "action": "Review and test last-admin invariants and audit trail."
+    },
+    {
+      "id": "AUTH-003",
+      "severity": "medium",
+      "status": "needs-review",
+      "detail": "Admin passes author role gate, but author novel collection remains filtered to admin's own owner ID.",
+      "action": "Document intended admin collection semantics and test."
+    },
+    {
+      "id": "AUTH-004",
+      "severity": "medium",
+      "status": "needs-review",
+      "detail": "Taxonomy submitter creator_id and creator_name are accepted from request body without a session requirement.",
+      "action": "Decide anonymous submission policy and prevent spoofable attribution."
+    },
+    {
+      "id": "AUTH-005",
+      "severity": "high",
+      "status": "pending",
+      "detail": "Remaining API routes, CSRF/origin, DTO allowlists, private caching and runtime object isolation are not certified.",
+      "action": "Continue handler review and runtime integration tests."
+    }
+  ]
+}
