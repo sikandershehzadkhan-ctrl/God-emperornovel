@@ -29,6 +29,8 @@ assert.equal(validateUserProfile({ ...valid, avatar_url: "/images/../private.png
 assert.equal(validateUserProfile(null).ok, false);
 
 const migration = fs.readFileSync("migrations/0012_user_profiles.sql", "utf8");
+assert.ok(migration.includes("profile_visibility TEXT NOT NULL DEFAULT 'private'"), "Profiles default to private.");
+assert.ok(migration.includes("show_reading_stats INTEGER NOT NULL DEFAULT 0"), "Reading statistics are opt-in.");
 for (const column of ["display_name", "bio", "avatar_url", "website_url", "location", "profile_visibility", "show_reading_stats", "profile_updated_at"]) {
   assert.match(migration, new RegExp("ADD COLUMN " + column));
 }
