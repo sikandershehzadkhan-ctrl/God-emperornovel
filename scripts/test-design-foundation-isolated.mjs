@@ -38,14 +38,14 @@ function contrast(foreground, background) {
   return (values[0] + 0.05) / (values[1] + 0.05);
 }
 const themeBlocks = {
-  light: css.match(/:root\\s*\\{([^}]*)\\}/)?.[1],
+  light: css.match(/:root\s*\{([^}]*)\}/)?.[1],
   ...Object.fromEntries(["dark", "sepia", "midnight", "imperial", "cosmic"].map((theme) => [
-    theme, css.match(new RegExp('html\\\\[data-theme="' + theme + '"\\\\]\\\\s*\\\\{([^}]*)\\\\}'))?.[1],
+    theme, css.match(new RegExp('html\\[data-theme="' + theme + '"\\]\\s*\\{([^}]*)\\}'))?.[1],
   ])),
 };
 for (const [theme, block] of Object.entries(themeBlocks)) {
   assert.ok(block, "Missing token block for " + theme);
-  const tokens = Object.fromEntries([...block.matchAll(/--in-(ink|muted|subtle|canvas|surface|surface-raised):\\s*(#[0-9A-Fa-f]{6})/g)].map((match) => [match[1], match[2]]));
+  const tokens = Object.fromEntries([...block.matchAll(/--in-(ink|muted|subtle|canvas|surface|surface-raised):\s*(#[0-9A-Fa-f]{6})/g)].map((match) => [match[1], match[2]]));
   for (const foreground of ["ink", "muted", "subtle"]) {
     for (const background of ["canvas", "surface", "surface-raised"]) {
       assert.ok(tokens[foreground] && tokens[background], "Missing " + foreground + "/" + background + " token for " + theme);
