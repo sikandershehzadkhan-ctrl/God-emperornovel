@@ -16,6 +16,10 @@ This is a partial handler-level source review, not a complete review of all API 
 - Global statistics, account directory, author application moderation, and application review use an administrator gate.
 - Application approval uses pending-state and eligible-account conditions before promoting an applicant.
 
+## AI project isolation
+
+The reviewed AI project collection is filtered by the current account ID. Project detail, update, generation-run, and job-list handlers load the project and compare its owner ID before proceeding, with an explicit admin override. Linked novels are also checked against the current account before a project is created. Two-account integration tests are still required for project IDs and job IDs.
+
 ## Findings
 
 1. Cross-account integration tests are still required. SQL ownership predicates are visible, but static inspection does not prove runtime isolation.
