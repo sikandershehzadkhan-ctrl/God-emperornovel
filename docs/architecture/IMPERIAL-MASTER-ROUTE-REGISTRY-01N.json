@@ -73,7 +73,7 @@
       "seo_policy": "index-conditional",
       "status": "observed",
       "screen_mapping": "observed-shell-and-client-renderer",
-      "component_mapping": "pending",
+      "component_mapping": "renderer, DOM anchors, action families and API references inventoried; full component tree/handler tests pending",
       "api_mapping": "pending",
       "permission_mapping": "pending",
       "tests": "pending"
@@ -87,7 +87,7 @@
       "seo_policy": "noindex",
       "status": "observed",
       "screen_mapping": "observed-shell-and-client-renderer",
-      "component_mapping": "pending",
+      "component_mapping": "renderer, DOM anchors, action families and API references inventoried; full component tree/handler tests pending",
       "api_mapping": "pending",
       "permission_mapping": "pending",
       "tests": "pending"
@@ -101,7 +101,7 @@
       "seo_policy": "noindex",
       "status": "observed-alias-conflict",
       "screen_mapping": "observed-shell-and-client-renderer",
-      "component_mapping": "pending",
+      "component_mapping": "renderer, DOM anchors, action families and API references inventoried; full component tree/handler tests pending",
       "api_mapping": "pending",
       "permission_mapping": "pending",
       "tests": "pending"
@@ -115,7 +115,7 @@
       "seo_policy": "index-conditional",
       "status": "observed",
       "screen_mapping": "observed-shell-and-client-renderer",
-      "component_mapping": "pending",
+      "component_mapping": "renderer, DOM anchors, action families and API references inventoried; full component tree/handler tests pending",
       "api_mapping": "pending",
       "permission_mapping": "pending",
       "tests": "pending"
@@ -129,7 +129,7 @@
       "seo_policy": "index-conditional",
       "status": "observed",
       "screen_mapping": "observed-shell-and-client-renderer",
-      "component_mapping": "pending",
+      "component_mapping": "renderer, DOM anchors, action families and API references inventoried; full component tree/handler tests pending",
       "api_mapping": "pending",
       "permission_mapping": "pending",
       "tests": "pending"
@@ -143,7 +143,7 @@
       "seo_policy": "noindex",
       "status": "observed",
       "screen_mapping": "observed-shell-and-client-renderer",
-      "component_mapping": "pending",
+      "component_mapping": "renderer, DOM anchors, action families and API references inventoried; full component tree/handler tests pending",
       "api_mapping": "pending",
       "permission_mapping": "pending",
       "tests": "pending"
@@ -157,7 +157,7 @@
       "seo_policy": "noindex-review",
       "status": "observed",
       "screen_mapping": "observed-shell-and-client-renderer",
-      "component_mapping": "pending",
+      "component_mapping": "renderer, DOM anchors, action families and API references inventoried; full component tree/handler tests pending",
       "api_mapping": "pending",
       "permission_mapping": "pending",
       "tests": "pending"
@@ -199,7 +199,7 @@
       "seo_policy": "index-conditional",
       "status": "observed",
       "screen_mapping": "observed-shell-and-client-renderer",
-      "component_mapping": "pending",
+      "component_mapping": "renderer, DOM anchors, action families and API references inventoried; full component tree/handler tests pending",
       "api_mapping": "pending",
       "permission_mapping": "pending",
       "tests": "pending"
@@ -213,7 +213,7 @@
       "seo_policy": "index-conditional",
       "status": "observed",
       "screen_mapping": "observed-shell-and-client-renderer",
-      "component_mapping": "pending",
+      "component_mapping": "renderer, DOM anchors, action families and API references inventoried; full component tree/handler tests pending",
       "api_mapping": "pending",
       "permission_mapping": "pending",
       "tests": "pending"
@@ -241,7 +241,7 @@
       "seo_policy": "noindex",
       "status": "observed",
       "screen_mapping": "observed-shell-and-client-renderer",
-      "component_mapping": "pending",
+      "component_mapping": "renderer, DOM anchors, action families and API references inventoried; full component tree/handler tests pending",
       "api_mapping": "pending",
       "permission_mapping": "pending",
       "tests": "pending"
@@ -255,7 +255,7 @@
       "seo_policy": "noindex",
       "status": "observed",
       "screen_mapping": "observed-shell-and-client-renderer",
-      "component_mapping": "pending",
+      "component_mapping": "renderer, DOM anchors, action families and API references inventoried; full component tree/handler tests pending",
       "api_mapping": "pending",
       "permission_mapping": "pending",
       "tests": "pending"
@@ -269,7 +269,7 @@
       "seo_policy": "noindex",
       "status": "observed",
       "screen_mapping": "observed-shell-and-client-renderer",
-      "component_mapping": "pending",
+      "component_mapping": "renderer, DOM anchors, action families and API references inventoried; full component tree/handler tests pending",
       "api_mapping": "pending",
       "permission_mapping": "pending",
       "tests": "pending"
@@ -283,7 +283,7 @@
       "seo_policy": "noindex",
       "status": "observed",
       "screen_mapping": "observed-shell-and-client-renderer",
-      "component_mapping": "pending",
+      "component_mapping": "renderer, DOM anchors, action families and API references inventoried; full component tree/handler tests pending",
       "api_mapping": "pending",
       "permission_mapping": "pending",
       "tests": "pending"
@@ -311,7 +311,7 @@
       "seo_policy": "noindex",
       "status": "observed",
       "screen_mapping": "observed-shell-and-client-renderer",
-      "component_mapping": "pending",
+      "component_mapping": "renderer, DOM anchors, action families and API references inventoried; full component tree/handler tests pending",
       "api_mapping": "pending",
       "permission_mapping": "pending",
       "tests": "pending"
@@ -353,7 +353,7 @@
       "seo_policy": "noindex",
       "status": "observed",
       "screen_mapping": "observed-shell-and-client-renderer",
-      "component_mapping": "pending",
+      "component_mapping": "renderer, DOM anchors, action families and API references inventoried; full component tree/handler tests pending",
       "api_mapping": "pending",
       "permission_mapping": "pending",
       "tests": "pending"
@@ -367,7 +367,7 @@
       "seo_policy": "noindex-review",
       "status": "observed",
       "screen_mapping": "observed-shell-and-client-renderer",
-      "component_mapping": "pending",
+      "component_mapping": "renderer, DOM anchors, action families and API references inventoried; full component tree/handler tests pending",
       "api_mapping": "pending",
       "permission_mapping": "pending",
       "tests": "pending"
@@ -381,7 +381,7 @@
       "seo_policy": "noindex-review",
       "status": "observed",
       "screen_mapping": "observed-shell-and-client-renderer",
-      "component_mapping": "pending",
+      "component_mapping": "renderer, DOM anchors, action families and API references inventoried; full component tree/handler tests pending",
       "api_mapping": "pending",
       "permission_mapping": "pending",
       "tests": "pending"
@@ -395,7 +395,7 @@
       "seo_policy": "noindex",
       "status": "observed",
       "screen_mapping": "observed-shell-and-client-renderer",
-      "component_mapping": "pending",
+      "component_mapping": "renderer, DOM anchors, action families and API references inventoried; full component tree/handler tests pending",
       "api_mapping": "pending",
       "permission_mapping": "pending",
       "tests": "pending"
@@ -409,7 +409,7 @@
       "seo_policy": "index-conditional",
       "status": "observed",
       "screen_mapping": "observed-shell-and-client-renderer",
-      "component_mapping": "pending",
+      "component_mapping": "renderer, DOM anchors, action families and API references inventoried; full component tree/handler tests pending",
       "api_mapping": "pending",
       "permission_mapping": "pending",
       "tests": "pending"
@@ -493,7 +493,7 @@
       "seo_policy": "noindex",
       "status": "observed",
       "screen_mapping": "observed-shell-and-client-renderer",
-      "component_mapping": "pending",
+      "component_mapping": "renderer, DOM anchors, action families and API references inventoried; full component tree/handler tests pending",
       "api_mapping": "pending",
       "permission_mapping": "pending",
       "tests": "pending"
@@ -507,7 +507,7 @@
       "seo_policy": "index",
       "status": "observed",
       "screen_mapping": "observed-shell-and-client-renderer",
-      "component_mapping": "pending",
+      "component_mapping": "renderer, DOM anchors, action families and API references inventoried; full component tree/handler tests pending",
       "api_mapping": "pending",
       "permission_mapping": "pending",
       "tests": "pending"
@@ -563,7 +563,7 @@
       "seo_policy": "index-conditional",
       "status": "observed-dynamic",
       "screen_mapping": "observed-shell-and-client-renderer",
-      "component_mapping": "pending",
+      "component_mapping": "renderer, DOM anchors, action families and API references inventoried; full component tree/handler tests pending",
       "api_mapping": "pending",
       "permission_mapping": "pending",
       "tests": "pending"
