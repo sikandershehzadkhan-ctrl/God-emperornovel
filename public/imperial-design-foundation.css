@@ -2142,3 +2142,18 @@ body.authorStudioPage .field label{color:var(--in-muted);font-weight:650}
 body.authorStudioPage .novelHead{gap:12px;align-items:flex-start}
 body.authorStudioPage .brand{font-size:clamp(21px,3vw,28px)}
 @media(max-width:760px){body.adminDashboardPage .adminWrap{width:100%;padding:16px 12px 88px}body.adminDashboardPage .adminGrid{grid-template-columns:minmax(0,1fr)!important}body.adminDashboardPage .adminHero{padding:18px}body.adminDashboardPage .adminHero h1{font-size:clamp(25px,7vw,34px)}body.adminDashboardPage .panel,body.adminDashboardPage .adminCard,body.adminDashboardPage .adminSection{padding:14px}body.adminDashboardPage .adminTable{min-width:640px}body.authorStudioPage .novelHead{flex-wrap:wrap}}
+
+
+/* RTL alignment for directional controls and drawers. Decorative hero geometry remains unchanged. */
+html[dir="rtl"] .skipLink{left:auto;right:8px}
+html[dir="rtl"] .chapterDrawer{
+  inset-inline-start:0;
+  inset-inline-end:auto;
+  border-left:0;
+  border-right:1px solid var(--in-line);
+  box-shadow:18px 20px 48px rgba(11,18,21,.14);
+}
+html[dir="rtl"] .homeFormatArrow{margin-left:0;margin-inline-start:auto}
+html[dir="rtl"] .catalogCover .statusBadge{left:auto;right:9px}
+html[dir="rtl"] .catalogCover .formatBadge{right:auto;left:9px}
+html[dir="rtl"] .omniSourceState{text-align:left}
