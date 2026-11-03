@@ -18,7 +18,7 @@ assert.match(runtime, /DELETE FROM comment_reports WHERE id NOT IN \(SELECT MIN\
 assert.match(runtime, /CREATE UNIQUE INDEX IF NOT EXISTS idx_comment_reports_user_comment ON comment_reports\(user_id,comment_id\)/, "runtime upgrade must enforce unique account/comment reports");
 assert.match(runtime, /runtime_feature_schema_version','2'/, "runtime schema upgrade must persist version 2");
 
-assert.match(migration, /GROUP BY user_id, comment_id/, "ordered migration deduplicates existing rows");
+assert.match(migration, /CREATE TABLE IF NOT EXISTS comment_reports/, "fresh D1 installs must create the table before indexing");\nassert.match(migration, /GROUP BY user_id, comment_id/, "ordered migration deduplicates existing rows");
 assert.match(migration, /CREATE UNIQUE INDEX IF NOT EXISTS idx_comment_reports_user_comment/, "ordered migration adds the unique index");
 
 console.log("PASS: comment report policy and fresh-install/runtime-upgrade uniqueness constraints are present.");
