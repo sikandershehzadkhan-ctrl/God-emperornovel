@@ -93,26 +93,7 @@ jobs:
           PY
 
       - name: Validate D1 migrations against SQLite
-        shell: bash
-        run: |
-          set -euo pipefail
-          python3 - <<'PY'
-          import glob, sqlite3, sys
-          db = sqlite3.connect(':memory:')
-          paths = sorted(glob.glob('migrations/*.sql'))
-          if not paths:
-              print('::error::No SQL migrations found.')
-              sys.exit(1)
-          for path in paths:
-              try:
-                  with open(path, encoding='utf-8') as f:
-                      db.executescript(f.read())
-                  print(f'PASS {path}')
-              except Exception as exc:
-                  print(f'::error::Migration failed: {path}: {exc}')
-                  sys.exit(1)
-          print(f'PASS: {len(paths)} migrations applied to fresh SQLite.')
-          PY
+        run: python3 scripts/test-migration-chain.py
 
       - name: Test catalog query aggregation parity
         run: python3 scripts/test-catalog-query.py
