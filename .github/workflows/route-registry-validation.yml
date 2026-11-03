@@ -9,6 +9,10 @@ on:
       - "public/app-*.js"
       - "docs/architecture/IMPERIAL-ROUTE-REGISTRY-01N.json"
       - "scripts/test-route-registry.mjs"
+      - "docs/architecture/IMPERIAL-API-ROUTE-METHOD-MATRIX-01N-37.json"
+      - "scripts/test-api-route-method-matrix.mjs"
+      - "docs/architecture/IMPERIAL-API-ROUTE-METHOD-MATRIX-01N-37.json"
+      - "scripts/test-api-route-method-matrix.mjs"
       - ".github/workflows/route-registry-validation.yml"
   push:
     branches:
