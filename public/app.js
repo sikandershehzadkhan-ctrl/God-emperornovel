@@ -39,7 +39,7 @@ function renderChapterContent(raw,kind){
  if(payload?.type!=='imperial_comic_chapter'||payload.version!==1||!Array.isArray(payload.pages)||!payload.pages.length)return fallback;
  const pages=payload.pages.slice(0,300).map((page,i)=>{
   const src=String(page?.src||'').trim();
-  const safeSrc=(src.startsWith('/')&&!src.startsWith('//')&&!src.includes('\\'))||/^https:\/\/[^\s"'<>]+$/i.test(src);
+  const safeSrc=(src.startsWith('/')&&!src.startsWith('//')&&!src.includes('\'))||/^https:\/\/[^\s"'<>]+$/i.test(src);
   const alt=esc(String(page?.alt||('Comic page '+(i+1))).slice(0,300));
   const caption=String(page?.caption||'').slice(0,500);
   if(!safeSrc)return '<div class="comicPageUnavailable" role="note">This page image has an invalid or unsupported address.</div>';
@@ -398,7 +398,7 @@ async function authorPublic(){
   let identityCard='';
   if(identity){
    const avatar=esc(identity.avatar_url||'/imperial-novel-app-icon.svg');
-   identityCard='<section class="panel"><div class="profileTop"><img class="avatar" src="'+avatar+'" alt="" referrerpolicy="no-referrer" onerror="this.onerror=null;this.src=\\'/imperial-novel-app-icon.svg\\'"><div><div class="eyebrow">PUBLIC ACCOUNT PROFILE</div><h2 style="margin:0">'+esc(identity.display_name||author)+'</h2><div class="muted">@'+esc(identity.username)+'</div></div></div>'+
+   identityCard='<section class="panel"><div class="profileTop"><img class="avatar" src="'+avatar+'" alt="" referrerpolicy="no-referrer" onerror="this.onerror=null;this.src=\'/imperial-novel-app-icon.svg\'"><div><div class="eyebrow">PUBLIC ACCOUNT PROFILE</div><h2 style="margin:0">'+esc(identity.display_name||author)+'</h2><div class="muted">@'+esc(identity.username)+'</div></div></div>'+
     (identity.bio?'<p style="white-space:pre-wrap;margin-top:18px">'+esc(identity.bio)+'</p>':'')+
     (identity.location?'<p class="muted">⌖ '+esc(identity.location)+'</p>':'')+
     (identity.website_url?'<p><a href="'+esc(identity.website_url)+'" target="_blank" rel="noopener noreferrer">Visit website ↗</a></p>':'')+
