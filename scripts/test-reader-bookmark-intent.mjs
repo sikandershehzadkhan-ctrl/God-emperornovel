@@ -16,6 +16,12 @@ assert.ok(historyWrite >= 0, 'Opening an unlocked chapter must continue recordin
 assert.ok(!reader.includes("api('/api/bookmark',{method:'POST'"), 'Opening a chapter must never silently create a bookmark');
 assert.ok(reader.slice(bookmarkHandler).includes("api('/api/bookmark',{method:'POST'"), 'Bookmark persistence must occur from the explicit bookmark action');
 assert.ok(reader.includes("localStorage.setItem('readerBookmark:'"), 'Guest bookmark action must remain locally available');
+assert.ok(reader.includes('const readReaderSetting='), 'Reader preferences must tolerate unavailable browser storage');
+assert.ok(reader.includes('const writeReaderSetting='), 'Reader preference writes must tolerate unavailable browser storage');
+assert.ok(reader.includes('Number.isFinite(sizeRaw)'), 'Stored font size must reject non-numeric values');
+assert.ok(reader.includes("Math.min(30,Math.max(15,Math.round(sizeRaw)))"), 'Stored font size must be clamped to supported bounds');
+assert.ok(reader.includes("['1.65','1.85','2'].includes"), 'Stored line spacing must be restricted to supported values');
+assert.ok(reader.includes("['500','600','680'].includes"), 'Stored text width must be restricted to supported values');
 assert.equal(app, served, 'Served versioned application asset must match source app.js');
 assert.ok(html.includes('/app-17.24.0.js'), 'Public entry must load the synchronized versioned asset');
 console.log('Reader bookmark intent passed: visits record history, bookmark writes require explicit action, guest behavior and source/served parity verified.');
