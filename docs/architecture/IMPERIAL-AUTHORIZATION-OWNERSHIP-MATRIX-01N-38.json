@@ -3,7 +3,7 @@
   "sourceBranch": "main",
   "sourceBlob": "237f4461135eb77258b7184e361ce9dfd9a140e9",
   "auditDate": "2026-11-03",
-  "scope": "Partial handler-level source review; not a full authorization certification.",
+  "scope": "Partial handler-level source review with static and SQLite checks; not a full authorization certification. The matrix records mitigations on the isolated route-registry PR branch; unreviewed API routes remain pending.",
   "reviewedRouteCount": 40,
   "pendingDisclosure": "All other exact and dynamic API routes remain pending handler-level review.",
   "routes": [
@@ -219,7 +219,7 @@
       "path": "/api/author/ai/projects",
       "method": "POST",
       "access": "author or admin with configured AI provider",
-      "ownerRule": "new project owner_user_id is u.id; linked novel must be owned by current user unless admin",
+      "ownerRule": "new project owner_user_id is u.id; linked novel must be owned by current user unless explicitly admin-created",
       "evidence": "author(u); linked novel owner comparison; INSERT binds owner_user_id to u.id",
       "tests": [
         "body cannot assign another project owner",
@@ -241,11 +241,12 @@
       "path": "/api/author/ai/projects/:id/run",
       "method": "POST",
       "access": "author or admin with configured AI provider",
-      "ownerRule": "loads project and compares owner_user_id to u.id unless admin",
-      "evidence": "author(u); project owner comparison before changing project status or creating job",
+      "ownerRule": "strict project owner only for generation; administrators cannot generate on behalf of another author",
+      "evidence": "author(u); project owner comparison is unconditional before changing status or creating a job",
       "tests": [
-        "author A cannot run author B project",
-        "missing AI configuration returns unavailable without creating output"
+        "non-owner author denied",
+        "administrator acting on creator-owned project denied",
+        "owner generation records same owner id"
       ]
     },
     {
@@ -364,13 +365,13 @@
     {
       "path": "/api/taxonomy",
       "method": "POST",
-      "access": "anonymous",
-      "ownerRule": "no account owner; creator_id and creator_name are accepted from request body",
-      "evidence": "communityTaxonomy POST has no getUser/need call; INSERT binds b.creator_id and b.creator_name directly",
+      "access": "public, optional authenticated attribution",
+      "ownerRule": "creator_id/name derived from verified session when present; anonymous attribution remains null/blank; per-IP rate limited",
+      "evidence": "communityTaxonomy uses u?.id and u?.username, consumes taxonomy-submit-ip rate limit",
       "tests": [
-        "rate-limit anonymous submissions",
-        "spoofed creator_id/name cannot impersonate another account",
-        "duplicate pending taxonomy submission is rejected"
+        "client cannot spoof creator identity",
+        "rate limit enforced",
+        "anonymous proposal attribution remains unclaimed"
       ]
     },
     {
@@ -423,25 +424,22 @@
       "path": "/api/comments",
       "method": "GET",
       "access": "public with optional session personalization",
-      "ownerRule": "comment query currently filters only by novel_id and visible status; publication and rights eligibility of parent novel are not enforced in this handler",
-      "evidence": "SELECT comments WHERE c.novel_id=? AND c.status='visible'; no join or publication_status/rights_status predicate",
+      "ownerRule": "parent novel must be published and rights eligible before comments are returned",
+      "evidence": "parent novel eligibility query before comment selection",
       "tests": [
-        "draft novel comments are not publicly readable",
-        "rights-ineligible novel comments are not publicly readable",
-        "published eligible novel comments remain readable"
+        "draft and rights-ineligible parent comments not readable",
+        "eligible published comments readable"
       ]
     },
     {
       "path": "/api/comments",
       "method": "POST",
       "access": "authenticated",
-      "ownerRule": "comment author is session u.id, but parent novel publication and rights eligibility are not checked before insert",
-      "evidence": "need(u); validates novel_id/body and optional visible parent comment; INSERT binds u.id and nid without querying novels",
+      "ownerRule": "parent novel must exist, be published and rights eligible before insert; author id from session",
+      "evidence": "parent novel eligibility query before comment insert",
       "tests": [
-        "cannot comment on draft novel",
-        "cannot comment on rights-ineligible novel",
-        "cannot comment on missing novel",
-        "cannot comment on unpublished chapter-only content"
+        "cannot comment on missing/draft/rights-ineligible novel",
+        "eligible published novel comment works"
       ]
     }
   ],
@@ -470,9 +468,9 @@
     {
       "id": "AUTH-004",
       "severity": "medium",
-      "status": "needs-review",
-      "detail": "Taxonomy submitter creator_id and creator_name are accepted from request body without a session requirement.",
-      "action": "Decide anonymous submission policy and prevent spoofable attribution."
+      "status": "mitigated-static-tested",
+      "detail": "Taxonomy submissions retain public access, but submitter attribution is now derived from the verified session and IP rate limiting is applied. Runtime abuse testing remains outstanding.",
+      "action": "Add browser/runtime tests for anonymous and authenticated submissions, spoof attempts and rate-limit behavior."
     },
     {
       "id": "AUTH-005",
@@ -484,30 +482,30 @@
     {
       "id": "AUTH-006",
       "severity": "medium",
-      "status": "needs-review",
-      "detail": "Admin report status mutation has no audit(env,u,...) call in the reviewed handler, unlike several adjacent moderation/payment actions.",
-      "action": "Add an audit event with report id and status transition; verify this action is included in admin activity history."
+      "status": "mitigated-static-tested",
+      "detail": "Admin report status changes now check affected rows and emit an audit event with report id and resulting status.",
+      "action": "Verify audit event persistence and failure behavior against isolated D1."
     },
     {
       "id": "AUTH-007",
       "severity": "medium",
-      "status": "needs-review",
-      "detail": "Admin account PATCH does not visibly audit role, verification, or ban changes and does not establish last-admin protection.",
-      "action": "Add immutable before/after admin audit records and a last-active-admin invariant."
+      "status": "mitigated-static-and-sqlite-tested",
+      "detail": "Administrator account PATCH now updates only explicitly supplied fields, rejects empty/unknown updates, protects the last active admin, and batches the account change with a conditional audit row. Static checks and SQLite transaction tests pass; live D1 concurrency testing remains outstanding.",
+      "action": "Run isolated D1 concurrency and audit-failure tests before security sign-off."
     },
     {
       "id": "AUTH-008",
       "severity": "medium",
-      "status": "needs-tests",
-      "detail": "Donation approval uses a conditional status transition and linked ticket/ledger writes, but atomicity and failure recovery need integration tests against D1 batch semantics.",
-      "action": "Test duplicate approval, missing target user, and partial failure behavior using an isolated D1 test database."
+      "status": "sqlite-tested-needs-d1",
+      "detail": "Donation approval uses a pending-only status transition followed by conditional balance credit and ledger insertion in a D1 batch. SQLite integration tests now cover successful approval, replay prevention and ledger-failure rollback.",
+      "action": "Verify the same behavior with isolated Cloudflare D1 integration tests and concurrent duplicate approvals."
     },
     {
       "id": "AUTH-009",
       "severity": "medium",
-      "status": "needs-mitigation",
-      "detail": "Taxonomy proposals are intentionally accepted anonymously, but creator_id and creator_name are copied directly from the request body. This permits spoofed attribution and leaves anonymous submission abuse controls unproven.",
-      "action": "Keep public submissions if desired, but derive attribution only from a verified session and add per-IP rate limiting, moderation queue abuse controls, and spam tests."
+      "status": "mitigated-static-tested",
+      "detail": "Taxonomy submissions retain public access, but submitter attribution is now derived from the verified session and IP rate limiting is applied. Runtime abuse testing remains outstanding.",
+      "action": "Add browser/runtime tests for anonymous and authenticated submissions, spoof attempts and rate-limit behavior."
     },
     {
       "id": "AUTH-010",
@@ -519,23 +517,23 @@
     {
       "id": "AUTH-011",
       "severity": "medium",
-      "status": "needs-verification",
-      "detail": "JSON responses default to Cache-Control no-store and HTML responses also use no-store, which is a strong privacy baseline. The sitemap is the explicit public-cache exception and filters to published, rights-eligible content. Cookie authentication uses SameSite=Lax, HttpOnly and Secure, but no explicit Origin/CSRF token check is visible in the reviewed request pipeline.",
-      "action": "Verify browser CSRF behavior with cross-site POST tests and review any future credentialed CORS changes; retain no-store on all account/admin responses."
+      "status": "mitigated-static-tested",
+      "detail": "State-changing API requests now reject mismatched Origin headers and Sec-Fetch-Site=cross-site before schema bootstrap/session lookup; SameSite=Lax remains defense-in-depth. Browser/runtime CSRF tests remain outstanding.",
+      "action": "Add real browser tests for same-origin POST, cross-origin form POST, missing Origin and Fetch Metadata edge cases."
     },
     {
       "id": "AUTH-012",
       "severity": "medium",
-      "status": "needs-decision",
-      "detail": "The admin override on AI project routes allows an admin to run a project owned by another author, while ai_chapter_jobs.owner_user_id and ai_generation_runs.owner_user_id are populated with the acting admin's u.id. The project remains owned by the original author. This mixes project ownership and actor attribution in fields named owner_user_id.",
-      "action": "Decide whether admins may generate on behalf of creators. If yes, store project owner and actor/reviewer separately; otherwise remove the admin override from generation actions. Add tests for owner-visible job history and audit attribution."
+      "status": "mitigated-static-tested",
+      "detail": "Story Bible generation and chapter generation now require strict project ownership even for administrators, so job/run owner_user_id remains aligned with the project owner. Admin read/oversight routes retain their separately gated access.",
+      "action": "Add two-account runtime tests proving admin and other authors cannot generate against a creator-owned project and owner job history remains correctly attributed."
     },
     {
       "id": "AUTH-013",
       "severity": "medium",
-      "status": "needs-mitigation",
-      "detail": "The public comments GET handler filters by comment visibility and caller-supplied novel_id but does not constrain the parent novel to published, rights-eligible content. The authenticated POST handler also inserts against the supplied novel_id without verifying that the novel exists and is published and rights-eligible. This may expose comments associated with draft or rights-ineligible works and permits orphan/invalid comment attempts; actual impact depends on surrounding schema and route reachability.",
-      "action": "Join/validate the parent novel in both handlers using publication_status='published' and the approved rights-status allowlist. Add integration tests for draft, missing, and rights-ineligible novel IDs before changing runtime behavior."
+      "status": "mitigated-static-tested",
+      "detail": "Both public comment reads and authenticated comment writes now require the parent novel to be published and rights eligible.",
+      "action": "Run isolated D1 tests for missing, draft, rights-ineligible and eligible parent novels."
     },
     {
       "id": "AUTH-014",
@@ -547,16 +545,16 @@
     {
       "id": "AUTH-015",
       "severity": "high",
-      "status": "needs-mitigation",
-      "detail": "The admin user PATCH handler writes verified and banned as b.verified ? 1 : 0 and b.banned ? 1 : 0. A request intended only to change a role can therefore silently clear verification and/or unban an account when those fields are omitted. This does not preserve PATCH semantics and may alter unrelated account security state.",
-      "action": "Validate a strict allowlisted patch DTO; update only fields explicitly present; reject empty patches; test role-only, verified-only, banned-only and mixed updates while asserting all omitted fields remain unchanged."
+      "status": "mitigated-static-and-sqlite-tested",
+      "detail": "Administrator account PATCH now updates only explicitly supplied fields, rejects empty/unknown updates, protects the last active admin, and batches the account change with a conditional audit row. Static checks and SQLite transaction tests pass; live D1 concurrency testing remains outstanding.",
+      "action": "Run isolated D1 concurrency and audit-failure tests before security sign-off."
     },
     {
       "id": "AUTH-016",
       "severity": "high",
-      "status": "needs-mitigation",
-      "detail": "The admin user PATCH handler prevents an administrator from removing their own admin role, but it does not visibly prevent demoting or banning the last remaining active administrator. A second administrator could remove the final admin account's privileges and lock the platform out of admin operations.",
-      "action": "Enforce a transactional last-active-admin invariant for role demotion and ban changes; test concurrent demotions and bans against an isolated D1 database, and preserve an audited recovery path."
+      "status": "mitigated-static-and-sqlite-tested",
+      "detail": "Administrator account PATCH now updates only explicitly supplied fields, rejects empty/unknown updates, protects the last active admin, and batches the account change with a conditional audit row. Static checks and SQLite transaction tests pass; live D1 concurrency testing remains outstanding.",
+      "action": "Run isolated D1 concurrency and audit-failure tests before security sign-off."
     }
   ]
 }
