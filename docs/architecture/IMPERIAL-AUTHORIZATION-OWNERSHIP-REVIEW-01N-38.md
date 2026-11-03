@@ -20,6 +20,14 @@ This is a partial handler-level source review, not a complete review of all API 
 
 The reviewed AI project collection is filtered by the current account ID. Project detail, update, generation-run, and job-list handlers load the project and compare its owner ID before proceeding, with an explicit admin override. Linked novels are also checked against the current account before a project is created. Two-account integration tests are still required for project IDs and job IDs.
 
+## Additional admin and connector review
+
+- Donation review is admin-gated and uses a pending-state transition with linked ticket-balance and ledger writes. D1 integration tests must verify duplicate approval and failure recovery.
+- Admin report status changes are gated and allowlisted, but the reviewed handler does not emit an audit event.
+- Admin account role/verification/ban changes block self-demotion, but last-admin protection and audit logging are not established in the handler.
+- Connector authorization requests derive requester identity from the authenticated session. Admin review requires a pending request and rights evidence/terms/notes; approved connectors remain disabled until separately enabled.
+- Admin ticket adjustments update the target balance and conditionally create a ledger entry; runtime consistency tests remain necessary.
+
 ## Findings
 
 1. Cross-account integration tests are still required. SQL ownership predicates are visible, but static inspection does not prove runtime isolation.
