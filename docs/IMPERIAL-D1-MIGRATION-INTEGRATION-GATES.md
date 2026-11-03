@@ -83,3 +83,20 @@ A minimal SQLite rehearsal using the observed migration SQL reproduced both defe
 - After one account changes from `oldname` to `newname`, inserting a second account with `oldname` succeeds under the current trigger set.
 
 This reproduction isolates the migration/trigger behavior. It is not a full application test and does not establish the production database's current state.
+
+
+## Expanded Author Studio branch inventory
+
+A direct comparison of the named author feature branches against main confirmed the current Author Studio migration sequence:
+
+| Migration | File | Purpose |
+|---|---|---|
+| 0012 | 0012_chapter_revisions.sql | Chapter revision history |
+| 0013 | 0013_scheduled_chapter_publications.sql | Scheduled chapter publication |
+| 0014 | 0014_author_story_goals.sql | Author writing goals |
+| 0015 | 0015_author_private_notes.sql | Private author notes |
+| 0016 | 0016_reader_progress_sync.sql | Reading progress percentage and updated-time index |
+
+The same migration set is present across the Author Studio workflow and reader-progress branches. The 0012 conflict with the profile branch is therefore confirmed; the Author Studio branch is also 11 commits behind main in the comparison performed during this audit. It must be reconciled with the newer base before integration.
+
+Correction to earlier shorthand: the actual scheduled-publication and story-goal migration filenames are 0013_scheduled_chapter_publications.sql and 0014_author_story_goals.sql, respectively.
