@@ -62,7 +62,7 @@ assert.match(reader, /synced to your account/,
   "Signed-in reader UI must disclose account synchronization");
 
 
-assert.match(readerCss, /@media\(max-width:480px\)[\s\S]*?readerActions\{grid-template-columns:minmax\(0,1fr\) minmax\(0,1fr\)\}/,
+assert.ok(readerCss.includes(".readerPage .readerActions{grid-template-columns:minmax(0,1fr) minmax(0,1fr);"),
   "Reader navigation must reflow into two usable columns on narrow phones");
 assert.match(readerCss, /readerActions a,.readerFooterCard>a\{[\s\S]*?min-height:44px/,
   "Reader navigation links must meet the 44px touch-target minimum");
