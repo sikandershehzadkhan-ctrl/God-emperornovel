@@ -10,7 +10,7 @@ const registerRoute = worker.slice(registerStart, loginStart);
 assert.ok(registerRoute.includes('FROM username_history WHERE old_username=? COLLATE NOCASE'), "Registration must pre-check historical usernames.");
 assert.ok(registerRoute.includes("That username is reserved because it was previously used by another account."), "Registration must return a clear reserved-name response.");
 
-const migration = fs.readFileSync("migrations/0019_username_historical_insert_guard.sql", "utf8");
+const migration = fs.readFileSync("migrations/0015_username_historical_insert_guard.sql", "utf8");
 assert.match(migration, /BEFORE INSERT ON users/);
 assert.match(migration, /old_username=NEW\.username COLLATE NOCASE/);
 assert.match(migration, /RAISE\(ABORT, 'username is reserved'\)/);
