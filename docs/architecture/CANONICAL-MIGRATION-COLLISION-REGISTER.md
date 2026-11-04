@@ -182,7 +182,7 @@ The live PR metadata confirms the stack is still based on the older design branc
 - **#148 reader request history:** changes the `GET /api/requests` response to include a bounded request-history list alongside the current weekly usage count. The inspected query scopes rows with `WHERE user_id=?` and limits the history to 20 records. Preserve that user-scoped predicate and test cross-account isolation when porting it; its branch inherits #146/#147.
 - **#149 catalog taxonomy/search and related recommendations:** adds separate parameterized search and recommendation policy modules, modifies the Worker and both bundles, and adds author-discovery, rights-filtering, search, rating-display and recommendation tests. The search policy caps terms at eight, escapes SQL LIKE wildcards, searches metadata plus taxonomy and uses correlated `EXISTS` clauses. Recommendation candidates are limited to published, rights-cleared works and exclude works already followed/read by the user. Port the policy modules and their tests as isolated units, then reconcile their SQL/schema assumptions with the canonical migrations and current route registry. Verify query plans and pagination on representative data before release.
 
-**Resolution:** treat #146–#149 as a feature stack to port in order, not merge directly from the old #120 base. First reconcile #146's SSR/design changes with #186 and #185. Then port #147 rankings, #148 private request history, and #149 taxonomy/recommendation policies one at a time, running their focused tests and the full Worker/migration/SEO/browser suite after each integration. Do not update route fingerprints until the final Worker source is stable.
+**Resolution/status:** #147 rankings, #148 private request history, and #149 taxonomy/recommendation policies have now been ported selectively onto the current-main integration branch. Their focused tests are part of `npm run build`; the full Cloudflare source-validation workflow passed on commit `07863de2` and again on `0b6dd454`, with later catalog/leaderboard refinements undergoing fresh validation. The port preserves published/rights-cleared visibility, per-reader request ownership, followed/read exclusions, published chapter counts, bounded search terms, escaped LIKE patterns, and safe pagination. #146 SSR remains deliberately unported pending a shell/hydration reconciliation described below. Do not merge the stacked PRs wholesale.
 
 ### Localization stack PRs #131–#145
 
@@ -211,3 +211,15 @@ A source-level compatibility check against #173's canonical Worker confirms the 
 ### Validation after collision-register updates
 
 The documentation commits `28466830` and `5d8756f6` each received successful Cloudflare Source Validation, Route Registry validation, and Graphify architecture-map workflow runs. The most recent confirmed run set is on `5d8756f6`. These workflows validate the integration branch's current Worker/route/migration guardrails; they do not certify the unported PR feature stacks or a live production deployment.
+
+### Homepage SSR integration blocker: PR #146
+
+The #146 SSR module is independently useful and escapes story metadata, validates cover URLs, bounds rendered cards, and supplies an empty state. However, it is not safe to wire into the current shell as-is:
+
+- `renderHomepageHtml()` returns its own header, mobile navigation, page content, and footer.
+- The current `shell()` in `public/app.js` independently inserts a complete header, navigation drawer, skip link, and account/language controls.
+- The current `boot()` replaces the entire `#app` contents with a loading fallback before it calls `home()`, so server-rendered content would be discarded unless boot behavior is changed.
+- The existing root shell has no server-rendered-home hydration marker or skip path. Simply adding the SSR module to `html()` would therefore either duplicate navigation or flash/erase the server-rendered page.
+- PR #146's Worker diff is stacked with unrelated catalog/search changes from #149 and must not be copied wholesale.
+
+**Safe next step:** split the SSR module into content-only rendering (or refactor its header to use the canonical shell), add a root-only Worker render path that queries published, rights-cleared novels with a strict limit, and change client boot to preserve and progressively enhance that exact SSR root without injecting duplicate navigation. Add tests for no-JS output, duplicate header/footer absence, theme and locale boot, hydration preservation, empty data, escaping, cover URL validation, cache headers, and canonical SEO/noindex behavior. Until these conditions are met, keep the current client-rendered homepage and do not claim SSR is live.
