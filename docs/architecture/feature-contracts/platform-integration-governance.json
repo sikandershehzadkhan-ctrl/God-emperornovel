@@ -62,13 +62,15 @@
       "test-account-identity-policy-isolated.mjs",
       "test-account-preferences-policy.mjs",
       "test-media-upload-policy-isolated.mjs",
-      "test-profile-account-api.mjs"
+      "test-profile-account-api.mjs",
+      "test-profile-account-api.mjs: account profile editor and preference sync UI"
     ],
     "integration": [
       "test-platform-architecture-contract.mjs",
       "test-route-registry.mjs",
       "test-api-route-method-matrix.mjs",
-      "test-profile-account-api.mjs"
+      "test-profile-account-api.mjs",
+      "Account page profile PUT and settings preference GET/PUT integration"
     ],
     "isolation": [
       "test-authorization-ownership-matrix.mjs"
