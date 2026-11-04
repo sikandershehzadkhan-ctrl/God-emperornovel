@@ -3,7 +3,7 @@ import { spawnSync } from "node:child_process";
 import { readFileSync } from "node:fs";
 import { completePasswordReset, PASSWORD_RESET_COMPLETION_SQL } from "../src/password-reset-store.mjs";
 
-const migration = readFileSync(new URL("../migrations/0009_password_reset_tokens.sql", import.meta.url), "utf8") + readFileSync(new URL("../migrations/0011_password_reset_email_snapshot.sql", import.meta.url), "utf8");
+const migration = readFileSync(new URL("../migrations/0036_password_reset_tokens.sql", import.meta.url), "utf8") + readFileSync(new URL("../migrations/0038_password_reset_email_snapshot.sql", import.meta.url), "utf8");
 assert.equal(PASSWORD_RESET_COMPLETION_SQL.length, 4);
 const valid = { tokenHash: "A".repeat(43), passwordHash: "pbkdf2-sha256$120000$" + "B".repeat(22) + "$" + "C".repeat(43), now: "2026-11-02T12:00:00.000Z" };
 let prepared = [];
