@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
   "sourceBranch": "integration/route-registry-current-main-2026-11-04",
-  "sourceBlob": "c3edc5f812f8abae4fd8cc5d3ac790612f004463",
+  "sourceBlob": "0bdd43f515ec9766d7e4ffafd4caa216c3606398",
   "auditDate": "2026-11-04",
   "scope": "Partial handler-level review of current main source snapshot. Static inspection only; no full authorization certification, live D1 concurrency proof, or browser/runtime isolation proof.",
   "reviewedRouteCount": 40,
@@ -503,9 +503,9 @@
     {
       "id": "AUTH-009",
       "severity": "high",
-      "status": "needs-product-and-schema-decision",
-      "detail": "The current rating API accepts whole-number ratings from 1 to 5 while product requirements specify 1 to 10. The dispatcher also contains a duplicate legacy POST /api/rating handler with inconsistent eligibility checks.",
-      "action": "Inventory schema constraints, UI controls, stored ratings and consumers; choose a canonical 1-10 migration/normalization plan; remove the duplicate handler only with regression tests. Do not widen the API bound without migration."
+      "status": "partially-mitigated-rating-migration-pending",
+      "detail": "The duplicate legacy POST /api/rating handler has been removed; a regression test now requires exactly one GET and one POST handler and checks publication/rights eligibility. The active API and ratings table still enforce a 1–5 scale, while the product contract requires 1–10. The ten-point migration files 0034/0035 exist on the separate profile-identity branch, but this current-main integration branch does not yet contain migrations 0012–0033, so importing 0034/0035 now would create a broken migration sequence.",
+      "action": "First reconcile and validate the complete canonical migration chain 0012–0035 on current main. Then port the 1–5 to 1–10 data-preserving rebuild, update runtime schema, both rating API paths, reader control, catalog thresholds, all display surfaces and source/served assets, and test legacy-data conversion before any D1 application."
     },
     {
       "id": "AUTH-010",
