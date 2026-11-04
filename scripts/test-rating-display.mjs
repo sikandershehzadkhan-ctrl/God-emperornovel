@@ -12,9 +12,11 @@ const baseline = fs.readFileSync('migrations/0034_ratings_baseline.sql', 'utf8')
 const migration = fs.readFileSync('migrations/0035_ten_point_ratings.sql', 'utf8');
 
 assert.equal(source, served, 'Editable app source and served runtime must remain identical');
-const match = source.match(/function ratingText\\(value\\)\\s*\\{[\\s\\S]*?\\}/);
-assert.ok(match, 'A shared truthful ten-point rating formatter must exist');
-const ratingText = vm.runInNewContext(match[0] + '; ratingText');
+const start = source.indexOf('function ratingText(value){');
+assert.ok(start >= 0, 'A shared truthful ten-point rating formatter must exist');
+const end = source.indexOf('}', start);
+assert.ok(end > start, 'Rating formatter must be complete');
+const ratingText = vm.runInNewContext(source.slice(start, end + 1) + '; ratingText');
 const cases = [
   [10, '10/10'], [9.6, '10/10'], [8.4, '8/10'], ['2.2', '2/10'],
   [1, '1/10'], [null, 'Not rated'], [undefined, 'Not rated'], [0, 'Not rated'],
@@ -22,11 +24,11 @@ const cases = [
 ];
 for (const [value, expected] of cases) assert.equal(ratingText(value), expected, 'Unexpected display for ' + String(value));
 
-assert.ok((source.match(/ratingText\\(n\\.rating\\)/g) || []).length >= 7, 'All public rating surfaces must use the shared formatter');
+assert.ok((source.split('ratingText(n.rating)').length - 1) >= 7, 'All public rating surfaces must use the shared formatter');
 assert.ok(!source.includes('Number(n.rating||0).toFixed(1)'), 'Missing ratings must never render as fabricated 0.0 values');
 assert.ok(source.includes('<option value="8">8+</option><option value="6">6+</option><option value="4">4+</option>'), 'Catalog minimum rating filter must use ten-point thresholds');
 assert.ok(worker.includes('rating INTEGER NOT NULL CHECK(rating BETWEEN 1 AND 10)'), 'Runtime schema must enforce the ten-point scale');
-assert.ok((worker.match(/rating>10/g) || []).length === 2, 'Both rating write paths must enforce the ten-point upper bound');
+assert.equal((worker.match(/rating>10/g) || []).length, 2, 'Both rating write paths must enforce the ten-point upper bound');
 assert.ok(worker.includes('Rating must be a whole number from 1 to 10'), 'Rating API must reject fractions and out-of-range values');
 assert.ok(island.includes('[1, 2, 3, 4, 5, 6, 7, 8, 9, 10]'), 'Reader rating control must offer ten whole-number choices');
 assert.ok(island.includes('Your rating: {selected}/10') && island.includes('"Not rated yet"'), 'Rating summary must use /10 and a truthful empty state');
