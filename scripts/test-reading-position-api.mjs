@@ -20,4 +20,26 @@ assert.ok(post.includes("},409)"),"stale writes must return conflict");
 assert.ok(post.includes("n.rights_status IN ('original','public_domain','licensed','authorized')"),"only rights-eligible novels may receive progress writes");
 assert.ok(post.includes("c.publication_status='published' AND n.publication_status='published'"),"only published chapters may receive progress writes");
 assert.ok(post.includes("WHERE user_id=? AND novel_id=?"),"conflict response must be scoped to the session owner");
-console.log("PASS: reader progress schema, session ownership, rights/publication eligibility, CSRF, rate limit and optimistic concurrency.");
+
+const client=fs.readFileSync("public/app.js","utf8");
+const served=fs.readFileSync("public/app-17.23.0.js","utf8");
+assert.equal(client,served,"canonical and versioned application bundles must remain byte-identical");
+assert.ok(client.includes("/api/reading-position?novel_id="),"reader must retrieve server progress");
+assert.ok(client.includes("/api/reading-position',{method:'POST'"),"reader must save progress to the server");
+assert.ok(client.includes("expected_revision:progressRevision"),"writes must use optimistic revision checks");
+assert.ok(client.includes("setTimeout(()=>saveProgress"),"autosave must be debounced");
+assert.ok(client.includes("window.addEventListener('online',async()=>{await readProgress();"),"reader must recover after initially offline startup");
+assert.ok(client.includes("readerProgress:'+id"),"local progress cache must remain available offline");
+assert.ok(client.includes("readerProgress:'+id+':account:'+encodeURIComponent(progressAccount)"),"authenticated local progress cache must be isolated by account");
+assert.ok(client.includes("if(!me.user){progressAccount=null;try{sessionStorage.removeItem('imperialReaderAccount')}catch{}progressCacheKey='readerProgress:'+id"),"legacy local progress must be selected only after the server confirms an anonymous session and clears prior tab identity");
+assert.ok(client.includes("sessionStorage.setItem('imperialReaderAccount',progressAccount)"),"last verified account must be retained per tab for offline cache restore");
+assert.ok(client.includes("sessionStorage.getItem('imperialReaderAccount')"),"authenticated local cache must restore after offline reload");
+assert.ok(client.includes("readerProgressPending:'+id"),"offline writes must be retained as pending progress");
+assert.ok(client.includes("Number(pending.expected_revision)===progressRevision"),"pending progress may only replay when the server revision still matches its base revision");
+assert.ok(client.includes("progressSync='conflict'"),"stale offline progress must remain a conflict rather than being blindly replayed");
+assert.ok(client.includes("pendingSyncedForCurrentChapter"),"a just-replayed offline position must not be overwritten by the pre-replay server snapshot");
+assert.ok(client.includes("if(progressAccount&&progressSync==='offline')retainPendingProgress(pct)"),"scrolling after a revision conflict must not rewrite the stale pending base revision");
+assert.ok(client.includes("sessionStorage.removeItem('imperialReaderAccount')"),"logout must clear the tab-scoped remembered account");
+assert.ok(client.includes("if(!progressAccount||progressSync!=='synced')return"),"anonymous/offline sessions must not issue authenticated writes");
+
+console.log("PASS: reader progress API and browser client, including session ownership, optimistic concurrency, bundle parity and offline fallback.");

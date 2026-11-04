@@ -6,13 +6,16 @@
     "docs/architecture/feature-contracts/"
   ],
   "sharedSurfaces": [
-    "src/index.js",
-    "public/app.js",
-    "public/app-17.23.0.js",
-    "public/index.html",
-    "public/imperial-design-foundation.css",
     "migrations/",
     "package.json",
+    "public/*.css",
+    "public/*.js",
+    "public/*.webmanifest",
+    "public/app-17.23.0.js",
+    "public/app.js",
+    "public/imperial-design-foundation.css",
+    "public/index.html",
+    "src/index.js",
     "wrangler.toml"
   ],
   "dependencies": [
@@ -31,7 +34,12 @@
     "Existing canonical route set; update registry for behavior changes"
   ],
   "apiContracts": [
-    "Existing API contracts; update method and authorization inventories for behavior changes"
+    "Existing API contracts; update method and authorization inventories for behavior changes",
+    "GET /api/profile returns current session user's profile and private stats",
+    "PUT /api/profile updates only session u.id after strict field validation",
+    "GET /api/account/preferences returns validated owner preferences or defaults",
+    "PUT /api/account/preferences updates only session u.id after strict allowlist validation",
+    "GET /api/public-profile/:username exposes only public, non-banned profile projection and opt-in aggregate stats"
   ],
   "dataEntities": [
     "Existing canonical D1 entities only; no duplicate ledgers or parallel account-deletion store"
@@ -68,17 +76,34 @@
       "test-account-identity-policy-isolated.mjs",
       "test-account-preferences-policy.mjs",
       "test-media-upload-policy-isolated.mjs",
-      "test-reading-position-api.mjs"
+      "test-reading-position-api.mjs",
+      "test-reading-position-api.mjs (API and browser client integration assertions)",
+      "test-profile-account-api.mjs",
+      "test-profile-account-api.mjs: account profile editor and preference sync UI",
+      "test-creator-ownership-policy.mjs",
+      "test-comic-author-ui.mjs: chapter publication and edit policy guards"
     ],
     "integration": [
       "test-platform-architecture-contract.mjs",
       "test-route-registry.mjs",
       "test-api-route-method-matrix.mjs",
       "reader progress schema and API regression",
-      "integration pull request validation"
+      "integration pull request validation",
+      "Reader browser GET/POST progress integration",
+      "Debounced autosave and reconnect recovery",
+      "Canonical/versioned reader bundle parity",
+      "Owner-scoped profile and account-preference API regression",
+      "Public profile visibility and opt-in disclosure regression",
+      "Account page profile PUT and settings preference GET/PUT integration",
+      "Account preference restoration and debounced cross-device synchronization",
+      "Local Wrangler Worker and D1 account/reader isolation integration",
+      "test-pr-shared-surface-lineage.mjs: enforce linear PR ancestry for overlapping serialized files",
+      "Local D1 Author Studio ownership, chapter route parsing, parent publication and rights-evidence integration"
     ],
     "isolation": [
-      "test-authorization-ownership-matrix.mjs"
+      "test-authorization-ownership-matrix.mjs",
+      "test-worker-account-reader-isolation.mjs",
+      "Author A cannot list or edit Author B novels and chapters"
     ],
     "buildCommands": [
       "npm run build",
@@ -129,7 +154,7 @@
     "repository-operations",
     "rights"
   ],
-  "changeSummary": "Consolidates current-main platform/security foundations with homepage SSR and the six-theme experience, while introducing canonical ownership, dependency, migration and integration governance. Adds mandatory isolated identity and media policy validation gates without changing Worker routes, UI bundles or D1 schema. Adds owner-scoped reader progress API and ensures architecture/source CI runs on nested integration PRs.",
+  "changeSummary": "Consolidates current-main platform/security foundations with homepage SSR and the six-theme experience, while introducing canonical ownership, dependency, migration and integration governance. Adds mandatory isolated identity and media policy validation gates without changing Worker routes, UI bundles or D1 schema. Adds owner-scoped reader progress API and ensures architecture/source CI runs on nested integration PRs. Adds the reader browser client integration to the existing owner-scoped reading-position API and mandatory regression coverage. Integrates owner-scoped profile and account-preference APIs and a visibility-filtered public profile projection into the same canonical Worker as reader progress. Adds the account profile editor and cross-device settings synchronization while preserving the reader-progress browser integration. Adds a PR-lineage gate that serializes overlapping Worker, browser bundle, identity, migration, route inventory, workflow and release-configuration changes. Extends serialized surface protection to every top-level served CSS, JavaScript and webmanifest asset so versioned style/service-worker files cannot diverge silently. Hardens Author Studio chapter editing and publication by enforcing parent publication state, rights evidence, comic page-sequence validation on edits, safe integer chapter costs and verified chapter-route identifier parsing.",
   "acceptanceCriteria": [
     "Every changed repository path resolves to one registered owner",
     "Dependency graph is acyclic and every edge points from consumer to lower-level dependency",
@@ -141,6 +166,53 @@
     "Identity and media policy regressions are executed by the mandatory build.",
     "No route, API, UI bundle, media storage binding or migration is introduced by the policy-only slice.",
     "Reader progress API is session-owned, rate-limited and revision-guarded.",
-    "Architecture governance and Cloudflare source validation run on integration-target pull requests."
+    "Architecture governance and Cloudflare source validation run on integration-target pull requests.",
+    "Reader browser retrieves and autosaves progress through the session-owned API.",
+    "Canonical and served versioned reader bundles remain byte-identical.",
+    "Reader progress client regression assertions execute in the existing mandatory build test.",
+    "Profile and preference APIs bind private reads and writes exclusively to the authenticated session owner.",
+    "Public profile projection excludes private account fields and discloses aggregate reading statistics only by explicit opt-in.",
+    "Profile API routes and authorization evidence are fingerprinted against the combined Worker source.",
+    "No additional migration is introduced; existing profile and preference columns are reused.",
+    "Private GET/PUT operations bind only to authenticated session owner.",
+    "Public profile never exposes email, Crown balance or private data.",
+    "Reading stats are disclosed only when show_reading_stats is enabled.",
+    "No migration is added or applied.",
+    "Route and authorization evidence fingerprints match exact Worker source.",
+    "Account editor saves validated profile fields without allowing role or owner selection.",
+    "Settings restore account preferences and debounce writes while retaining local-first anonymous behavior.",
+    "Public/private selection restores correctly from the saved profile.",
+    "Service worker installs a new cache namespace for the changed browser bundle.",
+    "Service-worker cache namespace changes when the browser application bundle changes.",
+    "A fresh local D1 database proves profile, preferences and reading progress are isolated between two authenticated accounts.",
+    "Cross-origin writes, stale progress revisions, rights-ineligible chapters and logout revocation are exercised against the local Worker runtime.",
+    "Open pull requests that change the same serialized shared surface must form one ancestor/descendant integration chain; divergent overlapping branches fail Architecture Governance.",
+    "All directly served browser JavaScript, CSS and webmanifest assets are included in serialized shared-surface lineage checks.",
+    "Author chapter publication requires a published parent novel and rights evidence for non-original rights.",
+    "Chapter publication route extracts the chapter identifier from the dynamic path segment.",
+    "Comic chapter content is revalidated on both create and edit.",
+    "Chapter ticket costs are non-negative safe integers; fractional values are rejected.",
+    "Author Studio cross-account draft and chapter ownership isolation is exercised against local D1."
+  ],
+  "sharedSurfaceSerialization": [
+    ".github/workflows/",
+    "docs/architecture/IMPERIAL-API-ROUTE-METHOD-MATRIX-01N-37.json",
+    "docs/architecture/IMPERIAL-AUTHORIZATION-OWNERSHIP-MATRIX-01N-38.json",
+    "docs/architecture/IMPERIAL-ROUTE-REGISTRY-01N.json",
+    "docs/architecture/decisions/",
+    "docs/architecture/feature-contracts/platform-integration-governance.json",
+    "migrations/",
+    "package-lock.json",
+    "package.json",
+    "public/*.css",
+    "public/*.js",
+    "public/*.webmanifest",
+    "public/app-*.js",
+    "public/app.js",
+    "public/index.html",
+    "public/sw.js",
+    "src/identity/",
+    "src/index.js",
+    "wrangler.toml"
   ]
 }
