@@ -1,0 +1,108 @@
+{
+  "featureId": "platform-integration-governance",
+  "domainOwner": "platform-architecture",
+  "technicalIntegrator": "platform-integrator",
+  "ownedPaths": [
+    "docs/architecture/feature-contracts/"
+  ],
+  "sharedSurfaces": [
+    "src/index.js",
+    "public/app.js",
+    "public/app-17.23.0.js",
+    "public/index.html",
+    "public/imperial-design-foundation.css",
+    "migrations/",
+    "package.json",
+    "wrangler.toml"
+  ],
+  "dependencies": [
+    "identity-security",
+    "experience-home-discovery",
+    "catalog-search-taxonomy",
+    "reader-library-progress",
+    "creator-author-studio",
+    "community-profiles",
+    "commerce-ledgers-payments",
+    "admin-moderation-operations",
+    "ai-trend-factory",
+    "omniportal-connectors"
+  ],
+  "routes": [
+    "Existing canonical route set; update registry for behavior changes"
+  ],
+  "apiContracts": [
+    "Existing API contracts; update method and authorization inventories for behavior changes"
+  ],
+  "dataEntities": [
+    "Existing canonical D1 entities only; no duplicate ledgers or parallel account-deletion store"
+  ],
+  "migrationPlan": {
+    "required": true,
+    "proposedNumbers": [
+      "0036-0045 already reconciled on this branch"
+    ],
+    "canonicalEntityReuse": "Reuse canonical account_closure_requests and current-main data model",
+    "backwardCompatibility": "Preserve existing data and append only to globally sequenced migration history",
+    "rollbackOrForwardRepair": "No production migration executed; use migration-specific forward repair for any future applied schema change"
+  },
+  "uiLifecycle": {
+    "shellOwner": "experience-runtime",
+    "ssrBehavior": "Worker emits escaped rights-eligible homepage markup; client preserves app root and hands off temporary SSR shell",
+    "clientBootBehavior": "One browser boot owner; no duplicate global navigation or destructive root reset",
+    "servedBundleParity": "public/app.js and public/app-17.23.0.js remain byte-identical"
+  },
+  "privacySecurity": {
+    "authentication": "Existing session authority remains canonical",
+    "authorization": "Authorization ownership matrix is authoritative for reviewed entries; unreviewed routes remain pending",
+    "ownerScoping": "User-owned records scoped by authenticated session owner",
+    "csrf": "Existing write-route policy remains in force",
+    "rateAndSizeLimits": "Preserve bounded route inputs and API method restrictions",
+    "rightsAndPrivacy": "Homepage shelves include published rights-eligible novels only"
+  },
+  "tests": {
+    "unit": [
+      "test-homepage-ssr-integration.mjs",
+      "test-design-foundation-integration.mjs",
+      "test-api-read-method-guards.mjs"
+    ],
+    "integration": [
+      "test-platform-architecture-contract.mjs",
+      "test-route-registry.mjs",
+      "test-api-route-method-matrix.mjs"
+    ],
+    "isolation": [
+      "test-authorization-ownership-matrix.mjs"
+    ],
+    "buildCommands": [
+      "npm run build",
+      "npm run check:cloudflare-readiness"
+    ]
+  },
+  "rollout": {
+    "flags": [
+      "SSR served after merge and deployment through normal release process"
+    ],
+    "stagingSteps": [
+      "Pass all CI workflows",
+      "Review exact PR diff",
+      "Verify staging response and client handoff before production"
+    ]
+  },
+  "rollback": {
+    "codeRollback": "Revert integration commit/PR before deployment",
+    "dataRollbackOrForwardRepair": "No D1 production migration executed by this PR",
+    "monitoringSignals": [
+      "Homepage HTML response",
+      "Client boot errors",
+      "Route validation",
+      "D1 query failures",
+      "Asset parity"
+    ]
+  },
+  "collisionReview": {
+    "duplicateRoutes": "Checked against canonical route registry",
+    "duplicateEntities": "Checked against canonical schema and migration collision register",
+    "migrationAllocation": "0036-0045 reconciled against existing canonical sequence",
+    "sharedSurfaceOwners": "Declared in ownership map and integration contract"
+  }
+}
