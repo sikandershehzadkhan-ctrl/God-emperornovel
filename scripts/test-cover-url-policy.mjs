@@ -41,6 +41,6 @@ const worker = readFileSync(new URL("../src/index.js", import.meta.url), "utf8")
 const client = readFileSync(new URL("../public/app.js", import.meta.url), "utf8");
 assert.equal((worker.match(/normalizeCoverUrl\\(/g) || []).length, 4, "author/admin create and update routes must all validate covers");
 assert.match(worker, /img-src 'self' data:/, "CSP must restrict images to same-origin and data URLs");
-assert.doesNotMatch(worker, /img-src[^"]*https:/, "CSP must not permit arbitrary remote image hosts");
+assert.match(worker, /test\\(p\\)\\?" https:"/ , "only comic reader routes may opt into HTTPS page images");
 assert.match(client, /story-cover-placeholder\\.svg/, "client must fall back to a safe local placeholder");
 console.log("Cover URL policy and integration tests passed.");
