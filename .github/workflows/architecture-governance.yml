@@ -6,6 +6,12 @@ on:
 permissions:
   contents: read
   pull-requests: read
+
+# Serialize repository-wide lineage scans so concurrent PR pushes do not
+# exhaust the installation token while each scan enumerates open PRs.
+concurrency:
+  group: imperial-architecture-governance-${{ github.repository }}
+  cancel-in-progress: false
 jobs:
   architecture-governance:
     runs-on: ubuntu-latest
