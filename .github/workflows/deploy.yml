@@ -24,6 +24,7 @@ concurrency:
 jobs:
   deploy:
     # HARD RELEASE STOP: production D1 state has not been audited against canonical migrations 0001-0035.
+# Any future re-enable must still require inputs.confirm_production_deploy == 'true' after the ledger audit.
     # Re-enable only in a reviewed change after the remote ledger, backup and one-time data migrations are reconciled.
     if: ${{ false }}
     runs-on: ubuntu-latest
