@@ -6,7 +6,7 @@ const checks={
  'runtime schema is versioned forward to v2':schema.includes('runtime_feature_schema_version')&&schema.includes("VALUES('runtime_feature_schema_version','2')"),
  'reading positions are unique per user and novel':schema.includes('PRIMARY KEY(user_id,novel_id)'),
  'canonical reading position uses percent plus optimistic revision, not the branch-local progress_percent column':schema.includes('percent REAL NOT NULL')&&schema.includes('revision INTEGER NOT NULL')&&!schema.includes('progress_percent'),
- 'no competing numbered reading_positions migration exists':!migrations.some(name=>/^\\d{4}_reading_positions\\.sql$/.test(name)),
+ 'no competing numbered reading_positions migration exists':!migrations.some(name=>name.endsWith('_reading_positions.sql')&&name.slice(0,4).split('').every(char=>char>='0'&&char<='9')),
  'reading positions validate chapter and percentage bounds':schema.includes('CHECK(chapter_number > 0)')&&schema.includes('CHECK(percent >= 0 AND percent <= 100)'),
  'reading positions cascade only with their owning account and novel':schema.includes('FOREIGN KEY(user_id) REFERENCES users(id) ON DELETE CASCADE')&&schema.includes('FOREIGN KEY(novel_id) REFERENCES novels(id) ON DELETE CASCADE'),
  'GET is scoped to the authenticated user':worker.includes('WHERE rp.user_id=? AND rp.novel_id=?'),
