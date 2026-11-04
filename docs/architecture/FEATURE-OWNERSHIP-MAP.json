@@ -227,6 +227,25 @@
         "wrangler.toml"
       ],
       "dataOwnership": "authorized provider metadata and connector-scoped credentials"
+    },
+    {
+      "id": "platform-integration-governance",
+      "owner": "platform-architecture",
+      "paths": [
+        "docs/architecture/feature-contracts/"
+      ],
+      "dependencies": [
+        "all-domain-contracts"
+      ],
+      "sharedSurfaces": [
+        "src/index.js",
+        "public/app.js",
+        "public/index.html",
+        "migrations/",
+        "package.json",
+        "wrangler.toml"
+      ],
+      "dataOwnership": "owns integration contracts and architecture metadata only; does not own product data"
     }
   ],
   "requiredContractFields": [
