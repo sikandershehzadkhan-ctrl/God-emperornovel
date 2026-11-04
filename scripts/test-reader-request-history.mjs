@@ -1,0 +1,13 @@
+import assert from "node:assert/strict";
+import { readFile } from "node:fs/promises";
+const source=await readFile(new URL("../src/index.js",import.meta.url),"utf8");
+const route=source.match(/if\(p==="\/api\/requests"&&m==="GET"\)\{([^\n]+)\}/);
+assert.ok(route,"reader request endpoint missing");
+const body=route[1];
+assert.ok(body.includes("need(u)"),"request history must require authentication");
+assert.ok(body.includes("WHERE user_id=? ORDER BY id DESC LIMIT 20"),"history must be scoped to the authenticated reader and bounded");
+assert.ok(body.includes(".bind(u.id).all()"),"history must bind the authenticated reader ID");
+assert.ok(body.includes("source_host,cost,status,created_at"),"history must return only safe request metadata");
+assert.ok(body.includes("Promise.all"),"weekly usage and history should be fetched together");
+assert.ok(body.includes("requests:history.results||[]"));
+console.log("PASS: reader request history is authenticated, user-scoped, bounded to 20, and returns metadata only.");
