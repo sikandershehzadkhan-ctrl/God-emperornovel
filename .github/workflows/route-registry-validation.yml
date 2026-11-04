@@ -2,30 +2,11 @@ name: Validate Imperial Novel Route Registry
 
 on:
   pull_request:
+    # Run the security and route contract suite for every PR. Path filters
+    # previously caused silent gaps when shared files changed indirectly.
     branches:
       - main
       - "integration/**"
-    paths:
-      - "src/index.js"
-      - "public/app.js"
-      - "public/app-*.js"
-      - "docs/architecture/IMPERIAL-ROUTE-REGISTRY-01N.json"
-      - "docs/architecture/IMPERIAL-API-ROUTE-METHOD-MATRIX-01N-37.json"
-      - "scripts/test-route-registry.mjs"
-      - "scripts/test-api-route-method-matrix.mjs"
-      - "docs/architecture/IMPERIAL-AUTHORIZATION-OWNERSHIP-MATRIX-01N-38.json"
-      - "scripts/test-authorization-ownership-matrix.mjs"
-      - "scripts/test-admin-account-comment-safety.mjs"
-      - "scripts/test-ai-project-actor-ownership.mjs"
-      - "scripts/test-api-csrf-taxonomy-safety.mjs"
-      - "scripts/test-community-taxonomy-security.mjs"
-      - "scripts/test-detail-api-method-guards.mjs"
-      - "scripts/test-public-vote-privacy.mjs"
-      - "scripts/test-readonly-api-method-guards.mjs"
-      - "scripts/test-rating-handler-canonical.mjs"
-      - "scripts/test-admin-account-d1.py"
-      - "scripts/test-donation-approval-d1.py"
-      - ".github/workflows/route-registry-validation.yml"
   push:
     # Integration branches are validated by pull_request; running both events
     # created duplicate checks and duplicate failure/cancellation emails.
