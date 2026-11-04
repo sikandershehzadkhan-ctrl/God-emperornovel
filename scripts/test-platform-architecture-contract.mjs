@@ -59,7 +59,7 @@ if(fs.existsSync(contractDir)){
  for(const name of fs.readdirSync(contractDir).filter(x=>x.endsWith(".json"))){
   const contract=JSON.parse(fs.readFileSync(path.join(contractDir,name),"utf8"));
   assert.equal(name,contract.featureId+".json","feature contract filename must match featureId");
-  assert.ok(ownership.domains.some(d=>d.id===contract.featureId),"feature contract has no registered domain owner: "+contract.featureId);
+  assert.ok(ownership.domains.some(d=>d.id===contract.domainOwner||d.owner===contract.domainOwner),"feature contract has no registered domain owner: "+contract.domainOwner);
   for(const field of ownership.requiredContractFields)assert.ok(Object.hasOwn(contract,field),"feature contract "+name+" missing "+field);
  }
 }
