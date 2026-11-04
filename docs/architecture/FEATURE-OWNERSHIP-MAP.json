@@ -289,6 +289,27 @@
         "package.json"
       ],
       "dataOwnership": "Automated regression tests only."
+    },
+    {
+      "id": "reader-progress-api",
+      "owner": "platform-kernel",
+      "paths": [
+        "src/domains/reader-progress-api/"
+      ]
+    },
+    {
+      "id": "reader-progress-schema",
+      "owner": "platform-data",
+      "paths": [
+        "src/domains/reader-progress-schema/"
+      ]
+    },
+    {
+      "id": "integration-pull-request-validation",
+      "owner": "delivery-platform",
+      "paths": [
+        ".github/workflows/"
+      ]
     }
   ],
   "requiredContractFields": [

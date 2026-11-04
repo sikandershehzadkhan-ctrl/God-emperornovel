@@ -1,0 +1,90 @@
+{
+  "featureId": "integration-pull-request-validation",
+  "domainOwner": "delivery-platform",
+  "technicalIntegrator": "platform-architecture",
+  "ownedPaths": [
+    ".github/workflows/architecture-governance.yml",
+    ".github/workflows/validate-cloudflare-source.yml"
+  ],
+  "sharedSurfaces": [],
+  "dependencies": [
+    "delivery-platform",
+    "platform-quality",
+    "platform-architecture"
+  ],
+  "routes": [],
+  "apiContracts": [
+    "No application API changes."
+  ],
+  "dataEntities": [
+    "No database changes."
+  ],
+  "migrationPlan": {
+    "required": false,
+    "proposedNumbers": [],
+    "canonicalEntityReuse": "No schema or data changes.",
+    "backwardCompatibility": "Existing main pull-request and push validation behavior is retained; integration-target pull requests gain additional checks.",
+    "rollbackOrForwardRepair": "Revert the two workflow branch-filter changes."
+  },
+  "uiLifecycle": {
+    "shellOwner": "experience-shell",
+    "ssrBehavior": "No SSR changes.",
+    "clientBootBehavior": "No client boot changes.",
+    "servedBundleParity": "No browser assets changed."
+  },
+  "privacySecurity": {
+    "authentication": "No application authentication changes.",
+    "authorization": "No application authorization changes.",
+    "ownerScoping": "No data access changes.",
+    "csrf": "No request handler changes.",
+    "rateAndSizeLimits": "CI-only change."
+  },
+  "tests": {
+    "unit": [
+      "Workflow YAML reviewed"
+    ],
+    "integration": [
+      "Confirm pull_request branches include main and integration/**"
+    ],
+    "isolation": [],
+    "buildCommands": [
+      "Architecture Governance",
+      "Cloudflare Source Validation",
+      "Route Registry",
+      "Graphify"
+    ]
+  },
+  "rollout": {
+    "flags": [
+      "No runtime feature flags."
+    ],
+    "stagingSteps": [
+      "Require all four workflows to pass on integration PR heads."
+    ]
+  },
+  "rollback": {
+    "codeRollback": "Revert the workflow filter changes.",
+    "dataRollbackOrForwardRepair": "Not applicable.",
+    "monitoringSignals": [
+      "Workflow run presence on every integration PR"
+    ]
+  },
+  "collisionReview": {
+    "duplicateRoutes": "None.",
+    "duplicateEntities": "None.",
+    "migrationAllocation": "None.",
+    "sharedSurfaceOwners": "Workflow paths are delivery-platform-owned."
+  },
+  "affectedDomains": [
+    "delivery-platform",
+    "platform-architecture",
+    "platform-quality"
+  ],
+  "changeSummary": "Extends architecture and Cloudflare source validation to integration-target pull requests, preventing skipped validation in nested integration PRs.",
+  "acceptanceCriteria": [
+    "Main pull requests continue to run both workflows.",
+    "Integration-target pull requests run both workflows.",
+    "No push-trigger duplication is introduced.",
+    "All workflows pass on the exact PR head."
+  ]
+}

@@ -1,0 +1,102 @@
+{
+  "featureId": "reader-library-progress",
+  "domainOwner": "experience-shell",
+  "technicalIntegrator": "reader",
+  "ownedPaths": [
+    "public/app.js",
+    "public/app-17.23.0.js",
+    "public/sw.js"
+  ],
+  "sharedSurfaces": [
+    "public/app.js",
+    "public/app-*.js"
+  ],
+  "dependencies": [
+    "identity",
+    "reader",
+    "platform-kernel"
+  ],
+  "routes": [],
+  "apiContracts": [
+    "Uses authenticated GET/POST /api/reading-position; owner remains session-derived and expected_revision is server-issued."
+  ],
+  "dataEntities": [
+    "Existing reading_positions table only; local storage remains an offline/anonymous cache."
+  ],
+  "migrationPlan": {
+    "required": false,
+    "proposedNumbers": [],
+    "canonicalEntityReuse": "Reuses the existing reading_positions table; no duplicate schema or numbered migration.",
+    "backwardCompatibility": "Anonymous readers retain local-only progress; authenticated readers use the server API when reachable.",
+    "rollbackOrForwardRepair": "Revert the browser integration and served bundle together; the additive API remains backward-compatible."
+  },
+  "uiLifecycle": {
+    "shellOwner": "experience-shell",
+    "ssrBehavior": "No SSR change.",
+    "clientBootBehavior": "Reader retrieves saved progress after chapter access, restores the current chapter percentage and debounces autosave.",
+    "servedBundleParity": "public/app.js and public/app-17.23.0.js remain byte-identical; service-worker install refreshes its precache."
+  },
+  "privacySecurity": {
+    "authentication": "The /api/me session result gates authenticated progress synchronization.",
+    "authorization": "All reads and writes are authorized by the Worker API.",
+    "ownerScoping": "Browser never supplies a user ID; the server derives the owner from the session.",
+    "csrf": "Uses same-origin requests and the Worker same-origin write guard.",
+    "rateAndSizeLimits": "Debounced writes are subject to server-side rate limits and input bounds."
+  },
+  "tests": {
+    "unit": [
+      "Reader progress API/client regression assertions in scripts/test-reading-position-api.mjs",
+      "Canonical and versioned bundle parity"
+    ],
+    "integration": [
+      "Authenticated GET restore and POST autosave wiring",
+      "Optimistic revision included in writes",
+      "Reconnect discovery after an initially offline load"
+    ],
+    "isolation": [
+      "No client-supplied account identifier; server API retains cross-account isolation."
+    ],
+    "buildCommands": [
+      "npm run build",
+      "node --check public/app.js"
+    ]
+  },
+  "rollout": {
+    "flags": [
+      "No new feature flag."
+    ],
+    "stagingSteps": [
+      "Pass all governed workflows on exact PR head.",
+      "Complete real browser tests with multiple accounts and devices before production deployment."
+    ]
+  },
+  "rollback": {
+    "codeRollback": "Revert the reader browser code and matching served bundle; preserve API compatibility.",
+    "dataRollbackOrForwardRepair": "No D1 mutation or rollback required.",
+    "monitoringSignals": [
+      "Reading-position API errors",
+      "409 revision conflicts",
+      "Reader resume and autosave failures"
+    ]
+  },
+  "collisionReview": {
+    "duplicateRoutes": "None; existing reading-position API is reused.",
+    "duplicateEntities": "None; existing reading_positions table is reused.",
+    "migrationAllocation": "No numbered migration.",
+    "sharedSurfaceOwners": "public/app.js is experience-shell-owned and changed with ADR-0005."
+  },
+  "affectedDomains": [
+    "reader",
+    "experience-shell",
+    "platform-kernel",
+    "platform-quality"
+  ],
+  "changeSummary": "Connects the reader interface to server-backed progress with debounced revision-guarded autosave and offline fallback.",
+  "acceptanceCriteria": [
+    "Server progress restores for the active chapter.",
+    "Autosaves are debounced and revision guarded.",
+    "Anonymous/offline reading remains functional.",
+    "A stale write is never blindly replayed.",
+    "Canonical and served bundles are byte-identical."
+  ]
+}
