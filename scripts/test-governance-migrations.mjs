@@ -92,6 +92,7 @@ export function validateMigrationInventory(currentEntries, baseEntries = [], cur
     count: current.length,
     baseCount: base.length,
     baseMax,
+    highestAllocatedNumber: Math.max(baseMax, reservations.reduce((max, x) => Math.max(max, x.number), 0)),
     added: addedMigrations.map(x => x.path),
     reservationCount: reservations.length,
     newReservations: newReservations.map(x => x.path)
@@ -154,7 +155,7 @@ if (process.argv.includes('--self-test')) {
   const currentPrNumber = Number(process.env.GOVERNANCE_PR_NUMBER);
   if (!Number.isInteger(currentPrNumber) || currentPrNumber < 1) fail('GOVERNANCE_PR_NUMBER is required; migration reservations must bind to the current pull request.');
   const result = validateMigrationInventory(currentEntries, baseEntries, currentReservations, baseReservations, currentPrNumber);
-  console.log('PASS: ' + result.count + ' migration files inventoried; ' + result.baseCount + ' base migrations are unchanged; highest allocated number is ' + result.baseMax + '.');
+  console.log('PASS: ' + result.count + ' migration files inventoried; ' + result.baseCount + ' base migrations are unchanged; highest allocated number is ' + result.highestAllocatedNumber + ' (base maximum ' + result.baseMax + ').');
   console.log('Immutable reservations: ' + result.reservationCount + '; new reservations: ' + (result.newReservations.join(', ') || 'none') + '.');
   if (result.added.length) console.log('Forward migrations: ' + result.added.join(', '));
   else console.log('No new migrations in this pull request.');
