@@ -68,14 +68,18 @@
       "test-account-identity-policy-isolated.mjs",
       "test-account-preferences-policy.mjs",
       "test-media-upload-policy-isolated.mjs",
-      "test-reading-position-api.mjs"
+      "test-reading-position-api.mjs",
+      "test-reading-position-api.mjs (API and browser client integration assertions)"
     ],
     "integration": [
       "test-platform-architecture-contract.mjs",
       "test-route-registry.mjs",
       "test-api-route-method-matrix.mjs",
       "reader progress schema and API regression",
-      "integration pull request validation"
+      "integration pull request validation",
+      "Reader browser GET/POST progress integration",
+      "Debounced autosave and reconnect recovery",
+      "Canonical/versioned reader bundle parity"
     ],
     "isolation": [
       "test-authorization-ownership-matrix.mjs"
@@ -129,7 +133,7 @@
     "repository-operations",
     "rights"
   ],
-  "changeSummary": "Consolidates current-main platform/security foundations with homepage SSR and the six-theme experience, while introducing canonical ownership, dependency, migration and integration governance. Adds mandatory isolated identity and media policy validation gates without changing Worker routes, UI bundles or D1 schema. Adds owner-scoped reader progress API and ensures architecture/source CI runs on nested integration PRs.",
+  "changeSummary": "Consolidates current-main platform/security foundations with homepage SSR and the six-theme experience, while introducing canonical ownership, dependency, migration and integration governance. Adds mandatory isolated identity and media policy validation gates without changing Worker routes, UI bundles or D1 schema. Adds owner-scoped reader progress API and ensures architecture/source CI runs on nested integration PRs. Adds the reader browser client integration to the existing owner-scoped reading-position API and mandatory regression coverage.",
   "acceptanceCriteria": [
     "Every changed repository path resolves to one registered owner",
     "Dependency graph is acyclic and every edge points from consumer to lower-level dependency",
@@ -141,6 +145,9 @@
     "Identity and media policy regressions are executed by the mandatory build.",
     "No route, API, UI bundle, media storage binding or migration is introduced by the policy-only slice.",
     "Reader progress API is session-owned, rate-limited and revision-guarded.",
-    "Architecture governance and Cloudflare source validation run on integration-target pull requests."
+    "Architecture governance and Cloudflare source validation run on integration-target pull requests.",
+    "Reader browser retrieves and autosaves progress through the session-owned API.",
+    "Canonical and served versioned reader bundles remain byte-identical.",
+    "Reader progress client regression assertions execute in the existing mandatory build test."
   ]
 }
