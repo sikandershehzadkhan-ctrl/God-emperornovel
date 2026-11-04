@@ -12,7 +12,9 @@
     { "id": "repository-governance", "paths": [".github/pull_request_template.md"] },
     { "id": "architecture-contracts", "paths": ["docs/architecture/"] },
     { "id": "governance-documentation", "paths": ["docs/governance/"] },
-    { "id": "governance-tooling", "paths": ["scripts/test-governance-"] }
+    { "id": "governance-ownership-validator", "paths": ["scripts/test-governance-ownership.mjs"] },
+    { "id": "governance-migration-validator", "paths": ["scripts/test-governance-migrations.mjs"] },
+    { "id": "governance-migration-collision-validator", "paths": ["scripts/test-governance-migration-collisions.mjs"] }
   ],
   "sharedSurfaceRule": "Every changed path must match exactly one owner. Any owned path change requires an ADR under docs/architecture/decisions/ or a feature contract under docs/architecture/feature-contracts/ in the same PR. Add a new owner before introducing a new path."
 }
