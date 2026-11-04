@@ -20,14 +20,15 @@ This register is the auditable closure checklist for consolidating Imperial Nove
 - That governance branch compares as 389 commits ahead of `main`, with 162 changed files. It must not be merged wholesale without decomposition and reconciliation.
 - The governance branch's migration collision register records a canonical migration chain and explicitly says no production D1 migration has been run for the described candidate work. Verify current mainline state before acting on any allocation in that register.
 
-## Open security and integrity blockers
+## Security and integrity issue disposition
 
-The following GitHub issues were confirmed as **open** during the audit. They remain release blockers until the fix is present on the canonical integration path and supported by reproducible tests.
+Issue #108 was re-verified against current `main` and closed as completed on 2026-11-04: the shared public-novel allowlist is wired into catalog, detail, made-for-you, recommendations and follows responses, with sentinel-based regression coverage. Its former finding is no longer an open blocker.
+
+The following GitHub issues were confirmed as **open** during the audit and remain blockers until the fix is present on the canonical integration path and supported by reproducible tests.
 
 | Issue | Required outcome |
 |---|---|
 | #107 Runtime bootstrap schema consistency | Runtime-created/bootstrap schema matches canonical D1 migrations and constraints; fresh-install and upgrade fixtures pass. |
-| #108 Public novel response allowlist | Public responses expose only explicitly approved fields; rights/review/internal metadata cannot leak. |
 | #109 Atomic AI generation claims | Concurrent requests cannot claim or execute the same generation job twice; idempotency and race tests pass. |
 | #110 Bookmark/history target validation | Targets are validated against visibility and ownership before writes; cross-user and unpublished-target tests pass. |
 | #111 Content Security Policy | Remove unsafe inline allowances where feasible; nonce/hash and real browser boot behavior are verified. |
@@ -64,7 +65,7 @@ Issue status must be refreshed immediately before closure. Closing an issue is n
 - [ ] Prove a deliberately invalid test fixture fails; prove a valid fixture passes.
 
 ### D. Security, privacy, and product integrity
-- [ ] Resolve and test issues #107-#115.
+- [ ] Resolve and test remaining open issues #107, #109-#115; #108 is closed after source and regression-test verification.
 - [ ] Test two separate accounts against reader progress, library, profile, author, payment, ticket, export, and admin boundaries.
 - [ ] Verify role separation and specialist approval boundaries.
 - [ ] Verify rate limits and financial mutations under concurrent requests.
@@ -91,4 +92,4 @@ Issue status must be refreshed immediately before closure. Closing an issue is n
 
 ## Current disposition
 
-**Governance closure is not complete.** This register establishes the current audit baseline and acceptance criteria. Branch protection settings, exhaustive branch classification, canonical migration replay, and production controls still require direct verification. The large shared-surface governance branch remains a source of candidate checks, not an approved merge unit.
+**Governance closure is not complete.** This register establishes the current audit baseline and acceptance criteria. Main branch protection is confirmed disabled and repository rulesets were empty at audit time; configuring enforceable protection requires repository administration access. Exhaustive branch classification, canonical migration replay, and production controls still require further verification. The large shared-surface governance branch remains a source of candidate checks, not an approved merge unit.
