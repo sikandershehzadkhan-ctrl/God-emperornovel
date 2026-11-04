@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
-  "sourceBranch": "integration/reader-profile-api-reconciled-17-76",
-  "sourceBlob": "9b88ca7e1b59fb8dd8a4c73f7f3c6bfa94295ab9",
+  "sourceBranch": "integration/author-chapter-publication-guards-17-82",
+  "sourceBlob": "e9d0820a26336b4656277154c99a1981421052f7",
   "auditDate": "2026-11-04",
   "scope": "Partial handler-level static review of current integration source snapshot. This revision rechecks the five authentication route-method entries introduced or changed in commit 106744a6e9124524c88b6f454bf4bbc98e81745f and preserves the prior 40 reviewed entries. No full authorization certification, live D1 concurrency proof, or browser/runtime isolation proof is claimed. The source-blob fingerprint was refreshed from the failing CI checkout after the catalog/recommendation Worker integration; the CI check computes the Git blob hash from the exact checked-out file bytes. CI computes the source fingerprint from the exact checked-out Worker bytes; the recorded value is aligned to that runtime fingerprint. This fingerprint is the value computed by the authorization-matrix CI assertion from the checked-out Worker bytes. Fingerprint synchronized to the exact Worker Git blob SHA reported for this branch snapshot. Fingerprint refreshed from the Git tree blob SHA for the current Worker source snapshot. Fingerprint synchronized to the latest Worker Git tree blob after the leaderboard zero-activity filter.",
   "reviewedRouteCount": 50,
@@ -180,9 +180,11 @@
       "method": "GET|POST",
       "access": "author or admin",
       "ownerRule": "loads parent novel and compares owner_user_id unless admin",
-      "evidence": "GET and POST both load parent novel and compare owner_user_id",
+      "evidence": "GET and POST both load parent novel and compare owner_user_id; POST validates comic page sequence and safe integer ticket cost",
       "tests": [
-        "author A cannot read/create chapters under author B novel"
+        "author A cannot read/create chapters under author B novel",
+        "fractional and negative chapter costs rejected",
+        "comic chapter page-sequence policy enforced on create"
       ]
     },
     {
@@ -190,9 +192,11 @@
       "method": "PATCH",
       "access": "author or admin",
       "ownerRule": "joins chapter to novel and compares parent owner_user_id",
-      "evidence": "chapter/novel join; explicit owner comparison before update",
+      "evidence": "chapter/novel join; explicit owner comparison; Number.isSafeInteger non-negative ticket cost; validateComicChapterContent on comic edits",
       "tests": [
-        "author A cannot edit author B chapter"
+        "author A cannot edit author B chapter",
+        "comic chapter edits cannot bypass page-sequence validation",
+        "fractional chapter ticket cost rejected"
       ]
     },
     {
@@ -200,10 +204,14 @@
       "method": "POST",
       "access": "author or admin",
       "ownerRule": "parent owner check plus novel rights eligibility",
-      "evidence": "author(u); joined owner check; rights-status allowlist",
+      "evidence": "author(u); chapter id from route segment 4; joined parent owner check; canPublishChapter requires parent publication_status='published', eligible rights status and evidence for non-original rights",
       "tests": [
         "author A cannot publish author B chapter",
-        "ineligible rights cannot publish"
+        "ineligible rights cannot publish",
+        "chapter route id is parsed correctly",
+        "draft/review parent cannot publish chapter",
+        "licensed work without evidence cannot publish chapter",
+        "valid published parent and rights evidence allow chapter publication"
       ]
     },
     {
@@ -663,5 +671,5 @@
     }
   ],
   "sourceReviewNote": "The reviewed API handler source was refreshed after adding explicit GET-only rejection for /api/novels and /api/admin/stats. Homepage SSR and theme work is confined to the Worker HTML renderer and browser assets; the existing 45 route-method ownership entries remain the reviewed subset, with all other routes still explicitly pending.",
-  "sourceCommit": "6b7ac6400f9ab55b8c9b4719d67741c6447b8f50"
+  "sourceCommit": "69424600e9b0cee9fe18b7b149cd1b0c9d6cbfd4"
 }
