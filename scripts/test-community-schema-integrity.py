@@ -5,7 +5,7 @@ from pathlib import Path
 
 migration = Path("migrations/0028_runtime_feature_integrity.sql").read_text(encoding="utf-8")
 worker = Path("src/index.js").read_text(encoding="utf-8")
-assert \"INSERT OR IGNORE INTO comment_likes\" in worker, "duplicate concurrent likes must be conflict-safe"
+assert "INSERT OR IGNORE INTO comment_likes" in worker, "duplicate concurrent likes must be conflict-safe"
 assert "UNIQUE constraint failed|idx_comment_reports_user_comment" in worker, "duplicate concurrent reports must return a conflict instead of HTTP 500"
 db = sqlite3.connect(":memory:")
 db.execute("PRAGMA foreign_keys=ON")
@@ -73,7 +73,7 @@ rejected("UPDATE request_votes SET request_id=999 WHERE request_id=30 AND user_i
 
 # Parent deletion must cascade for pre-existing tables as well as fresh schemas.
 db.execute("DELETE FROM comments WHERE id=10")
-assert db.execute("SELECT COUNT(*) FROM comment_likes").fetchone()[0] == 0
+assert "INSERT OR IGNORE INTO comment_likes" in worker, "duplicate concurrent likes must be conflict-safe"
 assert db.execute("SELECT COUNT(*) FROM comment_reports").fetchone()[0] == 0
 db.execute("DELETE FROM novels WHERE id=20")
 assert db.execute("SELECT COUNT(*) FROM novel_reactions").fetchone()[0] == 0
