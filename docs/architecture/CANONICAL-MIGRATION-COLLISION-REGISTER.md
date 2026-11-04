@@ -202,3 +202,12 @@ A deeper inspection of #173's actual Worker handlers narrows the earlier note ab
 - Therefore, the missing unlock predicate is **not a demonstrated chapter-content disclosure or entitlement bypass**. It is a potential product-integrity inconsistency: a client can record a position for a locked chapter it could not read. This should be a deliberate policy decision, not described as a confirmed security vulnerability.
 
 **Corrected resolution:** before adding an entitlement predicate, decide whether reading-position records represent (a) a genuine reading cursor, in which case only free or unlocked chapters should be accepted, or (b) a user-selected resume/bookmark target, in which case any published chapter may be stored. If policy (a) is chosen, add a predicate allowing free chapters or a matching `unlocks(user_id,chapter_id)` row, and test both cases plus cross-user isolation. If policy (b) is chosen, retain the current published-chapter check and document that position metadata is not proof of access. In either case, the chapter-content endpoint remains the actual entitlement enforcement boundary. Do not weaken that endpoint or infer unlock status from client-supplied fields.
+
+
+### Catalog search schema compatibility check
+
+A source-level compatibility check against #173's canonical Worker confirms the #149 search/recommendation policy's referenced core tables and metadata fields are present in its core schema: `novels.alt_titles`, `genres`, `tags`, `novel_genres`, and `novel_tags`. The #149 policy's primary SQL references therefore do not require a new migration for those structures. This is a static schema check only; the port still needs SQLite execution tests against a clean canonical migration/bootstrap database, including empty taxonomy, multiple matching tags/genres, escaped LIKE wildcards, pagination, and a reader with no follow/follow-history seeds.
+
+### Validation after collision-register updates
+
+The documentation commits `28466830` and `5d8756f6` each received successful Cloudflare Source Validation, Route Registry validation, and Graphify architecture-map workflow runs. The most recent confirmed run set is on `5d8756f6`. These workflows validate the integration branch's current Worker/route/migration guardrails; they do not certify the unported PR feature stacks or a live production deployment.
