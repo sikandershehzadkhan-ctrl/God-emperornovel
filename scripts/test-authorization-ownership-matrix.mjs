@@ -8,7 +8,7 @@ assert.equal(typeof data.sourceBranch,"string");
 assert.ok(data.sourceBranch.length>0,"source branch provenance missing");
 assert.match(data.sourceBlob,/^[a-f0-9]{40}$/);
 const source=fs.readFileSync("src/index.js","utf8");
-const gitBlob=crypto.createHash("sha1").update(`blob ${Buffer.byteLength(source)}\\0`).update(source).digest("hex");
+const gitBlob=crypto.createHash("sha1").update(`blob ${Buffer.byteLength(source)}\0`).update(source).digest("hex");
 assert.equal(data.sourceBlob,gitBlob,"ownership matrix must identify the exact Worker source blob under review");
 assert.equal(data.routes.length,data.reviewedRouteCount);
 assert.ok(data.reviewedRouteCount>=15);
