@@ -33,7 +33,7 @@ The following GitHub issues were confirmed as **open** during the audit and rema
 | #110 Bookmark/history target validation | Targets are validated against visibility and ownership before writes; cross-user and unpublished-target tests pass. | PR #212. |
 | #111 Content Security Policy | Remove unsafe inline allowances where feasible; nonce/hash and real browser boot behavior are verified. | No complete remediation PR yet; inline script blocks and event-handler attributes remain to be migrated. |
 | #112 Cover URL validation | Author-controlled URLs are scheme/host/size constrained; unsafe schemes and internal-network targets are rejected. | PR #213. |
-| #113 Published-novel engagement guards | Follows and comment engagement writes enforce publication and visibility rules. | PR #215 covers follows/likes; PR #214 covers reports. |
+| #113 Published-novel engagement guards | Follows and comment engagement writes enforce publication and visibility rules. | PR #214 consolidates follow, comment-like, and comment-report guards; PR #215 was closed unmerged to avoid shared-file collisions. |
 | #114 Rating input validation | Reject non-numeric, fractional, out-of-range and malformed values before database writes. | PR #209. |
 | #115 Concurrency-safe rate limits | Concurrent comment/report requests cannot bypass limits; atomic database-backed tests pass. | PR #214. |
 
