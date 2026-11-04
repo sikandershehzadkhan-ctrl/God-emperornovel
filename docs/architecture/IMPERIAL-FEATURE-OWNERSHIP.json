@@ -299,7 +299,11 @@
     "docs/architecture/IMPERIAL-API-ROUTE-METHOD-MATRIX-01N-37.json",
     "docs/architecture/IMPERIAL-AUTHORIZATION-OWNERSHIP-MATRIX-01N-38.json",
     "migrations/",
-    "src/homepage-ssr.mjs"
+    "src/homepage-ssr.mjs",
+    "public/app-*.js",
+    "public/app-*.css",
+    "public/app.css",
+    "public/imperial-design-foundation.css"
   ],
   "rules": {
     "singleOwner": true,
