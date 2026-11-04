@@ -45,7 +45,8 @@
       "test-identity-profile-policy.mjs",
       "test-account-identity-policy-isolated.mjs",
       "test-account-preferences-policy.mjs",
-      "test-media-upload-policy-isolated.mjs"
+      "test-media-upload-policy-isolated.mjs",
+      "test-media-processing-policy.mjs"
     ],
     "integration": [
       "test-media-asset-registry.py",
@@ -92,12 +93,13 @@
     "platform-architecture",
     "repository-operations"
   ],
-  "changeSummary": "Adds isolated, pure identity and media policy modules with mandatory build regression tests, without copying the older Worker or enabling unfinished runtime routes. Adds migration-backed SQLite regression coverage for media quotas, rights review, publication eligibility, owner isolation and draft-only comic page editing.",
+  "changeSummary": "Adds isolated, pure identity and media policy modules with mandatory build regression tests, without copying the older Worker or enabling unfinished runtime routes. Adds migration-backed SQLite regression coverage for media quotas, rights review, publication eligibility, owner isolation and draft-only comic page editing. Adds a fail-closed processing-readiness policy so an uploaded image cannot become publishable merely because rights review passed.",
   "acceptanceCriteria": [
     "All new source and test paths have canonical owners.",
     "No Worker route, UI, D1 migration, R2 binding or production configuration is changed.",
     "Policy tests run in npm run build.",
     "Existing architecture, route, API and authorization checks remain mandatory.",
-    "The exact PR head passes all required workflows."
+    "The exact PR head passes all required workflows.",
+    "Only a trusted processing result with bounded output metadata, valid hashes, supported image formats and approved rights can transition media to ready."
   ]
 }
