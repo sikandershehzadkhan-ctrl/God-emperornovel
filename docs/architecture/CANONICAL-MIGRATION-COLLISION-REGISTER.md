@@ -1,6 +1,27 @@
 # Canonical migration collision register
 
 
+
+## PR #124 security and account-deletion migration collision map
+
+PR #124 is based on an older migration namespace and cannot be merged as-is. Its files 0009–0012 collide with current canonical migrations 0009–0012, while its 0013 chapter timestamp migration duplicates the canonical timestamp migration 0029. The proposed canonical allocation after the validated 0001–0035 chain is:
+
+| PR #124 source file | Canonical destination | Treatment |
+| --- | --- | --- |
+| 0009_password_reset_tokens.sql | 0036_password_reset_tokens.sql | Preserve; single-use hashed recovery tokens |
+| 0010_email_verification.sql | 0037_email_verification.sql | Preserve; mailbox verification is distinct from the legacy verified badge |
+| 0011_password_reset_email_snapshot.sql | 0038_password_reset_email_snapshot.sql | Preserve; bind recovery tokens to the mailbox that received them |
+| 0012_novel_ownership_transfers.sql | 0039_novel_ownership_transfers.sql | Preserve; consent-based transfer with guarded acceptance |
+| 0013_chapter_updated_at.sql | none | Omit; canonical 0029_chapter_update_timestamps.sql already owns this column and lifecycle |
+| 0014_account_deletion_requests.sql | 0040_account_deletion_requests.sql | Preserve; reversible request state only, no erasure execution |
+| 0015_account_deletion_review_store.sql | 0041_account_deletion_review_store.sql | Preserve; review records and immutable events |
+| 0016_account_deletion_reviewer_roles.sql | 0042_account_deletion_reviewer_roles.sql | Preserve; explicit specialist roles, not inherited from admin |
+| 0017_account_deletion_disposition_plans.sql | 0043_account_deletion_disposition_plans.sql | Preserve; immutable versioned plans |
+| 0018_account_deletion_disposition_approvals.sql | 0044_account_deletion_disposition_approvals.sql | Preserve; independent approval bound to exact plan digest |
+| 0019_account_deletion_specialist_findings.sql | 0045_account_deletion_specialist_findings.sql | Preserve; specialist-scoped immutable findings |
+
+This allocation is a namespace reconciliation, not permission to execute account erasure. The deployment workflow remains disabled. Before any production use, the new migrations must pass fresh and upgrade fixtures, foreign-key/integrity checks, reviewer-role separation tests, and ownership-transfer concurrency tests. The PR #124 Worker/API changes must be ported onto the current security integration without replacing the Origin/Fetch-Metadata, route-method, project-owner, report-audit or admin-account safeguards already integrated from PR #172.
+
 ## Current-main reconciliation checkpoint (2026-11-04)
 
 - `main` and PR #173 have byte-identical migration files 0001–0011 (verified by Git blob SHA for each file).
