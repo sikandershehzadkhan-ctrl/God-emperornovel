@@ -1,7 +1,7 @@
 {
   "featureId": "discovery-seo-publication-quality",
-  "domainOwner": "platform-integrator",
-  "technicalIntegrator": "platform-integrator",
+  "domainOwner": "platform-architecture",
+  "technicalIntegrator": "platform-architecture",
   "ownedPaths": [
     "src/seo.mjs",
     "src/discovery-knowledge-graph.mjs",
