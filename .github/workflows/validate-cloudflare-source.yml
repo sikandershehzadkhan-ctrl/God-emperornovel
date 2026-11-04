@@ -129,6 +129,9 @@ jobs:
       - name: Test fresh and legacy ten-point rating migration
         run: python3 scripts/test-rating-migration.py
 
+      - name: Test legacy community schema integrity migration
+        run: python3 scripts/test-community-schema-integrity.py
+
       - name: Test catalog query aggregation parity
         run: python3 scripts/test-catalog-query.py
 
