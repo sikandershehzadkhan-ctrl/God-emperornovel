@@ -31,32 +31,26 @@
     "Existing canonical route set; update registry for behavior changes"
   ],
   "apiContracts": [
-    "Existing API contracts; update method and authorization inventories for behavior changes"
+    "Existing API contracts; update method and authorization inventories for behavior changes",
+    "GET/PUT /api/profile; GET/PUT /api/account/preferences; GET /api/public-profile/:username with owner isolation and public visibility controls"
   ],
   "dataEntities": [
     "Existing canonical D1 entities only; no duplicate ledgers or parallel account-deletion store"
   ],
   "migrationPlan": {
-    "required": true,
-    "proposedNumbers": [
-      "0036-0045 already reconciled on this branch"
-    ],
-    "canonicalEntityReuse": "Reuse canonical account_closure_requests and current-main data model",
+    "required": false,
+    "proposedNumbers": [],
+    "canonicalEntityReuse": "Reuse users columns from migrations 0012_user_profiles.sql and 0014_account_preferences.sql; no new schema or parallel account store.",
     "backwardCompatibility": "Preserve existing data and append only to globally sequenced migration history",
     "rollbackOrForwardRepair": "No production migration executed; use migration-specific forward repair for any future applied schema change"
   },
-  "uiLifecycle": {
-    "shellOwner": "experience-runtime",
-    "ssrBehavior": "Worker emits escaped rights-eligible homepage markup; client preserves app root and hands off temporary SSR shell",
-    "clientBootBehavior": "One browser boot owner; no duplicate global navigation or destructive root reset",
-    "servedBundleParity": "public/app.js and public/app-17.23.0.js remain byte-identical"
-  },
+  "uiLifecycle": "No browser bundle change in this API-only slice. Account and settings UI synchronization will be delivered in a separate feature integration.",
   "privacySecurity": {
-    "authentication": "Existing session authority remains canonical",
-    "authorization": "Authorization ownership matrix is authoritative for reviewed entries; unreviewed routes remain pending",
-    "ownerScoping": "User-owned records scoped by authenticated session owner",
-    "csrf": "Existing write-route policy remains in force",
-    "rateAndSizeLimits": "Preserve bounded route inputs and API method restrictions",
+    "authentication": "All private profile and preference operations require the canonical session.",
+    "authorization": "Profile and preference mutations bind the target exclusively to session u.id; public profile projection requires profile_visibility=public and banned=0.",
+    "ownerScoping": "Profile and preference reads/writes are scoped by session owner; public projection excludes email, tickets and private account fields.",
+    "csrf": "Profile and preference writes reject mismatched Origin and Sec-Fetch-Site=cross-site.",
+    "rateAndSizeLimits": "Profile and preference writes use strict allowlists, bounded policy validation and per-account rate limits.",
     "rightsAndPrivacy": "Homepage shelves include published rights-eligible novels only"
   },
   "tests": {
@@ -67,12 +61,14 @@
       "test-identity-profile-policy.mjs",
       "test-account-identity-policy-isolated.mjs",
       "test-account-preferences-policy.mjs",
-      "test-media-upload-policy-isolated.mjs"
+      "test-media-upload-policy-isolated.mjs",
+      "test-profile-account-api.mjs"
     ],
     "integration": [
       "test-platform-architecture-contract.mjs",
       "test-route-registry.mjs",
-      "test-api-route-method-matrix.mjs"
+      "test-api-route-method-matrix.mjs",
+      "test-profile-account-api.mjs"
     ],
     "isolation": [
       "test-authorization-ownership-matrix.mjs"
@@ -125,7 +121,7 @@
     "repository-operations",
     "rights"
   ],
-  "changeSummary": "Consolidates current-main platform/security foundations with homepage SSR and the six-theme experience, while introducing canonical ownership, dependency, migration and integration governance. Adds mandatory isolated identity and media policy validation gates without changing Worker routes, UI bundles or D1 schema.",
+  "changeSummary": "Adds owner-scoped account profile and preferences APIs on the canonical users table, a privacy-filtered public profile projection, strict validation, CSRF checks, rate limiting, audit events and exact route/authorization evidence. No migration or production deployment.",
   "acceptanceCriteria": [
     "Every changed repository path resolves to one registered owner",
     "Dependency graph is acyclic and every edge points from consumer to lower-level dependency",
@@ -135,6 +131,8 @@
     "API and authorization evidence fingerprints match the exact Worker source",
     "The exact PR head passes architecture, route, source, build and regression checks",
     "Identity and media policy regressions are executed by the mandatory build.",
-    "No route, API, UI bundle, media storage binding or migration is introduced by the policy-only slice."
+    "Profile and preferences APIs reuse existing canonical user columns without a duplicate migration.",
+    "Private profile and preference operations are owner-scoped; public projection discloses only opted-in fields and statistics.",
+    "Profile and preference API route/method and authorization inventories match the exact Worker source."
   ]
 }
