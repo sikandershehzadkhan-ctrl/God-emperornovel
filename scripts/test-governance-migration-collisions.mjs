@@ -25,6 +25,10 @@ export function findConcurrentMigrationCollisions(currentNumber, currentFiles, p
     .map(([number, entries]) => ({ number, entries }));
 }
 function selfTest() {
+  assert.equal(migrationNumber('migrations/0007_reader.sql'), 7);
+  assert.equal(migrationNumber('migrations/.reservations/0007.json'), 7);
+  assert.equal(migrationNumber('migrations/0007-invalid.sql'), null);
+  assert.equal(migrationNumber('migrations/0007_reader.SQL'), 7);
   const prs = [
     { number: 219, files: ['migrations/0013_reader.sql', 'migrations/.reservations/0013.json'] },
     { number: 220, files: ['migrations/0013_profile.sql', 'migrations/.reservations/0013.json'] },
