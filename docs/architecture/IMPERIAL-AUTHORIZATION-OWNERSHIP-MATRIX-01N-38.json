@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
-  "sourceBranch": "integration/homepage-ssr-design-on-security-stack-17-65",
-  "sourceBlob": "a741914a81c7fb08f79ea16deb92376b220cfaa4",
+  "sourceBranch": "integration/reader-progress-api-17-72",
+  "sourceBlob": "8fd48fdc5a9778a3861e77fcf597cafe87a87849",
   "auditDate": "2026-11-04",
   "scope": "Partial handler-level static review of current integration source snapshot. This revision rechecks the five authentication route-method entries introduced or changed in commit 106744a6e9124524c88b6f454bf4bbc98e81745f and preserves the prior 40 reviewed entries. No full authorization certification, live D1 concurrency proof, or browser/runtime isolation proof is claimed. The source-blob fingerprint was refreshed from the failing CI checkout after the catalog/recommendation Worker integration; the CI check computes the Git blob hash from the exact checked-out file bytes. CI computes the source fingerprint from the exact checked-out Worker bytes; the recorded value is aligned to that runtime fingerprint. This fingerprint is the value computed by the authorization-matrix CI assertion from the checked-out Worker bytes. Fingerprint synchronized to the exact Worker Git blob SHA reported for this branch snapshot. Fingerprint refreshed from the Git tree blob SHA for the current Worker source snapshot. Fingerprint synchronized to the latest Worker Git tree blob after the leaderboard zero-activity filter.",
   "reviewedRouteCount": 45,
@@ -504,6 +504,19 @@
         "changed email cannot be verified by stale token",
         "verification does not alter creator/admin badge",
         "atomic issuance and completion checks pass"
+      ]
+    },
+    {
+      "path": "/api/reading-position",
+      "method": "GET|POST",
+      "access": "authenticated",
+      "ownerRule": "reading_positions.user_id is always bound to session u.id; novel and chapter must be published and rights eligible",
+      "evidence": "need(u); GET WHERE rp.user_id=?; POST binds u.id and conditional revision; same-origin guard and per-account rate limit",
+      "tests": [
+        "cross-account read denial",
+        "cross-account write denial",
+        "stale revision returns 409",
+        "draft or rights-ineligible chapter denied"
       ]
     }
   ],
