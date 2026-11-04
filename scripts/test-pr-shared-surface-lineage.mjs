@@ -1,8 +1,19 @@
 import fs from "node:fs";
+import { spawnSync } from "node:child_process";
 
 const eventPath=process.env.GITHUB_EVENT_PATH;
 const token=process.env.GITHUB_TOKEN;
 const repository=process.env.GITHUB_REPOSITORY;
+function runGit(args){
+  const result=spawnSync("git",args,{encoding:"utf8",maxBuffer:32*1024*1024});
+  if(result.error)throw result.error;
+  return {status:result.status,stdout:result.stdout||"",stderr:result.stderr||""};
+}
+function requireGit(args,label){
+  const result=runGit(args);
+  if(result.status!==0)throw new Error(label+": "+result.stderr.slice(0,1000));
+  return result.stdout.trim();
+}
 if(!eventPath||!token||!repository){
   console.log("SKIP: shared-surface lineage check requires a GitHub pull_request event and read-only token.");
   process.exit(0);
@@ -62,32 +73,26 @@ async function listOpenPullRequests(){
   }
   throw new Error("Open pull-request pagination exceeded 1000 records; refusing an incomplete collision audit.");
 }
-async function listChangedFiles(number){
-  const result=[];
-  for(let page=1;page<=10;page++){
-    const items=await github("/pulls/"+number+"/files?per_page=100&page="+page);
-    result.push(...items.map(item=>item.filename));
-    if(items.length<100)return result;
-  }
-  throw new Error("Changed-file pagination exceeded 1000 paths for PR #"+number+"; refusing an incomplete collision audit.");
+function listChangedFiles(pr){
+  if(!pr.base?.sha||!pr.head?.sha)throw new Error("PR #"+pr.number+" is missing base/head commit metadata.");
+  const output=requireGit(["diff","--name-only","--no-renames",pr.base.sha+"..."+pr.head.sha],"Unable to inspect changed paths for PR #"+pr.number);
+  return output.split("\n").filter(Boolean);
 }
-async function isAncestor(baseSha,headSha){
+function isAncestor(baseSha,headSha){
   if(baseSha===headSha)return true;
-  const result=await github("/compare/"+baseSha+"..."+headSha);
-  return result.status==="ahead"||result.status==="identical";
+  const result=runGit(["merge-base","--is-ancestor",baseSha,headSha]);
+  if(result.status===0)return true;
+  if(result.status===1)return false;
+  throw new Error("Unable to compare local Git ancestry for "+baseSha+" and "+headSha+": "+result.stderr.slice(0,1000));
 }
-const treeCache=new Map();
-async function fileBlobSha(ref,file){
-  let blobs=treeCache.get(ref);
-  if(!blobs){
-    const tree=await github("/git/trees/"+encodeURIComponent(ref)+"?recursive=1");
-    if(tree.truncated)throw new Error("Git tree for "+ref+" is truncated; refusing an incomplete shared-surface comparison.");
-    blobs=new Map((tree.tree||[]).filter(item=>item.type==="blob").map(item=>[item.path,item.sha]));
-    treeCache.set(ref,blobs);
-  }
-  return blobs.get(file)||null;
+function fileBlobSha(ref,file){
+  const result=runGit(["rev-parse","--verify",ref+":"+file]);
+  if(result.status===0)return result.stdout.trim();
+  // A missing path on one side is a real deletion, not a network/API failure.
+  requireGit(["cat-file","-e",ref+"^{commit}"],"Git commit "+ref+" is unavailable for shared-surface comparison");
+  return null;
 }
-const currentFiles=(await listChangedFiles(current.number)).filter(isSerialized);
+const currentFiles=listChangedFiles(current).filter(isSerialized);
 if(currentFiles.length===0){
   console.log("PASS: this PR does not modify any serialized shared surface.");
   process.exit(0);
@@ -124,7 +129,7 @@ const siblings=open.filter(pr=>{
 }).sort((a,b)=>a.number-b.number);
 const conflicts=[];
 for(const other of siblings){
-  const otherFiles=await listChangedFiles(other.number);
+  const otherFiles=listChangedFiles(other);
   const overlap=otherFiles.filter(file=>currentPaths.has(file));
   if(overlap.length===0)continue;
   const currentBeforeOther=await isAncestor(current.head.sha,other.head.sha);
