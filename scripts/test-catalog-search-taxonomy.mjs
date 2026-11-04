@@ -1,0 +1,25 @@
+import assert from "node:assert/strict";
+import { readFile } from "node:fs/promises";
+import { buildCatalogSearchPredicate, buildCatalogSearchOrder } from "../src/catalog-search-policy.mjs";
+
+const empty=buildCatalogSearchPredicate([]);
+assert.deepEqual(empty,{sql:"",values:[]});
+const terms=buildCatalogSearchPredicate(["Fantasy","system"]);
+assert.equal(terms.values.length,16);
+assert.ok(terms.sql.includes("novel_genres")&&terms.sql.includes("novel_tags"));
+assert.ok(terms.sql.includes("LOWER(n.alt_titles)"));
+assert.ok(terms.sql.includes("ESCAPE char(92)"));
+assert.ok(terms.sql.includes(" AND "));
+assert.deepEqual(buildCatalogSearchPredicate(["one","two","three","four","five","six","seven","eight","ignored"]).values.length,64);
+const escaped=buildCatalogSearchPredicate(["50%_\\"]);
+assert.equal(escaped.values[0],"%50\\%\\_\\\\%");
+const order=buildCatalogSearchOrder("Fantasy_50%");
+assert.equal(order.values.length,12);
+assert.ok(order.sql.includes("THEN 4")&&order.sql.includes("THEN 7"));
+assert.deepEqual(buildCatalogSearchOrder(" "),{sql:"",values:[]});
+const worker=await readFile(new URL("../src/index.js",import.meta.url),"utf8");
+assert.ok(worker.includes('import { buildCatalogSearchPredicate, buildCatalogSearchOrder } from "./catalog-search-policy.mjs";'));
+assert.ok(worker.includes("buildCatalogSearchPredicate(searchTerms)"));
+assert.ok(worker.includes("a.push(...relevance.values)"));
+assert.ok(worker.includes("n.publication_status='published' AND n.rights_status IN ('original','public_domain','licensed','authorized')"));
+console.log("PASS: catalog search is bounded, parameterized, taxonomy-aware, wildcard-escaped, relevance-ranked, and retains public rights filters.");
