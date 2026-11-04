@@ -194,21 +194,21 @@ jobs:
           CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
 
-      - name: Verify catalog and author-application D1 migrations after deployment
+      - name: Verify catalog, author-application and AI claim D1 migrations after deployment
         shell: bash
         env:
           CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
         run: |
           set -euo pipefail
-          output="$(npx --yes wrangler@4 d1 execute god-emperornovel-db --remote --command "SELECT CASE WHEN EXISTS(SELECT 1 FROM sqlite_master WHERE type='index' AND name='idx_novel_genres_genre_novel') AND EXISTS(SELECT 1 FROM sqlite_master WHERE type='index' AND name='idx_novel_tags_tag_novel') AND EXISTS(SELECT 1 FROM sqlite_master WHERE type='index' AND name='idx_unlocks_chapter_time') AND EXISTS(SELECT 1 FROM sqlite_master WHERE type='index' AND name='idx_novels_published_views') AND EXISTS(SELECT 1 FROM sqlite_master WHERE type='index' AND name='idx_novels_published_rating') AND EXISTS(SELECT 1 FROM sqlite_master WHERE type='index' AND name='idx_novels_published_created') AND EXISTS(SELECT 1 FROM sqlite_master WHERE type='table' AND name='author_applications') AND EXISTS(SELECT 1 FROM sqlite_master WHERE type='index' AND name='idx_author_applications_one_pending') AND EXISTS(SELECT 1 FROM sqlite_master WHERE type='index' AND name='idx_author_applications_status_created') AND EXISTS(SELECT 1 FROM sqlite_master WHERE type='index' AND name='idx_author_applications_user_created') THEN 'ready' ELSE 'missing' END AS readiness;")"
+          output="$(npx --yes wrangler@4 d1 execute god-emperornovel-db --remote --command "SELECT CASE WHEN (SELECT COUNT(*) FROM pragma_table_info('ai_author_projects') WHERE name IN ('active_run_token','active_run_started_at','active_run_owner_user_id'))=3 AND (SELECT COUNT(*) FROM pragma_table_info('ai_chapter_jobs') WHERE name='run_token')=1 AND EXISTS(SELECT 1 FROM sqlite_master WHERE type='index' AND name='idx_ai_chapter_jobs_run_token') AND EXISTS(SELECT 1 FROM sqlite_master WHERE type='index' AND name='idx_novel_genres_genre_novel') AND EXISTS(SELECT 1 FROM sqlite_master WHERE type='index' AND name='idx_novel_tags_tag_novel') AND EXISTS(SELECT 1 FROM sqlite_master WHERE type='index' AND name='idx_unlocks_chapter_time') AND EXISTS(SELECT 1 FROM sqlite_master WHERE type='index' AND name='idx_novels_published_views') AND EXISTS(SELECT 1 FROM sqlite_master WHERE type='index' AND name='idx_novels_published_rating') AND EXISTS(SELECT 1 FROM sqlite_master WHERE type='index' AND name='idx_novels_published_created') AND EXISTS(SELECT 1 FROM sqlite_master WHERE type='table' AND name='author_applications') AND EXISTS(SELECT 1 FROM sqlite_master WHERE type='index' AND name='idx_author_applications_one_pending') AND EXISTS(SELECT 1 FROM sqlite_master WHERE type='index' AND name='idx_author_applications_status_created') AND EXISTS(SELECT 1 FROM sqlite_master WHERE type='index' AND name='idx_author_applications_user_created') THEN 'ready' ELSE 'missing' END AS readiness;")"
           printf '%s\n' "$output"
           readiness="$(printf '%s' "$output" | node -e 'let s="";process.stdin.on("data",d=>s+=d).on("end",()=>{const m=s.match(/"readiness"\s*:\s*"([^"]+)"/);console.log(m?m[1]:"unknown")})')"
           if [ "$readiness" != "ready" ]; then
-            echo "::error::Required catalog indexes or author application schema are missing after deployment."
+            echo "::error::Required catalog, author application or AI claim schema is missing after deployment."
             exit 1
           fi
-          echo "Verified catalog filter/sort indexes and author application schema in production D1."
+          echo "Verified catalog filter/sort indexes, author application schema and AI run-claim columns in production D1."
 
       - name: Verify live Worker health after deployment
         shell: bash
