@@ -22,6 +22,9 @@ assert.ok(migration.includes('ALTER TABLE ai_author_projects ADD COLUMN active_r
 assert.ok(migration.includes('ALTER TABLE ai_author_projects ADD COLUMN active_run_started_at TEXT'));
 assert.ok(migration.includes('ALTER TABLE ai_author_projects ADD COLUMN active_run_owner_user_id INTEGER'));
 assert.ok(migration.includes('ALTER TABLE ai_chapter_jobs ADD COLUMN run_token TEXT'));
-assert.ok(worker.includes('ALTER TABLE ai_author_projects ADD COLUMN '+ 'active_run_token TEXT'));
+assert.ok(worker.includes('["active_run_token","TEXT"]'));
+assert.ok(worker.includes('["active_run_started_at","TEXT"]'));
+assert.ok(worker.includes('["active_run_owner_user_id","INTEGER"]'));
+assert.ok(worker.includes('ALTER TABLE ai_author_projects ADD COLUMN "+name+" "+type'));
 assert.ok(worker.includes('ALTER TABLE ai_chapter_jobs ADD COLUMN run_token TEXT'));
 console.log('Atomic AI run-claim source and migration checks passed.');
