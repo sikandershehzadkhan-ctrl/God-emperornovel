@@ -45,8 +45,12 @@ assert.ok(worker.includes("SELECT COUNT(*) count FROM novels WHERE publication_s
 assert.ok(worker.includes("c.publication_status='published' AND n.publication_status='published' AND n.rights_status IN ('original','public_domain','licensed','authorized')"), "chapter sitemap excludes unpublished or ineligible novels");
 assert.ok(worker.includes("ORDER BY id LIMIT ? OFFSET ?") && worker.includes("ORDER BY c.id LIMIT ? OFFSET ?"), "large sitemaps use bounded pagination");
 assert.ok(worker.includes("status:503") && worker.includes('"retry-after":"300"'), "temporary database failures return retryable sitemap errors");
+const workerFirst = wrangler.match(/run_worker_first\\s*=\\s*\\[([\\s\\S]*?)\\]/);
+const workerFirstRoutes = workerFirst ? workerFirst[1] : "";
 for (const path of ["/sitemap.xml", "/sitemap-static.xml", "/sitemap-novels.xml", "/sitemap-chapters.xml"]) {
-  assert.ok(wrangler.includes('"' + path + '"'), "Cloudflare routes " + path + " through the Worker");
+  const exactRoute = wrangler.includes('"' + path + '"');
+  const wildcardRoute = path.startsWith("/sitemap") && /"\\/sitemap\\*"/.test(workerFirstRoutes);
+  assert.ok(exactRoute || wildcardRoute, "Cloudflare routes " + path + " through an exact or covering Worker-first route");
 }
 assert.ok(robots.includes("Sitemap: " + origin.replace("https://stories.example", "https://god-emperornovel.sikandershehzadkhan.workers.dev") + "/sitemap.xml"), "robots.txt advertises the canonical sitemap");
 assert.ok(fallback.includes("/catalog") && fallback.includes("/copyright"), "static fallback sitemap contains core public pages");
