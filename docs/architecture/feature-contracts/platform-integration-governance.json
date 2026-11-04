@@ -13,7 +13,8 @@
     "public/imperial-design-foundation.css",
     "migrations/",
     "package.json",
-    "wrangler.toml"
+    "wrangler.toml",
+    "public/sw.js"
   ],
   "dependencies": [
     "identity-security",
@@ -44,7 +45,7 @@
     "backwardCompatibility": "Preserve existing data and append only to globally sequenced migration history",
     "rollbackOrForwardRepair": "No production migration executed; use migration-specific forward repair for any future applied schema change"
   },
-  "uiLifecycle": "No browser bundle change in this API-only slice. Account and settings UI synchronization will be delivered in a separate feature integration.",
+  "uiLifecycle": "Account profile editor uses the owner-scoped profile API. Settings restore and debounce account preference synchronization while retaining local-first anonymous use. A new service-worker cache namespace forces updated app bundle delivery.",
   "privacySecurity": {
     "authentication": "All private profile and preference operations require the canonical session.",
     "authorization": "Profile and preference mutations bind the target exclusively to session u.id; public profile projection requires profile_visibility=public and banned=0.",
@@ -123,7 +124,7 @@
     "repository-operations",
     "rights"
   ],
-  "changeSummary": "Adds owner-scoped account profile and preferences APIs on the canonical users table, a privacy-filtered public profile projection, strict validation, CSRF checks, rate limiting, audit events and exact route/authorization evidence. No migration or production deployment.",
+  "changeSummary": "Adds owner-scoped profile and preference APIs plus the account profile editor and cross-device settings synchronization, reusing canonical user columns and preserving the existing release asset graph.",
   "acceptanceCriteria": [
     "Every changed repository path resolves to one registered owner",
     "Dependency graph is acyclic and every edge points from consumer to lower-level dependency",
@@ -135,6 +136,7 @@
     "Identity and media policy regressions are executed by the mandatory build.",
     "Profile and preferences APIs reuse existing canonical user columns without a duplicate migration.",
     "Private profile and preference operations are owner-scoped; public projection discloses only opted-in fields and statistics.",
-    "Profile and preference API route/method and authorization inventories match the exact Worker source."
+    "Profile and preference API route/method and authorization inventories match the exact Worker source.",
+    "Service-worker cache namespace changes when the browser application bundle changes, preventing stale client code."
   ]
 }

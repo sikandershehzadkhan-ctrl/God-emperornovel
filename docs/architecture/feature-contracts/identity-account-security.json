@@ -50,8 +50,8 @@
   },
   "uiLifecycle": {
     "browserChange": true,
-    "accountEditor": "Account page edits profile fields through the owner-scoped profile API.",
-    "settingsSync": "Settings restore from and debounce updates to the authenticated account preferences API; local preferences remain available anonymously.",
+    "accountEditor": "Account page edits profile fields through the owner-scoped profile API; profile visibility and reading-stat opt-in are explicit.",
+    "settingsSync": "Settings restore saved account preferences, debounce authenticated writes, and preserve local-device settings for anonymous/offline use.",
     "publicProfile": "API projection only in this slice"
   },
   "privacySecurity": {
@@ -114,6 +114,8 @@
     "No migration is added or applied.",
     "Route and authorization evidence fingerprints match exact Worker source.",
     "Account editor saves validated profile fields without allowing role or owner selection.",
-    "Settings restore account preferences and debounce writes while retaining local-first anonymous behavior."
+    "Settings restore account preferences and debounce writes while retaining local-first anonymous behavior.",
+    "Public/private selection restores correctly from the saved profile.",
+    "Service worker installs a new cache namespace for the changed browser bundle."
   ]
 }
