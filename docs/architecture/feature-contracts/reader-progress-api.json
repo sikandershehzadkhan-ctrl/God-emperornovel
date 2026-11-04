@@ -45,7 +45,8 @@
     "authorization": "Every read/write is bound to session u.id; no request-supplied owner field is accepted.",
     "ownerScoping": "WHERE rp.user_id=? and insert binds u.id.",
     "csrf": "POST requires same-origin Origin.",
-    "rateAndSizeLimits": "Per-account 120 writes/hour; numeric bounds and optimistic revision validation."
+    "rateAndSizeLimits": "Per-account 120 writes/hour; numeric bounds and optimistic revision validation.",
+    "optimisticConcurrency": "Initial creation requires expected_revision=0; updates require an existing row with the same owner, novel and revision in the INSERT SELECT predicate, then repeat the revision predicate in ON CONFLICT DO UPDATE."
   },
   "tests": {
     "unit": [
@@ -101,6 +102,7 @@
     "API and authorization matrices match exact Worker blob.",
     "Every request is authenticated and owner-scoped.",
     "Published and rights-eligible chapter gate is enforced.",
-    "No production D1 or deployment action is performed."
+    "No production D1 or deployment action is performed.",
+    "A nonzero revision cannot create a missing position; only a matching existing revision can update."
   ]
 }
