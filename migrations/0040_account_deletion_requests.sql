@@ -23,9 +23,7 @@ SELECT id,user_id,
   CASE WHEN status IN ('pending','review_required','pending_deletion','cancelled','completed')
     THEN status ELSE 'review_required' END,
   requested_at,grace_until,cancelled_at,completed_at,
-  COALESCE(review_reason,''),
-  COALESCE(created_at,CURRENT_TIMESTAMP),
-  COALESCE(updated_at,CURRENT_TIMESTAMP)
+  '',CURRENT_TIMESTAMP,CURRENT_TIMESTAMP
 FROM account_closure_requests;
 DROP TABLE account_closure_requests;
 ALTER TABLE account_closure_requests_v2 RENAME TO account_closure_requests;
