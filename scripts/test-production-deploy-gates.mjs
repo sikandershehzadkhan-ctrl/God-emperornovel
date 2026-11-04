@@ -9,12 +9,14 @@ assert.ok(!/^\s*push:/m.test(workflow) && !/^\s*pull_request:/m.test(workflow), 
 assert.ok(workflow.includes("npx --yes wrangler@4 deploy --dry-run"), "Production bundle must be validated before deployment.");
 assert.ok(workflow.includes("Verify catalog and author-application D1 migrations after deployment"), "Production deployment must verify additive catalog and creator migrations.");
 assert.ok(workflow.includes("Apply and verify additive D1 migrations before Worker deployment"), "Production D1 migrations must run before publishing the Worker.");
-for (const migration of ["migrations/0009_catalog_filter_indexes.sql", "migrations/0010_catalog_sort_indexes.sql", "migrations/0011_author_applications.sql"]) {
+for (const migration of ["migrations/0009_catalog_filter_indexes.sql", "migrations/0010_catalog_sort_indexes.sql", "migrations/0011_author_applications.sql", "migrations/0012_atomic_ai_run_claims.sql"]) {
   assert.ok(workflow.includes("--file=" + migration), "Pre-deploy migration step must apply " + migration);
 }
 assert.ok(workflow.indexOf("Validate Cloudflare bundle without deploying") < workflow.indexOf("Apply and verify additive D1 migrations before Worker deployment"), "Validate the Worker bundle before mutating production D1.");
 assert.ok(workflow.indexOf("Apply and verify additive D1 migrations before Worker deployment") < workflow.indexOf("Deploy Worker and static assets"), "D1 schema must be ready before the Worker is deployed.");
 assert.ok(workflow.includes("author_applications exists with an incomplete or unrecognized schema"), "Partial author application schemas must fail closed.");
+assert.ok(workflow.includes("AI run-claim schema is partially initialized"), "Partial AI run-claim schemas must fail closed.");
+assert.ok(workflow.includes("AI run-claim columns already exist; skipping non-idempotent ALTER TABLE migration 0012."), "Repeated deploys must skip an already-applied non-idempotent column migration.");
 
 for (const index of [
   "idx_novel_genres_genre_novel",
@@ -24,6 +26,11 @@ for (const index of [
   "idx_novels_published_rating",
   "idx_novels_published_created",
   "idx_author_applications_one_pending",
+  "idx_ai_chapter_jobs_run_token",
+  "active_run_token",
+  "active_run_started_at",
+  "active_run_owner_user_id",
+  "run_token",
 ]) assert.ok(workflow.includes(index), "Post-deploy D1 verification must include " + index);
 assert.ok(workflow.includes('"$base/discover?verify=$stamp"'), "Post-deploy checks must exercise the direct Discover route.");
 assert.ok(workflow.includes('"$base/author?verify=$stamp"'), "Post-deploy checks must exercise Author Studio.");
