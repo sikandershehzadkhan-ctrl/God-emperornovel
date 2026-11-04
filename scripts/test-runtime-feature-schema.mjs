@@ -16,14 +16,14 @@ function fakeDb(marker) {
   };
 }
 
-const fastDb = fakeDb({ value: "1" });
+const fastDb = fakeDb({ value: "2" });
 await createRuntimeFeatureSchemaEnsurer()({ DB: fastDb });
 assert.equal(fastDb.calls.length, 1);
 assert.match(fastDb.calls[0], /runtime_feature_schema_version/);
 
 const coldDb = fakeDb(null);
 await createRuntimeFeatureSchemaEnsurer()({ DB: coldDb });
-for (const table of ["auth_rate_limits", "comment_likes", "comment_reports", "novel_reactions", "request_votes"]) {
+for (const table of ["auth_rate_limits", "comment_likes", "comment_reports", "novel_reactions", "request_votes", "reading_positions"]) {
   assert.ok(coldDb.calls.some(sql => sql.includes("CREATE TABLE IF NOT EXISTS " + table)));
 }
 assert.ok(coldDb.calls.some(sql => sql.includes("ALTER TABLE comments ADD COLUMN parent_id INTEGER")));
