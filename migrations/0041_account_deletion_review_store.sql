@@ -15,7 +15,7 @@ CREATE TABLE IF NOT EXISTS account_deletion_reviews (
   approved_by INTEGER,
   created_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,
   updated_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,
-  FOREIGN KEY(request_id) REFERENCES account_deletion_requests(id) ON DELETE RESTRICT,
+  FOREIGN KEY(request_id) REFERENCES account_closure_requests(id) ON DELETE RESTRICT,
   FOREIGN KEY(subject_user_id) REFERENCES users(id) ON DELETE RESTRICT,
   FOREIGN KEY(claimed_by) REFERENCES users(id) ON DELETE RESTRICT,
   FOREIGN KEY(proposed_by) REFERENCES users(id) ON DELETE RESTRICT,
@@ -36,9 +36,9 @@ CREATE TRIGGER IF NOT EXISTS trg_account_deletion_review_subject_guard
 BEFORE INSERT ON account_deletion_reviews
 BEGIN
   SELECT CASE WHEN NOT EXISTS (
-    SELECT 1 FROM account_deletion_requests r
+    SELECT 1 FROM account_closure_requests r
     WHERE r.id = NEW.request_id AND r.user_id = NEW.subject_user_id
-      AND r.status IN ('pending_deletion','review_required')
+      AND r.status IN ('pending','review_required','pending_deletion')
   ) THEN RAISE(ABORT, 'deletion review request/subject mismatch or inactive request') END;
 END;
 
@@ -72,7 +72,7 @@ CREATE TABLE IF NOT EXISTS account_deletion_review_events (
     CHECK (json_valid(metadata_json) AND length(metadata_json) <= 4096),
   created_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,
   FOREIGN KEY(review_id) REFERENCES account_deletion_reviews(id) ON DELETE RESTRICT,
-  FOREIGN KEY(request_id) REFERENCES account_deletion_requests(id) ON DELETE RESTRICT,
+  FOREIGN KEY(request_id) REFERENCES account_closure_requests(id) ON DELETE RESTRICT,
   FOREIGN KEY(actor_id) REFERENCES users(id) ON DELETE RESTRICT
 );
 
