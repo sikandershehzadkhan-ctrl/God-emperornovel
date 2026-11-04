@@ -87,6 +87,9 @@ async function ensureAuthorAISchema(env){
     auto_publish INTEGER NOT NULL DEFAULT 0,
     chapters_target INTEGER NOT NULL DEFAULT 0,
     chapters_generated INTEGER NOT NULL DEFAULT 0,
+    active_run_token TEXT,
+    active_run_started_at TEXT,
+    active_run_owner_user_id INTEGER,
     created_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,
     updated_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP
    )`,
@@ -101,6 +104,7 @@ async function ensureAuthorAISchema(env){
     result TEXT DEFAULT '',
     error TEXT DEFAULT '',
     attempts INTEGER NOT NULL DEFAULT 0,
+    run_token TEXT,
     created_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,
     started_at TEXT,
     finished_at TEXT
@@ -139,6 +143,21 @@ async function ensureAuthorAISchema(env){
    `CREATE INDEX IF NOT EXISTS idx_ai_runs_project ON ai_generation_runs(project_id,created_at)`
   ];
   for(const q of qs){try{await env.DB.prepare(q).run()}catch(e){console.error('author AI schema statement failed; aborting bootstrap',e);throw e}}
+  const projectInfo=(await env.DB.prepare("PRAGMA table_info(ai_author_projects)").all()).results||[];
+  const projectColumns=new Set(projectInfo.map(x=>String(x.name)));
+  for(const [name,type] of [["active_run_token","TEXT"],["active_run_started_at","TEXT"],["active_run_owner_user_id","INTEGER"]]){
+   if(!projectColumns.has(name)){
+    try{await env.DB.prepare("ALTER TABLE ai_author_projects ADD COLUMN "+name+" "+type).run()}
+    catch(e){if(!/duplicate column name/i.test(String(e?.message||e)))throw e}
+   }
+  }
+  const jobInfo=(await env.DB.prepare("PRAGMA table_info(ai_chapter_jobs)").all()).results||[];
+  const jobColumns=new Set(jobInfo.map(x=>String(x.name)));
+  if(!jobColumns.has("run_token")){
+   try{await env.DB.prepare("ALTER TABLE ai_chapter_jobs ADD COLUMN run_token TEXT").run()}
+   catch(e){if(!/duplicate column name/i.test(String(e?.message||e)))throw e}
+  }
+  await env.DB.prepare("CREATE INDEX IF NOT EXISTS idx_ai_chapter_jobs_run_token ON ai_chapter_jobs(run_token)").run();
  }catch(e){console.error('author AI schema failed; schema version must not advance',e);throw e}
 }
 function aiSafeText(s,max=12000){return String(s||'').replace(/\u0000/g,'').trim().slice(0,max)}
