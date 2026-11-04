@@ -75,10 +75,13 @@
     "integration": [
       "Cloudflare Source Validation build",
       "Route Registry authorization matrix",
-      "Graphify architecture map"
+      "Graphify architecture map",
+      "scripts/test-worker-account-reader-isolation.mjs: local Wrangler Worker and isolated D1 two-account integration"
     ],
     "isolation": [
-      "Two-account Worker/D1 tests remain required before runtime sign-off"
+      "Two-account Worker/D1 tests remain required before runtime sign-off",
+      "Local D1 integration verifies account A/B profile and preference isolation, public disclosure, reader-progress isolation, stale revision handling, rights gating and logout.",
+      "Production browser/device and cross-device synchronization checks remain required before deployment."
     ]
   },
   "rollout": {
@@ -89,7 +92,9 @@
       "Pass all CI workflows",
       "Review owner isolation and public response shape",
       "Run two-account isolated Worker/D1 tests",
-      "Integrate account editor and settings sync separately"
+      "Integrate account editor and settings sync separately",
+      "Run local D1 two-account Worker integration in CI.",
+      "Verify login/logout, account switching, offline settings recovery and cross-device preference synchronization in staging before production."
     ]
   },
   "rollback": {
