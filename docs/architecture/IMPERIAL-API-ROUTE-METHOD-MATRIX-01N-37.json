@@ -2,7 +2,7 @@
   "schemaVersion": 1,
   "name": "Imperial Novel API route method inventory",
   "sourceBranch": "integration/reader-progress-api-17-72",
-  "sourceBlob": "8fd48fdc5a9778a3861e77fcf597cafe87a87849",
+  "sourceBlob": "5ca2004339d4fa3a679dc07b12569a9246330c2e",
   "auditDate": "2026-11-04",
   "scope": "Static dispatcher scan of the integrated Worker. Observed method guards only; this is not a complete permission or runtime contract.",
   "exactRouteCount": 79,
@@ -1039,7 +1039,7 @@
       ],
       "unguardedLines": [],
       "methodGuardMissing": false,
-      "authorization": "authenticated; session-owned; same-origin writes"
+      "authorization": "authenticated; session-owned; same-origin writes; initial insert requires expected_revision=0; updates require exact revision"
     }
   ],
   "dynamicRoutes": [
