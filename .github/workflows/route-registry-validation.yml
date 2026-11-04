@@ -15,6 +15,13 @@ on:
       - "scripts/test-api-route-method-matrix.mjs"
       - "docs/architecture/IMPERIAL-AUTHORIZATION-OWNERSHIP-MATRIX-01N-38.json"
       - "scripts/test-authorization-ownership-matrix.mjs"
+      - "scripts/test-admin-account-comment-safety.mjs"
+      - "scripts/test-ai-project-actor-ownership.mjs"
+      - "scripts/test-api-csrf-taxonomy-safety.mjs"
+      - "scripts/test-community-taxonomy-security.mjs"
+      - "scripts/test-detail-api-method-guards.mjs"
+      - "scripts/test-public-vote-privacy.mjs"
+      - "scripts/test-readonly-api-method-guards.mjs"
       - "scripts/test-admin-account-d1.py"
       - "scripts/test-donation-approval-d1.py"
       - ".github/workflows/route-registry-validation.yml"
@@ -32,6 +39,13 @@ on:
       - "scripts/test-api-route-method-matrix.mjs"
       - "docs/architecture/IMPERIAL-AUTHORIZATION-OWNERSHIP-MATRIX-01N-38.json"
       - "scripts/test-authorization-ownership-matrix.mjs"
+      - "scripts/test-admin-account-comment-safety.mjs"
+      - "scripts/test-ai-project-actor-ownership.mjs"
+      - "scripts/test-api-csrf-taxonomy-safety.mjs"
+      - "scripts/test-community-taxonomy-security.mjs"
+      - "scripts/test-detail-api-method-guards.mjs"
+      - "scripts/test-public-vote-privacy.mjs"
+      - "scripts/test-readonly-api-method-guards.mjs"
       - "scripts/test-admin-account-d1.py"
       - "scripts/test-donation-approval-d1.py"
       - ".github/workflows/route-registry-validation.yml"
@@ -71,4 +85,25 @@ jobs:
 
       - name: Validate authorization and ownership register
         run: node scripts/test-authorization-ownership-matrix.mjs
+
+      - name: Validate admin account and comment safety invariants
+        run: node scripts/test-admin-account-comment-safety.mjs
+
+      - name: Validate API CSRF and taxonomy attribution safeguards
+        run: node scripts/test-api-csrf-taxonomy-safety.mjs
+
+      - name: Validate AI project actor ownership
+        run: node scripts/test-ai-project-actor-ownership.mjs
+
+      - name: Validate novel and chapter detail API method guards
+        run: node scripts/test-detail-api-method-guards.mjs
+
+      - name: Validate public vote-board privacy
+        run: node scripts/test-public-vote-privacy.mjs
+
+      - name: Validate read-only API method guards
+        run: node scripts/test-readonly-api-method-guards.mjs
+
+      - name: Validate community taxonomy attribution and rate limiting
+        run: node scripts/test-community-taxonomy-security.mjs
 
