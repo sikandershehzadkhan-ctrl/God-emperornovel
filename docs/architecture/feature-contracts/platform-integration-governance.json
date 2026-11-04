@@ -6,13 +6,16 @@
     "docs/architecture/feature-contracts/"
   ],
   "sharedSurfaces": [
-    "src/index.js",
-    "public/app.js",
-    "public/app-17.23.0.js",
-    "public/index.html",
-    "public/imperial-design-foundation.css",
     "migrations/",
     "package.json",
+    "public/*.css",
+    "public/*.js",
+    "public/*.webmanifest",
+    "public/app-17.23.0.js",
+    "public/app.js",
+    "public/imperial-design-foundation.css",
+    "public/index.html",
+    "src/index.js",
     "wrangler.toml"
   ],
   "dependencies": [
@@ -147,7 +150,7 @@
     "repository-operations",
     "rights"
   ],
-  "changeSummary": "Consolidates current-main platform/security foundations with homepage SSR and the six-theme experience, while introducing canonical ownership, dependency, migration and integration governance. Adds mandatory isolated identity and media policy validation gates without changing Worker routes, UI bundles or D1 schema. Adds owner-scoped reader progress API and ensures architecture/source CI runs on nested integration PRs. Adds the reader browser client integration to the existing owner-scoped reading-position API and mandatory regression coverage. Integrates owner-scoped profile and account-preference APIs and a visibility-filtered public profile projection into the same canonical Worker as reader progress. Adds the account profile editor and cross-device settings synchronization while preserving the reader-progress browser integration. Adds a PR-lineage gate that serializes overlapping Worker, browser bundle, identity, migration, route inventory, workflow and release-configuration changes.",
+  "changeSummary": "Consolidates current-main platform/security foundations with homepage SSR and the six-theme experience, while introducing canonical ownership, dependency, migration and integration governance. Adds mandatory isolated identity and media policy validation gates without changing Worker routes, UI bundles or D1 schema. Adds owner-scoped reader progress API and ensures architecture/source CI runs on nested integration PRs. Adds the reader browser client integration to the existing owner-scoped reading-position API and mandatory regression coverage. Integrates owner-scoped profile and account-preference APIs and a visibility-filtered public profile projection into the same canonical Worker as reader progress. Adds the account profile editor and cross-device settings synchronization while preserving the reader-progress browser integration. Adds a PR-lineage gate that serializes overlapping Worker, browser bundle, identity, migration, route inventory, workflow and release-configuration changes. Extends serialized surface protection to every top-level served CSS, JavaScript and webmanifest asset so versioned style/service-worker files cannot diverge silently.",
   "acceptanceCriteria": [
     "Every changed repository path resolves to one registered owner",
     "Dependency graph is acyclic and every edge points from consumer to lower-level dependency",
@@ -179,7 +182,8 @@
     "Service-worker cache namespace changes when the browser application bundle changes.",
     "A fresh local D1 database proves profile, preferences and reading progress are isolated between two authenticated accounts.",
     "Cross-origin writes, stale progress revisions, rights-ineligible chapters and logout revocation are exercised against the local Worker runtime.",
-    "Open pull requests that change the same serialized shared surface must form one ancestor/descendant integration chain; divergent overlapping branches fail Architecture Governance."
+    "Open pull requests that change the same serialized shared surface must form one ancestor/descendant integration chain; divergent overlapping branches fail Architecture Governance.",
+    "All directly served browser JavaScript, CSS and webmanifest assets are included in serialized shared-surface lineage checks."
   ],
   "sharedSurfaceSerialization": [
     ".github/workflows/",
@@ -189,10 +193,13 @@
     "docs/architecture/decisions/",
     "docs/architecture/feature-contracts/platform-integration-governance.json",
     "migrations/",
-    "package.json",
     "package-lock.json",
-    "public/app.js",
+    "package.json",
+    "public/*.css",
+    "public/*.js",
+    "public/*.webmanifest",
     "public/app-*.js",
+    "public/app.js",
     "public/index.html",
     "public/sw.js",
     "src/identity/",
