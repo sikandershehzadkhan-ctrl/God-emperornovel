@@ -132,6 +132,30 @@ jobs:
       - name: Test legacy community schema integrity migration
         run: python3 scripts/test-community-schema-integrity.py
 
+      - name: Test canonical account closure request migration
+        run: node scripts/test-account-deletion-migration.mjs
+
+      - name: Test account deletion review-store migration
+        run: node scripts/test-account-deletion-review-migration.mjs
+
+      - name: Test immutable account deletion disposition migration
+        run: node scripts/test-account-deletion-disposition-migration.mjs
+
+      - name: Test independent account deletion disposition approvals
+        run: node scripts/test-account-deletion-disposition-approval-migration.mjs
+
+      - name: Test specialist-scoped account deletion findings
+        run: node scripts/test-account-deletion-specialist-findings-migration.mjs
+
+      - name: Test consent-based novel ownership transfer migration
+        run: node scripts/test-ownership-transfer-migration.mjs
+
+      - name: Test independent email ownership verification migration
+        run: node scripts/test-email-verification-migration.mjs
+
+      - name: Test purpose-bound password recovery token migration
+        run: node scripts/test-password-reset-migration-policy.mjs
+
       - name: Test catalog query aggregation parity
         run: python3 scripts/test-catalog-query.py
 
