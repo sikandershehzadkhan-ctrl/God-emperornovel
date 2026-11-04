@@ -674,31 +674,82 @@ async function api(req,env){
   return json({ok:true,provider,blueprint:output});
  }
  if(/^\/api\/author\/ai\/projects\/\d+\/run$/.test(p)&&m==="POST"){
-  const e=author(u);if(e)return e;if(!String(env.OPENAI_API_KEY||'').trim())return json({error:"AI generation is not configured. Manual Chapter Studio remains available."},503);await ensureAuthorAISchema(env);const id=Number(p.split('/')[5]);const row=await env.DB.prepare('SELECT * FROM ai_author_projects WHERE id=?').bind(id).first();if(!row)return json({error:'AI project not found'},404);if(u.role!=='admin'&&Number(row.owner_user_id)!==Number(u.id))return json({error:'You do not own this project'},403);
-  if(row.status==='running')return json({error:'Project is already running'},409);
-  await env.DB.prepare("UPDATE ai_author_projects SET status='running',updated_at=CURRENT_TIMESTAMP WHERE id=?").bind(id).run();
-  const next=Number(row.chapters_generated||0)+1, target=Number(row.chapters_target||0);
-  if(target&&next>target){await env.DB.prepare("UPDATE ai_author_projects SET status='complete' WHERE id=?").bind(id).run();return json({ok:true,status:'complete',message:'Chapter target reached.'})}
-  const job=await env.DB.prepare(`INSERT INTO ai_chapter_jobs(project_id,owner_user_id,chapter_number,job_type,status,prompt) VALUES(?,?,?,'draft','queued',?)`).bind(id,u.id,next,aiSafeText(row.premise,3000)).run();
+  const e=author(u);if(e)return e;
+  if(!String(env.OPENAI_API_KEY||'').trim())return json({error:"AI generation is not configured. Manual Chapter Studio remains available."},503);
+  await ensureAuthorAISchema(env);
+  const id=Number(p.split('/')[5]);
+  const existing=await env.DB.prepare('SELECT * FROM ai_author_projects WHERE id=?').bind(id).first();
+  if(!existing)return json({error:'AI project not found'},404);
+  if(u.role!=='admin'&&Number(existing.owner_user_id)!==Number(u.id))return json({error:'You do not own this project'},403);
+
+  // A conditional UPDATE is the lock. Only one concurrent request can claim a
+  // project; stale claims may be replaced after 30 minutes, and the token fences
+  // off any late completion from the previous worker invocation.
+  const claimToken=rnd(24);
+  const claim=await env.DB.prepare(`UPDATE ai_author_projects
+   SET status='running',active_run_token=?,active_run_started_at=CURRENT_TIMESTAMP,
+       active_run_owner_user_id=?,updated_at=CURRENT_TIMESTAMP
+   WHERE id=? AND (
+     status!='running' OR
+     (active_run_started_at IS NOT NULL AND active_run_started_at<=datetime('now','-30 minutes'))
+   )`).bind(claimToken,u.id,id).run();
+  if(Number(claim.meta?.changes||0)!==1)return json({error:'Project is already running. A run claim is active; retry after it completes or the stale-claim recovery window.'},409);
+
+  const row=await env.DB.prepare('SELECT * FROM ai_author_projects WHERE id=? AND active_run_token=?').bind(id,claimToken).first();
+  if(!row)return json({error:'The generation claim could not be verified. No job was started.'},409);
+  const next=Number(row.chapters_generated||0)+1,target=Number(row.chapters_target||0);
+  if(target&&next>target){
+   await env.DB.prepare("UPDATE ai_author_projects SET status='complete',active_run_token=NULL,active_run_started_at=NULL,active_run_owner_user_id=NULL,updated_at=CURRENT_TIMESTAMP WHERE id=? AND active_run_token=?").bind(id,claimToken).run();
+   return json({ok:true,status:'complete',message:'Chapter target reached.'});
+  }
+
+  const job=await env.DB.prepare(`INSERT INTO ai_chapter_jobs(project_id,owner_user_id,chapter_number,job_type,status,prompt,run_token)
+   VALUES(?,?,?,'draft','queued',?,?)`).bind(id,u.id,next,aiSafeText(row.premise,3000),claimToken).run();
   const jobId=Number(job.meta.last_row_id);
   const ai=await callAuthorModel(env,'You are the chapter writer for a rights-aware novel platform. Write an original clean chapter based only on the supplied story bible/project data. Do not reproduce protected text from any source. Keep continuity, character consistency, gradual world/territory building, dialogue and concrete consequences. Return HTML paragraphs only.',JSON.stringify({project:{name:row.name,genre:row.genre,fandom:row.fandom,premise:row.premise,protagonist:row.protagonist},bible:aiJson(row.bible_json),chapter_number:next}),3200);
-  if(ai.error||!ai.text){await env.DB.batch([env.DB.prepare("UPDATE ai_chapter_jobs SET status='failed',error=?,attempts=1,started_at=CURRENT_TIMESTAMP,finished_at=CURRENT_TIMESTAMP WHERE id=?").bind(ai.error||'AI provider returned no chapter text',jobId),env.DB.prepare("UPDATE ai_author_projects SET status='paused',updated_at=CURRENT_TIMESTAMP WHERE id=?").bind(id)]);return json({error:ai.error||'The AI provider returned no chapter text. The project remains paused and no chapter was published.'},502)}
+
+  if(ai.error||!ai.text){
+   await env.DB.batch([
+    env.DB.prepare("UPDATE ai_chapter_jobs SET status='failed',error=?,attempts=1,started_at=CURRENT_TIMESTAMP,finished_at=CURRENT_TIMESTAMP WHERE id=? AND run_token=?").bind(ai.error||'AI provider returned no chapter text',jobId,claimToken),
+    env.DB.prepare("UPDATE ai_author_projects SET status='paused',active_run_token=NULL,active_run_started_at=NULL,active_run_owner_user_id=NULL,updated_at=CURRENT_TIMESTAMP WHERE id=? AND active_run_token=?").bind(id,claimToken)
+   ]);
+   return json({error:ai.error||'The AI provider returned no chapter text. The project remains paused and no chapter was published.'},502);
+  }
+
   const draft=ai.text,provider=ai.provider;
-  let createdChapter=null;
+  const statements=[];
+  let chapterInsertIndex=-1;
   if(row.novel_id){
-   const n=await env.DB.prepare('SELECT id,owner_user_id,rights_status FROM novels WHERE id=?').bind(row.novel_id).first();
-   if(n&&(u.role==='admin'||Number(n.owner_user_id)===Number(u.id))&&['original','public_domain','licensed','authorized'].includes(String(n.rights_status))){
-    const existing=await env.DB.prepare('SELECT id FROM chapters WHERE novel_id=? AND chapter_number=?').bind(row.novel_id,next).first();
-    if(!existing){
-     const cr=await env.DB.prepare(`INSERT INTO chapters(novel_id,chapter_number,title,content,is_locked,ticket_cost,publication_status) VALUES(?,?,?,?,0,0,'draft')`).bind(row.novel_id,next,`Chapter ${next}`,draft).run();createdChapter=Number(cr.meta.last_row_id);
-    }
+   const novel=await env.DB.prepare('SELECT id,owner_user_id,rights_status FROM novels WHERE id=?').bind(row.novel_id).first();
+   if(novel&&(u.role==='admin'||Number(novel.owner_user_id)===Number(u.id))&&['original','public_domain','licensed','authorized'].includes(String(novel.rights_status))){
+    chapterInsertIndex=statements.length;
+    statements.push(env.DB.prepare(`INSERT INTO chapters(novel_id,chapter_number,title,content,is_locked,ticket_cost,publication_status)
+     SELECT ?,?,?,?,0,0,'draft'
+     WHERE EXISTS(SELECT 1 FROM ai_author_projects WHERE id=? AND active_run_token=?)
+       AND NOT EXISTS(SELECT 1 FROM chapters WHERE novel_id=? AND chapter_number=?)
+    `).bind(row.novel_id,next,`Chapter ${next}`,draft,id,claimToken,row.novel_id,next));
    }
   }
-  await env.DB.batch([
-   env.DB.prepare("UPDATE ai_chapter_jobs SET status='complete',result=?,attempts=1,started_at=CURRENT_TIMESTAMP,finished_at=CURRENT_TIMESTAMP WHERE id=?").bind(draft.slice(0,50000),jobId),
-   env.DB.prepare("UPDATE ai_author_projects SET chapters_generated=?,status=?,updated_at=CURRENT_TIMESTAMP WHERE id=?").bind(next,target&&next>=target?'complete':'paused',id),
-   env.DB.prepare("INSERT INTO ai_generation_runs(project_id,owner_user_id,agent,mode,status,input_summary,output_summary,provider) VALUES(?,?,? ,? ,'ok',?,?,?)").bind(id,u.id,'chapter-writer',row.mode,`chapter=${next}`,`draft=${draft.length} chars`,provider)
-  ]);
+  statements.push(env.DB.prepare(`UPDATE ai_chapter_jobs SET status='complete',result=?,attempts=1,started_at=CURRENT_TIMESTAMP,finished_at=CURRENT_TIMESTAMP
+   WHERE id=? AND run_token=? AND status='queued'
+     AND EXISTS(SELECT 1 FROM ai_author_projects WHERE id=? AND active_run_token=?)
+  `).bind(draft.slice(0,50000),jobId,claimToken,id,claimToken));
+  statements.push(env.DB.prepare(`INSERT INTO ai_generation_runs(project_id,owner_user_id,agent,mode,status,input_summary,output_summary,provider)
+   SELECT ?,?,?,?,'ok',?,?,?
+   WHERE EXISTS(SELECT 1 FROM ai_author_projects WHERE id=? AND active_run_token=?)
+  `).bind(id,u.id,'chapter-writer',row.mode,`chapter=${next}`,`draft=${draft.length} chars`,provider,id,claimToken));
+  statements.push(env.DB.prepare(`UPDATE ai_author_projects SET chapters_generated=?,status=?,active_run_token=NULL,
+   active_run_started_at=NULL,active_run_owner_user_id=NULL,updated_at=CURRENT_TIMESTAMP
+   WHERE id=? AND active_run_token=?
+  `).bind(next,target&&next>=target?'complete':'paused',id,claimToken));
+
+  const results=await env.DB.batch(statements);
+  const jobState=await env.DB.prepare('SELECT status FROM ai_chapter_jobs WHERE id=? AND run_token=?').bind(jobId,claimToken).first();
+  if(jobState?.status!=='complete'){
+   await env.DB.prepare("UPDATE ai_chapter_jobs SET status='superseded',error='Run claim expired or was replaced before completion',finished_at=CURRENT_TIMESTAMP WHERE id=? AND run_token=? AND status='queued'").bind(jobId,claimToken).run();
+   return json({error:'This generation claim was replaced before completion. The late result was discarded.'},409);
+  }
+  const createdChapter=chapterInsertIndex>=0?Number(results[chapterInsertIndex]?.meta?.last_row_id||0)||null:null;
   await audit(env,u,'ai_author_chapter_generated',`project=${id};chapter=${next};provider=${provider}`);
   return json({ok:true,project_id:id,chapter_number:next,chapter_id:createdChapter,provider,draft,status:target&&next>=target?'complete':'paused',message:createdChapter?'Draft chapter created in Chapter Studio.':'Draft generated. Link a novel to store it automatically.'});
  }
