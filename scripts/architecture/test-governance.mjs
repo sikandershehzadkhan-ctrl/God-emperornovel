@@ -33,6 +33,15 @@ if(new Set(nums).size!==nums.length)fail('duplicate migration sequence number');
 for(let i=1;i<nums.length;i++)if(nums[i]!==nums[i-1]+1)fail('migration sequence gap between '+nums[i-1]+' and '+nums[i]);
 for(const n of nums){const ranges=migrations.ranges.filter(r=>n>=r.from&&n<=r.to);if(ranges.length!==1)fail('migration '+n+' must have exactly one owning allocation range');}
 for(const r of migrations.ranges){if(!domains.has(r.owner))fail('migration range has unknown owner '+r.owner);}
+const orderedRanges=migrations.ranges.slice().sort((a,b)=>a.from-b.from);
+if(!orderedRanges.length||orderedRanges[0].from!==1)fail('migration allocations must start at sequence 0001');
+for(let i=0;i<orderedRanges.length;i++){
+ const r=orderedRanges[i];
+ if(!Number.isInteger(r.from)||!Number.isInteger(r.to)||r.from>r.to)fail('invalid migration allocation range '+JSON.stringify(r));
+ if(i&&r.from!==orderedRanges[i-1].to+1)fail('migration allocation ranges overlap or contain a gap between '+orderedRanges[i-1].to+' and '+r.from);
+}
+if(orderedRanges.at(-1).to!==migrations.lastObservedSequence)fail('lastObservedSequence must equal the final allocated migration number');
+if(nums.at(-1)!==migrations.lastObservedSequence)fail('lastObservedSequence does not match the actual migration directory');
 const routePath='docs/architecture/IMPERIAL-ROUTE-REGISTRY-01N.json';
 if(fs.existsSync(routePath)){const reg=read(routePath);const seen=new Set();for(const r of reg.routes||[]){if(seen.has(r.path))fail('duplicate route registry path '+r.path);seen.add(r.path);}}
 const apiPath='docs/architecture/IMPERIAL-API-ROUTE-METHOD-MATRIX-01N-37.json';
@@ -50,10 +59,17 @@ if(changedBase){
  const hasAdr=changed.some(p=>p.startsWith(adrDir)&&p.endsWith('.md'));
  const hasFeatureContract=changed.some(p=>p.startsWith('docs/architecture/feature-contracts/')&&p.endsWith('.json'));
  const hasFeatureCode=changed.some(p=>p.startsWith('src/')||p.startsWith('public/')||p.startsWith('migrations/'));
+ const migrationDiff=execFileSync('git',['diff','--name-status',changedBase,'HEAD','--','migrations'],{encoding:'utf8'}).trim().split('\n').filter(Boolean);
+ const baseMigrationFiles=execFileSync('git',['ls-tree','-r','--name-only',changedBase,'migrations'],{encoding:'utf8'}).split('\n').filter(p=>/^migrations\/\d{4}_.*\.sql$/.test(p));
+ const baseMigrationMax=baseMigrationFiles.reduce((m,p)=>Math.max(m,Number(p.slice(11,15))),0);
+ for(const line of migrationDiff){const [status,file]=line.split('\t');if(status!=='A')fail('shared migration history is immutable; only new forward migrations may be added: '+line);const n=Number(file.slice(11,15));if(n<=baseMigrationMax)fail('new migration must use a newly allocated number above '+baseMigrationMax+': '+file);}
  if(hasFeatureCode&&!hasFeatureContract)fail('feature code/schema changes require a feature contract in docs/architecture/feature-contracts/');
  for(const file of changed.filter(p=>p.startsWith('docs/architecture/feature-contracts/')&&p.endsWith('.json'))){
   const contract=read(file);
   if(!contract.featureId||!contract.domainOwner||!domains.has(contract.domainOwner))fail('feature contract has missing/unknown featureId or domainOwner: '+file);
+  if(!contract.technicalIntegrator)fail('feature contract must name a technicalIntegrator: '+file);
+  if(!Array.isArray(contract.affectedDomains)||contract.affectedDomains.length===0||contract.affectedDomains.some(id=>!domains.has(id)))fail('feature contract must list valid affectedDomains: '+file);
+  for(const field of ['dependencies','tests','migrationPlan','privacySecurity','rollout','rollback'])if(contract[field]===undefined)fail('feature contract is missing '+field+': '+file);
   if(!Array.isArray(contract.ownedPaths)||contract.ownedPaths.length===0)fail('feature contract must declare ownedPaths: '+file);
   for(const ownedPath of contract.ownedPaths){const owner=roots.find(r=>ownedPath===r.path||ownedPath.startsWith(r.path.endsWith('/')?r.path:r.path+'/'));if(!owner||owner.owner!==contract.domainOwner)fail('feature contract path '+ownedPath+' is not owned by declared domain '+contract.domainOwner+' in '+file);}
  }
