@@ -119,3 +119,37 @@ A separate reader-progress PR proposed adding `history.progress_percent`. The ca
 7. Deploy only through the explicitly approved production release workflow.
 
 The ten-point rating implementation and fresh/legacy SQLite migration tests exist on PR #173, but they are not yet integrated into the current-main route/security integration branch. The duplicate legacy POST /api/rating handler has been removed on the current integration branch; the active Worker schema and API remain 1–5 until migrations 0012–0035 and the complete ten-point UI/API/schema/test set are reconciled together. This register is a source-level integration plan only. No production D1 migration has been run and no production Worker deployment is authorized by this work.
+
+
+## Pull-request integration collision audit (2026-11-04)
+
+### PR #124 versus the current canonical security integration
+
+PR #124 remains **blocked from direct merge**: GitHub reports the branch as dirty against current `main`, and the branch contains 307 commits. Its 0009–0019 migration filenames collide with the already sequenced chain. The migration mapping above is not a filename-only rename:
+
+- The password-reset token, email-verification, email-snapshot, ownership-transfer and reviewer-role migrations are byte-identical to canonical destinations 0036, 0037, 0038, 0039 and 0042 respectively.
+- The old 0013 chapter timestamp migration is superseded by 0029. The canonical migration also adds edit-time timestamp maintenance and an index, so the old migration must not be replayed.
+- The old 0014 deletion migration creates a second `account_deletion_requests` ledger. Canonical 0040 instead upgrades `account_closure_requests` created by 0031. Canonical 0041, 0043, 0044 and 0045 were adapted to reference that canonical ledger. Do not restore the old table or foreign keys.
+- The 0015 review-store migration differs specifically in its foreign-key target and active-request statuses. The 0017–0019 specialist workflow migrations likewise reference the old request table on PR #124 but the canonical closure table in 0043–0045.
+
+The account export, deletion-review APIs/UI and ownership-transfer APIs are not all present in the current route-registry Worker snapshot. Their migration presence does not mean those API features are integrated. Port those handlers separately against the canonical `account_closure_requests` schema and current authorization middleware; do not merge the old `src/index.js` wholesale.
+
+### PR #173 versus PR #185
+
+PR #173 (profile/account/reader/media consolidation) and PR #185 (current-main route registry/security audit) share 434 tracked paths in their branch trees; 32 shared paths have different Git blob IDs. The collision set includes the Worker entrypoint, both browser application bundles, HTML shell, package manifests/lockfile, deployment and Cloudflare workflows, Wrangler configuration, rating/runtime policy modules, and multiple regression tests.
+
+The branches are not interchangeable and must not be merged by choosing one side for every conflict. PR #173 contains the consolidated product/runtime work and canonical migrations 0012–0035; PR #185 contains the current-main route inventory and the later security/route audit. A release candidate must port the route registry and audit onto the integrated PR #173 Worker, then regenerate the Worker source fingerprint and rerun authorization, route-method, build, migration and browser-bundle checks. Preserve the product behavior from PR #173 while reconciling the current-main route/security safeguards. Neither PR alone proves that combined result.
+
+### PR #171 versus PR #186
+
+PR #171 (older design plus homepage SSR integration) and PR #186 (design foundation ported onto current main) share 408 tracked paths; 13 shared paths have different blob IDs. The differing set includes `src/index.js`, `public/app.js`, versioned application/design bundles, `package.json`, deployment workflow and design/production regression tests.
+
+PR #186 deliberately preserves the current-main Worker and ports the six-theme design foundation without importing the older SSR Worker. PR #171 contains the homepage SSR implementation and additional rating/reader-progress changes, but its Worker and migration context are stale relative to current main. Do not merge PR #171 wholesale or overwrite PR #186's current-main Worker. If homepage SSR is still required, port the SSR module and route integration as a separate, source-reviewed change, reconciling route ownership, ratings, metadata, cache behavior and private-route noindex tests first.
+
+### Merge-safety rules
+
+1. Never resolve a source/Worker conflict by taking an entire branch version without reviewing its route and security changes.
+2. Never replay branch-local migrations when an identical or semantically superseding canonical migration already exists.
+3. A schema migration being present does not prove its API/UI integration is present.
+4. Recompute source fingerprints only after the relevant handlers have been reviewed; never update the hash merely to silence a test.
+5. Keep production D1 migrations and Worker deployment gated. These are source integration decisions only; no production database or live deployment is authorized by this register.
