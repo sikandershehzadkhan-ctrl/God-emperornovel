@@ -15,5 +15,6 @@ const commentRoute = worker.split('\n').find(line => line.includes('if(p==="/api
 const reportRoute = worker.split('\n').find(line => line.includes('if(p==="/api/comments/report"&&m==="POST")'));
 assert.ok(commentRoute && !commentRoute.includes("SELECT COUNT(*)") && commentRoute.includes("comment_hourly_limit"));
 assert.ok(reportRoute && !reportRoute.includes("SELECT COUNT(*)") && reportRoute.includes("comment_report_hourly_limit"));
+assert.ok(reportRoute.includes("JOIN novels") && reportRoute.includes("n.publication_status='published'") && reportRoute.includes("n.rights_status IN"), "reports must target visible comments on published rights-eligible novels");
 assert.ok(reportRoute.includes("comment_report_claims.user_id"));
 console.log("PASS: community write routes use database-enforced atomic quota and duplicate-report triggers.");
