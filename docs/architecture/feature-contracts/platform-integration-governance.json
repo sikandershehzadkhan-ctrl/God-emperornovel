@@ -90,10 +90,12 @@
       "Owner-scoped profile and account-preference API regression",
       "Public profile visibility and opt-in disclosure regression",
       "Account page profile PUT and settings preference GET/PUT integration",
-      "Account preference restoration and debounced cross-device synchronization"
+      "Account preference restoration and debounced cross-device synchronization",
+      "Local Wrangler Worker and D1 account/reader isolation integration"
     ],
     "isolation": [
-      "test-authorization-ownership-matrix.mjs"
+      "test-authorization-ownership-matrix.mjs",
+      "test-worker-account-reader-isolation.mjs"
     ],
     "buildCommands": [
       "npm run build",
@@ -173,6 +175,8 @@
     "Settings restore account preferences and debounce writes while retaining local-first anonymous behavior.",
     "Public/private selection restores correctly from the saved profile.",
     "Service worker installs a new cache namespace for the changed browser bundle.",
-    "Service-worker cache namespace changes when the browser application bundle changes."
+    "Service-worker cache namespace changes when the browser application bundle changes.",
+    "A fresh local D1 database proves profile, preferences and reading progress are isolated between two authenticated accounts.",
+    "Cross-origin writes, stale progress revisions, rights-ineligible chapters and logout revocation are exercised against the local Worker runtime."
   ]
 }
