@@ -85,11 +85,11 @@ if(changedBase){
  for(const file of changed.filter(p=>p.startsWith('docs/architecture/feature-contracts/')&&p.endsWith('.json'))){
   const contract=read(file);
   if(!contract.featureId||!contract.domainOwner||!domains.has(contract.domainOwner))fail('feature contract has missing/unknown featureId or domainOwner: '+file);
-  if(!contract.technicalIntegrator)fail('feature contract must name a technicalIntegrator: '+file);
+  if(!contract.technicalIntegrator||!domains.has(contract.technicalIntegrator))fail('feature contract must name a valid technicalIntegrator: '+file);
   if(!Array.isArray(contract.affectedDomains)||contract.affectedDomains.length===0||contract.affectedDomains.some(id=>!domains.has(id)))fail('feature contract must list valid affectedDomains: '+file);
   for(const field of ['dependencies','tests','migrationPlan','privacySecurity','rollout','rollback'])if(contract[field]===undefined)fail('feature contract is missing '+field+': '+file);
   if(!Array.isArray(contract.ownedPaths)||contract.ownedPaths.length===0)fail('feature contract must declare ownedPaths: '+file);
-  for(const ownedPath of contract.ownedPaths){const owner=roots.find(r=>ownedPath===r.path||ownedPath.startsWith(r.path.endsWith('/')?r.path:r.path+'/'));if(!owner||owner.owner!==contract.domainOwner)fail('feature contract path '+ownedPath+' is not owned by declared domain '+contract.domainOwner+' in '+file);}
+  for(const ownedPath of contract.ownedPaths){const owner=roots.find(r=>ownedPath===r.path||ownedPath.startsWith(r.path.endsWith('/')?r.path:r.path+'/'));if(!owner||!contract.affectedDomains.includes(owner.owner))fail('feature contract path '+ownedPath+' is not owned by one of its declared affectedDomains in '+file);}
  }
  const rootsSorted=roots.slice().sort((a,b)=>b.path.length-a.path.length);
  for(const file of changed){
