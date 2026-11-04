@@ -9,6 +9,6 @@ assert.ok(worker.includes('"x-robots-tag":noindex?"noindex, nofollow":"index, fo
 for(const path of privatePaths)assert.ok(worker.includes('"'+path+'"'),"noindex policy includes "+path);
 assert.ok(!worker.includes('new Set(["/author/'),"public author profile paths must not be blocked by the private author-studio rule");
 assert.ok(robots.includes("Disallow: /api/"),"robots.txt discourages crawling API endpoints");
-assert.match(robots,/^User-agent: \\*\\s*\\nDisallow: \/api\//m,"API crawl exclusion must apply to the global crawler rule");
+assert.match(robots,/^User-agent: \*\s*\nDisallow: \/api\//m,"API crawl exclusion must apply to the global crawler rule");
 assert.ok(robots.includes("Allow: /")&&robots.includes("/sitemap.xml"),"robots.txt retains public indexing and the dynamic sitemap");
 console.log("Private-route noindex headers, meta tags and API crawl rules passed.");
