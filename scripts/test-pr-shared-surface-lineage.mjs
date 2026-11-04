@@ -41,18 +41,18 @@ async function listOpenPullRequests(){
   for(let page=1;page<=10;page++){
     const items=await github("/pulls?state=open&per_page=100&page="+page);
     result.push(...items);
-    if(items.length<100)break;
+    if(items.length<100)return result;
   }
-  return result;
+  throw new Error("Open pull-request pagination exceeded 1000 records; refusing an incomplete collision audit.");
 }
 async function listChangedFiles(number){
   const result=[];
   for(let page=1;page<=10;page++){
     const items=await github("/pulls/"+number+"/files?per_page=100&page="+page);
     result.push(...items.map(item=>item.filename));
-    if(items.length<100)break;
+    if(items.length<100)return result;
   }
-  return result;
+  throw new Error("Changed-file pagination exceeded 1000 paths for PR #"+number+"; refusing an incomplete collision audit.");
 }
 async function isAncestor(baseSha,headSha){
   if(baseSha===headSha)return true;
@@ -99,15 +99,15 @@ for(let depth=0;depth<30;depth++){
   cursorSha=parent.base.sha;
   if(cursorRef!=="main")relevantBaseRefs.add(cursorRef);
 }
-const older=open.filter(pr=>{
+// Evaluate every open sibling targeting the same base, regardless of creation
+// order. Newer PRs are just as capable of carrying a conflicting shared surface.
+// Nested stack parents are included even when their base ref differs.
+const siblings=open.filter(pr=>{
   if(pr.number===current.number)return false;
-  const otherTime=Date.parse(pr.created_at),currentTime=Date.parse(current.created_at);
-  const isOlder=otherTime<currentTime||(otherTime===currentTime&&pr.number<current.number);
-  if(!isOlder)return false;
   return stackParentNumbers.has(pr.number)||relevantBaseRefs.has(pr.base.ref);
-}).sort((a,b)=>Date.parse(a.created_at)-Date.parse(b.created_at));
+}).sort((a,b)=>a.number-b.number);
 const conflicts=[];
-for(const other of older){
+for(const other of siblings){
   const otherFiles=await listChangedFiles(other.number);
   const overlap=otherFiles.filter(file=>currentPaths.has(file));
   if(overlap.length===0)continue;
@@ -135,12 +135,12 @@ for(const other of older){
   }
 }
 if(conflicts.length){
-  console.error("FAIL: this PR diverges from an earlier PR in the same integration stack or targeting the same base on serialized shared surfaces.");
+  console.error("FAIL: this PR diverges from another open PR in the same integration stack or targeting the same base on serialized shared surfaces.");
   for(const conflict of conflicts){
     console.error("  PR #"+conflict.number+" "+conflict.title+" ("+conflict.head+")");
     console.error("  Overlapping paths: "+conflict.overlap.join(", "));
   }
-  console.error("Stack the new branch on the earlier PR head, integrate that head first, or close the superseded draft before proceeding.");
+  console.error("If the difference is intentional, stack the work or reconcile the shared file explicitly; do not close a PR until its unique changes have been reviewed.");
   process.exit(1);
 }
 console.log("PASS: shared-surface lineage is linear for "+currentFiles.length+" changed protected path(s).");
