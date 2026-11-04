@@ -227,7 +227,7 @@ def audit_connections(actual: sqlite3.Connection,
         report["foreign_key_violations"] or report["orphan_relationships"]
         or report["duplicate_unique_groups"] or report["invalid_check_rows"]
     )
-    report["safe_to_rebuild"] = not (
+    report["core_schema_preflight_clean"] = not (
         report["schema_drift"] or report["data_violations"] or report["errors"]
     )
     return report
@@ -315,7 +315,7 @@ def main() -> int:
     try:
         result = audit_connections(actual, canonical)
         print(json.dumps(result, indent=2, sort_keys=True))
-        return 0 if result["safe_to_rebuild"] else 2
+        return 0 if result["core_schema_preflight_clean"] else 2
     finally:
         actual.close()
         canonical.close()
