@@ -1,4 +1,5 @@
 import assert from "node:assert/strict";
+import fs from "node:fs";
 import { readFile } from "node:fs/promises";
 const source=await readFile(new URL("../src/index.js",import.meta.url),"utf8");
 const route=source.match(/if\(p==="\/api\/requests"&&m==="GET"\)\{([^\n]+)\}/);
