@@ -229,6 +229,7 @@ def audit_connections(actual: sqlite3.Connection,
     )
     report["core_schema_preflight_clean"] = not (
         report["schema_drift"] or report["data_violations"] or report["errors"]
+        or report["custom_objects"]
     )
     return report
 
