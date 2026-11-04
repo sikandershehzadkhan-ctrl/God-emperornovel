@@ -73,9 +73,9 @@ export function validateMigrationInventory(currentEntries, baseEntries = [], cur
   for (const item of newReservations) {
     if (item.number <= baseMax) fail('new reservation ' + item.path + ' is not above the highest existing migration/reservation number ' + baseMax);
     if (!Number.isInteger(currentPrNumber) || item.pullRequest !== currentPrNumber) fail('new reservation ' + item.path + ' must be bound to the current pull request number');
-    if (!addedMigrations.some(migration => migration.path === item.migration && migration.number === item.number)) {
-      fail('new reservation ' + item.path + ' must be accompanied by its exact SQL migration in the same pull request');
-    }
+    const pairedMigration = addedMigrations.find(migration => migration.number === item.number);
+    if (!pairedMigration) fail('new reservation ' + item.path + ' must be accompanied by its SQL migration in the same pull request');
+    if (pairedMigration.path !== item.migration) fail('migration ' + pairedMigration.path + ' does not match reservation ' + item.path + ' for ' + item.migration);
   }
 
   const reservationByNumber = new Map(reservations.map(x => [x.number, x]));
