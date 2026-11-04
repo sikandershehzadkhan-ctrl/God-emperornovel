@@ -1,7 +1,9 @@
+import json
 from pathlib import Path
 
 app = Path("public/app.js").read_text(encoding="utf-8")
-versioned = Path("public/app-17.23.0.js").read_text(encoding="utf-8")
+version = json.loads(Path("package.json").read_text(encoding="utf-8"))["version"]
+versioned = Path(f"public/app-{version}.js").read_text(encoding="utf-8")
 checks = {
     "Author Studio includes a creator media library": "authorMediaPanel" in app,
     "media library reads the authenticated creator API": "api('/api/author/media')" in app,

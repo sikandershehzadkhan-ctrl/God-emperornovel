@@ -1,7 +1,9 @@
+import json
 from pathlib import Path
 
 app = Path("public/app.js").read_text(encoding="utf-8")
-versioned = Path("public/app-17.23.0.js").read_text(encoding="utf-8")
+version = json.loads(Path("package.json").read_text(encoding="utf-8"))["version"]
+versioned = Path(f"public/app-{version}.js").read_text(encoding="utf-8")
 checks = {
     "administrator link is only inserted after admin role check": "if(d.user?.role==='admin')" in app,
     "administrator link appears in desktop navigation": "class=\"adminLink\"" in app,
