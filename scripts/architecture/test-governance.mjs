@@ -62,7 +62,7 @@ if(changedBase){
   if(file===''||file==='.gitignore'||file==='.gitattributes')continue;
   const owner=rootsSorted.find(r=>file===r.path||file.startsWith(r.path.endsWith('/')?r.path:r.path+'/'));
   if(!owner)fail('changed path has no registered owner: '+file+'; register its domain before merging');
-  const protectedPath=shared.some(p=>file===p||p.endsWith('/')&&file.startsWith(p));
+  const protectedPath=shared.some(p=>p.endsWith('*')?file.startsWith(p.slice(0,-1)):file===p||p.endsWith('/')&&file.startsWith(p));
   if(protectedPath&&!hasAdr)fail('shared path changed without an Architecture Decision Record in '+adrDir+': '+file);
  }
  console.log('PR path ownership checked: '+changed.length+' changed paths; shared-file ADR rule checked.');
