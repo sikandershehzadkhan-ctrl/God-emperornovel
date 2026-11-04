@@ -1,4 +1,4 @@
--- Imperial Novel 17.24.0: atomic AI Author Studio run claims.
+-- Imperial Novel: additive AI Author Studio atomic run-claim fields.
 -- Additive only. Existing job history is preserved; no rows are rewritten.
 ALTER TABLE ai_author_projects ADD COLUMN active_run_token TEXT;
 ALTER TABLE ai_author_projects ADD COLUMN active_run_started_at TEXT;
