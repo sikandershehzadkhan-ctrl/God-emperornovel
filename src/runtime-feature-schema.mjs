@@ -10,6 +10,7 @@ export function createRuntimeFeatureSchemaEnsurer() {
         "CREATE INDEX IF NOT EXISTS idx_auth_rate_limits_window ON auth_rate_limits(window_start)",
         "CREATE TABLE IF NOT EXISTS community_rate_limit_events (id INTEGER PRIMARY KEY AUTOINCREMENT,scope TEXT NOT NULL CHECK(scope IN ('comment','report')),user_id INTEGER NOT NULL,created_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP)",
         "CREATE INDEX IF NOT EXISTS idx_community_rate_limit_scope_user_created ON community_rate_limit_events(scope,user_id,created_at)",
+        "CREATE INDEX IF NOT EXISTS idx_community_rate_limit_created ON community_rate_limit_events(created_at)",
         "CREATE TABLE IF NOT EXISTS comment_report_claims (user_id INTEGER NOT NULL,comment_id INTEGER NOT NULL,created_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,PRIMARY KEY(user_id,comment_id))",
         "CREATE TABLE IF NOT EXISTS comment_likes (user_id INTEGER NOT NULL,comment_id INTEGER NOT NULL,created_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,PRIMARY KEY(user_id,comment_id))",
         "CREATE TABLE IF NOT EXISTS comment_reports (id INTEGER PRIMARY KEY AUTOINCREMENT,user_id INTEGER NOT NULL,comment_id INTEGER NOT NULL,reason TEXT NOT NULL,details TEXT DEFAULT '',status TEXT NOT NULL DEFAULT 'open',created_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP)",
@@ -24,6 +25,7 @@ export function createRuntimeFeatureSchemaEnsurer() {
       await env.DB.prepare(`CREATE TRIGGER IF NOT EXISTS trg_comments_hourly_limit
         BEFORE INSERT ON comments
         BEGIN
+          DELETE FROM community_rate_limit_events WHERE created_at < datetime('now','-2 days');
           SELECT CASE WHEN (SELECT COUNT(*) FROM community_rate_limit_events WHERE scope='comment' AND user_id=NEW.user_id AND created_at>=datetime('now','-1 hour')) >= 10
             THEN RAISE(ABORT,'comment_hourly_limit') END;
           INSERT INTO community_rate_limit_events(scope,user_id) VALUES('comment',NEW.user_id);
@@ -31,6 +33,7 @@ export function createRuntimeFeatureSchemaEnsurer() {
       await env.DB.prepare(`CREATE TRIGGER IF NOT EXISTS trg_comment_reports_hourly_limit_and_claim
         BEFORE INSERT ON comment_reports
         BEGIN
+          DELETE FROM community_rate_limit_events WHERE created_at < datetime('now','-2 days');
           SELECT CASE WHEN (SELECT COUNT(*) FROM community_rate_limit_events WHERE scope='report' AND user_id=NEW.user_id AND created_at>=datetime('now','-1 hour')) >= 10
             THEN RAISE(ABORT,'comment_report_hourly_limit') END;
           INSERT INTO comment_report_claims(user_id,comment_id) VALUES(NEW.user_id,NEW.comment_id);
