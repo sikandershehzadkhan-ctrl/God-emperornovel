@@ -148,7 +148,19 @@ Required gates: source validation, architecture governance, dependency DAG, rout
 
 No auto-merge. No deployment from feature branches. No production schema changes from feature CI.
 
-## 9. Collision prevention response
+## 9. Repository branch protection (required operational setting)
+
+The governance workflow is only a check until GitHub branch protection makes it mandatory. Before this PR is considered fully enforced on `main`, repository settings must:
+- require pull requests for all changes to `main`;
+- require the exact checks `Imperial Novel Architecture Governance / architecture-governance`, `Imperial Novel Cloudflare Source Validation / validate-source`, `Validate Imperial Novel Route Registry / route-registry`, and `Graphify architecture map`;
+- require the branch to be up to date before merge;
+- block force pushes and branch deletion;
+- dismiss stale approvals when new commits are pushed;
+- restrict bypass permissions to a deliberately controlled owner-only emergency process.
+
+The GitHub connector available for this work can edit files and PR metadata but does not expose repository branch-protection settings. This policy is documented, not falsely reported as enabled. A repository owner must apply these settings in GitHub Settings → Branches / Rulesets. Until then, checks run but GitHub may still permit an administrator to bypass them.
+
+## 10. Collision prevention response
 
 If a collision is detected: stop integration, preserve both source histories, identify canonical owner, compare semantics (not filenames alone), create a reconciliation ADR, port the smallest safe change, add a regression test, update registers, rerun gates on the exact head. Never resolve a collision by silently overwriting a file or renumbering an applied migration.
 
