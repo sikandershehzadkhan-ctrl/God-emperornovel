@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
   "name": "Imperial Novel feature ownership map",
-  "policy": "One accountable owner per domain. Logical ownership does not imply that the current monolith has already been physically split.",
+  "policy": "Legacy feature-level decomposition map. Canonical repository path ownership and integration policy are governed by IMPERIAL-FEATURE-OWNERSHIP.json and ARCHITECTURE.md; this file remains a subordinate feature-module placement guide. If statements conflict, canonical root governance wins.",
   "pathRules": {
     "backendFeatures": "src/features/<feature-id>/",
     "backendPlatform": "src/platform/<capability-id>/",
@@ -264,5 +264,6 @@
     "tests",
     "rollout",
     "rollback"
-  ]
+  ],
+  "canonicalGovernance": "docs/architecture/IMPERIAL-FEATURE-OWNERSHIP.json"
 }
