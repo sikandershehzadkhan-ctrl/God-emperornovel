@@ -56,7 +56,7 @@ def check_allowlists(conn: sqlite3.Connection, table: str) -> list[tuple]:
     ddl = row[0] if row else ""
     found = []
     for check in re.finditer(
-        r"CHECK\\s*\\(\\s*([A-Za-z_][A-Za-z0-9_]*)\\s+IN\\s*\\(([^)]*)\\)\\s*\\)",
+        r"CHECK\s*\(\s*([A-Za-z_][A-Za-z0-9_]*)\s+IN\s*\(([^)]*)\)\s*\)",
         ddl, re.IGNORECASE
     ):
         values = tuple(value.replace("''", "'") for value in
