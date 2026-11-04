@@ -25,7 +25,18 @@
       "name": "Identity and accounts",
       "owns": [
         "src/domains/identity/",
-        "src/identity/"
+        "src/identity/",
+        "src/account-deletion-disposition-approval-policy.mjs",
+        "src/account-deletion-disposition-policy.mjs",
+        "src/account-deletion-review-policy.mjs",
+        "src/email-verification-request.mjs",
+        "src/email-verification-store.mjs",
+        "src/email-verification-token.mjs",
+        "src/password-reset-link.mjs",
+        "src/password-reset-request.mjs",
+        "src/password-reset-store.mjs",
+        "src/password-reset-token.mjs",
+        "src/security-email-delivery.mjs"
       ],
       "responsibilities": [
         "profiles",
@@ -41,7 +52,8 @@
       "name": "Catalog and taxonomy",
       "owns": [
         "src/domains/catalog/",
-        "src/catalog/"
+        "src/catalog/",
+        "src/catalog-search-policy.mjs"
       ],
       "responsibilities": [
         "novel discovery",
@@ -99,7 +111,8 @@
       "name": "Creator and Author Studio",
       "owns": [
         "src/domains/creator/",
-        "src/author/"
+        "src/author/",
+        "src/creator-ownership-policy.mjs"
       ],
       "responsibilities": [
         "author applications",
@@ -141,7 +154,8 @@
       "name": "Discovery and intelligence",
       "owns": [
         "src/domains/discovery/",
-        "src/discovery/"
+        "src/discovery/",
+        "src/related-novel-policy.mjs"
       ],
       "responsibilities": [
         "ranking",
@@ -195,7 +209,8 @@
       "id": "experience-shell",
       "name": "Web experience and design system",
       "owns": [
-        "public/"
+        "public/",
+        "src/react/"
       ],
       "responsibilities": [
         "browser shell",
