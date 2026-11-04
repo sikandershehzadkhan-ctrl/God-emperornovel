@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
   "sourceBranch": "integration/route-registry-current-main-2026-11-04",
-  "sourceBlob": "6aafdfe662fb3ce4bdcd2d3cfb6dbcee5fe7979c",
+  "sourceBlob": "43b6610b2d9dd5ffff461fe587eb648e6e8d7dec",
   "auditDate": "2026-11-04",
   "scope": "Partial handler-level static review of current integration source snapshot. This revision rechecks the five authentication route-method entries introduced or changed in commit 106744a6e9124524c88b6f454bf4bbc98e81745f and preserves the prior 40 reviewed entries. No full authorization certification, live D1 concurrency proof, or browser/runtime isolation proof is claimed.",
   "reviewedRouteCount": 45,
