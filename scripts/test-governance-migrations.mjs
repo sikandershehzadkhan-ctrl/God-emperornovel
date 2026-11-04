@@ -1,0 +1,82 @@
+import assert from 'node:assert/strict';
+import fs from 'node:fs';
+import path from 'node:path';
+import {execFileSync} from 'node:child_process';
+
+const fail = (message) => { throw new Error('[governance:migrations] ' + message); };
+
+export function validateMigrationInventory(currentEntries, baseEntries = []) {
+  const parse = (entries, label) => {
+    const parsed = [];
+    for (const entry of entries) {
+      const name = entry.path.split('/').at(-1);
+      if (!name.endsWith('.sql')) continue;
+      const match = /^(\\d{4})_([a-z0-9][a-z0-9_-]*)\\.sql$/i.exec(name);
+      if (!match) fail(label + ' contains a SQL migration with a non-canonical filename: ' + entry.path);
+      parsed.push({ path: entry.path, number: Number(match[1]), content: entry.content });
+    }
+    const seen = new Map();
+    for (const item of parsed) {
+      if (seen.has(item.number)) fail('duplicate migration number ' + String(item.number).padStart(4, '0') + ': ' + seen.get(item.number) + ' and ' + item.path);
+      seen.set(item.number, item.path);
+    }
+    return parsed.sort((a, b) => a.number - b.number);
+  };
+
+  const current = parse(currentEntries, 'current tree');
+  const base = parse(baseEntries, 'base tree');
+  const currentByPath = new Map(current.map(x => [x.path, x]));
+  const baseMax = base.reduce((max, x) => Math.max(max, x.number), 0);
+
+  for (const old of base) {
+    const now = currentByPath.get(old.path);
+    if (!now) fail('applied migration was deleted: ' + old.path);
+    if (now.content !== old.content) fail('applied migration was modified: ' + old.path + '; add a new forward migration instead');
+  }
+
+  const basePaths = new Set(base.map(x => x.path));
+  for (const item of current) {
+    if (!basePaths.has(item.path) && item.number <= baseMax) {
+      fail('new migration ' + item.path + ' reuses or backfills a sequence at or below the base maximum ' + baseMax);
+    }
+  }
+  return { count: current.length, baseCount: base.length, baseMax, added: current.filter(x => !basePaths.has(x.path)).map(x => x.path) };
+}
+
+function selfTest() {
+  const base = [
+    { path: 'migrations/0001_initial.sql', content: 'CREATE TABLE a(id INTEGER);' },
+    { path: 'migrations/0002_accounts.sql', content: 'CREATE TABLE b(id INTEGER);' }
+  ];
+  const valid = [...base, { path: 'migrations/0003_reader.sql', content: 'CREATE TABLE c(id INTEGER);' }];
+  assert.equal(validateMigrationInventory(valid, base).added.length, 1);
+  assert.throws(() => validateMigrationInventory([...valid, { path: 'migrations/0003_duplicate.sql', content: '' }], base), /duplicate migration number/);
+  assert.throws(() => validateMigrationInventory([{ ...base[0], content: 'DROP TABLE a;' }, base[1]], base), /was modified/);
+  assert.throws(() => validateMigrationInventory([base[1]], base), /was deleted/);
+  assert.throws(() => validateMigrationInventory([...base, { path: 'migrations/0002_reused.sql', content: '' }], base), /duplicate migration number/);
+  assert.throws(() => validateMigrationInventory([...base, { path: 'migrations/0002_backfill.sql', content: '' }], base), /duplicate migration number/);
+  assert.throws(() => validateMigrationInventory([...base, { path: 'migrations/0003bad.sql', content: '' }], base), /non-canonical filename/);
+  console.log('PASS: migration governance self-tests (valid forward addition, duplicate allocation, modified/deleted history, and invalid naming).');
+}
+
+if (process.argv.includes('--self-test')) {
+  selfTest();
+} else {
+  const baseSha = process.env.GOVERNANCE_BASE_SHA;
+  if (!baseSha) fail('GOVERNANCE_BASE_SHA is required; run this gate in a pull_request workflow.');
+  const directory = 'migrations';
+  if (!fs.existsSync(directory)) fail('migrations directory is missing');
+  const currentEntries = fs.readdirSync(directory, { withFileTypes: true })
+    .filter(entry => entry.isFile() && entry.name.endsWith('.sql'))
+    .map(entry => ({ path: path.posix.join(directory, entry.name), content: fs.readFileSync(path.join(directory, entry.name), 'utf8') }));
+  const basePaths = execFileSync('git', ['ls-tree', '-r', '--name-only', baseSha, '--', directory], { encoding: 'utf8' })
+    .split('\\n').filter(name => /^migrations\\/\\d{4}_.+\\.sql$/i.test(name));
+  const baseEntries = basePaths.map(file => ({
+    path: file,
+    content: execFileSync('git', ['show', baseSha + ':' + file], { encoding: 'utf8' })
+  }));
+  const result = validateMigrationInventory(currentEntries, baseEntries);
+  console.log('PASS: ' + result.count + ' migration files inventoried; ' + result.baseCount + ' base migrations are unchanged; base maximum is ' + result.baseMax + '.');
+  if (result.added.length) console.log('Forward additions: ' + result.added.join(', '));
+  else console.log('No new migrations in this pull request.');
+}
