@@ -123,6 +123,9 @@ jobs:
       - name: Test normalized donation reference uniqueness
         run: python3 scripts/test-donation-reference-unique.py
 
+      - name: Test published comment engagement boundaries
+        run: python3 scripts/test-published-comment-engagement.py
+
       - name: Test atomic novel request charging
         run: python3 scripts/test-novel-request-charge-atomic.py
 
