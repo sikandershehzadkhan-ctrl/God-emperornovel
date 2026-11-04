@@ -22,8 +22,6 @@ function img(url,title=''){
     [/silent isekai|isekai/,'/covers/isekai.jpg'],
     [/last cartographer|cartographer/,'/covers/cartographer.jpg']
   ];
-  // Prefer bundled title-matched covers for the known launch catalog.
-  // For other novels, preserve the publisher/admin supplied cover URL.
   for(const [pattern,path] of fallback){if(pattern.test(t))return path}
   const value=typeof url==='string'?url.trim():'';
   return value==='/story-cover-placeholder.svg'||value.startsWith('/covers/')&&!value.includes('..')&&!/[?#%\\\\]/.test(value)&&value.length<=180?value:'/story-cover-placeholder.svg'
