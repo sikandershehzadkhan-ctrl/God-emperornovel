@@ -7,6 +7,7 @@ on:
 
 permissions:
   contents: read
+  pull-requests: read
 
 concurrency:
   group: imperial-novel-migration-governance-${{ github.event.pull_request.number || github.ref }}
@@ -14,9 +15,9 @@ concurrency:
 
 jobs:
   migration-governance:
-    name: Migration immutability and allocation
+    name: Migration immutability, ownership and concurrent allocation
     runs-on: ubuntu-latest
-    timeout-minutes: 5
+    timeout-minutes: 8
     steps:
       - name: Checkout complete history
         uses: actions/checkout@v4
@@ -28,13 +29,16 @@ jobs:
         with:
           node-version: 22
 
-      - name: Test governance guard against valid and invalid fixtures
+      - name: Test migration guard fixtures
         run: node scripts/test-governance-migrations.mjs --self-test
 
-      - name: Test shared-surface ownership guard against fixtures
+      - name: Test ownership guard fixtures
         run: node scripts/test-governance-ownership.mjs --self-test
 
-      - name: Enforce shared-surface ownership and ADR requirements
+      - name: Test concurrent migration allocation fixtures
+        run: node scripts/test-governance-migration-collisions.mjs --self-test
+
+      - name: Enforce complete path ownership and ADR requirements
         if: github.event_name == 'pull_request'
         env:
           GOVERNANCE_BASE_SHA: ${{ github.event.pull_request.base.sha }}
@@ -45,3 +49,11 @@ jobs:
         env:
           GOVERNANCE_BASE_SHA: ${{ github.event.pull_request.base.sha }}
         run: node scripts/test-governance-migrations.mjs
+
+      - name: Reject concurrent migration sequence collisions
+        if: github.event_name == 'pull_request'
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+          GITHUB_EVENT_PATH: ${{ github.event_path }}
+          GITHUB_REPOSITORY: ${{ github.repository }}
+        run: node scripts/test-governance-migration-collisions.mjs
