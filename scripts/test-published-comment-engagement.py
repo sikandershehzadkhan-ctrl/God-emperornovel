@@ -11,6 +11,9 @@ comment_target = "SELECT c.id FROM comments c JOIN novels n ON n.id=c.novel_id W
 for cid, expected in [(11,11),(12,None),(13,None),(14,14),(15,None),(16,None),(999,None)]:
     row = db.execute(comment_target, (cid,)).fetchone()
     assert (row[0] if row else None) == expected, (cid, row, expected)
+comment_create_target = "SELECT 1 FROM novels WHERE id=? AND publication_status='published' AND rights_status IN ('original','public_domain','licensed','authorized')"
+for nid, expected in [(1,True),(2,False),(3,False),(4,True),(5,False),(999,False)]:
+    assert bool(db.execute(comment_create_target, (nid,)).fetchone()) is expected
 follow_target = "SELECT 1 FROM novels WHERE id=? AND publication_status='published' AND rights_status IN ('original','public_domain','licensed','authorized')"
 for nid, expected in [(1,True),(2,False),(3,False),(4,True),(5,False),(999,False)]:
     assert bool(db.execute(follow_target, (nid,)).fetchone()) is expected
