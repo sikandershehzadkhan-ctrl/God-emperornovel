@@ -2,9 +2,9 @@ import assert from 'node:assert/strict';
 
 const fail = message => { throw new Error('[governance:migration-collision] ' + message); };
 const migrationNumber = file => {
-  const sql = /^migrations\\/(\\d{4})_[a-z0-9][a-z0-9_-]*\\.sql$/i.exec(file);
+  const sql = /^migrations\/(\d{4})_[a-z0-9][a-z0-9_-]*\.sql$/i.exec(file);
   if (sql) return Number(sql[1]);
-  const reservation = /^migrations\\/\\.reservations\\/(\\d{4})\\.json$/.exec(file);
+  const reservation = /^migrations\/\.reservations\/(\d{4})\.json$/.exec(file);
   return reservation ? Number(reservation[1]) : null;
 };
 export function findConcurrentMigrationCollisions(currentNumber, currentFiles, pullRequests) {
