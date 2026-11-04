@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
-  "sourceBranch": "main",
-  "sourceBlob": "237f4461135eb77258b7184e361ce9dfd9a140e9",
+  "sourceBranch": "integration/route-registry-current-main-2026-11-04",
+  "sourceBlob": "c3edc5f812f8abae4fd8cc5d3ac790612f004463",
   "auditDate": "2026-11-04",
   "scope": "Partial handler-level review of current main source snapshot. Static inspection only; no full authorization certification, live D1 concurrency proof, or browser/runtime isolation proof.",
   "reviewedRouteCount": 40,
@@ -454,51 +454,51 @@
     {
       "id": "AUTH-002",
       "severity": "high",
-      "status": "confirmed-gap",
-      "detail": "The current /api/admin/users/:id PATCH handler defaults omitted verified and banned fields to false, does not reject unknown or empty fields, has no last-active-admin guard, and does not write an atomic audit record.",
-      "action": "Replace destructive defaults with explicit-field allowlisting, protect the last active admin, and batch the account update with a conditional audit entry. Add concurrent D1 tests."
+      "status": "mitigated-static-and-sqlite-tested",
+      "detail": "Administrator account PATCH now validates an explicit field allowlist, rejects empty or unknown fields, protects the last active administrator, and batches the update with a conditional audit row. Static and local SQLite transaction checks are present; live D1 concurrency remains unverified.",
+      "action": "Run isolated Cloudflare D1 concurrency and audit-failure tests before security sign-off."
     },
     {
       "id": "AUTH-003",
       "severity": "high",
-      "status": "confirmed-gap",
-      "detail": "POST /api/taxonomy accepts creator_id and creator_name directly from the request body. No IP rate limit is applied in the handler, so submitter attribution can be spoofed and submissions can be spammed.",
-      "action": "Derive submitter identity only from the verified session, ignore client-supplied creator fields, add bounded IP/account rate limiting, and test spoof attempts and abuse limits."
+      "status": "mitigated-static-tested",
+      "detail": "Taxonomy submission attribution is now derived from the verified session, client-supplied creator identity is ignored, and submissions are IP-rate-limited. Regression checks cover the source invariants; live abuse/rate-limit behavior remains unverified.",
+      "action": "Run browser/Worker tests for anonymous and authenticated submissions, spoof attempts, and rate-limit behavior."
     },
     {
       "id": "AUTH-004",
       "severity": "high",
-      "status": "confirmed-gap",
-      "detail": "Public comment reads and authenticated comment writes filter by comment status and novel id but do not require the parent novel to be published and rights-eligible.",
-      "action": "Join the parent novel on both comment GET and POST and enforce publication_status='published' plus the eligible rights-status set. Add D1 tests for draft, missing and rights-ineligible parents."
+      "status": "mitigated-static-tested",
+      "detail": "Public comment reads and authenticated comment writes now require the parent novel to be published and rights eligible; reply parents must also be visible and belong to the same novel. Isolated D1 behavior tests remain outstanding.",
+      "action": "Run isolated D1 tests for missing, draft, rights-ineligible and eligible parent novels and cross-novel reply attempts."
     },
     {
       "id": "AUTH-005",
       "severity": "high",
-      "status": "needs-security-control",
-      "detail": "The Worker API dispatcher performs schema bootstrap and session lookup without a global Origin/Sec-Fetch-Site check for state-changing requests. SameSite=Lax cookies alone do not provide the complete CSRF control requested by the security plan.",
-      "action": "Add a carefully scoped same-origin check for unsafe methods before schema/session work, preserve legitimate webhook handling with a separate verified signature path, and add browser-level CSRF tests."
+      "status": "mitigated-static-tested",
+      "detail": "Unsafe browser-originated API requests now reject mismatched Origin headers and Sec-Fetch-Site=cross-site before schema bootstrap and session lookup. SameSite=Lax remains defense-in-depth; browser edge cases are not yet runtime-tested.",
+      "action": "Add browser tests for same-origin POST, cross-origin form POST, missing Origin and Fetch Metadata edge cases; verify signed webhook exceptions separately."
     },
     {
       "id": "AUTH-006",
       "severity": "medium",
-      "status": "needs-privacy-review",
-      "detail": "The public vote-board endpoint requires review of returned fields and requester identifiers; the current source has not been proven to minimize its response to the public metadata and aggregate counts required by the UI.",
-      "action": "Inspect the full GET response projection and remove requester usernames or other personal identifiers unless explicitly necessary and disclosed. Add response-shape regression tests."
+      "status": "mitigated-static-tested",
+      "detail": "The public vote-board response no longer joins users or returns requester usernames; it exposes request metadata and aggregate vote counts. Static response-shape regression coverage is present.",
+      "action": "Review whether request URLs and source hosts are appropriate public fields and add abuse controls if needed."
     },
     {
       "id": "AUTH-007",
       "severity": "high",
-      "status": "confirmed-gap",
-      "detail": "AI Story Bible and chapter-generation handlers allow users with the admin role to bypass project-owner checks. This permits privileged generation against another creator's project and can misattribute generation runs.",
-      "action": "Require strict project ownership for generation and owner attribution even for admins; keep administrative read/oversight routes separately gated. Add two-account runtime tests."
+      "status": "mitigated-static-tested",
+      "detail": "Story Bible and chapter-generation handlers now require strict project ownership even for administrators, preventing privileged cross-owner generation and misattributed jobs. Static ownership regression coverage is present; two-account runtime proof remains outstanding.",
+      "action": "Add two-account Worker tests for admin and other-author access to creator-owned projects, generation jobs and owner history."
     },
     {
       "id": "AUTH-008",
       "severity": "medium",
-      "status": "confirmed-gap",
-      "detail": "The current admin report PATCH handler updates report status without checking affected rows and returns success for missing ids; it does not create an audit event.",
-      "action": "Check the affected-row count, return 404/409 for missing or unchanged records as appropriate, and persist an audit event with report id and resulting status."
+      "status": "mitigated-static-tested",
+      "detail": "Admin report status updates now check affected-row counts, return an error for missing or unchanged targets, and emit an audit event containing report id and resulting status. D1 audit persistence/failure behavior remains to be exercised.",
+      "action": "Verify audit persistence and failure behavior against isolated Cloudflare D1."
     },
     {
       "id": "AUTH-009",
@@ -517,9 +517,9 @@
     {
       "id": "AUTH-011",
       "severity": "medium",
-      "status": "needs-review",
-      "detail": "Several exact API routes have no explicit method guard in the dispatcher inventory, including /api/taxonomy, /api/me, /api/config, /api/genres and /api/tags. Some intentionally read-only endpoints may still need a consistent 405 response for unsafe methods.",
-      "action": "Classify each unguarded route as intentional read-only or method-agnostic; add explicit allowed-method handling and 405 responses with Allow headers where appropriate."
+      "status": "mitigated-static-tested",
+      "detail": "Explicit GET-only guards now return 405 for the audited read-only endpoints, including /api/me, /api/config, /api/genres, /api/tags, /api/public-authors, /api/sources and OmniPortal read routes. Route-method inventory validation is included in CI; the full API surface still needs continued review.",
+      "action": "Keep the method matrix synchronized with dispatcher changes and add Allow headers plus tests where required by the route contract."
     },
     {
       "id": "AUTH-012",
