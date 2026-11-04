@@ -1,0 +1,104 @@
+import assert from "node:assert/strict";
+import { readFileSync, readdirSync } from "node:fs";
+
+const pages = readdirSync("public").filter((name) => name.endsWith(".html"));
+const stylesheet = "/imperial-design-foundation.css";
+const pageSources = Object.fromEntries(pages.map((name) => [name, readFileSync("public/" + name, "utf8")]));
+const missing = pages.filter((name) => !pageSources[name].includes('href="' + stylesheet + '"'));
+assert.deepEqual(missing, [], "Every public HTML route must load the shared design foundation");
+const missingViewport = pages.filter((name) => !/<meta\s+name=["']viewport["']\s+content=/i.test(pageSources[name]));
+assert.deepEqual(missingViewport, [], "Every public HTML route must declare a mobile viewport");
+const missingLanguage = pages.filter((name) => !/<html\b[^>]*\blang=["'][a-z]{2}(?:-[A-Z]{2})?["']/i.test(pageSources[name]));
+assert.deepEqual(missingLanguage, [], "Every public HTML route must declare a document language");
+
+const author = readFileSync("public/author.html", "utf8");
+const admin = readFileSync("public/admin.html", "utf8");
+const worker = readFileSync("src/index.js", "utf8");
+assert.ok(worker.includes('if(p==="/author"||file==="author.html")text=text.replace("<body>",\'<body class="authorStudioPage">\');'), "The routed /author page must receive the Author Studio design scope even though it serves the homepage template");
+assert.match(author, /<body[^>]*class=["'][^"']*authorStudioPage/, "Author Studio needs its scoped design hook");
+assert.match(admin, /<body[^>]*class=["'][^"']*adminDashboardPage/, "Admin needs its scoped design hook");
+
+const app = readFileSync("public/app.js", "utf8");
+assert.match(app, /const IMPERIAL_THEMES=\['light','dark','sepia','midnight','imperial','cosmic'\]/, "All six global themes must be selectable");
+assert.match(app, /localStorage\.setItem\('imperial_theme',chosen\)/, "Selected theme must persist");
+assert.match(app, /Current theme:/, "Theme control must announce its current and next theme");
+assert.ok(app.includes("shell();applyImperialTheme(document.documentElement.dataset.theme||'light');"), "Theme toggle label and icon must initialize after the navigation shell is mounted");
+assert.match(app, /id="setSiteTheme"[^>]*>[\s\S]*?<option value="cosmic">Cosmic<\/option>/, "Settings must expose all six global themes");
+assert.match(app, /applyImperialTheme\(\$\('#setSiteTheme'\)\.value\)/, "Settings must apply the selected global theme");
+assert.match(app, /imperial_reduced_motion.*imperial_high_contrast.*imperial_compact_cards/, "Accessibility preferences must be restored from local storage during app initialization");
+assert.match(app, /root\.dataset\.reducedMotion=String\(reduced\);root\.dataset\.highContrast=String\(high\)/, "Restored accessibility preferences must reach global document state");
+assert.ok(app.includes("Strengthen borders and keyboard focus."), "High-contrast help text must accurately describe the implemented effect");
+
+const css = readFileSync("public/imperial-design-foundation.css", "utf8");
+for (const [label, pattern] of [
+  ["tablet navigation breakpoint", /@media\(max-width:760px\)/],
+  ["compact-phone header breakpoint", /@media\(max-width:390px\)/],
+  ["very-narrow-phone layout breakpoint", /@media\(max-width:340px\)/],
+  ["safe-area-aware mobile navigation", /padding:[^;]*env\(safe-area-inset-bottom\)/],
+  ["horizontal overflow containment", /html,body\{max-width:100%;overflow-x:clip\}/],
+  ["RTL menu drawer positioning", /html\[dir="rtl"\] \.menuDrawer\{[\s\S]*?inset-inline-start:0;[\s\S]*?inset-inline-end:auto/],
+]) assert.match(css, pattern, label + " must be present");
+
+assert.match(app, /document\.documentElement\.dir=\(c==="ur"\|\|c==="ar"\|\|c==="fa"\)\?"rtl":"ltr"/,
+  "Urdu and Arabic interface languages must set the document direction");
+
+assert.match(css, /html\[dir="rtl"\] \.chapterDrawer\{[\s\S]*?inset-inline-start:0;[\s\S]*?border-right:1px solid/,
+  "Chapter drawer must mirror to the correct edge in RTL");
+assert.match(css, /html\[dir="rtl"\] \.catalogCover \.statusBadge\{left:auto;right:9px\}/,
+  "Catalog status badges must mirror in RTL");
+assert.match(css, /html\[dir="rtl"\] \.homeFormatArrow\{margin-left:0;margin-inline-start:auto\}/,
+  "Format arrows must use the correct logical start edge in RTL");
+assert.match(css, /body\.authorStudioPage button,[\s\S]*?body\.adminDashboardPage \.ghost \{\s*min-height:44px;/,
+  "Author Studio and Admin action controls must meet the 44px touch-target minimum");
+
+function luminance(hex) {
+  const channels = hex.slice(1).match(/.{2}/g).map((value) => parseInt(value, 16) / 255)
+    .map((value) => value <= 0.04045 ? value / 12.92 : ((value + 0.055) / 1.055) ** 2.4);
+  return 0.2126 * channels[0] + 0.7152 * channels[1] + 0.0722 * channels[2];
+}
+function contrast(foreground, background) {
+  const values = [luminance(foreground), luminance(background)].sort((a, b) => b - a);
+  return (values[0] + 0.05) / (values[1] + 0.05);
+}
+const themeBlocks = {
+  light: css.match(/:root\s*\{([^}]*)\}/)?.[1],
+  ...Object.fromEntries(["dark", "sepia", "midnight", "imperial", "cosmic"].map((theme) => [
+    theme, css.match(new RegExp('html\\[data-theme="' + theme + '"\\]\\s*\\{([^}]*)\\}'))?.[1],
+  ])),
+};
+for (const [theme, block] of Object.entries(themeBlocks)) {
+  assert.ok(block, "Missing token block for " + theme);
+  const tokens = Object.fromEntries([...block.matchAll(/--in-(ink|muted|subtle|canvas|surface|surface-raised):\s*(#[0-9A-Fa-f]{6})/g)].map((match) => [match[1], match[2]]));
+  for (const foreground of ["ink", "muted", "subtle"]) {
+    for (const background of ["canvas", "surface", "surface-raised"]) {
+      assert.ok(tokens[foreground] && tokens[background], "Missing " + foreground + "/" + background + " token for " + theme);
+      assert.ok(contrast(tokens[foreground], tokens[background]) >= 4.5,
+        theme + " " + foreground + " on " + background + " must meet WCAG AA normal-text contrast");
+    }
+  }
+}
+
+assert.match(css, /:is\(html\[data-theme="dark"\],html\[data-theme="midnight"\],html\[data-theme="imperial"\],html\[data-theme="cosmic"\]\)/, "Dark-surface component refinements must cover every dark theme");
+
+assert.match(css, /html\[data-high-contrast="true"\]/,
+  "The saved high-contrast preference must strengthen interface separation");
+assert.match(css, /html\[data-high-contrast="true"\][\s\S]*?outline-width:3px/,
+  "High-contrast mode must strengthen keyboard focus visibility");
+assert.match(css, /html\[data-reduced-motion="true"\] \*/,
+  "The saved reduced-motion preference must disable motion independently of OS settings");
+assert.match(css, /html\[data-reduced-motion="true"\][\s\S]*?transform:none!important/,
+  "Reduced-motion mode must suppress hover movement");
+
+
+assert.ok(css.includes('html[data-compact-cards="true"] .catalogGrid') && css.includes('gap:9px'),
+  "Compact-card preference must densify discovery grids");
+assert.ok(css.includes('html[data-compact-cards="true"] .catalogCover') && css.includes('aspect-ratio:.84'),
+  "Compact-card preference must reduce cover height");
+assert.ok(css.includes('html[data-compact-cards="true"] .catalogBody') && css.includes('padding:9px'),
+  "Compact-card preference must reduce card padding");
+
+for (const theme of ["light", "dark", "sepia", "midnight", "imperial", "cosmic"]) {
+  assert.ok(css.includes(`html[data-theme="${theme}"]`), "Missing global theme: " + theme);
+}
+
+console.log("Design foundation coverage passed for " + pages.length + " public HTML routes and six global themes.");
