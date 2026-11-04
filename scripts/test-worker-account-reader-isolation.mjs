@@ -1,5 +1,5 @@
 import assert from "node:assert/strict";
-import { execFileSync, spawn } from "node:child_process";
+import { spawn } from "node:child_process";
 import { createServer } from "node:net";
 import { once } from "node:events";
 import fs from "node:fs";
@@ -12,15 +12,29 @@ const persist=fs.mkdtempSync(path.join(os.tmpdir(),"imperial-account-reader-d1-"
 let server=null;
 let serverLogs="";
 const wait=ms=>new Promise(resolve=>setTimeout(resolve,ms));
-function wrangler(args,input){
-  try{
-    return execFileSync(npx,["--yes","wrangler@4",...args],{
-      cwd:root,encoding:"utf8",timeout:240000,input:input||undefined,
-      env:{...process.env,CI:"1",WRANGLER_SEND_METRICS:"false"}
-    });
-  }catch(error){
-    throw new Error("Wrangler command failed: "+args.join(" ")+"\n"+String(error.stdout||"")+"\n"+String(error.stderr||""));
+function stopProcessGroup(child){
+  if(!child||!child.pid)return;
+  if(process.platform!=="win32"){
+    try{process.kill(-child.pid,"SIGTERM");return}catch{}
   }
+  try{child.kill("SIGTERM")}catch{}
+}
+async function wrangler(args,input){
+  const child=spawn(npx,["--yes","wrangler@4",...args],{
+    cwd:root,detached:process.platform!=="win32",stdio:["pipe","pipe","pipe"],
+    env:{...process.env,CI:"1",WRANGLER_SEND_METRICS:"false"}
+  });
+  let stdout="",stderr="",timedOut=false;
+  child.stdout.on("data",chunk=>{stdout+=chunk.toString()});
+  child.stderr.on("data",chunk=>{stderr+=chunk.toString()});
+  child.stdin.end(input||"");
+  const timer=setTimeout(()=>{timedOut=true;stopProcessGroup(child)},180000);
+  let code,signal;
+  try{[code,signal]=await new Promise((resolve,reject)=>{child.once("error",reject);child.once("close",(exitCode,exitSignal)=>resolve([exitCode,exitSignal]))})}
+  finally{clearTimeout(timer)}
+  if(timedOut)throw new Error("Wrangler command timed out: "+args.join(" ")+"\n"+stdout+"\n"+stderr);
+  if(code!==0)throw new Error("Wrangler command failed ("+code+"/"+signal+"): "+args.join(" ")+"\n"+stdout+"\n"+stderr);
+  return stdout;
 }
 async function freePort(){
   const probe=createServer();
@@ -72,11 +86,11 @@ async function createAccount(base,origin,username,email){
 
 try{
   // Every run gets a fresh local D1 directory. No remote database or credentials are used.
-  wrangler(["d1","migrations","apply","god-emperornovel-db","--local","--persist-to",persist],"y\n");
+  await wrangler(["d1","migrations","apply","god-emperornovel-db","--local","--persist-to",persist],"y\n");
   const port=await freePort();
   const origin="http://127.0.0.1:"+port;
   server=spawn(npx,["--yes","wrangler@4","dev","--local","--ip","127.0.0.1","--port",String(port),"--persist-to",persist],{
-    cwd:root,stdio:["ignore","pipe","pipe"],
+    cwd:root,detached:process.platform!=="win32",stdio:["ignore","pipe","pipe"],
     env:{...process.env,CI:"1",WRANGLER_SEND_METRICS:"false"}
   });
   server.stdout.on("data",chunk=>{serverLogs+=chunk.toString()});
@@ -130,7 +144,7 @@ try{
     "INSERT OR REPLACE INTO novels(id,title,author,rights_status,publication_status,owner_user_id) VALUES(990002,'Restricted Test Novel','Reader Alpha','pending','published',"+Number(accountA.user.id)+")",
     "INSERT OR REPLACE INTO chapters(id,novel_id,chapter_number,title,content,is_locked,ticket_cost,publication_status) VALUES(990002,990002,1,'Restricted Chapter','Local D1 integration fixture',0,0,'published')"
   ].join(";\n")+";";
-  wrangler(["d1","execute","god-emperornovel-db","--local","--persist-to",persist,"--command",sql]);
+  await wrangler(["d1","execute","god-emperornovel-db","--local","--persist-to",persist,"--command",sql]);
 
   const emptyA=await request(origin,"/api/reading-position?novel_id=990001",{cookie:accountA.cookie});
   const emptyB=await request(origin,"/api/reading-position?novel_id=990001",{cookie:accountB.cookie});
@@ -185,9 +199,9 @@ try{
   if(serverLogs)console.error(serverLogs);
   process.exitCode=1;
 }finally{
-  if(server&&server.exitCode===null){
-    server.kill("SIGTERM");
-    await Promise.race([once(server,"exit"),wait(5000)]);
+  if(server){
+    stopProcessGroup(server);
+    await Promise.race([once(server,"close"),wait(5000)]);
   }
   fs.rmSync(persist,{recursive:true,force:true});
 }
