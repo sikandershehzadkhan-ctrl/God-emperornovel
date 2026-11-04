@@ -25,16 +25,33 @@ function matches(file,pattern){
 }
 function isSerialized(file){return patterns.some(pattern=>matches(file,pattern))}
 async function github(path){
-  const response=await fetch("https://api.github.com/repos/"+repository+path,{
-    headers:{
-      accept:"application/vnd.github+json",
-      authorization:"Bearer "+token,
-      "x-github-api-version":"2022-11-28"
-    },
-    signal:AbortSignal.timeout(20000)
-  });
-  if(!response.ok)throw new Error("GitHub API "+response.status+" for "+path+": "+(await response.text()).slice(0,500));
-  return response.json();
+  const url="https://api.github.com/repos/"+repository+path;
+  let lastError;
+  for(let attempt=0;attempt<4;attempt++){
+    try{
+      const response=await fetch(url,{
+        headers:{
+          accept:"application/vnd.github+json",
+          authorization:"Bearer "+token,
+          "x-github-api-version":"2022-11-28"
+        },
+        signal:AbortSignal.timeout(30000)
+      });
+      if(response.ok)return response.json();
+      const detail=(await response.text()).slice(0,500);
+      const retryable=response.status===429||response.status>=500||
+        (response.status===403&&/rate limit|secondary rate/i.test(detail));
+      if(!retryable||attempt===3)throw new Error("GitHub API "+response.status+" for "+path+": "+detail);
+      const retryAfter=Number(response.headers.get("retry-after")||0);
+      await new Promise(resolve=>setTimeout(resolve,Math.max(retryAfter*1000,300*(2**attempt))));
+    }catch(error){
+      lastError=error;
+      if(attempt===3)throw error;
+      if(error instanceof Error&&/^GitHub API 4/.test(error.message))throw error;
+      await new Promise(resolve=>setTimeout(resolve,300*(2**attempt)));
+    }
+  }
+  throw lastError||new Error("GitHub API request failed for "+path);
 }
 async function listOpenPullRequests(){
   const result=[];
@@ -59,17 +76,16 @@ async function isAncestor(baseSha,headSha){
   const result=await github("/compare/"+baseSha+"..."+headSha);
   return result.status==="ahead"||result.status==="identical";
 }
+const treeCache=new Map();
 async function fileBlobSha(ref,file){
-  const encoded=file.split("/").map(encodeURIComponent).join("/");
-  const response=await fetch("https://api.github.com/repos/"+repository+"/contents/"+encoded+"?ref="+encodeURIComponent(ref),{
-    headers:{accept:"application/vnd.github+json",authorization:"Bearer "+token,"x-github-api-version":"2022-11-28"},
-    signal:AbortSignal.timeout(20000)
-  });
-  if(response.status===404)return null;
-  if(!response.ok)throw new Error("GitHub API "+response.status+" while reading "+file+" at "+ref+": "+(await response.text()).slice(0,500));
-  const value=await response.json();
-  if(Array.isArray(value)||!value.sha)throw new Error("Expected a single file blob for "+file+" at "+ref);
-  return value.sha;
+  let blobs=treeCache.get(ref);
+  if(!blobs){
+    const tree=await github("/git/trees/"+encodeURIComponent(ref)+"?recursive=1");
+    if(tree.truncated)throw new Error("Git tree for "+ref+" is truncated; refusing an incomplete shared-surface comparison.");
+    blobs=new Map((tree.tree||[]).filter(item=>item.type==="blob").map(item=>[item.path,item.sha]));
+    treeCache.set(ref,blobs);
+  }
+  return blobs.get(file)||null;
 }
 const currentFiles=(await listChangedFiles(current.number)).filter(isSerialized);
 if(currentFiles.length===0){
