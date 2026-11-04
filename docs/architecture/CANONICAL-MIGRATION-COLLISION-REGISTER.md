@@ -39,6 +39,11 @@ Both definitions cannot safely own the same table name. A simple migration-numbe
 
 The canonical Worker lazily creates `ratings` with a 1–5 CHECK constraint. The incoming migration rebuilds `ratings` for 1–10 but assumes that the table already exists, while a fresh D1 migration replay does not create it before the rebuild. The endpoint also currently validates 1–5 on the canonical branch. This feature requires a coordinated migration that supports both fresh and existing databases, plus API/UI/test changes to 1–10. It is not safe to port the SQL alone.
 
+
+### Reader progress history field
+
+A separate reader-progress PR proposed adding `history.progress_percent`. The canonical Worker already persists cross-device chapter progress in `reading_positions` with optimistic concurrency (`percent` and `revision`) and local recovery. Adding a second independently writable progress field would create two competing sources of truth. Keep the existing `reading_positions` API as canonical; if the Library needs a history percentage, derive it from that source rather than storing a second percentage on `history`.
+
 ## Release requirements
 
 1. Run the full Cloudflare Source Validation workflow against this branch, including fresh SQLite replay and migration integrity checks.
