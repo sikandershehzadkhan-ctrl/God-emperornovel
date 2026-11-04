@@ -27,9 +27,10 @@ on:
       - "scripts/test-donation-approval-d1.py"
       - ".github/workflows/route-registry-validation.yml"
   push:
+    # Integration branches are validated by pull_request; running both events
+    # created duplicate checks and duplicate failure/cancellation emails.
     branches:
-      - "route-registry/**"
-      - "integration/**"
+      - main
     paths:
       - "src/index.js"
       - "public/app.js"
