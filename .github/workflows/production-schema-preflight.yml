@@ -75,6 +75,8 @@ jobs:
           query "Session columns" "PRAGMA table_info(sessions);"
           query "Novel columns" "PRAGMA table_info(novels);"
           query "Chapter columns" "PRAGMA table_info(chapters);"
+          query "Core foreign-key definitions" "SELECT 'sessions' AS table_name,* FROM pragma_foreign_key_list('sessions') UNION ALL SELECT 'chapters',* FROM pragma_foreign_key_list('chapters') UNION ALL SELECT 'novel_genres',* FROM pragma_foreign_key_list('novel_genres') UNION ALL SELECT 'novel_tags',* FROM pragma_foreign_key_list('novel_tags') UNION ALL SELECT 'unlocks',* FROM pragma_foreign_key_list('unlocks') UNION ALL SELECT 'unlock_batches',* FROM pragma_foreign_key_list('unlock_batches') UNION ALL SELECT 'bookmarks',* FROM pragma_foreign_key_list('bookmarks') UNION ALL SELECT 'history',* FROM pragma_foreign_key_list('history') UNION ALL SELECT 'donations',* FROM pragma_foreign_key_list('donations') UNION ALL SELECT 'comments',* FROM pragma_foreign_key_list('comments') UNION ALL SELECT 'novel_requests',* FROM pragma_foreign_key_list('novel_requests');"
+          query "Foreign-key integrity violations" "PRAGMA foreign_key_check;"
           query "Application settings columns" "PRAGMA table_info(app_settings);"
           query "Agent columns" "PRAGMA table_info(agents);"
           query "Agent run columns" "PRAGMA table_info(agent_runs);"
