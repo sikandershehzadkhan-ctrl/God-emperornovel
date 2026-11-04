@@ -148,6 +148,7 @@ try{
   assert.equal(prefsBAfterWrite.data.preferences.site_theme,"cosmic");
 
   const sql=[
+    "UPDATE users SET role='author' WHERE id IN ("+Number(accountA.user.id)+","+Number(accountB.user.id)+")",
     "INSERT OR REPLACE INTO novels(id,title,author,rights_status,publication_status,owner_user_id) VALUES(990001,'Isolation Test Novel','Reader Alpha','original','published',"+Number(accountA.user.id)+")",
     "INSERT OR REPLACE INTO chapters(id,novel_id,chapter_number,title,content,is_locked,ticket_cost,publication_status) VALUES(990001,990001,1,'Chapter One','Local D1 integration fixture',0,0,'published')",
     "INSERT OR REPLACE INTO novels(id,title,author,rights_status,publication_status,owner_user_id) VALUES(990002,'Restricted Test Novel','Reader Alpha','pending','published',"+Number(accountA.user.id)+")",
@@ -194,6 +195,43 @@ try{
   const optedIn=await request(origin,"/api/public-profile/"+accountA.username);
   assert.equal(optedIn.status,200);
   assert.equal(optedIn.data.stats.published_novels,1,"opt-in stats must use only published rights-eligible creator works");
+
+  // Author Studio ownership and publication-state integration against the same local Worker.
+  const authorNovel=await request(origin,"/api/author/novels",{method:"POST",cookie:accountA.cookie,origin,body:{title:"Author Studio Rights Test",author:accountA.username,kind:"original",rights_status:"original",description:"A local integration test work."}});
+  assert.equal(authorNovel.status,201,"author should be able to create a private draft");
+  const authorNovelId=authorNovel.data.id;
+  const accountBNovels=await request(origin,"/api/author/novels",{cookie:accountB.cookie});
+  assert.equal(accountBNovels.status,200);
+  assert.equal(accountBNovels.data.some(n=>n.id===authorNovelId),false,"another author must not see the owner's private draft");
+  const foreignNovelEdit=await request(origin,"/api/author/novels/"+authorNovelId,{method:"PATCH",cookie:accountB.cookie,origin,body:{title:"Stolen draft"}});
+  assert.equal(foreignNovelEdit.status,403,"another author must not edit the owner's novel");
+
+  const authorChapter=await request(origin,"/api/author/chapters",{method:"POST",cookie:accountA.cookie,origin,body:{novel_id:authorNovelId,chapter_number:1,title:"Draft chapter",content:"Original chapter text for local integration."}});
+  assert.equal(authorChapter.status,201,"author should be able to create a chapter draft");
+  const authorChapterId=authorChapter.data.id;
+  const foreignChapterEdit=await request(origin,"/api/author/chapters/"+authorChapterId,{method:"PATCH",cookie:accountB.cookie,origin,body:{title:"Stolen chapter"}});
+  assert.equal(foreignChapterEdit.status,403,"another author must not edit the owner's chapter");
+  const draftParentPublish=await request(origin,"/api/author/chapters/"+authorChapterId+"/publish",{method:"POST",cookie:accountA.cookie,origin,body:{publication_status:"published"}});
+  assert.equal(draftParentPublish.status,403,"a chapter must not publish while its parent novel is still a draft");
+
+  const rightsMissing="UPDATE novels SET publication_status='published',rights_status='licensed',rights_evidence='' WHERE id="+Number(authorNovelId);
+  await wrangler(["d1","execute","god-emperornovel-db","--local","--persist-to",persist,"--command",rightsMissing]);
+  const missingEvidencePublish=await request(origin,"/api/author/chapters/"+authorChapterId+"/publish",{method:"POST",cookie:accountA.cookie,origin,body:{publication_status:"published"}});
+  assert.equal(missingEvidencePublish.status,403,"licensed parent work must have rights evidence before chapter publication");
+  const rightsEvidence="UPDATE novels SET rights_evidence='Local test license reference' WHERE id="+Number(authorNovelId);
+  await wrangler(["d1","execute","god-emperornovel-db","--local","--persist-to",persist,"--command",rightsEvidence]);
+  const eligiblePublish=await request(origin,"/api/author/chapters/"+authorChapterId+"/publish",{method:"POST",cookie:accountA.cookie,origin,body:{publication_status:"published"}});
+  assert.equal(eligiblePublish.status,200,"valid parent status and rights evidence should allow chapter publication");
+
+  const comicNovel=await request(origin,"/api/author/novels",{method:"POST",cookie:accountA.cookie,origin,body:{title:"Comic Edit Validation",author:accountA.username,kind:"manga",rights_status:"original"}});
+  assert.equal(comicNovel.status,201);
+  const comicContent=JSON.stringify({type:"imperial_comic_chapter",version:1,pages:[{src:"https://cdn.example.test/page.webp",alt:"Test page"}]});
+  const comicChapter=await request(origin,"/api/author/chapters",{method:"POST",cookie:accountA.cookie,origin,body:{novel_id:comicNovel.data.id,chapter_number:1,title:"Comic page sequence",content:comicContent}});
+  assert.equal(comicChapter.status,201,"valid comic page sequence should save");
+  const invalidComicEdit=await request(origin,"/api/author/chapters/"+comicChapter.data.id,{method:"PATCH",cookie:accountA.cookie,origin,body:{content:"<script>invalid</script>"}});
+  assert.equal(invalidComicEdit.status,400,"comic chapter edits must not bypass page-sequence validation");
+  const fractionalTicketCost=await request(origin,"/api/author/chapters",{method:"POST",cookie:accountA.cookie,origin,body:{novel_id:authorNovelId,chapter_number:2,title:"Invalid cost chapter",content:"Text",ticket_cost:1.5}});
+  assert.equal(fractionalTicketCost.status,400,"chapter ticket cost must be a whole number");
 
   const logout=await request(origin,"/api/auth/logout",{method:"POST",cookie:accountA.cookie,origin});
   assert.equal(logout.status,200);
