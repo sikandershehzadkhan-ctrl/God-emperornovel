@@ -27,7 +27,7 @@ The workflow is therefore hard-disabled. Do not remove that block merely to depl
 - 0032: Author Studio writing goals.
 - 0033: private creator notes.
 - 0034: fresh-install legacy ratings baseline.
-- 0035: one-time 1–5 to 1–10 rating conversion and aggregate recomputation.
+- 0035: one-time 1–5 to 1–10 rating conversion and aggregate recomputation in `migrations/0035_ten_point_ratings.sql`.
 
 ## Required work before a production release
 
