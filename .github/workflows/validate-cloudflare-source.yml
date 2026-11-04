@@ -123,6 +123,9 @@ jobs:
       - name: Test normalized donation reference uniqueness
         run: python3 scripts/test-donation-reference-unique.py
 
+      - name: Test concurrent community comment and report limits
+        run: python3 scripts/test-community-rate-limits-atomic.py
+
       - name: Test atomic novel request charging
         run: python3 scripts/test-novel-request-charge-atomic.py
 
