@@ -10,6 +10,8 @@ CREATE TABLE community_rate_limit_events (id INTEGER PRIMARY KEY AUTOINCREMENT, 
 CREATE INDEX idx_community_rate_limit_scope_user_created ON community_rate_limit_events(scope,user_id,created_at);
 CREATE INDEX idx_community_rate_limit_created ON community_rate_limit_events(created_at);
 CREATE TABLE comment_report_claims (user_id INTEGER NOT NULL, comment_id INTEGER NOT NULL, created_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP, PRIMARY KEY(user_id,comment_id));
+INSERT INTO comment_reports(user_id,comment_id,reason) VALUES(4,777,'spam'),(4,777,'other');
+INSERT OR IGNORE INTO comment_report_claims(user_id,comment_id) SELECT DISTINCT user_id,comment_id FROM comment_reports;
 CREATE TRIGGER trg_comments_hourly_limit
 BEFORE INSERT ON comments
 BEGIN
@@ -91,6 +93,8 @@ with tempfile.TemporaryDirectory() as directory:
         outcomes = list(pool.map(lambda _: run_report(path, 9999, user_id=2), range(2)))
     assert outcomes.count("accepted") == 1, outcomes
     assert outcomes.count("duplicate") == 1, outcomes
+
+    assert run_report(path, 777, user_id=4) == "duplicate", "legacy duplicate reports must be backfilled into the unique claim table"
 
     db = connect(path)
     db.execute("INSERT INTO community_rate_limit_events(scope,user_id,created_at) VALUES('comment',3,datetime('now','-2 hours'))")
