@@ -1,6 +1,6 @@
 {
   "featureId": "discovery-seo-publication-quality",
-  "domainOwner": "platform-architecture",
+  "domainOwner": "catalog",
   "technicalIntegrator": "platform-architecture",
   "ownedPaths": [
     "src/seo.mjs",
