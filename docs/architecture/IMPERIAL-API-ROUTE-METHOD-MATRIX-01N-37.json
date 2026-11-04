@@ -1,8 +1,8 @@
 {
   "schemaVersion": 1,
   "name": "Imperial Novel API route method inventory",
-  "sourceBranch": "integration/reader-profile-api-reconciled-17-76",
-  "sourceBlob": "9b88ca7e1b59fb8dd8a4c73f7f3c6bfa94295ab9",
+  "sourceBranch": "integration/author-chapter-publication-guards-17-82",
+  "sourceBlob": "e9d0820a26336b4656277154c99a1981421052f7",
   "auditDate": "2026-11-04",
   "scope": "Static dispatcher scan of the integrated Worker. Observed method guards only; this is not a complete permission or runtime contract.",
   "exactRouteCount": 80,
@@ -449,12 +449,12 @@
         "POST"
       ],
       "sourceLines": [
-        837,
-        841
+        863,
+        867
       ],
       "unguardedLines": [],
       "methodGuardMissing": false,
-      "authorization": "requires handler-level review"
+      "authorization": "author(u) or admin; GET and POST load the parent novel and compare owner_user_id to u.id unless admin; POST validates comic page sequences and whole non-negative Crown cost."
     },
     {
       "path": "/api/author/novels",
@@ -463,12 +463,12 @@
         "POST"
       ],
       "sourceLines": [
-        805,
-        809
+        831,
+        835
       ],
       "unguardedLines": [],
       "methodGuardMissing": false,
-      "authorization": "requires handler-level review"
+      "authorization": "author(u) or admin; GET filters owner_user_id=u.id; POST binds owner_user_id to u.id and always creates a draft."
     },
     {
       "path": "/api/bookmark",
@@ -1189,10 +1189,10 @@
         "POST"
       ],
       "sourceLines": [
-        856
+        882
       ],
       "methodGuardMissing": false,
-      "authorization": "requires handler-level review"
+      "authorization": "author(u) or admin; parses chapter ID from route segment, joins to parent owner, and calls canPublishChapter to require a published parent novel plus eligible rights evidence."
     },
     {
       "pathPattern": "/^\\/api\\/author\\/chapters\\/\\d+$/",
@@ -1200,10 +1200,10 @@
         "PATCH"
       ],
       "sourceLines": [
-        849
+        875
       ],
       "methodGuardMissing": false,
-      "authorization": "requires handler-level review"
+      "authorization": "author(u) or admin; joins chapter to parent novel and enforces owner_user_id=u.id; validates whole non-negative Crown cost and revalidates comic page-sequence content on edits."
     },
     {
       "pathPattern": "/^\\/api\\/author\\/novels\\/\\d+\\/submit$/",
@@ -1211,10 +1211,10 @@
         "POST"
       ],
       "sourceLines": [
-        819
+        845
       ],
       "methodGuardMissing": false,
-      "authorization": "requires handler-level review"
+      "authorization": "author(u) or admin; loads the novel and enforces owner_user_id=u.id; validates rights status and requires evidence for non-original works before moving the novel to review."
     },
     {
       "pathPattern": "/^\\/api\\/author\\/novels\\/\\d+$/",
@@ -1222,10 +1222,10 @@
         "PATCH"
       ],
       "sourceLines": [
-        825
+        851
       ],
       "methodGuardMissing": false,
-      "authorization": "requires handler-level review"
+      "authorization": "author(u) or admin; loads target novel and enforces owner_user_id=u.id; rights/cover/source changes pause published work for renewed rights review."
     },
     {
       "pathPattern": "/^\\/api\\/chapters\\/(\\d+)$/",
@@ -1312,6 +1312,6 @@
     "Authorization labels are not inferred for exact routes. Verify anonymous, reader, author, owner, moderator, admin and cross-owner behavior separately.",
     "This matrix does not inspect DTO exposure, cache headers, CSRF, rate limits, body size, or database transaction semantics."
   ],
-  "sourceCommit": "6b7ac6400f9ab55b8c9b4719d67741c6447b8f50",
+  "sourceCommit": "69424600e9b0cee9fe18b7b149cd1b0c9d6cbfd4",
   "refreshNote": "Reconciled reader progress and identity/account API handlers against the same Worker blob; route evidence is static inventory, not runtime authorization certification."
 }
