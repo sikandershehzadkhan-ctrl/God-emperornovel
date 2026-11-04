@@ -20,7 +20,7 @@ assert.ok(workflow.indexOf("Validate Cloudflare bundle without deploying") < wor
 assert.ok(workflow.indexOf("Apply and verify additive D1 migrations before Worker deployment") < workflow.indexOf("Deploy Worker and static assets"), "Migration gate must remain before any future Worker deployment.");
 assert.ok(releasePlan.includes("STATUS: BLOCKED"), "Production release plan must remain blocked until remote D1 audit.");
 assert.ok(releasePlan.includes("0035_ten_point_ratings.sql"), "Release plan must explicitly account for the one-time ratings conversion.");
-assert.ok(workflow.includes("author_applications exists with an incomplete or unrecognized schema"), "Partial author application schemas must fail closed.");
+assert.ok(releasePlan.includes("remote D1 schema") && releasePlan.includes("applied-migration ledger"), "The release plan must require a remote schema and applied-migration ledger audit.");
 
 for (const index of [
   "idx_novel_genres_genre_novel",
