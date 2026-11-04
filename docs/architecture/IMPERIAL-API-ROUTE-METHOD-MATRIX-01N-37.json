@@ -225,12 +225,6 @@
     {
       "path": "/api/admin/stats",
       "methods": [
-        "HEAD",
-        "POST",
-        "PUT",
-        "PATCH",
-        "DELETE",
-        "OPTIONS",
         "GET"
       ],
       "sourceLines": [
@@ -297,13 +291,7 @@
     {
       "path": "/api/auth/login",
       "methods": [
-        "POST",
-        "GET",
-        "HEAD",
-        "PUT",
-        "PATCH",
-        "DELETE",
-        "OPTIONS"
+        "POST"
       ],
       "sourceLines": [
         449
@@ -316,11 +304,7 @@
       "path": "/api/auth/logout",
       "methods": [
         "POST",
-        "HEAD",
-        "PUT",
-        "PATCH",
-        "DELETE",
-        "OPTIONS"
+        "GET"
       ],
       "sourceLines": [
         517
@@ -332,13 +316,7 @@
     {
       "path": "/api/auth/password-reset/complete",
       "methods": [
-        "POST",
-        "GET",
-        "HEAD",
-        "PUT",
-        "PATCH",
-        "DELETE",
-        "OPTIONS"
+        "POST"
       ],
       "sourceLines": [
         465,
@@ -351,13 +329,7 @@
     {
       "path": "/api/auth/password-reset/request",
       "methods": [
-        "POST",
-        "GET",
-        "HEAD",
-        "PUT",
-        "PATCH",
-        "DELETE",
-        "OPTIONS"
+        "POST"
       ],
       "sourceLines": [
         450,
@@ -382,13 +354,7 @@
     {
       "path": "/api/auth/verify-email",
       "methods": [
-        "POST",
-        "GET",
-        "HEAD",
-        "PUT",
-        "PATCH",
-        "DELETE",
-        "OPTIONS"
+        "POST"
       ],
       "sourceLines": [
         498,
@@ -571,12 +537,7 @@
     {
       "path": "/api/config",
       "methods": [
-        "HEAD",
-        "POST",
-        "PUT",
-        "PATCH",
-        "DELETE",
-        "OPTIONS"
+        "GET"
       ],
       "sourceLines": [
         520,
@@ -650,12 +611,7 @@
     {
       "path": "/api/genres",
       "methods": [
-        "HEAD",
-        "POST",
-        "PUT",
-        "PATCH",
-        "DELETE",
-        "OPTIONS"
+        "GET"
       ],
       "sourceLines": [
         522,
@@ -669,12 +625,7 @@
       "path": "/api/health",
       "methods": [
         "GET",
-        "HEAD",
-        "POST",
-        "PUT",
-        "PATCH",
-        "DELETE",
-        "OPTIONS"
+        "POST"
       ],
       "sourceLines": [
         436,
@@ -741,11 +692,7 @@
       "path": "/api/me",
       "methods": [
         "POST",
-        "HEAD",
-        "PUT",
-        "PATCH",
-        "DELETE",
-        "OPTIONS"
+        "GET"
       ],
       "sourceLines": [
         518,
@@ -758,13 +705,7 @@
     {
       "path": "/api/me/email-verification/request",
       "methods": [
-        "POST",
-        "GET",
-        "HEAD",
-        "PUT",
-        "PATCH",
-        "DELETE",
-        "OPTIONS"
+        "POST"
       ],
       "sourceLines": [
         483,
@@ -817,12 +758,7 @@
     {
       "path": "/api/novels",
       "methods": [
-        "HEAD",
-        "POST",
-        "PUT",
-        "PATCH",
-        "DELETE",
-        "OPTIONS"
+        "GET"
       ],
       "sourceLines": [
         547,
@@ -849,12 +785,7 @@
       "path": "/api/omni/jobs",
       "methods": [
         "POST",
-        "GET",
-        "HEAD",
-        "PUT",
-        "PATCH",
-        "DELETE",
-        "OPTIONS"
+        "GET"
       ],
       "sourceLines": [
         541
@@ -866,12 +797,8 @@
     {
       "path": "/api/omni/resolve",
       "methods": [
-        "HEAD",
-        "POST",
-        "PUT",
-        "PATCH",
-        "DELETE",
-        "OPTIONS"
+        "GET",
+        "POST"
       ],
       "sourceLines": [
         538,
@@ -884,12 +811,7 @@
     {
       "path": "/api/omni/search",
       "methods": [
-        "HEAD",
-        "POST",
-        "PUT",
-        "PATCH",
-        "DELETE",
-        "OPTIONS"
+        "GET"
       ],
       "sourceLines": [
         536,
@@ -902,13 +824,7 @@
     {
       "path": "/api/omni/smart-unlock",
       "methods": [
-        "GET",
-        "HEAD",
-        "POST",
-        "PUT",
-        "PATCH",
-        "DELETE",
-        "OPTIONS"
+        "GET"
       ],
       "sourceLines": [
         542,
@@ -921,12 +837,7 @@
     {
       "path": "/api/omni/status",
       "methods": [
-        "HEAD",
-        "POST",
-        "PUT",
-        "PATCH",
-        "DELETE",
-        "OPTIONS"
+        "GET"
       ],
       "sourceLines": [
         534,
@@ -963,12 +874,7 @@
     {
       "path": "/api/public-authors",
       "methods": [
-        "HEAD",
-        "POST",
-        "PUT",
-        "PATCH",
-        "DELETE",
-        "OPTIONS"
+        "GET"
       ],
       "sourceLines": [
         526,
@@ -1046,12 +952,7 @@
     {
       "path": "/api/sources",
       "methods": [
-        "HEAD",
-        "POST",
-        "PUT",
-        "PATCH",
-        "DELETE",
-        "OPTIONS"
+        "GET"
       ],
       "sourceLines": [
         532,
@@ -1064,12 +965,7 @@
     {
       "path": "/api/tags",
       "methods": [
-        "HEAD",
-        "POST",
-        "PUT",
-        "PATCH",
-        "DELETE",
-        "OPTIONS"
+        "GET"
       ],
       "sourceLines": [
         524,
@@ -1136,12 +1032,7 @@
     {
       "pathPattern": "/^\\/api\\/novels\\/(\\d+)$/",
       "methods": [
-        "HEAD",
-        "POST",
-        "PUT",
-        "PATCH",
-        "DELETE",
-        "OPTIONS"
+        "GET"
       ],
       "sourceLines": [
         561
@@ -1152,12 +1043,7 @@
     {
       "pathPattern": "/^\\/api\\/chapters\\/(\\d+)$/",
       "methods": [
-        "HEAD",
-        "POST",
-        "PUT",
-        "PATCH",
-        "DELETE",
-        "OPTIONS"
+        "GET"
       ],
       "sourceLines": [
         562
@@ -1205,7 +1091,9 @@
         "PATCH"
       ],
       "sourceLines": [
-        737
+        737,
+        738,
+        742
       ],
       "methodGuardMissing": false,
       "authorization": "requires handler-level review"
@@ -1334,8 +1222,7 @@
     {
       "pathPattern": "/^\\/api\\/admin\\/reports\\/(\\d+)$/",
       "methods": [
-        "PATCH",
-        "POST"
+        "PATCH"
       ],
       "sourceLines": [
         928
@@ -1385,5 +1272,5 @@
     "This matrix does not inspect DTO exposure, cache headers, CSRF, rate limits, body size, or database transaction semantics."
   ],
   "sourceCommit": "61a40d9cd4d4bf52b5db2780b983441670d933f8",
-  "refreshNote": "Refreshed against the integrated 45-migration security platform with homepage SSR and six-theme design. Four auth verification/recovery endpoints and eight Author Studio/AI dynamic patterns are included. Read-only routes, health, and novel/admin stats reject unsupported methods; taxonomy delegates to its own GET/POST guard. Handler-level authorization remains a separate partial review."
+  "refreshNote": "Refreshed against the 45-migration security integration with homepage SSR and six-theme design. Four auth verification/recovery endpoints and eight Author Studio/AI dynamic patterns are included. The exact-route scan now reports zero unguarded handlers; taxonomy's GET/POST contract is delegated to its validating helper. Handler-level authorization remains a separate partial review."
 }
