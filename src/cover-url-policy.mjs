@@ -1,13 +1,18 @@
 const PLACEHOLDER = "/story-cover-placeholder.svg";
+const ALLOWED_COVERS = new Set([
+  "/covers/ascendant.jpg",
+  "/covers/cartographer.jpg",
+  "/covers/ember.jpg",
+  "/covers/glass.jpg",
+  "/covers/isekai.jpg",
+  "/covers/mercy.jpg",
+  "/covers/neon.jpg",
+  "/covers/swords.jpg"
+]);
 
 export function normalizeCoverUrl(value) {
   if (value === null || value === undefined || value === "") return PLACEHOLDER;
-  if (typeof value !== "string") return null;
-  const path = value;
-  if (path !== path.trim()) return null;
-  if (!path || path.length > 180 || /[\x00-\x20\x7f\\%?#]/.test(path)) return null;
-  if (path === PLACEHOLDER) return PLACEHOLDER;
-  if (!/^\/covers\/[a-z0-9][a-z0-9._-]{0,119}\.(?:avif|jpe?g|png|webp)$/i.test(path)) return null;
-  if (path.split("/").some(part => part === "." || part === "..")) return null;
-  return path;
+  if (typeof value !== "string" || value !== value.trim()) return null;
+  if (value === PLACEHOLDER) return PLACEHOLDER;
+  return ALLOWED_COVERS.has(value) ? value : null;
 }
