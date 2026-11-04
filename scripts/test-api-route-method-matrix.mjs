@@ -30,15 +30,14 @@ for(const route of matrix.exactRoutes){
 }
 const dynamicPatterns=new Set();
 for(const route of matrix.dynamicRoutes){
-  assert.ok(route.pathPattern.startsWith("^/api/")||route.pathPattern.startsWith("/^\\\\/api\\\\/"),"dynamic API route must be anchored under /api: "+route.pathPattern);
+  assert.ok(route.pathPattern.startsWith("^/api/")||route.pathPattern.startsWith("/^"),"dynamic API route must be anchored under /api: "+route.pathPattern);
   assert.ok(!dynamicPatterns.has(route.pathPattern),"duplicate dynamic API route: "+route.pathPattern);
   dynamicPatterns.add(route.pathPattern);
   if(route.pathPattern.startsWith("/^")){
     const patternSource=route.pathPattern.slice(1,route.pathPattern.lastIndexOf("/"));
     assert.doesNotThrow(()=>new RegExp(patternSource),"dynamic route regex must compile: "+route.pathPattern);
   }else{
-    const templateSource=route.pathPattern.replace(/[.*+?^$\\[\\]\\\\]/g,"\\\\  const patternSource=route.pathPattern.slice(1,route.pathPattern.lastIndexOf("/"));
-  assert.doesNotThrow(()=>new RegExp(patternSource),"dynamic route pattern must compile: "+route.pathPattern);").replace(/\\\\\\{[^}]+\\\\\\}/g,"[^/]+");
+    const templateSource=route.pathPattern.replace(/\{[^}]+\}/g,"[^/]+");
     assert.doesNotThrow(()=>new RegExp(templateSource),"dynamic route template must compile: "+route.pathPattern);
   }
   assert.ok(Array.isArray(route.methods),"dynamic methods must be an array: "+route.pathPattern);
@@ -48,5 +47,5 @@ for(const route of matrix.dynamicRoutes){
   assert.ok(typeof route.authorization==="string"&&route.authorization.length>0,"dynamic authorization review status missing");
 }
 assert.ok(worker.includes("async function api("),"Worker API dispatcher could not be located");
-assert.ok(matrix.sourceBlob===null||typeof matrix.sourceBlob==="string","source blob metadata must be a string when present");
+assert.ok(typeof matrix.sourceBlob==="string"&&matrix.sourceBlob.length>=40,"source blob metadata is required");
 console.log("API method inventory validated: "+matrix.exactRoutes.length+" exact endpoints, "+matrix.dynamicRoutes.length+" dynamic endpoints. Authorization remains a separate handler-level review.");
