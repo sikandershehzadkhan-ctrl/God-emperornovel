@@ -71,7 +71,7 @@ if(process.env.GITHUB_EVENT_PATH&&fs.existsSync(process.env.GITHUB_EVENT_PATH)){
  if(pr?.base?.sha&&pr?.head?.sha){
   const {execFileSync}=await import("node:child_process");
   const changed=execFileSync("git",["diff","--name-only",pr.base.sha+"..."+pr.head.sha],{encoding:"utf8"}).split(/\r?\n/).filter(Boolean);
-  const shared=/^(src\/index\.js|public\/app(?:-[^/]+)?\.js|public\/index\.html|public\/app(?:-[^/]+)?\.css|migrations\/|wrangler\.toml|package\.json)$/;
+  const shared=/^(src\/index\.js|public\/app(?:-[^/]+)?\.js|public\/index\.html|public\/app(?:-[^/]+)?\.css|migrations\/.+|wrangler\.toml|package\.json)$/;
   if(changed.some(p=>shared.test(p))){
    const contractPath="docs/architecture/feature-contracts/platform-integration-governance.json";
    assert.ok(changed.includes(contractPath),"shared platform surfaces changed without updating "+contractPath);
