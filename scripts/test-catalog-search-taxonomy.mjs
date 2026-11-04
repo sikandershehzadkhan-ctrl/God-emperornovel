@@ -25,5 +25,9 @@ const worker=await readFile(new URL("../src/index.js",import.meta.url),"utf8");
 assert.ok(worker.includes('import { buildCatalogSearchPredicate, buildCatalogSearchOrder } from "./catalog-search-policy.mjs";'));
 assert.ok(worker.includes('const search=buildCatalogSearchPredicate(searchTerms);sql+=" AND "+search.sql;a.push(...search.values)'));
 assert.ok(worker.includes("const relevance=buildCatalogSearchOrder(term);"));
+assert.ok(worker.includes('.replace(/\\\\s+/g," ").slice(0,120)'),"search text must be whitespace-normalized and bounded");
+assert.ok(worker.includes("requestedPage=Number(q.get(\"page\")||1),page=Number.isSafeInteger(requestedPage)&&requestedPage>0?Math.min(requestedPage,100000):1"),"page number must be finite, positive, and bounded");
+assert.ok(worker.includes("requestedLimit=Number(q.get(\"limit\")||24),limit=Number.isSafeInteger(requestedLimit)?Math.min(50,Math.max(1,requestedLimit)):24"),"page size must be a safe integer capped at 50");
+
 assert.ok(worker.includes("n.publication_status='published' AND n.rights_status IN ('original','public_domain','licensed','authorized')"));
 console.log("PASS: catalog search is bounded, parameterized, wildcard-escaped, taxonomy-aware, relevance-ranked, and retains published/rights-cleared visibility filters.");
