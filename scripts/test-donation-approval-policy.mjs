@@ -25,11 +25,16 @@ const end = source.indexOf('if(p==="/api/admin/reports"', start);
 assert.ok(start >= 0 && end > start, "admin donation decision route must remain present");
 const route = source.slice(start, end);
 for (const fragment of [
-  "status='pending' AND user_id IS NOT NULL",
-  "AND changes()=1",
-  "SELECT ?,?,?,? WHERE changes()=1",
-  "transitioned!==1||credited!==1||ledger!==1",
-  "status='rejected' WHERE id=? AND status='pending'"
-]) assert.ok(route.includes(fragment), `missing one-time donation accounting invariant: ${fragment}`);
+  'consumeAuthRateLimit(env,"admin-donation-review",String(u.id),30,300)',
+  "INSERT INTO donation_reviews(donation_id,reviewer_user_id,decision,tickets,note)",
+  "status='pending' AND user_id IS ?",
+  "UPDATE donations SET status=? WHERE id=? AND status='pending'",
+  "reviewer_user_id=? AND decision=?",
+  "if(recorded!==1||transitioned!==1)",
+  "parseManualDonationApproval(b,d)",
+  "if(!note||note.length>1000)"
+]) assert.ok(route.includes(fragment), `missing audited one-time donation accounting invariant: ${fragment}`);
+assert.ok(!route.includes("UPDATE users SET tickets"), "donation route must not directly credit balances; database trigger owns atomic posting");
+assert.ok(!route.includes("INSERT INTO ticket_ledger"), "donation route must not directly append payment ledger rows; database trigger owns atomic posting");
 
-console.log("PASS: donation policy validates decisions and bounded credits; approval/rejection transitions and Crown ledger writes are one-time and conditional.");
+console.log("PASS: donation policy validates bounded credits; admin decisions require attributable review notes and atomic database-triggered Crown posting.");
