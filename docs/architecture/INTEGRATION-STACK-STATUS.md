@@ -29,6 +29,10 @@ See `CANONICAL-MIGRATION-COLLISION-REGISTER.md` for branch-local mappings and sc
 - Private Author Studio goals/notes and account/session data remain owner-scoped.
 - Payment webhooks and external media storage remain disabled until their separate provider/binding gates are satisfied.
 
+## Author Studio application layer
+
+Writing goals, private chapter-linked notes and deterministic editorial readiness APIs/UI are now integrated on this account branch and registered in the build regression suite. The existing comic page manager and private media library remain intact.
+
 ## Validation and release boundary
 
 The exact integration tree at `ef6cf9c1f54073a809caad50ab89ba008cf000f3` passed:
