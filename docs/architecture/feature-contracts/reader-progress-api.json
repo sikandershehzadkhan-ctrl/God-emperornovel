@@ -1,14 +1,12 @@
 {
   "featureId": "reader-progress-api",
-  "domainOwner": "reader",
+  "domainOwner": "platform-kernel",
   "technicalIntegrator": "platform-kernel",
   "ownedPaths": [
-    "src/reader/",
-    "src/runtime-feature-schema.mjs",
-    "scripts/test-reading-position-api.mjs"
+    "src/index.js"
   ],
   "sharedSurfaces": [
-    "src/index.js",
+    "src/runtime-feature-schema.mjs",
     "docs/architecture/IMPERIAL-API-ROUTE-METHOD-MATRIX-01N-37.json",
     "docs/architecture/IMPERIAL-AUTHORIZATION-OWNERSHIP-MATRIX-01N-38.json",
     "package.json"
@@ -54,7 +52,8 @@
       "test-reading-position-api.mjs"
     ],
     "integration": [
-      "source-validation fresh runtime schema build"
+      "runtime schema bootstrap v2",
+      "owner-scoped Worker GET/POST route"
     ],
     "isolation": [
       "Cross-account owner binding and stale revision source invariants"
