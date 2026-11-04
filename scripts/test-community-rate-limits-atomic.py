@@ -8,10 +8,12 @@ CREATE TABLE comments (id INTEGER PRIMARY KEY AUTOINCREMENT, user_id INTEGER NOT
 CREATE TABLE comment_reports (id INTEGER PRIMARY KEY AUTOINCREMENT, user_id INTEGER NOT NULL, comment_id INTEGER NOT NULL, reason TEXT NOT NULL, details TEXT DEFAULT '', status TEXT NOT NULL DEFAULT 'open', created_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP);
 CREATE TABLE community_rate_limit_events (id INTEGER PRIMARY KEY AUTOINCREMENT, scope TEXT NOT NULL CHECK(scope IN ('comment','report')), user_id INTEGER NOT NULL, created_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP);
 CREATE INDEX idx_community_rate_limit_scope_user_created ON community_rate_limit_events(scope,user_id,created_at);
+CREATE INDEX idx_community_rate_limit_created ON community_rate_limit_events(created_at);
 CREATE TABLE comment_report_claims (user_id INTEGER NOT NULL, comment_id INTEGER NOT NULL, created_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP, PRIMARY KEY(user_id,comment_id));
 CREATE TRIGGER trg_comments_hourly_limit
 BEFORE INSERT ON comments
 BEGIN
+ DELETE FROM community_rate_limit_events WHERE created_at < datetime('now','-2 days');
  SELECT CASE WHEN (SELECT COUNT(*) FROM community_rate_limit_events WHERE scope='comment' AND user_id=NEW.user_id AND created_at>=datetime('now','-1 hour')) >= 10
    THEN RAISE(ABORT,'comment_hourly_limit') END;
  INSERT INTO community_rate_limit_events(scope,user_id) VALUES('comment',NEW.user_id);
