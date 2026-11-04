@@ -177,6 +177,12 @@ jobs:
       - name: Test email verification storage policy
         run: node scripts/test-email-verification-store.mjs
 
+      - name: Test atomic password reset token issuance
+        run: node scripts/test-password-reset-issuance.mjs
+
+      - name: Test atomic email verification token issuance
+        run: node scripts/test-email-verification-issuance.mjs
+
       - name: Test account deletion review authorization policy
         run: node scripts/test-account-deletion-review-policy.mjs
 
