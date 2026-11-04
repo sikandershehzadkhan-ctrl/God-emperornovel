@@ -19,6 +19,7 @@ on:
       - "docs/architecture/IMPERIAL-ROUTE-REGISTRY-01N.json"
       - "docs/architecture/IMPERIAL-API-ROUTE-METHOD-MATRIX-01N-37.json"
       - "scripts/test-route-registry.mjs"
+      - "scripts/test-profile-account-api.mjs"
       - "scripts/test-api-route-method-matrix.mjs"
       - "docs/architecture/IMPERIAL-AUTHORIZATION-OWNERSHIP-MATRIX-01N-38.json"
       - "scripts/test-authorization-ownership-matrix.mjs"
@@ -63,6 +64,8 @@ jobs:
 
       - name: Validate HTML route manifest
         run: node scripts/test-route-registry.mjs
+      - name: Validate owner-scoped profile and preference API
+        run: node scripts/test-profile-account-api.mjs
 
       - name: Validate API method inventory
         run: node scripts/test-api-route-method-matrix.mjs
