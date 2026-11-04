@@ -1,7 +1,7 @@
 import sqlite3
 from pathlib import Path
 
-migration = Path("migrations/0019_admin_ticket_adjustments.sql").read_text(encoding="utf-8")
+migration = Path("migrations/0025_admin_ticket_adjustments.sql").read_text(encoding="utf-8")
 source = Path("src/index.js").read_text(encoding="utf-8")
 admin = Path("public/admin.html").read_text(encoding="utf-8")
 

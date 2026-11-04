@@ -23,7 +23,7 @@ INSERT INTO novel_requests(id,user_id,url,source_host,week_key,cost,status) VALU
  (12,1,'https://example.test/rejected','example.test',1,50,'rejected'),
  (13,2,'https://example.test/admin-own-request','example.test',1,25,'rejected');
 """)
-db.executescript((root / "migrations/0021_novel_request_refunds.sql").read_text(encoding="utf-8"))
+db.executescript((root / "migrations/0027_novel_request_refunds.sql").read_text(encoding="utf-8"))
 
 def reject(fn, label):
     try:

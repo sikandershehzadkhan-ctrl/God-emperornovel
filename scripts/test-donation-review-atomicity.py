@@ -3,8 +3,8 @@ from pathlib import Path
 
 root = Path(".")
 migrations = [
-    (root / "migrations/0018_donation_review_audit.sql").read_text(encoding="utf-8"),
-    (root / "migrations/0020_donation_independent_review.sql").read_text(encoding="utf-8"),
+    (root / "migrations/0024_donation_review_audit.sql").read_text(encoding="utf-8"),
+    (root / "migrations/0026_donation_independent_review.sql").read_text(encoding="utf-8"),
 ]
 source = (root / "src/index.js").read_text(encoding="utf-8")
 start = source.index('if(p==="/api/admin/donations"&&m==="GET"){')
