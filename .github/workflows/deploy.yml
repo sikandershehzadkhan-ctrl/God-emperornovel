@@ -1,7 +1,9 @@
 name: Deploy Imperial Novel to Cloudflare
 
-# Production deployment is deliberately manual. A push or PR merge must
-# never publish to the live Worker without an explicit release decision.
+# Production deployment is deliberately disabled on this integration branch.
+# Its branch-local migration ledger conflicts with the canonical platform ledger.
+# Do not re-enable until remote D1 inspection, backup/restore rehearsal, and a reviewed
+# canonical migration runner are complete.
 on:
   workflow_dispatch:
     inputs:
@@ -23,7 +25,8 @@ concurrency:
 
 jobs:
   deploy:
-    if: ${{ github.event_name == 'workflow_dispatch' && inputs.confirm_production_deploy == 'true' }}
+    # HARD GATE: branch-local migrations 0012/0013 are not canonical and must never run.
+    if: ${{ false }}
     runs-on: ubuntu-latest
     timeout-minutes: 10
     steps:
