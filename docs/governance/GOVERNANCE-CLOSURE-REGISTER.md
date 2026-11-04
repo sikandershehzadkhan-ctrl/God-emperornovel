@@ -1,0 +1,93 @@
+# Governance Closure Register
+
+**Audit date:** 2026-11-04  
+**Repository:** `sikandershehzadkhan-ctrl/God-emperornovel`  
+**Canonical integration target:** `main`  
+**Status:** Open; evidence register, not a production approval.
+
+## Purpose
+
+This register is the auditable closure checklist for consolidating Imperial Novel's architecture and release governance. It deliberately distinguishes repository evidence from assumptions. A feature, branch, workflow, or security control is not considered complete merely because a proposal or implementation exists on a non-canonical branch.
+
+## Verified repository observations
+
+- The repository default integration target is `main`.
+- The first two pages of branch search each returned 100 branch names; the second page returned a continuation cursor. The branch inventory is therefore at least 200 entries and is not yet exhaustive.
+- The mainline package metadata reports version `17.23.0`.
+- Mainline README defines the product as Imperial Novel and requires rights-cleared content, mobile-first operation, truthful metrics, and separation between passing CI, deployment, and verified production behavior.
+- A governance implementation exists on `integration/shared-surface-lineage-governance-17-81`, including `.github/workflows/architecture-governance.yml`, ownership/dependency/migration checks, and a shared-surface lineage check. This is branch evidence only; it is not evidence that the workflow is present or required on `main`.
+- That governance branch compares as 389 commits ahead of `main`, with 162 changed files. It must not be merged wholesale without decomposition and reconciliation.
+- The governance branch's migration collision register records a canonical migration chain and explicitly says no production D1 migration has been run for the described candidate work. Verify current mainline state before acting on any allocation in that register.
+
+## Open security and integrity blockers
+
+The following GitHub issues were confirmed as **open** during this audit. They remain release blockers until the fix is present on the canonical integration path and supported by reproducible tests.
+
+| Issue | Required outcome |
+|---|---|
+| #107 Runtime bootstrap schema consistency | Runtime-created/bootstrap schema matches canonical D1 migrations and constraints; fresh-install and upgrade fixtures pass. |
+| #108 Public novel response allowlist | Public responses expose only explicitly approved fields; rights/review/internal metadata cannot leak. |
+| #109 Atomic AI generation claims | Concurrent requests cannot claim or execute the same generation job twice; idempotency and race tests pass. |
+| #110 Bookmark/history target validation | Targets are validated against visibility and ownership before writes; cross-user and unpublished-target tests pass. |
+| #111 Content Security Policy | Remove unsafe inline allowances where feasible; nonce/hash and real browser boot behavior are verified. |
+| #112 Cover URL validation | Author-controlled URLs are scheme/host/size constrained; unsafe schemes and internal-network targets are rejected. |
+| #113 Published-novel engagement guards | Follows and comment engagement writes enforce publication and visibility rules. |
+| #114 Rating input validation | Reject non-numeric, fractional, out-of-range and malformed values before database writes. |
+| #115 Concurrency-safe rate limits | Concurrent comment/report requests cannot bypass limits; atomic database-backed tests pass. |
+
+Issue status must be refreshed immediately before closure. Closing an issue is not a substitute for validating the fix on the exact merged commit.
+
+## Mandatory closure gates
+
+### A. Canonical source tree
+- [ ] Inventory every branch across all result pages; classify as merged, active, superseded, abandoned, or archival.
+- [ ] Identify the canonical source and release artifact for Worker, browser app, React islands, route registry, authorization matrix, and D1 migrations.
+- [ ] No bulk merge of stale integration branches.
+- [ ] Every surviving feature has one owner, one contract, and one integration destination.
+- [ ] Shared-surface changes include explicit impact and owner review.
+
+### B. Database and migration integrity
+- [ ] Recompute migration sequence from `main`; do not trust branch-local numbering.
+- [ ] Confirm every migration is immutable and uniquely allocated.
+- [ ] Detect duplicate schema objects and semantically duplicate ledgers.
+- [ ] Run fresh-install and upgrade replay against disposable SQLite/D1-compatible fixtures.
+- [ ] Verify foreign keys, indexes, constraints, idempotency, and data preservation.
+- [ ] No production D1 migration without a separately authorized release operation and verified backup/recovery plan.
+
+### C. Automated governance
+- [ ] Port governance checks to a small, reviewable PR based on current `main`.
+- [ ] Ensure checks run for pull requests targeting `main` and for relevant pushes.
+- [ ] Ensure path ownership, dependency direction/cycles, migration allocation, route/API uniqueness, and source fingerprints are tested.
+- [ ] Ensure required checks are configured in GitHub branch protection/rulesets. Workflow presence alone is insufficient.
+- [ ] Verify permissions are least-privilege and workflow concurrency/cancellation behavior is safe.
+- [ ] Prove a deliberately invalid test fixture fails; prove a valid fixture passes.
+
+### D. Security, privacy, and product integrity
+- [ ] Resolve and test issues #107-#115.
+- [ ] Test two separate accounts against reader progress, library, profile, author, payment, ticket, export, and admin boundaries.
+- [ ] Verify role separation and specialist approval boundaries.
+- [ ] Verify rate limits and financial mutations under concurrent requests.
+- [ ] Verify public API allowlists and rights/publication eligibility.
+
+### E. Release governance
+- [ ] Exact commit SHA passes required CI.
+- [ ] Independent review is recorded for security-sensitive and destructive changes.
+- [ ] Backup and restore evidence is current.
+- [ ] Deployment and D1 migration are separate approved operations.
+- [ ] Production smoke tests verify the deployed Worker and served assets.
+- [ ] Rollback/forward-repair plan is documented and tested.
+- [ ] No production-ready claim until production behavior is independently verified.
+
+## Integration rules
+
+1. Never merge a large integration branch solely because it contains useful work.
+2. Compare each candidate against current `main`; inspect changed paths and shared-surface lineage.
+3. Port one coherent concern at a time into a fresh branch from current `main`.
+4. Re-run the complete test suite after every integration slice.
+5. Reconcile registries and generated artifacts from the exact resulting source snapshot.
+6. Keep unresolved collisions explicit; do not silence them by renaming, stale snapshots, or deleting tests.
+7. Do not deploy or run production migrations as part of ordinary branch reconciliation.
+
+## Current disposition
+
+**Governance closure is not complete.** This register establishes the current audit baseline and acceptance criteria. Branch protection settings, exhaustive branch classification, canonical migration replay, and production controls still require direct verification. The large shared-surface governance branch remains a source of candidate checks, not an approved merge unit.
