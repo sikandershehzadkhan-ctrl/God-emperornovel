@@ -122,16 +122,17 @@ if (process.argv.includes('--self-test')) {
   if (!baseSha) fail('GOVERNANCE_BASE_SHA is required; run this gate in a pull_request workflow.');
   const directory = 'migrations';
   if (!fs.existsSync(directory)) fail('migrations directory is missing');
-  const currentEntries = fs.readdirSync(directory, { withFileTypes: true })
-    .filter(entry => entry.isFile() && entry.name.endsWith('.sql'))
-    .map(entry => ({ path: path.posix.join(directory, entry.name), content: fs.readFileSync(path.join(directory, entry.name), 'utf8') }));
-  const reservationDirectory = path.join(directory, '.reservations');
-  const currentReservations = fs.existsSync(reservationDirectory)
-    ? fs.readdirSync(reservationDirectory, { withFileTypes: true }).filter(entry => entry.isFile()).map(entry => ({
-        path: path.posix.join(reservationDirectory, entry.name),
-        content: fs.readFileSync(path.join(reservationDirectory, entry.name), 'utf8')
-      }))
-    : [];
+  const walk = (absoluteDirectory, relativeDirectory) => fs.readdirSync(absoluteDirectory, { withFileTypes: true }).flatMap(entry => {
+    const absolutePath = path.join(absoluteDirectory, entry.name);
+    const relativePath = path.posix.join(relativeDirectory, entry.name);
+    if (entry.isSymbolicLink()) fail('symbolic links are not allowed in the migration inventory: ' + relativePath);
+    if (entry.isDirectory()) return walk(absolutePath, relativePath);
+    if (!entry.isFile()) fail('unsupported filesystem entry in migration inventory: ' + relativePath);
+    return [{ path: relativePath, content: fs.readFileSync(absolutePath, 'utf8') }];
+  });
+  const inventoryFiles = walk(directory, directory);
+  const currentEntries = inventoryFiles.filter(entry => entry.path.endsWith('.sql'));
+  const currentReservations = inventoryFiles.filter(entry => entry.path.startsWith('migrations/.reservations/'));
   const basePaths = execFileSync('git', ['ls-tree', '-r', '--name-only', baseSha, '--', directory], { encoding: 'utf8' }).split('\n').filter(Boolean);
   const baseEntries = basePaths.filter(file => file.endsWith('.sql')).map(file => ({
     path: file,
