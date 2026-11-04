@@ -11,7 +11,7 @@ export function validateMigrationInventory(currentEntries, baseEntries = []) {
     for (const entry of entries) {
       const name = entry.path.split('/').at(-1);
       if (!name.endsWith('.sql')) continue;
-      const match = /^(\\d{4})_([a-z0-9][a-z0-9_-]*)\\.sql$/i.exec(name);
+      const match = /^(\d{4})_([a-z0-9][a-z0-9_-]*)\.sql$/i.exec(name);
       if (!match) fail(label + ' contains a SQL migration with a non-canonical filename: ' + entry.path);
       parsed.push({ path: entry.path, number: Number(match[1]), content: entry.content });
     }
@@ -70,7 +70,7 @@ if (process.argv.includes('--self-test')) {
     .filter(entry => entry.isFile() && entry.name.endsWith('.sql'))
     .map(entry => ({ path: path.posix.join(directory, entry.name), content: fs.readFileSync(path.join(directory, entry.name), 'utf8') }));
   const basePaths = execFileSync('git', ['ls-tree', '-r', '--name-only', baseSha, '--', directory], { encoding: 'utf8' })
-    .split('\\n').filter(name => /^migrations\\/\\d{4}_.+\\.sql$/i.test(name));
+    .split('\n').filter(name => /^migrations\/\d{4}_.+\.sql$/i.test(name));
   const baseEntries = basePaths.map(file => ({
     path: file,
     content: execFileSync('git', ['show', baseSha + ':' + file], { encoding: 'utf8' })
