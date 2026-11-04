@@ -95,15 +95,17 @@ with tempfile.NamedTemporaryFile(suffix=".sqlite") as temp:
     if conn.execute("SELECT changes()").fetchone()[0] != 1:
         raise SystemExit("FAIL: stale claim could not be recovered")
 
+    old_token = winners[0]
     conn.execute(
         """INSERT INTO chapters(novel_id,chapter_number,title,content,is_locked,ticket_cost,publication_status)
            SELECT 1,1,'Late chapter','late result',0,0,'draft'
-           WHERE EXISTS(SELECT 1 FROM ai_author_projects WHERE id=1 AND active_run_token='old-claim')
-             AND NOT EXISTS(SELECT 1 FROM chapters WHERE novel_id=1 AND chapter_number=1)"""
+           WHERE EXISTS(SELECT 1 FROM ai_author_projects WHERE id=1 AND active_run_token=?)
+             AND NOT EXISTS(SELECT 1 FROM chapters WHERE novel_id=1 AND chapter_number=1)""",
+        (old_token,)
     )
     if conn.execute("SELECT changes()").fetchone()[0] != 0:
         raise SystemExit("FAIL: expired worker inserted a chapter after its claim was replaced")
-    conn.execute("UPDATE ai_author_projects SET chapters_generated=1 WHERE id=1 AND active_run_token='old-claim'")
+    conn.execute("UPDATE ai_author_projects SET chapters_generated=1 WHERE id=1 AND active_run_token=?", (old_token,))
     if conn.execute("SELECT changes()").fetchone()[0] != 0:
         raise SystemExit("FAIL: expired worker overwrote project progress")
     token = conn.execute("SELECT active_run_token FROM ai_author_projects WHERE id=1").fetchone()[0]
