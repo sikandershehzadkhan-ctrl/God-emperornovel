@@ -1,0 +1,48 @@
+{
+  "schemaVersion": 1,
+  "name": "Global D1 migration allocation register",
+  "sequencePattern": "^([0-9]{4})_",
+  "lastObservedSequence": 45,
+  "canonicalSource": "migrations/",
+  "policy": {
+    "reserveBeforeAuthoring": true,
+    "immutableAfterShared": true,
+    "neverReuseNumbers": true,
+    "oneBusinessConceptOneTable": true,
+    "forwardOnlyCorrections": true,
+    "productionExecutionRequiresReleaseApproval": true
+  },
+  "ranges": [
+    {
+      "from": 1,
+      "to": 11,
+      "owner": "platform-data",
+      "status": "existing canonical baseline"
+    },
+    {
+      "from": 12,
+      "to": 27,
+      "owner": "media",
+      "status": "existing reconciled platform/media/rights/payment migrations"
+    },
+    {
+      "from": 28,
+      "to": 35,
+      "owner": "platform-data",
+      "status": "existing runtime integrity, analytics, rating and schema reconciliation"
+    },
+    {
+      "from": 36,
+      "to": 39,
+      "owner": "identity",
+      "status": "existing recovery, verification and ownership transfer"
+    },
+    {
+      "from": 40,
+      "to": 45,
+      "owner": "identity",
+      "status": "existing account closure and specialist review"
+    }
+  ],
+  "allocations": []
+}
