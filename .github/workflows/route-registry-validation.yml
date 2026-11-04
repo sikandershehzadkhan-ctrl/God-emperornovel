@@ -15,7 +15,6 @@ on:
       - "scripts/test-api-route-method-matrix.mjs"
       - "docs/architecture/IMPERIAL-AUTHORIZATION-OWNERSHIP-MATRIX-01N-38.json"
       - "scripts/test-authorization-ownership-matrix.mjs"
-      - "scripts/test-community-taxonomy-security.mjs"
       - "scripts/test-admin-account-d1.py"
       - "scripts/test-donation-approval-d1.py"
       - ".github/workflows/route-registry-validation.yml"
