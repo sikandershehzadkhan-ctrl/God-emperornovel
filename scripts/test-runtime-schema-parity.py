@@ -23,7 +23,9 @@ def build(sql_statements):
         db.execute(sql)
     return db
 
-canonical = build([migration_sql])
+canonical = sqlite3.connect(":memory:")
+canonical.execute("PRAGMA foreign_keys=ON")
+canonical.executescript(migration_sql)
 runtime = build(runtime_ddl)
 
 tables = [
