@@ -106,16 +106,20 @@
     "sharedSurfaceOwners": "Declared in ownership map and integration contract"
   },
   "affectedDomains": [
-    "platform-kernel",
+    "catalog",
+    "creator",
+    "delivery-platform",
+    "discovery",
+    "experience-shell",
     "identity",
+    "payments",
+    "platform-architecture",
+    "platform-data",
+    "platform-kernel",
+    "platform-quality",
     "rights",
     "media",
-    "platform-data",
-    "platform-quality",
-    "platform-architecture",
-    "delivery-platform",
-    "repository-operations",
-    "experience-shell"
+    "repository-operations"
   ],
   "changeSummary": "Consolidates current-main platform/security foundations with homepage SSR and the six-theme experience, while introducing canonical ownership, dependency, migration and integration governance.",
   "acceptanceCriteria": [
