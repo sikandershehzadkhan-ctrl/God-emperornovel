@@ -63,5 +63,27 @@ if(fs.existsSync(contractDir)){
   for(const field of ownership.requiredContractFields)assert.ok(Object.hasOwn(contract,field),"feature contract "+name+" missing "+field);
  }
 }
+
+// Pull-request change-impact enforcement. Full git history is required in CI.
+if(process.env.GITHUB_EVENT_PATH&&fs.existsSync(process.env.GITHUB_EVENT_PATH)){
+ const event=JSON.parse(fs.readFileSync(process.env.GITHUB_EVENT_PATH,"utf8"));
+ const pr=event.pull_request;
+ if(pr?.base?.sha&&pr?.head?.sha){
+  const {execFileSync}=await import("node:child_process");
+  const changed=execFileSync("git",["diff","--name-only",pr.base.sha+"..."+pr.head.sha],{encoding:"utf8"}).split(/\r?\n/).filter(Boolean);
+  const shared=/^(src\/index\.js|public\/app(?:-[^/]+)?\.js|public\/index\.html|public\/app(?:-[^/]+)?\.css|migrations\/|wrangler\.toml|package\.json)$/;
+  if(changed.some(p=>shared.test(p))){
+   const contractPath="docs/architecture/feature-contracts/platform-integration-governance.json";
+   assert.ok(changed.includes(contractPath),"shared platform surfaces changed without updating "+contractPath);
+  }
+  const featureIds=new Set();
+  for(const file of changed){const match=file.match(/^(?:src|public)\/features\/([^/]+)\//);if(match)featureIds.add(match[1]);}
+  for(const id of featureIds){
+   const contractPath="docs/architecture/feature-contracts/"+id+".json";
+   assert.ok(changed.includes(contractPath),"feature module requires its own contract in this PR: "+contractPath);
+  }
+ }
+}
+
 console.log("Platform architecture contract passed: "+ownership.domains.length+" domains, "+ownership.sharedSurfaces.length+" shared surfaces, "+route.routes.length+" routes, "+api.exactRouteCount+" API routes, "+namesCount()+" numbered migrations.");
 function namesCount(){return fs.existsSync(migrationDir)?fs.readdirSync(migrationDir).filter(x=>/^\d{4}_.*\.sql$/.test(x)).length:0}
