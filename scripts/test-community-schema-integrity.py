@@ -4,6 +4,9 @@ import sqlite3
 from pathlib import Path
 
 migration = Path("migrations/0028_runtime_feature_integrity.sql").read_text(encoding="utf-8")
+worker = Path("src/index.js").read_text(encoding="utf-8")
+assert \"INSERT OR IGNORE INTO comment_likes\" in worker, "duplicate concurrent likes must be conflict-safe"
+assert "UNIQUE constraint failed|idx_comment_reports_user_comment" in worker, "duplicate concurrent reports must return a conflict instead of HTTP 500"
 db = sqlite3.connect(":memory:")
 db.execute("PRAGMA foreign_keys=ON")
 db.executescript("""
