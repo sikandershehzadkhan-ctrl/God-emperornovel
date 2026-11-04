@@ -1,0 +1,102 @@
+{
+  "featureId": "identity-media-policy-foundations",
+  "domainOwner": "identity",
+  "technicalIntegrator": "platform-integrator",
+  "ownedPaths": [
+    "src/identity/",
+    "src/media/",
+    "scripts/test-identity-profile-policy.mjs",
+    "scripts/test-account-identity-policy-isolated.mjs",
+    "scripts/test-account-preferences-policy.mjs",
+    "scripts/test-media-upload-policy-isolated.mjs"
+  ],
+  "sharedSurfaces": [
+    "package.json"
+  ],
+  "dependencies": [
+    "platform-kernel",
+    "platform-data",
+    "platform-quality"
+  ],
+  "routes": [],
+  "apiContracts": [
+    "No route or API behavior is introduced by this slice."
+  ],
+  "dataEntities": [
+    "No new database entities or migrations."
+  ],
+  "migrationPlan": {
+    "required": false,
+    "proposedNumbers": [],
+    "canonicalEntityReuse": "No database changes; existing migrations are untouched.",
+    "backwardCompatibility": "Pure policy modules are additive and have no runtime callers yet.",
+    "rollbackOrForwardRepair": "Revert this code-only slice; no data repair is required."
+  },
+  "uiLifecycle": {
+    "shellOwner": "experience-shell",
+    "ssrBehavior": "No SSR changes.",
+    "clientBootBehavior": "No browser boot changes.",
+    "servedBundleParity": "No served bundle changes."
+  },
+  "privacySecurity": {
+    "authentication": "No authentication changes.",
+    "authorization": "No route or authorization changes.",
+    "ownerScoping": "No data access; ownership is enforced later at route/repository boundaries.",
+    "csrf": "No write endpoints added.",
+    "rateAndSizeLimits": "Profile fields, preferences, media types and media sizes are bounded in pure policy functions."
+  },
+  "tests": {
+    "unit": [
+      "test-identity-profile-policy.mjs",
+      "test-account-identity-policy-isolated.mjs",
+      "test-account-preferences-policy.mjs",
+      "test-media-upload-policy-isolated.mjs"
+    ],
+    "integration": [],
+    "isolation": [],
+    "buildCommands": [
+      "npm run build",
+      "npm run check:cloudflare-readiness"
+    ]
+  },
+  "rollout": {
+    "flags": [
+      "No runtime feature is enabled by this slice."
+    ],
+    "stagingSteps": [
+      "Pass all CI workflows",
+      "Review exact PR diff",
+      "Integrate route/API/UI behavior only in a follow-up governed change."
+    ]
+  },
+  "rollback": {
+    "codeRollback": "Revert the policy foundation commit.",
+    "dataRollbackOrForwardRepair": "No database changes.",
+    "monitoringSignals": [
+      "Build regression tests",
+      "Architecture governance",
+      "Route/API inventory checks"
+    ]
+  },
+  "collisionReview": {
+    "duplicateRoutes": "None introduced.",
+    "duplicateEntities": "None introduced.",
+    "migrationAllocation": "No migration added.",
+    "sharedSurfaceOwners": "package.json remains owned by repository-operations; ADR and contract document the build-gate change."
+  },
+  "affectedDomains": [
+    "identity",
+    "media",
+    "platform-quality",
+    "platform-architecture",
+    "repository-operations"
+  ],
+  "changeSummary": "Adds isolated, pure identity and media policy modules with mandatory build regression tests, without copying the older Worker or enabling unfinished runtime routes.",
+  "acceptanceCriteria": [
+    "All new source and test paths have canonical owners.",
+    "No Worker route, UI, D1 migration, R2 binding or production configuration is changed.",
+    "Policy tests run in npm run build.",
+    "Existing architecture, route, API and authorization checks remain mandatory.",
+    "The exact PR head passes all required workflows."
+  ]
+}
