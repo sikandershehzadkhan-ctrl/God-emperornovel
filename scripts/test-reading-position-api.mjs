@@ -15,7 +15,7 @@ assert.ok(get.includes("need(u)")&&get.includes("rp.user_id=?"),"GET must be aut
 assert.ok(post.includes("need(u)")&&post.includes("u.id"),"POST must be authenticated and derive owner from session");
 assert.ok(post.includes("req.headers.get(\"origin\")!==url.origin"),"POST must reject cross-origin writes");
 assert.ok(post.includes("consumeAuthRateLimit"),"POST must be rate-limited");
-assert.ok(post.includes("expected_revision")&&post.includes("WHERE reading_positions.revision=? RETURNING"),"writes must use optimistic concurrency");
+assert.ok(post.includes("expected_revision")&&post.includes("WHERE ?=0 ON CONFLICT")&&post.includes("WHERE reading_positions.revision=? RETURNING"),"initial inserts require revision zero and updates require exact optimistic revision");
 assert.ok(post.includes("},409)"),"stale writes must return conflict");
 assert.ok(post.includes("n.rights_status IN ('original','public_domain','licensed','authorized')"),"only rights-eligible novels may receive progress writes");
 assert.ok(post.includes("c.publication_status='published' AND n.publication_status='published'"),"only published chapters may receive progress writes");
