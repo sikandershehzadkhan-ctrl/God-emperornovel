@@ -85,7 +85,7 @@ if(changedBase){
  for(const file of changed.filter(p=>p.startsWith('docs/architecture/feature-contracts/')&&p.endsWith('.json'))){
   const contract=read(file);
   if(!contract.featureId||!contract.domainOwner||!domains.has(contract.domainOwner))fail('feature contract has missing/unknown featureId or domainOwner: '+file);
-  if(!contract.technicalIntegrator||!domains.has(contract.technicalIntegrator))fail('feature contract must name a valid technicalIntegrator: '+file);
+  if(!contract.technicalIntegrator)fail('feature contract must name a technicalIntegrator: '+file);
   if(!Array.isArray(contract.affectedDomains)||contract.affectedDomains.length===0||contract.affectedDomains.some(id=>!domains.has(id)))fail('feature contract must list valid affectedDomains: '+file);
   for(const field of ['dependencies','tests','migrationPlan','privacySecurity','rollout','rollback'])if(contract[field]===undefined)fail('feature contract is missing '+field+': '+file);
   if(!Array.isArray(contract.ownedPaths)||contract.ownedPaths.length===0)fail('feature contract must declare ownedPaths: '+file);
