@@ -1,0 +1,296 @@
+{
+  "schemaVersion": 1,
+  "name": "Imperial Novel feature ownership registry",
+  "effectivePolicy": "Architecture root governs; exact shared paths require an ADR and full validation.",
+  "domains": [
+    {
+      "id": "platform-kernel",
+      "name": "Platform kernel",
+      "owns": [
+        "src/index.js",
+        "src/platform/"
+      ],
+      "responsibilities": [
+        "Worker composition",
+        "routing",
+        "sessions",
+        "configuration",
+        "errors",
+        "observability"
+      ]
+    },
+    {
+      "id": "identity",
+      "name": "Identity and accounts",
+      "owns": [
+        "src/domains/identity/",
+        "src/identity/"
+      ],
+      "responsibilities": [
+        "profiles",
+        "roles",
+        "sessions",
+        "recovery",
+        "verification",
+        "account lifecycle"
+      ]
+    },
+    {
+      "id": "catalog",
+      "name": "Catalog and taxonomy",
+      "owns": [
+        "src/domains/catalog/",
+        "src/catalog/"
+      ],
+      "responsibilities": [
+        "novel discovery",
+        "genres",
+        "tags",
+        "search",
+        "catalog projections"
+      ]
+    },
+    {
+      "id": "publishing",
+      "name": "Publishing",
+      "owns": [
+        "src/domains/publishing/",
+        "src/publishing/"
+      ],
+      "responsibilities": [
+        "novels",
+        "chapters",
+        "revisions",
+        "scheduling",
+        "publication state"
+      ]
+    },
+    {
+      "id": "reader",
+      "name": "Reader experience",
+      "owns": [
+        "src/domains/reader/",
+        "src/reader/"
+      ],
+      "responsibilities": [
+        "reading progress",
+        "bookmarks",
+        "history",
+        "reader preferences"
+      ]
+    },
+    {
+      "id": "community",
+      "name": "Community",
+      "owns": [
+        "src/domains/community/",
+        "src/community/"
+      ],
+      "responsibilities": [
+        "discussions",
+        "comments",
+        "reports",
+        "community moderation"
+      ]
+    },
+    {
+      "id": "creator",
+      "name": "Creator and Author Studio",
+      "owns": [
+        "src/domains/creator/",
+        "src/author/"
+      ],
+      "responsibilities": [
+        "author applications",
+        "creator dashboard",
+        "creator analytics"
+      ]
+    },
+    {
+      "id": "rights",
+      "name": "Rights and attribution",
+      "owns": [
+        "src/domains/rights/",
+        "src/rights/"
+      ],
+      "responsibilities": [
+        "licenses",
+        "attribution",
+        "takedowns",
+        "rights eligibility"
+      ]
+    },
+    {
+      "id": "payments",
+      "name": "Payments and ledgers",
+      "owns": [
+        "src/domains/payments/",
+        "src/payments/"
+      ],
+      "responsibilities": [
+        "tickets",
+        "immutable ledger",
+        "donations",
+        "payouts",
+        "reconciliation"
+      ]
+    },
+    {
+      "id": "discovery",
+      "name": "Discovery and intelligence",
+      "owns": [
+        "src/domains/discovery/",
+        "src/discovery/"
+      ],
+      "responsibilities": [
+        "ranking",
+        "recommendations",
+        "trending",
+        "Trend Factory"
+      ]
+    },
+    {
+      "id": "media",
+      "name": "Media and formats",
+      "owns": [
+        "src/domains/media/",
+        "src/media/"
+      ],
+      "responsibilities": [
+        "uploads",
+        "covers",
+        "comics",
+        "media processing"
+      ]
+    },
+    {
+      "id": "ai",
+      "name": "AI capabilities",
+      "owns": [
+        "src/domains/ai/",
+        "src/ai/"
+      ],
+      "responsibilities": [
+        "AI orchestration",
+        "provider adapters",
+        "project ownership",
+        "usage controls"
+      ]
+    },
+    {
+      "id": "administration",
+      "name": "Administration",
+      "owns": [
+        "src/domains/administration/",
+        "src/admin/"
+      ],
+      "responsibilities": [
+        "admin workflows",
+        "moderation operations",
+        "audit tools"
+      ]
+    },
+    {
+      "id": "experience-shell",
+      "name": "Web experience and design system",
+      "owns": [
+        "public/"
+      ],
+      "responsibilities": [
+        "browser shell",
+        "reader UI",
+        "design tokens",
+        "static assets",
+        "release bundles"
+      ]
+    },
+    {
+      "id": "platform-data",
+      "name": "Database and persistence",
+      "owns": [
+        "migrations/",
+        "src/adapters/"
+      ],
+      "responsibilities": [
+        "D1 migrations",
+        "repositories",
+        "storage adapters"
+      ]
+    },
+    {
+      "id": "platform-quality",
+      "name": "Tests and build tooling",
+      "owns": [
+        "scripts/",
+        "tests/"
+      ],
+      "responsibilities": [
+        "automated tests",
+        "architecture validators",
+        "build pipeline"
+      ]
+    },
+    {
+      "id": "platform-architecture",
+      "name": "Architecture and product contracts",
+      "owns": [
+        "docs/"
+      ],
+      "responsibilities": [
+        "ADRs",
+        "registers",
+        "system contracts",
+        "operational documentation"
+      ]
+    },
+    {
+      "id": "delivery-platform",
+      "name": "CI and deployment",
+      "owns": [
+        ".github/",
+        "wrangler.toml"
+      ],
+      "responsibilities": [
+        "CI",
+        "release gates",
+        "Cloudflare configuration"
+      ]
+    },
+    {
+      "id": "repository-operations",
+      "name": "Repository root operations",
+      "owns": [
+        "package.json",
+        "package-lock.json",
+        "ARCHITECTURE.md"
+      ],
+      "responsibilities": [
+        "dependency graph",
+        "root build scripts",
+        "architecture entrypoint"
+      ]
+    }
+  ],
+  "sharedPaths": [
+    "src/index.js",
+    "public/app.js",
+    "public/index.html",
+    "package.json",
+    "package-lock.json",
+    "wrangler.toml",
+    ".github/workflows/",
+    "docs/architecture/IMPERIAL-ROUTE-REGISTRY-01N.json",
+    "docs/architecture/IMPERIAL-API-ROUTE-METHOD-MATRIX-01N-37.json",
+    "docs/architecture/IMPERIAL-AUTHORIZATION-OWNERSHIP-MATRIX-01N-38.json",
+    "migrations/"
+  ],
+  "rules": {
+    "singleOwner": true,
+    "defaultDenyUnknownPaths": true,
+    "sharedChangesRequireAdr": true,
+    "adrDirectory": "docs/architecture/decisions/",
+    "registriesUpdatedInSamePr": true,
+    "oneMigrationSequence": true,
+    "productionDeployFromMainOnly": true
+  }
+}
