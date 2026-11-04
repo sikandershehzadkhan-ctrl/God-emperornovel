@@ -128,12 +128,18 @@ function isAncestor(baseSha,headSha){
   if(result.status===1)return false;
   throw new Error("Unable to compare local Git ancestry for "+baseSha+" and "+headSha+": "+result.stderr.slice(0,1000));
 }
-function fileBlobSha(ref,file){
-  const result=runGit(["rev-parse","--verify",ref+":"+file]);
-  if(result.status===0)return result.stdout.trim();
-  // A missing path on one side is a real deletion, not a network/API failure.
-  requireGit(["cat-file","-e",ref+"^{commit}"],"Git commit "+ref+" is unavailable for shared-surface comparison");
-  return null;
+function conflictingSharedPaths(leftSha,rightSha,eligiblePaths){
+  const result=runGit(["merge-tree","--write-tree","--name-only",leftSha,rightSha]);
+  if(result.status===0)return [];
+  if(result.status!==1){
+    throw new Error("Unable to perform non-mutating Git merge analysis for "+leftSha+" and "+rightSha+": "+result.stderr.slice(0,1000));
+  }
+  const reported=new Set(result.stdout.split(/\\r?\\n/).map(line=>line.trim()).filter(Boolean));
+  const conflicts=eligiblePaths.filter(file=>reported.has(file));
+  if(conflicts.length===0&&result.stdout.trim()===""){
+    throw new Error("Git reported merge conflicts without identifying paths; refusing an incomplete shared-surface audit.");
+  }
+  return conflicts;
 }
 const currentFiles=listChangedFiles(current).filter(isSerialized);
 if(currentFiles.length===0){
@@ -178,17 +184,11 @@ for(const other of siblings){
   const currentBeforeOther=await isAncestor(current.head.sha,other.head.sha);
   const otherBeforeCurrent=await isAncestor(other.head.sha,current.head.sha);
   if(currentBeforeOther||otherBeforeCurrent)continue;
-  // Divergent commit histories are not automatically collisions. If every
-  // overlapping serialized path resolves to the same Git blob (including
-  // both sides deleting it), the shared surface is already reconciled.
-  const divergent=[];
-  for(const file of overlap){
-    const [currentBlob,otherBlob]=await Promise.all([
-      fileBlobSha(current.head.sha,file),
-      fileBlobSha(other.head.sha,file)
-    ]);
-    if(currentBlob!==otherBlob)divergent.push(file);
-  }
+  // Different blobs are not necessarily a collision: Git can often merge
+  // independent edits to separate sections of the same shared file. Use the
+  // real three-way merge algorithm without changing either branch, and report
+  // only merge-conflicted paths that are protected shared surfaces.
+  const divergent=conflictingSharedPaths(current.head.sha,other.head.sha,overlap);
   if(divergent.length){
     conflicts.push({
       number:other.number,
