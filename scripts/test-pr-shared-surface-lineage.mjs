@@ -59,6 +59,18 @@ async function isAncestor(baseSha,headSha){
   const result=await github("/compare/"+baseSha+"..."+headSha);
   return result.status==="ahead"||result.status==="identical";
 }
+async function fileBlobSha(ref,file){
+  const encoded=file.split("/").map(encodeURIComponent).join("/");
+  const response=await fetch("https://api.github.com/repos/"+repository+"/contents/"+encoded+"?ref="+encodeURIComponent(ref),{
+    headers:{accept:"application/vnd.github+json",authorization:"Bearer "+token,"x-github-api-version":"2022-11-28"},
+    signal:AbortSignal.timeout(20000)
+  });
+  if(response.status===404)return null;
+  if(!response.ok)throw new Error("GitHub API "+response.status+" while reading "+file+" at "+ref+": "+(await response.text()).slice(0,500));
+  const value=await response.json();
+  if(Array.isArray(value)||!value.sha)throw new Error("Expected a single file blob for "+file+" at "+ref);
+  return value.sha;
+}
 const currentFiles=(await listChangedFiles(current.number)).filter(isSerialized);
 if(currentFiles.length===0){
   console.log("PASS: this PR does not modify any serialized shared surface.");
@@ -101,12 +113,24 @@ for(const other of older){
   if(overlap.length===0)continue;
   const currentBeforeOther=await isAncestor(current.head.sha,other.head.sha);
   const otherBeforeCurrent=await isAncestor(other.head.sha,current.head.sha);
-  if(!currentBeforeOther&&!otherBeforeCurrent){
+  if(currentBeforeOther||otherBeforeCurrent)continue;
+  // Divergent commit histories are not automatically collisions. If every
+  // overlapping serialized path resolves to the same Git blob (including
+  // both sides deleting it), the shared surface is already reconciled.
+  const divergent=[];
+  for(const file of overlap){
+    const [currentBlob,otherBlob]=await Promise.all([
+      fileBlobSha(current.head.sha,file),
+      fileBlobSha(other.head.sha,file)
+    ]);
+    if(currentBlob!==otherBlob)divergent.push(file);
+  }
+  if(divergent.length){
     conflicts.push({
       number:other.number,
       title:other.title,
       head:other.head.ref,
-      overlap
+      overlap:divergent
     });
   }
 }
