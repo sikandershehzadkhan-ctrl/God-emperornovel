@@ -27,6 +27,20 @@ The community/reader/account-closure branch used overlapping branch-local number
 | 0018_comment_reports.sql | none | Intentionally omitted: source file is comment-only; comment-report schema is owned by 0028. |
 | 0019_account_closure_requests.sql | 0031_account_closure_requests.sql | Ported. |
 
+
+## Author editorial workspace reconciliation
+
+The Author Editorial Workspace branch also used branch-local migrations 0012–0015:
+
+| Former branch-local file | Canonical treatment |
+| --- | --- |
+| 0012_chapter_revisions.sql | Omitted as a duplicate: byte-identical to canonical 0016_chapter_revisions.sql. |
+| 0013_scheduled_chapter_publications.sql | Omitted as a duplicate: byte-identical to canonical 0017_scheduled_chapter_publications.sql. |
+| 0014_author_story_goals.sql | Ported as 0032_author_story_goals.sql. |
+| 0015_author_private_notes.sql | Ported as 0033_author_private_notes.sql. |
+
+This resolves the filename collisions without replaying duplicate DDL or displacing account migrations 0014–0015. The application APIs/UI and their owner-isolation tests still need to be integrated and validated with these tables before the Author Editorial Workspace can be considered fully integrated.
+
 ## Confirmed schema collisions that must not be papered over
 
 ### Reading positions
