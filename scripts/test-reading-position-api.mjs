@@ -31,7 +31,7 @@ assert.ok(client.includes("setTimeout(()=>saveProgress"),"autosave must be debou
 assert.ok(client.includes("window.addEventListener('online',async()=>{await readProgress();"),"reader must recover after initially offline startup");
 assert.ok(client.includes("readerProgress:'+id"),"local progress cache must remain available offline");
 assert.ok(client.includes("readerProgress:'+id+':account:'+encodeURIComponent(progressAccount)"),"authenticated local progress cache must be isolated by account");
-assert.ok(client.includes("if(!me.user){progressAccount=null;progressCacheKey='readerProgress:'+id"),"legacy local progress must be selected only after the server confirms an anonymous session");
+assert.ok(client.includes("if(!me.user){progressAccount=null;try{sessionStorage.removeItem('imperialReaderAccount')}catch{}progressCacheKey='readerProgress:'+id"),"legacy local progress must be selected only after the server confirms an anonymous session and clears prior tab identity");
 assert.ok(client.includes("sessionStorage.setItem('imperialReaderAccount',progressAccount)"),"last verified account must be retained per tab for offline cache restore");
 assert.ok(client.includes("sessionStorage.getItem('imperialReaderAccount')"),"authenticated local cache must restore after offline reload");
 assert.ok(client.includes("readerProgressPending:'+id"),"offline writes must be retained as pending progress");
