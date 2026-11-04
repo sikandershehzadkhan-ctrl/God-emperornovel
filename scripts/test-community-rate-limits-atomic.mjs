@@ -11,6 +11,8 @@ assert.match(schema, /DELETE FROM community_rate_limit_events/);
 assert.match(schema, /INSERT OR IGNORE INTO comment_report_claims\(user_id,comment_id\) SELECT DISTINCT/);
 assert.match(schema, /CREATE TRIGGER IF NOT EXISTS trg_comments_hourly_limit/);
 assert.match(schema, /CREATE TRIGGER IF NOT EXISTS trg_comment_reports_hourly_limit_and_claim/);
+assert.match(schema, /CREATE TRIGGER IF NOT EXISTS trg_comments_prune_rate_limit_events/);
+assert.match(schema, /CREATE TRIGGER IF NOT EXISTS trg_comment_reports_prune_rate_limit_events/);
 assert.match(schema, /RAISE\(ABORT,'comment_hourly_limit'\)/);
 assert.match(schema, /RAISE\(ABORT,'comment_report_hourly_limit'\)/);
 const commentRoute = worker.split('\n').find(line => line.includes('if(p==="/api/comments"&&m==="POST")'));
