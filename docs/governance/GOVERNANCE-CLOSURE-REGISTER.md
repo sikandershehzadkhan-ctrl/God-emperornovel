@@ -26,16 +26,18 @@ Issue #108 was re-verified against current `main` and closed as completed on 202
 
 The following GitHub issues were confirmed as **open** during the audit and remain blockers until the fix is present on the canonical integration path and supported by reproducible tests.
 
-| Issue | Required outcome |
-|---|---|
-| #107 Runtime bootstrap schema consistency | Runtime-created/bootstrap schema matches canonical D1 migrations and constraints; fresh-install and upgrade fixtures pass. |
-| #109 Atomic AI generation claims | Concurrent requests cannot claim or execute the same generation job twice; idempotency and race tests pass. |
-| #110 Bookmark/history target validation | Targets are validated against visibility and ownership before writes; cross-user and unpublished-target tests pass. |
-| #111 Content Security Policy | Remove unsafe inline allowances where feasible; nonce/hash and real browser boot behavior are verified. |
-| #112 Cover URL validation | Author-controlled URLs are scheme/host/size constrained; unsafe schemes and internal-network targets are rejected. |
-| #113 Published-novel engagement guards | Follows and comment engagement writes enforce publication and visibility rules. |
-| #114 Rating input validation | Reject non-numeric, fractional, out-of-range and malformed values before database writes. |
-| #115 Concurrency-safe rate limits | Concurrent comment/report requests cannot bypass limits; atomic database-backed tests pass. |
+| Issue | Required outcome | Current proposal (not yet merged) |
+|---|---|---|
+| #107 Runtime bootstrap schema consistency | Runtime-created/bootstrap schema matches canonical D1 migrations and constraints; fresh-install and upgrade fixtures pass. | PR #210 covers fresh bootstrap parity; legacy-schema retrofit remains open. |
+| #109 Atomic AI generation claims | Concurrent requests cannot claim or execute the same generation job twice; idempotency and race tests pass. | PR #211. |
+| #110 Bookmark/history target validation | Targets are validated against visibility and ownership before writes; cross-user and unpublished-target tests pass. | PR #212. |
+| #111 Content Security Policy | Remove unsafe inline allowances where feasible; nonce/hash and real browser boot behavior are verified. | No complete remediation PR yet; inline script blocks and event-handler attributes remain to be migrated. |
+| #112 Cover URL validation | Author-controlled URLs are scheme/host/size constrained; unsafe schemes and internal-network targets are rejected. | PR #213. |
+| #113 Published-novel engagement guards | Follows and comment engagement writes enforce publication and visibility rules. | PR #215 covers follows/likes; PR #214 covers reports. |
+| #114 Rating input validation | Reject non-numeric, fractional, out-of-range and malformed values before database writes. | PR #209. |
+| #115 Concurrency-safe rate limits | Concurrent comment/report requests cannot bypass limits; atomic database-backed tests pass. | PR #214. |
+
+All proposals above remain open/unmerged as of this register update. Passing CI, when obtained, will still not equal canonical integration or production verification.
 
 Issue status must be refreshed immediately before closure. Closing an issue is not a substitute for validating the fix on the exact merged commit.
 
