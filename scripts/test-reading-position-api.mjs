@@ -31,6 +31,7 @@ assert.ok(client.includes("setTimeout(()=>saveProgress"),"autosave must be debou
 assert.ok(client.includes("window.addEventListener('online',async()=>{await readProgress();"),"reader must recover after initially offline startup");
 assert.ok(client.includes("readerProgress:'+id"),"local progress cache must remain available offline");
 assert.ok(client.includes("readerProgress:'+id+':account:'+encodeURIComponent(progressAccount)"),"authenticated local progress cache must be isolated by account");
+assert.ok(client.includes("if(!me.user){progressAccount=null;progressCacheKey='readerProgress:'+id"),"legacy local progress must be selected only after the server confirms an anonymous session");
 assert.ok(client.includes("if(!progressAccount||progressSync!=='synced')return"),"anonymous/offline sessions must not issue authenticated writes");
 
 console.log("PASS: reader progress API and browser client, including session ownership, optimistic concurrency, bundle parity and offline fallback.");
