@@ -2,6 +2,7 @@ import assert from "node:assert/strict";
 import fs from "node:fs";
 
 const workflow = fs.readFileSync(".github/workflows/deploy.yml", "utf8");
+const releasePlan = fs.readFileSync("docs/production/CANONICAL-D1-MIGRATION-RELEASE-PLAN.md", "utf8");
 assert.ok(workflow.includes("workflow_dispatch:"), "Production deploy must remain manual.");
 assert.ok(workflow.includes("confirm_production_deploy"), "Production deploy must require an explicit confirmation input.");
 assert.ok(workflow.includes("inputs.confirm_production_deploy == 'true'"), "Production job must be gated by the explicit true confirmation.");
@@ -15,7 +16,6 @@ assert.ok(!workflow.includes("--file=migrations/"), "No stale branch-local migra
 assert.ok(workflow.includes("HARD RELEASE STOP"), "The workflow must explain why production deployment is blocked.");
 assert.ok(workflow.indexOf("Validate Cloudflare bundle without deploying") < workflow.indexOf("Apply and verify additive D1 migrations before Worker deployment"), "Source validation must precede any future migration runner.");
 assert.ok(workflow.indexOf("Apply and verify additive D1 migrations before Worker deployment") < workflow.indexOf("Deploy Worker and static assets"), "Migration gate must remain before any future Worker deployment.");
-const releasePlan = fs.readFileSync("docs/production/CANONICAL-D1-MIGRATION-RELEASE-PLAN.md", "utf8");
 assert.ok(releasePlan.includes("STATUS: BLOCKED"), "Production release plan must remain blocked until remote D1 audit.");
 assert.ok(releasePlan.includes("0035_ten_point_ratings.sql"), "Release plan must explicitly account for the one-time ratings conversion.");
 assert.ok(workflow.includes("author_applications exists with an incomplete or unrecognized schema"), "Partial author application schemas must fail closed.");
