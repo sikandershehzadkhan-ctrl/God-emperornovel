@@ -20,6 +20,15 @@ for(let i=0;i<roots.length;i++)for(let j=i+1;j<roots.length;j++){
  const a=roots[i],b=roots[j];
  if(a.path.endsWith('/')&&b.path.startsWith(a.path)||b.path.endsWith('/')&&a.path.startsWith(b.path))fail('overlapping ownership roots are forbidden: '+a.path+' ('+a.owner+') and '+b.path+' ('+b.owner+')');
 }
+// Full repository invariant: every tracked file has exactly one canonical owner.
+// This catches untouched orphan files too, not merely paths changed by the current PR.
+const trackedPaths=execFileSync('git',['ls-files'],{encoding:'utf8'}).split(/\\r?\\n/).filter(Boolean);
+for(const file of trackedPaths){
+ const owners=roots.filter(r=>file===r.path||file.startsWith(r.path.endsWith('/')?r.path:r.path+'/'));
+ if(owners.length===0)fail('tracked path has no registered owner: '+file+'; assign a domain before merging');
+ if(owners.length>1)fail('tracked path has multiple owners: '+file+' ('+owners.map(r=>r.owner).join(', ')+')');
+}
+console.log('Full tracked-path ownership checked: '+trackedPaths.length+' files; exactly one owner each.');
 for(const sharedPath of ownership.sharedPaths||[]){
  const candidate=sharedPath.endsWith('*')?sharedPath.slice(0,-1):sharedPath;
  const owner=roots.find(r=>candidate===r.path||candidate.startsWith(r.path.endsWith('/')?r.path:r.path+'/'));
