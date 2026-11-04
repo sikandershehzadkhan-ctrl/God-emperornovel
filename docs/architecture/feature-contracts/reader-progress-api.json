@@ -54,7 +54,8 @@
     ],
     "integration": [
       "runtime schema bootstrap v2",
-      "owner-scoped Worker GET/POST route"
+      "owner-scoped Worker GET/POST route",
+      "test-reading-position-sql.py"
     ],
     "isolation": [
       "Cross-account owner binding and stale revision source invariants"
