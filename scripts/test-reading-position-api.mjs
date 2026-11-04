@@ -32,6 +32,12 @@ assert.ok(client.includes("window.addEventListener('online',async()=>{await read
 assert.ok(client.includes("readerProgress:'+id"),"local progress cache must remain available offline");
 assert.ok(client.includes("readerProgress:'+id+':account:'+encodeURIComponent(progressAccount)"),"authenticated local progress cache must be isolated by account");
 assert.ok(client.includes("if(!me.user){progressAccount=null;progressCacheKey='readerProgress:'+id"),"legacy local progress must be selected only after the server confirms an anonymous session");
+assert.ok(client.includes("sessionStorage.setItem('imperialReaderAccount',progressAccount)"),"last verified account must be retained per tab for offline cache restore");
+assert.ok(client.includes("sessionStorage.getItem('imperialReaderAccount')"),"authenticated local cache must restore after offline reload");
+assert.ok(client.includes("readerProgressPending:'+id"),"offline writes must be retained as pending progress");
+assert.ok(client.includes("Number(pending.expected_revision)===progressRevision"),"pending progress may only replay when the server revision still matches its base revision");
+assert.ok(client.includes("progressSync='conflict'"),"stale offline progress must remain a conflict rather than being blindly replayed");
+assert.ok(client.includes("sessionStorage.removeItem('imperialReaderAccount')"),"logout must clear the tab-scoped remembered account");
 assert.ok(client.includes("if(!progressAccount||progressSync!=='synced')return"),"anonymous/offline sessions must not issue authenticated writes");
 
 console.log("PASS: reader progress API and browser client, including session ownership, optimistic concurrency, bundle parity and offline fallback.");
