@@ -3,8 +3,8 @@
   "name": "Imperial Novel route registry",
   "sourceBranch": "main",
   "sourceCommit": "c909a8aad8c88863b4c472263b8c5b9aa29a878f",
-  "auditDate": "2026-11-03",
-  "scope": "Static source reconciliation only; not proof of deployed behavior or authorization correctness.",
+  "auditDate": "2026-11-04",
+  "scope": "Current-main static route reconciliation. Does not prove deployed behavior, runtime routing, or authorization correctness.",
   "routes": [
     {
       "path": "/",
