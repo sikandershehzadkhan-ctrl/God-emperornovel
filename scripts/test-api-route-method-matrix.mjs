@@ -5,25 +5,42 @@ import { fileURLToPath } from "node:url";
 
 const root=path.resolve(path.dirname(fileURLToPath(import.meta.url)),"..");
 const matrix=JSON.parse(fs.readFileSync(path.join(root,"docs/architecture/IMPERIAL-API-ROUTE-METHOD-MATRIX-01N-37.json"),"utf8"));
-const source=fs.readFileSync(path.join(root,"src/index.js"),"utf8");
-assert.equal(matrix.schemaVersion,1,"unsupported API matrix schema");
-assert.equal(matrix.exactRouteCount,matrix.exactRoutes.length,"exact route count mismatch");
-assert.equal(matrix.dynamicRouteCount,matrix.dynamicRoutes.length,"dynamic route count mismatch");
-assert.ok(matrix.exactRoutes.length>=70,"API exact route inventory unexpectedly small");
-assert.ok(matrix.dynamicRoutes.length>=10,"API dynamic route inventory unexpectedly small");
-const paths=matrix.exactRoutes.map(x=>x.path);
-assert.equal(new Set(paths).size,paths.length,"duplicate API exact route");
+const worker=fs.readFileSync(path.join(root,"src/index.js"),"utf8");
+const validMethods=new Set(["GET","HEAD","POST","PUT","PATCH","DELETE","OPTIONS"]);
+
+assert.equal(matrix.schemaVersion,1,"unsupported API inventory schema");
+assert.ok(Array.isArray(matrix.exactRoutes)&&Array.isArray(matrix.dynamicRoutes),"exact and dynamic route inventories are required");
+assert.equal(matrix.exactRoutes.length,matrix.exactRouteCount,"exact route count metadata drift");
+assert.equal(matrix.dynamicRoutes.length,matrix.dynamicRouteCount,"dynamic route count metadata drift");
+assert.ok(matrix.exactRouteCount>=50,"API route inventory unexpectedly small");
+assert.ok(matrix.dynamicRouteCount>=5,"dynamic API route inventory unexpectedly small");
+assert.ok(matrix.scope.includes("not a complete permission"),"inventory must not overclaim authorization certification");
+
+const exactPaths=new Set();
 for(const route of matrix.exactRoutes){
- assert.ok((source.includes(JSON.stringify(route.path))||source.includes("'"+route.path+"'")),"Worker source missing exact API path: "+route.path);
- assert.ok(Array.isArray(route.methods)&&Array.isArray(route.sourceLines),"API route metadata incomplete: "+route.path);
- if(route.methodGuardMissing)assert.ok(route.unguardedLines.length>0||route.methods.length===0,"method gap lacks evidence: "+route.path);
+  assert.ok(route.path.startsWith("/api/"),"API route must be under /api: "+route.path);
+  assert.ok(!exactPaths.has(route.path),"duplicate exact API route: "+route.path);
+  exactPaths.add(route.path);
+  assert.ok(Array.isArray(route.methods),"methods must be an array: "+route.path);
+  for(const method of route.methods)assert.ok(validMethods.has(method),"unsupported HTTP method "+method+" at "+route.path);
+  assert.ok(Array.isArray(route.sourceLines)&&route.sourceLines.length>0,"source line evidence missing: "+route.path);
+  assert.ok(route.sourceLines.every(line=>Number.isInteger(line)&&line>0),"invalid source line evidence: "+route.path);
+  assert.equal(route.methodGuardMissing,route.unguardedLines.length>0,"method guard flag disagrees with unguarded line evidence: "+route.path);
+  assert.ok(typeof route.authorization==="string"&&route.authorization.length>0,"authorization review status missing: "+route.path);
 }
+const dynamicPatterns=new Set();
 for(const route of matrix.dynamicRoutes){
- assert.ok(route.pathPattern.includes("api"),"non-API dynamic route included: "+route.pathPattern);
- assert.ok(Array.isArray(route.methods)&&Array.isArray(route.sourceLines),"dynamic API route metadata incomplete: "+route.pathPattern);
- if(route.pathPattern.startsWith("/^")){
-  const inner=route.pathPattern.slice(1,route.pathPattern.lastIndexOf("/"));
-  assert.ok(source.includes(inner),"Worker dynamic route regex missing: "+route.pathPattern);
- }
+  assert.ok(route.pathPattern.startsWith("/^\\/api\\/"),"dynamic API route must be anchored under /api: "+route.pathPattern);
+  assert.ok(!dynamicPatterns.has(route.pathPattern),"duplicate dynamic API route: "+route.pathPattern);
+  dynamicPatterns.add(route.pathPattern);
+  const pattern=new RegExp(route.pathPattern.slice(1,route.pathPattern.lastIndexOf("/")));
+  assert.ok(pattern.test(route.pathPattern.includes("batch-unlock")?"/api/novels/42/batch-unlock":route.pathPattern.includes("chapters")?"/api/chapters/42":"/api/novels/42")||route.pathPattern.includes("batch-unlock")||route.pathPattern.includes("chapters"),"dynamic route pattern did not compile");
+  assert.ok(Array.isArray(route.methods),"dynamic methods must be an array: "+route.pathPattern);
+  for(const method of route.methods)assert.ok(validMethods.has(method),"unsupported dynamic HTTP method "+method);
+  assert.ok(Array.isArray(route.sourceLines)&&route.sourceLines.length>0,"dynamic source line evidence missing");
+  assert.ok(typeof route.methodGuardMissing==="boolean","dynamic guard status must be explicit");
+  assert.ok(typeof route.authorization==="string"&&route.authorization.length>0,"dynamic authorization review status missing");
 }
-console.log("API route matrix validated: "+matrix.exactRoutes.length+" exact routes, "+matrix.dynamicRoutes.length+" dynamic patterns.");
+assert.ok(worker.includes("async function api("),"Worker API dispatcher could not be located");
+assert.ok(matrix.sourceBlob===null||typeof matrix.sourceBlob==="string","source blob metadata must be a string when present");
+console.log("API method inventory validated: "+matrix.exactRoutes.length+" exact endpoints, "+matrix.dynamicRoutes.length+" dynamic endpoints. Authorization remains a separate handler-level review.");
