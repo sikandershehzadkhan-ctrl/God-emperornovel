@@ -1,0 +1,13 @@
+import assert from 'node:assert/strict';
+import { readFileSync } from 'node:fs';
+import { parsePositiveSafeInteger } from '../src/published-engagement-policy.mjs';
+for (const value of [1, '1', 7, '25']) assert.equal(parsePositiveSafeInteger(value), Number(value));
+for (const value of [0, -1, 1.2, '1.2', ' 1 ', '1e2', '0x10', 'abc', null, undefined, true, false, Number.MAX_SAFE_INTEGER + 1]) assert.equal(parsePositiveSafeInteger(value), null);
+const source = readFileSync(new URL('../src/index.js', import.meta.url), 'utf8');
+const like = source.split('\n').find(line => line.includes('if(p==="/api/comments/like"&&m==="POST")'));
+const follow = source.split('\n').find(line => line.includes('if(p==="/api/follow"&&m==="POST")'));
+const report = source.split('\n').find(line => line.includes('if(p==="/api/comments/report"&&m==="POST")'));
+assert.ok(like && like.includes('JOIN novels') && like.includes("n.publication_status='published'") && like.includes('n.rights_status IN'));
+assert.ok(follow && follow.includes('parsePositiveSafeInteger') && follow.includes("publication_status='published'") && follow.includes('rights_status IN'));
+assert.ok(report && report.includes('JOIN novels') && report.includes("n.publication_status='published'") && report.includes('n.rights_status IN'));
+console.log('PASS: published engagement write boundaries.');
