@@ -25,7 +25,7 @@ const visiting=new Set(),visited=new Set();
 function visit(id,trail=[]){if(visiting.has(id))fail('dependency cycle: '+[...trail,id].join(' -> '));if(visited.has(id))return;visiting.add(id);for(const d of graph.domains[id].dependsOn)visit(d,[...trail,id]);visiting.delete(id);visited.add(id);}
 for(const id of Object.keys(graph.domains))visit(id);
 for(const [id,node] of Object.entries(graph.domains)){
- if(node.layer>0)for(const dep of node.dependsOn){if(graph.domains[dep].layer<=node.layer)fail('layer inversion: '+id+' (layer '+node.layer+') depends on '+dep+' (layer '+graph.domains[dep].layer+')');}
+ if(node.layer>0)for(const dep of node.dependsOn){if(graph.domains[dep].layer>=node.layer)fail('layer inversion: '+id+' (layer '+node.layer+') depends on '+dep+' (layer '+graph.domains[dep].layer+')');}
 }
 const files=fs.readdirSync('migrations').filter(f=>/^\d{4}_.*\.sql$/.test(f)).sort();
 const nums=files.map(f=>Number(f.slice(0,4)));
