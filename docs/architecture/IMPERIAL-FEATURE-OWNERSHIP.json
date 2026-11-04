@@ -256,10 +256,7 @@
       "owns": [
         "scripts/",
         "tests/",
-        ".graphifyignore",
-        "scripts/test-seo-foundation.mjs",
-        "scripts/test-discovery-knowledge-graph.mjs",
-        "scripts/test-content-quality-policy.mjs"
+        ".graphifyignore"
       ],
       "responsibilities": [
         "automated tests",
