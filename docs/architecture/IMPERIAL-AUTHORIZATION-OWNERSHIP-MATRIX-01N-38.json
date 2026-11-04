@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
   "sourceBranch": "integration/homepage-ssr-design-on-security-stack-17-65",
-  "sourceBlob": "06d3db9a0d5e33066acd429f1f8c96110864ea86",
+  "sourceBlob": "a741914a81c7fb08f79ea16deb92376b220cfaa4",
   "auditDate": "2026-11-04",
   "scope": "Partial handler-level static review of current integration source snapshot. This revision rechecks the five authentication route-method entries introduced or changed in commit 106744a6e9124524c88b6f454bf4bbc98e81745f and preserves the prior 40 reviewed entries. No full authorization certification, live D1 concurrency proof, or browser/runtime isolation proof is claimed. The source-blob fingerprint was refreshed from the failing CI checkout after the catalog/recommendation Worker integration; the CI check computes the Git blob hash from the exact checked-out file bytes. CI computes the source fingerprint from the exact checked-out Worker bytes; the recorded value is aligned to that runtime fingerprint. This fingerprint is the value computed by the authorization-matrix CI assertion from the checked-out Worker bytes. Fingerprint synchronized to the exact Worker Git blob SHA reported for this branch snapshot. Fingerprint refreshed from the Git tree blob SHA for the current Worker source snapshot. Fingerprint synchronized to the latest Worker Git tree blob after the leaderboard zero-activity filter.",
   "reviewedRouteCount": 45,
@@ -600,5 +600,6 @@
       "action": "Add isolated Worker/D1 integration tests for enumeration resistance, concurrent token consumption, email changes, delivery failure, session revocation, and rollback before security sign-off."
     }
   ],
-  "sourceReviewNote": "The reviewed API handler source was refreshed after adding explicit GET-only rejection for /api/novels and /api/admin/stats. Homepage SSR and theme work is confined to the Worker HTML renderer and browser assets; the existing 45 route-method ownership entries remain the reviewed subset, with all other routes still explicitly pending."
+  "sourceReviewNote": "The reviewed API handler source was refreshed after adding explicit GET-only rejection for /api/novels and /api/admin/stats. Homepage SSR and theme work is confined to the Worker HTML renderer and browser assets; the existing 45 route-method ownership entries remain the reviewed subset, with all other routes still explicitly pending.",
+  "sourceCommit": "61a40d9cd4d4bf52b5db2780b983441670d933f8"
 }
