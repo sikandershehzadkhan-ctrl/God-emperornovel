@@ -1,0 +1,29 @@
+name: Design Foundation Validation
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - "public/**"
+      - "src/index.js"
+      - "scripts/test-design-foundation-isolated.mjs"
+      - ".github/workflows/design-foundation-validation.yml"
+  push:
+    branches:
+      - "integration/design-foundation-current-main-2026-11-04"
+    paths:
+      - "public/**"
+      - "src/index.js"
+      - "scripts/test-design-foundation-isolated.mjs"
+      - ".github/workflows/design-foundation-validation.yml"
+permissions:
+  contents: read
+jobs:
+  design-foundation:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Validate six themes, accessibility preferences, RTL and all public pages
+        run: node scripts/test-design-foundation-isolated.mjs
