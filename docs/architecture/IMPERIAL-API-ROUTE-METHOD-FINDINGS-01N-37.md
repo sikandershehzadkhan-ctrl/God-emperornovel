@@ -1,100 +1,55 @@
-# Imperial Novel — API Method Matrix Findings (01N-37)
+# Imperial Novel: API Method Matrix Findings (01N-37)
 
-**Audit date:** 3 November 2026  
-**Audited source:** `main:src/index.js`  
-**Source blob:** `237f4461135eb77258b7184e361ce9dfd9a140e9`  
-**Machine-readable inventory:** `IMPERIAL-API-ROUTE-METHOD-MATRIX-01N-37.json`  
-**Validation:** GitHub Actions route-registry workflow passed for the manifest and API matrix.
+**Audit date:** 4 November 2026  
+**Audited branch:** `integration/homepage-ssr-design-on-security-stack-17-65`  
+**Worker source blob:** `a741914a81c7fb08f79ea16deb92376b220cfaa4`  
+**Source commit:** `61a40d9cd4d4bf52b5db2780b983441670d933f8`  
+**Machine-readable inventory:** `IMPERIAL-API-ROUTE-METHOD-MATRIX-01N-37.json`
 
-## 1. Inventory totals
+## 1. Refreshed inventory
 
 | Item | Count |
 |---|---:|
-| Exact API path comparisons | 74 |
-| Dynamic API route patterns | 14 |
-| Exact routes with at least one path-only handler condition | 14 |
-| Exact routes with multiple explicitly observed methods | 15 |
+| Exact API paths | 78 |
+| Dynamic API route patterns | 21 |
+| Exact routes with unguarded method dispatch | 0 |
+| Dynamic routes with unguarded method dispatch | 0 |
+| Ownership/authorization entries reviewed | 45 |
 
-This is a static dispatcher inventory. It is not a complete OpenAPI contract, authorization certification, or proof of runtime behavior.
+This is a static dispatcher inventory. It is not a complete OpenAPI contract, authorization certification, or proof of runtime behavior. The 45 ownership entries remain a reviewed subset, not full coverage of all 99 route shapes.
 
-## 2. Exact path-only method gaps
+## 2. Method-contract hardening completed
 
-The following exact path conditions have no explicit method check at one or more matching branches:
+The previous main-branch audit identified path-only branches for health, profile projection, public configuration/catalog reads, Omni status/search/resolve/smart-unlock, novel listing and admin statistics. These were reconciled against the integrated Worker.
 
-| Endpoint | Finding |
-|---|---|
-| `/api/health` | Has an early GET fast path, but a later compatibility branch also matches by path alone |
-| `/api/taxonomy` | Delegates to `communityTaxonomy(req, env)`; helper method contract must be inspected |
-| `/api/me` | Path-only response projection |
-| `/api/config` | Path-only public configuration projection |
-| `/api/genres` | Path-only catalog read |
-| `/api/tags` | Path-only catalog read |
-| `/api/public-authors` | Path-only public author aggregation |
-| `/api/sources` | Path-only source registry projection |
-| `/api/omni/status` | Path-only connector status projection |
-| `/api/omni/search` | Path-only search handler |
-| `/api/omni/resolve` | Path-only source URL resolver |
-| `/api/omni/smart-unlock` | Path-only authenticated smart-unlock handler |
-| `/api/novels` | Path-only published catalog query |
-| `/api/admin/stats` | Path-only administrator stats handler |
+- `/api/health` retains its GET fast path and now returns 405 for other methods before database work.
+- `/api/me`, `/api/config`, `/api/genres`, `/api/tags`, `/api/public-authors`, `/api/sources`, `/api/omni/status`, `/api/omni/search`, `/api/omni/resolve`, and `/api/omni/smart-unlock` reject non-GET methods before endpoint work.
+- `/api/novels` and `/api/admin/stats` now explicitly reject non-GET methods.
+- Numeric novel and chapter detail routes require GET before their read/view-count behavior.
+- `/api/taxonomy` delegates to `communityTaxonomy`, whose helper validates its supported GET/POST contract.
+- Dynamic Author Studio, AI, admin publishing, donation, report, connector-authorization, author-application and request routes retain explicit method dispatch.
 
-**Interpretation:** these are explicit method-contract gaps in the dispatcher, not confirmed exploits. The delegated taxonomy helper may enforce methods internally. For other handlers, the route should declare an allowed method and reject unsupported methods consistently. The novel and chapter ID routes are also dynamic path-only handlers: they currently perform view-count writes while matching any method unless a surrounding layer blocks it.
+The updated machine-readable matrix records the observed methods and source-line evidence. It reports zero unguarded exact or dynamic handlers. This closes the method-ambiguity findings from the 3 November snapshot; it does not certify authorization or data ownership.
 
-## 3. Dynamic API route families
+## 3. Remaining security work
 
-The machine-readable matrix records 14 dynamic patterns, including:
+1. Standardize HTTP 405 responses with accurate `Allow` headers. Current guards reject unsupported methods, but header consistency still needs a dedicated pass.
+2. Add per-route anonymous/reader/author/owner/moderator/admin integration tests.
+3. Add cross-user ID substitution tests for history, library, bookmarks, tickets, notifications, profiles, AI projects and creator-owned novels/chapters.
+4. Add response DTO allowlists and private-cache assertions for account, ticket, payment, author and admin responses.
+5. Verify CSRF/origin enforcement and rate limits for every cookie-authenticated mutation.
+6. Reconcile the current 1–5 rating API validation with the intended whole-number 1–10 product scale before changing schema or UI.
+7. Expand the 45-entry authorization/ownership review to all exact and dynamic routes; do not treat the remaining routes as certified.
 
-- Novel detail and chapter detail reads.
-- Chapter unlock and novel batch unlock.
-- Admin user role/verification updates.
-- Author AI project reads/updates, blueprint/run/jobs actions.
-- Author novel submission and editing.
-- Author chapter editing and publication.
-- Admin publishing novel/chapter updates, reordering and deletion.
-- Donation and report review.
-- Author application review.
-- Admin request review.
-- Connector authorization review.
+## 4. CI and release boundary
 
-The matrix preserves the source-observed method guards. In particular, the dynamic novel and chapter detail routes have no explicit method guard in the current dispatcher.
+The route-registry workflow validates:
+- HTML route manifest.
+- API method inventory.
+- Authorization/ownership register.
+- Admin account and donation/ticket D1 invariants.
+- Additional API ownership, CSRF, taxonomy, rating, and privacy checks.
 
-## 4. Routes with multiple observed methods
+The latest full workflow result must be read from the exact PR head. A green static inventory does not authorize production deployment or D1 migration.
 
-Several paths intentionally branch by method, including history, library, comments, ratings, reactions, requests, vote-novels, creator projects, author novels/chapters and admin connectors. These should remain separate method contracts. A single path does not imply a single permission level or response DTO.
-
-## 5. Required hardening
-
-1. Add a method allowlist for every API path and dynamic route family.
-2. Return 405 with an accurate `Allow` header for unsupported methods.
-3. Confirm `communityTaxonomy` enforces its own method contract.
-4. Prevent view-count mutations on unsupported methods for novel/chapter detail routes.
-5. Add per-route anonymous/reader/author/owner/moderator/admin tests.
-6. Add cross-user ID substitution tests for history, library, bookmarks, tickets, notifications, profile, AI projects and creator-owned novels/chapters.
-7. Add response DTO allowlist and private-cache assertions.
-8. Add CSRF/origin and rate-limit tests for cookie-authenticated mutations.
-9. Reconcile the current 1–5 rating API validation with the product's intended whole-number 1–10 scale before changing schema or UI.
-
-## 6. CI and release boundary
-
-The dedicated `route-registry-validation.yml` workflow now runs:
-
-- `node scripts/test-route-registry.mjs`
-- `node scripts/test-api-route-method-matrix.mjs`
-
-Both checks passed on the route-registry branch. The broader source-validation workflow also passed on the same PR revision. Production deployment remains manual and was not invoked.
-
-**No runtime API handler, database schema, production secret, or live Worker was changed by this audit.**
-
-
-## Detail API method guard follow-up (3 November 2026)
-
-The numeric novel and chapter detail API handlers now explicitly require `GET` before any database access or view-count write. Other methods receive HTTP 405. A regression test, `scripts/test-detail-api-method-guards.mjs`, verifies both guards precede database work and is part of the route-registry CI workflow.
-
-This closes the specific method-ambiguity identified during source review. It does not certify every API handler; the remaining path-only branches still need individual method and side-effect review.
-
-
-## Read-only API method guard follow-up (3 November 2026)
-
-The following endpoints now explicitly return HTTP 405 for non-GET methods before endpoint work: `/api/health`, `/api/me`, `/api/config`, `/api/genres`, `/api/tags`, `/api/public-authors`, `/api/sources`, `/api/omni/status`, `/api/omni/search`, `/api/omni/resolve`, and `/api/omni/smart-unlock`. The novel/chapter detail routes are separately guarded. Regression tests cover the 11 read-only endpoints plus the two detail endpoints.
-
-This is a targeted method-contract improvement. Other path-only branches and routes with multiple verbs still require review for allowed methods, authorization, side effects, and response caching.
+**No production Worker deployment or live D1 mutation is part of this audit.**
