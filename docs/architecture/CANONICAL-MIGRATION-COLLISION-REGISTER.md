@@ -22,8 +22,8 @@ The community/reader/account-closure branch used overlapping branch-local number
 | 0013_chapter_update_timestamps.sql | 0029_chapter_update_timestamps.sql | Ported. |
 | 0014_reader_engagement_metrics.sql | none | Intentionally omitted: source file is comment-only and creates no schema. |
 | 0015_daily_view_analytics.sql | 0030_daily_view_analytics.sql | Ported. |
-| 0016_reading_positions.sql | not yet ported | Blocked by a real schema/API collision described below. |
-| 0017_ten_point_ratings.sql | not yet ported | Blocked until the table lifecycle and API validation are migrated together. |
+| 0016_reading_positions.sql | superseded | The canonical Worker already provides cross-device reading positions with optimistic concurrency; do not create a second table contract. |
+| 0017_ten_point_ratings.sql | 0034_ratings_baseline.sql + 0035_ten_point_ratings.sql | Ported with a fresh-install baseline, existing-table rebuild and even-value conversion from 1–5 to 1–10. Worker API, runtime schema, reader control, catalog thresholds and display regressions were updated together. |
 | 0018_comment_reports.sql | none | Intentionally omitted: source file is comment-only; comment-report schema is owned by 0028. |
 | 0019_account_closure_requests.sql | 0031_account_closure_requests.sql | Ported. |
 
@@ -68,4 +68,4 @@ A separate reader-progress PR proposed adding `history.progress_percent`. The ca
 6. Review the exact remote D1 migration ledger and take a recoverable backup before any production migration.
 7. Deploy only through the explicitly approved production release workflow.
 
-This branch is a source-level integration candidate. It does not claim that all reader features are integrated, that the production database has been migrated, or that the production Worker has been deployed.
+The ten-point rating feature is now integrated at source level and its fresh/legacy migration paths have dedicated regression coverage. This branch remains a source-level integration candidate; it does not claim that production D1 has been migrated or that the production Worker has been deployed.
