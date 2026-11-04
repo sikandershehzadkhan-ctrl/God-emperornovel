@@ -2,7 +2,7 @@
   "schemaVersion": 1,
   "name": "Imperial Novel route registry",
   "sourceBranch": "main",
-  "sourceCommit": "38b072a51693774172509d826e2d4de6878f7eba",
+  "sourceCommit": "c909a8aad8c88863b4c472263b8c5b9aa29a878f",
   "auditDate": "2026-11-03",
   "scope": "Static source reconciliation only; not proof of deployed behavior or authorization correctness.",
   "routes": [
