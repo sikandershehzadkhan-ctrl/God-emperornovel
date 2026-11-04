@@ -1,0 +1,361 @@
+{
+  "schemaVersion": 1,
+  "name": "Imperial Novel route registry",
+  "sourceBranch": "main",
+  "sourceCommit": "c909a8aad8c88863b4c472263b8c5b9aa29a878f",
+  "auditDate": "2026-11-03",
+  "scope": "Static source reconciliation only; not proof of deployed behavior or authorization correctness.",
+  "routes": [
+    {
+      "path": "/",
+      "kind": "exact",
+      "shell": "index.html",
+      "screen": "home",
+      "renderer": "home",
+      "robots": "index"
+    },
+    {
+      "path": "/catalog",
+      "kind": "exact",
+      "shell": "catalog.html",
+      "screen": "catalog",
+      "renderer": "catalog",
+      "robots": "index"
+    },
+    {
+      "path": "/discover",
+      "kind": "exact",
+      "shell": "catalog.html",
+      "screen": "catalog",
+      "renderer": "catalog",
+      "robots": "index",
+      "aliasOf": "/catalog"
+    },
+    {
+      "path": "/formats",
+      "kind": "exact",
+      "shell": "index.html",
+      "screen": "format-directory",
+      "renderer": "formatDirectory",
+      "robots": "index"
+    },
+    {
+      "path": "/genres",
+      "kind": "exact",
+      "shell": "genres.html",
+      "screen": "genres",
+      "renderer": "genres",
+      "robots": "index"
+    },
+    {
+      "path": "/tags",
+      "kind": "exact",
+      "shell": "tags.html",
+      "screen": "tags",
+      "renderer": "tags",
+      "robots": "index"
+    },
+    {
+      "path": "/search",
+      "kind": "exact",
+      "shell": "search.html",
+      "screen": "search",
+      "renderer": "search",
+      "robots": "index"
+    },
+    {
+      "path": "/library",
+      "kind": "exact",
+      "shell": "library.html",
+      "screen": "library",
+      "renderer": "library",
+      "robots": "noindex"
+    },
+    {
+      "path": "/history",
+      "kind": "exact",
+      "shell": "history.html",
+      "screen": "history",
+      "renderer": "history",
+      "robots": "noindex"
+    },
+    {
+      "path": "/following",
+      "kind": "exact",
+      "shell": "following.html",
+      "screen": "following",
+      "renderer": "following",
+      "robots": "noindex"
+    },
+    {
+      "path": "/tickets",
+      "kind": "exact",
+      "shell": "tickets.html",
+      "screen": "tickets",
+      "renderer": "tickets",
+      "robots": "noindex"
+    },
+    {
+      "path": "/requests",
+      "kind": "exact",
+      "shell": "requests.html",
+      "screen": "requests",
+      "renderer": "requests",
+      "robots": "noindex"
+    },
+    {
+      "path": "/omniportal",
+      "kind": "exact",
+      "shell": "omniportal.html",
+      "screen": "omniportal",
+      "renderer": "omni",
+      "robots": "index"
+    },
+    {
+      "path": "/community",
+      "kind": "exact",
+      "shell": "index.html",
+      "screen": "community",
+      "renderer": "discoveryPage:community",
+      "robots": "index"
+    },
+    {
+      "path": "/leaderboard",
+      "kind": "exact",
+      "shell": "index.html",
+      "screen": "leaderboard",
+      "renderer": "discoveryPage:leaderboard",
+      "robots": "index"
+    },
+    {
+      "path": "/tier-list",
+      "kind": "exact",
+      "shell": "index.html",
+      "screen": "tier-list",
+      "renderer": "discoveryPage:tier-list",
+      "robots": "index"
+    },
+    {
+      "path": "/random",
+      "kind": "exact",
+      "shell": "index.html",
+      "screen": "random",
+      "renderer": "discoveryPage:random",
+      "robots": "index"
+    },
+    {
+      "path": "/made-for-you",
+      "kind": "exact",
+      "shell": "index.html",
+      "screen": "made-for-you",
+      "renderer": "discoveryPage:made-for-you",
+      "robots": "index"
+    },
+    {
+      "path": "/settings",
+      "kind": "exact",
+      "shell": "index.html",
+      "screen": "settings",
+      "renderer": "settings",
+      "robots": "noindex"
+    },
+    {
+      "path": "/for-you",
+      "kind": "exact",
+      "shell": "index.html",
+      "screen": "made-for-you",
+      "renderer": "discoveryPage:made-for-you",
+      "robots": "index",
+      "aliasOf": "/made-for-you"
+    },
+    {
+      "path": "/trending",
+      "kind": "exact",
+      "shell": "index.html",
+      "screen": "trending",
+      "renderer": "discoveryPage:trending",
+      "robots": "index"
+    },
+    {
+      "path": "/vote",
+      "kind": "exact",
+      "shell": "index.html",
+      "screen": "vote",
+      "renderer": "discoveryPage:vote",
+      "robots": "index"
+    },
+    {
+      "path": "/notifications",
+      "kind": "exact",
+      "shell": "index.html",
+      "screen": "notifications",
+      "renderer": "discoveryPage:notifications",
+      "robots": "noindex"
+    },
+    {
+      "path": "/trend-factory",
+      "kind": "exact",
+      "shell": "index.html",
+      "screen": "trend-factory",
+      "renderer": "trendFactory",
+      "robots": "index"
+    },
+    {
+      "path": "/community-taxonomy",
+      "kind": "exact",
+      "shell": "community-taxonomy.html",
+      "screen": "community-taxonomy",
+      "renderer": "standalone-html",
+      "robots": "index"
+    },
+    {
+      "path": "/privacy",
+      "kind": "exact",
+      "shell": "privacy.html",
+      "screen": "privacy-policy",
+      "renderer": "standalone-html",
+      "robots": "index"
+    },
+    {
+      "path": "/terms",
+      "kind": "exact",
+      "shell": "terms.html",
+      "screen": "terms",
+      "renderer": "standalone-html",
+      "robots": "index"
+    },
+    {
+      "path": "/copyright",
+      "kind": "exact",
+      "shell": "copyright.html",
+      "screen": "copyright",
+      "renderer": "standalone-html",
+      "robots": "index"
+    },
+    {
+      "path": "/account",
+      "kind": "exact",
+      "shell": "account.html",
+      "screen": "account",
+      "renderer": "account",
+      "robots": "noindex"
+    },
+    {
+      "path": "/login",
+      "kind": "exact",
+      "shell": "login.html",
+      "screen": "login",
+      "renderer": "authPage:login",
+      "robots": "noindex"
+    },
+    {
+      "path": "/register",
+      "kind": "exact",
+      "shell": "register.html",
+      "screen": "register",
+      "renderer": "authPage:register",
+      "robots": "noindex"
+    },
+    {
+      "path": "/admin",
+      "kind": "exact",
+      "shell": "admin.html",
+      "screen": "admin-dashboard",
+      "renderer": "standalone-html",
+      "robots": "noindex"
+    },
+    {
+      "path": "/author",
+      "kind": "exact",
+      "shell": "index.html",
+      "screen": "author-studio",
+      "renderer": "authorStudio",
+      "robots": "noindex"
+    }
+  ],
+  "patterns": [
+    {
+      "pattern": "^/format/[^/]+/?$",
+      "samples": [
+        "/format/original",
+        "/format/manga"
+      ],
+      "shell": "index.html",
+      "renderer": "formatLanding",
+      "screen": "format-landing"
+    },
+    {
+      "pattern": "^/novel/\\d+/chapters/?$",
+      "samples": [
+        "/novel/1/chapters"
+      ],
+      "shell": "novel.html",
+      "renderer": "chapters",
+      "screen": "chapter-archive"
+    },
+    {
+      "pattern": "^/novel/\\d+/?$",
+      "samples": [
+        "/novel/1"
+      ],
+      "shell": "novel.html",
+      "renderer": "novel",
+      "screen": "novel-detail"
+    },
+    {
+      "pattern": "^/read/\\d+/\\d+/?$",
+      "samples": [
+        "/read/1/1"
+      ],
+      "shell": "read.html",
+      "renderer": "reader",
+      "screen": "reader"
+    },
+    {
+      "pattern": "^/fandom/",
+      "samples": [
+        "/fandom/example"
+      ],
+      "shell": "fandom.html",
+      "renderer": "redirect-to-catalog-tag",
+      "screen": "compatibility-redirect"
+    },
+    {
+      "pattern": "^/author/[^/]+$",
+      "samples": [
+        "/author/example"
+      ],
+      "shell": "author-public.html",
+      "renderer": "authorPublic",
+      "screen": "public-author-profile"
+    }
+  ],
+  "sitemaps": [
+    "/sitemap.xml",
+    "/sitemap-static.xml",
+    "/sitemap-novels.xml",
+    "/sitemap-chapters.xml"
+  ],
+  "noindexExact": [
+    "/admin",
+    "/account",
+    "/login",
+    "/register",
+    "/library",
+    "/history",
+    "/following",
+    "/tickets",
+    "/requests",
+    "/settings",
+    "/notifications",
+    "/author"
+  ],
+  "knownOpenQuestions": [
+    "/fandom/:slug is a compatibility redirect, not a dedicated fandom landing.",
+    "/discover aliases /catalog; canonical metadata needs runtime verification.",
+    "/for-you aliases /made-for-you; canonical metadata needs runtime verification.",
+    "Shared discoveryPage renderers require per-feature functional and authorization tests.",
+    "HTTP method and object-level permissions are not certified by this UI route manifest.",
+    "Production status, active assets, cache behavior and browser navigation remain unverified."
+  ]
+}
