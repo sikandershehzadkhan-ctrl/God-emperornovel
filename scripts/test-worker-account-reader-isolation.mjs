@@ -101,6 +101,11 @@ try{
   const accountA=await createAccount(origin,origin,"ReaderA"+suffix,"reader-a-"+suffix+"@example.test");
   const accountB=await createAccount(origin,origin,"ReaderB"+suffix,"reader-b-"+suffix+"@example.test");
 
+  // Authentication is mandatory for every private account and reader endpoint.
+  assert.equal((await request(origin,"/api/profile")).status,401,"anonymous profile reads must be denied");
+  assert.equal((await request(origin,"/api/account/preferences")).status,401,"anonymous preference reads must be denied");
+  assert.equal((await request(origin,"/api/reading-position?novel_id=990001")).status,401,"anonymous reader-progress reads must be denied");
+
   const profileA={display_name:"Reader Alpha",bio:"Alpha private biography",avatar_url:"/uploads/alpha.webp",website_url:"https://alpha.example.test",location:"Islamabad",profile_visibility:"private",show_reading_stats:false};
   const profileB={display_name:"Reader Beta",bio:"Beta biography",avatar_url:"",website_url:"",location:"Lahore",profile_visibility:"private",show_reading_stats:false};
   let result=await request(origin,"/api/profile",{method:"PUT",cookie:accountA.cookie,origin,body:profileA});
@@ -125,6 +130,10 @@ try{
   assert.equal(privateProjection.status,404,"private profile must not be publicly discoverable");
 
   const prefsA={site_theme:"imperial",reader_theme:"sepia",font_size:21,line_height:2,text_width:680,reduced_motion:true,high_contrast:false,compact_cards:true};
+  const invalidPrefs=await request(origin,"/api/account/preferences",{method:"PUT",cookie:accountA.cookie,origin,body:{...prefsA,site_theme:"gold",owner_user_id:accountB.user.id}});
+  assert.equal(invalidPrefs.status,400,"invalid themes and owner injection must be rejected");
+  const crossOriginPrefs=await request(origin,"/api/account/preferences",{method:"PUT",cookie:accountA.cookie,origin:"https://attacker.example",body:prefsA});
+  assert.equal(crossOriginPrefs.status,403,"preference writes must reject cross-origin requests");
   result=await request(origin,"/api/account/preferences",{method:"PUT",cookie:accountA.cookie,origin,body:prefsA});
   assert.equal(result.status,200,"account A preference update should succeed");
   const prefsBDefault=await request(origin,"/api/account/preferences",{cookie:accountB.cookie});
