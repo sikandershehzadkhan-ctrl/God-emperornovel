@@ -2,7 +2,7 @@
   "schemaVersion": 1,
   "name": "Imperial Novel API route method inventory",
   "sourceBranch": "integration/homepage-ssr-design-on-security-stack-17-65",
-  "sourceBlob": "06d3db9a0d5e33066acd429f1f8c96110864ea86",
+  "sourceBlob": "a741914a81c7fb08f79ea16deb92376b220cfaa4",
   "auditDate": "2026-11-04",
   "scope": "Static dispatcher scan of the integrated Worker. Observed method guards only; this is not a complete permission or runtime contract.",
   "exactRouteCount": 78,
@@ -1384,6 +1384,6 @@
     "Authorization labels are not inferred for exact routes. Verify anonymous, reader, author, owner, moderator, admin and cross-owner behavior separately.",
     "This matrix does not inspect DTO exposure, cache headers, CSRF, rate limits, body size, or database transaction semantics."
   ],
-  "sourceCommit": "c9f41008d6e8184746b4e58185579a07864a08da",
-  "refreshNote": "Refreshed against the 45-migration security integration plus homepage SSR and design foundation. Four exact password-reset/email-verification routes and eight author AI/Author Studio dynamic patterns were added. Handler-level authorization remains a separate partial review."
+  "sourceCommit": "61a40d9cd4d4bf52b5db2780b983441670d933f8",
+  "refreshNote": "Refreshed against the integrated 45-migration security platform with homepage SSR and six-theme design. Four auth verification/recovery endpoints and eight Author Studio/AI dynamic patterns are included. Read-only routes, health, and novel/admin stats reject unsupported methods; taxonomy delegates to its own GET/POST guard. Handler-level authorization remains a separate partial review."
 }
