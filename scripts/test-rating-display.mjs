@@ -30,7 +30,7 @@ assert.ok(!source.includes('Number(n.rating||0).toFixed(1)'), 'Missing ratings m
 assert.ok(source.includes('<option value="8">8+</option><option value="6">6+</option><option value="4">4+</option>'), 'Catalog minimum rating filter must use ten-point thresholds');
 assert.ok(worker.includes('rating INTEGER NOT NULL CHECK(rating BETWEEN 1 AND 10)'), 'Runtime schema must enforce the ten-point scale');
 assert.equal((worker.match(/rating>10/g) || []).length, 1, 'The single canonical rating write path must enforce the ten-point upper bound');
-assert.equal((worker.match(/if\\(p===['\"]\\/api\\/rating['\"]&&m===['\"]POST['\"]\\)/g) || []).length, 1, 'Exactly one canonical rating POST handler must remain');
+assert.equal(worker.split('if(p==="/api/rating"&&m==="POST")').length - 1, 1, "Exactly one canonical rating POST handler must remain");
 assert.ok(worker.includes('Rating must be a whole number from 1 to 10'), 'Rating API must reject fractions and out-of-range values');
 assert.ok(island.includes('[1, 2, 3, 4, 5, 6, 7, 8, 9, 10]'), 'Reader rating control must offer ten whole-number choices');
 assert.ok(island.includes('Your rating: {selected}/10') && island.includes('"Not rated yet"'), 'Rating summary must use /10 and a truthful empty state');
