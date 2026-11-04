@@ -44,10 +44,11 @@ jobs:
           GOVERNANCE_BASE_SHA: ${{ github.event.pull_request.base.sha }}
         run: node scripts/test-governance-ownership.mjs
 
-      - name: Enforce immutable history and unique forward allocations
+      - name: Enforce immutable history and same-PR migration reservations
         if: github.event_name == 'pull_request'
         env:
           GOVERNANCE_BASE_SHA: ${{ github.event.pull_request.base.sha }}
+          GOVERNANCE_PR_NUMBER: ${{ github.event.pull_request.number }}
         run: node scripts/test-governance-migrations.mjs
 
       - name: Reject concurrent migration sequence collisions
