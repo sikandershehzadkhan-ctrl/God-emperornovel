@@ -24,6 +24,9 @@ for(const id of domains.keys())if(!graph.domains[id])fail('owned domain missing 
 const visiting=new Set(),visited=new Set();
 function visit(id,trail=[]){if(visiting.has(id))fail('dependency cycle: '+[...trail,id].join(' -> '));if(visited.has(id))return;visiting.add(id);for(const d of graph.domains[id].dependsOn)visit(d,[...trail,id]);visiting.delete(id);visited.add(id);}
 for(const id of Object.keys(graph.domains))visit(id);
+for(const [id,node] of Object.entries(graph.domains)){
+ if(node.layer>0)for(const dep of node.dependsOn){if(graph.domains[dep].layer<=node.layer)fail('layer inversion: '+id+' (layer '+node.layer+') depends on '+dep+' (layer '+graph.domains[dep].layer+')');}
+}
 const files=fs.readdirSync('migrations').filter(f=>/^\d{4}_.*\.sql$/.test(f)).sort();
 const nums=files.map(f=>Number(f.slice(0,4)));
 if(new Set(nums).size!==nums.length)fail('duplicate migration sequence number');
@@ -48,6 +51,12 @@ if(changedBase){
  const hasFeatureContract=changed.some(p=>p.startsWith('docs/architecture/feature-contracts/')&&p.endsWith('.json'));
  const hasFeatureCode=changed.some(p=>p.startsWith('src/')||p.startsWith('public/')||p.startsWith('migrations/'));
  if(hasFeatureCode&&!hasFeatureContract)fail('feature code/schema changes require a feature contract in docs/architecture/feature-contracts/');
+ for(const file of changed.filter(p=>p.startsWith('docs/architecture/feature-contracts/')&&p.endsWith('.json'))){
+  const contract=read(file);
+  if(!contract.featureId||!contract.domainOwner||!domains.has(contract.domainOwner))fail('feature contract has missing/unknown featureId or domainOwner: '+file);
+  if(!Array.isArray(contract.ownedPaths)||contract.ownedPaths.length===0)fail('feature contract must declare ownedPaths: '+file);
+  for(const ownedPath of contract.ownedPaths){const owner=roots.find(r=>ownedPath===r.path||ownedPath.startsWith(r.path.endsWith('/')?r.path:r.path+'/'));if(!owner||owner.owner!==contract.domainOwner)fail('feature contract path '+ownedPath+' is not owned by declared domain '+contract.domainOwner+' in '+file);}
+ }
  const rootsSorted=roots.slice().sort((a,b)=>b.path.length-a.path.length);
  for(const file of changed){
   if(file===''||file==='.gitignore'||file==='.gitattributes')continue;
