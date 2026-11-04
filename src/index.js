@@ -87,11 +87,11 @@ async function ensureAuthorAISchema(env){
     auto_publish INTEGER NOT NULL DEFAULT 0,
     chapters_target INTEGER NOT NULL DEFAULT 0,
     chapters_generated INTEGER NOT NULL DEFAULT 0,
+    created_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    updated_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,
     active_run_token TEXT,
     active_run_started_at TEXT,
-    active_run_owner_user_id INTEGER,
-    created_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    updated_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP
+    active_run_owner_user_id INTEGER
    )`,
    `CREATE TABLE IF NOT EXISTS ai_chapter_jobs (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -104,10 +104,10 @@ async function ensureAuthorAISchema(env){
     result TEXT DEFAULT '',
     error TEXT DEFAULT '',
     attempts INTEGER NOT NULL DEFAULT 0,
-    run_token TEXT,
     created_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,
     started_at TEXT,
-    finished_at TEXT
+    finished_at TEXT,
+    run_token TEXT
    )`,
    `CREATE TABLE IF NOT EXISTS ai_generation_runs (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
