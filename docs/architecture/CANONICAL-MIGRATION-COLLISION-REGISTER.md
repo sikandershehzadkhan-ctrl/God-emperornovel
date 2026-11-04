@@ -4,10 +4,10 @@
 ## Current-main reconciliation checkpoint (2026-11-04)
 
 - `main` and PR #173 have byte-identical migration files 0001–0011 (verified by Git blob SHA for each file).
-- PR #173 is the only audited candidate in this comparison that supplies migration files 0012–0035. The current-main route/security integration branch still contains 0001–0011 only; do not apply 0034/0035 ahead of 0012–0033.
+- PR #173 is the audited source of migrations 0012–0035. These 24 migration files have now been ported into the current-main route/security integration branch after confirming 0001–0011 are byte-identical to main. The complete 0001–0035 fresh replay and integrity gates are now in CI; no production D1 migration has been run.
 - PR #173 is two commits behind current `main` and changes the Worker, browser bundle, deployment workflow, package metadata and many tests. Its branch must not be merged wholesale: it does not contain the current route-security safeguards ported from PR #172.
-- The current-main route/security integration branch removed the unreachable duplicate legacy `POST /api/rating` handler and added `scripts/test-rating-handler-canonical.mjs`. The active route still uses the legacy 1–5 contract pending migration-chain integration.
-- The canonical migration candidate includes a fresh-install baseline (0034), even-value conversion of legacy scores (0035), a uniqueness guard, and a dedicated SQLite rating-migration test. These must be wired into the current-main CI and validated with all 35 migrations before the rating scale changes.
+- The current-main route/security integration branch removed the unreachable duplicate legacy `POST /api/rating` handler, migrated the runtime/API/UI to whole-number 1–10 ratings, added the fresh-install and legacy-conversion migrations 0034/0035, and registered `scripts/test-rating-handler-canonical.mjs` plus `scripts/test-rating-migration.py`. Full CI is the remaining verification gate.
+- The canonical migration chain includes a fresh-install baseline (0034), even-value conversion of legacy scores (0035), a uniqueness guard, and a dedicated SQLite rating-migration test. These are now wired into current-main CI and must pass alongside the full 35-migration replay before this integration branch is eligible for review.
 
 
 Status: integration candidate; no production D1 migration has been run.
