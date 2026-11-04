@@ -6,21 +6,18 @@ const migrationNumber = file => {
   return match ? Number(match[1]) : null;
 };
 export function findConcurrentMigrationCollisions(currentNumber, pullRequests) {
-  const collisions = [];
+  const allocations = new Map();
   for (const pr of pullRequests) {
     if (pr.number === currentNumber) continue;
-    const numbers = new Map();
     for (const file of pr.files || []) {
       const number = migrationNumber(file);
       if (number === null) continue;
-      if (!numbers.has(number)) numbers.set(number, []);
-      numbers.get(number).push(file);
-    }
-    for (const [number, files] of numbers) {
-      if (files.length > 1) collisions.push({ pr: pr.number, number, files });
+      if (!allocations.has(number)) allocations.set(number, []);
+      allocations.get(number).push({ pr: pr.number, file });
     }
   }
-  return collisions;
+  return [...allocations].filter(([, entries]) => new Set(entries.map(x => x.pr)).size > 1)
+    .map(([number, entries]) => ({ number, entries }));
 }
 function selfTest() {
   const prs = [
@@ -28,11 +25,13 @@ function selfTest() {
     { number: 220, files: ['migrations/0013_profile.sql'] },
     { number: 221, files: ['migrations/0014_unique.sql'] }
   ];
-  const collisions = findConcurrentMigrationCollisions(219, prs);
+  const collisions = findConcurrentMigrationCollisions(0, prs);
   assert.equal(collisions.length, 1);
   assert.equal(collisions[0].number, 13);
-  assert.equal(findConcurrentMigrationCollisions(219, [{ number: 220, files: ['migrations/0014_unique.sql'] }]).length, 0);
-  console.log('PASS: concurrent migration allocation fixtures (duplicate number rejected; distinct number accepted).');
+  assert.deepEqual(collisions[0].entries.map(x => x.pr), [219, 220]);
+  assert.equal(findConcurrentMigrationCollisions(219, prs).length, 0);
+  assert.equal(findConcurrentMigrationCollisions(0, [{ number: 220, files: ['migrations/0014_unique.sql'] }]).length, 0);
+  console.log('PASS: concurrent migration allocation fixtures (same sequence across PRs rejected; distinct sequences accepted).');
 }
 if (process.argv.includes('--self-test')) selfTest();
 else {
@@ -40,7 +39,8 @@ else {
   const repository = process.env.GITHUB_REPOSITORY;
   const eventPath = process.env.GITHUB_EVENT_PATH;
   if (!token || !repository || !eventPath) fail('GitHub pull-request context and read-only token are required; refusing to skip.');
-  const event = JSON.parse((await import('node:fs')).readFileSync(eventPath, 'utf8'));
+  const fs = await import('node:fs');
+  const event = JSON.parse(fs.readFileSync(eventPath, 'utf8'));
   const current = event.pull_request;
   if (!current) fail('Expected a pull_request event.');
   async function github(path) {
@@ -55,7 +55,6 @@ else {
   for (let page = 1; page <= 10; page++) {
     const items = await github('/pulls?state=open&base=main&per_page=100&page=' + page);
     for (const pr of items) {
-      if (pr.number === current.number) continue;
       const files = [];
       for (let filePage = 1; filePage <= 10; filePage++) {
         const changed = await github('/pulls/' + pr.number + '/files?per_page=100&page=' + filePage);
@@ -67,12 +66,19 @@ else {
     if (items.length < 100) break;
   }
   const collisions = findConcurrentMigrationCollisions(current.number, pullRequests);
-  const currentFiles = (await github('/pulls/' + current.number + '/files?per_page=100')).map(item => item.filename);
+  const currentFiles = [];
+  for (let page = 1; page <= 10; page++) {
+    const changed = await github('/pulls/' + current.number + '/files?per_page=100&page=' + page);
+    currentFiles.push(...changed.map(item => item.filename));
+    if (changed.length < 100) break;
+  }
   const currentAllocations = currentFiles.map(file => ({ file, number: migrationNumber(file) })).filter(x => x.number !== null);
   const conflicting = collisions.filter(c => currentAllocations.some(x => x.number === c.number));
   if (conflicting.length) {
-    for (const item of conflicting) console.error('PR #' + item.pr + ' independently allocates migration ' + String(item.number).padStart(4, '0') + ': ' + item.files.join(', '));
-    fail('Concurrent open PRs allocate the same migration sequence. Restack and reallocate against the newly integrated main.');
+    for (const item of conflicting) {
+      console.error('Migration ' + String(item.number).padStart(4, '0') + ' is independently allocated by: ' + item.entries.map(x => 'PR #' + x.pr + ' (' + x.file + ')').join('; '));
+    }
+    fail('Concurrent open main-targeted PRs allocate the same migration sequence. Restack and reallocate against the newly integrated main.');
   }
   console.log('PASS: no open main-targeted PR independently allocates a migration number used by this PR (' + currentAllocations.length + ' proposed migration(s)).');
 }
