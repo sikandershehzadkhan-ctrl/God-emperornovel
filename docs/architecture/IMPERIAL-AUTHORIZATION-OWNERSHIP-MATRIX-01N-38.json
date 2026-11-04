@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
   "sourceBranch": "integration/route-registry-current-main-2026-11-04",
-  "sourceBlob": "125cf9a3ab852e60def7b30e4f75de3d69f30062",
+  "sourceBlob": "40c9d821811d29d3ca23adac5be8a91f1c6ccbb0",
   "auditDate": "2026-11-04",
   "scope": "Partial handler-level review of current main source snapshot. Static inspection only; no full authorization certification, live D1 concurrency proof, or browser/runtime isolation proof.",
   "reviewedRouteCount": 40,
@@ -504,7 +504,7 @@
       "id": "AUTH-009",
       "severity": "high",
       "status": "implemented-pending-ci",
-      "detail": "The duplicate legacy POST /api/rating handler has been removed. The remaining handler now accepts only whole-number ratings from 1 to 10 and retains published/rights-eligible novel checks. The runtime ratings CHECK constraint, catalog minimum-rating cap, public rating formatter, library/author displays, reader ten-choice control and responsive ten-column layout have been updated. Fresh-install and existing-install migration 0034/0035 fixtures, migration sequence validation and CI integrity checks are now present; the latest CI result is still pending.",
+      "detail": "The duplicate legacy POST /api/rating handler has been removed. The remaining handler accepts only safe whole-number ratings from 1 to 10 and retains published/rights-eligible novel checks. The runtime ratings CHECK constraint, catalog minimum-rating cap, public rating formatter, library/author displays, reader ten-choice control and responsive ten-column layout have been updated. Fresh-install and existing-install migration 0034/0035 fixtures, migration sequence validation and CI integrity checks are wired; the latest full CI result remains pending.",
       "action": "Require the full source-validation workflow to pass the 35-migration fresh replay, foreign_key_check, integrity_check, rating migration fixture, public/served asset parity and Worker build. Do not apply the rating migration to production D1 until the remote migration ledger and recoverable backup are verified."
     },
     {
