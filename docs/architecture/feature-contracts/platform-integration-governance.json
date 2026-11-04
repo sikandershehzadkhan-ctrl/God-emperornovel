@@ -31,7 +31,12 @@
     "Existing canonical route set; update registry for behavior changes"
   ],
   "apiContracts": [
-    "Existing API contracts; update method and authorization inventories for behavior changes"
+    "Existing API contracts; update method and authorization inventories for behavior changes",
+    "GET /api/profile returns current session user's profile and private stats",
+    "PUT /api/profile updates only session u.id after strict field validation",
+    "GET /api/account/preferences returns validated owner preferences or defaults",
+    "PUT /api/account/preferences updates only session u.id after strict allowlist validation",
+    "GET /api/public-profile/:username exposes only public, non-banned profile projection and opt-in aggregate stats"
   ],
   "dataEntities": [
     "Existing canonical D1 entities only; no duplicate ledgers or parallel account-deletion store"
@@ -69,7 +74,8 @@
       "test-account-preferences-policy.mjs",
       "test-media-upload-policy-isolated.mjs",
       "test-reading-position-api.mjs",
-      "test-reading-position-api.mjs (API and browser client integration assertions)"
+      "test-reading-position-api.mjs (API and browser client integration assertions)",
+      "test-profile-account-api.mjs"
     ],
     "integration": [
       "test-platform-architecture-contract.mjs",
@@ -79,7 +85,9 @@
       "integration pull request validation",
       "Reader browser GET/POST progress integration",
       "Debounced autosave and reconnect recovery",
-      "Canonical/versioned reader bundle parity"
+      "Canonical/versioned reader bundle parity",
+      "Owner-scoped profile and account-preference API regression",
+      "Public profile visibility and opt-in disclosure regression"
     ],
     "isolation": [
       "test-authorization-ownership-matrix.mjs"
@@ -133,7 +141,7 @@
     "repository-operations",
     "rights"
   ],
-  "changeSummary": "Consolidates current-main platform/security foundations with homepage SSR and the six-theme experience, while introducing canonical ownership, dependency, migration and integration governance. Adds mandatory isolated identity and media policy validation gates without changing Worker routes, UI bundles or D1 schema. Adds owner-scoped reader progress API and ensures architecture/source CI runs on nested integration PRs. Adds the reader browser client integration to the existing owner-scoped reading-position API and mandatory regression coverage.",
+  "changeSummary": "Consolidates current-main platform/security foundations with homepage SSR and the six-theme experience, while introducing canonical ownership, dependency, migration and integration governance. Adds mandatory isolated identity and media policy validation gates without changing Worker routes, UI bundles or D1 schema. Adds owner-scoped reader progress API and ensures architecture/source CI runs on nested integration PRs. Adds the reader browser client integration to the existing owner-scoped reading-position API and mandatory regression coverage. Integrates owner-scoped profile and account-preference APIs and a visibility-filtered public profile projection into the same canonical Worker as reader progress.",
   "acceptanceCriteria": [
     "Every changed repository path resolves to one registered owner",
     "Dependency graph is acyclic and every edge points from consumer to lower-level dependency",
@@ -148,6 +156,10 @@
     "Architecture governance and Cloudflare source validation run on integration-target pull requests.",
     "Reader browser retrieves and autosaves progress through the session-owned API.",
     "Canonical and served versioned reader bundles remain byte-identical.",
-    "Reader progress client regression assertions execute in the existing mandatory build test."
+    "Reader progress client regression assertions execute in the existing mandatory build test.",
+    "Profile and preference APIs bind private reads and writes exclusively to the authenticated session owner.",
+    "Public profile projection excludes private account fields and discloses aggregate reading statistics only by explicit opt-in.",
+    "Profile API routes and authorization evidence are fingerprinted against the combined Worker source.",
+    "No additional migration is introduced; existing profile and preference columns are reused."
   ]
 }
