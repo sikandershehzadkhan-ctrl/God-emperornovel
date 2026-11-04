@@ -1,0 +1,249 @@
+{
+  "schemaVersion": 1,
+  "name": "Imperial Novel feature ownership map",
+  "policy": "One accountable owner per domain. Logical ownership does not imply that the current monolith has already been physically split.",
+  "pathRules": {
+    "backendFeatures": "src/features/<feature-id>/",
+    "backendPlatform": "src/platform/<capability-id>/",
+    "browserFeatures": "public/features/<feature-id>/",
+    "browserPlatform": "public/platform/",
+    "migrations": "migrations/NNNN_description.sql",
+    "architecture": "docs/architecture/",
+    "tests": "scripts/test-*.mjs"
+  },
+  "sharedSurfaces": [
+    {
+      "path": "src/index.js",
+      "owner": "platform-runtime",
+      "changePolicy": "protected; integrator approval and API/route/auth registry impact review required"
+    },
+    {
+      "path": "public/app.js",
+      "owner": "experience-runtime",
+      "changePolicy": "protected; shell, route, localization, theme and boot impact review required"
+    },
+    {
+      "path": "public/app-*.js",
+      "owner": "release-artifacts",
+      "changePolicy": "must match corresponding source bundle byte-for-byte"
+    },
+    {
+      "path": "public/index.html",
+      "owner": "experience-shell",
+      "changePolicy": "SSR/client boot, metadata, assets and accessibility review required"
+    },
+    {
+      "path": "package.json",
+      "owner": "build-platform",
+      "changePolicy": "new tests and checks must be registered; lockfile consistency required"
+    },
+    {
+      "path": "migrations/",
+      "owner": "data-platform",
+      "changePolicy": "append-only globally allocated sequence; never edit applied files"
+    },
+    {
+      "path": "wrangler.toml",
+      "owner": "runtime-operations",
+      "changePolicy": "environment, binding, route and secret safety review required"
+    }
+  ],
+  "domains": [
+    {
+      "id": "experience-home-discovery",
+      "owner": "experience",
+      "paths": [
+        "src/features/home/",
+        "public/features/home/"
+      ],
+      "dependencies": [
+        "catalog-contract",
+        "novel-public-projection",
+        "design-system"
+      ],
+      "sharedSurfaces": [
+        "src/index.js",
+        "public/app.js",
+        "public/index.html"
+      ],
+      "dataOwnership": "read-only public projections; published and rights-eligible content only"
+    },
+    {
+      "id": "catalog-search-taxonomy",
+      "owner": "discovery",
+      "paths": [
+        "src/features/catalog/",
+        "public/features/catalog/"
+      ],
+      "dependencies": [
+        "novel-public-projection",
+        "taxonomy-contract"
+      ],
+      "sharedSurfaces": [
+        "src/index.js",
+        "public/app.js"
+      ],
+      "dataOwnership": "canonical novel, genre and tag records"
+    },
+    {
+      "id": "reader-library-progress",
+      "owner": "reader-experience",
+      "paths": [
+        "src/features/reader/",
+        "public/features/reader/"
+      ],
+      "dependencies": [
+        "identity-contract",
+        "novel-public-projection",
+        "chapter-access-contract"
+      ],
+      "sharedSurfaces": [
+        "src/index.js",
+        "public/app.js"
+      ],
+      "dataOwnership": "reader progress and personal library rows scoped to session owner"
+    },
+    {
+      "id": "creator-author-studio",
+      "owner": "creator-platform",
+      "paths": [
+        "src/features/creator/",
+        "public/features/creator/"
+      ],
+      "dependencies": [
+        "identity-contract",
+        "rights-contract",
+        "publishing-contract"
+      ],
+      "sharedSurfaces": [
+        "src/index.js",
+        "public/app.js"
+      ],
+      "dataOwnership": "creator-owned works, revisions and publishing workflow"
+    },
+    {
+      "id": "identity-account-security",
+      "owner": "identity-security",
+      "paths": [
+        "src/features/identity/",
+        "src/platform/identity/"
+      ],
+      "dependencies": [
+        "database-contract",
+        "session-contract"
+      ],
+      "sharedSurfaces": [
+        "src/index.js",
+        "migrations/",
+        "wrangler.toml"
+      ],
+      "dataOwnership": "users, credentials, sessions and account lifecycle; strict owner isolation"
+    },
+    {
+      "id": "community-profiles",
+      "owner": "community",
+      "paths": [
+        "src/features/community/",
+        "public/features/community/"
+      ],
+      "dependencies": [
+        "identity-contract",
+        "moderation-contract"
+      ],
+      "sharedSurfaces": [
+        "src/index.js",
+        "public/app.js"
+      ],
+      "dataOwnership": "profile visibility and user-owned community records"
+    },
+    {
+      "id": "commerce-ledgers-payments",
+      "owner": "commerce-finance",
+      "paths": [
+        "src/features/commerce/",
+        "src/platform/ledger/"
+      ],
+      "dependencies": [
+        "identity-contract",
+        "ledger-contract",
+        "payment-provider-contract"
+      ],
+      "sharedSurfaces": [
+        "src/index.js",
+        "migrations/",
+        "wrangler.toml"
+      ],
+      "dataOwnership": "append-only financial/ticket ledgers; idempotent mutations and reconciliation"
+    },
+    {
+      "id": "admin-moderation-operations",
+      "owner": "operations-security",
+      "paths": [
+        "src/features/admin/",
+        "src/platform/audit/"
+      ],
+      "dependencies": [
+        "identity-contract",
+        "authorization-contract",
+        "audit-contract"
+      ],
+      "sharedSurfaces": [
+        "src/index.js",
+        "migrations/"
+      ],
+      "dataOwnership": "least privilege; specialist approvals are distinct from admin"
+    },
+    {
+      "id": "ai-trend-factory",
+      "owner": "ai-platform",
+      "paths": [
+        "src/features/ai/",
+        "src/platform/ai/"
+      ],
+      "dependencies": [
+        "identity-contract",
+        "rights-contract",
+        "provider-contract"
+      ],
+      "sharedSurfaces": [
+        "src/index.js",
+        "wrangler.toml"
+      ],
+      "dataOwnership": "project and actor ownership; no unauthorized chapter-body ingestion"
+    },
+    {
+      "id": "omniportal-connectors",
+      "owner": "integrations",
+      "paths": [
+        "src/features/omniportal/",
+        "src/platform/connectors/"
+      ],
+      "dependencies": [
+        "rights-contract",
+        "connector-authorization-contract"
+      ],
+      "sharedSurfaces": [
+        "src/index.js",
+        "wrangler.toml"
+      ],
+      "dataOwnership": "authorized provider metadata and connector-scoped credentials"
+    }
+  ],
+  "requiredContractFields": [
+    "featureId",
+    "domainOwner",
+    "technicalIntegrator",
+    "ownedPaths",
+    "sharedSurfaces",
+    "dependencies",
+    "routes",
+    "apiContracts",
+    "dataEntities",
+    "migrationPlan",
+    "uiLifecycle",
+    "privacySecurity",
+    "tests",
+    "rollout",
+    "rollback"
+  ]
+}
