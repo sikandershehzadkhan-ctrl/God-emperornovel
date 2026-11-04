@@ -13,7 +13,6 @@ CREATE TABLE comment_report_claims (user_id INTEGER NOT NULL, comment_id INTEGER
 CREATE TRIGGER trg_comments_hourly_limit
 BEFORE INSERT ON comments
 BEGIN
- DELETE FROM community_rate_limit_events WHERE created_at < datetime('now','-2 days');
  SELECT CASE WHEN (SELECT COUNT(*) FROM community_rate_limit_events WHERE scope='comment' AND user_id=NEW.user_id AND created_at>=datetime('now','-1 hour')) >= 10
    THEN RAISE(ABORT,'comment_hourly_limit') END;
  INSERT INTO community_rate_limit_events(scope,user_id) VALUES('comment',NEW.user_id);
