@@ -123,6 +123,12 @@ jobs:
       - name: Test normalized donation reference uniqueness
         run: python3 scripts/test-donation-reference-unique.py
 
+      - name: Test community route and schema guards
+        run: |
+          node scripts/test-published-engagement-policy.mjs
+          node scripts/test-published-comment-engagement.mjs
+          node scripts/test-community-rate-limits-atomic.mjs
+
       - name: Test published comment engagement boundaries
         run: python3 scripts/test-published-comment-engagement.py
 
