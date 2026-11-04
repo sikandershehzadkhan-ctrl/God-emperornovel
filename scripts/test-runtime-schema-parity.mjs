@@ -3,7 +3,8 @@ import fs from 'node:fs';
 
 const worker = fs.readFileSync('src/index.js', 'utf8');
 const migration = fs.readFileSync('migrations/0001_initial.sql', 'utf8');
-const start = worker.indexOf('const qs=[');
+const coreStart = worker.indexOf('async function ensureCoreSchema');
+const start = worker.indexOf('const qs=[', coreStart);
 const end = worker.indexOf('];\n  for(const q of qs)', start);
 assert.notEqual(start, -1, 'Runtime core schema statement list must exist');
 assert.notEqual(end, -1, 'Runtime core schema statement list must have a stable boundary');
