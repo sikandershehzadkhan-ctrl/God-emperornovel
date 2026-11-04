@@ -40,6 +40,16 @@ The workflow is therefore hard-disabled. Do not remove that block merely to depl
 7. Only after review, implement a ledger-aware runner that applies only verified missing migrations, records checksums transactionally where possible, stops on any mismatch, and verifies post-migration schema.
 8. Re-enable production deployment in a separate reviewed change with explicit approval. Deploy only after the D1 migration step and Worker dry-run both pass.
 
+## Required post-migration schema checks
+
+At minimum, the reviewed release runner must verify these structures before deploying the Worker:
+
+- `idx_chapter_revisions_chapter_created` and `idx_scheduled_chapter_publications_due`.
+- `author_story_goals` and `idx_author_story_goals_owner_updated`.
+- `author_private_notes`, `idx_author_private_notes_owner_story_updated` and `idx_author_private_notes_chapter`.
+- The ten-point `ratings` CHECK constraint and recomputed novel rating aggregates.
+- `PRAGMA integrity_check` and `PRAGMA foreign_key_check` on the rehearsal database.
+
 ## Current safety state
 
 - Production D1 migration: not performed.
