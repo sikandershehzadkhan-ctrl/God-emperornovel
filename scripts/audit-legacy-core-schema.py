@@ -126,7 +126,7 @@ def audit_connections(actual: sqlite3.Connection,
         ).fetchone()
         ddl = ddl_row[0] if ddl_row else ""
         for check in re.finditer(
-            r"CHECK\\s*\\(\\s*([A-Za-z_][A-Za-z0-9_]*)\\s+IN\\s*\\(([^)]*)\\)\\s*\\)",
+            r"CHECK\s*\(\s*([A-Za-z_][A-Za-z0-9_]*)\s+IN\s*\(([^)]*)\)\s*\)",
             ddl, re.IGNORECASE
         ):
             column = check.group(1)
