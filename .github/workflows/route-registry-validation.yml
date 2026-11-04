@@ -2,7 +2,9 @@ name: Validate Imperial Novel Route Registry
 
 on:
   pull_request:
-    branches:\n      - main\n      - "integration/**"
+    branches:
+      - main
+      - "integration/**"
     paths:
       - "src/index.js"
       - "public/app.js"
@@ -26,6 +28,7 @@ on:
   push:
     branches:
       - "route-registry/**"
+      - "integration/**"
     paths:
       - "src/index.js"
       - "public/app.js"
