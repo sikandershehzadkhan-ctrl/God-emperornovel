@@ -24,6 +24,20 @@ Additional observed overlap:
 - #217 shares the Cloudflare validation workflow with #210, #211, #212 and #214.
 - #195 and #219 both change `.github/pull_request_template.md`; their content was aligned byte-for-byte in the latest audited branches.
 
+## Content-level divergence confirmation
+
+A second comparison inspected the actual head blob SHA for every file shared by the PR pairs above. This confirms the overlaps are not merely matching path names:
+
+- #214 has divergent head content against #213, #212, #211, #210, #209, #195 and #217 on the shared paths listed by the pairwise audit.
+- #213 is divergent against #212, #211, #210, #209 and #195 on its overlapping files, including the browser bundle pair shared with #195.
+- #212 is divergent against #211, #210, #209, #195 and #217 on overlapping runtime/build/workflow files.
+- #211 is divergent against #210, #209, #195 and #217 on overlapping files.
+- #210 is divergent against #209, #195 and #217 on overlapping files.
+- #209 is divergent against #195 on `package.json`.
+- #195 is divergent against #217 on the Cloudflare validation workflow.
+
+The audit compared the blob SHAs reported for each PR's changed-file list. Different SHAs establish that the current branches do not carry identical file content. They do not by themselves identify which hunk is semantically correct; that requires sequential integration and tests.
+
 ## Required integration protocol
 
 1. Keep the current PR branches open until their unique behavior is accounted for. Do not close or merge a branch merely because another branch touches the same path.
