@@ -3,12 +3,12 @@ const cleanText = (value, max, field) => {
   if (typeof value !== "string") return { error: field + " must be text." };
   const text = value.normalize("NFC").trim();
   if (text.length > max) return { error: field + " must be " + max + " characters or fewer." };
-  if (/[\\u0000-\\u0008\\u000B\\u000C\\u000E-\\u001F\\u007F]/u.test(text)) return { error: field + " contains unsupported control characters." };
+  if (/[\x00-\x08\x0B\x0C\x0E-\x1F\x7F]/u.test(text)) return { error: field + " contains unsupported control characters." };
   return { value: text };
 };
 const safeAvatar = value => {
   if (!value) return true;
-  if (value.startsWith("/") && !value.startsWith("//") && !value.includes("\\\\") && !/(?:^|\\/)\\.\\.(?:\\/|$)/.test(value)) return true;
+  if (value.startsWith("/") && !value.startsWith("//") && !value.includes("\\") && !value.split("/").includes("..")) return true;
   try { const url = new URL(value); return url.protocol === "https:" && !!url.hostname && !url.username && !url.password; } catch { return false; }
 };
 const safeWebsite = value => {
