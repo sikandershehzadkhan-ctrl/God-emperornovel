@@ -13,7 +13,7 @@ CREATE TABLE IF NOT EXISTS account_deletion_disposition_approvals (
   created_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,
   FOREIGN KEY(plan_id) REFERENCES account_deletion_disposition_plans(id) ON DELETE RESTRICT,
   FOREIGN KEY(review_id) REFERENCES account_deletion_reviews(id) ON DELETE RESTRICT,
-  FOREIGN KEY(request_id) REFERENCES account_deletion_requests(id) ON DELETE RESTRICT,
+  FOREIGN KEY(request_id) REFERENCES account_closure_requests(id) ON DELETE RESTRICT,
   FOREIGN KEY(approver_id) REFERENCES users(id) ON DELETE RESTRICT
 );
 
