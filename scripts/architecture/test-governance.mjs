@@ -22,7 +22,7 @@ for(let i=0;i<roots.length;i++)for(let j=i+1;j<roots.length;j++){
 }
 // Full repository invariant: every tracked file has exactly one canonical owner.
 // This catches untouched orphan files too, not merely paths changed by the current PR.
-const trackedPaths=execFileSync('git',['ls-files'],{encoding:'utf8'}).split(/\\r?\\n/).filter(Boolean);
+const trackedPaths=execFileSync('git',['ls-files'],{encoding:'utf8'}).split(/\r?\n/).filter(Boolean);
 for(const file of trackedPaths){
  const owners=roots.filter(r=>file===r.path||file.startsWith(r.path.endsWith('/')?r.path:r.path+'/'));
  if(owners.length===0)fail('tracked path has no registered owner: '+file+'; assign a domain before merging');
