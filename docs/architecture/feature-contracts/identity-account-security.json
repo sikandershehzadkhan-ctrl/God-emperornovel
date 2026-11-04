@@ -1,0 +1,116 @@
+{
+  "featureId": "identity-account-security",
+  "domainOwner": "identity",
+  "technicalIntegrator": "platform-integrator",
+  "ownedPaths": [
+    "src/identity/"
+  ],
+  "sharedSurfaces": [
+    "src/index.js",
+    "package.json",
+    "docs/architecture/IMPERIAL-API-ROUTE-METHOD-MATRIX-01N-37.json",
+    "docs/architecture/IMPERIAL-AUTHORIZATION-OWNERSHIP-MATRIX-01N-38.json"
+  ],
+  "dependencies": [
+    "platform-kernel",
+    "platform-quality",
+    "repository-operations",
+    "delivery-platform"
+  ],
+  "routes": [
+    "/api/profile",
+    "/api/account/preferences",
+    "/api/public-profile/:username"
+  ],
+  "apiContracts": [
+    "GET /api/profile returns current session user's profile and private stats",
+    "PUT /api/profile updates only session u.id after strict field validation",
+    "GET /api/account/preferences returns validated owner preferences or defaults",
+    "PUT /api/account/preferences updates only session u.id after strict allowlist validation",
+    "GET /api/public-profile/:username exposes only public, non-banned profile projection and opt-in aggregate stats"
+  ],
+  "dataEntities": [
+    "users.display_name",
+    "users.bio",
+    "users.avatar_url",
+    "users.website_url",
+    "users.location",
+    "users.profile_visibility",
+    "users.show_reading_stats",
+    "users.preferences_json"
+  ],
+  "migrationPlan": {
+    "required": false,
+    "existingSchema": [
+      "0012_user_profiles.sql",
+      "0014_account_preferences.sql"
+    ],
+    "backwardCompatibility": "Reuse existing nullable-safe/defaulted user columns; no numbered migration added.",
+    "rollbackOrForwardRepair": "Revert Worker API handlers and retain user data columns; no production schema mutation."
+  },
+  "uiLifecycle": {
+    "browserChange": false,
+    "accountEditor": "Separate follow-up integration",
+    "settingsSync": "Separate follow-up integration",
+    "publicProfile": "API projection only in this slice"
+  },
+  "privacySecurity": {
+    "authentication": "need(u) on all private endpoints",
+    "authorization": "Mutations derive owner exclusively from session u.id; client cannot select another account",
+    "publicDisclosure": "Public endpoint requires public visibility and non-banned account; excludes email, tickets and private stats",
+    "csrf": "Reject mismatched Origin and Sec-Fetch-Site=cross-site",
+    "abuse": "Per-account rate limits on writes; strict input allowlists and length bounds",
+    "audit": "Profile and preference mutations emit audit events"
+  },
+  "tests": {
+    "unit": [
+      "scripts/test-profile-account-api.mjs",
+      "scripts/test-identity-profile-policy.mjs",
+      "scripts/test-account-preferences-policy.mjs"
+    ],
+    "integration": [
+      "Cloudflare Source Validation build",
+      "Route Registry authorization matrix",
+      "Graphify architecture map"
+    ],
+    "isolation": [
+      "Two-account Worker/D1 tests remain required before runtime sign-off"
+    ]
+  },
+  "rollout": {
+    "flags": [
+      "No feature flag or production exposure in this PR"
+    ],
+    "stagingSteps": [
+      "Pass all CI workflows",
+      "Review owner isolation and public response shape",
+      "Run two-account isolated Worker/D1 tests",
+      "Integrate account editor and settings sync separately"
+    ]
+  },
+  "rollback": {
+    "codeRollback": "Revert this API-only PR before deployment.",
+    "dataRollbackOrForwardRepair": "No schema changes; existing profile/preferences values remain untouched.",
+    "monitoringSignals": [
+      "4xx/5xx profile API rates",
+      "rate-limit events",
+      "audit event persistence",
+      "cross-account isolation tests"
+    ]
+  },
+  "affectedDomains": [
+    "identity",
+    "platform-kernel",
+    "platform-quality",
+    "repository-operations",
+    "delivery-platform"
+  ],
+  "changeSummary": "Owner-scoped profile and preference APIs using existing canonical user columns, plus public visibility-filtered profile projection.",
+  "acceptanceCriteria": [
+    "Private GET/PUT operations bind only to authenticated session owner.",
+    "Public profile never exposes email, Crown balance or private data.",
+    "Reading stats are disclosed only when show_reading_stats is enabled.",
+    "No migration is added or applied.",
+    "Route and authorization evidence fingerprints match exact Worker source."
+  ]
+}
