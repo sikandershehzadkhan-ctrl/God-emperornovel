@@ -1,0 +1,12 @@
+import assert from "node:assert/strict";
+import { readFile } from "node:fs/promises";
+import { buildRelatedNovelRecommendationsQuery, relatedNovelRecommendationBindings } from "../src/related-novel-policy.mjs";
+const sql=buildRelatedNovelRecommendationsQuery();
+for(const fragment of ["SELECT novel_id FROM follows WHERE user_id=?","SELECT novel_id FROM history WHERE user_id=?","candidate_genre.genre_id IN","candidate_tag.tag_id IN","n.publication_status='published'","n.rights_status IN ('original','public_domain','licensed','authorized')","NOT EXISTS (SELECT 1 FROM seeds s WHERE s.novel_id=n.id)","LIMIT 12"]) assert.ok(sql.includes(fragment),fragment);
+assert.deepEqual(relatedNovelRecommendationBindings(42),[42,42]);
+const worker=await readFile(new URL("../src/index.js",import.meta.url),"utf8");
+assert.ok(worker.includes('import { buildRelatedNovelRecommendationsQuery, relatedNovelRecommendationBindings } from "./related-novel-policy.mjs";'));
+assert.ok(worker.includes("buildRelatedNovelRecommendationsQuery()).bind(...relatedNovelRecommendationBindings(u.id))"));
+assert.ok(worker.includes("f.user_id=? AND f.novel_id=n.id"));
+assert.ok(worker.includes("h.user_id=? AND h.novel_id=n.id"));
+console.log("PASS: recommendations use only the authenticated reader's follow/history seeds and rights-cleared published candidates.");
