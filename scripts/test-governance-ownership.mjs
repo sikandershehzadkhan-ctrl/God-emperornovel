@@ -28,8 +28,9 @@ export function validateOwnership(registry, changedPaths = []) {
   const ownedChanges = [];
   for (const file of changedPaths) {
     const owners = ownerFor(file);
+    if (owners.length === 0) fail('changed path has no registered owner: ' + file + '; register an owner before integration');
     if (owners.length > 1) fail('changed path has multiple owners: ' + file);
-    if (owners.length === 1) ownedChanges.push(file);
+    ownedChanges.push(file);
   }
   if (ownedChanges.length) {
     const hasAdr = changedPaths.some(file => file.startsWith('docs/architecture/decisions/') && file.endsWith('.md'));
@@ -45,11 +46,12 @@ function selfTest() {
     { id: 'ci', paths: ['.github/workflows/'] },
     { id: 'architecture', paths: ['docs/architecture/'] }
   ] };
-  assert.equal(validateOwnership(registry, ['src/index.js', 'feature/new-module.js', 'docs/architecture/decisions/ADR-0001.md']).ownedChanges.length, 2);
+  assert.equal(validateOwnership(registry, ['src/index.js', 'docs/architecture/decisions/ADR-0001.md']).ownedChanges.length, 2);
   assert.throws(() => validateOwnership(registry, ['src/index.js']), /require an ADR or feature contract/);
+  assert.throws(() => validateOwnership(registry, ['scripts/new-unguarded-file.mjs']), /no registered owner/);
   assert.throws(() => validateOwnership({ version: 1, owners: [...registry.owners, { id: 'overlap', paths: ['src/'] }] }), /overlapping ownership roots/);
   assert.throws(() => validateOwnership(registry, ['migrations/0009_new.sql']), /require an ADR or feature contract/);
-  console.log('PASS: ownership governance self-tests (valid owners, shared-path ADR requirement, overlapping roots and migration contract).');
+  console.log('PASS: ownership governance self-tests (registered paths, unowned-path rejection, ADR requirement and overlapping-root rejection).');
 }
 if (process.argv.includes('--self-test')) selfTest();
 else {
@@ -58,5 +60,5 @@ else {
   const registry = JSON.parse(fs.readFileSync('docs/architecture/SHARED-SURFACE-OWNERSHIP.json', 'utf8'));
   const changedPaths = execFileSync('git', ['diff', '--name-only', baseSha + '...HEAD'], { encoding: 'utf8' }).split('\n').filter(Boolean);
   const result = validateOwnership(registry, changedPaths);
-  console.log('PASS: ' + result.ownerRoots + ' ownership roots validated; ' + result.ownedChanges.length + ' changed shared surface(s) have exactly one owner and an ADR/feature contract.');
+  console.log('PASS: ' + result.ownerRoots + ' ownership roots validated; all ' + result.ownedChanges.length + ' changed paths have exactly one registered owner and the required architecture record.');
 }
