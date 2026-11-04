@@ -41,6 +41,20 @@ The Author Editorial Workspace branch also used branch-local migrations 0012–0
 
 This resolves the filename collisions without replaying duplicate DDL or displacing account migrations 0014–0015. The application APIs/UI and their owner-isolation tests still need to be integrated and validated with these tables before the Author Editorial Workspace can be considered fully integrated.
 
+
+## Author Studio application integration completed
+
+The canonical account-security integration now includes the Author Editorial Workspace application layer, not just its tables:
+
+- Owner-scoped GET/PUT writing-goal APIs with bounded integer/date validation, atomic ownership predicates and audit events.
+- Private note list/create/update/delete APIs with owner/story/chapter checks, 4,000-character bounds and audit events.
+- Deterministic story readiness checks based on recorded metadata, supported formats, rights evidence and actual chapter completeness. These checks do not certify literary quality, originality, legal rights or approval.
+- Phone-first Author Studio panels for goals, chapter-linked private notes and editorial readiness, with planning-queue signals.
+- Regression coverage registered in the standard build, including owner isolation and source/served bundle parity.
+- Existing comic page manager and creator media library were preserved and revalidated alongside the editorial workspace.
+
+Canonical migrations 0032–0033 back these features. Their API/UI/test integration passed the complete Cloudflare Source Validation, account identity CI and Graphify workflows on commit `358269534ec8ac00fcbdd3ab1b41a9d6c4fa7f52`.
+
 ## Confirmed schema collisions that must not be papered over
 
 ### Reading positions
