@@ -2,6 +2,8 @@ import assert from "node:assert/strict";
 import fs from "node:fs";
 
 const workflow = fs.readFileSync(".github/workflows/deploy.yml", "utf8");
+const validationWorkflow = fs.readFileSync(".github/workflows/validate-cloudflare-source.yml", "utf8");
+assert.ok(validationWorkflow.includes("PRAGMA integrity_check") && validationWorkflow.includes("PRAGMA foreign_key_check"), "Fresh SQLite migration replay must verify database and foreign-key integrity.");
 const releasePlan = fs.readFileSync("docs/production/CANONICAL-D1-MIGRATION-RELEASE-PLAN.md", "utf8");
 assert.ok(workflow.includes("workflow_dispatch:"), "Production deploy must remain manual.");
 assert.ok(workflow.includes("confirm_production_deploy"), "Production deploy must require an explicit confirmation input.");
