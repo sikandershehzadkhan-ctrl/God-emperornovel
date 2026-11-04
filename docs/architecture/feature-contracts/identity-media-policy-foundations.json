@@ -47,7 +47,13 @@
       "test-account-preferences-policy.mjs",
       "test-media-upload-policy-isolated.mjs"
     ],
-    "integration": [],
+    "integration": [
+      "test-media-asset-registry.py",
+      "test-media-storage-quotas.py",
+      "test-media-publication-gates.py",
+      "test-media-owner-guards.py",
+      "test-comic-page-authoring.py"
+    ],
     "isolation": [],
     "buildCommands": [
       "npm run build",
@@ -86,7 +92,7 @@
     "platform-architecture",
     "repository-operations"
   ],
-  "changeSummary": "Adds isolated, pure identity and media policy modules with mandatory build regression tests, without copying the older Worker or enabling unfinished runtime routes.",
+  "changeSummary": "Adds isolated, pure identity and media policy modules with mandatory build regression tests, without copying the older Worker or enabling unfinished runtime routes. Adds migration-backed SQLite regression coverage for media quotas, rights review, publication eligibility, owner isolation and draft-only comic page editing.",
   "acceptanceCriteria": [
     "All new source and test paths have canonical owners.",
     "No Worker route, UI, D1 migration, R2 binding or production configuration is changed.",
