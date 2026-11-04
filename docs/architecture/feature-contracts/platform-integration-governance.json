@@ -67,12 +67,15 @@
       "test-identity-profile-policy.mjs",
       "test-account-identity-policy-isolated.mjs",
       "test-account-preferences-policy.mjs",
-      "test-media-upload-policy-isolated.mjs"
+      "test-media-upload-policy-isolated.mjs",
+      "test-reading-position-api.mjs"
     ],
     "integration": [
       "test-platform-architecture-contract.mjs",
       "test-route-registry.mjs",
-      "test-api-route-method-matrix.mjs"
+      "test-api-route-method-matrix.mjs",
+      "reader progress schema and API regression",
+      "integration pull request validation"
     ],
     "isolation": [
       "test-authorization-ownership-matrix.mjs"
@@ -122,10 +125,11 @@
     "platform-data",
     "platform-kernel",
     "platform-quality",
+    "reader",
     "repository-operations",
     "rights"
   ],
-  "changeSummary": "Consolidates current-main platform/security foundations with homepage SSR and the six-theme experience, while introducing canonical ownership, dependency, migration and integration governance. Adds mandatory isolated identity and media policy validation gates without changing Worker routes, UI bundles or D1 schema.",
+  "changeSummary": "Consolidates current-main platform/security foundations with homepage SSR and the six-theme experience, while introducing canonical ownership, dependency, migration and integration governance. Adds mandatory isolated identity and media policy validation gates without changing Worker routes, UI bundles or D1 schema. Adds owner-scoped reader progress API and ensures architecture/source CI runs on nested integration PRs.",
   "acceptanceCriteria": [
     "Every changed repository path resolves to one registered owner",
     "Dependency graph is acyclic and every edge points from consumer to lower-level dependency",
@@ -135,6 +139,8 @@
     "API and authorization evidence fingerprints match the exact Worker source",
     "The exact PR head passes architecture, route, source, build and regression checks",
     "Identity and media policy regressions are executed by the mandatory build.",
-    "No route, API, UI bundle, media storage binding or migration is introduced by the policy-only slice."
+    "No route, API, UI bundle, media storage binding or migration is introduced by the policy-only slice.",
+    "Reader progress API is session-owned, rate-limited and revision-guarded.",
+    "Architecture governance and Cloudflare source validation run on integration-target pull requests."
   ]
 }
