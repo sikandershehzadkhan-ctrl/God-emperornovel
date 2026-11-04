@@ -35,5 +35,7 @@ assert.ok(coldDb.calls.some(sql => sql.includes("DELETE FROM auth_rate_limits"))
 assert.ok(coldDb.calls.some(sql => sql.includes("INSERT OR IGNORE INTO comment_report_claims")));
 assert.ok(coldDb.calls.some(sql => sql.includes("CREATE TRIGGER IF NOT EXISTS trg_comments_hourly_limit")));
 assert.ok(coldDb.calls.some(sql => sql.includes("CREATE TRIGGER IF NOT EXISTS trg_comment_reports_hourly_limit_and_claim")));
+assert.ok(coldDb.calls.some(sql => sql.includes("idx_community_rate_limit_created")));
+assert.ok(coldDb.calls.some(sql => sql.includes("DELETE FROM community_rate_limit_events")));
 assert.match(coldDb.calls.at(-1), /runtime_feature_schema_version/);
 console.log("PASS: initialized runtime schema takes one read; first-time bootstrap creates all required feature tables.");
