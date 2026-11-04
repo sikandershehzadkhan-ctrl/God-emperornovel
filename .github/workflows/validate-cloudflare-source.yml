@@ -156,6 +156,39 @@ jobs:
       - name: Test purpose-bound password recovery token migration
         run: node scripts/test-password-reset-migration-policy.mjs
 
+      - name: Test password reset link policy
+        run: node scripts/test-password-reset-link.mjs
+
+      - name: Test password reset request policy
+        run: node scripts/test-password-reset-request.mjs
+
+      - name: Test password reset token policy
+        run: node scripts/test-password-reset-token.mjs
+
+      - name: Test password reset storage policy
+        run: node scripts/test-password-reset-store.mjs
+
+      - name: Test security email delivery policy
+        run: node scripts/test-security-email-delivery.mjs
+
+      - name: Test email verification request policy
+        run: node scripts/test-email-verification-request.mjs
+
+      - name: Test email verification storage policy
+        run: node scripts/test-email-verification-store.mjs
+
+      - name: Test account deletion review authorization policy
+        run: node scripts/test-account-deletion-review-policy.mjs
+
+      - name: Test account deletion disposition policy
+        run: node scripts/test-account-deletion-disposition-policy.mjs
+
+      - name: Test independent disposition approval policy
+        run: node scripts/test-account-deletion-disposition-approval-policy.mjs
+
+      - name: Test creator ownership policy
+        run: node scripts/test-creator-ownership-policy.mjs
+
       - name: Test catalog query aggregation parity
         run: python3 scripts/test-catalog-query.py
 
