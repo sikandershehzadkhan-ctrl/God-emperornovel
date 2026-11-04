@@ -225,7 +225,8 @@
       "name": "Database and persistence",
       "owns": [
         "migrations/",
-        "src/adapters/"
+        "src/adapters/",
+        "src/runtime-feature-schema.mjs"
       ],
       "responsibilities": [
         "D1 migrations",
