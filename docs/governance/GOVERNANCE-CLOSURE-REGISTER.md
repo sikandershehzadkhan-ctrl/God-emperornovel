@@ -12,7 +12,7 @@ This register is the auditable closure checklist for consolidating Imperial Nove
 ## Verified repository observations
 
 - The repository default integration target is `main`.
-- The first two pages of branch search each returned 100 branch names; the second page returned a continuation cursor. The branch inventory is therefore at least 200 entries and is not yet exhaustive.
+- Branch search returned 204 branch names across three result pages (100 + 100 + 4). This is the observed search result set, not a guarantee that every remote ref or deleted branch is represented.
 - The mainline package metadata reports version `17.23.0`.
 - Mainline README defines the product as Imperial Novel and requires rights-cleared content, mobile-first operation, truthful metrics, and separation between passing CI, deployment, and verified production behavior.
 - A governance implementation exists on `integration/shared-surface-lineage-governance-17-81`, including `.github/workflows/architecture-governance.yml`, ownership/dependency/migration checks, and a shared-surface lineage check. This is branch evidence only; it is not evidence that the workflow is present or required on `main`.
@@ -21,7 +21,7 @@ This register is the auditable closure checklist for consolidating Imperial Nove
 
 ## Open security and integrity blockers
 
-The following GitHub issues were confirmed as **open** during this audit. They remain release blockers until the fix is present on the canonical integration path and supported by reproducible tests.
+The following GitHub issues were confirmed as **open** during the audit. They remain release blockers until the fix is present on the canonical integration path and supported by reproducible tests.
 
 | Issue | Required outcome |
 |---|---|
