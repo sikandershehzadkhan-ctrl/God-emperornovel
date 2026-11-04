@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
   "sourceBranch": "integration/route-registry-current-main-2026-11-04",
-  "sourceBlob": "40c9d821811d29d3ca23adac5be8a91f1c6ccbb0",
+  "sourceBlob": "34f0ce4f0c241001b331f270ac2274dbf0e9efe3",
   "auditDate": "2026-11-04",
   "scope": "Partial handler-level review of current main source snapshot. Static inspection only; no full authorization certification, live D1 concurrency proof, or browser/runtime isolation proof.",
   "reviewedRouteCount": 40,
