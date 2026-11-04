@@ -41,6 +41,16 @@ All proposals above remain open/unmerged as of this register update. Passing CI,
 
 Issue status must be refreshed immediately before closure. Closing an issue is not a substitute for validating the fix on the exact merged commit.
 
+## Active security PR ownership and collision controls
+
+| PR | Primary ownership | Shared-surface rule |
+|---|---|---|
+| #213 | Cover URL policy, cover rendering fallback, Author Studio cover guidance, default image CSP | Owns the cover policy module and the cover-specific build regression. |
+| #214 | Community quota/report-claim schema, follow/like/report publication guards, community audit inventory, validation workflow | Owns the community schema and validation workflow. Its Worker import is kept separate from #213's cover-policy import; its new Node checks run as dedicated workflow steps, not by editing the shared package build command. |
+| #208 | Governance closure register only | Documentation-only; no runtime or migration surface. |
+
+PR #215 was closed unmerged after its follow/like changes were consolidated into #214. This is intentional collision prevention, not a lost implementation. #213 and #214 still both touch `src/index.js`, but own separate route/schema regions; verify the exact combined diff and rerun validation after either PR is integrated.
+
 ## Mandatory closure gates
 
 ### A. Canonical source tree
