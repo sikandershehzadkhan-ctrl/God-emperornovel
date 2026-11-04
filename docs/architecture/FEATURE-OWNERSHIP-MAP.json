@@ -246,6 +246,49 @@
         "wrangler.toml"
       ],
       "dataOwnership": "owns integration contracts and architecture metadata only; does not own product data"
+    },
+    {
+      "id": "identity-media-policy-foundations",
+      "owner": "identity",
+      "paths": [
+        "src/identity/"
+      ],
+      "dependencies": [
+        "identity-account-security"
+      ],
+      "sharedSurfaces": [
+        "package.json"
+      ],
+      "dataOwnership": "Pure identity validation policies; no direct data access."
+    },
+    {
+      "id": "media-upload-policy-foundation",
+      "owner": "media",
+      "paths": [
+        "src/media/"
+      ],
+      "dependencies": [
+        "identity-account-security"
+      ],
+      "sharedSurfaces": [
+        "package.json"
+      ],
+      "dataOwnership": "Pure media upload validation policies; no storage activation."
+    },
+    {
+      "id": "identity-media-policy-regressions",
+      "owner": "platform-quality",
+      "paths": [
+        "scripts/"
+      ],
+      "dependencies": [
+        "identity-media-policy-foundations",
+        "media-upload-policy-foundation"
+      ],
+      "sharedSurfaces": [
+        "package.json"
+      ],
+      "dataOwnership": "Automated regression tests only."
     }
   ],
   "requiredContractFields": [
