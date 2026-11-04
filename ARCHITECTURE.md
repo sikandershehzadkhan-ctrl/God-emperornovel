@@ -164,6 +164,6 @@ The GitHub connector available for this work can edit files and PR metadata but 
 
 If a collision is detected: stop integration, preserve both source histories, identify canonical owner, compare semantics (not filenames alone), create a reconciliation ADR, port the smallest safe change, add a regression test, update registers, rerun gates on the exact head. Never resolve a collision by silently overwriting a file or renumbering an applied migration.
 
-## 10. Honest status
+## 11. Honest status
 
 This contract becomes effective only after its governance validator and CI workflow are merged to `main`. Until then it is a draft integration control. It cannot guarantee zero future defects; it makes ownership conflicts detectable before merge and makes exceptions explicit and reviewable.
