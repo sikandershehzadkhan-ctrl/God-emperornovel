@@ -20,7 +20,7 @@ assert.match(source,/if\(serverRenderedHome\)\{document\.querySelector\('\[data-
 assert.match(source,/const serverRenderedHome=!!root\.querySelector\('\[data-imperial-ssr-home\]'\)/);
 assert.match(source,/if\(!serverRenderedHome\)root\.innerHTML=/);
 assert.match(html,/id=["']app["']/);
-assert.match(html,/app-17\.23\.0\.js/);
+assert.match(html,/app-17\.24\.0\.js/);
 
 const rendered=renderHomepageHtml({
  trending:[{id:1,title:'<script>alert(1)</script>',author:'A&B',cover_url:'javascript:alert(1)',chapter_count:0}],
