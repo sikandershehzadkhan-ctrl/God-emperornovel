@@ -1,13 +1,27 @@
 {
   "schemaVersion": 1,
   "name": "Imperial Novel API route method inventory",
-  "sourceBranch": "integration/reader-progress-api-17-72",
-  "sourceBlob": "13ca11451ae46b4905e4426b8c95f054be0d441b",
+  "sourceBranch": "integration/reader-profile-api-reconciled-17-76",
+  "sourceBlob": "9b88ca7e1b59fb8dd8a4c73f7f3c6bfa94295ab9",
   "auditDate": "2026-11-04",
   "scope": "Static dispatcher scan of the integrated Worker. Observed method guards only; this is not a complete permission or runtime contract.",
-  "exactRouteCount": 79,
-  "dynamicRouteCount": 21,
+  "exactRouteCount": 80,
+  "dynamicRouteCount": 22,
   "exactRoutes": [
+    {
+      "path": "/api/account/preferences",
+      "methods": [
+        "GET",
+        "PUT"
+      ],
+      "sourceLines": [
+        684,
+        685
+      ],
+      "unguardedLines": [],
+      "methodGuardMissing": false,
+      "authorization": "Authenticated owner-scoped preference reads/writes; PUT validates allowlisted values, rejects cross-site writes, rate-limits and audits."
+    },
     {
       "path": "/api/admin/agents",
       "methods": [
@@ -862,14 +876,16 @@
     {
       "path": "/api/profile",
       "methods": [
-        "GET"
+        "GET",
+        "PUT"
       ],
       "sourceLines": [
-        661
+        682,
+        683
       ],
       "unguardedLines": [],
       "methodGuardMissing": false,
-      "authorization": "requires handler-level review"
+      "authorization": "GET is session-owned; PUT derives owner from session u.id, validates strict profile allowlist, rejects cross-site writes, rate-limits and audits."
     },
     {
       "path": "/api/public-authors",
@@ -909,6 +925,20 @@
       "unguardedLines": [],
       "methodGuardMissing": false,
       "authorization": "requires handler-level review"
+    },
+    {
+      "path": "/api/reading-position",
+      "methods": [
+        "GET",
+        "POST"
+      ],
+      "sourceLines": [
+        566,
+        573
+      ],
+      "unguardedLines": [],
+      "methodGuardMissing": false,
+      "authorization": "authenticated; session-owned; same-origin writes; initial insert requires revision zero; updates require a matching existing revision atomically"
     },
     {
       "path": "/api/recommendations",
@@ -1026,63 +1056,71 @@
       "unguardedLines": [],
       "methodGuardMissing": false,
       "authorization": "requires handler-level review"
-    },
-    {
-      "path": "/api/reading-position",
-      "methods": [
-        "GET",
-        "POST"
-      ],
-      "sourceLines": [
-        566,
-        573
-      ],
-      "unguardedLines": [],
-      "methodGuardMissing": false,
-      "authorization": "authenticated; session-owned; same-origin writes; initial insert requires revision zero; updates require a matching existing revision atomically"
     }
   ],
   "dynamicRoutes": [
     {
-      "pathPattern": "/^\\/api\\/novels\\/(\\d+)$/",
+      "pathPattern": "/^\\/api\\/admin\\/connector-authorization-requests\\/(\\d+)$/",
+      "methods": [
+        "PATCH"
+      ],
+      "sourceLines": [
+        939
+      ],
+      "methodGuardMissing": false,
+      "authorization": "requires handler-level review"
+    },
+    {
+      "pathPattern": "/^\\/api\\/admin\\/donations\\/(\\d+)$/",
+      "methods": [
+        "PATCH"
+      ],
+      "sourceLines": [
+        926
+      ],
+      "methodGuardMissing": false,
+      "authorization": "requires handler-level review"
+    },
+    {
+      "pathPattern": "/^\\/api\\/admin\\/publishing\\/chapters(?:\\/(\\d+))?$/",
       "methods": [
         "GET"
       ],
       "sourceLines": [
-        561
+        877
       ],
       "methodGuardMissing": false,
       "authorization": "requires handler-level review"
     },
     {
-      "pathPattern": "/^\\/api\\/chapters\\/(\\d+)$/",
+      "pathPattern": "/^\\/api\\/admin\\/publishing\\/chapters\\/(\\d+)$/",
       "methods": [
-        "GET"
+        "PATCH"
       ],
       "sourceLines": [
-        562
+        885
       ],
       "methodGuardMissing": false,
       "authorization": "requires handler-level review"
     },
     {
-      "pathPattern": "/^\\/api\\/chapters\\/\\d+\\/unlock$/",
+      "pathPattern": "/^\\/api\\/admin\\/publishing\\/novels\\/(\\d+)$/",
       "methods": [
-        "POST"
+        "PATCH"
       ],
       "sourceLines": [
-        563
+        876
       ],
       "methodGuardMissing": false,
       "authorization": "requires handler-level review"
     },
     {
-      "pathPattern": "/^\\/api\\/novels\\/(\\d+)\\/batch-unlock$/",
+      "pathPattern": "/^\\/api\\/admin\\/reports\\/(\\d+)$/",
       "methods": [
-        "POST"
+        "PATCH"
       ],
       "sourceLines": [
-        564
+        928
       ],
       "methodGuardMissing": false,
       "authorization": "requires handler-level review"
@@ -1124,6 +1162,17 @@
       "authorization": "requires handler-level review"
     },
     {
+      "pathPattern": "/^\\/api\\/author\\/ai\\/projects\\/\\d+\\/jobs$/",
+      "methods": [
+        "GET"
+      ],
+      "sourceLines": [
+        790
+      ],
+      "methodGuardMissing": false,
+      "authorization": "requires handler-level review"
+    },
+    {
       "pathPattern": "/^\\/api\\/author\\/ai\\/projects\\/\\d+\\/run$/",
       "methods": [
         "POST"
@@ -1135,12 +1184,23 @@
       "authorization": "requires handler-level review"
     },
     {
-      "pathPattern": "/^\\/api\\/author\\/ai\\/projects\\/\\d+\\/jobs$/",
+      "pathPattern": "/^\\/api\\/author\\/chapters\\/\\d+\\/publish$/",
       "methods": [
-        "GET"
+        "POST"
       ],
       "sourceLines": [
-        790
+        856
+      ],
+      "methodGuardMissing": false,
+      "authorization": "requires handler-level review"
+    },
+    {
+      "pathPattern": "/^\\/api\\/author\\/chapters\\/\\d+$/",
+      "methods": [
+        "PATCH"
+      ],
+      "sourceLines": [
+        849
       ],
       "methodGuardMissing": false,
       "authorization": "requires handler-level review"
@@ -1168,92 +1228,59 @@
       "authorization": "requires handler-level review"
     },
     {
-      "pathPattern": "/^\\/api\\/author\\/chapters\\/\\d+$/",
-      "methods": [
-        "PATCH"
-      ],
-      "sourceLines": [
-        849
-      ],
-      "methodGuardMissing": false,
-      "authorization": "requires handler-level review"
-    },
-    {
-      "pathPattern": "/^\\/api\\/author\\/chapters\\/\\d+\\/publish$/",
-      "methods": [
-        "POST"
-      ],
-      "sourceLines": [
-        856
-      ],
-      "methodGuardMissing": false,
-      "authorization": "requires handler-level review"
-    },
-    {
-      "pathPattern": "/^\\/api\\/admin\\/publishing\\/novels\\/(\\d+)$/",
-      "methods": [
-        "PATCH"
-      ],
-      "sourceLines": [
-        876
-      ],
-      "methodGuardMissing": false,
-      "authorization": "requires handler-level review"
-    },
-    {
-      "pathPattern": "/^\\/api\\/admin\\/publishing\\/chapters(?:\\/(\\d+))?$/",
+      "pathPattern": "/^\\/api\\/chapters\\/(\\d+)$/",
       "methods": [
         "GET"
       ],
       "sourceLines": [
-        877
+        562
       ],
       "methodGuardMissing": false,
       "authorization": "requires handler-level review"
     },
     {
-      "pathPattern": "/^\\/api\\/admin\\/publishing\\/chapters\\/(\\d+)$/",
+      "pathPattern": "/^\\/api\\/chapters\\/\\d+\\/unlock$/",
       "methods": [
-        "PATCH"
+        "POST"
       ],
       "sourceLines": [
-        885
+        563
       ],
       "methodGuardMissing": false,
       "authorization": "requires handler-level review"
     },
     {
-      "pathPattern": "/^\\/api\\/admin\\/donations\\/(\\d+)$/",
+      "pathPattern": "/^\\/api\\/novels\\/(\\d+)\\/batch-unlock$/",
       "methods": [
-        "PATCH"
+        "POST"
       ],
       "sourceLines": [
-        926
+        564
       ],
       "methodGuardMissing": false,
       "authorization": "requires handler-level review"
     },
     {
-      "pathPattern": "/^\\/api\\/admin\\/reports\\/(\\d+)$/",
+      "pathPattern": "/^\\/api\\/novels\\/(\\d+)$/",
       "methods": [
-        "PATCH"
+        "GET"
       ],
       "sourceLines": [
-        928
+        561
       ],
       "methodGuardMissing": false,
       "authorization": "requires handler-level review"
     },
     {
-      "pathPattern": "/^\\/api\\/admin\\/connector-authorization-requests\\/(\\d+)$/",
+      "pathPattern": "/^\\/api\\/public-profile\\/[^/]+$/",
       "methods": [
-        "PATCH"
+        "GET"
       ],
       "sourceLines": [
-        939
+        686
       ],
       "methodGuardMissing": false,
-      "authorization": "requires handler-level review"
+      "authorization": "Public projection only for public, non-banned profiles; excludes email, tickets and private fields; aggregate stats require opt-in."
     },
     {
       "pathPattern": "^/api/admin/author-applications/{applicationId}$",
@@ -1285,6 +1312,6 @@
     "Authorization labels are not inferred for exact routes. Verify anonymous, reader, author, owner, moderator, admin and cross-owner behavior separately.",
     "This matrix does not inspect DTO exposure, cache headers, CSRF, rate limits, body size, or database transaction semantics."
   ],
-  "sourceCommit": "61a40d9cd4d4bf52b5db2780b983441670d933f8",
-  "refreshNote": "Refreshed against the 45-migration security integration with homepage SSR and six-theme design. Four auth verification/recovery endpoints and eight Author Studio/AI dynamic patterns are included. The exact-route scan now reports zero unguarded handlers; taxonomy's GET/POST contract is delegated to its validating helper. Handler-level authorization remains a separate partial review."
+  "sourceCommit": "6b7ac6400f9ab55b8c9b4719d67741c6447b8f50",
+  "refreshNote": "Reconciled reader progress and identity/account API handlers against the same Worker blob; route evidence is static inventory, not runtime authorization certification."
 }
