@@ -13,6 +13,7 @@ assert.ok(body.includes("Promise.all"),"weekly usage and history should be fetch
 assert.ok(body.includes("requests:history.results||[]"));
 console.log("PASS: reader request history is authenticated, user-scoped, bounded to 20, and returns metadata only.");
 
+const ui=fs.readFileSync('public/app.js','utf8');
 const versioned=fs.readFileSync('public/app-17.23.0.js','utf8');
 assert.match(ui,/Your request history/,'reader request page must expose request history');
 assert.match(ui,/Awaiting review/,'pending review state must be explained');
