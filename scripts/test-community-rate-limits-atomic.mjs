@@ -1,0 +1,19 @@
+import assert from "node:assert/strict";
+import { readFileSync } from "node:fs";
+
+const schema = readFileSync(new URL("../src/runtime-feature-schema.mjs", import.meta.url), "utf8");
+const worker = readFileSync(new URL("../src/index.js", import.meta.url), "utf8");
+assert.match(schema, /runtime_feature_schema_version','2/);
+assert.match(schema, /CREATE TABLE IF NOT EXISTS community_rate_limit_events/);
+assert.match(schema, /CREATE TABLE IF NOT EXISTS comment_report_claims/);
+assert.match(schema, /INSERT OR IGNORE INTO comment_report_claims\(user_id,comment_id\) SELECT DISTINCT/);
+assert.match(schema, /CREATE TRIGGER IF NOT EXISTS trg_comments_hourly_limit/);
+assert.match(schema, /CREATE TRIGGER IF NOT EXISTS trg_comment_reports_hourly_limit_and_claim/);
+assert.match(schema, /RAISE\(ABORT,'comment_hourly_limit'\)/);
+assert.match(schema, /RAISE\(ABORT,'comment_report_hourly_limit'\)/);
+const commentRoute = worker.split('\n').find(line => line.includes('if(p==="/api/comments"&&m==="POST")'));
+const reportRoute = worker.split('\n').find(line => line.includes('if(p==="/api/comments/report"&&m==="POST")'));
+assert.ok(commentRoute && !commentRoute.includes("SELECT COUNT(*)") && commentRoute.includes("comment_hourly_limit"));
+assert.ok(reportRoute && !reportRoute.includes("SELECT COUNT(*)") && reportRoute.includes("comment_report_hourly_limit"));
+assert.ok(reportRoute.includes("comment_report_claims.user_id"));
+console.log("PASS: community write routes use database-enforced atomic quota and duplicate-report triggers.");
