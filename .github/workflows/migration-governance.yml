@@ -1,0 +1,38 @@
+name: Imperial Novel Migration Governance
+
+on:
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: imperial-novel-migration-governance-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  migration-governance:
+    name: Migration immutability and allocation
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Checkout complete history
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Test governance guard against valid and invalid fixtures
+        run: node scripts/test-governance-migrations.mjs --self-test
+
+      - name: Enforce immutable history and unique forward allocations
+        if: github.event_name == 'pull_request'
+        env:
+          GOVERNANCE_BASE_SHA: ${{ github.event.pull_request.base.sha }}
+        run: node scripts/test-governance-migrations.mjs
