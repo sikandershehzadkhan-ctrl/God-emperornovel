@@ -32,7 +32,6 @@ export function createRuntimeFeatureSchemaEnsurer() {
       await env.DB.prepare(`CREATE TRIGGER IF NOT EXISTS trg_comments_prune_rate_limit_events
         AFTER INSERT ON comments
         BEGIN
-          DELETE FROM community_rate_limit_events WHERE created_at < datetime('now','-2 days');
         END`).run();
       await env.DB.prepare(`CREATE TRIGGER IF NOT EXISTS trg_comment_reports_prune_rate_limit_events
         AFTER INSERT ON comment_reports
