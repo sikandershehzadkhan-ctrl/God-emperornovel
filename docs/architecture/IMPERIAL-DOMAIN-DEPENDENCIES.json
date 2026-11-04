@@ -1,0 +1,168 @@
+{
+  "schemaVersion": 1,
+  "direction": "Experience -> Application -> Domain contracts -> Platform kernel -> Persistence adapters -> Infrastructure. Runtime dependency edges must follow declared direction.",
+  "domains": {
+    "platform-kernel": {
+      "layer": 4,
+      "dependsOn": [
+        "platform-data",
+        "delivery-platform"
+      ]
+    },
+    "identity": {
+      "layer": 3,
+      "dependsOn": [
+        "platform-kernel",
+        "platform-data"
+      ]
+    },
+    "catalog": {
+      "layer": 3,
+      "dependsOn": [
+        "platform-kernel",
+        "platform-data",
+        "rights"
+      ]
+    },
+    "publishing": {
+      "layer": 3,
+      "dependsOn": [
+        "platform-kernel",
+        "platform-data",
+        "identity",
+        "rights",
+        "media"
+      ]
+    },
+    "reader": {
+      "layer": 3,
+      "dependsOn": [
+        "platform-kernel",
+        "platform-data",
+        "identity",
+        "catalog",
+        "publishing"
+      ]
+    },
+    "community": {
+      "layer": 3,
+      "dependsOn": [
+        "platform-kernel",
+        "platform-data",
+        "identity",
+        "rights"
+      ]
+    },
+    "creator": {
+      "layer": 3,
+      "dependsOn": [
+        "platform-kernel",
+        "platform-data",
+        "identity",
+        "publishing",
+        "rights"
+      ]
+    },
+    "rights": {
+      "layer": 3,
+      "dependsOn": [
+        "platform-kernel",
+        "platform-data",
+        "identity"
+      ]
+    },
+    "payments": {
+      "layer": 3,
+      "dependsOn": [
+        "platform-kernel",
+        "platform-data",
+        "identity",
+        "publishing"
+      ]
+    },
+    "discovery": {
+      "layer": 3,
+      "dependsOn": [
+        "platform-kernel",
+        "platform-data",
+        "catalog",
+        "publishing",
+        "reader",
+        "rights"
+      ]
+    },
+    "media": {
+      "layer": 3,
+      "dependsOn": [
+        "platform-kernel",
+        "platform-data",
+        "rights"
+      ]
+    },
+    "ai": {
+      "layer": 3,
+      "dependsOn": [
+        "platform-kernel",
+        "platform-data",
+        "identity",
+        "rights"
+      ]
+    },
+    "administration": {
+      "layer": 3,
+      "dependsOn": [
+        "platform-kernel",
+        "platform-data",
+        "identity",
+        "rights",
+        "payments"
+      ]
+    },
+    "experience-shell": {
+      "layer": 1,
+      "dependsOn": [
+        "identity",
+        "catalog",
+        "publishing",
+        "reader",
+        "community",
+        "creator",
+        "discovery",
+        "media",
+        "ai",
+        "administration"
+      ]
+    },
+    "platform-data": {
+      "layer": 5,
+      "dependsOn": [
+        "delivery-platform"
+      ]
+    },
+    "platform-quality": {
+      "layer": 0,
+      "dependsOn": []
+    },
+    "platform-architecture": {
+      "layer": 0,
+      "dependsOn": []
+    },
+    "delivery-platform": {
+      "layer": 6,
+      "dependsOn": []
+    },
+    "repository-operations": {
+      "layer": 0,
+      "dependsOn": [
+        "platform-quality",
+        "delivery-platform"
+      ]
+    }
+  },
+  "rules": {
+    "dependenciesMustExist": true,
+    "noCycles": true,
+    "featureDomainsCannotDependOnExperienceShell": true,
+    "contractsRequiredForCrossDomainWrites": true
+  }
+}
