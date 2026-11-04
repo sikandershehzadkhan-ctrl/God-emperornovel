@@ -1,62 +1,18 @@
 {
   "version": 1,
-  "purpose": "Small initial ownership map for high-collision platform surfaces. Expand deliberately as domain modules are established.",
+  "purpose": "Canonical ownership map for shared runtime, schema, build, CI, architecture, governance documentation and governance tooling. New repository paths must be assigned before integration.",
   "owners": [
-    {
-      "id": "worker-runtime",
-      "paths": [
-        "src/index.js"
-      ]
-    },
-    {
-      "id": "browser-runtime",
-      "paths": [
-        "public/app.js"
-      ]
-    },
-    {
-      "id": "web-shell",
-      "paths": [
-        "public/index.html"
-      ]
-    },
-    {
-      "id": "build-toolchain",
-      "paths": [
-        "package.json",
-        "package-lock.json"
-      ]
-    },
-    {
-      "id": "cloudflare-runtime",
-      "paths": [
-        "wrangler.toml"
-      ]
-    },
-    {
-      "id": "database-schema",
-      "paths": [
-        "migrations/"
-      ]
-    },
-    {
-      "id": "ci-release-governance",
-      "paths": [
-        ".github/workflows/"
-      ]
-    },
-    {
-      "id": "repository-governance",
-      "paths": [
-        ".github/pull_request_template.md"
-      ]
-    },
-    {
-      "id": "architecture-contracts",
-      "paths": [
-        "docs/architecture/"
-      ]
-    }
+    { "id": "worker-runtime", "paths": ["src/index.js"] },
+    { "id": "browser-runtime", "paths": ["public/app.js"] },
+    { "id": "web-shell", "paths": ["public/index.html"] },
+    { "id": "build-toolchain", "paths": ["package.json", "package-lock.json"] },
+    { "id": "cloudflare-runtime", "paths": ["wrangler.toml"] },
+    { "id": "database-schema", "paths": ["migrations/"] },
+    { "id": "ci-release-governance", "paths": [".github/workflows/"] },
+    { "id": "repository-governance", "paths": [".github/pull_request_template.md"] },
+    { "id": "architecture-contracts", "paths": ["docs/architecture/"] },
+    { "id": "governance-documentation", "paths": ["docs/governance/"] },
+    { "id": "governance-tooling", "paths": ["scripts/test-governance-"] }
   ],
-  "sharedSurfaceRule": "Changes to any owned shared surface require an ADR under docs/architecture/decisions/ or a feature contract under docs/architecture/feature-contracts/ in the same PR."
+  "sharedSurfaceRule": "Every changed path must match exactly one owner. Any owned path change requires an ADR under docs/architecture/decisions/ or a feature contract under docs/architecture/feature-contracts/ in the same PR. Add a new owner before introducing a new path."
 }
