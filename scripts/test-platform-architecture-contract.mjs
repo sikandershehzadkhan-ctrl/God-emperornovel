@@ -18,6 +18,7 @@ for(const section of ["## 1. Architecture tree","## 2. Canonical source-of-truth
 const policy=fs.readFileSync(requiredFiles[1],"utf8");
 for(const phrase of ["Collision scan protocol","Database rules","API and data rules","Frontend and rendering rules","Pull request and merge rules","Future feature acceptance checklist"])assert.ok(policy.includes(phrase),"governance policy missing: "+phrase);
 const ownership=JSON.parse(fs.readFileSync(requiredFiles[2],"utf8"));
+const canonicalOwnership=JSON.parse(fs.readFileSync("docs/architecture/IMPERIAL-FEATURE-OWNERSHIP.json","utf8"));
 assert.equal(ownership.schemaVersion,1);
 assert.ok(Array.isArray(ownership.domains)&&ownership.domains.length>=8);
 assert.ok(Array.isArray(ownership.sharedSurfaces)&&ownership.sharedSurfaces.length>=5);
@@ -59,7 +60,7 @@ if(fs.existsSync(contractDir)){
  for(const name of fs.readdirSync(contractDir).filter(x=>x.endsWith(".json"))){
   const contract=JSON.parse(fs.readFileSync(path.join(contractDir,name),"utf8"));
   assert.equal(name,contract.featureId+".json","feature contract filename must match featureId");
-  assert.ok(ownership.domains.some(d=>d.id===contract.domainOwner||d.owner===contract.domainOwner),"feature contract has no registered domain owner: "+contract.domainOwner);
+  assert.ok(canonicalOwnership.domains.some(d=>d.id===contract.domainOwner),"feature contract has no canonical domain owner: "+contract.domainOwner);
   for(const field of ownership.requiredContractFields)assert.ok(Object.hasOwn(contract,field),"feature contract "+name+" missing "+field);
  }
 }
