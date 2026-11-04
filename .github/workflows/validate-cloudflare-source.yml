@@ -92,13 +92,17 @@ jobs:
               raise SystemExit(1)
           PY
 
-      - name: Validate D1 migrations against SQLite
+      - name: Validate canonical migration sequence and duplicate payloads
+        run: node scripts/test-migration-sequence-uniqueness.mjs
+
+      - name: Validate D1 migrations against fresh SQLite
         shell: bash
         run: |
           set -euo pipefail
           python3 - <<'PY'
           import glob, sqlite3, sys
           db = sqlite3.connect(':memory:')
+          db.execute('PRAGMA foreign_keys=ON')
           paths = sorted(glob.glob('migrations/*.sql'))
           if not paths:
               print('::error::No SQL migrations found.')
@@ -111,8 +115,19 @@ jobs:
               except Exception as exc:
                   print(f'::error::Migration failed: {path}: {exc}')
                   sys.exit(1)
-          print(f'PASS: {len(paths)} migrations applied to fresh SQLite.')
+          integrity = db.execute('PRAGMA integrity_check').fetchone()[0]
+          if integrity != 'ok':
+              print(f'::error::SQLite integrity_check failed: {integrity}')
+              sys.exit(1)
+          violations = db.execute('PRAGMA foreign_key_check').fetchall()
+          if violations:
+              print(f'::error::SQLite foreign_key_check failed: {violations[:10]}')
+              sys.exit(1)
+          print(f'PASS: {len(paths)} migrations; integrity_check and foreign_key_check are clean.')
           PY
+
+      - name: Test fresh and legacy ten-point rating migration
+        run: python3 scripts/test-rating-migration.py
 
       - name: Test catalog query aggregation parity
         run: python3 scripts/test-catalog-query.py
