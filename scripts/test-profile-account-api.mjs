@@ -18,4 +18,6 @@ assert.ok(worker.includes('UPDATE users SET preferences_json=? WHERE id=?'));
 assert.ok(worker.includes('await audit(env,u,"account.profile_updated"'));
 assert.ok(worker.includes('await audit(env,u,"account.preferences_updated"'));
 assert.equal(app,versioned,"Canonical and served bundles must remain byte-identical.");
+
+for(const marker of ["id='profileForm'","api('/api/profile',{method:'PUT'","api('/api/account/preferences',{method:'PUT'","syncAccountPreferences","restoreAccountPreferences","Preferences synced to your account.","show_reading_stats"]) assert.ok(app.includes(marker),"Missing account UI integration marker: "+marker);
 console.log("PASS: profile and account-preference policies, owner-scoped API route and public visibility guards.");
