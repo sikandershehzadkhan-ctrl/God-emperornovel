@@ -8,6 +8,7 @@ from __future__ import annotations
 
 import argparse
 import json
+import re
 import sqlite3
 import sys
 from pathlib import Path
@@ -73,6 +74,9 @@ def audit_connections(actual: sqlite3.Connection,
         "tables": {},
         "foreign_key_violations": [],
         "orphan_relationships": [],
+        "duplicate_unique_groups": [],
+        "invalid_check_rows": [],
+        "missing_canonical_objects": [],
         "custom_objects": [],
         "errors": [],
     }
@@ -98,6 +102,49 @@ def audit_connections(actual: sqlite3.Connection,
             "actual_unique_indexes": actual_unique,
         }
         report["tables"][table] = entry
+
+        # Detect data that would violate canonical unique indexes before a rebuild.
+        for columns, partial in expected_unique:
+            if partial or not columns or any(column is None for column in columns):
+                continue
+            group_sql = ", ".join(f'"{column}"' for column in columns)
+            duplicates = rows(
+                actual,
+                f'SELECT {group_sql}, COUNT(*) FROM "{table}" '
+                f'GROUP BY {group_sql} HAVING COUNT(*) > 1 LIMIT 20'
+            )
+            if duplicates:
+                report["duplicate_unique_groups"].append({
+                    "table": table, "columns": list(columns),
+                    "sample_duplicate_groups": duplicates,
+                })
+
+        # Extract simple IN-list CHECK constraints from canonical table DDL.
+        # This intentionally does not attempt to interpret arbitrary SQL expressions.
+        ddl_row = canonical.execute(
+            "SELECT sql FROM sqlite_master WHERE type='table' AND name=?", (table,)
+        ).fetchone()
+        ddl = ddl_row[0] if ddl_row else ""
+        for check in re.finditer(
+            r"CHECK\\s*\\(\\s*([A-Za-z_][A-Za-z0-9_]*)\\s+IN\\s*\\(([^)]*)\\)\\s*\\)",
+            ddl, re.IGNORECASE
+        ):
+            column = check.group(1)
+            allowed = re.findall(r"'((?:''|[^'])*)'", check.group(2))
+            if not allowed or column not in {item[0] for item in actual_columns}:
+                continue
+            placeholders = ", ".join("?" for _ in allowed)
+            invalid = rows(
+                actual,
+                f'SELECT "{column}", COUNT(*) FROM "{table}" '
+                f'WHERE "{column}" NOT IN ({placeholders}) GROUP BY "{column}" LIMIT 20',
+                tuple(value.replace("''", "'") for value in allowed),
+            )
+            if invalid:
+                report["invalid_check_rows"].append({
+                    "table": table, "column": column,
+                    "allowed_values": allowed, "invalid_values_and_counts": invalid,
+                })
 
         # Inspect every canonical relationship even when the legacy table has no FK.
         grouped: dict[int, list[tuple]] = {}
@@ -141,10 +188,13 @@ def audit_connections(actual: sqlite3.Connection,
             "WHERE type IN ('index','trigger') AND sql IS NOT NULL"
         )
     }
+    for kind, name in sorted(expected_objects - actual_objects):
+        report["missing_canonical_objects"].append({"type": kind, "name": name})
     for kind, name in sorted(actual_objects - expected_objects):
         report["custom_objects"].append({"type": kind, "name": name})
 
     report["schema_drift"] = bool(
+        report["missing_canonical_objects"] or
         report["canonical_tables_missing"]
         or any(not (
             item["columns_match"] and item["foreign_keys_match"]
@@ -153,6 +203,7 @@ def audit_connections(actual: sqlite3.Connection,
     )
     report["data_violations"] = bool(
         report["foreign_key_violations"] or report["orphan_relationships"]
+        or report["duplicate_unique_groups"] or report["invalid_check_rows"]
     )
     report["safe_to_rebuild"] = not (
         report["schema_drift"] or report["data_violations"] or report["errors"]
@@ -200,10 +251,12 @@ def self_test(migration_path: Path) -> None:
         CREATE TRIGGER custom_fixture_trigger AFTER INSERT ON users
         BEGIN UPDATE users SET verified=1 WHERE id=NEW.id; END;
     """)
+    legacy.execute("PRAGMA query_only=ON")
     result = audit_connections(legacy, canonical)
     assert result["schema_drift"], "legacy constraints should be detected"
     assert result["data_violations"], "invalid role/orphan fixture should be blocked"
     assert result["orphan_relationships"], "missing legacy FK must not hide orphan rows"
+    assert result["invalid_check_rows"], "invalid role values must be detected explicitly"
     assert {"index", "trigger"} <= {
         item["type"] for item in result["custom_objects"]
     }, "custom indexes and triggers must be inventoried"
@@ -213,7 +266,7 @@ def self_test(migration_path: Path) -> None:
         pass
     else:
         raise AssertionError("query_only must prevent writes to the inspected connection")
-    print("PASS: legacy drift, orphan detection, custom-object inventory, and read-only guard")
+    print("PASS: schema drift, orphan/CHECK/unique violations, custom objects, and read-only guard")
 
 
 def main() -> int:
