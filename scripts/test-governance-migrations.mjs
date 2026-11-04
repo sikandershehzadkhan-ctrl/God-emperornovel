@@ -118,6 +118,7 @@ function selfTest() {
   assert.throws(() => validateMigrationInventory(valid, base, [{ path: 'migrations/.reservations/0003.json', content: JSON.stringify({ version: 1, number: 3, migration: 'migrations/0003_other.sql', pullRequest: 77 }) }], [], 77), /does not match reservation/);
   assert.throws(() => validateMigrationInventory(base, base, [{ path: 'migrations/.reservations/0002.json', content: JSON.stringify({ version: 1, number: 2, migration: 'migrations/0002_old.sql', pullRequest: 77 }) }], [], 77), /not above the highest existing/);
   assert.throws(() => validateMigrationInventory(base, base, [], [validReservation], 77), /reservation was deleted/);
+  assert.throws(() => validateMigrationInventory(base, base, [validReservation], [validReservation], 77), /has no matching immutable SQL migration/);
   assert.throws(() => validateMigrationInventory(base, base, [{ path: validReservation.path, content: JSON.stringify({ version: 1, number: 3, migration: 'migrations/0003_reader.sql', pullRequest: 77, edited: true }) }], [validReservation], 77), /reservation was modified/);
   assert.throws(() => validateMigrationInventory(base, base, [
     { path: 'migrations/.reservations/0004.json', content: JSON.stringify({ version: 1, number: 4, migration: 'migrations/0004_x.sql', pullRequest: 77 }) },
