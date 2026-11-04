@@ -10,7 +10,7 @@ Independent feature branches can each pass source, route and architecture checks
 
 ## Decision
 
-1. Maintain a canonical list of serialized shared surfaces in the platform integration contract.
+1. Maintain a canonical list of serialized shared surfaces in the platform integration contract, including wildcard coverage for all top-level served CSS, JavaScript and webmanifest assets.
 2. During Architecture Governance, inspect earlier open pull requests and compare their changed files with the current pull request.
 3. If two open pull requests overlap on a serialized shared surface, require their head commits to have an ancestor/descendant relationship.
 4. Permit a newer PR to stack on an earlier PR, and permit an earlier foundation PR to remain open while a newer dependent PR is stacked on it.
@@ -19,7 +19,7 @@ Independent feature branches can each pass source, route and architecture checks
 
 ## Serialized surfaces
 
-The policy covers the Worker dispatcher, identity modules, browser bundles, service worker, migrations, route and authorization inventories, architecture decisions, platform integration contract, workflow definitions, package manifests and Wrangler configuration.
+The policy covers the Worker dispatcher, identity modules, every directly served browser JavaScript and CSS asset, web manifests, service workers, migrations, route and authorization inventories, architecture decisions, platform integration contract, workflow definitions, package manifests and Wrangler configuration.
 
 ## Consequences
 
