@@ -24,7 +24,7 @@ CREATE TABLE IF NOT EXISTS account_deletion_disposition_findings (
   created_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,
   UNIQUE(review_id, dependency_key, revision),
   FOREIGN KEY(review_id) REFERENCES account_deletion_reviews(id) ON DELETE RESTRICT,
-  FOREIGN KEY(request_id) REFERENCES account_deletion_requests(id) ON DELETE RESTRICT,
+  FOREIGN KEY(request_id) REFERENCES account_closure_requests(id) ON DELETE RESTRICT,
   FOREIGN KEY(reviewer_id) REFERENCES users(id) ON DELETE RESTRICT
 );
 
@@ -37,7 +37,7 @@ BEGIN
   SELECT CASE WHEN NOT EXISTS (
     SELECT 1
     FROM account_deletion_reviews v
-    JOIN account_deletion_requests r ON r.id=v.request_id
+    JOIN account_closure_requests r ON r.id=v.request_id
     WHERE v.id=NEW.review_id
       AND v.request_id=NEW.request_id
       AND v.subject_user_id<>NEW.reviewer_id
