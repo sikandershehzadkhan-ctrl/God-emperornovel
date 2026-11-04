@@ -67,6 +67,9 @@ jobs:
       - name: Validate API method inventory
         run: node scripts/test-api-route-method-matrix.mjs
 
+      - name: Validate profile and account API ownership/privacy invariants
+        run: node scripts/test-profile-account-api.mjs
+
       - name: Validate authorization and ownership register
         run: node scripts/test-authorization-ownership-matrix.mjs
 

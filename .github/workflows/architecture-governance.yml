@@ -1,7 +1,7 @@
 name: Imperial Novel Architecture Governance
 on:
   pull_request:
-    branches: [main]
+    branches: [main, "integration/**"]
   workflow_dispatch:
 permissions:
   contents: read
