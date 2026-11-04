@@ -246,6 +246,16 @@ def self_test(migration_path: Path) -> None:
     canonical = sqlite3.connect(":memory:")
     canonical.executescript(migration_path.read_text(encoding="utf-8"))
 
+    # A pristine canonical fixture must pass the schema-only preflight.
+    clean = sqlite3.connect(":memory:")
+    canonical.backup(clean)
+    clean.execute("PRAGMA query_only=ON")
+    clean_result = audit_connections(clean, canonical)
+    assert clean_result["core_schema_preflight_clean"], (
+        f"canonical fixture should pass: {clean_result}"
+    )
+    clean.close()
+
     legacy = sqlite3.connect(":memory:")
     legacy.executescript("""
         CREATE TABLE users (
@@ -289,7 +299,28 @@ def self_test(migration_path: Path) -> None:
         pass
     else:
         raise AssertionError("query_only must prevent writes to the inspected connection")
-    print("PASS: schema drift, orphan/CHECK/unique violations, custom objects, and read-only guard")
+    # A legacy table without the canonical unique indexes must expose duplicates.
+    duplicate = sqlite3.connect(":memory:")
+    duplicate.executescript("""
+        CREATE TABLE users (
+            id INTEGER PRIMARY KEY,
+            username TEXT NOT NULL,
+            email TEXT NOT NULL,
+            password_hash TEXT NOT NULL,
+            role TEXT NOT NULL DEFAULT 'user'
+        );
+        INSERT INTO users VALUES
+            (1,'same','one@example.invalid','x','user'),
+            (2,'same','two@example.invalid','x','user');
+    """)
+    duplicate.execute("PRAGMA query_only=ON")
+    duplicate_result = audit_connections(duplicate, canonical)
+    assert duplicate_result["duplicate_unique_groups"], (
+        "duplicate values for missing canonical unique indexes must be detected"
+    )
+    duplicate.close()
+
+    print("PASS: clean schema, drift, orphan/CHECK/unique violations, custom objects, and read-only guard")
 
 
 def main() -> int:
