@@ -49,6 +49,23 @@ def unique_index_signature(conn: sqlite3.Connection, table: str) -> list[tuple]:
     return sorted(result)
 
 
+def check_allowlists(conn: sqlite3.Connection, table: str) -> list[tuple]:
+    row = conn.execute(
+        "SELECT sql FROM sqlite_master WHERE type='table' AND name=?", (table,)
+    ).fetchone()
+    ddl = row[0] if row else ""
+    found = []
+    for check in re.finditer(
+        r"CHECK\\s*\\(\\s*([A-Za-z_][A-Za-z0-9_]*)\\s+IN\\s*\\(([^)]*)\\)\\s*\\)",
+        ddl, re.IGNORECASE
+    ):
+        values = tuple(value.replace("''", "'") for value in
+                       re.findall(r"'((?:''|[^'])*)'", check.group(2)))
+        if values:
+            found.append((check.group(1), values))
+    return sorted(found)
+
+
 def orphan_count(conn: sqlite3.Connection, child: str, parent: str,
                  child_cols: list[str], parent_cols: list[str]) -> int:
     predicates = " AND ".join(
@@ -88,10 +105,15 @@ def audit_connections(actual: sqlite3.Connection,
         actual_fks = foreign_keys(actual, table)
         expected_unique = unique_index_signature(canonical, table)
         actual_unique = unique_index_signature(actual, table)
+        expected_checks = check_allowlists(canonical, table)
+        actual_checks = check_allowlists(actual, table)
         entry = {
             "columns_match": actual_columns == expected_columns,
             "foreign_keys_match": actual_fks == expected_fks,
             "unique_indexes_match": actual_unique == expected_unique,
+            "check_constraints_match": actual_checks == expected_checks,
+            "expected_check_allowlists": expected_checks,
+            "actual_check_allowlists": actual_checks,
             "missing_columns": sorted(set(x[0] for x in expected_columns) -
                                       set(x[0] for x in actual_columns)),
             "unexpected_columns": sorted(set(x[0] for x in actual_columns) -
@@ -198,7 +220,7 @@ def audit_connections(actual: sqlite3.Connection,
         report["canonical_tables_missing"]
         or any(not (
             item["columns_match"] and item["foreign_keys_match"]
-            and item["unique_indexes_match"]
+            and item["unique_indexes_match"] and item["check_constraints_match"]
         ) for item in report["tables"].values())
     )
     report["data_violations"] = bool(
@@ -257,6 +279,7 @@ def self_test(migration_path: Path) -> None:
     assert result["data_violations"], "invalid role/orphan fixture should be blocked"
     assert result["orphan_relationships"], "missing legacy FK must not hide orphan rows"
     assert result["invalid_check_rows"], "invalid role values must be detected explicitly"
+    assert not result["tables"]["users"]["check_constraints_match"], "missing role CHECK must be detected as schema drift"
     assert {"index", "trigger"} <= {
         item["type"] for item in result["custom_objects"]
     }, "custom indexes and triggers must be inventoried"
