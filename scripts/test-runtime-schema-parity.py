@@ -4,7 +4,8 @@ from pathlib import Path
 
 migration_sql = Path("migrations/0001_initial.sql").read_text(encoding="utf-8")
 worker = Path("src/index.js").read_text(encoding="utf-8")
-start = worker.index("const qs=[")
+core_start = worker.index("async function ensureCoreSchema")
+start = worker.index("const qs=[", core_start)
 end = worker.index("];\n  for(const q of qs)", start)
 block = worker[start:end]
 
