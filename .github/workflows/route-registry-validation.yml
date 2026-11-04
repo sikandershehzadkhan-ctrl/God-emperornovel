@@ -1,0 +1,105 @@
+name: Validate Imperial Novel Route Registry
+
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - "src/index.js"
+      - "public/app.js"
+      - "public/app-*.js"
+      - "docs/architecture/IMPERIAL-ROUTE-REGISTRY-01N.json"
+      - "docs/architecture/IMPERIAL-API-ROUTE-METHOD-MATRIX-01N-37.json"
+      - "scripts/test-route-registry.mjs"
+      - "scripts/test-api-route-method-matrix.mjs"
+      - "docs/architecture/IMPERIAL-AUTHORIZATION-OWNERSHIP-MATRIX-01N-38.json"
+      - "scripts/test-authorization-ownership-matrix.mjs"
+      - "scripts/test-admin-account-comment-safety.mjs"
+      - "scripts/test-community-taxonomy-security.mjs"
+      - "scripts/test-admin-account-d1.py"
+      - "scripts/test-api-csrf-taxonomy-safety.mjs"
+      - "scripts/test-ai-project-actor-ownership.mjs"
+      - "scripts/test-detail-api-method-guards.mjs"
+      - "scripts/test-public-vote-privacy.mjs"
+      - "scripts/test-readonly-api-method-guards.mjs"
+      - "scripts/test-donation-approval-d1.py"
+      - ".github/workflows/route-registry-validation.yml"
+  push:
+    branches:
+      - "route-registry/**"
+    paths:
+      - "src/index.js"
+      - "public/app.js"
+      - "public/app-*.js"
+      - "docs/architecture/IMPERIAL-ROUTE-REGISTRY-01N.json"
+      - "docs/architecture/IMPERIAL-API-ROUTE-METHOD-MATRIX-01N-37.json"
+      - "scripts/test-route-registry.mjs"
+      - "scripts/test-api-route-method-matrix.mjs"
+      - "docs/architecture/IMPERIAL-AUTHORIZATION-OWNERSHIP-MATRIX-01N-38.json"
+      - "scripts/test-authorization-ownership-matrix.mjs"
+      - "scripts/test-admin-account-comment-safety.mjs"
+      - "scripts/test-community-taxonomy-security.mjs"
+      - "scripts/test-admin-account-d1.py"
+      - "scripts/test-api-csrf-taxonomy-safety.mjs"
+      - "scripts/test-ai-project-actor-ownership.mjs"
+      - "scripts/test-detail-api-method-guards.mjs"
+      - "scripts/test-public-vote-privacy.mjs"
+      - "scripts/test-readonly-api-method-guards.mjs"
+      - "scripts/test-donation-approval-d1.py"
+      - ".github/workflows/route-registry-validation.yml"
+
+permissions:
+  contents: read
+
+jobs:
+  route-registry:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Check out source
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Set up Python for SQLite integration checks
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.x"
+
+      - name: Test administrator account D1 transaction invariants
+        run: python scripts/test-admin-account-d1.py
+
+      - name: Test donation approval and ticket ledger D1 invariants
+        run: python scripts/test-donation-approval-d1.py
+
+      - name: Validate HTML route manifest
+        run: node scripts/test-route-registry.mjs
+
+      - name: Validate API method inventory
+        run: node scripts/test-api-route-method-matrix.mjs
+
+      - name: Validate authorization and ownership register
+        run: node scripts/test-authorization-ownership-matrix.mjs
+
+      - name: Validate admin account and comment safety invariants
+        run: node scripts/test-admin-account-comment-safety.mjs
+
+      - name: Validate API CSRF and taxonomy attribution safeguards
+        run: node scripts/test-api-csrf-taxonomy-safety.mjs
+
+      - name: Validate AI project actor ownership
+        run: node scripts/test-ai-project-actor-ownership.mjs
+
+      - name: Validate novel and chapter detail API method guards
+        run: node scripts/test-detail-api-method-guards.mjs
+
+      - name: Validate public vote-board privacy
+        run: node scripts/test-public-vote-privacy.mjs
+
+      - name: Validate read-only API method guards
+        run: node scripts/test-readonly-api-method-guards.mjs
+
+      - name: Validate community taxonomy attribution and rate limiting
+        run: node scripts/test-community-taxonomy-security.mjs
