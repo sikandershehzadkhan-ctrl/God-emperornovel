@@ -51,6 +51,20 @@ Issue status must be refreshed immediately before closure. Closing an issue is n
 
 PR #215 was closed unmerged after its follow/like changes were consolidated into #214. This is intentional collision prevention, not a lost implementation. #213 and #214 still both touch `src/index.js`, but own separate route/schema regions; verify the exact combined diff and rerun validation after either PR is integrated.
 
+## Live shared-file collision matrix (2026-11-04)
+
+The open PRs are independently based on `main`. They are not a merge queue and must not be merged in parallel.
+
+| Shared path | Open PRs touching it | Integration risk / required control |
+|---|---|---|
+| `src/index.js` | #209, #210, #211, #212, #213, #214 | Highest risk. Route handlers, runtime bootstrap, CSP and imports share one Worker entry point. Integrate one at a time and rerun the full validation suite against the cumulative candidate. |
+| `package.json` | #209, #210, #211, #212, #213 | High risk. Each branch adds a test to the same long `build` command line. These are overlapping edits to one line and can conflict or silently omit a test. Do not merge these PRs independently without first reconciling the complete build command. |
+| `.github/workflows/validate-cloudflare-source.yml` | #210, #211, #212, #214 | High risk. Workflow steps must be composed cumulatively and checked for duplicate names, ordering and missing test execution. |
+| `.github/workflows/deploy.yml` | #211 | Unique to the AI claim preflight proposal. Keep manual deployment gates intact. |
+| `.github/workflows/production-schema-preflight.yml` | #210 | Unique to the runtime schema parity proposal. It is read-only and must remain so. |
+
+**Safe integration rule:** do not merge by PR-number order alone. Before each merge, refresh the base, inspect the exact cumulative diff, run Cloudflare Source Validation and Graphify on the cumulative integration candidate, then re-check all later PRs against the new base. No production migration or deployment is implied by CI success.
+
 ## Mandatory closure gates
 
 ### A. Canonical source tree
