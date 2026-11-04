@@ -1,6 +1,7 @@
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import path from 'node:path';
+import {createHash} from 'node:crypto';
 import {execFileSync} from 'node:child_process';
 const read=(p)=>JSON.parse(fs.readFileSync(p,'utf8'));
 const ownership=read('docs/architecture/IMPERIAL-FEATURE-OWNERSHIP.json');
@@ -33,12 +34,20 @@ const routePath='docs/architecture/IMPERIAL-ROUTE-REGISTRY-01N.json';
 if(fs.existsSync(routePath)){const reg=read(routePath);const seen=new Set();for(const r of reg.routes||[]){if(seen.has(r.path))fail('duplicate route registry path '+r.path);seen.add(r.path);}}
 const apiPath='docs/architecture/IMPERIAL-API-ROUTE-METHOD-MATRIX-01N-37.json';
 if(fs.existsSync(apiPath)){const reg=read(apiPath);const seen=new Set();for(const r of reg.exactRoutes||[]){const key=r.path+' '+(r.methods||[]).slice().sort().join(',');if(seen.has(key))fail('duplicate API route-method declaration '+key);seen.add(key);}}
+const workerBytes=fs.readFileSync('src/index.js');
+const workerBlob=createHash('sha1').update('blob '+workerBytes.length+'\\0').update(workerBytes).digest('hex');
+for(const p of [apiPath,'docs/architecture/IMPERIAL-AUTHORIZATION-OWNERSHIP-MATRIX-01N-38.json']){
+ if(fs.existsSync(p)){const reg=read(p);if(reg.sourceBlob!==workerBlob)fail(p+' is stale: sourceBlob '+reg.sourceBlob+' does not match Worker blob '+workerBlob+'; regenerate its evidence from this exact source snapshot');}
+}
 const changedBase=process.env.ARCH_BASE_SHA;
 if(changedBase){
  let changed=[];try{changed=execFileSync('git',['diff','--name-only',changedBase,'HEAD'],{encoding:'utf8'}).trim().split('\n').filter(Boolean);}catch(e){fail('unable to inspect PR changed paths: '+e.message);}
  const shared=ownership.sharedPaths||[];
  const adrDir=ownership.rules.adrDirectory;
  const hasAdr=changed.some(p=>p.startsWith(adrDir)&&p.endsWith('.md'));
+ const hasFeatureContract=changed.some(p=>p.startsWith('docs/architecture/feature-contracts/')&&p.endsWith('.json'));
+ const hasFeatureCode=changed.some(p=>p.startsWith('src/')||p.startsWith('public/')||p.startsWith('migrations/'));
+ if(hasFeatureCode&&!hasFeatureContract)fail('feature code/schema changes require a feature contract in docs/architecture/feature-contracts/');
  const rootsSorted=roots.slice().sort((a,b)=>b.path.length-a.path.length);
  for(const file of changed){
   if(file===''||file==='.gitignore'||file==='.gitattributes')continue;
