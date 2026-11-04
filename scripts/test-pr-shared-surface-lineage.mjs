@@ -64,14 +64,57 @@ async function github(path){
   }
   throw lastError||new Error("GitHub API request failed for "+path);
 }
-async function listOpenPullRequests(){
+async function listOpenPullRequestsGraphQL(){
+  const [owner,name]=repository.split("/");
+  if(!owner||!name)throw new Error("GITHUB_REPOSITORY must be owner/name for GraphQL fallback.");
   const result=[];
-  for(let page=1;page<=10;page++){
-    const items=await github("/pulls?state=open&per_page=100&page="+page);
-    result.push(...items);
-    if(items.length<100)return result;
+  let after=null;
+  for(let page=0;page<10;page++){
+    const response=await fetch("https://api.github.com/graphql",{
+      method:"POST",
+      headers:{
+        accept:"application/vnd.github+json",
+        authorization:"Bearer "+token,
+        "content-type":"application/json",
+        "x-github-api-version":"2022-11-28"
+      },
+      body:JSON.stringify({
+        query:"query OpenPullRequests($owner:String!,$name:String!,$after:String){repository(owner:$owner,name:$name){pullRequests(states:OPEN,first:100,after:$after){nodes{number title headRefName headRefOid baseRefName baseRefOid}pageInfo{hasNextPage endCursor}}}}",
+        variables:{owner,name,after}
+      }),
+      signal:AbortSignal.timeout(30000)
+    });
+    const payload=await response.json();
+    if(!response.ok||payload.errors?.length){
+      throw new Error("GitHub GraphQL fallback failed: "+JSON.stringify(payload.errors||payload).slice(0,1000));
+    }
+    const connection=payload.data?.repository?.pullRequests;
+    if(!connection)throw new Error("GitHub GraphQL returned no repository pull-request connection.");
+    result.push(...connection.nodes.map(pr=>({
+      number:pr.number,
+      title:pr.title,
+      head:{ref:pr.headRefName,sha:pr.headRefOid},
+      base:{ref:pr.baseRefName,sha:pr.baseRefOid}
+    })));
+    if(!connection.pageInfo.hasNextPage)return result;
+    after=connection.pageInfo.endCursor;
   }
   throw new Error("Open pull-request pagination exceeded 1000 records; refusing an incomplete collision audit.");
+}
+async function listOpenPullRequests(){
+  const result=[];
+  try{
+    for(let page=1;page<=10;page++){
+      const items=await github("/pulls?state=open&per_page=100&page="+page);
+      result.push(...items);
+      if(items.length<100)return result;
+    }
+    throw new Error("Open pull-request pagination exceeded 1000 records; refusing an incomplete collision audit.");
+  }catch(error){
+    if(!/GitHub API 403 .*rate limit|API rate limit exceeded/i.test(String(error?.message||error)))throw error;
+    console.warn("REST API rate limit reached; retrying the same complete open-PR inventory through GraphQL.");
+    return listOpenPullRequestsGraphQL();
+  }
 }
 function listChangedFiles(pr){
   if(!pr.base?.sha||!pr.head?.sha)throw new Error("PR #"+pr.number+" is missing base/head commit metadata.");
