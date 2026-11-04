@@ -33,8 +33,8 @@ for(const route of matrix.dynamicRoutes){
   assert.ok(route.pathPattern.startsWith("/^\\/api\\/"),"dynamic API route must be anchored under /api: "+route.pathPattern);
   assert.ok(!dynamicPatterns.has(route.pathPattern),"duplicate dynamic API route: "+route.pathPattern);
   dynamicPatterns.add(route.pathPattern);
-  const pattern=new RegExp(route.pathPattern.slice(1,route.pathPattern.lastIndexOf("/")));
-  assert.ok(pattern.test(route.pathPattern.includes("batch-unlock")?"/api/novels/42/batch-unlock":route.pathPattern.includes("chapters")?"/api/chapters/42":"/api/novels/42")||route.pathPattern.includes("batch-unlock")||route.pathPattern.includes("chapters"),"dynamic route pattern did not compile");
+  const patternSource=route.pathPattern.slice(1,route.pathPattern.lastIndexOf("/"));
+  assert.doesNotThrow(()=>new RegExp(patternSource),"dynamic route pattern must compile: "+route.pathPattern);
   assert.ok(Array.isArray(route.methods),"dynamic methods must be an array: "+route.pathPattern);
   for(const method of route.methods)assert.ok(validMethods.has(method),"unsupported dynamic HTTP method "+method);
   assert.ok(Array.isArray(route.sourceLines)&&route.sourceLines.length>0,"dynamic source line evidence missing");
