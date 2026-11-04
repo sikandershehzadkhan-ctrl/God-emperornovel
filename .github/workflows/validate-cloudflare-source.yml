@@ -94,6 +94,8 @@ jobs:
 
       - name: Validate canonical migration sequence and duplicate payloads
         run: node scripts/test-migration-sequence-uniqueness.mjs
+      - name: Reject stale migration references in test scripts
+        run: node scripts/test-migration-reference-integrity.mjs
 
       - name: Validate D1 migrations against fresh SQLite
         shell: bash
