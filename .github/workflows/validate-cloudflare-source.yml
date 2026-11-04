@@ -114,6 +114,9 @@ jobs:
           print(f'PASS: {len(paths)} migrations applied to fresh SQLite.')
           PY
 
+      - name: Test read-only legacy core schema auditor
+        run: python3 scripts/audit-legacy-core-schema.py --self-test
+
       - name: Test catalog query aggregation parity
         run: python3 scripts/test-catalog-query.py
 
