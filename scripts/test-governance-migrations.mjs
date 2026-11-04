@@ -63,6 +63,9 @@ export function validateMigrationInventory(currentEntries, baseEntries = [], cur
     const now = currentReservationsByPath.get(old.path);
     if (!now) fail('migration reservation was deleted: ' + old.path);
     if (now.content !== old.content) fail('migration reservation was modified: ' + old.path + '; reservations are immutable');
+    if (!base.some(migration => migration.number === old.number && migration.path === old.migration)) {
+      fail('base migration reservation ' + old.path + ' has no matching immutable SQL migration in the base tree');
+    }
   }
 
   const basePaths = new Set(base.map(x => x.path));
