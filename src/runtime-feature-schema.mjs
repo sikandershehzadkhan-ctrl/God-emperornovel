@@ -25,10 +25,19 @@ export function createRuntimeFeatureSchemaEnsurer() {
       await env.DB.prepare(`CREATE TRIGGER IF NOT EXISTS trg_comments_hourly_limit
         BEFORE INSERT ON comments
         BEGIN
-          DELETE FROM community_rate_limit_events WHERE created_at < datetime('now','-2 days');
           SELECT CASE WHEN (SELECT COUNT(*) FROM community_rate_limit_events WHERE scope='comment' AND user_id=NEW.user_id AND created_at>=datetime('now','-1 hour')) >= 10
             THEN RAISE(ABORT,'comment_hourly_limit') END;
           INSERT INTO community_rate_limit_events(scope,user_id) VALUES('comment',NEW.user_id);
+        END`).run();
+      await env.DB.prepare(`CREATE TRIGGER IF NOT EXISTS trg_comments_prune_rate_limit_events
+        AFTER INSERT ON comments
+        BEGIN
+          DELETE FROM community_rate_limit_events WHERE created_at < datetime('now','-2 days');
+        END`).run();
+      await env.DB.prepare(`CREATE TRIGGER IF NOT EXISTS trg_comment_reports_prune_rate_limit_events
+        AFTER INSERT ON comment_reports
+        BEGIN
+          DELETE FROM community_rate_limit_events WHERE created_at < datetime('now','-2 days');
         END`).run();
       await env.DB.prepare(`CREATE TRIGGER IF NOT EXISTS trg_comment_reports_hourly_limit_and_claim
         BEFORE INSERT ON comment_reports
