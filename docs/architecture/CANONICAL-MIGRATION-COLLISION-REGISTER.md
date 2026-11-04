@@ -49,6 +49,11 @@ The canonical runtime schema on the media branch creates `reading_positions` wit
 
 Both definitions cannot safely own the same table name. A simple migration-number rename would leave the Worker queries and database contract inconsistent. The incoming per-chapter feature must be ported to a separately named table (for example `reader_chapter_positions`) and its API/UI queries updated in the same change, or the canonical contract must be deliberately redesigned with a tested data migration.
 
+
+### Duplicate reader-progress proposals
+
+The design branch's `0013_reader_progress.sql`, the phase branch's `0016_reading_positions.sql`, and the separate `history.progress_percent` proposal all represent overlapping cross-device chapter-position persistence. The canonical Worker already has `reading_positions` with a revision token and server-side conflict detection. These competing tables/columns are intentionally retired from the migration plan; new Library progress displays should read the canonical position API rather than introduce another independently writable progress store.
+
 ### Ten-point ratings
 
 The canonical Worker lazily creates `ratings` with a 1–5 CHECK constraint. The incoming migration rebuilds `ratings` for 1–10 but assumes that the table already exists, while a fresh D1 migration replay does not create it before the rebuild. The endpoint also currently validates 1–5 on the canonical branch. This feature requires a coordinated migration that supports both fresh and existing databases, plus API/UI/test changes to 1–10. It is not safe to port the SQL alone.
