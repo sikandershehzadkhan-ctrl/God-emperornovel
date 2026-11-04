@@ -6,6 +6,8 @@ const worker = readFileSync(new URL("../src/index.js", import.meta.url), "utf8")
 assert.match(schema, /runtime_feature_schema_version','2/);
 assert.match(schema, /CREATE TABLE IF NOT EXISTS community_rate_limit_events/);
 assert.match(schema, /CREATE TABLE IF NOT EXISTS comment_report_claims/);
+assert.match(schema, /idx_community_rate_limit_created/);
+assert.match(schema, /DELETE FROM community_rate_limit_events/);
 assert.match(schema, /INSERT OR IGNORE INTO comment_report_claims\(user_id,comment_id\) SELECT DISTINCT/);
 assert.match(schema, /CREATE TRIGGER IF NOT EXISTS trg_comments_hourly_limit/);
 assert.match(schema, /CREATE TRIGGER IF NOT EXISTS trg_comment_reports_hourly_limit_and_claim/);
