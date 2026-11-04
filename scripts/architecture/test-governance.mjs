@@ -35,7 +35,7 @@ if(fs.existsSync(routePath)){const reg=read(routePath);const seen=new Set();for(
 const apiPath='docs/architecture/IMPERIAL-API-ROUTE-METHOD-MATRIX-01N-37.json';
 if(fs.existsSync(apiPath)){const reg=read(apiPath);const seen=new Set();for(const r of reg.exactRoutes||[]){const key=r.path+' '+(r.methods||[]).slice().sort().join(',');if(seen.has(key))fail('duplicate API route-method declaration '+key);seen.add(key);}}
 const workerBytes=fs.readFileSync('src/index.js');
-const workerBlob=createHash('sha1').update('blob '+workerBytes.length+'\\0').update(workerBytes).digest('hex');
+const workerBlob=createHash('sha1').update('blob '+workerBytes.length+'\0').update(workerBytes).digest('hex');
 for(const p of [apiPath,'docs/architecture/IMPERIAL-AUTHORIZATION-OWNERSHIP-MATRIX-01N-38.json']){
  if(fs.existsSync(p)){const reg=read(p);if(reg.sourceBlob!==workerBlob)fail(p+' is stale: sourceBlob '+reg.sourceBlob+' does not match Worker blob '+workerBlob+'; regenerate its evidence from this exact source snapshot');}
 }
