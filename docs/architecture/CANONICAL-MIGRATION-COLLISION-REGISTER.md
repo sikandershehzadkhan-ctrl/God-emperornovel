@@ -153,3 +153,21 @@ PR #186 deliberately preserves the current-main Worker and ports the six-theme d
 3. A schema migration being present does not prove its API/UI integration is present.
 4. Recompute source fingerprints only after the relevant handlers have been reviewed; never update the hash merely to silence a test.
 5. Keep production D1 migrations and Worker deployment gated. These are source integration decisions only; no production database or live deployment is authorized by this register.
+
+
+### Reader stack PRs #153–#155 versus canonical reading-position storage
+
+PR #153 (`feature/reader-progress-sync-17-46`) is stacked on #152 and proposes a second progress store:
+
+- It adds `migrations/0016_reader_progress_sync.sql`, altering `history` with `progress_percent`. This filename directly collides with canonical PR #173's `0016_chapter_revisions.sql`.
+- It changes `GET /api/history` and `POST /api/history` to persist and return `history.progress_percent`, and changes the reader to send progress through the history endpoint.
+- Its test expects progress writes to require a published novel/chapter and an unlock record. The current #173 `POST /api/reading-position` instead writes to `reading_positions`, uses `percent` and optimistic `expected_revision`, and checks publication status. The handler as inspected does not itself check whether the chapter is free or unlocked.
+- PR #173's reader already loads `/api/reading-position?novel_id=...`, restores the canonical `reading_positions` record, throttles saves, and handles HTTP 409 revision conflicts. The two client implementations are not drop-in compatible.
+
+**Resolution:** do not take PR #153's migration or its `history.progress_percent` API changes. Keep `reading_positions` as the sole durable progress store. Port only independently useful reader behavior after comparing it with the #173 reader, and adapt library/history progress display by joining or separately reading canonical `reading_positions`; do not add a duplicate percentage column to `history`. Preserve local storage only as an offline/recovery fallback, not as a competing server source.
+
+**Additional authorization gap to close before release:** the inspected #173 `POST /api/reading-position` validates that the novel and chapter are published, but does not check that the chapter is free or unlocked by the authenticated reader. Before enabling this route, add a server-side entitlement predicate consistent with the chapter-content endpoint (free/public access or a matching user unlock), and tests proving a locked, unpurchased chapter cannot be used to write a reading position. Do not copy PR #153's exact SQL blindly; reconcile its entitlement check with the canonical chapter access rules and free-chapter policy.
+
+PR #154 (reader accessibility) changes the same two browser bundles and adds a source-level accessibility test. Its test and UI changes should be reviewed and ported independently after the reader-progress implementation is unified; do not let its branch base reintroduce PR #153's duplicate schema. PR #155 (library controls) also changes those bundles and extends the library localization test with bookmark removal, progress display, whole-number rating and empty-state assertions. These library controls are useful candidates, but the progress display must read the canonical position source and the bookmark delete action must remain user-scoped and authenticated.
+
+The stack remains ordered #152 → #153 → #154 → #155. It is not safe to merge #154 or #155 as-is merely because their own diffs are small: their base includes #153. Rebase/port the independent accessibility and library-control behavior onto the consolidated reader only after the canonical reading-position contract and entitlement guard are settled. No migration from #153 is approved.
