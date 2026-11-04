@@ -1,6 +1,6 @@
 {
   "featureId": "reader-library-progress",
-  "domainOwner": "reader-experience",
+  "domainOwner": "reader",
   "technicalIntegrator": "reader-experience",
   "ownedPaths": [
     "public/app.js",
