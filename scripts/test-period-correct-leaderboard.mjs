@@ -11,6 +11,7 @@ assert.ok(route.includes("u.unlocked_at>=datetime('now','-"));
 assert.ok(route.includes("uc.publication_status='published'"));
 assert.ok(route.includes("n.publication_status='published' AND n.rights_status IN ('original','public_domain','licensed','authorized')"));
 assert.ok(route.includes("activity.unlocks DESC"));
+assert.ok(route.includes("GROUP BY n.id HAVING unlocks>0"),"novel leaderboard must not pad rankings with zero-unlock entries");
 assert.ok(route.includes("NULLIF(TRIM(author),'')"));
 assert.ok(!route.includes("h.updated_at"));
 console.log("PASS: leaderboard validates periods, ranks by period-scoped chapter unlocks, normalizes author identity, and excludes unpublished or uncleared works.");
