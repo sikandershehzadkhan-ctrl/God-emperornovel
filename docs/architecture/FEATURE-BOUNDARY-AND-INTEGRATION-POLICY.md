@@ -11,7 +11,7 @@ Prevent recurring merge collisions, duplicate foundations, stale architecture ma
 - **Feature contributor:** may implement only within the feature's declared paths and contract.
 - **Integrator:** reconciles shared-surface changes, runs the collision scan and updates the canonical registries.
 
-The ownership map is the source of truth. A contributor cannot self-assign ownership of a shared platform surface by creating a branch.
+The canonical source of truth is `IMPERIAL-FEATURE-OWNERSHIP.json`, with `IMPERIAL-DOMAIN-DEPENDENCIES.json` and `IMPERIAL-MIGRATION-ALLOCATIONS.json` as its dependency and schema companions. `FEATURE-OWNERSHIP-MAP.json` is a subordinate feature-module placement guide only. If they conflict, `ARCHITECTURE.md` and the canonical registries win. A contributor cannot self-assign ownership of a shared platform surface by creating a branch.
 
 ## Path boundaries
 
@@ -28,7 +28,7 @@ Legacy monolith files and versioned public bundles are shared integration surfac
 
 ## Required feature contract
 
-Copy `FEATURE-CHANGE-CONTRACT.template.json` into `docs/architecture/feature-contracts/<feature-id>.json`. Use stable IDs and declare:
+Copy `FEATURE-CHANGE-CONTRACT.template.json` into `docs/architecture/feature-contracts/<feature-id>.json`; its owner and path declarations must agree with the canonical registries. Use stable IDs and declare:
 - one domain owner and one technical integrator;
 - exact files/directories owned and shared files touched;
 - dependencies and the direction of each dependency;
