@@ -11,3 +11,11 @@ assert.ok(body.includes("source_host,cost,status,created_at"),"history must retu
 assert.ok(body.includes("Promise.all"),"weekly usage and history should be fetched together");
 assert.ok(body.includes("requests:history.results||[]"));
 console.log("PASS: reader request history is authenticated, user-scoped, bounded to 20, and returns metadata only.");
+
+const versioned=fs.readFileSync('public/app-17.23.0.js','utf8');
+assert.match(ui,/Your request history/,'reader request page must expose request history');
+assert.match(ui,/Awaiting review/,'pending review state must be explained');
+assert.match(ui,/Approved/,'approved state must be explained');
+assert.match(ui,/Not approved/,'rejected state must be explained');
+assert.match(ui,/role="status" aria-live="polite"/,'submission feedback must be announced accessibly');
+assert.equal(ui,versioned,'reader bundles must remain byte-identical');
