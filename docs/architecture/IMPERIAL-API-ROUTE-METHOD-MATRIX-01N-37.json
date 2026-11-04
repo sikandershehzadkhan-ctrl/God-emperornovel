@@ -1,8 +1,8 @@
 {
   "schemaVersion": 1,
   "name": "Imperial Novel API route method inventory",
-  "sourceBranch": "integration/author-chapter-publication-guards-17-82",
-  "sourceBlob": "e9d0820a26336b4656277154c99a1981421052f7",
+  "sourceBranch": "integration/architecture-governance-root-17-70",
+  "sourceBlob": "622d396666bda217e0bc4df2264df3cba99e808e",
   "auditDate": "2026-11-04",
   "scope": "Static dispatcher scan of the integrated Worker. Observed method guards only; this is not a complete permission or runtime contract.",
   "exactRouteCount": 80,
