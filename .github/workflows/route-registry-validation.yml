@@ -22,6 +22,7 @@ on:
       - "scripts/test-detail-api-method-guards.mjs"
       - "scripts/test-public-vote-privacy.mjs"
       - "scripts/test-readonly-api-method-guards.mjs"
+      - "scripts/test-rating-handler-canonical.mjs"
       - "scripts/test-admin-account-d1.py"
       - "scripts/test-donation-approval-d1.py"
       - ".github/workflows/route-registry-validation.yml"
@@ -46,6 +47,7 @@ on:
       - "scripts/test-detail-api-method-guards.mjs"
       - "scripts/test-public-vote-privacy.mjs"
       - "scripts/test-readonly-api-method-guards.mjs"
+      - "scripts/test-rating-handler-canonical.mjs"
       - "scripts/test-admin-account-d1.py"
       - "scripts/test-donation-approval-d1.py"
       - ".github/workflows/route-registry-validation.yml"
@@ -106,4 +108,7 @@ jobs:
 
       - name: Validate community taxonomy attribution and rate limiting
         run: node scripts/test-community-taxonomy-security.mjs
+
+      - name: Validate canonical rating handler and rights checks
+        run: node scripts/test-rating-handler-canonical.mjs
 
