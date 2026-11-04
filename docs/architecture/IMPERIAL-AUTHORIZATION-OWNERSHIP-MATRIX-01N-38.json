@@ -1,0 +1,560 @@
+{
+  "schemaVersion": 1,
+  "sourceBranch": "main",
+  "sourceBlob": "237f4461135eb77258b7184e361ce9dfd9a140e9",
+  "auditDate": "2026-11-03",
+  "scope": "Partial handler-level source review with static and SQLite checks; not a full authorization certification. The matrix records mitigations on the isolated route-registry PR branch; unreviewed API routes remain pending.",
+  "reviewedRouteCount": 40,
+  "pendingDisclosure": "All other exact and dynamic API routes remain pending handler-level review.",
+  "routes": [
+    {
+      "path": "/api/notifications",
+      "method": "GET",
+      "access": "authenticated",
+      "ownerRule": "user_id is bound to session u.id",
+      "evidence": "need(u); SELECT notifications WHERE user_id=?",
+      "tests": [
+        "cross-account read denial"
+      ]
+    },
+    {
+      "path": "/api/notifications/read",
+      "method": "POST",
+      "access": "authenticated",
+      "ownerRule": "UPDATE filtered by session u.id",
+      "evidence": "need(u); UPDATE notifications WHERE user_id=? AND read_at IS NULL",
+      "tests": [
+        "cross-account update denial"
+      ]
+    },
+    {
+      "path": "/api/tickets/ledger",
+      "method": "GET",
+      "access": "authenticated",
+      "ownerRule": "user_id is bound to session u.id",
+      "evidence": "need(u); SELECT ticket_ledger WHERE user_id=?",
+      "tests": [
+        "cross-account ledger denial"
+      ]
+    },
+    {
+      "path": "/api/recommendations",
+      "method": "GET",
+      "access": "authenticated",
+      "ownerRule": "recommendations.user_id is bound to session u.id",
+      "evidence": "need(u); SELECT recommendations WHERE r.user_id=?",
+      "tests": [
+        "cross-account recommendation denial"
+      ]
+    },
+    {
+      "path": "/api/follows",
+      "method": "GET",
+      "access": "authenticated",
+      "ownerRule": "follows.user_id is bound to session u.id",
+      "evidence": "need(u); SELECT follows WHERE user_id=?",
+      "tests": [
+        "cross-account follows denial"
+      ]
+    },
+    {
+      "path": "/api/profile",
+      "method": "GET",
+      "access": "authenticated",
+      "ownerRule": "history, follows, unlocks and ledger aggregates all bind u.id",
+      "evidence": "need(u); four per-user aggregate queries use u.id",
+      "tests": [
+        "response is scoped to session account"
+      ]
+    },
+    {
+      "path": "/api/author/applications/me",
+      "method": "GET",
+      "access": "authenticated",
+      "ownerRule": "application user_id is bound to session u.id",
+      "evidence": "need(u); SELECT author_applications WHERE user_id=?",
+      "tests": [
+        "cross-account application denial"
+      ]
+    },
+    {
+      "path": "/api/author/applications",
+      "method": "POST",
+      "access": "authenticated user role only",
+      "ownerRule": "insert user_id is taken from u.id, not request body",
+      "evidence": "need(u); rejects roles other than user; INSERT binds u.id",
+      "tests": [
+        "non-reader role denied",
+        "body cannot override user_id"
+      ]
+    },
+    {
+      "path": "/api/admin/author-applications",
+      "method": "GET",
+      "access": "admin",
+      "ownerRule": "global applicant data protected by admin(u)",
+      "evidence": "admin(u) before global application query",
+      "tests": [
+        "non-admin receives 403"
+      ]
+    },
+    {
+      "path": "/api/admin/author-applications/:id",
+      "method": "PATCH",
+      "access": "admin",
+      "ownerRule": "admin gate and pending-state/eligible-user conditions",
+      "evidence": "admin(u); conditional pending update and role promotion checks",
+      "tests": [
+        "non-admin denied",
+        "review replay denied",
+        "banned applicant not promoted"
+      ]
+    },
+    {
+      "path": "/api/admin/stats",
+      "method": "GET",
+      "access": "admin",
+      "ownerRule": "global aggregates protected by admin(u)",
+      "evidence": "admin(u) before platform-wide counts",
+      "tests": [
+        "non-admin receives 403"
+      ]
+    },
+    {
+      "path": "/api/admin/users",
+      "method": "GET",
+      "access": "admin",
+      "ownerRule": "account directory protected by admin(u)",
+      "evidence": "admin(u) before listing account identifiers and emails",
+      "tests": [
+        "non-admin receives 403",
+        "password/session fields excluded"
+      ]
+    },
+    {
+      "path": "/api/admin/users/:id",
+      "method": "PATCH",
+      "access": "admin",
+      "ownerRule": "admin gate; prevents self-demotion",
+      "evidence": "admin(u); self-role removal check; role allowlist",
+      "tests": [
+        "non-admin denied",
+        "self-demotion denied",
+        "last-admin invariant reviewed"
+      ]
+    },
+    {
+      "path": "/api/author/novels",
+      "method": "GET",
+      "access": "author or admin",
+      "ownerRule": "novels filtered by owner_user_id = u.id",
+      "evidence": "author(u); SELECT novels WHERE n.owner_user_id=?",
+      "tests": [
+        "author A cannot list author B drafts"
+      ]
+    },
+    {
+      "path": "/api/author/novels",
+      "method": "POST",
+      "access": "author or admin",
+      "ownerRule": "new owner_user_id is u.id; status is draft",
+      "evidence": "author(u); INSERT binds owner_user_id to u.id and draft status",
+      "tests": [
+        "body cannot set another owner",
+        "cannot create directly published novel"
+      ]
+    },
+    {
+      "path": "/api/author/novels/:id",
+      "method": "PATCH",
+      "access": "author or admin",
+      "ownerRule": "loads target novel and compares owner_user_id unless admin",
+      "evidence": "author(u); SELECT by id; explicit owner comparison",
+      "tests": [
+        "author A cannot edit author B novel"
+      ]
+    },
+    {
+      "path": "/api/author/chapters",
+      "method": "GET|POST",
+      "access": "author or admin",
+      "ownerRule": "loads parent novel and compares owner_user_id unless admin",
+      "evidence": "GET and POST both load parent novel and compare owner_user_id",
+      "tests": [
+        "author A cannot read/create chapters under author B novel"
+      ]
+    },
+    {
+      "path": "/api/author/chapters/:id",
+      "method": "PATCH",
+      "access": "author or admin",
+      "ownerRule": "joins chapter to novel and compares parent owner_user_id",
+      "evidence": "chapter/novel join; explicit owner comparison before update",
+      "tests": [
+        "author A cannot edit author B chapter"
+      ]
+    },
+    {
+      "path": "/api/author/chapters/:id/publish",
+      "method": "POST",
+      "access": "author or admin",
+      "ownerRule": "parent owner check plus novel rights eligibility",
+      "evidence": "author(u); joined owner check; rights-status allowlist",
+      "tests": [
+        "author A cannot publish author B chapter",
+        "ineligible rights cannot publish"
+      ]
+    },
+    {
+      "path": "/api/author/ai/projects",
+      "method": "GET",
+      "access": "author or admin",
+      "ownerRule": "project collection filtered by owner_user_id = u.id",
+      "evidence": "author(u); SELECT ai_author_projects WHERE p.owner_user_id=? bound to u.id",
+      "tests": [
+        "author A cannot list author B AI projects"
+      ]
+    },
+    {
+      "path": "/api/author/ai/projects",
+      "method": "POST",
+      "access": "author or admin with configured AI provider",
+      "ownerRule": "new project owner_user_id is u.id; linked novel must be owned by current user unless explicitly admin-created",
+      "evidence": "author(u); linked novel owner comparison; INSERT binds owner_user_id to u.id",
+      "tests": [
+        "body cannot assign another project owner",
+        "cannot link another author's novel"
+      ]
+    },
+    {
+      "path": "/api/author/ai/projects/:id",
+      "method": "GET|PATCH",
+      "access": "author or admin",
+      "ownerRule": "loads project and compares owner_user_id to u.id unless admin",
+      "evidence": "author(u); SELECT project by id; explicit owner check in GET and PATCH",
+      "tests": [
+        "author A cannot read author B project",
+        "author A cannot edit author B project"
+      ]
+    },
+    {
+      "path": "/api/author/ai/projects/:id/run",
+      "method": "POST",
+      "access": "author or admin with configured AI provider",
+      "ownerRule": "strict project owner only for generation; administrators cannot generate on behalf of another author",
+      "evidence": "author(u); project owner comparison is unconditional before changing status or creating a job",
+      "tests": [
+        "non-owner author denied",
+        "administrator acting on creator-owned project denied",
+        "owner generation records same owner id"
+      ]
+    },
+    {
+      "path": "/api/author/ai/projects/:id/jobs",
+      "method": "GET",
+      "access": "author or admin",
+      "ownerRule": "loads project owner and compares owner_user_id to u.id unless admin",
+      "evidence": "author(u); SELECT project owner; explicit owner check before listing jobs",
+      "tests": [
+        "author A cannot read author B generation jobs"
+      ]
+    },
+    {
+      "path": "/api/admin/donations",
+      "method": "GET",
+      "access": "admin",
+      "ownerRule": "platform-wide donation records gated by admin(u)",
+      "evidence": "admin(u) before SELECT donations joined to account usernames",
+      "tests": [
+        "non-admin receives 403",
+        "response excludes payment secrets not needed for review"
+      ]
+    },
+    {
+      "path": "/api/admin/donations/:id",
+      "method": "PATCH",
+      "access": "admin",
+      "ownerRule": "admin gate; pending-only transition; credit target derived from stored donation record and approval policy",
+      "evidence": "admin(u); parseManualDonationApproval(b,d); conditional pending status update; user ticket credit and ledger insert chained in DB batch",
+      "tests": [
+        "non-admin denied",
+        "replay of processed donation denied",
+        "body cannot change donation owner",
+        "ticket credit and ledger are atomic"
+      ]
+    },
+    {
+      "path": "/api/admin/reports",
+      "method": "GET",
+      "access": "admin",
+      "ownerRule": "platform-wide report queue gated by admin(u)",
+      "evidence": "admin(u) before SELECT reports with reporter and novel metadata",
+      "tests": [
+        "non-admin receives 403"
+      ]
+    },
+    {
+      "path": "/api/admin/reports/:id",
+      "method": "PATCH",
+      "access": "admin",
+      "ownerRule": "admin gate and status allowlist",
+      "evidence": "admin(u); status allowlist; update by report id",
+      "tests": [
+        "non-admin denied",
+        "unknown report id returns safe result",
+        "moderation mutation creates audit event"
+      ]
+    },
+    {
+      "path": "/api/admin/tickets",
+      "method": "POST",
+      "access": "admin",
+      "ownerRule": "target account chosen by admin; ticket ledger row only inserted if account balance update changed one row",
+      "evidence": "admin(u); validates user_id and amount; DB batch updates users then conditional ticket_ledger insert; audit event",
+      "tests": [
+        "non-admin denied",
+        "unknown user receives 404",
+        "balance and ledger remain consistent"
+      ]
+    },
+    {
+      "path": "/api/connector-authorization-requests",
+      "method": "POST",
+      "access": "authenticated",
+      "ownerRule": "requester user_id comes from session u.id, connector is selected by validated database id",
+      "evidence": "need(u); connector existence check; INSERT user_id=u.id; audit and admin notification",
+      "tests": [
+        "anonymous denied",
+        "requester cannot spoof user_id",
+        "duplicate pending request behavior verified"
+      ]
+    },
+    {
+      "path": "/api/admin/connector-authorization-requests",
+      "method": "GET",
+      "access": "admin",
+      "ownerRule": "global authorization queue gated by admin(u)",
+      "evidence": "admin(u) before joined connector and requester listing",
+      "tests": [
+        "non-admin receives 403"
+      ]
+    },
+    {
+      "path": "/api/admin/connector-authorization-requests/:id",
+      "method": "PATCH",
+      "access": "admin",
+      "ownerRule": "admin gate; pending-only decision; connector rights state changed with request review",
+      "evidence": "admin(u); pending-state check; evidence requirement before approval; DB batch writes review and connector rights state",
+      "tests": [
+        "non-admin denied",
+        "review replay denied",
+        "connector remains disabled after approval"
+      ]
+    },
+    {
+      "path": "/api/taxonomy",
+      "method": "GET",
+      "access": "public",
+      "ownerRule": "returns approved genre/tag proposals only; status parameter must equal approved",
+      "evidence": "communityTaxonomy GET validates type and rejects status other than approved; SELECT filters status='approved'",
+      "tests": [
+        "pending proposals never appear in public response",
+        "rejected proposals never appear in public response"
+      ]
+    },
+    {
+      "path": "/api/taxonomy",
+      "method": "POST",
+      "access": "public, optional authenticated attribution",
+      "ownerRule": "creator_id/name derived from verified session when present; anonymous attribution remains null/blank; per-IP rate limited",
+      "evidence": "communityTaxonomy uses u?.id and u?.username, consumes taxonomy-submit-ip rate limit",
+      "tests": [
+        "client cannot spoof creator identity",
+        "rate limit enforced",
+        "anonymous proposal attribution remains unclaimed"
+      ]
+    },
+    {
+      "path": "/api/admin/taxonomy",
+      "method": "GET",
+      "access": "admin",
+      "ownerRule": "global taxonomy moderation queue gated by admin(u)",
+      "evidence": "admin(u) before SELECT taxonomy_submissions",
+      "tests": [
+        "non-admin receives 403",
+        "pending submitter details are admin-only"
+      ]
+    },
+    {
+      "path": "/api/admin/taxonomy",
+      "method": "POST",
+      "access": "admin",
+      "ownerRule": "reviewer_id is assigned from session u.id; only pending submissions can be reviewed",
+      "evidence": "adminTaxonomy admin(u); pending-state check; reviewer_id=u.id for approve/reject",
+      "tests": [
+        "non-admin denied",
+        "review replay denied",
+        "reviewer identity cannot be spoofed"
+      ]
+    },
+    {
+      "path": "/api/vote-novels",
+      "method": "GET",
+      "access": "public",
+      "ownerRule": "public vote list exposes pending/approved request metadata and requester username",
+      "evidence": "SELECT requests status IN ('pending','approved') LEFT JOIN users; LIMIT 100",
+      "tests": [
+        "response contains no email or private account fields",
+        "only eligible request statuses are public"
+      ]
+    },
+    {
+      "path": "/api/vote-novels",
+      "method": "POST",
+      "access": "authenticated",
+      "ownerRule": "vote row is keyed by request_id and session u.id; toggles only caller's vote",
+      "evidence": "need(u); SELECT/DELETE/INSERT request_votes bind u.id",
+      "tests": [
+        "account A cannot remove account B vote",
+        "anonymous voting denied",
+        "closed request voting denied"
+      ]
+    },
+    {
+      "path": "/api/comments",
+      "method": "GET",
+      "access": "public with optional session personalization",
+      "ownerRule": "parent novel must be published and rights eligible before comments are returned",
+      "evidence": "parent novel eligibility query before comment selection",
+      "tests": [
+        "draft and rights-ineligible parent comments not readable",
+        "eligible published comments readable"
+      ]
+    },
+    {
+      "path": "/api/comments",
+      "method": "POST",
+      "access": "authenticated",
+      "ownerRule": "parent novel must exist, be published and rights eligible before insert; author id from session",
+      "evidence": "parent novel eligibility query before comment insert",
+      "tests": [
+        "cannot comment on missing/draft/rights-ineligible novel",
+        "eligible published novel comment works"
+      ]
+    }
+  ],
+  "findings": [
+    {
+      "id": "AUTH-001",
+      "severity": "high",
+      "status": "needs-tests",
+      "detail": "Cross-account integration tests are not evidenced by source inspection.",
+      "action": "Add two-account tests for notifications, ledger, recommendations, follows, profile and applications."
+    },
+    {
+      "id": "AUTH-002",
+      "severity": "high",
+      "status": "needs-review",
+      "detail": "Self-demotion is blocked, but last-admin protection and full audit logging for admin user mutation are not established.",
+      "action": "Review and test last-admin invariants and audit trail."
+    },
+    {
+      "id": "AUTH-003",
+      "severity": "medium",
+      "status": "needs-review",
+      "detail": "Admin passes author role gate, but author novel collection remains filtered to admin's own owner ID.",
+      "action": "Document intended admin collection semantics and test."
+    },
+    {
+      "id": "AUTH-004",
+      "severity": "medium",
+      "status": "mitigated-static-tested",
+      "detail": "Taxonomy submissions retain public access, but submitter attribution is now derived from the verified session and IP rate limiting is applied. Runtime abuse testing remains outstanding.",
+      "action": "Add browser/runtime tests for anonymous and authenticated submissions, spoof attempts and rate-limit behavior."
+    },
+    {
+      "id": "AUTH-005",
+      "severity": "high",
+      "status": "pending",
+      "detail": "Remaining API routes, CSRF/origin, DTO allowlists, private caching and runtime object isolation are not certified.",
+      "action": "Continue handler review and runtime integration tests."
+    },
+    {
+      "id": "AUTH-006",
+      "severity": "medium",
+      "status": "mitigated-static-tested",
+      "detail": "Admin report status changes now check affected rows and emit an audit event with report id and resulting status.",
+      "action": "Verify audit event persistence and failure behavior against isolated D1."
+    },
+    {
+      "id": "AUTH-007",
+      "severity": "medium",
+      "status": "mitigated-static-and-sqlite-tested",
+      "detail": "Administrator account PATCH now updates only explicitly supplied fields, rejects empty/unknown updates, protects the last active admin, and batches the account change with a conditional audit row. Static checks and SQLite transaction tests pass; live D1 concurrency testing remains outstanding.",
+      "action": "Run isolated D1 concurrency and audit-failure tests before security sign-off."
+    },
+    {
+      "id": "AUTH-008",
+      "severity": "medium",
+      "status": "sqlite-tested-needs-d1",
+      "detail": "Donation approval uses a pending-only status transition followed by conditional balance credit and ledger insertion in a D1 batch. SQLite integration tests now cover successful approval, replay prevention and ledger-failure rollback.",
+      "action": "Verify the same behavior with isolated Cloudflare D1 integration tests and concurrent duplicate approvals."
+    },
+    {
+      "id": "AUTH-009",
+      "severity": "medium",
+      "status": "mitigated-static-tested",
+      "detail": "Taxonomy submissions retain public access, but submitter attribution is now derived from the verified session and IP rate limiting is applied. Runtime abuse testing remains outstanding.",
+      "action": "Add browser/runtime tests for anonymous and authenticated submissions, spoof attempts and rate-limit behavior."
+    },
+    {
+      "id": "AUTH-010",
+      "severity": "low",
+      "status": "mitigated-static-tested",
+      "detail": "Public vote-board response no longer returns requester usernames or joins users; it returns only request metadata and aggregate vote counts required by the UI. A static regression test is in CI.",
+      "action": "Review whether request URL and source host are appropriate public fields and apply abuse controls if needed."
+    },
+    {
+      "id": "AUTH-011",
+      "severity": "medium",
+      "status": "mitigated-static-tested",
+      "detail": "State-changing API requests now reject mismatched Origin headers and Sec-Fetch-Site=cross-site before schema bootstrap/session lookup; SameSite=Lax remains defense-in-depth. Browser/runtime CSRF tests remain outstanding.",
+      "action": "Add real browser tests for same-origin POST, cross-origin form POST, missing Origin and Fetch Metadata edge cases."
+    },
+    {
+      "id": "AUTH-012",
+      "severity": "medium",
+      "status": "mitigated-static-tested",
+      "detail": "Story Bible generation and chapter generation now require strict project ownership even for administrators, so job/run owner_user_id remains aligned with the project owner. Admin read/oversight routes retain their separately gated access.",
+      "action": "Add two-account runtime tests proving admin and other authors cannot generate against a creator-owned project and owner job history remains correctly attributed."
+    },
+    {
+      "id": "AUTH-013",
+      "severity": "medium",
+      "status": "mitigated-static-tested",
+      "detail": "Both public comment reads and authenticated comment writes now require the parent novel to be published and rights eligible.",
+      "action": "Run isolated D1 tests for missing, draft, rights-ineligible and eligible parent novels."
+    },
+    {
+      "id": "AUTH-014",
+      "severity": "low",
+      "status": "needs-decision",
+      "detail": "The current rating API accepts and rounds whole-number ratings from 1 to 5, while the product requirements specify a whole-number 1-to-10 scale. The source also contains a second legacy POST /api/rating handler after the first matching handler, creating duplicate route logic with inconsistent rights eligibility checks; the first matching handler returns, so the later block appears unreachable in the current dispatch flow.",
+      "action": "Resolve the product rating contract before migration. Inventory schema constraints, UI controls, stored ratings and all consumers; design an explicit migration/normalization plan and remove the duplicate legacy handler only with regression tests. Do not change the scale by simply widening the API bound."
+    },
+    {
+      "id": "AUTH-015",
+      "severity": "high",
+      "status": "mitigated-static-and-sqlite-tested",
+      "detail": "Administrator account PATCH now updates only explicitly supplied fields, rejects empty/unknown updates, protects the last active admin, and batches the account change with a conditional audit row. Static checks and SQLite transaction tests pass; live D1 concurrency testing remains outstanding.",
+      "action": "Run isolated D1 concurrency and audit-failure tests before security sign-off."
+    },
+    {
+      "id": "AUTH-016",
+      "severity": "high",
+      "status": "mitigated-static-and-sqlite-tested",
+      "detail": "Administrator account PATCH now updates only explicitly supplied fields, rejects empty/unknown updates, protects the last active admin, and batches the account change with a conditional audit row. Static checks and SQLite transaction tests pass; live D1 concurrency testing remains outstanding.",
+      "action": "Run isolated D1 concurrency and audit-failure tests before security sign-off."
+    }
+  ]
+}
