@@ -66,10 +66,33 @@ if(currentFiles.length===0){
 }
 const currentPaths=new Set(currentFiles);
 const open=await listOpenPullRequests();
+// Restrict collision checks to this PR's active integration stack and sibling PRs
+// targeting the same integration base. Legacy PRs targeting main are checked when
+// their own main-targeted stack is evaluated, not against every nested integration PR.
+const stackParentNumbers=new Set();
+const relevantBaseRefs=new Set([current.base.ref]);
+let cursorRef=current.base.ref;
+let cursorSha=current.base.sha;
+for(let depth=0;depth<30;depth++){
+  const parent=open.find(pr=>pr.head.ref===cursorRef);
+  if(!parent)break;
+  if(parent.head.sha!==cursorSha){
+    console.error("FAIL: integration base branch "+cursorRef+" advanced after this PR was created.");
+    console.error("  PR #"+parent.number+" now points to "+parent.head.sha+" but this PR is based on "+cursorSha+".");
+    console.error("  Restack this branch on the latest base PR head before continuing.");
+    process.exit(1);
+  }
+  stackParentNumbers.add(parent.number);
+  cursorRef=parent.base.ref;
+  cursorSha=parent.base.sha;
+  if(cursorRef!=="main")relevantBaseRefs.add(cursorRef);
+}
 const older=open.filter(pr=>{
   if(pr.number===current.number)return false;
   const otherTime=Date.parse(pr.created_at),currentTime=Date.parse(current.created_at);
-  return otherTime<currentTime||(otherTime===currentTime&&pr.number<current.number);
+  const isOlder=otherTime<currentTime||(otherTime===currentTime&&pr.number<current.number);
+  if(!isOlder)return false;
+  return stackParentNumbers.has(pr.number)||relevantBaseRefs.has(pr.base.ref);
 }).sort((a,b)=>Date.parse(a.created_at)-Date.parse(b.created_at));
 const conflicts=[];
 for(const other of older){
@@ -88,7 +111,7 @@ for(const other of older){
   }
 }
 if(conflicts.length){
-  console.error("FAIL: this PR diverges from an older open PR on serialized shared surfaces.");
+  console.error("FAIL: this PR diverges from an earlier PR in the same integration stack or targeting the same base on serialized shared surfaces.");
   for(const conflict of conflicts){
     console.error("  PR #"+conflict.number+" "+conflict.title+" ("+conflict.head+")");
     console.error("  Overlapping paths: "+conflict.overlap.join(", "));
