@@ -16,6 +16,15 @@ for(let i=0;i<roots.length;i++)for(let j=i+1;j<roots.length;j++){
  const a=roots[i],b=roots[j];
  if(a.path===b.path)fail('duplicate path owner: '+a.path+' ('+a.owner+', '+b.owner+')');
 }
+for(let i=0;i<roots.length;i++)for(let j=i+1;j<roots.length;j++){
+ const a=roots[i],b=roots[j];
+ if(a.path.endsWith('/')&&b.path.startsWith(a.path)||b.path.endsWith('/')&&a.path.startsWith(b.path))fail('overlapping ownership roots are forbidden: '+a.path+' ('+a.owner+') and '+b.path+' ('+b.owner+')');
+}
+for(const sharedPath of ownership.sharedPaths||[]){
+ const candidate=sharedPath.endsWith('*')?sharedPath.slice(0,-1):sharedPath;
+ const owner=roots.find(r=>candidate===r.path||candidate.startsWith(r.path.endsWith('/')?r.path:r.path+'/'));
+ if(!owner)fail('shared path has no canonical owner: '+sharedPath);
+}
 for(const [id,node] of Object.entries(graph.domains)){
  if(!domains.has(id))fail('dependency node has no owner: '+id);
  for(const dep of node.dependsOn){if(!graph.domains[dep])fail(id+' depends on unknown domain '+dep);if(dep==='experience-shell'&&id!=='experience-shell')fail(id+' must not depend on the experience shell');}
