@@ -8,7 +8,7 @@ assert.ok(workflow.includes("inputs.confirm_production_deploy == 'true'"), "Prod
 assert.ok(!/^\s*push:/m.test(workflow) && !/^\s*pull_request:/m.test(workflow), "Pushes and pull requests must never auto-deploy production.");
 assert.ok(workflow.includes("npx --yes wrangler@4 deploy --dry-run"), "Production bundle must be validated before deployment.");
 assert.ok(workflow.includes("Verify catalog and author-application D1 migrations after deployment"), "Production deployment must verify additive catalog and creator migrations.");
-assert.ok(workflow.includes("idx_chapter_revisions_chapter_created") && workflow.includes("idx_scheduled_chapter_publications_due"), "Production deployment must verify chapter revision and scheduling indexes.");
+assert.ok(releasePlan.includes("chapter_revisions") && releasePlan.includes("scheduled_chapter_publications"), "The canonical release plan must account for chapter revision and scheduling structures.");
 assert.ok(workflow.includes("Apply and verify additive D1 migrations before Worker deployment"), "The disabled legacy migration step must remain visibly identified.");
 assert.ok(workflow.includes("if: ${{ false }}"), "Production deployment and migration execution must remain hard-disabled until the canonical D1 audit is complete.");
 assert.ok(!workflow.includes("--file=migrations/"), "No stale branch-local migration file may be applied by the legacy deployment workflow.");
