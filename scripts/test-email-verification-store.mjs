@@ -27,7 +27,7 @@ assert.deepEqual(await completeEmailVerification({...fake,async batch(){return [
 await assert.rejects(()=>completeEmailVerification(fake,{tokenHash:"bad",now}),/Invalid email-verification token digest/);
 await assert.rejects(()=>completeEmailVerification(fake,{tokenHash,now:"invalid"}),/normalized UTC timestamp/);
 
-const migration=readFileSync(new URL("../migrations/0010_email_verification.sql",import.meta.url),"utf8");
+const migration=readFileSync(new URL("../migrations/0037_email_verification.sql",import.meta.url),"utf8");
 const python=String.raw`
 import json,sqlite3,sys
 p=json.loads(sys.stdin.read()); db=sqlite3.connect(":memory:"); db.execute("PRAGMA foreign_keys=ON")
