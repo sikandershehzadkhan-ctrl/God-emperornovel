@@ -37,6 +37,8 @@ assert.ok(client.includes("sessionStorage.getItem('imperialReaderAccount')"),"au
 assert.ok(client.includes("readerProgressPending:'+id"),"offline writes must be retained as pending progress");
 assert.ok(client.includes("Number(pending.expected_revision)===progressRevision"),"pending progress may only replay when the server revision still matches its base revision");
 assert.ok(client.includes("progressSync='conflict'"),"stale offline progress must remain a conflict rather than being blindly replayed");
+assert.ok(client.includes("pendingSyncedForCurrentChapter"),"a just-replayed offline position must not be overwritten by the pre-replay server snapshot");
+assert.ok(client.includes("if(progressAccount&&progressSync==='offline')retainPendingProgress(pct)"),"scrolling after a revision conflict must not rewrite the stale pending base revision");
 assert.ok(client.includes("sessionStorage.removeItem('imperialReaderAccount')"),"logout must clear the tab-scoped remembered account");
 assert.ok(client.includes("if(!progressAccount||progressSync!=='synced')return"),"anonymous/offline sessions must not issue authenticated writes");
 
