@@ -1,21 +1,36 @@
--- A deletion request is a reversible workflow, never an erasure command.
-CREATE TABLE IF NOT EXISTS account_deletion_requests (
+-- Upgrade the canonical account_closure_requests table for the independent
+-- account-deletion review workflow. Do not create a second request ledger.
+-- This rebuild also upgrades installations where migration 0031 used its earlier,
+-- narrower pending/cancelled/completed status constraint.
+CREATE TABLE account_closure_requests_v2 (
   id INTEGER PRIMARY KEY AUTOINCREMENT,
   user_id INTEGER NOT NULL,
-  status TEXT NOT NULL CHECK(status IN ('pending_deletion','review_required','cancelled','finalized')),
-  requested_at TEXT NOT NULL,
-  scheduled_for TEXT NOT NULL,
-  cancelled_at TEXT,
+  status TEXT NOT NULL DEFAULT 'pending'
+    CHECK(status IN ('pending','review_required','pending_deletion','cancelled','completed')),
+  requested_at INTEGER NOT NULL,
+  grace_until INTEGER NOT NULL,
+  cancelled_at INTEGER,
+  completed_at INTEGER,
   review_reason TEXT NOT NULL DEFAULT '',
   created_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,
   updated_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,
   FOREIGN KEY(user_id) REFERENCES users(id) ON DELETE RESTRICT,
-  CHECK(scheduled_for > requested_at)
+  CHECK(grace_until > requested_at)
 );
-
-CREATE UNIQUE INDEX IF NOT EXISTS uq_account_deletion_active_request
-  ON account_deletion_requests(user_id)
-  WHERE status IN ('pending_deletion','review_required');
-
-CREATE INDEX IF NOT EXISTS idx_account_deletion_review
-  ON account_deletion_requests(status, scheduled_for);
+INSERT INTO account_closure_requests_v2
+  (id,user_id,status,requested_at,grace_until,cancelled_at,completed_at,review_reason,created_at,updated_at)
+SELECT id,user_id,
+  CASE WHEN status IN ('pending','review_required','pending_deletion','cancelled','completed')
+    THEN status ELSE 'review_required' END,
+  requested_at,grace_until,cancelled_at,completed_at,
+  COALESCE(review_reason,''),
+  COALESCE(created_at,CURRENT_TIMESTAMP),
+  COALESCE(updated_at,CURRENT_TIMESTAMP)
+FROM account_closure_requests;
+DROP TABLE account_closure_requests;
+ALTER TABLE account_closure_requests_v2 RENAME TO account_closure_requests;
+CREATE UNIQUE INDEX IF NOT EXISTS idx_account_closure_one_pending_per_user
+  ON account_closure_requests(user_id)
+  WHERE status IN ('pending','review_required','pending_deletion');
+CREATE INDEX IF NOT EXISTS idx_account_closure_status_grace
+  ON account_closure_requests(status,grace_until);
