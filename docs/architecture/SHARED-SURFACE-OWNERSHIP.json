@@ -1,62 +1,254 @@
 {
   "version": 1,
-  "purpose": "Small initial ownership map for high-collision platform surfaces. Expand deliberately as domain modules are established.",
+  "purpose": "Fail-closed ownership map covering every tracked repository path. Directory-level owners are intentionally coarse initial domain boundaries; owners must be refined before the affected domain is split into independently governed modules.",
   "owners": [
     {
-      "id": "worker-runtime",
+      "id": "repository-root-artifacts",
       "paths": [
-        "src/index.js"
-      ]
-    },
-    {
-      "id": "browser-runtime",
-      "paths": [
-        "public/app.js"
-      ]
-    },
-    {
-      "id": "web-shell",
-      "paths": [
-        "public/index.html"
-      ]
+        ".graphifyignore",
+        "DEPLOY-10.1.txt",
+        "DEPLOY-10.2.txt",
+        "DEPLOY-11.0.txt",
+        "DEPLOY-12.0.txt",
+        "DEPLOY-13.0.txt",
+        "DEPLOY-14.0.txt",
+        "DEPLOY-15.0.txt",
+        "DEPLOY-16.0.txt",
+        "DEPLOY-16.1.1-FINAL.txt",
+        "DEPLOY-16.1.txt",
+        "DEPLOY-16.10.0-AUTHOR-STUDIO-TRIGGER.txt",
+        "DEPLOY-16.11.0-AUTHOR-CHAPTER-STUDIO-TRIGGER.txt",
+        "DEPLOY-16.12.0-AUTHOR-REVIEW.txt",
+        "DEPLOY-16.12.1-AUTHOR-LOADING-FIX.txt",
+        "DEPLOY-16.12.2-CHAPTER-STUDIO-FIX.txt",
+        "DEPLOY-16.13.0-AUTHOR-REVIEW-DECISIONS.txt",
+        "DEPLOY-16.14.0-PLATFORM-DISCOVERY-TRIGGER.txt",
+        "DEPLOY-16.14.1-CATALOG-CARD-FIX.txt",
+        "DEPLOY-16.15.0-COMMUNITY-TRIGGER.txt",
+        "DEPLOY-16.15.1-CHAPTER-ROW-FIX.txt",
+        "DEPLOY-16.2.1-FINAL.txt",
+        "DEPLOY-16.2.1.txt",
+        "DEPLOY-16.2.2.txt",
+        "DEPLOY-16.2.3-FINAL.txt",
+        "DEPLOY-16.2.3.txt",
+        "DEPLOY-16.2.4-ADMIN-FIX.txt",
+        "DEPLOY-16.2.5-FIX.txt",
+        "DEPLOY-16.2.6-TRIGGERS.txt",
+        "DEPLOY-16.2.7-TRIGGERS.txt",
+        "DEPLOY-16.2.8-TRIGGERS.txt",
+        "DEPLOY-16.2.txt",
+        "DEPLOY-16.20.0-DISCOVERY-COMMUNITY.txt",
+        "DEPLOY-16.21.0-CORE-UX-ROUTE-FIX.txt",
+        "DEPLOY-16.3.1-TRIGGERS.txt",
+        "DEPLOY-16.3.2-TRIGGERS.txt",
+        "DEPLOY-16.3.3-TRIGGERS.txt",
+        "DEPLOY-16.3.4-TRIGGERS.txt",
+        "DEPLOY-16.3.5-TRIGGERS.txt",
+        "DEPLOY-16.3.6-TRIGGERS.txt",
+        "DEPLOY-16.3.7-TRIGGERS.txt",
+        "DEPLOY-16.3.8-TRIGGERS.txt",
+        "DEPLOY-16.3.9-TRIGGERS.txt",
+        "DEPLOY-16.5.0-EDIT-REPAIR-TRIGGERS.txt",
+        "DEPLOY-16.5.1-EDIT-FIX-TRIGGER.txt",
+        "DEPLOY-16.5.2-EDIT-FUNCTIONAL-FIX-TRIGGER.txt",
+        "DEPLOY-16.6.0-CHAPTER-PREVIEW-TRIGGER.txt",
+        "DEPLOY-16.7.0-CHAPTER-PUBLISHING-TRIGGER.txt",
+        "DEPLOY-16.7.0-TRIGGER.txt",
+        "DEPLOY-16.8.0-READER-EXPERIENCE-TRIGGER.txt",
+        "DEPLOY-16.9.0-READER-ACCOUNT-LIBRARY-TRIGGER.txt",
+        "DEPLOY-9.0.txt",
+        "DEPLOY-9.1.txt",
+        "DEPLOY-9.2.txt",
+        "Deploy - 16.1.1.txt",
+        "God-Emperor-Novel-10.1-Imperial-UI.zip",
+        "God-Emperor-Novel-10.2-Imperial-UI.zip",
+        "God-Emperor-Novel-11.0-Imperial-UI.zip",
+        "God-Emperor-Novel-12.0-Imperial-UI.zip",
+        "God-Emperor-Novel-13.0-Imperial-UI.zip",
+        "God-Emperor-Novel-14.0-Imperial-Luxury-MultiPage.zip",
+        "God-Emperor-Novel-15.0-Imperial-Fixes.zip",
+        "God-Emperor-Novel-16.0-Imperial-Taxonomy.zip",
+        "God-Emperor-Novel-6.0-Final-Complete-Bundle.zip",
+        "God-Emperor-Novel-6.1-Fixed-Bundle.zip",
+        "God-Emperor-Novel-8.0-NovelVerse-Agent-Fleet.zip",
+        "God-Emperor-Novel-8.1-Corrected.zip",
+        "God-Emperor-Novel-9.0-Complete-UI.zip",
+        "God-Emperor-Novel-9.1-Functional-Dashboard.zip",
+        "God-Emperor-Novel-9.2-SignIn-Fix.zip",
+        "God-Emperor-Novel-GitHub-Ready-Corrected.zip",
+        "God-Emperor-Novel-GitHub-Ready.zip",
+        "Imperial-Novel-16.1-Taxonomy-Seed-Fix.zip",
+        "Imperial-Novel-16.1.1-Taxonomy-Seed-Fix.zip",
+        "Imperial-Novel-16.10.0-Author-Studio.zip",
+        "Imperial-Novel-16.11.0-Author-Chapter-Studio.zip",
+        "Imperial-Novel-16.12.0-Author-Review-Workflow.zip",
+        "Imperial-Novel-16.12.1-Author-Loading-Fix.zip",
+        "Imperial-Novel-16.12.2-Author-Chapter-Studio-Fix.zip",
+        "Imperial-Novel-16.13.0-Author-Review-Decisions.zip",
+        "Imperial-Novel-16.14.0-Platform-Discovery-Catalog.zip",
+        "Imperial-Novel-16.14.1-CatalogCard-Fix.zip",
+        "Imperial-Novel-16.15.0-Comments-Ratings-Community.zip",
+        "Imperial-Novel-16.15.1-ChapterRow-Fix.zip",
+        "Imperial-Novel-16.16.0-OmniPortal-Rights-First.zip",
+        "Imperial-Novel-16.16.1-Rights-OmniPortal-Security.zip",
+        "Imperial-Novel-16.16.2-OpenAI-AI-Agents.zip",
+        "Imperial-Novel-16.16.3-Local-Agents.zip",
+        "Imperial-Novel-16.17.0-Autonomous-Agent-Fleet.zip",
+        "Imperial-Novel-16.18.0-OmniPortal-Authorization.zip",
+        "Imperial-Novel-16.19.0-AI-Author-Studio.zip",
+        "Imperial-Novel-16.2-Community-Taxonomy.zip",
+        "Imperial-Novel-16.2.1-Community-Taxonomy-Fix.zip",
+        "Imperial-Novel-16.2.1-FINAL.zip",
+        "Imperial-Novel-16.2.2-Taxonomy-Fix.zip",
+        "Imperial-Novel-16.2.3-FINAL.zip",
+        "Imperial-Novel-16.2.3-Taxonomy-Parameter-Fix.zip",
+        "Imperial-Novel-16.2.4-Admin-Promotion-Fix.zip",
+        "Imperial-Novel-16.2.5-Setup-Secret-Fix.zip",
+        "Imperial-Novel-16.2.6-Admin-Bootstrap-Fix.zip",
+        "Imperial-Novel-16.2.7-Admin-Dashboard.zip",
+        "Imperial-Novel-16.2.8-Admin-Request-Management-Fix.zip",
+        "Imperial-Novel-16.20.0-Discovery-Community.zip",
+        "Imperial-Novel-16.21.0-Core-UX-Route-Fix.zip",
+        "Imperial-Novel-16.22.0-Imperial-Luxury-UX.zip",
+        "Imperial-Novel-16.23.0-QA-Repair-UX-Hardening.zip",
+        "Imperial-Novel-16.24.0-HOME-MOBILE-UX-CATALOG-POLISH.zip",
+        "Imperial-Novel-16.3.1-Combined-UI-Backend.zip",
+        "Imperial-Novel-16.3.2-Mobile-UI-Polish.zip",
+        "Imperial-Novel-16.3.3-Clean-Mobile-UI.zip",
+        "Imperial-Novel-16.3.4-Catalog-Reader.zip",
+        "Imperial-Novel-16.3.5-Catalog-Polish-Rights-Safe.zip",
+        "Imperial-Novel-16.3.6-Legal-Publishing-Reader.zip",
+        "Imperial-Novel-16.3.7-Stability-Publishing-Fix.zip",
+        "Imperial-Novel-16.3.8-Publishing-Repair.zip",
+        "Imperial-Novel-16.3.9-Publishing-UI-Fix.zip",
+        "Imperial-Novel-16.4.0-Chapter-Creation-Repair.zip",
+        "Imperial-Novel-16.5.0-Chapter-Management.zip",
+        "Imperial-Novel-16.5.0-Edit-Repair-WITH-TRIGGER.zip",
+        "Imperial-Novel-16.5.1-Edit-Fix.zip",
+        "Imperial-Novel-16.5.2-Edit-Functional-Fix.zip",
+        "Imperial-Novel-16.54.0-SIMPLE-BUILD-UPDATE.zip",
+        "Imperial-Novel-16.54.0-UPDATE-1.zip",
+        "Imperial-Novel-16.54.1-WEBSITE-CONTINUATION-UPDATE.zip",
+        "Imperial-Novel-16.56.0-DIRECT-BUILD-UPDATE.zip",
+        "Imperial-Novel-16.6.0-Chapter-Preview-Navigation.zip",
+        "Imperial-Novel-16.60.0-IMPERIAL-ASSETS-AND-CATALOG-UPDATE-1.zip",
+        "Imperial-Novel-16.64.0-THREE-LINE-MENU-DESIGN-UPDATE.zip",
+        "Imperial-Novel-16.7.0-Chapter-Publishing-Navigation-Management.zip",
+        "Imperial-Novel-16.8.0-Reader-Experience.zip",
+        "Imperial-Novel-16.9.0-Reader-Account-Library.zip",
+        "README.md",
+        "THIRD-PARTY-NOTICES.txt",
+        "TRIGGER-DEPLOY-16.19.0.txt",
+        "TRIGGER-DEPLOY-16.22.0.txt",
+        "TRIGGER-DEPLOY-16.23.0.txt",
+        "TRIGGER-DEPLOY-16.24.0.txt",
+        "TRIGGER-DEPLOY-16.54.0-SIMPLE.txt",
+        "TRIGGER-DEPLOY-16.54.0.txt",
+        "TRIGGER-DEPLOY-16.54.1.txt",
+        "TRIGGER-DEPLOY-16.56.0.txt",
+        "TRIGGER-DEPLOY-16.60.0.txt",
+        "TRIGGER-DEPLOY-16.64.0.txt",
+        "index.html",
+        "trigger-6.0.txt",
+        "trigger.txt"
+      ],
+      "requiresAdr": false
     },
     {
       "id": "build-toolchain",
       "paths": [
         "package.json",
         "package-lock.json"
-      ]
+      ],
+      "requiresAdr": true
     },
     {
       "id": "cloudflare-runtime",
       "paths": [
         "wrangler.toml"
-      ]
+      ],
+      "requiresAdr": true
     },
     {
-      "id": "database-schema",
+      "id": "github-automation",
       "paths": [
-        "migrations/"
-      ]
+        ".github/"
+      ],
+      "requiresAdr": true
     },
     {
-      "id": "ci-release-governance",
+      "id": "design-system",
       "paths": [
-        ".github/workflows/"
-      ]
+        "design-system/"
+      ],
+      "requiresAdr": true
     },
     {
-      "id": "repository-governance",
+      "id": "documentation-reference",
       "paths": [
-        ".github/pull_request_template.md"
-      ]
+        "docs/AI-WEB-DESIGN-AND-GPT-SKILLS-PLAYBOOK.md",
+        "docs/ARCHITECTURE-GRAPH-BASELINE-2026-10-31.md",
+        "docs/AUTOMATIC-DEPLOYMENT-STATUS.md",
+        "docs/COMPETITIVE-BENCHMARK-BASELINE-2026-10-31.md",
+        "docs/COMPETITOR-WTR-LAB-GAP-REGISTER.md",
+        "docs/DEPLOYMENT-IDENTITY-INVESTIGATION.md",
+        "docs/FREE-ASSET-POLICY.md",
+        "docs/IMPERIAL-COMIC-READER.md",
+        "docs/IMPERIAL-MEDIA-STORAGE.md",
+        "docs/LIVE-UX-AUDIT-2026-10-31.md",
+        "docs/MEDIA-HOSTING-OPTIONS-2026-10-31.md",
+        "docs/OPERATIONS-D1-RECOVERY-17.21.md",
+        "docs/PRODUCTION-SCHEMA-UPGRADE-ASSESSMENT.md",
+        "docs/RELEASE-16.65.0-MODERN-SMART-IMPERIAL.md",
+        "docs/RELEASE-17.22.0-AUTHOR-APPLICATIONS.md",
+        "docs/RELEASE-17.23.0-COMIC-AUTHOR-STUDIO.md",
+        "docs/SOURCE-RECOVERY-REPORT.md",
+        "docs/SUSTAINABLE-REVENUE-MODEL.md"
+      ],
+      "requiresAdr": false
     },
     {
       "id": "architecture-contracts",
       "paths": [
         "docs/architecture/"
-      ]
+      ],
+      "requiresAdr": true
+    },
+    {
+      "id": "governance-documentation",
+      "paths": [
+        "docs/governance/"
+      ],
+      "requiresAdr": false
+    },
+    {
+      "id": "database-schema",
+      "paths": [
+        "migrations/"
+      ],
+      "requiresAdr": true
+    },
+    {
+      "id": "frontend-runtime-and-assets",
+      "paths": [
+        "public/"
+      ],
+      "requiresAdr": true
+    },
+    {
+      "id": "engineering-tooling",
+      "paths": [
+        "scripts/"
+      ],
+      "requiresAdr": true
+    },
+    {
+      "id": "worker-runtime",
+      "paths": [
+        "src/"
+      ],
+      "requiresAdr": true
     }
   ],
-  "sharedSurfaceRule": "Changes to any owned shared surface require an ADR under docs/architecture/decisions/ or a feature contract under docs/architecture/feature-contracts/ in the same PR."
+  "sharedSurfaceRule": "Every changed path must match exactly one owner. Paths whose owner requiresAdr=true require an ADR under docs/architecture/decisions/ or a feature contract under docs/architecture/feature-contracts/ in the same PR. Every tracked path is also checked for exactly one owner so unregistered baseline files cannot hide until changed."
 }
