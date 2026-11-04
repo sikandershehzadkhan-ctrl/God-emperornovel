@@ -104,5 +104,27 @@
     "duplicateEntities": "Checked against canonical schema and migration collision register",
     "migrationAllocation": "0036-0045 reconciled against existing canonical sequence",
     "sharedSurfaceOwners": "Declared in ownership map and integration contract"
-  }
+  },
+  "affectedDomains": [
+    "platform-kernel",
+    "identity",
+    "rights",
+    "media",
+    "platform-data",
+    "platform-quality",
+    "platform-architecture",
+    "delivery-platform",
+    "repository-operations",
+    "experience-shell"
+  ],
+  "changeSummary": "Consolidates current-main platform/security foundations with homepage SSR and the six-theme experience, while introducing canonical ownership, dependency, migration and integration governance.",
+  "acceptanceCriteria": [
+    "Every changed repository path resolves to one registered owner",
+    "Dependency graph is acyclic and every edge points from consumer to lower-level dependency",
+    "Migration ranges are contiguous, non-overlapping and match the actual migration directory",
+    "Existing migration files are immutable; new migrations append above the base maximum",
+    "Shared surfaces require an ADR in the same PR",
+    "API and authorization evidence fingerprints match the exact Worker source",
+    "The exact PR head passes architecture, route, source, build and regression checks"
+  ]
 }
