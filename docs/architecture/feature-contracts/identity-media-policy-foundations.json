@@ -3,12 +3,7 @@
   "domainOwner": "identity",
   "technicalIntegrator": "platform-integrator",
   "ownedPaths": [
-    "src/identity/",
-    "src/media/",
-    "scripts/test-identity-profile-policy.mjs",
-    "scripts/test-account-identity-policy-isolated.mjs",
-    "scripts/test-account-preferences-policy.mjs",
-    "scripts/test-media-upload-policy-isolated.mjs"
+    "src/identity/"
   ],
   "sharedSurfaces": [
     "package.json"
