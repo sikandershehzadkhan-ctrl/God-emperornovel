@@ -1,11 +1,11 @@
 {
   "schemaVersion": 1,
   "sourceBranch": "integration/route-registry-current-main-2026-11-04",
-  "sourceBlob": "34f0ce4f0c241001b331f270ac2274dbf0e9efe3",
+  "sourceBlob": "6aafdfe662fb3ce4bdcd2d3cfb6dbcee5fe7979c",
   "auditDate": "2026-11-04",
-  "scope": "Partial handler-level review of current main source snapshot. Static inspection only; no full authorization certification, live D1 concurrency proof, or browser/runtime isolation proof.",
-  "reviewedRouteCount": 40,
-  "pendingDisclosure": "Only the 40 listed route-method entries have been reviewed in this snapshot. All other exact and dynamic API routes remain pending handler-level review.",
+  "scope": "Partial handler-level static review of current integration source snapshot. This revision rechecks the five authentication route-method entries introduced or changed in commit 106744a6e9124524c88b6f454bf4bbc98e81745f and preserves the prior 40 reviewed entries. No full authorization certification, live D1 concurrency proof, or browser/runtime isolation proof is claimed.",
+  "reviewedRouteCount": 45,
+  "pendingDisclosure": "45 listed route-method entries have been reviewed in this source snapshot. All other exact and dynamic API routes remain pending handler-level review. This update re-reviewed the five authentication entries changed by commit 106744a6e9124524c88b6f454bf4bbc98e81745f; prior 40 entries were not changed by that commit.",
   "routes": [
     {
       "path": "/api/notifications",
@@ -441,6 +441,70 @@
         "cannot comment on missing/draft/rights-ineligible novel",
         "eligible published novel comment works"
       ]
+    },
+    {
+      "path": "/api/auth/login",
+      "method": "POST",
+      "access": "public",
+      "ownerRule": "credentials are checked against the submitted email; banned accounts are rejected before session creation; session token is stored as a digest and delivered in an HttpOnly Secure SameSite=Lax cookie",
+      "evidence": "login-ip and login-email rate limits; banned flag check; sessions.token_hash receives digest(token); secure HttpOnly cookie",
+      "tests": [
+        "invalid credentials denied",
+        "banned account denied without session",
+        "session token is not stored in plaintext"
+      ]
+    },
+    {
+      "path": "/api/auth/password-reset/request",
+      "method": "POST",
+      "access": "public",
+      "ownerRule": "generic response prevents account enumeration; issuance is bound to the matched account ID and current email snapshot; request is rate-limited by IP and email",
+      "evidence": "rate limits before lookup; generic 202 for valid/invalid account cases; SELECT lower(trim(email)); requestPasswordReset issues digest-bound token with 30-minute expiry and email snapshot",
+      "tests": [
+        "unknown account response does not disclose existence",
+        "issuance requires configured security email provider",
+        "token digest only is stored",
+        "mailbox snapshot must still match"
+      ]
+    },
+    {
+      "path": "/api/auth/password-reset/complete",
+      "method": "POST",
+      "access": "public token possession",
+      "ownerRule": "one-time unexpired token digest is consumed only when current mailbox matches its snapshot; password update, session revocation and sibling-token invalidation are one D1 batch",
+      "evidence": "IP and token-digest rate limits; password hash validation; completePasswordReset uses conditional token consume with unique consumption_id and D1 batch",
+      "tests": [
+        "invalid/expired/replayed token rejected",
+        "mailbox change invalidates recovery",
+        "all existing sessions revoked",
+        "atomic rollback on batch failure"
+      ]
+    },
+    {
+      "path": "/api/me/email-verification/request",
+      "method": "POST",
+      "access": "authenticated",
+      "ownerRule": "target account is derived exclusively from session u.id; only current unverified email can receive a token; account/IP rate limits apply",
+      "evidence": "need(u); account rate limit keyed by u.id; SELECT users WHERE id=? bound to u.id; requestEmailVerification binds exact email snapshot",
+      "tests": [
+        "anonymous request denied",
+        "request cannot select another user",
+        "verified address does not issue a token",
+        "missing provider fails closed"
+      ]
+    },
+    {
+      "path": "/api/auth/verify-email",
+      "method": "POST",
+      "access": "public token possession",
+      "ownerRule": "one-time token digest verifies only the same account and exact email snapshot; replay, expiry and changed mailbox are rejected",
+      "evidence": "IP and token-digest rate limits; completeEmailVerification conditionally consumes token and updates matching email_verified_at in D1 batch",
+      "tests": [
+        "invalid/expired/replayed token rejected",
+        "changed email cannot be verified by stale token",
+        "verification does not alter creator/admin badge",
+        "atomic issuance and completion checks pass"
+      ]
     }
   ],
   "findings": [
@@ -527,6 +591,13 @@
       "status": "needs-runtime-tests",
       "detail": "Owner scoping is present on several author collections and job-history reads, but cross-account enforcement for all AI project, chapter job and related resource operations is not proven by static source review.",
       "action": "Add two-account tests for project detail, Story Bible, chapter generation, job status/history, cancellation, export and all project mutations."
+    },
+    {
+      "id": "AUTH-013",
+      "severity": "high",
+      "status": "static-and-sqlite-tested-needs-worker-runtime",
+      "detail": "Password recovery and email ownership verification now use rate-limited routes, purpose-bound token digests, email snapshots, one-time consumption IDs, generic recovery responses, provider fail-closed behavior, and session revocation on password reset. Local SQLite and helper tests cover key invariants; deployed Worker and live D1 runtime behavior remain unverified.",
+      "action": "Add isolated Worker/D1 integration tests for enumeration resistance, concurrent token consumption, email changes, delivery failure, session revocation, and rollback before security sign-off."
     }
   ]
 }
