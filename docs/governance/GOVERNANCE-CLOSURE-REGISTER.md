@@ -28,7 +28,7 @@ The following GitHub issues were confirmed as **open** during the audit and rema
 
 | Issue | Required outcome | Current proposal (not yet merged) |
 |---|---|---|
-| #107 Runtime bootstrap schema consistency | Runtime-created/bootstrap schema matches canonical D1 migrations and constraints; fresh-install and upgrade fixtures pass. | PR #210 covers fresh bootstrap parity; legacy-schema retrofit remains open. |
+| #107 Runtime bootstrap schema consistency | Runtime-created/bootstrap schema matches canonical D1 migrations and constraints; fresh-install and upgrade fixtures pass. | PR #210 covers fresh bootstrap parity; PR #216 defines legacy rebuild gates; PR #217 adds a read-only core-schema auditor. Legacy retrofit remains open. |
 | #109 Atomic AI generation claims | Concurrent requests cannot claim or execute the same generation job twice; idempotency and race tests pass. | PR #211. |
 | #110 Bookmark/history target validation | Targets are validated against visibility and ownership before writes; cross-user and unpublished-target tests pass. | PR #212. |
 | #111 Content Security Policy | Remove unsafe inline allowances where feasible; nonce/hash and real browser boot behavior are verified. | No complete remediation PR yet; inline script blocks and event-handler attributes remain to be migrated. |
@@ -59,7 +59,7 @@ The open PRs are independently based on `main`. They are not a merge queue and m
 |---|---|---|
 | `src/index.js` | #209, #210, #211, #212, #213, #214 | Highest risk. Route handlers, runtime bootstrap, CSP and imports share one Worker entry point. Integrate one at a time and rerun the full validation suite against the cumulative candidate. |
 | `package.json` | #209, #210, #211, #212, #213 | High risk. Each branch adds a test to the same long `build` command line. These are overlapping edits to one line and can conflict or silently omit a test. Do not merge these PRs independently without first reconciling the complete build command. |
-| `.github/workflows/validate-cloudflare-source.yml` | #210, #211, #212, #214 | High risk. Workflow steps must be composed cumulatively and checked for duplicate names, ordering and missing test execution. |
+| `.github/workflows/validate-cloudflare-source.yml` | #210, #211, #212, #214, #217 | High risk. Workflow steps must be composed cumulatively and checked for duplicate names, ordering and missing test execution. #217 adds one isolated read-only auditor fixture step. |
 | `.github/workflows/deploy.yml` | #211 | Unique to the AI claim preflight proposal. Keep manual deployment gates intact. |
 | `.github/workflows/production-schema-preflight.yml` | #210 | Unique to the runtime schema parity proposal. It is read-only and must remain so. |
 
