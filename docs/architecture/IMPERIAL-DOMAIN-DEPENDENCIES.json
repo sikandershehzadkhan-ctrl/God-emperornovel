@@ -10,14 +10,14 @@
       ]
     },
     "identity": {
-      "layer": 4,
+      "layer": 5,
       "dependsOn": [
         "platform-kernel",
         "platform-data"
       ]
     },
     "catalog": {
-      "layer": 6,
+      "layer": 7,
       "dependsOn": [
         "platform-kernel",
         "platform-data",
@@ -25,7 +25,7 @@
       ]
     },
     "publishing": {
-      "layer": 7,
+      "layer": 8,
       "dependsOn": [
         "platform-kernel",
         "platform-data",
@@ -35,7 +35,7 @@
       ]
     },
     "reader": {
-      "layer": 8,
+      "layer": 9,
       "dependsOn": [
         "platform-kernel",
         "platform-data",
@@ -45,7 +45,7 @@
       ]
     },
     "community": {
-      "layer": 6,
+      "layer": 7,
       "dependsOn": [
         "platform-kernel",
         "platform-data",
@@ -54,7 +54,7 @@
       ]
     },
     "creator": {
-      "layer": 8,
+      "layer": 9,
       "dependsOn": [
         "platform-kernel",
         "platform-data",
@@ -64,7 +64,7 @@
       ]
     },
     "rights": {
-      "layer": 5,
+      "layer": 6,
       "dependsOn": [
         "platform-kernel",
         "platform-data",
@@ -72,7 +72,7 @@
       ]
     },
     "payments": {
-      "layer": 8,
+      "layer": 9,
       "dependsOn": [
         "platform-kernel",
         "platform-data",
@@ -81,7 +81,7 @@
       ]
     },
     "discovery": {
-      "layer": 9,
+      "layer": 10,
       "dependsOn": [
         "platform-kernel",
         "platform-data",
@@ -92,7 +92,7 @@
       ]
     },
     "media": {
-      "layer": 6,
+      "layer": 7,
       "dependsOn": [
         "platform-kernel",
         "platform-data",
@@ -100,7 +100,7 @@
       ]
     },
     "ai": {
-      "layer": 6,
+      "layer": 7,
       "dependsOn": [
         "platform-kernel",
         "platform-data",
@@ -109,7 +109,7 @@
       ]
     },
     "administration": {
-      "layer": 9,
+      "layer": 10,
       "dependsOn": [
         "platform-kernel",
         "platform-data",
@@ -119,7 +119,7 @@
       ]
     },
     "experience-shell": {
-      "layer": 10,
+      "layer": 11,
       "dependsOn": [
         "identity",
         "catalog",
@@ -134,7 +134,7 @@
       ]
     },
     "platform-data": {
-      "layer": 2,
+      "layer": 4,
       "dependsOn": [
         "delivery-platform"
       ]
@@ -148,7 +148,7 @@
       "dependsOn": []
     },
     "delivery-platform": {
-      "layer": 1,
+      "layer": 5,
       "dependsOn": []
     },
     "repository-operations": {
