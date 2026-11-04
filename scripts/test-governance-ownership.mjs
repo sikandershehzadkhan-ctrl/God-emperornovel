@@ -60,6 +60,7 @@ function selfTest() {
   assert.throws(() => validateOwnership(registry, ['scripts/new-unguarded-file.mjs']), /no registered owner/);
   assert.throws(() => validateOwnership(registry, [], ['scripts/existing-unowned-file.mjs']), /tracked repository path has no registered owner/);
   assert.throws(() => validateOwnership({ version: 1, owners: [...registry.owners, { id: 'overlap', paths: ['src/'], requiresAdr: true }] }), /overlapping ownership roots/);
+  assert.throws(() => validateOwnership({ version: 1, owners: [{ id: 'bad-separator', paths: ['src' + String.fromCharCode(92) + 'escape'], requiresAdr: false }] }), /invalid ownership path/);
   assert.throws(() => validateOwnership(registry, ['migrations/0009_new.sql']), /require an ADR or feature contract/);
   assert.equal(validateOwnership(registry, ['DEPLOY-1.txt']).decisionChanges.length, 0);
   console.log('PASS: ownership governance self-tests (exact ownership, tracked inventory coverage, unowned-path rejection, ADR requirements, and overlap rejection).');
