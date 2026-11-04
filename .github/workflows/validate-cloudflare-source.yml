@@ -99,6 +99,7 @@ jobs:
           python3 - <<'PY'
           import glob, sqlite3, sys
           db = sqlite3.connect(':memory:')
+          db.execute('PRAGMA foreign_keys=ON')
           paths = sorted(glob.glob('migrations/*.sql'))
           if not paths:
               print('::error::No SQL migrations found.')
@@ -111,6 +112,15 @@ jobs:
               except Exception as exc:
                   print(f'::error::Migration failed: {path}: {exc}')
                   sys.exit(1)
+          integrity = db.execute('PRAGMA integrity_check').fetchone()[0]
+          if integrity != 'ok':
+              print(f'::error::SQLite integrity_check failed: {integrity}')
+              sys.exit(1)
+          foreign_key_violations = db.execute('PRAGMA foreign_key_check').fetchall()
+          if foreign_key_violations:
+              print(f'::error::SQLite foreign_key_check failed: {foreign_key_violations[:10]}')
+              sys.exit(1)
+          print('PASS: PRAGMA integrity_check and PRAGMA foreign_key_check.')
           print(f'PASS: {len(paths)} migrations applied to fresh SQLite.')
           PY
 
