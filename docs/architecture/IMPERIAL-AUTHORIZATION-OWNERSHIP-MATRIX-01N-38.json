@@ -2,10 +2,10 @@
   "schemaVersion": 1,
   "sourceBranch": "main",
   "sourceBlob": "237f4461135eb77258b7184e361ce9dfd9a140e9",
-  "auditDate": "2026-11-03",
-  "scope": "Partial handler-level source review with static and SQLite checks; not a full authorization certification. The matrix records mitigations on the isolated route-registry PR branch; unreviewed API routes remain pending.",
+  "auditDate": "2026-11-04",
+  "scope": "Partial handler-level review of current main source snapshot. Static inspection only; no full authorization certification, live D1 concurrency proof, or browser/runtime isolation proof.",
   "reviewedRouteCount": 40,
-  "pendingDisclosure": "All other exact and dynamic API routes remain pending handler-level review.",
+  "pendingDisclosure": "Only the 40 listed route-method entries have been reviewed in this snapshot. All other exact and dynamic API routes remain pending handler-level review.",
   "routes": [
     {
       "path": "/api/notifications",
@@ -447,114 +447,86 @@
     {
       "id": "AUTH-001",
       "severity": "high",
-      "status": "needs-tests",
-      "detail": "Cross-account integration tests are not evidenced by source inspection.",
-      "action": "Add two-account tests for notifications, ledger, recommendations, follows, profile and applications."
+      "status": "needs-runtime-tests",
+      "detail": "Cross-account isolation for notifications, ticket ledger, recommendations, follows, profiles, applications and other user-owned resources is not established by source inspection alone.",
+      "action": "Add two-account Worker/D1 tests proving every read, update, delete, export and background job is scoped to the authenticated owner."
     },
     {
       "id": "AUTH-002",
       "severity": "high",
-      "status": "needs-review",
-      "detail": "Self-demotion is blocked, but last-admin protection and full audit logging for admin user mutation are not established.",
-      "action": "Review and test last-admin invariants and audit trail."
+      "status": "confirmed-gap",
+      "detail": "The current /api/admin/users/:id PATCH handler defaults omitted verified and banned fields to false, does not reject unknown or empty fields, has no last-active-admin guard, and does not write an atomic audit record.",
+      "action": "Replace destructive defaults with explicit-field allowlisting, protect the last active admin, and batch the account update with a conditional audit entry. Add concurrent D1 tests."
     },
     {
       "id": "AUTH-003",
-      "severity": "medium",
-      "status": "needs-review",
-      "detail": "Admin passes author role gate, but author novel collection remains filtered to admin's own owner ID.",
-      "action": "Document intended admin collection semantics and test."
+      "severity": "high",
+      "status": "confirmed-gap",
+      "detail": "POST /api/taxonomy accepts creator_id and creator_name directly from the request body. No IP rate limit is applied in the handler, so submitter attribution can be spoofed and submissions can be spammed.",
+      "action": "Derive submitter identity only from the verified session, ignore client-supplied creator fields, add bounded IP/account rate limiting, and test spoof attempts and abuse limits."
     },
     {
       "id": "AUTH-004",
-      "severity": "medium",
-      "status": "mitigated-static-tested",
-      "detail": "Taxonomy submissions retain public access, but submitter attribution is now derived from the verified session and IP rate limiting is applied. Runtime abuse testing remains outstanding.",
-      "action": "Add browser/runtime tests for anonymous and authenticated submissions, spoof attempts and rate-limit behavior."
+      "severity": "high",
+      "status": "confirmed-gap",
+      "detail": "Public comment reads and authenticated comment writes filter by comment status and novel id but do not require the parent novel to be published and rights-eligible.",
+      "action": "Join the parent novel on both comment GET and POST and enforce publication_status='published' plus the eligible rights-status set. Add D1 tests for draft, missing and rights-ineligible parents."
     },
     {
       "id": "AUTH-005",
       "severity": "high",
-      "status": "pending",
-      "detail": "Remaining API routes, CSRF/origin, DTO allowlists, private caching and runtime object isolation are not certified.",
-      "action": "Continue handler review and runtime integration tests."
+      "status": "needs-security-control",
+      "detail": "The Worker API dispatcher performs schema bootstrap and session lookup without a global Origin/Sec-Fetch-Site check for state-changing requests. SameSite=Lax cookies alone do not provide the complete CSRF control requested by the security plan.",
+      "action": "Add a carefully scoped same-origin check for unsafe methods before schema/session work, preserve legitimate webhook handling with a separate verified signature path, and add browser-level CSRF tests."
     },
     {
       "id": "AUTH-006",
       "severity": "medium",
-      "status": "mitigated-static-tested",
-      "detail": "Admin report status changes now check affected rows and emit an audit event with report id and resulting status.",
-      "action": "Verify audit event persistence and failure behavior against isolated D1."
+      "status": "needs-privacy-review",
+      "detail": "The public vote-board endpoint requires review of returned fields and requester identifiers; the current source has not been proven to minimize its response to the public metadata and aggregate counts required by the UI.",
+      "action": "Inspect the full GET response projection and remove requester usernames or other personal identifiers unless explicitly necessary and disclosed. Add response-shape regression tests."
     },
     {
       "id": "AUTH-007",
-      "severity": "medium",
-      "status": "mitigated-static-and-sqlite-tested",
-      "detail": "Administrator account PATCH now updates only explicitly supplied fields, rejects empty/unknown updates, protects the last active admin, and batches the account change with a conditional audit row. Static checks and SQLite transaction tests pass; live D1 concurrency testing remains outstanding.",
-      "action": "Run isolated D1 concurrency and audit-failure tests before security sign-off."
+      "severity": "high",
+      "status": "confirmed-gap",
+      "detail": "AI Story Bible and chapter-generation handlers allow users with the admin role to bypass project-owner checks. This permits privileged generation against another creator's project and can misattribute generation runs.",
+      "action": "Require strict project ownership for generation and owner attribution even for admins; keep administrative read/oversight routes separately gated. Add two-account runtime tests."
     },
     {
       "id": "AUTH-008",
       "severity": "medium",
-      "status": "sqlite-tested-needs-d1",
-      "detail": "Donation approval uses a pending-only status transition followed by conditional balance credit and ledger insertion in a D1 batch. SQLite integration tests now cover successful approval, replay prevention and ledger-failure rollback.",
-      "action": "Verify the same behavior with isolated Cloudflare D1 integration tests and concurrent duplicate approvals."
+      "status": "confirmed-gap",
+      "detail": "The current admin report PATCH handler updates report status without checking affected rows and returns success for missing ids; it does not create an audit event.",
+      "action": "Check the affected-row count, return 404/409 for missing or unchanged records as appropriate, and persist an audit event with report id and resulting status."
     },
     {
       "id": "AUTH-009",
-      "severity": "medium",
-      "status": "mitigated-static-tested",
-      "detail": "Taxonomy submissions retain public access, but submitter attribution is now derived from the verified session and IP rate limiting is applied. Runtime abuse testing remains outstanding.",
-      "action": "Add browser/runtime tests for anonymous and authenticated submissions, spoof attempts and rate-limit behavior."
+      "severity": "high",
+      "status": "needs-product-and-schema-decision",
+      "detail": "The current rating API accepts whole-number ratings from 1 to 5 while product requirements specify 1 to 10. The dispatcher also contains a duplicate legacy POST /api/rating handler with inconsistent eligibility checks.",
+      "action": "Inventory schema constraints, UI controls, stored ratings and consumers; choose a canonical 1-10 migration/normalization plan; remove the duplicate handler only with regression tests. Do not widen the API bound without migration."
     },
     {
       "id": "AUTH-010",
-      "severity": "low",
-      "status": "mitigated-static-tested",
-      "detail": "Public vote-board response no longer returns requester usernames or joins users; it returns only request metadata and aggregate vote counts required by the UI. A static regression test is in CI.",
-      "action": "Review whether request URL and source host are appropriate public fields and apply abuse controls if needed."
+      "severity": "medium",
+      "status": "sqlite-tested-needs-d1",
+      "detail": "Donation approval uses a pending-only transition, conditional balance credit and ledger insertion in a D1 batch. Local SQLite integration tests cover successful approval, replay prevention and ledger-failure rollback; live D1 concurrency is not proven.",
+      "action": "Run isolated Cloudflare D1 concurrency tests for duplicate approvals and verify rollback and ledger invariants before production use."
     },
     {
       "id": "AUTH-011",
       "severity": "medium",
-      "status": "mitigated-static-tested",
-      "detail": "State-changing API requests now reject mismatched Origin headers and Sec-Fetch-Site=cross-site before schema bootstrap/session lookup; SameSite=Lax remains defense-in-depth. Browser/runtime CSRF tests remain outstanding.",
-      "action": "Add real browser tests for same-origin POST, cross-origin form POST, missing Origin and Fetch Metadata edge cases."
+      "status": "needs-review",
+      "detail": "Several exact API routes have no explicit method guard in the dispatcher inventory, including /api/taxonomy, /api/me, /api/config, /api/genres and /api/tags. Some intentionally read-only endpoints may still need a consistent 405 response for unsafe methods.",
+      "action": "Classify each unguarded route as intentional read-only or method-agnostic; add explicit allowed-method handling and 405 responses with Allow headers where appropriate."
     },
     {
       "id": "AUTH-012",
-      "severity": "medium",
-      "status": "mitigated-static-tested",
-      "detail": "Story Bible generation and chapter generation now require strict project ownership even for administrators, so job/run owner_user_id remains aligned with the project owner. Admin read/oversight routes retain their separately gated access.",
-      "action": "Add two-account runtime tests proving admin and other authors cannot generate against a creator-owned project and owner job history remains correctly attributed."
-    },
-    {
-      "id": "AUTH-013",
-      "severity": "medium",
-      "status": "mitigated-static-tested",
-      "detail": "Both public comment reads and authenticated comment writes now require the parent novel to be published and rights eligible.",
-      "action": "Run isolated D1 tests for missing, draft, rights-ineligible and eligible parent novels."
-    },
-    {
-      "id": "AUTH-014",
-      "severity": "low",
-      "status": "needs-decision",
-      "detail": "The current rating API accepts and rounds whole-number ratings from 1 to 5, while the product requirements specify a whole-number 1-to-10 scale. The source also contains a second legacy POST /api/rating handler after the first matching handler, creating duplicate route logic with inconsistent rights eligibility checks; the first matching handler returns, so the later block appears unreachable in the current dispatch flow.",
-      "action": "Resolve the product rating contract before migration. Inventory schema constraints, UI controls, stored ratings and all consumers; design an explicit migration/normalization plan and remove the duplicate legacy handler only with regression tests. Do not change the scale by simply widening the API bound."
-    },
-    {
-      "id": "AUTH-015",
       "severity": "high",
-      "status": "mitigated-static-and-sqlite-tested",
-      "detail": "Administrator account PATCH now updates only explicitly supplied fields, rejects empty/unknown updates, protects the last active admin, and batches the account change with a conditional audit row. Static checks and SQLite transaction tests pass; live D1 concurrency testing remains outstanding.",
-      "action": "Run isolated D1 concurrency and audit-failure tests before security sign-off."
-    },
-    {
-      "id": "AUTH-016",
-      "severity": "high",
-      "status": "mitigated-static-and-sqlite-tested",
-      "detail": "Administrator account PATCH now updates only explicitly supplied fields, rejects empty/unknown updates, protects the last active admin, and batches the account change with a conditional audit row. Static checks and SQLite transaction tests pass; live D1 concurrency testing remains outstanding.",
-      "action": "Run isolated D1 concurrency and audit-failure tests before security sign-off."
+      "status": "needs-runtime-tests",
+      "detail": "Owner scoping is present on several author collections and job-history reads, but cross-account enforcement for all AI project, chapter job and related resource operations is not proven by static source review.",
+      "action": "Add two-account tests for project detail, Story Bible, chapter generation, job status/history, cancellation, export and all project mutations."
     }
   ]
 }
