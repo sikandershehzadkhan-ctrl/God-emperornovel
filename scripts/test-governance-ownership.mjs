@@ -13,7 +13,7 @@ export function validateOwnership(registry, changedPaths = [], trackedPaths = []
     if (typeof owner.requiresAdr !== 'boolean') fail('owner must explicitly declare requiresAdr: ' + owner.id);
     if (!Array.isArray(owner.paths) || owner.paths.length === 0) fail('owner has no paths: ' + owner.id);
     for (const path of owner.paths) {
-      if (typeof path !== 'string' || !path || path.startsWith('/') || path.includes('..') || path.includes('\\\\') || path.includes('//')) fail('invalid ownership path: ' + path);
+      if (typeof path !== 'string' || !path || path.startsWith('/') || path.includes('..') || path.includes(String.fromCharCode(92)) || path.includes('//')) fail('invalid ownership path: ' + path);
       roots.push({ path, owner: owner.id, requiresAdr: owner.requiresAdr });
     }
   }
