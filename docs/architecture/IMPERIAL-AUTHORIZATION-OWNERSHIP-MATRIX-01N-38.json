@@ -1,10 +1,10 @@
 {
   "schemaVersion": 1,
-  "sourceBranch": "integration/reader-progress-api-17-72",
-  "sourceBlob": "13ca11451ae46b4905e4426b8c95f054be0d441b",
+  "sourceBranch": "integration/reader-profile-api-reconciled-17-76",
+  "sourceBlob": "9b88ca7e1b59fb8dd8a4c73f7f3c6bfa94295ab9",
   "auditDate": "2026-11-04",
   "scope": "Partial handler-level static review of current integration source snapshot. This revision rechecks the five authentication route-method entries introduced or changed in commit 106744a6e9124524c88b6f454bf4bbc98e81745f and preserves the prior 40 reviewed entries. No full authorization certification, live D1 concurrency proof, or browser/runtime isolation proof is claimed. The source-blob fingerprint was refreshed from the failing CI checkout after the catalog/recommendation Worker integration; the CI check computes the Git blob hash from the exact checked-out file bytes. CI computes the source fingerprint from the exact checked-out Worker bytes; the recorded value is aligned to that runtime fingerprint. This fingerprint is the value computed by the authorization-matrix CI assertion from the checked-out Worker bytes. Fingerprint synchronized to the exact Worker Git blob SHA reported for this branch snapshot. Fingerprint refreshed from the Git tree blob SHA for the current Worker source snapshot. Fingerprint synchronized to the latest Worker Git tree blob after the leaderboard zero-activity filter.",
-  "reviewedRouteCount": 46,
+  "reviewedRouteCount": 50,
   "pendingDisclosure": "46 listed route-method entries have been reviewed in this source snapshot. All other exact and dynamic API routes remain pending handler-level review. Reader progress GET/POST is newly included with session-bound ownership and optimistic revision checks.",
   "routes": [
     {
@@ -61,10 +61,11 @@
       "path": "/api/profile",
       "method": "GET",
       "access": "authenticated",
-      "ownerRule": "history, follows, unlocks and ledger aggregates all bind u.id",
-      "evidence": "need(u); four per-user aggregate queries use u.id",
+      "ownerRule": "Profile fields and private history/follow/unlock/ledger aggregates are read only for the authenticated session user u.id.",
+      "evidence": "need(u); profile row SELECT users WHERE id=? bound to u.id; four per-user aggregate queries use u.id",
       "tests": [
-        "response is scoped to session account"
+        "response is scoped to session account",
+        "private profile fields never appear in public projection"
       ]
     },
     {
@@ -518,6 +519,54 @@
         "stale revision returns 409",
         "draft or rights-ineligible chapter denied"
       ]
+    },
+    {
+      "path": "/api/profile",
+      "method": "PUT",
+      "access": "authenticated",
+      "ownerRule": "Profile mutation target is exclusively session u.id; request cannot select another account.",
+      "evidence": "need(u); validateUserProfile allowlist; UPDATE users ... WHERE id=? bound to u.id; Origin and Sec-Fetch-Site checks; account rate limit; audit event",
+      "tests": [
+        "unknown fields and invalid values rejected",
+        "cross-site writes rejected",
+        "two-account profile isolation required before runtime sign-off"
+      ]
+    },
+    {
+      "path": "/api/account/preferences",
+      "method": "GET",
+      "access": "authenticated",
+      "ownerRule": "Preference row is selected only by authenticated session u.id; missing or invalid stored values return validated defaults.",
+      "evidence": "need(u); SELECT preferences_json FROM users WHERE id=? bound to u.id; validateAccountPreferences",
+      "tests": [
+        "anonymous request denied",
+        "account A cannot read account B preferences",
+        "invalid stored preference JSON falls back safely"
+      ]
+    },
+    {
+      "path": "/api/account/preferences",
+      "method": "PUT",
+      "access": "authenticated",
+      "ownerRule": "Preference update is scoped exclusively to authenticated session u.id; no client-supplied owner identifier.",
+      "evidence": "need(u); validateAccountPreferences allowlist; UPDATE users SET preferences_json=? WHERE id=? bound to u.id; Origin/Sec-Fetch-Site checks; rate limit; audit event",
+      "tests": [
+        "unknown preference fields rejected",
+        "cross-site writes rejected",
+        "two-account preference isolation required before runtime sign-off"
+      ]
+    },
+    {
+      "path": "/api/public-profile/:username",
+      "method": "GET",
+      "access": "public filtered projection",
+      "ownerRule": "Only public, non-banned account profiles resolve; private email, ticket balance and private fields are excluded; reading aggregates require explicit opt-in.",
+      "evidence": "SELECT users WHERE username=? AND profile_visibility='public' AND banned=0; explicit response projection; stats query runs only when show_reading_stats=1",
+      "tests": [
+        "private and banned accounts return not found",
+        "public response excludes email and ticket balance",
+        "reading stats hidden unless opted in"
+      ]
     }
   ],
   "findings": [
@@ -614,5 +663,5 @@
     }
   ],
   "sourceReviewNote": "The reviewed API handler source was refreshed after adding explicit GET-only rejection for /api/novels and /api/admin/stats. Homepage SSR and theme work is confined to the Worker HTML renderer and browser assets; the existing 45 route-method ownership entries remain the reviewed subset, with all other routes still explicitly pending.",
-  "sourceCommit": "61a40d9cd4d4bf52b5db2780b983441670d933f8"
+  "sourceCommit": "6b7ac6400f9ab55b8c9b4719d67741c6447b8f50"
 }
