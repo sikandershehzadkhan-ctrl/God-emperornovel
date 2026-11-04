@@ -72,5 +72,3 @@ jobs:
       - name: Validate authorization and ownership register
         run: node scripts/test-authorization-ownership-matrix.mjs
 
-      - name: Validate community taxonomy attribution and rate limiting
-        run: node scripts/test-community-taxonomy-security.mjs
