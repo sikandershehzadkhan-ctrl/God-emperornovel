@@ -22,7 +22,7 @@ INSERT INTO donations(id,user_id,amount,reference_id,status) VALUES
  (4,2,75,' ep-dup ','pending'),
  (5,1,100,'EP-REJECT','rejected');
 """)
-db.executescript((root / "migrations/0018_donation_review_audit.sql").read_text(encoding="utf-8"))
+db.executescript((root / "migrations/0024_donation_review_audit.sql").read_text(encoding="utf-8"))
 db.executescript("""
 INSERT INTO donation_reviews(donation_id,reviewer_user_id,decision,tickets,note) VALUES
  (1,9,'approved',25,'Provider receipt checked'),
