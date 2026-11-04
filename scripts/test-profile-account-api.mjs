@@ -20,4 +20,6 @@ assert.ok(worker.includes('await audit(env,u,"account.preferences_updated"'));
 assert.equal(app,versioned,"Canonical and served bundles must remain byte-identical.");
 
 for(const marker of ["id='profileForm'","api('/api/profile',{method:'PUT'","api('/api/account/preferences',{method:'PUT'","syncAccountPreferences","restoreAccountPreferences","Preferences synced to your account.","show_reading_stats"]) assert.ok(app.includes(marker),"Missing account UI integration marker: "+marker);
+assert.ok(app.includes("const savedSiteTheme=get('imperial_theme'"),"Settings must restore the saved site theme for anonymous users.");
+assert.ok(app.includes("document.documentElement.dataset.theme=$('#setSiteTheme').value"),"Initial site theme must be applied consistently.");
 console.log("PASS: profile and account-preference policies, owner-scoped API route and public visibility guards.");
