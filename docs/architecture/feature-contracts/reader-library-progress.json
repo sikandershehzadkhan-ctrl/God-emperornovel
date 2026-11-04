@@ -1,7 +1,7 @@
 {
   "featureId": "reader-library-progress",
-  "domainOwner": "experience-shell",
-  "technicalIntegrator": "reader",
+  "domainOwner": "reader-experience",
+  "technicalIntegrator": "reader-experience",
   "ownedPaths": [
     "public/app.js",
     "public/app-17.23.0.js",
