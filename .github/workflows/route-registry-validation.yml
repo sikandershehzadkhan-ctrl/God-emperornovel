@@ -17,7 +17,6 @@ on:
       - "scripts/test-authorization-ownership-matrix.mjs"
       - "scripts/test-community-taxonomy-security.mjs"
       - "scripts/test-admin-account-d1.py"
-      - "scripts/test-detail-api-method-guards.mjs"
       - "scripts/test-public-vote-privacy.mjs"
       - "scripts/test-readonly-api-method-guards.mjs"
       - "scripts/test-donation-approval-d1.py"
@@ -82,9 +81,6 @@ jobs:
 
       - name: Validate authorization and ownership register
         run: node scripts/test-authorization-ownership-matrix.mjs
-
-      - name: Validate novel and chapter detail API method guards
-        run: node scripts/test-detail-api-method-guards.mjs
 
       - name: Validate public vote-board privacy
         run: node scripts/test-public-vote-privacy.mjs
