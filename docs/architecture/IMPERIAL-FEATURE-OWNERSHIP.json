@@ -57,7 +57,8 @@
         "src/catalog/",
         "src/catalog-search-policy.mjs",
         "src/public-novel.mjs",
-        "src/sitemap.mjs"
+        "src/sitemap.mjs",
+        "src/seo.mjs"
       ],
       "responsibilities": [
         "novel discovery",
@@ -72,7 +73,8 @@
       "name": "Publishing",
       "owns": [
         "src/domains/publishing/",
-        "src/publishing/"
+        "src/publishing/",
+        "src/content-quality-policy.mjs"
       ],
       "responsibilities": [
         "novels",
@@ -163,7 +165,8 @@
       "owns": [
         "src/domains/discovery/",
         "src/discovery/",
-        "src/related-novel-policy.mjs"
+        "src/related-novel-policy.mjs",
+        "src/discovery-knowledge-graph.mjs"
       ],
       "responsibilities": [
         "ranking",
@@ -253,7 +256,10 @@
       "owns": [
         "scripts/",
         "tests/",
-        ".graphifyignore"
+        ".graphifyignore",
+        "scripts/test-seo-foundation.mjs",
+        "scripts/test-discovery-knowledge-graph.mjs",
+        "scripts/test-content-quality-policy.mjs"
       ],
       "responsibilities": [
         "automated tests",

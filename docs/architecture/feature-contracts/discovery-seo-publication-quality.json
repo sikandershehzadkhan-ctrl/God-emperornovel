@@ -1,0 +1,111 @@
+{
+  "featureId": "discovery-seo-publication-quality",
+  "domainOwner": "platform-integrator",
+  "technicalIntegrator": "platform-integrator",
+  "ownedPaths": [
+    "src/seo.mjs",
+    "src/discovery-knowledge-graph.mjs",
+    "src/content-quality-policy.mjs",
+    "scripts/test-seo-foundation.mjs",
+    "scripts/test-discovery-knowledge-graph.mjs",
+    "scripts/test-content-quality-policy.mjs"
+  ],
+  "sharedSurfaces": [
+    "package.json",
+    "docs/architecture/IMPERIAL-FEATURE-OWNERSHIP.json"
+  ],
+  "dependencies": [
+    "catalog",
+    "discovery",
+    "publishing",
+    "media",
+    "platform-quality",
+    "platform-architecture"
+  ],
+  "routes": [],
+  "apiContracts": [
+    "This slice adds pure policy and metadata helpers only; no Worker route is activated."
+  ],
+  "dataEntities": [
+    "No database entities or migrations."
+  ],
+  "migrationPlan": {
+    "required": false,
+    "proposedNumbers": [],
+    "canonicalEntityReuse": "No schema changes.",
+    "backwardCompatibility": "Additive pure modules; runtime integration is deferred to a separate governed change.",
+    "rollbackOrForwardRepair": "Revert these modules and their tests; no data repair."
+  },
+  "uiLifecycle": {
+    "shellOwner": "experience-shell",
+    "ssrBehavior": "No Worker SSR wiring is changed in this slice.",
+    "clientBootBehavior": "No browser boot changes.",
+    "servedBundleParity": "No browser bundle changes."
+  },
+  "privacySecurity": {
+    "authentication": "No auth changes.",
+    "authorization": "No routes or access changes.",
+    "ownerScoping": "Discovery graph builder only accepts supplied public catalog projections; callers must supply rights-filtered data.",
+    "csrf": "No writes.",
+    "rateAndSizeLimits": "No endpoints."
+  },
+  "tests": {
+    "unit": [
+      "test-seo-foundation.mjs",
+      "test-discovery-knowledge-graph.mjs",
+      "test-content-quality-policy.mjs"
+    ],
+    "integration": [
+      "Existing dynamic sitemap and public-rights eligibility tests remain mandatory."
+    ],
+    "isolation": [
+      "No account data or private chapter body ingestion."
+    ],
+    "buildCommands": [
+      "npm run build",
+      "npm run check:cloudflare-readiness"
+    ]
+  },
+  "rollout": {
+    "flags": [
+      "No runtime feature enabled."
+    ],
+    "stagingSteps": [
+      "Pass exact-head CI.",
+      "Review future route wiring separately.",
+      "Verify robots, sitemap, canonical and JSON-LD against real published content before activation."
+    ]
+  },
+  "rollback": {
+    "codeRollback": "Revert this code-only slice.",
+    "dataRollbackOrForwardRepair": "No database changes.",
+    "monitoringSignals": [
+      "SEO regression tests",
+      "Publication-quality policy tests",
+      "Discovery graph validation tests"
+    ]
+  },
+  "collisionReview": {
+    "duplicateRoutes": "None.",
+    "duplicateEntities": "None.",
+    "migrationAllocation": "No migration added.",
+    "sharedSurfaceOwners": "package.json remains repository-operations-owned; ownership registry updated for all new paths."
+  },
+  "affectedDomains": [
+    "catalog",
+    "discovery",
+    "publishing",
+    "platform-quality",
+    "platform-architecture",
+    "repository-operations"
+  ],
+  "changeSummary": "Ports isolated SEO metadata/sitemap/crawler policy helpers, public discovery graph construction and rights-aware publication-quality assessment from PR #120 with focused regression tests. Does not wire new routes or change database/runtime behavior.",
+  "acceptanceCriteria": [
+    "All added files have exactly one owner.",
+    "SEO helpers encode private-route noindex and crawler policy defaults.",
+    "Discovery graph excludes invalid novels and orphan relationships.",
+    "Publication quality requires valid metadata, rights and published chapter content.",
+    "All tests are mandatory in npm run build.",
+    "No routes, migrations, browser bundles or production configuration change."
+  ]
+}
