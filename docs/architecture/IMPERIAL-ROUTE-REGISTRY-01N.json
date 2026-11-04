@@ -1,8 +1,8 @@
 {
   "schemaVersion": 1,
   "name": "Imperial Novel route registry",
-  "sourceBranch": "main",
-  "sourceCommit": "c909a8aad8c88863b4c472263b8c5b9aa29a878f",
+  "sourceBranch": "integration/homepage-ssr-design-on-security-stack-17-65",
+  "sourceCommit": "c9f41008d6e8184746b4e58185579a07864a08da",
   "auditDate": "2026-11-04",
   "scope": "Current-main static route reconciliation. Does not prove deployed behavior, runtime routing, or authorization correctness.",
   "routes": [
@@ -357,5 +357,6 @@
     "Shared discoveryPage renderers require per-feature functional and authorization tests.",
     "HTTP method and object-level permissions are not certified by this UI route manifest.",
     "Production status, active assets, cache behavior and browser navigation remain unverified."
-  ]
+  ],
+  "sourceBlob": "06d3db9a0d5e33066acd429f1f8c96110864ea86"
 }
