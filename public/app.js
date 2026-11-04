@@ -25,7 +25,8 @@ function img(url,title=''){
   // Prefer bundled title-matched covers for the known launch catalog.
   // For other novels, preserve the publisher/admin supplied cover URL.
   for(const [pattern,path] of fallback){if(pattern.test(t))return path}
-  return url?esc(url):'/story-cover-placeholder.svg'
+  const value=typeof url==='string'?url.trim():'';
+  return value==='/story-cover-placeholder.svg'||value.startsWith('/covers/')&&!value.includes('..')&&!/[?#%\\\\]/.test(value)&&value.length<=180?value:'/story-cover-placeholder.svg'
 }
 function ratingText(value){const rating=Number(value);return Number.isFinite(rating)&&rating>=1&&rating<=5?Math.round(rating)+'/5':'Not rated'}
 function uniqueLatestStories(trendingRows,latestRows){const trendingIds=new Set((trendingRows||[]).map(row=>row?.id).filter(id=>id!==null&&id!==undefined).map(String));return (latestRows||[]).filter(row=>row?.id===null||row?.id===undefined||!trendingIds.has(String(row.id)))}
