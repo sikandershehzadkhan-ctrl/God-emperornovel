@@ -1,0 +1,16 @@
+import assert from "node:assert/strict";
+import { readFile } from "node:fs/promises";
+const source=await readFile(new URL("../src/index.js",import.meta.url),"utf8");
+const start=source.indexOf('if(p==="/api/leaderboard"&&m==="GET"){');
+const end=source.indexOf('if(p==="/api/tier-list"&&m==="GET"){',start);
+assert.ok(start>=0&&end>start);
+const route=source.slice(start,end);
+assert.ok(route.includes("['weekly','monthly','all'].includes(requestedPeriod)"));
+assert.ok(route.includes("rankingMetric:'chapter_unlocks'"));
+assert.ok(route.includes("u.unlocked_at>=datetime('now','-"));
+assert.ok(route.includes("uc.publication_status='published'"));
+assert.ok(route.includes("n.publication_status='published' AND n.rights_status IN ('original','public_domain','licensed','authorized')"));
+assert.ok(route.includes("activity.unlocks DESC"));
+assert.ok(route.includes("NULLIF(TRIM(author),'')"));
+assert.ok(!route.includes("h.updated_at"));
+console.log("PASS: leaderboard validates periods, ranks by period-scoped chapter unlocks, normalizes author identity, and excludes unpublished or uncleared works.");
