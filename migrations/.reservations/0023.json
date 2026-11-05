@@ -1,0 +1,6 @@
+{
+  "version": 1,
+  "number": 23,
+  "migration": "migrations/0023_comic_page_draft_guards.sql",
+  "pullRequest": 195
+}
