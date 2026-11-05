@@ -185,7 +185,8 @@
       "Homepage localization runs after SSR handoff or client fallback while preserving dynamic creator-authored story content and byte-identical 17.23 served bundle.",
       "Existing content-format accessibility checks remain aligned with the localized skip-link and Urdu/Arabic/Persian RTL behavior.",
       "Settings and reader localization run on the canonical 17.23 runtime without replacing progress synchronization, bookmarks, unlock operations or account preference sync.",
-      "Reader progress aria-valuetext and visible progress labels use the active locale without changing persistence or revision semantics."
+      "Reader progress aria-valuetext and visible progress labels use the active locale without changing persistence or revision semantics.",
+      "Reader applies the active locale after rendering; bookmark and reader-theme accessible names are translated while progress persistence remains unchanged."
     ],
     "isolation": [
       "test-authorization-ownership-matrix.mjs",
@@ -336,7 +337,8 @@
     "Settings restores and updates the existing browser-local imperial_language preference across fourteen locales.",
     "Reader locked-chapter copy, Crown labels and dynamic progress/footer labels use the selected locale.",
     "Existing reader progress, bookmark, unlock and account preference regressions remain mandatory.",
-    "Reader progress announcements use localized labels while retaining numeric progress values and accessible progressbar semantics."
+    "Reader progress announcements use localized labels while retaining numeric progress values and accessible progressbar semantics.",
+    "Reader bookmark and reader-theme accessible names follow the active locale after reader markup handoff."
   ],
   "sharedSurfaceSerialization": [
     ".github/workflows/",
