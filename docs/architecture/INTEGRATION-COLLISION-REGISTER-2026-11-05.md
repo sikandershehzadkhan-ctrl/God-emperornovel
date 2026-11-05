@@ -268,3 +268,11 @@ The canonical app already has the 14-language interface dictionary and selected 
 - The first rankings-localization build passed the new locale test but exposed a hard-coded English suffix in the existing period-correct leaderboard regression. The UI now correctly renders the unlock metric through rankingText('unlocks') for the active locale.
 - Updated the existing API/UI regression to assert that numeric unlock counts use the locale key, preserving the period, rights, zero-activity and numeric-count checks. The test was registered in the feature and platform contracts; no assertion was removed.
 - A fresh exact-head validation is required.
+
+
+### PR #259 exact-head validation and integration
+
+- The final rankings/Tier List localization candidate passed all six exact-head workflows: Architecture Governance, Cloudflare Source Validation, Route Registry, Runtime Schema Parity, Integration Migration Governance and Graphify.
+- The mandatory build passed the fourteen-locale ranking test and the existing period-correct leaderboard regression after its unlock-count assertions were updated to use the active locale key. No ranking, numeric-count, rights or zero-activity assertion was removed.
+- PR #259 was squash-merged into the governed integration root as d962c637c228dce16a08c9d4ac3e03000570a01b. It was not merged into main and does not authorize production deployment.
+- The leaderboard now localizes the period chapter-unlock explanation and novel/author unlock metrics across fourteen interface locales. Tier List labels and empty states are also localized. Creator-authored titles and author names remain unchanged.
