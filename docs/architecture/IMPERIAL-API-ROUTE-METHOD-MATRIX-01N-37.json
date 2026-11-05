@@ -1,10 +1,10 @@
 {
   "schemaVersion": 1,
   "name": "Imperial Novel API route method inventory",
-  "sourceBranch": "integration/architecture-governance-root-17-70",
-  "sourceBlob": "b51fe9309c16404554d6877970989d546be29f88",
+  "sourceBranch": "integration/omni-connector-dedup-17-73",
+  "sourceBlob": "3616e3e6d889de20ecd961814aa6a45c8b1cd152",
   "auditDate": "2026-11-05",
-  "scope": "Static dispatcher scan of the integrated Worker. Observed method guards only; this is not a complete permission or runtime contract. Bookmark and history POST writes now require positive safe-integer identifiers and an exact published chapter belonging to a published, rights-eligible novel; validation occurs before persistence. Community POST handlers now use strict positive safe-integer identifiers and published rights-eligible targets; comment/report quotas and duplicate report claims are database-trigger enforced. Worker source fingerprint refreshed to the exact source blob for the personalized-route noindex correction; this change does not expand route access or object ownership. Explicit bookmark removal is DELETE on the singular /api/bookmark resource; the plural /api/bookmarks resource is the authenticated GET list.",
+  "scope": "Static dispatcher scan of the integrated Worker. Observed method guards only; this is not a complete permission or runtime contract. Bookmark and history POST writes now require positive safe-integer identifiers and an exact published chapter belonging to a published, rights-eligible novel; validation occurs before persistence. Community POST handlers now use strict positive safe-integer identifiers and published rights-eligible targets; comment/report quotas and duplicate report claims are database-trigger enforced. Worker source fingerprint refreshed to the exact source blob for the personalized-route noindex correction; this change does not expand route access or object ownership. Explicit bookmark removal is DELETE on the singular /api/bookmark resource; the plural /api/bookmarks resource is the authenticated GET list. OmniPortal connector registry seeding now uses a normalized NOT EXISTS guard; the public status projection deduplicates normalized base URLs and preserves the enabled/authorized representative. Administrator connector creation validates an allowlisted HTTPS origin, rejects duplicate URLs and creates new entries disabled/pending. No route signature was added or removed.",
   "exactRouteCount": 80,
   "dynamicRouteCount": 22,
   "exactRoutes": [
@@ -1313,6 +1313,6 @@
     "This matrix does not inspect DTO exposure, cache headers, CSRF, rate limits, body size, or database transaction semantics.",
     "Community comment and report hourly quotas are enforced by SQLite BEFORE INSERT triggers; duplicate reports are fenced by a unique claim. Static route inventory does not itself certify trigger execution."
   ],
-  "sourceCommit": "4fee7d078a53ebaae6316c6d602bfde435c46145",
-  "refreshNote": "Refreshed to the exact Worker blob for atomic community engagement hardening; no new routes, but existing comment, like, report and follow write behavior now uses strict identifiers and published-rights eligibility."
+  "sourceCommit": "3f1db595f2ac53925fbfa0f8e56a66b997fab5c8",
+  "refreshNote": "Refreshed to the exact Worker blob for OmniPortal connector registry idempotency, status deduplication and rights-pending administrator registration; route signatures are unchanged."
 }
