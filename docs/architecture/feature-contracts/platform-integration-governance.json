@@ -154,7 +154,8 @@
       "test-navigation-accessibility-localization.mjs: fourteen skip-link translations, accessible search label and Urdu/Arabic/Persian RTL.",
       "check-content-formats.mjs: keyboard skip-link, locale fallback and Persian RTL compatibility with homepage/navigation localization.",
       "test-settings-language-selector.mjs: fourteen locale settings dictionary, saved language restore, live switch and source/served bundle parity.",
-      "test-reader-localization-completeness.mjs: ten reader strings in fourteen locales, dynamic progress/footer labels, accessibility labels and bundle parity."
+      "test-reader-localization-completeness.mjs: ten reader strings in fourteen locales, dynamic progress/footer labels, accessibility labels and bundle parity.",
+      "test-reader-accessibility.mjs: localized progress announcements retain progressbar semantics."
     ],
     "integration": [
       "test-platform-architecture-contract.mjs",
@@ -183,7 +184,8 @@
       "Leaderboard UI displays period chapter-unlock ranking labels and returned unlock counts; canonical and versioned browser bundles remain byte-identical.",
       "Homepage localization runs after SSR handoff or client fallback while preserving dynamic creator-authored story content and byte-identical 17.23 served bundle.",
       "Existing content-format accessibility checks remain aligned with the localized skip-link and Urdu/Arabic/Persian RTL behavior.",
-      "Settings and reader localization run on the canonical 17.23 runtime without replacing progress synchronization, bookmarks, unlock operations or account preference sync."
+      "Settings and reader localization run on the canonical 17.23 runtime without replacing progress synchronization, bookmarks, unlock operations or account preference sync.",
+      "Reader progress aria-valuetext and visible progress labels use the active locale without changing persistence or revision semantics."
     ],
     "isolation": [
       "test-authorization-ownership-matrix.mjs",
@@ -333,7 +335,8 @@
     "Homepage localization preserves SSR fallback, dynamic creator-authored content and byte-identical served bundle parity.",
     "Settings restores and updates the existing browser-local imperial_language preference across fourteen locales.",
     "Reader locked-chapter copy, Crown labels and dynamic progress/footer labels use the selected locale.",
-    "Existing reader progress, bookmark, unlock and account preference regressions remain mandatory."
+    "Existing reader progress, bookmark, unlock and account preference regressions remain mandatory.",
+    "Reader progress announcements use localized labels while retaining numeric progress values and accessible progressbar semantics."
   ],
   "sharedSurfaceSerialization": [
     ".github/workflows/",
