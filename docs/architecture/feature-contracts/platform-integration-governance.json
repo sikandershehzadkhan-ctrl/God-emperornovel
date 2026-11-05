@@ -19,7 +19,8 @@
     "wrangler.toml",
     "docs/architecture/feature-contracts/omni-connector-registry-deduplication.json",
     "docs/architecture/feature-contracts/homepage-navigation-localization.json",
-    "docs/architecture/feature-contracts/settings-reader-localization.json"
+    "docs/architecture/feature-contracts/settings-reader-localization.json",
+    "docs/architecture/feature-contracts/rankings-tier-list-localization.json"
   ],
   "dependencies": [
     "identity-security",
@@ -155,7 +156,8 @@
       "check-content-formats.mjs: keyboard skip-link, locale fallback and Persian RTL compatibility with homepage/navigation localization.",
       "test-settings-language-selector.mjs: fourteen locale settings dictionary, saved language restore, live switch and source/served bundle parity.",
       "test-reader-localization-completeness.mjs: ten reader strings in fourteen locales, dynamic progress/footer labels, accessibility labels and bundle parity.",
-      "test-reader-accessibility.mjs: localized progress announcements retain progressbar semantics."
+      "test-reader-accessibility.mjs: localized progress announcements retain progressbar semantics.",
+      "test-rankings-localization.mjs: fourteen locale leaderboard/tier-list labels, period chapter-unlock metric, dynamic result localization, empty states and bundle parity."
     ],
     "integration": [
       "test-platform-architecture-contract.mjs",
@@ -186,7 +188,8 @@
       "Existing content-format accessibility checks remain aligned with the localized skip-link and Urdu/Arabic/Persian RTL behavior.",
       "Settings and reader localization run on the canonical 17.23 runtime without replacing progress synchronization, bookmarks, unlock operations or account preference sync.",
       "Reader progress aria-valuetext and visible progress labels use the active locale without changing persistence or revision semantics.",
-      "Reader applies the active locale after rendering; bookmark and reader-theme accessible names are translated while progress persistence remains unchanged."
+      "Reader applies the active locale after rendering; bookmark and reader-theme accessible names are translated while progress persistence remains unchanged.",
+      "Leaderboard and Tier List render the active locale after dynamic data loads while preserving period-scoped chapter-unlock ranking semantics."
     ],
     "isolation": [
       "test-authorization-ownership-matrix.mjs",
@@ -338,7 +341,9 @@
     "Reader locked-chapter copy, Crown labels and dynamic progress/footer labels use the selected locale.",
     "Existing reader progress, bookmark, unlock and account preference regressions remain mandatory.",
     "Reader progress announcements use localized labels while retaining numeric progress values and accessible progressbar semantics.",
-    "Reader bookmark and reader-theme accessible names follow the active locale after reader markup handoff."
+    "Reader bookmark and reader-theme accessible names follow the active locale after reader markup handoff.",
+    "Leaderboard and Tier List labels are localized across fourteen locales and accurately describe period-scoped chapter-unlock rankings.",
+    "Dynamic ranking results reapply the selected locale without translating creator-authored titles or author names."
   ],
   "sharedSurfaceSerialization": [
     ".github/workflows/",
@@ -365,6 +370,7 @@
     "scripts/test-cover-url-policy.mjs",
     "docs/architecture/feature-contracts/personalized-route-indexing.json",
     "docs/architecture/feature-contracts/omni-connector-registry-deduplication.json",
-    "docs/architecture/feature-contracts/settings-reader-localization.json"
+    "docs/architecture/feature-contracts/settings-reader-localization.json",
+    "docs/architecture/feature-contracts/rankings-tier-list-localization.json"
   ]
 }
