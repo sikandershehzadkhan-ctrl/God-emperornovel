@@ -53,7 +53,7 @@
     "proposedNumbers": [],
     "canonicalEntityReuse": "Reuses existing comments, comment_reports, comment_likes and follows tables; adds only runtime-feature tables community_rate_limit_events and comment_report_claims.",
     "runtimeSchemaVersion": 3,
-    "backwardCompatibility": "Monotonic runtime schema upgrade from v1 or v2 to v3. Existing comments and reports remain; duplicate legacy reports are collapsed into the claim table using INSERT OR IGNORE.",
+    "backwardCompatibility": "Monotonic runtime schema upgrade from v1 or v2 to v3. Existing comments and reports remain; valid legacy report claims are backfilled with INSERT OR IGNORE after joining existing users and comments. Orphan legacy reports are excluded from claims and remain subject to the existing integrity migration.",
     "rollbackOrForwardRepair": "The additive v3 tables and triggers are retained on code rollback. Do not decrement the runtime schema marker or drop event/claim tables."
   },
   "uiLifecycle": {
@@ -65,7 +65,7 @@
   "privacySecurity": {
     "authentication": "Comment creation, likes, reports and follows require the existing authenticated session.",
     "authorization": "All writes bind the actor exclusively to session u.id.",
-    "ownerScoping": "No client-supplied user identifier is accepted.",
+    "ownerScoping": "No client-supplied user identifier is accepted. Rate-limit events and report claims cascade on user deletion; report claims also cascade on comment deletion.",
     "csrf": "Existing write-route CSRF/origin policy remains in force.",
     "rateAndSizeLimits": "Comment text remains capped at 1000 characters; report details remain capped at 500 characters; SQLite triggers enforce rolling-hour quotas atomically.",
     "rightsAndPrivacy": "Public engagement targets are restricted to published novels with original, public-domain, licensed or authorized rights status."
@@ -134,6 +134,8 @@
     "Concurrent duplicate reports cannot create more than one claim.",
     "Legacy duplicate reports are backfilled without aborting the upgrade.",
     "Expired rate-limit events are pruned after both comment and report inserts.",
-    "Published engagement routes reject malformed identifiers and unpublished or rights-ineligible targets."
+    "Published engagement routes reject malformed identifiers and unpublished or rights-ineligible targets.",
+    "Rate-limit events and report claims cascade when their user is deleted; report claims cascade when their comment is deleted.",
+    "Orphan legacy reports do not cause the v2-to-v3 claim backfill to fail."
   ]
 }
