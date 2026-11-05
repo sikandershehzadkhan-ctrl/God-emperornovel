@@ -8,10 +8,10 @@ export function createRuntimeFeatureSchemaEnsurer() {
       const statements = [
         "CREATE TABLE IF NOT EXISTS auth_rate_limits (scope TEXT NOT NULL,key_hash TEXT NOT NULL,window_start INTEGER NOT NULL,attempts INTEGER NOT NULL DEFAULT 0,PRIMARY KEY(scope,key_hash))",
         "CREATE INDEX IF NOT EXISTS idx_auth_rate_limits_window ON auth_rate_limits(window_start)",
-        "CREATE TABLE IF NOT EXISTS community_rate_limit_events (id INTEGER PRIMARY KEY AUTOINCREMENT,scope TEXT NOT NULL CHECK(scope IN ('comment','report')),user_id INTEGER NOT NULL,created_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP)",
+        "CREATE TABLE IF NOT EXISTS community_rate_limit_events (id INTEGER PRIMARY KEY AUTOINCREMENT,scope TEXT NOT NULL CHECK(scope IN ('comment','report')),user_id INTEGER NOT NULL,created_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,FOREIGN KEY(user_id) REFERENCES users(id) ON DELETE CASCADE)",
         "CREATE INDEX IF NOT EXISTS idx_community_rate_limit_scope_user_created ON community_rate_limit_events(scope,user_id,created_at)",
         "CREATE INDEX IF NOT EXISTS idx_community_rate_limit_created ON community_rate_limit_events(created_at)",
-        "CREATE TABLE IF NOT EXISTS comment_report_claims (user_id INTEGER NOT NULL,comment_id INTEGER NOT NULL,created_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,PRIMARY KEY(user_id,comment_id))",
+        "CREATE TABLE IF NOT EXISTS comment_report_claims (user_id INTEGER NOT NULL,comment_id INTEGER NOT NULL,created_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,PRIMARY KEY(user_id,comment_id),FOREIGN KEY(user_id) REFERENCES users(id) ON DELETE CASCADE,FOREIGN KEY(comment_id) REFERENCES comments(id) ON DELETE CASCADE)",
         "CREATE TABLE IF NOT EXISTS comment_likes (user_id INTEGER NOT NULL,comment_id INTEGER NOT NULL,created_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,PRIMARY KEY(user_id,comment_id))",
         "CREATE TABLE IF NOT EXISTS comment_reports (id INTEGER PRIMARY KEY AUTOINCREMENT,user_id INTEGER NOT NULL,comment_id INTEGER NOT NULL,reason TEXT NOT NULL,details TEXT DEFAULT '',status TEXT NOT NULL DEFAULT 'open',created_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP)",
         "CREATE TABLE IF NOT EXISTS novel_reactions (user_id INTEGER NOT NULL,novel_id INTEGER NOT NULL,reaction TEXT NOT NULL CHECK(reaction IN ('love','fire','laugh','sad','clap')),created_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,PRIMARY KEY(user_id,novel_id),FOREIGN KEY(user_id) REFERENCES users(id) ON DELETE CASCADE,FOREIGN KEY(novel_id) REFERENCES novels(id) ON DELETE CASCADE)",
@@ -23,7 +23,7 @@ export function createRuntimeFeatureSchemaEnsurer() {
       ];
       for (const sql of statements) await env.DB.prepare(sql).run();
 
-      await env.DB.prepare("INSERT OR IGNORE INTO comment_report_claims(user_id,comment_id) SELECT DISTINCT user_id,comment_id FROM comment_reports").run();
+      await env.DB.prepare("INSERT OR IGNORE INTO comment_report_claims(user_id,comment_id) SELECT DISTINCT r.user_id,r.comment_id FROM comment_reports r JOIN users u ON u.id=r.user_id JOIN comments c ON c.id=r.comment_id").run();
       await env.DB.prepare(`CREATE TRIGGER IF NOT EXISTS trg_comments_hourly_limit
         BEFORE INSERT ON comments
         BEGIN
