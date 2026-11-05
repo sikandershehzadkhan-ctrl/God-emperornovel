@@ -50,7 +50,9 @@
     "GET /for-you and GET /made-for-you are personalized HTML routes and receive noindex meta and X-Robots-Tag response directives.",
     "DELETE /api/bookmark removes only the selected chapter bookmark for session u.id; opening a chapter never creates a bookmark.",
     "GET /api/omni/status returns one stable public representative per normalized connector base URL; repeated registry seeding uses a normalized NOT EXISTS guard.",
-    "POST /api/admin/connectors remains administrator-only, validates an allowlisted HTTPS origin, rejects normalized duplicates with HTTP 409 and creates new connectors disabled/pending."
+    "POST /api/admin/connectors remains administrator-only, validates an allowlisted HTTPS origin, rejects normalized duplicates with HTTP 409 and creates new connectors disabled/pending.",
+    "/leaderboard",
+    "GET /api/leaderboard (existing)"
   ],
   "apiContracts": [
     "Existing API contracts; update method and authorization inventories for behavior changes",
@@ -72,7 +74,9 @@
     "POST /api/admin/connectors rejects credentials, non-HTTPS origins, paths, queries, fragments and duplicate normalized base URLs; newly inserted connectors remain disabled with rights_status='pending' until evidence/terms review.",
     "POST /api/admin/connectors remains administrator-only; accepts only a normalized allowlisted HTTPS origin with no credentials, path, query or fragment, rejects normalized duplicates with HTTP 409, and creates records disabled with rights_status='pending'.",
     "GET /api/omni/status returns one non-secret representative per normalized connector base URL, preferring enabled or authorized rows and then the oldest stable ID.",
-    "OmniPortal registry seeding uses a normalized NOT EXISTS guard so repeated status requests do not add sequential duplicate registry rows."
+    "OmniPortal registry seeding uses a normalized NOT EXISTS guard so repeated status requests do not add sequential duplicate registry rows.",
+    "Leaderboard weekly/monthly/all-time rankings are based on chapter unlocks in the selected period and include only published rights-eligible novels and published chapters.",
+    "Leaderboard response metric is chapter_unlocks; zero-unlock novels are omitted from ranked novel results."
   ],
   "dataEntities": [
     "Existing canonical D1 entities only; no duplicate ledgers or parallel account-deletion store",
@@ -80,7 +84,8 @@
     "ai_chapter_jobs.run_token",
     "Runtime bootstrap DDL for 17 canonical core tables; no new persistent entity or migration.",
     "OmniPortal connector registry reuses connectors, import_jobs and connector_events; no table or migration is added. Existing duplicate rows remain for explicit administrator cleanup.",
-    "Existing connectors, import_jobs and connector_events tables are reused; no new table or migration is introduced by connector registry deduplication."
+    "Existing connectors, import_jobs and connector_events tables are reused; no new table or migration is introduced by connector registry deduplication.",
+    "Existing novels, chapters and unlocks tables support period-correct public leaderboard aggregation; no new entity or migration."
   ],
   "migrationPlan": {
     "required": true,
@@ -137,7 +142,8 @@
       "test-reader-accessibility.mjs: labeled chapter progress, live progress values, accessible drawer focus/Escape behavior and font control names.",
       "test-library-localization.mjs: 14 locale dictionary completeness, library/history localization, explicit bookmark removal, progress display and canonical ten-point rating formatter.",
       "test-omni-connector-deduplication.mjs: sequential idempotent registry seed, normalized public status deduplication, duplicate administrator registration rejection and rights-pending gate.",
-      "test-omni-connector-deduplication.mjs: idempotent registry seeding, normalized status deduplication, administrator duplicate rejection and pending-rights defaults."
+      "test-omni-connector-deduplication.mjs: idempotent registry seeding, normalized status deduplication, administrator duplicate rejection and pending-rights defaults.",
+      "test-period-correct-leaderboard.mjs: period validation, rights eligibility, published-chapter unlocks, zero-unlock suppression, visible metric/counts, bootstrap index and bundle parity."
     ],
     "integration": [
       "test-platform-architecture-contract.mjs",
@@ -162,7 +168,8 @@
       "test-community-rate-limits-atomic.py: execute exact runtime trigger DDL under concurrent comment/report load, duplicate claims, legacy backfill and pruning",
       "test-published-comment-engagement.py: reject draft, archived and rights-ineligible engagement targets",
       "OmniPortal status projection and administrator connector registration source regression; no production D1 mutation.",
-      "OmniPortal connector registration and public status projection remain bounded to existing routes and existing D1 entities; no production D1 mutation or migration is part of this feature."
+      "OmniPortal connector registration and public status projection remain bounded to existing routes and existing D1 entities; no production D1 mutation or migration is part of this feature.",
+      "Leaderboard UI displays period chapter-unlock ranking labels and returned unlock counts; canonical and versioned browser bundles remain byte-identical."
     ],
     "isolation": [
       "test-authorization-ownership-matrix.mjs",
@@ -301,7 +308,11 @@
     "Repeated OmniPortal status requests do not create sequential duplicate connector registry entries.",
     "Public OmniPortal status deduplicates normalized base URLs and never projects connector credentials or secret names.",
     "Administrator connector creation requires an allowlisted HTTPS origin, rejects normalized duplicates, and leaves new connectors disabled and pending rights review.",
-    "The connector deduplication regression runs in the mandatory build; no migration or production data repair is implied."
+    "The connector deduplication regression runs in the mandatory build; no migration or production data repair is implied.",
+    "Weekly, monthly and all-time leaderboard tabs explain the chapter-unlock metric for the selected period.",
+    "Novel and author leaderboard cards display returned period unlock counts.",
+    "The existing zero-unlock suppression, rights eligibility and canonical ten-point rating behavior remain unchanged.",
+    "Runtime bootstrap creates the idempotent idx_unlocks_chapter_time index without adding a numbered migration."
   ],
   "sharedSurfaceSerialization": [
     ".github/workflows/",
