@@ -157,7 +157,8 @@
       "test-settings-language-selector.mjs: fourteen locale settings dictionary, saved language restore, live switch and source/served bundle parity.",
       "test-reader-localization-completeness.mjs: ten reader strings in fourteen locales, dynamic progress/footer labels, accessibility labels and bundle parity.",
       "test-reader-accessibility.mjs: localized progress announcements retain progressbar semantics.",
-      "test-rankings-localization.mjs: fourteen locale leaderboard/tier-list labels, period chapter-unlock metric, dynamic result localization, empty states and bundle parity."
+      "test-rankings-localization.mjs: fourteen locale leaderboard/tier-list labels, period chapter-unlock metric, dynamic result localization, empty states and bundle parity.",
+      "test-period-correct-leaderboard.mjs: validates returned unlock counts using localized ranking labels without weakening period/rank semantics."
     ],
     "integration": [
       "test-platform-architecture-contract.mjs",
@@ -189,7 +190,8 @@
       "Settings and reader localization run on the canonical 17.23 runtime without replacing progress synchronization, bookmarks, unlock operations or account preference sync.",
       "Reader progress aria-valuetext and visible progress labels use the active locale without changing persistence or revision semantics.",
       "Reader applies the active locale after rendering; bookmark and reader-theme accessible names are translated while progress persistence remains unchanged.",
-      "Leaderboard and Tier List render the active locale after dynamic data loads while preserving period-scoped chapter-unlock ranking semantics."
+      "Leaderboard and Tier List render the active locale after dynamic data loads while preserving period-scoped chapter-unlock ranking semantics.",
+      "Period-correct leaderboard regression remains compatible with localized unlock-count labels and the canonical numeric counts."
     ],
     "isolation": [
       "test-authorization-ownership-matrix.mjs",
