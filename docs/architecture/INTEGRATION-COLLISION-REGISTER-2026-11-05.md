@@ -285,3 +285,10 @@ The canonical app already has the 14-language interface dictionary and selected 
 - Added translations for six additional discussion-feed labels and loading/empty/unavailable states. The active locale is applied after initial render and after catalog results update.
 - Novel titles, usernames, discussion bodies and creator/community-authored content remain unchanged.
 - Added ADR-0027, a feature contract and a mandatory 24-string/fourteen-locale regression. No route, API, D1 entity, migration or production deployment is introduced. Exact-head validation remains required.
+
+
+### Community localization dictionary-test isolation
+
+- The first Community exact-head build exposed that the ranking locale test assumed RANKING_LANG was immediately followed by setINLang. Community localization correctly adds its own dictionary between those declarations, so the old test regex consumed two JSON objects.
+- Tightened the ranking test to isolate the RANKING_LANG object itself, without changing either dictionary or the locale merge order. The Community dictionary test continues to target COMMUNITY_LANG directly before setINLang.
+- No feature behavior or validation coverage was removed. A clean exact-head run is required.
