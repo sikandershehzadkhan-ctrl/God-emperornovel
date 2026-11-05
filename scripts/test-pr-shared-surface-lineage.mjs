@@ -156,7 +156,7 @@ const relevantBaseRefs=new Set([current.base.ref]);
 let cursorRef=current.base.ref;
 let cursorSha=current.base.sha;
 for(let depth=0;depth<30;depth++){
-  const parent=open.find(pr=>pr.head.ref===cursorRef);
+  const parent=open.find(pr=>pr.number!==current.number&&pr.head.ref===cursorRef);
   if(!parent)break;
   if(parent.head.sha!==cursorSha){
     console.error("FAIL: integration base branch "+cursorRef+" advanced after this PR was created.");
