@@ -29,7 +29,7 @@ assert.ok(library.includes("api('/api/bookmark',{method:'DELETE'"),"Library must
 assert.ok(library.includes('class="ghost removeBookmark"'),"Saved bookmarks must expose a remove action");
 assert.ok(library.includes("Number(x.progress_percent)||0"),"Continue Reading must display saved chapter progress");
 assert.ok(library.includes("ratingText(x.rating)")&&!library.includes("Number(x.rating)<=5")&&!library.includes("toFixed(1)"),"Library ratings must preserve the canonical ten-point formatter without fabricated decimals");
-assert.ok(library.includes("$('#savedCount').textContent=remaining"),"Removing a story must update the visible library count");
+assert.ok(library.includes("$('#savedCount').textContent=remaining")&&library.includes("const remaining=$('.removeLibrary').length"),"Removing a story must update the visible library count");
 assert.ok(library.includes("if(!remaining)$('#savedList').innerHTML"),"Removing the final story must render the empty-library state");
 assert.ok(library.includes("if(!$('.removeBookmark').length)$('#bookmarkList').innerHTML"),"Removing the final bookmark must render the empty-bookmarks state");
 assert.equal(app,served,"Served versioned asset must match source app.js");
