@@ -111,7 +111,7 @@
   "collisionReview": {
     "duplicateRoutes": "Reuses the existing AI project run and jobs endpoints.",
     "duplicateEntities": "Extends existing AI Author Studio project/job tables.",
-    "migrationAllocation": "Migration 0046 reserved to the AI domain for PR 226; sequences 0001-0045 remain immutable.",
+    "migrationAllocation": "Migration 0046 is allocated to the canonical main-targeted integration PR #195; its feature implementation was validated first in child integration PR #226. Reservation becomes immutable when the canonical integration lands on main.",
     "sharedSurfaceOwners": "Worker owned by platform-kernel; migrations by platform-data; tests by platform-quality; package root by repository-operations; architecture evidence refreshed to exact Worker blob.; rebased onto the latest canonical integration head to satisfy shared-surface lineage."
   },
   "affectedDomains": [
