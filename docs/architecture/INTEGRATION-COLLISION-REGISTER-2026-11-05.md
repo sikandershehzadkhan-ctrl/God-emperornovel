@@ -18,9 +18,9 @@ The original collision table below is retained as a historical snapshot. The fol
 | #234 earlier ancestry reconciliation attempt | Closed as duplicate | Replaced by #236, which reran checks against the refreshed canonical base |
 | #195 canonical architecture integration | Open, draft, not merged to main | Current candidate head follows the main-ancestry reconciliation. Consult the latest exact-head workflow runs and live compare before any merge decision; passing CI is not production approval |
 | #189 homepage SSR / design foundation | Closed as superseded after path-level audit | SSR module and design stylesheet are byte-identical on the canonical root; equivalent Worker integration and regression tests are present. The old PR's 17.24 bundle is absent from the active 17.23 runtime and must not be reintroduced |
-| #216 legacy core-schema rebuild plan | Replaced by refreshed canonical safety plan in `docs/architecture/LEGACY-CORE-SCHEMA-REBUILD-PLAN.md` | The old plan referenced an obsolete migration head and stale PR numbers. Its read-only preflight, fail-closed data disposition, fixture, backup, restore, and D1 transaction requirements were preserved and refreshed |
-| #208 governance closure register | Replaced by refreshed canonical register in `docs/architecture/GOVERNANCE-CLOSURE-REGISTER-2026-11-05.md` | The old register contained historical PR/issue statuses and branch-protection observations. The useful closure gates were retained while volatile facts were marked for live re-verification |
-| #176 platform completion register | Replaced by refreshed canonical checklist in `docs/architecture/IMPERIAL-PLATFORM-COMPLETION-REGISTER-2026-11-05.md` | Ordered product, security, reader, author, community, payments, operations, and acceptance gates were preserved; the old mainline baseline and account-branch blockers were refreshed to avoid stale claims |
+| #216 legacy core-schema rebuild plan | Closed as superseded by PR #237 | The old plan referenced an obsolete migration head and stale PR numbers. Its read-only preflight, fail-closed data disposition, fixture, backup, restore, and D1 transaction requirements were preserved and refreshed |
+| #208 governance closure register | Closed as superseded by PR #237 | The old register contained historical PR/issue statuses and branch-protection observations. The useful closure gates were retained while volatile facts were marked for live re-verification |
+| #176 platform completion register | Closed as superseded by PR #237 | Ordered product, security, reader, author, community, payments, operations, and acceptance gates were preserved; the old mainline baseline and account-branch blockers were refreshed to avoid stale claims |
 
 ### Governance defects found and corrected
 
@@ -33,7 +33,7 @@ The original collision table below is retained as a historical snapshot. The fol
 
 The following groups remain open and have not been declared safe to merge or closed merely because they are old. Their unique behavior and tests must be reconciled against the canonical root before disposition:
 
-- #216 and #208 have been path-audited and their durable requirements ported into refreshed canonical documents; their old PRs still require closure after the replacement-document PR is accepted.
+- #216, #208 and #176 were path-audited; their durable requirements were ported into canonical documents merged through PR #237, and the stale PRs were closed as superseded.
 - #175 UX acceptance matrix and route-to-screen coverage matrix still require individual path-level review; do not close until their unique acceptance criteria and route evidence are accounted for.
 - #156 homepage SSR fallback and #155–#146 reader/home/catalog feature chain.
 - #145–#131 localization chain.
