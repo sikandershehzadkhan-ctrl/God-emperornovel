@@ -4,7 +4,7 @@
   "sourceBranch": "feat/public-author-discovery-17-72",
   "sourceCommit": "61a40d9cd4d4bf52b5db2780b983441670d933f8",
   "auditDate": "2026-11-05",
-  "scope": "Current-main static route reconciliation. Does not prove deployed behavior, runtime routing, or authorization correctness.",
+  "scope": "Canonical integration-root exact-route inventory. The /authors directory is a public shell route; this static registry does not by itself certify deployed runtime behavior.",
   "routes": [
     {
       "path": "/",
@@ -366,5 +366,5 @@
     "HTTP method and object-level permissions are not certified by this UI route manifest.",
     "Production status, active assets, cache behavior and browser navigation remain unverified."
   ],
-  "sourceBlob": "10a3db46c4c52095ab07f63a9273b2521b11d26b"
+  "sourceBlob": "0bdadd45920bb964baa077acd3076fdf7d95788c"
 }
