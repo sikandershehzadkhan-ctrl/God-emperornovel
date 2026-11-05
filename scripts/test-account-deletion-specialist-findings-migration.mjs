@@ -43,6 +43,7 @@ try:
  raise AssertionError("assignment survived failed audit insertion")
 except sqlite3.IntegrityError: pass
 assert db.execute("SELECT COUNT(*) FROM account_deletion_reviewer_assignments WHERE user_id=4").fetchone()[0]==0
+db.execute("DROP TRIGGER injected_assignment_audit_failure")
 # A failed revocation audit insert must roll back the revocation update too.
 db.execute("INSERT INTO account_deletion_reviewer_assignments(user_id,role_key,assigned_by) VALUES(5,'support_reviewer',1)")
 revoke_id=db.execute("SELECT id FROM account_deletion_reviewer_assignments WHERE user_id=5").fetchone()[0]
