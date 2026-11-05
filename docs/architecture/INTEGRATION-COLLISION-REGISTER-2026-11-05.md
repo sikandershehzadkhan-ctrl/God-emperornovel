@@ -202,3 +202,12 @@ The canonical app already has the 14-language interface dictionary and selected 
 - The implementation keeps the accessible skip link marked for translation and correctly enables RTL for Urdu, Arabic and Persian. Existing Library/History locale application remains intact.
 - Updated the content-format regression to assert the new localized skip-link, Persian RTL and safe English-key fallback behavior. The Library selector compatibility regression was preserved by retaining its expected selector form.
 - The updated check is registered in the homepage localization feature contract. A fresh exact-head validation cycle is required; do not weaken or skip either legacy regression.
+
+
+### PR #253 exact-head validation and integration
+
+- The final homepage/navigation localization candidate passed all six exact-head workflows: Architecture Governance, Cloudflare Source Validation, Route Registry, Runtime Schema Parity, Integration Migration Governance and Graphify.
+- The Cloudflare build executed both new fourteen-locale homepage/navigation regressions and the existing Library/History, content-format and accessibility checks. The compatibility changes preserve all existing checks; none were skipped or weakened.
+- The initial exact-head build identified two stale string-level assertions in existing tests, plus a selector-format assertion in the Library localization test. The implementation compatibility and test expectations were corrected, then the clean exact-head run passed.
+- PR #253 was squash-merged into the governed integration root as 6fa17d5ec807f6cf08a650f3584ad1dbb44482a2. It was not merged into main and does not authorize production deployment.
+- Creator-authored story titles, author names and dynamic catalog content remain excluded from automatic translation. No API, Worker, database entity, migration, account setting or production data change was introduced.
