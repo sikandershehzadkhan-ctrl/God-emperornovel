@@ -20,8 +20,8 @@ const served=await readFile(new URL("../public/app-17.23.0.js",import.meta.url),
 assert.equal(app,served,"canonical and served browser bundles must remain byte-identical");
 assert.ok(app.includes("Ranked by chapter unlocks in the selected period."),"novel ranking metric must be visible");
 assert.ok(app.includes("Ranked by chapter unlocks across eligible published stories."),"author ranking metric must be visible");
-assert.ok(app.includes("Number(n.unlocks||0).toLocaleString()} unlocks"),"novel cards must show period unlock counts");
-assert.ok(app.includes("Number(x.unlocks||0).toLocaleString()} unlocks"),"author cards must show period unlock counts");
+assert.ok(app.includes("Number(n.unlocks||0).toLocaleString()} ${rankingText('unlocks')}"),"novel cards must show period unlock counts");
+assert.ok(app.includes("Number(x.unlocks||0).toLocaleString()} ${rankingText('unlocks')}"),"author cards must show period unlock counts");
 assert.ok(source.includes("CREATE INDEX IF NOT EXISTS idx_unlocks_chapter_time ON unlocks(chapter_id,unlocked_at)"),"chapter/time lookup index must exist in runtime bootstrap");
 
 console.log("PASS: leaderboard validates periods, ranks by period-scoped chapter unlocks, normalizes author identity, and excludes unpublished or uncleared works.");

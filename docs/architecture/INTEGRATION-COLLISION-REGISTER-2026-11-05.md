@@ -246,3 +246,25 @@ The canonical app already has the 14-language interface dictionary and selected 
 - The first candidate exposed legacy tests hard-coded to the 17.24 asset and English-only progress announcements. Tests and reader aria-valuetext were updated to validate the canonical 17.23 bundle and localized progress text; no regression was removed or skipped.
 - Reader locale application now runs after markup handoff; bookmark and reader-theme accessible names are translated. Canonical progress synchronization, revision checks, bookmarks, Crown unlocks and creator-authored chapter content remain unchanged.
 - PR #256 was squash-merged into the governed integration root as 6774f37dd40a8966267bad3f697edbc6a48ed900. It was not merged into main and does not authorize production deployment.
+
+
+### PR #137: rankings and tier-list localization collision
+
+- The legacy PR #137 branch is based on the 17.24 localization chain and its ranking copy describes generic catalog activity. That wording conflicts with the canonical period-scoped chapter-unlock ranking now implemented in the Worker and displayed by PR #248.
+- Ported the fourteen-locale ranking dictionary onto the current 17.23 runtime and added accurate translations for the selected-period chapter-unlock metric, novel/author ranking descriptions, unlock counts and author empty state.
+- Leaderboard and Tier List now reapply the selected locale after dynamic rendering. Creator-authored novel titles and author names remain unchanged.
+- Preserved the canonical ten-point rating formatter, published-rights filters, zero-unlock suppression, existing routes and API responses.
+- Added ADR-0026, a feature contract and a mandatory fourteen-locale regression. No API, database entity, migration or production deployment is included. Exact-head validation remains required.
+
+
+### Rankings localization regression adjustment
+
+- The first exact-head build confirmed the locale dictionary and other checks loaded, then exposed a brittle assertion that expected rankingText() to wrap explanatory copy directly. The implementation intentionally marks static explanation paragraphs with data-in-lang and reapplies setINLang after rendering; dynamic counts use rankingText().
+- Updated the regression to assert the actual static-markup and dynamic-count paths separately. The chapter-unlock wording remains unchanged and accurately reflects the canonical API. A clean exact-head run is required.
+
+
+### Period leaderboard regression compatibility
+
+- The first rankings-localization build passed the new locale test but exposed a hard-coded English suffix in the existing period-correct leaderboard regression. The UI now correctly renders the unlock metric through rankingText('unlocks') for the active locale.
+- Updated the existing API/UI regression to assert that numeric unlock counts use the locale key, preserving the period, rights, zero-activity and numeric-count checks. The test was registered in the feature and platform contracts; no assertion was removed.
+- A fresh exact-head validation is required.
