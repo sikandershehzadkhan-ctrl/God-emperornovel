@@ -23,6 +23,8 @@ The original collision table below is retained as a historical snapshot. The fol
 | #176 platform completion register | Closed as superseded by PR #237 | Ordered product, security, reader, author, community, payments, operations, and acceptance gates were preserved; the old mainline baseline and account-branch blockers were refreshed to avoid stale claims |
 | #122 dynamic public sitemap | Closed as superseded | Canonical `src/sitemap.mjs` and `src/seo.mjs` provide a stronger sharded sitemap index, bounded novel/chapter pagination, robots policy and route-aware SEO; `test-dynamic-sitemap.mjs` and `test-seo-foundation.mjs` cover the integrated implementation |
 | #119 rating input validation | Closed as superseded | Canonical Worker validation and `test-rating-input-validation.mjs` enforce whole-number ratings from 1–10; the old PR's separate 1–5 parser conflicts with the platform's 1–10 rating contract and is not to be reintroduced |
+| #156 homepage SSR fallback | Open; partial parity only | Canonical SSR renderer, public-novel projection and integration regression test supersede the old SSR implementation, but #156 also carries homepage content localization and broader no-JS/RTL assertions absent from the canonical app/test. Port those unique requirements selectively before closing; do not merge its stale Worker/bundles |
+| #127 visual design foundation | Open; partial parity only | Canonical `imperial-design-foundation.css` and design integration test supersede the old token/layout/reader/component foundation in part, but the old branch's admin tab keyboard/ARIA behavior is absent from canonical `public/admin.html`, and several admin/page-specific styles remain unmatched. Selectively reconcile before closing; do not merge its 17.24 assets wholesale |
 
 ### Governance defects found and corrected
 
@@ -37,9 +39,9 @@ The following groups remain open and have not been declared safe to merge or clo
 
 - #216, #208 and #176 were path-audited; their durable requirements were ported into canonical documents merged through PR #237, and the stale PRs were closed as superseded.
 - #175 UX acceptance matrix and route-to-screen coverage matrix were ported as dated canonical acceptance references in PR #239; its unique Worker noindex correction was handled separately by PR #238. Both replacement PRs passed validation and the stale PR was closed.
-- #156 homepage SSR fallback and #155–#146 reader/home/catalog feature chain.
+- #156 homepage SSR and homepage-content localization parity; #155–#146 reader/home/catalog feature chain.
 - #145–#131 localization chain.
-- #127 design foundation.
+- #127 design foundation, especially admin keyboard/ARIA behavior and remaining page-specific styling.
 - #95–#86 security hardening branches.
 - #49–#28 media, reader, security, product and research branches.
 - #8–#4 early product/engineering branches.
