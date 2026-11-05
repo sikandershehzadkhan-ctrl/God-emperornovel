@@ -151,7 +151,7 @@ For each item, first check whether a current route implements the same behavior 
 
 The canonical root contains `src/homepage-ssr.mjs`, `src/public-novel.mjs` and `scripts/test-homepage-ssr-integration.mjs`. The older #156 branch has a materially different SSR renderer and a test coupled to its old homepage markup, old client bundle and old CSS. Replacing the current renderer or the active 17.23 browser bundle with those files would reintroduce stale runtime content.
 
-A separate test in #156 exposed a genuine remaining behavior gap: `seedOmni` used `INSERT OR IGNORE` despite the current `connectors` table having no matching unique constraint, and public OmniPortal status did not collapse duplicate normalized base URLs. That behavior has been selectively reconstructed on the canonical root in **PR #243**. The same slice also closes an authorization gap in the administrator connector-create route: new connectors are disabled and pending until evidence/terms review, rather than being inserted as authorized without evidence. PR #244 merged the corrected slice after all six exact-head workflows passed.
+A separate test in #156 exposed a genuine remaining behavior gap: `seedOmni` used `INSERT OR IGNORE` despite the current `connectors` table having no matching unique constraint, and public OmniPortal status did not collapse duplicate normalized base URLs. That behavior was selectively reconstructed on the canonical root in PR #243, then superseded by PR #244 after the shared-surface contract was corrected. PR #244 passed all six exact-head workflows and was squash-merged into the governed integration root. The same slice closes an authorization gap in the administrator connector-create route: new connectors are disabled and pending until evidence/terms review, rather than being inserted as authorized without evidence.
 
 ### PRs #145–#131: localization chain remains a parity gap
 
@@ -166,3 +166,14 @@ The canonical app already has the 14-language interface dictionary and selected 
 - Existing duplicate rows are not deleted by a public GET. The administrator cleanup endpoint remains the explicit repair path.
 - No migration, production D1 mutation or deployment is included.
 - The current table still has no database-enforced unique index on normalized `base_url`; this code-only slice does not claim uniqueness under every concurrent administrator write. A future unique-index migration requires a separate allocation and reviewed reference-preserving data repair.
+
+
+### PR #147: period-correct leaderboard UI parity
+
+- The canonical Worker already ranks by period-scoped chapter unlocks, filters to published rights-eligible works and published chapters, normalizes author identity, and suppresses zero-unlock novel rows. The legacy PR #147 query was therefore not copied wholesale.
+- A bounded port now aligns the leaderboard UI with the existing API: it explains the selected-period chapter-unlock metric and displays returned unlock counts on novel and author cards.
+- The canonical ten-point rating formatter is retained. The runtime bootstrap receives the idempotent composite index idx_unlocks_chapter_time on unlocks(chapter_id, unlocked_at).
+- The existing mandatory leaderboard test now verifies API semantics, visible labels and counts, index presence, and byte-identical canonical/versioned browser bundles.
+- ADR-0024 and a feature contract document ownership, existing route/entity reuse, no-migration scope and acceptance criteria.
+- PR #245 was created from the pre-refresh root and immediately became one commit behind the moving integration branch. It is superseded by PR #246, which is based on the refreshed root. Do not merge PR #245.
+- No production deployment, production D1 mutation or numbered migration is included.
