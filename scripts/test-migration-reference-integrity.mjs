@@ -15,7 +15,18 @@ function walk(directory) {
 }
 walk(scriptsRoot);
 
-const referencePattern = /(?:\.\.\/)?migrations\/([0-9]{4}_[A-Za-z0-9_-]+\.sql)/g;
+// Only inspect migration paths passed to a real file-loading call. Governance
+// self-tests intentionally contain synthetic names such as 0003_reader.sql;
+// treating every string literal as a dependency creates false positives.
+const referencePattern = /(?:readFileSync|readFile|open)\s*\(\s*(?:new\s+URL\s*\(\s*)?["'`](?:\.\.\/)?migrations\/([0-9]{4}_[A-Za-z0-9_-]+\.sql)["'`]/g;
+
+// Guard the scanner itself: fixture strings are not dependencies, while a
+// concrete file-loading expression must still be checked.
+const fixtureOnly = "const fixture = 'migrations/0003_reader.sql';";
+assert.equal([...fixtureOnly.matchAll(referencePattern)].length, 0);
+const actualReference = 'readFileSync(new URL("../migrations/0031_account_closure_requests.sql", import.meta.url), "utf8")';
+assert.equal([...actualReference.matchAll(referencePattern)].length, 1);
+
 const missing = [];
 let references = 0;
 for (const file of files) {
@@ -27,7 +38,7 @@ for (const file of files) {
   }
 }
 for (const item of missing) {
-  console.error("FAIL: " + item.file + " references missing migration " + item.migration);
+  console.error("FAIL: " + item.file + " loads missing migration " + item.migration);
 }
-assert.equal(missing.length, 0, "Migration test references must resolve to canonical migration files");
-console.log("PASS: " + references + " migration-file references across " + files.length + " scripts resolve to existing canonical files.");
+assert.equal(missing.length, 0, "Migration file-loading references must resolve to existing canonical migration files");
+console.log("PASS: " + references + " concrete migration file-loading references across " + files.length + " scripts resolve to existing canonical files.");
