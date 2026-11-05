@@ -2,7 +2,7 @@ import assert from "node:assert/strict";
 import fs from "node:fs";
 const schema=fs.readFileSync("src/runtime-feature-schema.mjs","utf8");
 const worker=fs.readFileSync("src/index.js","utf8");
-assert.ok(schema.includes("runtime_feature_schema_version','2'"),"runtime schema must advance to v2");
+assert.ok(schema.includes("runtime_feature_schema_version','3'"),"runtime schema must advance monotonically to v3");
 assert.ok(schema.includes("CREATE TABLE IF NOT EXISTS reading_positions"),"reading positions table must be created idempotently");
 assert.ok(schema.includes("PRIMARY KEY(user_id,novel_id)"),"one position per reader and novel");
 assert.ok(schema.includes("CHECK(percent >= 0 AND percent <= 100)"),"percentage must be database-bounded");
