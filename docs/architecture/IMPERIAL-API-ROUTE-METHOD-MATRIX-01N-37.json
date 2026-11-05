@@ -2,7 +2,7 @@
   "schemaVersion": 1,
   "name": "Imperial Novel API route method inventory",
   "sourceBranch": "integration/architecture-governance-root-17-70",
-  "sourceBlob": "2d9ad0e54f664461d500147b051b67e9698db81f",
+  "sourceBlob": "8ee92eb7f1c62debbf95984bec141a1fef1e1224",
   "auditDate": "2026-11-04",
   "scope": "Static dispatcher scan of the integrated Worker. Observed method guards only; this is not a complete permission or runtime contract.",
   "exactRouteCount": 80,
@@ -1312,6 +1312,6 @@
     "Authorization labels are not inferred for exact routes. Verify anonymous, reader, author, owner, moderator, admin and cross-owner behavior separately.",
     "This matrix does not inspect DTO exposure, cache headers, CSRF, rate limits, body size, or database transaction semantics."
   ],
-  "sourceCommit": "991f899f2cbf9bfc573c7cb67329b805b781fbc9",
-  "refreshNote": "Reconciled reader progress and identity/account API handlers against the same Worker blob; route evidence is static inventory, not runtime authorization certification. Fingerprint refreshed for the schema-bootstrap-only Worker change in PR #228; no route declarations or dispatcher behavior changed."
+  "sourceCommit": "444e141965e57ae4b89bb5eaf29231010a534424",
+  "refreshNote": "Reconciled reader progress and identity/account API handlers against the same Worker blob; route evidence is static inventory, not runtime authorization certification. Fingerprint refreshed for the schema-bootstrap-only Worker change in PR #228; no route declarations or dispatcher behavior changed. Fingerprint refreshed for strict whole-number 1–10 rating validation; route path and method are unchanged."
 }
