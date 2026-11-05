@@ -494,7 +494,7 @@
       ],
       "unguardedLines": [],
       "methodGuardMissing": false,
-      "authorization": "requires handler-level review"
+      "authorization": "Authenticated owner-scoped bookmark list; the query binds user_id to session u.id and restricts novels to published, rights-eligible content."
     },
     {
       "path": "/api/comments",
