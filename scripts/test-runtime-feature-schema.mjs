@@ -26,6 +26,10 @@ for (const marker of ["2", "1", null]) {
   for (const table of ["auth_rate_limits", "comment_likes", "comment_reports", "novel_reactions", "request_votes", "reading_positions", "community_rate_limit_events", "comment_report_claims"]) {
     assert.ok(db.calls.some(sql => sql.includes("CREATE TABLE IF NOT EXISTS " + table)), "missing table " + table + " for marker " + marker);
   }
+  const eventTable = db.calls.find(sql => sql.includes("CREATE TABLE IF NOT EXISTS community_rate_limit_events"));
+  const claimTable = db.calls.find(sql => sql.includes("CREATE TABLE IF NOT EXISTS comment_report_claims"));
+  assert.ok(eventTable && eventTable.includes("FOREIGN KEY(user_id) REFERENCES users(id) ON DELETE CASCADE"), "rate-limit events must cascade on user deletion");
+  assert.ok(claimTable && claimTable.includes("FOREIGN KEY(user_id) REFERENCES users(id) ON DELETE CASCADE") && claimTable.includes("FOREIGN KEY(comment_id) REFERENCES comments(id) ON DELETE CASCADE"), "report claims must cascade on user and comment deletion");
   for (const trigger of ["trg_comments_hourly_limit", "trg_comments_prune_rate_limit_events", "trg_comment_reports_prune_rate_limit_events", "trg_comment_reports_hourly_limit_and_claim"]) {
     assert.ok(db.calls.some(sql => sql.includes("CREATE TRIGGER IF NOT EXISTS " + trigger)), "missing trigger " + trigger + " for marker " + marker);
   }
