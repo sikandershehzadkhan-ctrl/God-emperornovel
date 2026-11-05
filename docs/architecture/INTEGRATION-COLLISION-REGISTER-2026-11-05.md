@@ -211,3 +211,13 @@ The canonical app already has the 14-language interface dictionary and selected 
 - The initial exact-head build identified two stale string-level assertions in existing tests, plus a selector-format assertion in the Library localization test. The implementation compatibility and test expectations were corrected, then the clean exact-head run passed.
 - PR #253 was squash-merged into the governed integration root as 6fa17d5ec807f6cf08a650f3584ad1dbb44482a2. It was not merged into main and does not authorize production deployment.
 - Creator-authored story titles, author names and dynamic catalog content remain excluded from automatic translation. No API, Worker, database entity, migration, account setting or production data change was introduced.
+
+
+### PR #143: settings and reader localization collision
+
+- The legacy localization branch is based on the older stacked 17.24 chain and replaces the reader function with a version that predates the canonical session-owned progress API. It is not safe to merge wholesale.
+- The canonical root already has a full settings page, six-theme preferences, account preference synchronization, reader progress synchronization, bookmarks and Crown unlock flows. Those implementations are preserved.
+- Ported the fourteen-locale settings dictionary and native-language selector into the existing settings page using the existing browser-local imperial_language preference.
+- Ported ten reader strings into the existing fourteen-locale dictionary, marking only static labels and resolving dynamic progress/footer copy through readerText. Chapter content and user-owned state remain unchanged.
+- Added settings and reader localization regression tests to the mandatory build, plus ADR-0025 and a feature contract.
+- No route signature, API contract, database entity, migration, production data mutation or deployment is introduced. Exact-head CI is required before integration.
