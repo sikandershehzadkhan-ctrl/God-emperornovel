@@ -133,5 +133,13 @@
     "Late workers cannot insert chapters or overwrite progress after claim replacement.",
     "Project edits invalidate outstanding claims.",
     "No production D1 migration or Worker deployment is performed."
-  ]
+  ],
+  "validationWorkflows": [
+    "Imperial Novel Integration Migration Governance",
+    "Imperial Novel Architecture Governance",
+    "Validate Imperial Novel Route Registry",
+    "Imperial Novel Cloudflare Source Validation",
+    "Graphify architecture map"
+  ],
+  "validationRequirement": "All validation workflows must pass on the exact feature head and current integration base before this feature is merged into the canonical integration branch."
 }
