@@ -34,11 +34,13 @@
     "platform-quality",
     "repository-operations",
     "delivery-platform",
-    "platform-kernel"
+    "platform-kernel",
+    "reader-progress-target-validation"
   ],
   "routes": [
     "Existing canonical route set; update registry for behavior changes",
-    "POST /api/author/ai/projects/:id/run uses an atomic token-fenced claim; GET /api/author/ai/projects/:id/jobs remains owner-scoped"
+    "POST /api/author/ai/projects/:id/run uses an atomic token-fenced claim; GET /api/author/ai/projects/:id/jobs remains owner-scoped",
+    "POST /api/bookmark and POST /api/history require positive safe-integer targets and an exact published, rights-eligible novel/chapter relationship."
   ],
   "apiContracts": [
     "Existing API contracts; update method and authorization inventories for behavior changes",
@@ -46,7 +48,9 @@
     "PUT /api/profile updates only session u.id after strict field validation",
     "GET /api/account/preferences returns validated owner preferences or defaults",
     "PUT /api/account/preferences updates only session u.id after strict allowlist validation",
-    "GET /api/public-profile/:username exposes only public, non-banned profile projection and opt-in aggregate stats"
+    "GET /api/public-profile/:username exposes only public, non-banned profile projection and opt-in aggregate stats",
+    "POST /api/bookmark validates the target chapter belongs to the requested published rights-eligible novel before writing only to session u.id.",
+    "POST /api/history validates the target chapter belongs to the requested published rights-eligible novel before writing only to session u.id."
   ],
   "dataEntities": [
     "Existing canonical D1 entities only; no duplicate ledgers or parallel account-deletion store",
@@ -96,7 +100,8 @@
       "test-atomic-ai-run-claims.mjs",
       "test-ai-project-actor-ownership.mjs",
       "test-production-deploy-gates.mjs: block deployment when canonical migrations exceed the reviewed release set",
-      "test-runtime-schema-parity.mjs: runtime role constraint, foreign-key and default source assertions"
+      "test-runtime-schema-parity.mjs: runtime role constraint, foreign-key and default source assertions",
+      "test-reader-progress-policy.mjs: strict integer target parser and Worker route guard assertions"
     ],
     "integration": [
       "test-platform-architecture-contract.mjs",
@@ -116,18 +121,22 @@
       "Local D1 Author Studio ownership, chapter route parsing, parent publication and rights-evidence integration",
       "test-atomic-ai-run-claims.py: concurrent claims, stale recovery and late-worker rejection",
       "test-runtime-schema-parity.py: compare runtime bootstrap with canonical migration 0001 in independent SQLite databases for 17 core tables",
-      "Runtime Schema Parity workflow runs on main and integration pull requests"
+      "Runtime Schema Parity workflow runs on main and integration pull requests",
+      "test-reader-progress-targets.py: exact chapter-to-novel relationship, publication and rights eligibility, and rejected-target non-mutation"
     ],
     "isolation": [
       "test-authorization-ownership-matrix.mjs",
       "test-worker-account-reader-isolation.mjs",
-      "Author A cannot list or edit Author B novels and chapters"
+      "Author A cannot list or edit Author B novels and chapters",
+      "Reader bookmark/history writes remain scoped to session u.id; cross-account isolation must pass in local D1 Worker tests."
     ],
     "buildCommands": [
       "npm run build",
       "npm run check:cloudflare-readiness",
       "python3 scripts/test-runtime-schema-parity.py",
-      "node scripts/test-runtime-schema-parity.mjs"
+      "node scripts/test-runtime-schema-parity.mjs",
+      "node scripts/test-reader-progress-policy.mjs",
+      "python3 scripts/test-reader-progress-targets.py"
     ]
   },
   "rollout": {
@@ -140,7 +149,8 @@
       "Verify staging response and client handoff before production",
       "Production deploy fails closed while migrations 0012+ lack an approved, resumable rollout plan.",
       "Run runtime schema parity against canonical migration 0001 on the exact PR head.",
-      "Use the read-only production schema preflight to inspect existing foreign keys and PRAGMA foreign_key_check before any future migration plan."
+      "Use the read-only production schema preflight to inspect existing foreign keys and PRAGMA foreign_key_check before any future migration plan.",
+      "Verify bookmark/history reject missing, unpublished, rights-ineligible and cross-novel chapter targets without mutating existing progress."
     ]
   },
   "rollback": {
@@ -153,11 +163,12 @@
       "D1 query failures",
       "Asset parity",
       "Runtime Schema Parity workflow",
-      "Fresh-install role CHECK and core foreign-key failures"
+      "Fresh-install role CHECK and core foreign-key failures",
+      "Reader bookmark/history 400/404 target rejection rates and D1 write failures."
     ]
   },
   "collisionReview": {
-    "duplicateRoutes": "Checked against canonical route registry",
+    "duplicateRoutes": "Checked against canonical route registry; existing /api/bookmark and /api/history methods only, no new route",
     "duplicateEntities": "Checked against canonical schema and migration collision register",
     "migrationAllocation": "No new migration allocated. Migration 0001 is immutable and remains the canonical definition for the audited core tables. Migration 0046 remains allocated to the canonical umbrella integration PR #195.",
     "sharedSurfaceOwners": "Declared in ownership map and integration contract"
@@ -179,7 +190,7 @@
     "repository-operations",
     "rights"
   ],
-  "changeSummary": "Consolidates current-main platform/security foundations with homepage SSR and the six-theme experience, while introducing canonical ownership, dependency, migration and integration governance. Adds mandatory isolated identity and media policy validation gates without changing Worker routes, UI bundles or D1 schema. Adds owner-scoped reader progress API and ensures architecture/source CI runs on nested integration PRs. Adds the reader browser client integration to the existing owner-scoped reading-position API and mandatory regression coverage. Integrates owner-scoped profile and account-preference APIs and a visibility-filtered public profile projection into the same canonical Worker as reader progress. Adds the account profile editor and cross-device settings synchronization while preserving the reader-progress browser integration. Adds a PR-lineage gate that serializes overlapping Worker, browser bundle, identity, migration, route inventory, workflow and release-configuration changes. Extends serialized surface protection to every top-level served CSS, JavaScript and webmanifest asset so versioned style/service-worker files cannot diverge silently. Hardens Author Studio chapter editing and publication by enforcing parent publication state, rights evidence, comic page-sequence validation on edits, safe integer chapter costs and verified chapter-route identifier parsing. Adds atomic token-fenced AI Author Studio generation claims with concurrent-run exclusion, stale-claim recovery, late-result rejection, owner-only authorization, and migration 0046. Adds a fail-closed production release gate because the deploy workflow currently applies only migrations 0009-0011 while the canonical integration line contains later migrations. Aligns runtime first-install core DDL with immutable migration 0001, adds source and SQLite parity regression tests, and extends the read-only production schema preflight to report core foreign-key definitions and integrity violations.",
+  "changeSummary": "Consolidates current-main platform/security foundations with homepage SSR and the six-theme experience, while introducing canonical ownership, dependency, migration and integration governance. Adds mandatory isolated identity and media policy validation gates without changing Worker routes, UI bundles or D1 schema. Adds owner-scoped reader progress API and ensures architecture/source CI runs on nested integration PRs. Adds the reader browser client integration to the existing owner-scoped reading-position API and mandatory regression coverage. Integrates owner-scoped profile and account-preference APIs and a visibility-filtered public profile projection into the same canonical Worker as reader progress. Adds the account profile editor and cross-device settings synchronization while preserving the reader-progress browser integration. Adds a PR-lineage gate that serializes overlapping Worker, browser bundle, identity, migration, route inventory, workflow and release-configuration changes. Extends serialized surface protection to every top-level served CSS, JavaScript and webmanifest asset so versioned style/service-worker files cannot diverge silently. Hardens Author Studio chapter editing and publication by enforcing parent publication state, rights evidence, comic page-sequence validation on edits, safe integer chapter costs and verified chapter-route identifier parsing. Adds atomic token-fenced AI Author Studio generation claims with concurrent-run exclusion, stale-claim recovery, late-result rejection, owner-only authorization, and migration 0046. Adds a fail-closed production release gate because the deploy workflow currently applies only migrations 0009-0011 while the canonical integration line contains later migrations. Aligns runtime first-install core DDL with immutable migration 0001, adds source and SQLite parity regression tests, and extends the read-only production schema preflight to report core foreign-key definitions and integrity violations. Adds strict reader bookmark/history target validation so only an exact published chapter under a published rights-eligible novel can be saved; invalid targets cannot mutate progress.",
   "acceptanceCriteria": [
     "Every changed repository path resolves to one registered owner",
     "Dependency graph is acyclic and every edge points from consumer to lower-level dependency",
@@ -227,7 +238,9 @@
     "Runtime bootstrap matches migration 0001 columns, defaults, primary keys and foreign keys for 17 audited core tables.",
     "Invalid user roles are rejected by both runtime bootstrap and canonical migration schema.",
     "No historical migration is modified and no new migration is allocated.",
-    "Production schema preflight reports core foreign keys and PRAGMA foreign_key_check without mutating D1."
+    "Production schema preflight reports core foreign keys and PRAGMA foreign_key_check without mutating D1.",
+    "Bookmark and history writes reject malformed, fractional, unsafe, missing, unpublished and cross-novel chapter targets before D1 writes.",
+    "Bookmark and history writes bind user ownership exclusively to authenticated session u.id."
   ],
   "sharedSurfaceSerialization": [
     ".github/workflows/",
