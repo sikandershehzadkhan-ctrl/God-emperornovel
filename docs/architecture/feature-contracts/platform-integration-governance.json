@@ -46,7 +46,8 @@
     "POST /api/comments enforces the per-user rolling-hour quota in SQLite triggers, not a racy preflight count.",
     "POST /api/comments/report serializes duplicate claims and per-user rolling-hour quotas in SQLite triggers.",
     "POST /api/comments/like and POST /api/follow require strict positive safe-integer identifiers and published rights-eligible targets.",
-    "GET /for-you and GET /made-for-you are personalized HTML routes and receive noindex meta and X-Robots-Tag response directives."
+    "GET /for-you and GET /made-for-you are personalized HTML routes and receive noindex meta and X-Robots-Tag response directives.",
+    "DELETE /api/bookmark removes only the selected chapter bookmark for session u.id; opening a chapter never creates a bookmark."
   ],
   "apiContracts": [
     "Existing API contracts; update method and authorization inventories for behavior changes",
@@ -60,7 +61,8 @@
     "Comment creation and engagement identifiers are positive safe integers; malformed, fractional, boolean, object and unsafe values are rejected.",
     "Comment reads, likes, reports, and follows are restricted to published rights-eligible novels.",
     "Community comment and report quotas are database-enforced at 10 per rolling hour; duplicate reports are serialized with a unique claim.",
-    "Personalized recommendation HTML routes /for-you and /made-for-you are excluded from search indexing; crawler directives do not replace authentication or owner scoping."
+    "Personalized recommendation HTML routes /for-you and /made-for-you are excluded from search indexing; crawler directives do not replace authentication or owner scoping.",
+    "DELETE /api/bookmark validates positive safe-integer novel/chapter identifiers and deletes only WHERE user_id=u.id AND novel_id=? AND chapter_number=?; no schema migration."
   ],
   "dataEntities": [
     "Existing canonical D1 entities only; no duplicate ledgers or parallel account-deletion store",
@@ -118,7 +120,8 @@
       "test-published-comment-engagement.mjs",
       "test-community-rate-limits-atomic.mjs",
       "test-runtime-feature-schema.mjs: v2-to-v3 upgrade and non-empty trigger checks",
-      "test-seo-indexing-guards.mjs: personalized /for-you and /made-for-you routes remain noindex"
+      "test-seo-indexing-guards.mjs: personalized /for-you and /made-for-you routes remain noindex",
+      "test-reader-bookmark-intent.mjs: explicit bookmark action, owner-scoped DELETE, guest toggle and source/served bundle parity."
     ],
     "integration": [
       "test-platform-architecture-contract.mjs",
