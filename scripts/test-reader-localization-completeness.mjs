@@ -2,7 +2,7 @@ import fs from 'node:fs';
 import assert from 'node:assert/strict';
 
 const app = fs.readFileSync('public/app.js', 'utf8');
-const served = fs.readFileSync('public/app-17.24.0.js', 'utf8');
+const served = fs.readFileSync('public/app-17.23.0.js', 'utf8');
 const html = fs.readFileSync('public/index.html', 'utf8');
 const match = app.match(/const IN_LANG=(\{[\s\S]*?\});/);
 assert.ok(match, 'Interface locale dictionary must exist');
@@ -23,5 +23,5 @@ assert.ok(reader.includes("readerText('through novel')"), 'Dynamic novel progres
 assert.ok(reader.includes("readerText('Next: Chapter')"), 'Dynamic next-chapter title must use translated prefix');
 assert.ok(reader.includes("readerText('Reader theme')"), 'Reader theme accessibility label must be translated');
 assert.equal(app, served, 'Served versioned asset must match source app.js');
-assert.ok(html.includes('/app-17.24.0.js'));
+assert.ok(html.includes('/app-17.23.0.js'));
 console.log('Reader localization passed: 14 locales, 10 added reader strings, dynamic progress/footer labels and accessibility labels.');
