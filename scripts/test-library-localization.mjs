@@ -32,6 +32,7 @@ assert.ok(library.includes("<span data-in-lang>Chapter</span>")&&library.include
 assert.ok(library.includes("ratingText(x.rating)")&&!library.includes("Number(x.rating)<=5")&&!library.includes("toFixed(1)"),"Library ratings must preserve the canonical ten-point formatter without fabricated decimals");
 assert.ok(library.includes("$('#savedCount').textContent=remaining")&&library.includes("const remaining=$$('.removeLibrary').length"),"Removing a story must update the visible library count");
 assert.ok(library.includes("if(!remaining)$('#savedList').innerHTML"),"Removing the final story must render the empty-library state");
+assert.ok(!library.includes('<b>Add to Library</b>')&&(library.split("Your library is empty. Open a novel and tap Add to Library.").length-1)===2,"Both initial and post-removal empty-library states must remain translatable leaf text");
 assert.ok(library.includes("if(!$$('.removeBookmark').length)$('#bookmarkList').innerHTML"),"Removing the final bookmark must render the empty-bookmarks state");
 assert.equal(app,served,"Served versioned asset must match source app.js");
 assert.ok(html.includes("/app-17.23.0.js"),"Public entry must load the synchronized versioned asset");
