@@ -20,8 +20,8 @@ for(const locale of locales){assert.ok(dictionaries[locale],'Missing locale: '+l
 assert.equal(Object.keys(dictionaries).length,14);
 assert.ok(app.includes('function rankingText(key)'), 'Ranking translation helper missing');
 assert.ok(app.includes("if(kind==='leaderboard')")&&app.includes("if(kind==='tier-list')"),'Leaderboard and Tier List handlers must remain');
-assert.ok(app.includes("rankingText('unlocks')")&&app.includes("rankingText('Ranked by chapter unlocks in the selected period.')"),'Period chapter-unlock metric must be localized');
-assert.ok(app.includes("rankingText('Ranked by chapter unlocks across eligible published stories.')"),'Author ranking metric must be localized');
+assert.ok(app.includes("rankingText('unlocks')")&&app.includes('data-in-lang>Ranked by chapter unlocks in the selected period.</p>'),'Period chapter-unlock metric must be localized');
+assert.ok(app.includes('data-in-lang>Ranked by chapter unlocks across eligible published stories.</p>'),'Author ranking metric must be localized');
 assert.ok(app.includes('setINLang(activeLanguage)'), 'Dynamic ranking results must reapply the saved locale');
 assert.ok(app.includes('data-in-lang>No ranked novels yet.</div>')&&app.includes('data-in-lang>No ranked authors yet.</div>'),'Leaderboard empty states must be localizable');
 assert.ok(app.includes('data-in-lang>No novels here yet.</div>'),'Tier List empty state must be localizable');
