@@ -2,9 +2,9 @@
   "schemaVersion": 1,
   "name": "Imperial Novel API route method inventory",
   "sourceBranch": "integration/community-rate-limit-atomic-0052",
-  "sourceBlob": "db6a0f9f1b21b778a5180aa347edb0d18008ee73",
+  "sourceBlob": "5408e241bbf1da55fafe1ec7637ae67bd7cb5418",
   "auditDate": "2026-11-05",
-  "scope": "Static dispatcher scan of the integrated Worker. Observed method guards only; this is not a complete permission or runtime contract. Bookmark and history POST writes now require positive safe-integer identifiers and an exact published chapter belonging to a published, rights-eligible novel; validation occurs before persistence. Community POST handlers now use strict positive safe-integer identifiers and published rights-eligible targets; comment/report quotas and duplicate report claims are database-trigger enforced.",
+  "scope": "Static dispatcher scan of the integrated Worker. Observed method guards only; this is not a complete permission or runtime contract. Bookmark and history POST writes now require positive safe-integer identifiers and an exact published chapter belonging to a published, rights-eligible novel; validation occurs before persistence. Community POST handlers now use strict positive safe-integer identifiers and published rights-eligible targets; comment/report quotas and duplicate report claims are database-trigger enforced. Worker fingerprint refreshed after same-origin cover URL validation and route-specific image CSP; route method inventory unchanged.",
   "exactRouteCount": 80,
   "dynamicRouteCount": 22,
   "exactRoutes": [
