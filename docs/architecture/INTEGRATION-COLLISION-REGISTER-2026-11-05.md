@@ -157,10 +157,22 @@ The legacy chain is based on the 17.24 runtime and includes stale migration file
 
 The canonical app already has the 14-language interface dictionary and selected localized surfaces, including Library/History coverage, but the audit found missing canonical tests for several legacy surfaces and no equivalent `HOME_LANG` homepage-content dictionary in the current `public/app.js`. The unique localization requirements need path-by-path parity checks and bounded ports on a fresh canonical branch. Keep the legacy chain open until that work is accounted for; do not close it merely because its branches are stale.
 
-### PR #243: connector-registry acceptance boundary
+### PR #243/#244: connector-registry acceptance boundary
 
-- Registry seed uses a normalized `NOT EXISTS` guard; public status selects one stable representative per normalized URL and prefers an enabled/authorized row.
+- PR #243 was superseded by PR #244 after a missing shared-surface feature-contract update prevented a clean exact-head validation cycle.
+- PR #244 passed all six exact-head workflows (Architecture Governance, Cloudflare Source Validation, Route Registry, Runtime Schema Parity, Migration Governance and Graphify) on `384659543741a58e6ab6cf2e3e53b4745968762a`.
+- PR #244 was squash-merged into the governed integration root as `bb8b47a3d6eb4833fcc05269b1f06cc3dec4a652`; it was not merged into `main`.
+- Registry seeding uses a normalized `NOT EXISTS` guard; public status selects one stable representative per normalized URL and prefers an enabled/authorized row.
 - Administrator connector creation validates an allowlisted HTTPS origin, rejects a normalized duplicate with HTTP 409, and creates a disabled/pending record.
 - Existing duplicate rows are not deleted by a public GET. The administrator cleanup endpoint remains the explicit repair path.
 - No migration, production D1 mutation or deployment is included.
-- The current table still has no database-enforced unique index on normalized `base_url`; this code-only slice does not claim uniqueness under every concurrent administrator write. A future unique-index migration requires a separate allocation and reviewed reference-preserving data repair.
+- The table still has no database-enforced unique index on normalized `base_url`; this code-only slice does not claim uniqueness under every concurrent administrator write. A future unique-index migration requires separate allocation and reviewed reference-preserving data repair.
+
+### PR #147: period-correct leaderboard presentation
+
+- The canonical Worker already had period-scoped chapter-unlock ranking, published-chapter and rights-eligibility filters, author normalization, and zero-unlock novel suppression. The legacy PR #147 branch contained a useful UI explanation and unlock-count display, plus a chapter/time lookup index, but its Worker query was not copied wholesale.
+- Ported the UI labels and returned unlock counts onto a fresh branch from the governed integration root. Preserved the canonical ten-point rating formatter and the stronger zero-unlock suppression.
+- Added the idempotent runtime bootstrap index `idx_unlocks_chapter_time` on `unlocks(chapter_id,unlocked_at)`; no numbered migration or production D1 mutation.
+- Extended the existing mandatory leaderboard test to assert period metric labels, novel/author unlock counts, index presence and byte-identical source/versioned browser bundles.
+- Added ADR-0024 and the period-correct leaderboard feature contract, including explicit route, rights and rollout boundaries.
+- This is a selective port, not a merge of PR #147 or its stale parent chain. Exact-head CI is still required before integration.
