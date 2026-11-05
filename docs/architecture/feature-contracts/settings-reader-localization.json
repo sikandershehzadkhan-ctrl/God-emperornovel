@@ -5,7 +5,8 @@
   "ownedPaths": [
     "scripts/test-settings-language-selector.mjs",
     "scripts/test-reader-localization-completeness.mjs",
-    "scripts/check-content-formats.mjs"
+    "scripts/check-content-formats.mjs",
+    "scripts/test-reader-accessibility.mjs"
   ],
   "sharedSurfaces": [
     "public/app.js",
@@ -55,7 +56,8 @@
     "unit": [
       "test-settings-language-selector.mjs",
       "test-reader-localization-completeness.mjs",
-      "Existing reader progress, bookmark and unlock regressions."
+      "Existing reader progress, bookmark and unlock regressions.",
+      "test-reader-accessibility.mjs: initial and live progress announcements use the active locale without losing progressbar semantics."
     ],
     "integration": [
       "Settings language selection restores and updates the shared interface locale; reader progress/footer labels and locked-chapter copy use the selected locale."
@@ -98,7 +100,7 @@
     "platform-quality",
     "platform-architecture"
   ],
-  "changeSummary": "Adds a fourteen-locale settings language selector and ten reader strings on the canonical 17.23 runtime while preserving account preferences, progress synchronization, bookmarks, unlocks and six-theme reading.",
+  "changeSummary": "Adds a fourteen-locale settings language selector and ten reader strings on the canonical 17.23 runtime while preserving account preferences, progress synchronization, bookmarks, unlocks and six-theme reading. Keeps the existing reader accessibility regression aligned with translated progress value text.",
   "acceptanceCriteria": [
     "The existing settings page offers a native-language selector for all fourteen supported locales.",
     "Saved imperial_language is restored when settings opens and changes immediately through setINLang.",
@@ -106,6 +108,7 @@
     "Locked-chapter explanation and Imperial Crowns label are translatable.",
     "Existing reader progress, bookmark, unlock, library and account-preference behaviors remain unchanged.",
     "Canonical and served 17.23 browser bundles are byte-identical.",
-    "No API route, database entity, migration, production data mutation or deployment is introduced."
+    "No API route, database entity, migration, production data mutation or deployment is introduced.",
+    "Initial and live reader progress announcements use the active locale while retaining labeled progressbar semantics."
   ]
 }
