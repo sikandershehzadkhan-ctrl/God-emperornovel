@@ -175,5 +175,12 @@ The canonical app already has the 14-language interface dictionary and selected 
 - The canonical ten-point rating formatter is retained. The runtime bootstrap receives the idempotent composite index idx_unlocks_chapter_time on unlocks(chapter_id, unlocked_at).
 - The existing mandatory leaderboard test now verifies API semantics, visible labels and counts, index presence, and byte-identical canonical/versioned browser bundles.
 - ADR-0024 and a feature contract document ownership, existing route/entity reuse, no-migration scope and acceptance criteria.
-- PR #245 was created from the pre-refresh root and immediately became one commit behind the moving integration branch. It is superseded by PR #246, which is based on the refreshed root. Do not merge PR #245.
+- PR #245 and PR #247 were superseded and closed after their bases moved. PR #248 carried the corrected exact-head evidence and passed all six required workflows on commit 41281720fd7bad999c8ef8d044217a367488faa8. It was squash-merged into the governed integration root as fd81e5b064b7b4cf9d2bfb810dcf21f1542b969f, not into main.
 - No production deployment, production D1 mutation or numbered migration is included.
+
+### PR #248 exact-head validation and integration
+
+- Architecture Governance, Cloudflare Source Validation, Route Registry, Runtime Schema Parity, Integration Migration Governance and Graphify all passed on the exact validated head.
+- The first validation attempt exposed stale route-method and authorization Worker fingerprints. Both evidence files were refreshed to the exact Worker blob 830f6385856b11b356cba9352b776ae89d24b879; the corrected exact-head run then passed.
+- PR #248 was squash-merged into the governed integration root. The same changes are not merged into main and are not a production deployment approval.
+
