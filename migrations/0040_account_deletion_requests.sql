@@ -1,7 +1,7 @@
 -- Upgrade the canonical account_closure_requests table for the independent
 -- account-deletion review workflow. Do not create a second request ledger.
--- This rebuild also upgrades installations where migration 0031 used its earlier,
--- narrower pending/cancelled/completed status constraint.
+-- Migration 0031 on this governed lineage already includes review metadata.
+-- Preserve every existing field while widening the lifecycle status constraint.
 CREATE TABLE account_closure_requests_v2 (
   id INTEGER PRIMARY KEY AUTOINCREMENT,
   user_id INTEGER NOT NULL,
@@ -23,7 +23,7 @@ SELECT id,user_id,
   CASE WHEN status IN ('pending','review_required','pending_deletion','cancelled','completed')
     THEN status ELSE 'review_required' END,
   requested_at,grace_until,cancelled_at,completed_at,
-  '',CURRENT_TIMESTAMP,CURRENT_TIMESTAMP
+  review_reason,created_at,updated_at
 FROM account_closure_requests;
 DROP TABLE account_closure_requests;
 ALTER TABLE account_closure_requests_v2 RENAME TO account_closure_requests;
