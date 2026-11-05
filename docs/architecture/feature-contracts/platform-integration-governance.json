@@ -98,7 +98,8 @@
       "test-ai-project-actor-ownership.mjs",
       "test-production-deploy-gates.mjs: block deployment when canonical migrations exceed the reviewed release set",
       "test-runtime-schema-parity.mjs: runtime role constraint, foreign-key and default source assertions",
-      "test-rating-input-validation.mjs: whole-number 1–10 validation and malformed input rejection"
+      "test-rating-input-validation.mjs: whole-number 1–10 validation and malformed input rejection",
+      "test-rating-handler-canonical.mjs: canonical ten-point route, rights and direct safe-integer checks"
     ],
     "integration": [
       "test-platform-architecture-contract.mjs",
