@@ -91,7 +91,8 @@
   "affectedDomains": [
     "discovery",
     "platform-kernel",
-    "platform-architecture"
+    "platform-architecture",
+    "platform-quality"
   ],
   "changeSummary": "Mark personalized recommendation HTML routes as noindex without changing authentication, authorization, data access, or browser bundles.",
   "acceptanceCriteria": [
