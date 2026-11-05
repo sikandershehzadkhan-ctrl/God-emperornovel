@@ -596,6 +596,13 @@ async function api(req,env){
   await env.DB.prepare("INSERT INTO bookmarks(user_id,novel_id,chapter_number) VALUES(?,?,?) ON CONFLICT(user_id,novel_id) DO UPDATE SET chapter_number=excluded.chapter_number,updated_at=CURRENT_TIMESTAMP").bind(u.id,parsed.novelId,parsed.chapterNumber).run();
   return json({ok:true});
  }
+ if(p==="/api/bookmark"&&m==="DELETE"){
+  const e=need(u);if(e)return e;
+  const parsed=parseReaderProgressTarget(await body(req));
+  if(!parsed.ok)return json({error:parsed.error},400);
+  const result=await env.DB.prepare("DELETE FROM bookmarks WHERE user_id=? AND novel_id=? AND chapter_number=?").bind(u.id,parsed.novelId,parsed.chapterNumber).run();
+  return json({ok:true,removed:Number(result?.meta?.changes??result?.changes??0)===1});
+ }
  if(p==="/api/reading-position"&&m==="GET"){
   const e=need(u);if(e)return e;
   const nid=Number(url.searchParams.get("novel_id"));
