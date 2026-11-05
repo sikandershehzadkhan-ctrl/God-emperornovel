@@ -2,7 +2,7 @@ import fs from 'node:fs';
 import assert from 'node:assert/strict';
 
 const app = fs.readFileSync('public/app.js', 'utf8');
-const served = fs.readFileSync('public/app-17.24.0.js', 'utf8');
+const served = fs.readFileSync('public/app-17.23.0.js', 'utf8');
 const html = fs.readFileSync('public/index.html', 'utf8');
 const match = app.match(/const SETTINGS_LANG=(\{[\s\S]*?\});/);
 assert.ok(match, 'Settings locale dictionary must exist');
@@ -19,5 +19,5 @@ assert.ok(app.includes("$('#setLanguage').value=language"), 'Saved language must
 assert.ok(app.includes("$('#setLanguage').addEventListener('change'"), 'Language selector must update interface');
 assert.ok(app.includes("setINLang(language);$('#setLanguage').value=language"), 'Language change must use shared localization system');
 assert.equal(app, served, 'Served versioned asset must match source app.js');
-assert.ok(html.includes('/app-17.24.0.js'));
+assert.ok(html.includes('/app-17.23.0.js'));
 console.log('Settings language selector passed: 14 locales, native language names, saved preference restore, live language switch and source/served parity.');
