@@ -81,7 +81,7 @@ def orphan_count(conn: sqlite3.Connection, child: str, parent: str,
 
 
 def normalized_sql(value: str) -> str:
-    return re.sub(r"\\s+", " ", (value or "").strip().rstrip(";")).casefold()
+    return re.sub(r"\s+", " ", (value or "").strip().rstrip(";")).casefold()
 
 
 def audit_connections(actual: sqlite3.Connection,
