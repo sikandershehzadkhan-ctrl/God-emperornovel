@@ -15,6 +15,7 @@ async function authors(){
  const setStatus=key=>{meta.dataset.inLang="";meta.dataset.inLangKey=key;meta.textContent=t(key)};
  setINLang(document.documentElement.lang||"en");
  input.value=initial;
+ let requestSequence=0;
  const makeLabel=key=>{const node=document.createElement("span");node.dataset.inLang="";node.dataset.inLangKey=key;node.textContent=t(key);return node};
  const render=rows=>{
   list.replaceChildren();
@@ -35,14 +36,17 @@ async function authors(){
   setINLang(document.documentElement.lang||"en");
  };
  const load=async query=>{
+  const sequence=++requestSequence;
   setStatus(query?"Searching published authors…":"Loading published authors…");
   list.replaceChildren();
   try{
    const rows=await api("/api/public-authors"+(query?"?q="+encodeURIComponent(query):""));
+   if(sequence!==requestSequence)return;
    if(!Array.isArray(rows))throw new Error(t("Author directory is temporarily unavailable."));
    render(rows);
    setStatus(rows.length?"Published authors in the Imperial catalog.":"No published authors found.");
   }catch(error){
+   if(sequence!==requestSequence)return;
    setStatus("Author directory is temporarily unavailable.");
    const notice=document.createElement("div");notice.className="notice";
    const retry=document.createElement("button");retry.type="button";retry.className="ghost";retry.dataset.inLang="";retry.dataset.inLangKey="Try again";retry.textContent=t("Try again");
