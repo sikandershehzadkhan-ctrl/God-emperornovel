@@ -359,6 +359,7 @@
     "public/author.html",
     "scripts/test-cover-url-policy.mjs",
     "docs/architecture/feature-contracts/personalized-route-indexing.json",
-    "docs/architecture/feature-contracts/omni-connector-registry-deduplication.json"
+    "docs/architecture/feature-contracts/omni-connector-registry-deduplication.json",
+    "docs/architecture/feature-contracts/settings-reader-localization.json"
   ]
 }
