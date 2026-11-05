@@ -33,7 +33,8 @@
     "platform-data",
     "platform-quality",
     "repository-operations",
-    "delivery-platform"
+    "delivery-platform",
+    "platform-kernel"
   ],
   "routes": [
     "Existing canonical route set; update registry for behavior changes",
@@ -50,7 +51,8 @@
   "dataEntities": [
     "Existing canonical D1 entities only; no duplicate ledgers or parallel account-deletion store",
     "ai_author_projects.active_run_token / active_run_started_at / active_run_owner_user_id",
-    "ai_chapter_jobs.run_token"
+    "ai_chapter_jobs.run_token",
+    "Runtime bootstrap DDL for 17 canonical core tables; no new persistent entity or migration."
   ],
   "migrationPlan": {
     "required": true,
@@ -93,7 +95,8 @@
       "test-comic-author-ui.mjs: chapter publication and edit policy guards",
       "test-atomic-ai-run-claims.mjs",
       "test-ai-project-actor-ownership.mjs",
-      "test-production-deploy-gates.mjs: block deployment when canonical migrations exceed the reviewed release set"
+      "test-production-deploy-gates.mjs: block deployment when canonical migrations exceed the reviewed release set",
+      "test-runtime-schema-parity.mjs: runtime role constraint, foreign-key and default source assertions"
     ],
     "integration": [
       "test-platform-architecture-contract.mjs",
@@ -111,7 +114,9 @@
       "Local Wrangler Worker and D1 account/reader isolation integration",
       "test-pr-shared-surface-lineage.mjs: enforce linear PR ancestry for overlapping serialized files",
       "Local D1 Author Studio ownership, chapter route parsing, parent publication and rights-evidence integration",
-      "test-atomic-ai-run-claims.py: concurrent claims, stale recovery and late-worker rejection"
+      "test-atomic-ai-run-claims.py: concurrent claims, stale recovery and late-worker rejection",
+      "test-runtime-schema-parity.py: compare runtime bootstrap with canonical migration 0001 in independent SQLite databases for 17 core tables",
+      "Runtime Schema Parity workflow runs on main and integration pull requests"
     ],
     "isolation": [
       "test-authorization-ownership-matrix.mjs",
@@ -120,7 +125,9 @@
     ],
     "buildCommands": [
       "npm run build",
-      "npm run check:cloudflare-readiness"
+      "npm run check:cloudflare-readiness",
+      "python3 scripts/test-runtime-schema-parity.py",
+      "node scripts/test-runtime-schema-parity.mjs"
     ]
   },
   "rollout": {
@@ -131,7 +138,9 @@
       "Pass all CI workflows",
       "Review exact PR diff",
       "Verify staging response and client handoff before production",
-      "Production deploy fails closed while migrations 0012+ lack an approved, resumable rollout plan."
+      "Production deploy fails closed while migrations 0012+ lack an approved, resumable rollout plan.",
+      "Run runtime schema parity against canonical migration 0001 on the exact PR head.",
+      "Use the read-only production schema preflight to inspect existing foreign keys and PRAGMA foreign_key_check before any future migration plan."
     ]
   },
   "rollback": {
@@ -142,13 +151,15 @@
       "Client boot errors",
       "Route validation",
       "D1 query failures",
-      "Asset parity"
+      "Asset parity",
+      "Runtime Schema Parity workflow",
+      "Fresh-install role CHECK and core foreign-key failures"
     ]
   },
   "collisionReview": {
     "duplicateRoutes": "Checked against canonical route registry",
     "duplicateEntities": "Checked against canonical schema and migration collision register",
-    "migrationAllocation": "Migration 0046 reserved to the AI domain for PR 224; sequences 0001-0045 remain immutable.",
+    "migrationAllocation": "No new migration allocated. Migration 0001 is immutable and remains the canonical definition for the audited core tables. Migration 0046 remains allocated to the canonical umbrella integration PR #195.",
     "sharedSurfaceOwners": "Declared in ownership map and integration contract"
   },
   "affectedDomains": [
@@ -168,7 +179,7 @@
     "repository-operations",
     "rights"
   ],
-  "changeSummary": "Consolidates current-main platform/security foundations with homepage SSR and the six-theme experience, while introducing canonical ownership, dependency, migration and integration governance. Adds mandatory isolated identity and media policy validation gates without changing Worker routes, UI bundles or D1 schema. Adds owner-scoped reader progress API and ensures architecture/source CI runs on nested integration PRs. Adds the reader browser client integration to the existing owner-scoped reading-position API and mandatory regression coverage. Integrates owner-scoped profile and account-preference APIs and a visibility-filtered public profile projection into the same canonical Worker as reader progress. Adds the account profile editor and cross-device settings synchronization while preserving the reader-progress browser integration. Adds a PR-lineage gate that serializes overlapping Worker, browser bundle, identity, migration, route inventory, workflow and release-configuration changes. Extends serialized surface protection to every top-level served CSS, JavaScript and webmanifest asset so versioned style/service-worker files cannot diverge silently. Hardens Author Studio chapter editing and publication by enforcing parent publication state, rights evidence, comic page-sequence validation on edits, safe integer chapter costs and verified chapter-route identifier parsing. Adds atomic token-fenced AI Author Studio generation claims with concurrent-run exclusion, stale-claim recovery, late-result rejection, owner-only authorization, and migration 0046. Adds a fail-closed production release gate because the deploy workflow currently applies only migrations 0009-0011 while the canonical integration line contains later migrations.",
+  "changeSummary": "Consolidates current-main platform/security foundations with homepage SSR and the six-theme experience, while introducing canonical ownership, dependency, migration and integration governance. Adds mandatory isolated identity and media policy validation gates without changing Worker routes, UI bundles or D1 schema. Adds owner-scoped reader progress API and ensures architecture/source CI runs on nested integration PRs. Adds the reader browser client integration to the existing owner-scoped reading-position API and mandatory regression coverage. Integrates owner-scoped profile and account-preference APIs and a visibility-filtered public profile projection into the same canonical Worker as reader progress. Adds the account profile editor and cross-device settings synchronization while preserving the reader-progress browser integration. Adds a PR-lineage gate that serializes overlapping Worker, browser bundle, identity, migration, route inventory, workflow and release-configuration changes. Extends serialized surface protection to every top-level served CSS, JavaScript and webmanifest asset so versioned style/service-worker files cannot diverge silently. Hardens Author Studio chapter editing and publication by enforcing parent publication state, rights evidence, comic page-sequence validation on edits, safe integer chapter costs and verified chapter-route identifier parsing. Adds atomic token-fenced AI Author Studio generation claims with concurrent-run exclusion, stale-claim recovery, late-result rejection, owner-only authorization, and migration 0046. Adds a fail-closed production release gate because the deploy workflow currently applies only migrations 0009-0011 while the canonical integration line contains later migrations. Aligns runtime first-install core DDL with immutable migration 0001, adds source and SQLite parity regression tests, and extends the read-only production schema preflight to report core foreign-key definitions and integrity violations.",
   "acceptanceCriteria": [
     "Every changed repository path resolves to one registered owner",
     "Dependency graph is acyclic and every edge points from consumer to lower-level dependency",
@@ -212,7 +223,11 @@
     "Project configuration edits invalidate an active generation claim.",
     "Migration 0046 is reserved and appended without modifying historical migrations.",
     "AI generation remains restricted to the authenticated project owner; admins cannot impersonate creators.",
-    "The manual production deploy workflow must block if numbered migrations beyond 0011 exist until the complete canonical migration rollout is explicitly reviewed and implemented."
+    "The manual production deploy workflow must block if numbered migrations beyond 0011 exist until the complete canonical migration rollout is explicitly reviewed and implemented.",
+    "Runtime bootstrap matches migration 0001 columns, defaults, primary keys and foreign keys for 17 audited core tables.",
+    "Invalid user roles are rejected by both runtime bootstrap and canonical migration schema.",
+    "No historical migration is modified and no new migration is allocated.",
+    "Production schema preflight reports core foreign keys and PRAGMA foreign_key_check without mutating D1."
   ],
   "sharedSurfaceSerialization": [
     ".github/workflows/",
