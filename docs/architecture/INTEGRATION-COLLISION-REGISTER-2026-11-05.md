@@ -221,3 +221,9 @@ The canonical app already has the 14-language interface dictionary and selected 
 - Ported ten reader strings into the existing fourteen-locale dictionary, marking only static labels and resolving dynamic progress/footer copy through readerText. Chapter content and user-owned state remain unchanged.
 - Added settings and reader localization regression tests to the mandatory build, plus ADR-0025 and a feature contract.
 - No route signature, API contract, database entity, migration, production data mutation or deployment is introduced. Exact-head CI is required before integration.
+
+
+### Settings/reader localization build correction
+
+- The first exact-head build exposed that two legacy localization tests were still hard-coded to load the stale 17.24.0 bundle. The canonical platform serves 17.23.0, so the tests were corrected to validate public/app-17.23.0.js instead of importing or creating a stale 17.24 bundle.
+- Direct source checks now confirm the settings selector, fourteen-locale settings dictionary, ten reader translations, dynamic reader labels, and byte-identical canonical/versioned bundles. A fresh exact-head build is still required to certify the full suite.
