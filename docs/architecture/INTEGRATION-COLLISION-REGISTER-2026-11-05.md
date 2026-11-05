@@ -227,3 +227,11 @@ The canonical app already has the 14-language interface dictionary and selected 
 
 - The first exact-head build exposed that two legacy localization tests were still hard-coded to load the stale 17.24.0 bundle. The canonical platform serves 17.23.0, so the tests were corrected to validate public/app-17.23.0.js instead of importing or creating a stale 17.24 bundle.
 - Direct source checks now confirm the settings selector, fourteen-locale settings dictionary, ten reader translations, dynamic reader labels, and byte-identical canonical/versioned bundles. A fresh exact-head build is still required to certify the full suite.
+
+
+### Reader accessibility regression reconciliation
+
+- The first settings/reader localization build confirmed the new settings and reader locale tests were not yet the only integration gate: the existing reader accessibility test expected English-only progress aria-valuetext strings.
+- Updated the canonical reader to localize both initial and live progress announcements using readerText while preserving numeric progress values and progressbar semantics.
+- Updated the existing reader accessibility regression to assert localized initial/live value text, and registered the test in the settings-reader feature contract and platform integration governance.
+- No progress persistence, revision, bookmark, unlock or ownership behavior changed. A fresh exact-head build is required.
