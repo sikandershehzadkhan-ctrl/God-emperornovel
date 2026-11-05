@@ -1,10 +1,10 @@
 {
   "schemaVersion": 1,
   "name": "Imperial Novel API route method inventory",
-  "sourceBranch": "integration/reader-progress-target-validation-0050",
-  "sourceBlob": "d9824a4811c02dd5daa32f1c0c144b8e57913f68",
+  "sourceBranch": "integration/community-rate-limit-atomic-0052",
+  "sourceBlob": "db6a0f9f1b21b778a5180aa347edb0d18008ee73",
   "auditDate": "2026-11-05",
-  "scope": "Static dispatcher scan of the integrated Worker. Observed method guards only; this is not a complete permission or runtime contract. Bookmark and history POST writes now require positive safe-integer identifiers and an exact published chapter belonging to a published, rights-eligible novel; validation occurs before persistence.",
+  "scope": "Static dispatcher scan of the integrated Worker. Observed method guards only; this is not a complete permission or runtime contract. Bookmark and history POST writes now require positive safe-integer identifiers and an exact published chapter belonging to a published, rights-eligible novel; validation occurs before persistence. Community POST handlers now use strict positive safe-integer identifiers and published rights-eligible targets; comment/report quotas and duplicate report claims are database-trigger enforced.",
   "exactRouteCount": 80,
   "dynamicRouteCount": 22,
   "exactRoutes": [
@@ -503,8 +503,8 @@
         "GET"
       ],
       "sourceLines": [
-        573,
-        574
+        635,
+        636
       ],
       "unguardedLines": [],
       "methodGuardMissing": false,
@@ -516,7 +516,7 @@
         "POST"
       ],
       "sourceLines": [
-        575
+        637
       ],
       "unguardedLines": [],
       "methodGuardMissing": false,
@@ -529,7 +529,7 @@
         "GET"
       ],
       "sourceLines": [
-        576
+        638
       ],
       "unguardedLines": [],
       "methodGuardMissing": false,
@@ -592,7 +592,7 @@
         "POST"
       ],
       "sourceLines": [
-        604
+        666
       ],
       "unguardedLines": [],
       "methodGuardMissing": false,
@@ -1310,8 +1310,9 @@
     "Path-only handlers are not automatically safe: delegated helpers may enforce their own method rules, which must be checked separately.",
     "A method not explicitly matched may fall through to another path-only handler or ultimately 404; do not assume 405 behavior.",
     "Authorization labels are not inferred for exact routes. Verify anonymous, reader, author, owner, moderator, admin and cross-owner behavior separately.",
-    "This matrix does not inspect DTO exposure, cache headers, CSRF, rate limits, body size, or database transaction semantics."
+    "This matrix does not inspect DTO exposure, cache headers, CSRF, rate limits, body size, or database transaction semantics.",
+    "Community comment and report hourly quotas are enforced by SQLite BEFORE INSERT triggers; duplicate reports are fenced by a unique claim. Static route inventory does not itself certify trigger execution."
   ],
-  "sourceCommit": "565cb3c1db1d688ce12c3dcaf33eac1d1aec1bdb",
-  "refreshNote": "Refreshed to the exact Worker blob for the reader-progress target validation integration; route behavior changes only on existing POST methods."
+  "sourceCommit": "4fee7d078a53ebaae6316c6d602bfde435c46145",
+  "refreshNote": "Refreshed to the exact Worker blob for atomic community engagement hardening; no new routes, but existing comment, like, report and follow write behavior now uses strict identifiers and published-rights eligibility."
 }

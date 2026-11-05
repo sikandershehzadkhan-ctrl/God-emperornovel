@@ -36,12 +36,16 @@
     "delivery-platform",
     "platform-kernel",
     "catalog",
-    "reader-progress-target-validation"
+    "reader-progress-target-validation",
+    "community-atomic-rate-limits"
   ],
   "routes": [
     "Existing canonical route set; update registry for behavior changes",
     "POST /api/author/ai/projects/:id/run uses an atomic token-fenced claim; GET /api/author/ai/projects/:id/jobs remains owner-scoped",
-    "POST /api/bookmark and POST /api/history require positive safe-integer targets and an exact published, rights-eligible novel/chapter relationship."
+    "POST /api/bookmark and POST /api/history require positive safe-integer targets and an exact published, rights-eligible novel/chapter relationship.",
+    "POST /api/comments enforces the per-user rolling-hour quota in SQLite triggers, not a racy preflight count.",
+    "POST /api/comments/report serializes duplicate claims and per-user rolling-hour quotas in SQLite triggers.",
+    "POST /api/comments/like and POST /api/follow require strict positive safe-integer identifiers and published rights-eligible targets."
   ],
   "apiContracts": [
     "Existing API contracts; update method and authorization inventories for behavior changes",
@@ -51,7 +55,10 @@
     "PUT /api/account/preferences updates only session u.id after strict allowlist validation",
     "GET /api/public-profile/:username exposes only public, non-banned profile projection and opt-in aggregate stats",
     "POST /api/bookmark validates the target chapter belongs to the requested published rights-eligible novel before writing only to session u.id.",
-    "POST /api/history validates the target chapter belongs to the requested published rights-eligible novel before writing only to session u.id."
+    "POST /api/history validates the target chapter belongs to the requested published rights-eligible novel before writing only to session u.id.",
+    "Comment creation and engagement identifiers are positive safe integers; malformed, fractional, boolean, object and unsafe values are rejected.",
+    "Comment reads, likes, reports, and follows are restricted to published rights-eligible novels.",
+    "Community comment and report quotas are database-enforced at 10 per rolling hour; duplicate reports are serialized with a unique claim."
   ],
   "dataEntities": [
     "Existing canonical D1 entities only; no duplicate ledgers or parallel account-deletion store",
@@ -104,7 +111,11 @@
       "test-runtime-schema-parity.mjs: runtime role constraint, foreign-key and default source assertions",
       "test-rating-input-validation.mjs: whole-number 1–10 validation and malformed input rejection",
       "test-rating-handler-canonical.mjs: canonical ten-point route, rights and direct safe-integer checks",
-      "test-reader-progress-policy.mjs: strict integer target parser and Worker route guard assertions"
+      "test-reader-progress-policy.mjs: strict integer target parser and Worker route guard assertions",
+      "test-published-engagement-policy.mjs",
+      "test-published-comment-engagement.mjs",
+      "test-community-rate-limits-atomic.mjs",
+      "test-runtime-feature-schema.mjs: v2-to-v3 upgrade and non-empty trigger checks"
     ],
     "integration": [
       "test-platform-architecture-contract.mjs",
@@ -125,13 +136,17 @@
       "test-atomic-ai-run-claims.py: concurrent claims, stale recovery and late-worker rejection",
       "test-runtime-schema-parity.py: compare runtime bootstrap with canonical migration 0001 in independent SQLite databases for 17 core tables",
       "Runtime Schema Parity workflow runs on main and integration pull requests",
-      "test-reader-progress-targets.py: exact chapter-to-novel relationship, publication and rights eligibility, and rejected-target non-mutation"
+      "test-reader-progress-targets.py: exact chapter-to-novel relationship, publication and rights eligibility, and rejected-target non-mutation",
+      "test-community-rate-limits-atomic.py: execute exact runtime trigger DDL under concurrent comment/report load, duplicate claims, legacy backfill and pruning",
+      "test-published-comment-engagement.py: reject draft, archived and rights-ineligible engagement targets"
     ],
     "isolation": [
       "test-authorization-ownership-matrix.mjs",
       "test-worker-account-reader-isolation.mjs",
       "Author A cannot list or edit Author B novels and chapters",
-      "Reader bookmark/history writes remain scoped to session u.id; cross-account isolation must pass in local D1 Worker tests."
+      "Reader bookmark/history writes remain scoped to session u.id; cross-account isolation must pass in local D1 Worker tests.",
+      "Concurrent requests cannot exceed 10 comments or 10 reports per user per rolling hour",
+      "A user cannot create duplicate reports for the same comment, including concurrent attempts"
     ],
     "buildCommands": [
       "npm run build",
@@ -140,7 +155,12 @@
       "node scripts/test-runtime-schema-parity.mjs",
       "node scripts/test-rating-input-validation.mjs",
       "node scripts/test-reader-progress-policy.mjs",
-      "python3 scripts/test-reader-progress-targets.py"
+      "python3 scripts/test-reader-progress-targets.py",
+      "node scripts/test-published-engagement-policy.mjs",
+      "node scripts/test-published-comment-engagement.mjs",
+      "node scripts/test-community-rate-limits-atomic.mjs",
+      "python3 scripts/test-community-rate-limits-atomic.py",
+      "python3 scripts/test-published-comment-engagement.py"
     ]
   },
   "rollout": {
@@ -154,7 +174,8 @@
       "Production deploy fails closed while migrations 0012+ lack an approved, resumable rollout plan.",
       "Run runtime schema parity against canonical migration 0001 on the exact PR head.",
       "Use the read-only production schema preflight to inspect existing foreign keys and PRAGMA foreign_key_check before any future migration plan.",
-      "Verify bookmark/history reject missing, unpublished, rights-ineligible and cross-novel chapter targets without mutating existing progress."
+      "Verify bookmark/history reject missing, unpublished, rights-ineligible and cross-novel chapter targets without mutating existing progress.",
+      "Verify v2-to-v3 runtime schema upgrade, atomic quota behavior under concurrent writes, legacy duplicate-report backfill and expired-event pruning before any production release."
     ]
   },
   "rollback": {

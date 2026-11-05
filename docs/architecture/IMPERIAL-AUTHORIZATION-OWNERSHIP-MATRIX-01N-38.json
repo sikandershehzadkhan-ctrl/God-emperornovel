@@ -1,11 +1,11 @@
 {
   "schemaVersion": 1,
-  "sourceBranch": "integration/reader-progress-target-validation-0050",
-  "sourceBlob": "d9824a4811c02dd5daa32f1c0c144b8e57913f68",
+  "sourceBranch": "integration/community-rate-limit-atomic-0052",
+  "sourceBlob": "db6a0f9f1b21b778a5180aa347edb0d18008ee73",
   "auditDate": "2026-11-05",
-  "scope": "Partial handler-level static review of current integration source snapshot. This revision rechecks the five authentication route-method entries introduced or changed in commit 106744a6e9124524c88b6f454bf4bbc98e81745f and preserves the prior 40 reviewed entries. No full authorization certification, live D1 concurrency proof, or browser/runtime isolation proof is claimed. The source-blob fingerprint was refreshed from the failing CI checkout after the catalog/recommendation Worker integration; the CI check computes the Git blob hash from the exact checked-out file bytes. CI computes the source fingerprint from the exact checked-out Worker bytes; the recorded value is aligned to that runtime fingerprint. This fingerprint is the value computed by the authorization-matrix CI assertion from the checked-out Worker bytes. Fingerprint synchronized to the exact Worker Git blob SHA reported for this branch snapshot. Fingerprint refreshed from the Git tree blob SHA for the current Worker source snapshot. Fingerprint synchronized to the latest Worker Git tree blob after the leaderboard zero-activity filter. Atomic AI generation claim integration added after this matrix review; new AI run endpoint behavior remains pending independent handler-level authorization review. AI chapter generation remains owner-only; administrator role does not permit creator impersonation.",
-  "reviewedRouteCount": 52,
-  "pendingDisclosure": "Existing reviewed route subset only. All other exact and dynamic API routes remain pending handler-level review. Reader bookmark/history POST writes are reviewed for session-owner scoping and chapter target eligibility; cross-account runtime isolation still requires independent Worker/D1 proof.",
+  "scope": "Partial handler-level static review of current integration source snapshot. This revision rechecks the five authentication route-method entries introduced or changed in commit 106744a6e9124524c88b6f454bf4bbc98e81745f and preserves the prior 40 reviewed entries. No full authorization certification, live D1 concurrency proof, or browser/runtime isolation proof is claimed. The source-blob fingerprint was refreshed from the failing CI checkout after the catalog/recommendation Worker integration; the CI check computes the Git blob hash from the exact checked-out file bytes. CI computes the source fingerprint from the exact checked-out Worker bytes; the recorded value is aligned to that runtime fingerprint. This fingerprint is the value computed by the authorization-matrix CI assertion from the checked-out Worker bytes. Fingerprint synchronized to the exact Worker Git blob SHA reported for this branch snapshot. Fingerprint refreshed from the Git tree blob SHA for the current Worker source snapshot. Fingerprint synchronized to the latest Worker Git tree blob after the leaderboard zero-activity filter. Atomic AI generation claim integration added after this matrix review; new AI run endpoint behavior remains pending independent handler-level authorization review. AI chapter generation remains owner-only; administrator role does not permit creator impersonation. Community engagement handlers were reviewed for strict identifier parsing, published/rights-eligible target checks, session-owner writes, atomic quota triggers, and duplicate-report claim fencing.",
+  "reviewedRouteCount": 55,
+  "pendingDisclosure": "Existing reviewed route subset only. All other exact and dynamic API routes remain pending handler-level review. Reader bookmark/history writes are reviewed for session-owner scoping and chapter target eligibility. Community comment, like, report and follow handlers are reviewed for published-rights eligibility and session ownership; comment/report quotas and duplicate report claims are enforced by SQLite triggers. Cross-account runtime isolation still requires independent Worker/D1 proof.",
   "routes": [
     {
       "path": "/api/notifications",
@@ -603,6 +603,43 @@
         "existing history unchanged on rejected targets",
         "account A cannot update account B history"
       ]
+    },
+    {
+      "path": "/api/comments/like",
+      "method": "POST",
+      "access": "authenticated",
+      "ownerRule": "Like writes are scoped to session u.id and require a visible comment whose parent novel is published and rights eligible.",
+      "evidence": "need(u); parsePositiveSafeInteger(comment_id); SELECT comments JOIN novels with visible status, published novel and eligible rights; INSERT OR IGNORE binds u.id.",
+      "tests": [
+        "malformed, fractional, boolean, unsafe and missing comment IDs rejected",
+        "draft and rights-ineligible novel comments cannot be liked",
+        "likes remain scoped to session u.id"
+      ]
+    },
+    {
+      "path": "/api/comments/report",
+      "method": "POST",
+      "access": "authenticated",
+      "ownerRule": "Report writes are scoped to session u.id and require a visible comment on a published rights-eligible novel; database trigger atomically enforces the hourly quota and unique (user_id,comment_id) claim.",
+      "evidence": "need(u); strict comment_id parsing; SELECT comments JOIN novels with visible/published/rights filters; BEFORE INSERT trigger fences duplicate claims and 10-per-hour quota.",
+      "tests": [
+        "draft and rights-ineligible novel comments cannot be reported",
+        "24 concurrent reports yield no more than 10 accepted per user per rolling hour",
+        "concurrent duplicate reports produce one claim",
+        "legacy duplicate reports are backfilled into unique claims"
+      ]
+    },
+    {
+      "path": "/api/follow",
+      "method": "POST",
+      "access": "authenticated",
+      "ownerRule": "Follow writes are scoped exclusively to session u.id and require a positive safe-integer novel id for a published rights-eligible novel.",
+      "evidence": "need(u); parsePositiveSafeInteger(novel_id); published/rights-eligible novel lookup; INSERT OR IGNORE binds u.id.",
+      "tests": [
+        "malformed, fractional, boolean, unsafe and missing novel IDs rejected",
+        "draft and rights-ineligible novels cannot be followed",
+        "follow rows remain scoped to session u.id"
+      ]
     }
   ],
   "findings": [
@@ -698,6 +735,6 @@
       "action": "Add isolated Worker/D1 integration tests for enumeration resistance, concurrent token consumption, email changes, delivery failure, session revocation, and rollback before security sign-off."
     }
   ],
-  "sourceReviewNote": "The reviewed API handler source was refreshed after adding explicit GET-only rejection for /api/novels and /api/admin/stats. Homepage SSR and theme work is confined to the Worker HTML renderer and browser assets; the existing 45 route-method ownership entries remain the reviewed subset, with all other routes still explicitly pending. Fingerprint refreshed for the schema-bootstrap-only Worker change in PR #228; no route declarations or authorization handler behavior changed. Fingerprint refreshed for strict whole-number 1–10 rating validation; existing authenticated-owner and rights checks are unchanged. POST /api/bookmark and POST /api/history now validate positive safe-integer targets and require the exact published chapter of a published rights-eligible novel before writing; user_id is derived only from authenticated session u.id. Cross-account runtime proof remains pending.",
-  "sourceCommit": "565cb3c1db1d688ce12c3dcaf33eac1d1aec1bdb"
+  "sourceReviewNote": "The reviewed API handler source was refreshed after adding explicit GET-only rejection for /api/novels and /api/admin/stats. Homepage SSR and theme work is confined to the Worker HTML renderer and browser assets; the existing 45 route-method ownership entries remain the reviewed subset, with all other routes still explicitly pending. Fingerprint refreshed for the schema-bootstrap-only Worker change in PR #228; no route declarations or authorization handler behavior changed. Fingerprint refreshed for strict whole-number 1–10 rating validation; existing authenticated-owner and rights checks are unchanged. POST /api/bookmark and POST /api/history now validate positive safe-integer targets and require the exact published chapter of a published rights-eligible novel before writing; user_id is derived only from authenticated session u.id. Cross-account runtime proof remains pending. Community engagement routes revalidated against the exact Worker blob; quota and duplicate-report behavior covered by SQLite trigger tests.",
+  "sourceCommit": "4fee7d078a53ebaae6316c6d602bfde435c46145"
 }
