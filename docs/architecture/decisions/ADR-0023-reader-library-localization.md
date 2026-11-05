@@ -30,4 +30,4 @@ An older reader branch contains useful localization and bookmark-management beha
 
 ## Validation
 
-`scripts/test-library-localization.mjs` verifies 14 locales and 23 strings, page-local translation behavior, bookmark removal controls, reading-progress display, ten-point rating formatter parity, and byte-identical source/served bundles.
+`scripts/test-library-localization.mjs` verifies 14 locales and 25 strings, page-local translation behavior, bookmark removal controls, reading-progress display, ten-point rating formatter parity, and byte-identical source/served bundles.
