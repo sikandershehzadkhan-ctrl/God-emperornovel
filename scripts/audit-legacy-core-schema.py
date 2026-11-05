@@ -347,8 +347,8 @@ def self_test(migration_path: Path) -> None:
     # Same-name objects with altered SQL must not pass as canonical.
     altered = sqlite3.connect(":memory:")
     canonical.backup(altered)
-    altered.execute("DROP TRIGGER IF EXISTS trg_users_username_history_guard")
-    altered.execute("CREATE TRIGGER trg_users_username_history_guard AFTER INSERT ON users BEGIN SELECT 1; END")
+    altered.execute("DROP INDEX IF EXISTS idx_novels_updated")
+    altered.execute("CREATE INDEX idx_novels_updated ON novels(views)")
     altered.execute("PRAGMA query_only=ON")
     altered_result = audit_connections(altered, canonical)
     assert altered_result["object_definition_mismatches"], "same-name trigger/index definitions must be compared"
