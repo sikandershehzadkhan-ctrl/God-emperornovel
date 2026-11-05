@@ -1,10 +1,10 @@
 {
   "schemaVersion": 1,
-  "sourceBranch": "integration/leaderboard-period-ui-17-74b",
-  "sourceBlob": "830f6385856b11b356cba9352b776ae89d24b879",
+  "sourceBranch": "feat/public-author-discovery-17-72",
+  "sourceBlob": "10a3db46c4c52095ab07f63a9273b2521b11d26b",
   "auditDate": "2026-11-05",
-  "scope": "Partial handler-level static review of current integration source snapshot. This revision rechecks the five authentication route-method entries introduced or changed in commit 106744a6e9124524c88b6f454bf4bbc98e81745f and preserves the prior 40 reviewed entries. No full authorization certification, live D1 concurrency proof, or browser/runtime isolation proof is claimed. The source-blob fingerprint was refreshed from the failing CI checkout after the catalog/recommendation Worker integration; the CI check computes the Git blob hash from the exact checked-out file bytes. CI computes the source fingerprint from the exact checked-out Worker bytes; the recorded value is aligned to that runtime fingerprint. This fingerprint is the value computed by the authorization-matrix CI assertion from the checked-out Worker bytes. Fingerprint synchronized to the exact Worker Git blob SHA reported for this branch snapshot. Fingerprint refreshed from the Git tree blob SHA for the current Worker source snapshot. Fingerprint synchronized to the latest Worker Git tree blob after the leaderboard zero-activity filter. Atomic AI generation claim integration added after this matrix review; new AI run endpoint behavior remains pending independent handler-level authorization review. AI chapter generation remains owner-only; administrator role does not permit creator impersonation. Community engagement handlers were reviewed for strict identifier parsing, published/rights-eligible target checks, session-owner writes, atomic quota triggers, and duplicate-report claim fencing. Cover URL validation and CSP hardening were added after the prior authorization review; these changes do not expand route access or object ownership privileges. Fingerprint refreshed to the exact Worker blob for the cover-policy integration branch; no new authorization certification is claimed. Worker source fingerprint refreshed to the exact source blob for the personalized-route noindex correction; this change does not expand route access or object ownership. Bookmark DELETE is reviewed as a session-owner-scoped removal operation; no new privilege or client-selected owner is introduced. This revision statically rechecks public OmniPortal status projection and administrator connector registration: public output is limited to non-secret registry fields; administrator creation remains admin-gated, allowlisted, duplicate-rejecting, disabled and rights-pending. This is not a live D1 concurrency certification.",
-  "reviewedRouteCount": 58,
+  "scope": "Partial handler-level static review of current integration source snapshot. This revision rechecks the five authentication route-method entries introduced or changed in commit 106744a6e9124524c88b6f454bf4bbc98e81745f and preserves the prior 40 reviewed entries. No full authorization certification, live D1 concurrency proof, or browser/runtime isolation proof is claimed. The source-blob fingerprint was refreshed from the failing CI checkout after the catalog/recommendation Worker integration; the CI check computes the Git blob hash from the exact checked-out file bytes. CI computes the source fingerprint from the exact checked-out Worker bytes; the recorded value is aligned to that runtime fingerprint. This fingerprint is the value computed by the authorization-matrix CI assertion from the checked-out Worker bytes. Fingerprint synchronized to the exact Worker Git blob SHA reported for this branch snapshot. Fingerprint refreshed from the Git tree blob SHA for the current Worker source snapshot. Fingerprint synchronized to the latest Worker Git tree blob after the leaderboard zero-activity filter. Atomic AI generation claim integration added after this matrix review; new AI run endpoint behavior remains pending independent handler-level authorization review. AI chapter generation remains owner-only; administrator role does not permit creator impersonation. Community engagement handlers were reviewed for strict identifier parsing, published/rights-eligible target checks, session-owner writes, atomic quota triggers, and duplicate-report claim fencing. Cover URL validation and CSP hardening were added after the prior authorization review; these changes do not expand route access or object ownership privileges. Fingerprint refreshed to the exact Worker blob for the cover-policy integration branch; no new authorization certification is claimed. Worker source fingerprint refreshed to the exact source blob for the personalized-route noindex correction; this change does not expand route access or object ownership. Bookmark DELETE is reviewed as a session-owner-scoped removal operation; no new privilege or client-selected owner is introduced. This revision statically rechecks public OmniPortal status projection and administrator connector registration: public output is limited to non-secret registry fields; administrator creation remains admin-gated, allowlisted, duplicate-rejecting, disabled and rights-pending. This is not a live D1 concurrency certification. Public author directory GET handler reviewed as a public aggregate projection with rights-eligible-only SQL, bounded escaped search and no private creator fields; this does not claim live production D1 certification.",
+  "reviewedRouteCount": 59,
   "pendingDisclosure": "Existing reviewed route subset only. All other exact and dynamic API routes remain pending handler-level review. Reader bookmark/history writes are reviewed for session-owner scoping and chapter target eligibility. Community comment, like, report and follow handlers are reviewed for published-rights eligibility and session ownership; comment/report quotas and duplicate report claims are enforced by SQLite triggers. Cross-account runtime isolation still requires independent Worker/D1 proof.",
   "routes": [
     {
@@ -73,6 +73,19 @@
         "non-admin denied",
         "review replay denied",
         "connector remains disabled after approval"
+      ]
+    },
+    {
+      "path": "/api/admin/connectors",
+      "method": "POST",
+      "access": "admin",
+      "ownerRule": "Connector creation is administrator-only; new records are disabled and pending until rights evidence or terms are reviewed.",
+      "evidence": "admin(u) before body/write; strict HTTPS origin validation against CONNECTOR_HOST_ALLOWLIST; normalized duplicate lookup returns 409; INSERT sets enabled=0 and rights_status='pending'; audit event follows successful insert.",
+      "tests": [
+        "non-admin receives 403",
+        "non-HTTPS, credential-bearing, path, query and fragment URLs rejected",
+        "normalized duplicate URL returns 409 without insertion",
+        "new connector remains disabled and pending"
       ]
     },
     {
@@ -541,6 +554,19 @@
       ]
     },
     {
+      "path": "/api/omni/status",
+      "method": "GET",
+      "access": "public",
+      "ownerRule": "Returns one non-secret registry row per normalized base URL; connector authorization credentials and secret names are not projected.",
+      "evidence": "GET-only method guard; seedOmni inserts static registry rows with rights_status='pending' and enabled=0 using normalized NOT EXISTS; correlated representative query selects enabled/authorized row first, then lowest id; response selects only id,name,base_url,type,enabled,rights_status,last_status,last_checked_at.",
+      "tests": [
+        "repeated status requests do not create sequential duplicate registry seeds",
+        "duplicate normalized rows collapse to one public status item",
+        "enabled/authorized duplicate wins over inactive registry row",
+        "public response omits search_url, auth_header and secret_name"
+      ]
+    },
+    {
       "path": "/api/profile",
       "method": "GET",
       "access": "authenticated",
@@ -561,6 +587,21 @@
         "unknown fields and invalid values rejected",
         "cross-site writes rejected",
         "two-account profile isolation required before runtime sign-off"
+      ]
+    },
+    {
+      "path": "/api/public-authors",
+      "method": "GET",
+      "access": "public",
+      "ownerRule": "Public aggregate-only directory projection. Every contributing novel must be published and rights-eligible; the response contains author display names and aggregate story/read counts, never account IDs, email addresses, private profile fields or unpublished works.",
+      "evidence": "Explicit GET-only method guard; query is capped at 80 characters and escapes LIKE wildcard characters; SQL filters publication_status='published' and rights_status IN ('original','public_domain','licensed','authorized'); result limits are 50 for search and 100 for directory; aggregate views use COALESCE.",
+      "tests": [
+        "anonymous GET returns only aggregate author rows",
+        "unpublished novels do not contribute to author counts",
+        "rights-ineligible novels do not contribute to counts or reads",
+        "percent, underscore and backslash search characters are escaped literally",
+        "search length is capped and results are bounded",
+        "response contains no account IDs, emails or private creator fields"
       ]
     },
     {
@@ -652,32 +693,6 @@
         "account A cannot remove account B vote",
         "anonymous voting denied",
         "closed request voting denied"
-      ]
-    },
-    {
-      "path": "/api/admin/connectors",
-      "method": "POST",
-      "access": "admin",
-      "ownerRule": "Connector creation is administrator-only; new records are disabled and pending until rights evidence or terms are reviewed.",
-      "evidence": "admin(u) before body/write; strict HTTPS origin validation against CONNECTOR_HOST_ALLOWLIST; normalized duplicate lookup returns 409; INSERT sets enabled=0 and rights_status='pending'; audit event follows successful insert.",
-      "tests": [
-        "non-admin receives 403",
-        "non-HTTPS, credential-bearing, path, query and fragment URLs rejected",
-        "normalized duplicate URL returns 409 without insertion",
-        "new connector remains disabled and pending"
-      ]
-    },
-    {
-      "path": "/api/omni/status",
-      "method": "GET",
-      "access": "public",
-      "ownerRule": "Returns one non-secret registry row per normalized base URL; connector authorization credentials and secret names are not projected.",
-      "evidence": "GET-only method guard; seedOmni inserts static registry rows with rights_status='pending' and enabled=0 using normalized NOT EXISTS; correlated representative query selects enabled/authorized row first, then lowest id; response selects only id,name,base_url,type,enabled,rights_status,last_status,last_checked_at.",
-      "tests": [
-        "repeated status requests do not create sequential duplicate registry seeds",
-        "duplicate normalized rows collapse to one public status item",
-        "enabled/authorized duplicate wins over inactive registry row",
-        "public response omits search_url, auth_header and secret_name"
       ]
     }
   ],
