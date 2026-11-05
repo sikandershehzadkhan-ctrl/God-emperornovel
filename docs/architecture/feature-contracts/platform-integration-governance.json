@@ -63,7 +63,8 @@
     "Community comment and report quotas are database-enforced at 10 per rolling hour; duplicate reports are serialized with a unique claim.",
     "Personalized recommendation HTML routes /for-you and /made-for-you are excluded from search indexing; crawler directives do not replace authentication or owner scoping.",
     "DELETE /api/bookmark validates positive safe-integer novel/chapter identifiers and deletes only WHERE user_id=u.id AND novel_id=? AND chapter_number=?; no schema migration.",
-    "Reader progress UI exposes chapter completion separately from novel chapter position; no API or persistence contract changes."
+    "Reader progress UI exposes chapter completion separately from novel chapter position; no API or persistence contract changes.",
+    "Library and history views consume existing owner-scoped GET APIs and the session-owner-scoped DELETE /api/bookmark operation; no new API route or persistence contract is introduced."
   ],
   "dataEntities": [
     "Existing canonical D1 entities only; no duplicate ledgers or parallel account-deletion store",
@@ -123,7 +124,8 @@
       "test-runtime-feature-schema.mjs: v2-to-v3 upgrade and non-empty trigger checks",
       "test-seo-indexing-guards.mjs: personalized /for-you and /made-for-you routes remain noindex",
       "test-reader-bookmark-intent.mjs: explicit bookmark action, owner-scoped DELETE, guest toggle and source/served bundle parity.",
-      "test-reader-accessibility.mjs: labeled chapter progress, live progress values, accessible drawer focus/Escape behavior and font control names."
+      "test-reader-accessibility.mjs: labeled chapter progress, live progress values, accessible drawer focus/Escape behavior and font control names.",
+      "test-library-localization.mjs: 14 locale dictionary completeness, library/history localization, explicit bookmark removal, progress display and canonical ten-point rating formatter."
     ],
     "integration": [
       "test-platform-architecture-contract.mjs",
