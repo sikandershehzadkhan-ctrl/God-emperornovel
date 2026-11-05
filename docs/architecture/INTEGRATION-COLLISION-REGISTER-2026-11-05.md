@@ -17,6 +17,8 @@ The original collision table below is retained as a historical snapshot. The fol
 | #236 main ancestry reconciliation | Merged into the canonical integration root as `4a538dfde11e301dfa4fb0aa65ea1b18c3f196e5` | Exact-head six-workflow validation passed; the integration root now contains the current main ancestry |
 | #234 earlier ancestry reconciliation attempt | Closed as duplicate | Replaced by #236, which reran checks against the refreshed canonical base |
 | #195 canonical architecture integration | Open, draft, not merged to main | Current candidate head follows the main-ancestry reconciliation. Consult the latest exact-head workflow runs and live compare before any merge decision; passing CI is not production approval |
+| #244 OmniPortal connector registry deduplication | Merged into the canonical integration root as `bb8b47a3d6eb4833fcc05269b1f06cc3dec4a652` | Exact-head six-workflow validation passed; repeated registry seeding is idempotent, public status is deduplicated, duplicate admin registrations are rejected, and new connectors remain pending until rights review |
+| #243 first connector-registry validation attempt | Closed as superseded by #244 | The initial exact-head build exposed a missing platform-integration contract update; the corrected complete change was reconstructed and all six workflows passed on #244 |
 | #189 homepage SSR / design foundation | Closed as superseded after path-level audit | SSR module and design stylesheet are byte-identical on the canonical root; equivalent Worker integration and regression tests are present. The old PR's 17.24 bundle is absent from the active 17.23 runtime and must not be reintroduced |
 | #216 legacy core-schema rebuild plan | Closed as superseded by PR #237 | The old plan referenced an obsolete migration head and stale PR numbers. Its read-only preflight, fail-closed data disposition, fixture, backup, restore, and D1 transaction requirements were preserved and refreshed |
 | #208 governance closure register | Closed as superseded by PR #237 | The old register contained historical PR/issue statuses and branch-protection observations. The useful closure gates were retained while volatile facts were marked for live re-verification |
@@ -149,7 +151,7 @@ For each item, first check whether a current route implements the same behavior 
 
 The canonical root contains `src/homepage-ssr.mjs`, `src/public-novel.mjs` and `scripts/test-homepage-ssr-integration.mjs`. The older #156 branch has a materially different SSR renderer and a test coupled to its old homepage markup, old client bundle and old CSS. Replacing the current renderer or the active 17.23 browser bundle with those files would reintroduce stale runtime content.
 
-A separate test in #156 exposed a genuine remaining behavior gap: `seedOmni` used `INSERT OR IGNORE` despite the current `connectors` table having no matching unique constraint, and public OmniPortal status did not collapse duplicate normalized base URLs. That behavior has been selectively reconstructed on the canonical root in **PR #243**. The same slice also closes an authorization gap in the administrator connector-create route: new connectors are disabled and pending until evidence/terms review, rather than being inserted as authorized without evidence. PR #243 is open and awaits exact-head validation; it is not merged.
+A separate test in #156 exposed a genuine remaining behavior gap: `seedOmni` used `INSERT OR IGNORE` despite the current `connectors` table having no matching unique constraint, and public OmniPortal status did not collapse duplicate normalized base URLs. That behavior has been selectively reconstructed on the canonical root in **PR #243**. The same slice also closes an authorization gap in the administrator connector-create route: new connectors are disabled and pending until evidence/terms review, rather than being inserted as authorized without evidence. PR #244 merged the corrected slice after all six exact-head workflows passed.
 
 ### PRs #145–#131: localization chain remains a parity gap
 
@@ -157,7 +159,7 @@ The legacy chain is based on the 17.24 runtime and includes stale migration file
 
 The canonical app already has the 14-language interface dictionary and selected localized surfaces, including Library/History coverage, but the audit found missing canonical tests for several legacy surfaces and no equivalent `HOME_LANG` homepage-content dictionary in the current `public/app.js`. The unique localization requirements need path-by-path parity checks and bounded ports on a fresh canonical branch. Keep the legacy chain open until that work is accounted for; do not close it merely because its branches are stale.
 
-### PR #243: connector-registry acceptance boundary
+### PR #244: connector-registry acceptance boundary
 
 - Registry seed uses a normalized `NOT EXISTS` guard; public status selects one stable representative per normalized URL and prefers an enabled/authorized row.
 - Administrator connector creation validates an allowlisted HTTPS origin, rejects a normalized duplicate with HTTP 409, and creates a disabled/pending record.
