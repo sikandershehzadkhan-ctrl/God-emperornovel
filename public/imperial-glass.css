@@ -151,3 +151,37 @@ html[data-theme="dark"] .secondary{
     box-shadow:none;
   }
 }
+
+
+/* Mobile viewport correction: keep fixed navigation opaque and reserve its full
+   footprint so the last content row can scroll clear of the navigation. */
+@media (max-width:760px){
+  html:not([data-theme="dark"]) .mobileNav,
+  html[data-theme="light"] .mobileNav{
+    background:#FFFFFF;
+    border-top:1px solid rgba(11,18,21,.14);
+    box-shadow:0 -8px 24px rgba(11,18,21,.08);
+    -webkit-backdrop-filter:none;
+    backdrop-filter:none;
+    padding-bottom:calc(10px + env(safe-area-inset-bottom, 0px));
+  }
+  html[data-theme="dark"] .mobileNav{
+    background:#0B1215;
+    border-top:1px solid rgba(255,255,255,.16);
+    box-shadow:0 -8px 24px rgba(0,0,0,.28);
+    -webkit-backdrop-filter:none;
+    backdrop-filter:none;
+    padding-bottom:calc(10px + env(safe-area-inset-bottom, 0px));
+  }
+  .page{
+    padding-bottom:calc(124px + env(safe-area-inset-bottom, 0px))!important;
+  }
+  .mobileNav a{
+    min-height:48px;
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    justify-content:center;
+    gap:3px;
+  }
+}
