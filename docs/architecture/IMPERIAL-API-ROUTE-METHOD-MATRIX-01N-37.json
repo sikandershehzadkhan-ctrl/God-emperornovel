@@ -1,8 +1,8 @@
 {
   "schemaVersion": 1,
   "name": "Imperial Novel API route method inventory",
-  "sourceBranch": "integration/leaderboard-period-ui-17-74b",
-  "sourceBlob": "830f6385856b11b356cba9352b776ae89d24b879",
+  "sourceBranch": "security/omni-bounded-json-response-17-79",
+  "sourceBlob": "09d967a1204849653731a1b5a4dd98bba69d06fb",
   "auditDate": "2026-11-05",
   "scope": "Static dispatcher scan of the integrated Worker. Observed method guards only; this is not a complete permission or runtime contract. Bookmark and history POST writes now require positive safe-integer identifiers and an exact published chapter belonging to a published, rights-eligible novel; validation occurs before persistence. Community POST handlers now use strict positive safe-integer identifiers and published rights-eligible targets; comment/report quotas and duplicate report claims are database-trigger enforced. Worker source fingerprint refreshed to the exact source blob for the personalized-route noindex correction; this change does not expand route access or object ownership. Explicit bookmark removal is DELETE on the singular /api/bookmark resource; the plural /api/bookmarks resource is the authenticated GET list. OmniPortal connector registry seeding now uses a normalized NOT EXISTS guard; the public status projection deduplicates normalized base URLs and preserves the enabled/authorized representative. Administrator connector creation validates an allowlisted HTTPS origin, rejects duplicate URLs and creates new entries disabled/pending. No route signature was added or removed. The Worker source fingerprint is refreshed after the leaderboard chapter/time index addition; no route signature changed.",
   "exactRouteCount": 80,
@@ -1313,6 +1313,6 @@
     "This matrix does not inspect DTO exposure, cache headers, CSRF, rate limits, body size, or database transaction semantics.",
     "Community comment and report hourly quotas are enforced by SQLite BEFORE INSERT triggers; duplicate reports are fenced by a unique claim. Static route inventory does not itself certify trigger execution."
   ],
-  "sourceCommit": "df84b84a51c0b5e24f72c016ddaf95e181be27d1",
+  "sourceCommit": "c9710a8c4dbf7a9bbca4ac1c448b7800f7d68947",
   "refreshNote": "Refreshed to the exact Worker blob after adding the idempotent chapter/time unlock lookup index for period-correct leaderboard queries; no route signatures changed."
 }
