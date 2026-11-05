@@ -36,7 +36,8 @@
     "delivery-platform",
     "platform-kernel",
     "catalog",
-    "reader-progress-target-validation"
+    "reader-progress-target-validation",
+    "cover-url-boundary"
   ],
   "routes": [
     "Existing canonical route set; update registry for behavior changes",
@@ -51,7 +52,9 @@
     "PUT /api/account/preferences updates only session u.id after strict allowlist validation",
     "GET /api/public-profile/:username exposes only public, non-banned profile projection and opt-in aggregate stats",
     "POST /api/bookmark validates the target chapter belongs to the requested published rights-eligible novel before writing only to session u.id.",
-    "POST /api/history validates the target chapter belongs to the requested published rights-eligible novel before writing only to session u.id."
+    "POST /api/history validates the target chapter belongs to the requested published rights-eligible novel before writing only to session u.id.",
+    "Author and administrator novel create/update APIs accept only the built-in placeholder or an exact bundled same-origin cover path.",
+    "The default Content Security Policy blocks remote cover images; HTTPS images are allowed only on chapter-reader routes for comic page media."
   ],
   "dataEntities": [
     "Existing canonical D1 entities only; no duplicate ledgers or parallel account-deletion store",
@@ -104,7 +107,8 @@
       "test-runtime-schema-parity.mjs: runtime role constraint, foreign-key and default source assertions",
       "test-rating-input-validation.mjs: whole-number 1–10 validation and malformed input rejection",
       "test-rating-handler-canonical.mjs: canonical ten-point route, rights and direct safe-integer checks",
-      "test-reader-progress-policy.mjs: strict integer target parser and Worker route guard assertions"
+      "test-reader-progress-policy.mjs: strict integer target parser and Worker route guard assertions",
+      "test-cover-url-policy.mjs: exact allowlist and Worker/client/Author Studio integration"
     ],
     "integration": [
       "test-platform-architecture-contract.mjs",
@@ -140,7 +144,8 @@
       "node scripts/test-runtime-schema-parity.mjs",
       "node scripts/test-rating-input-validation.mjs",
       "node scripts/test-reader-progress-policy.mjs",
-      "python3 scripts/test-reader-progress-targets.py"
+      "python3 scripts/test-reader-progress-targets.py",
+      "node scripts/test-cover-url-policy.mjs"
     ]
   },
   "rollout": {
@@ -173,7 +178,7 @@
   },
   "collisionReview": {
     "duplicateRoutes": "Checked against canonical route registry; existing /api/bookmark and /api/history methods only, no new route",
-    "duplicateEntities": "Checked against canonical schema and migration collision register",
+    "duplicateEntities": "Existing novels.cover_url only; no new media table or route.",
     "migrationAllocation": "No new migration allocated. Migration 0001 is immutable and remains the canonical definition for the audited core tables. Migration 0046 remains allocated to the canonical umbrella integration PR #195.",
     "sharedSurfaceOwners": "Declared in ownership map and integration contract"
   },
@@ -194,7 +199,7 @@
     "repository-operations",
     "rights"
   ],
-  "changeSummary": "Consolidates current-main platform/security foundations with homepage SSR and the six-theme experience, while introducing canonical ownership, dependency, migration and integration governance. Adds mandatory isolated identity and media policy validation gates without changing Worker routes, UI bundles or D1 schema. Adds owner-scoped reader progress API and ensures architecture/source CI runs on nested integration PRs. Adds the reader browser client integration to the existing owner-scoped reading-position API and mandatory regression coverage. Integrates owner-scoped profile and account-preference APIs and a visibility-filtered public profile projection into the same canonical Worker as reader progress. Adds the account profile editor and cross-device settings synchronization while preserving the reader-progress browser integration. Adds a PR-lineage gate that serializes overlapping Worker, browser bundle, identity, migration, route inventory, workflow and release-configuration changes. Extends serialized surface protection to every top-level served CSS, JavaScript and webmanifest asset so versioned style/service-worker files cannot diverge silently. Hardens Author Studio chapter editing and publication by enforcing parent publication state, rights evidence, comic page-sequence validation on edits, safe integer chapter costs and verified chapter-route identifier parsing. Adds atomic token-fenced AI Author Studio generation claims with concurrent-run exclusion, stale-claim recovery, late-result rejection, owner-only authorization, and migration 0046. Adds a fail-closed production release gate because the deploy workflow currently applies only migrations 0009-0011 while the canonical integration line contains later migrations. Aligns runtime first-install core DDL with immutable migration 0001, adds source and SQLite parity regression tests, and extends the read-only production schema preflight to report core foreign-key definitions and integrity violations. Enforces whole-number 1–10 rating input without rounding and adds mandatory malformed-input regression coverage. Adds strict reader progress target validation: bookmark/history writes require a positive safe-integer novel/chapter pair that resolves to the exact published chapter of a published, rights-eligible novel; invalid targets are rejected before mutation and ownership remains session-derived.",
+  "changeSummary": "Consolidates current-main platform/security foundations with homepage SSR and the six-theme experience, while introducing canonical ownership, dependency, migration and integration governance. Adds mandatory isolated identity and media policy validation gates without changing Worker routes, UI bundles or D1 schema. Adds owner-scoped reader progress API and ensures architecture/source CI runs on nested integration PRs. Adds the reader browser client integration to the existing owner-scoped reading-position API and mandatory regression coverage. Integrates owner-scoped profile and account-preference APIs and a visibility-filtered public profile projection into the same canonical Worker as reader progress. Adds the account profile editor and cross-device settings synchronization while preserving the reader-progress browser integration. Adds a PR-lineage gate that serializes overlapping Worker, browser bundle, identity, migration, route inventory, workflow and release-configuration changes. Extends serialized surface protection to every top-level served CSS, JavaScript and webmanifest asset so versioned style/service-worker files cannot diverge silently. Hardens Author Studio chapter editing and publication by enforcing parent publication state, rights evidence, comic page-sequence validation on edits, safe integer chapter costs and verified chapter-route identifier parsing. Adds atomic token-fenced AI Author Studio generation claims with concurrent-run exclusion, stale-claim recovery, late-result rejection, owner-only authorization, and migration 0046. Adds a fail-closed production release gate because the deploy workflow currently applies only migrations 0009-0011 while the canonical integration line contains later migrations. Aligns runtime first-install core DDL with immutable migration 0001, adds source and SQLite parity regression tests, and extends the read-only production schema preflight to report core foreign-key definitions and integrity violations. Enforces whole-number 1–10 rating input without rounding and adds mandatory malformed-input regression coverage. Adds strict reader progress target validation: bookmark/history writes require a positive safe-integer novel/chapter pair that resolves to the exact published chapter of a published, rights-eligible novel; invalid targets are rejected before mutation and ownership remains session-derived. Adds strict same-origin cover URL validation for author/admin novel create and update flows, replaces arbitrary Author Studio URL inputs with bundled cover choices, constrains client rendering to the same allowlist, and narrows remote image CSP exceptions to chapter-reader routes.",
   "acceptanceCriteria": [
     "Every changed repository path resolves to one registered owner",
     "Dependency graph is acyclic and every edge points from consumer to lower-level dependency",
