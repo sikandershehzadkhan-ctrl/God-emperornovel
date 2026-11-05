@@ -261,3 +261,10 @@ The canonical app already has the 14-language interface dictionary and selected 
 
 - The first exact-head build confirmed the locale dictionary and other checks loaded, then exposed a brittle assertion that expected rankingText() to wrap explanatory copy directly. The implementation intentionally marks static explanation paragraphs with data-in-lang and reapplies setINLang after rendering; dynamic counts use rankingText().
 - Updated the regression to assert the actual static-markup and dynamic-count paths separately. The chapter-unlock wording remains unchanged and accurately reflects the canonical API. A clean exact-head run is required.
+
+
+### Period leaderboard regression compatibility
+
+- The first rankings-localization build passed the new locale test but exposed a hard-coded English suffix in the existing period-correct leaderboard regression. The UI now correctly renders the unlock metric through rankingText('unlocks') for the active locale.
+- Updated the existing API/UI regression to assert that numeric unlock counts use the locale key, preserving the period, rights, zero-activity and numeric-count checks. The test was registered in the feature and platform contracts; no assertion was removed.
+- A fresh exact-head validation is required.
