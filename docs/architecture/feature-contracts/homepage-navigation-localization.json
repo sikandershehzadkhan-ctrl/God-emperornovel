@@ -10,12 +10,14 @@
     "package.json",
     "docs/architecture/decisions/ADR-0019-homepage-and-navigation-localization.md",
     "docs/architecture/feature-contracts/homepage-navigation-localization.json",
-    "docs/architecture/feature-contracts/platform-integration-governance.json"
+    "docs/architecture/feature-contracts/platform-integration-governance.json",
+    "scripts/check-content-formats.mjs"
   ],
   "sharedSurfaces": [
     "public/app.js",
     "public/app-17.23.0.js",
-    "package.json"
+    "package.json",
+    "scripts/check-content-formats.mjs"
   ],
   "dependencies": [
     "experience-shell",
@@ -53,7 +55,8 @@
   "tests": {
     "unit": [
       "scripts/test-homepage-localization.mjs",
-      "scripts/test-navigation-accessibility-localization.mjs"
+      "scripts/test-navigation-accessibility-localization.mjs",
+      "scripts/check-content-formats.mjs: keyboard skip-link, localized RTL and language fallback compatibility."
     ],
     "integration": [
       "Homepage static copy localization across SSR handoff and client fallback; search placeholder/accessible name translation; skip-link language and RTL direction; canonical/versioned bundle parity."
@@ -96,7 +99,7 @@
     "repository-operations",
     "platform-architecture"
   ],
-  "changeSummary": "Ports fourteen-locale homepage copy and accessible skip-navigation labels onto the canonical 17.23 runtime, including search placeholder/accessible-name translation and Persian RTL, without replacing current SSR or translating creator content.",
+  "changeSummary": "Ports fourteen-locale homepage copy and accessible skip-navigation labels onto the canonical 17.23 runtime, including search placeholder/accessible-name translation and Persian RTL, without replacing current SSR or translating creator content. Updates the existing content-format accessibility regression to recognize the localized skip-link and Persian RTL behavior.",
   "acceptanceCriteria": [
     "All 54 homepage core strings and 12 additional section strings have non-empty translations in all fourteen locales.",
     "Homepage localization runs after both SSR handoff and client fallback.",
@@ -105,6 +108,7 @@
     "The skip-navigation link has a translation in all fourteen interface locales.",
     "Urdu, Arabic and Persian set document direction to RTL.",
     "The mutation observer does not repeatedly rewrite unchanged text and disconnects when the app root is detached.",
-    "public/app.js and public/app-17.23.0.js remain byte-identical."
+    "public/app.js and public/app-17.23.0.js remain byte-identical.",
+    "Existing keyboard skip-navigation and language fallback regression checks remain valid after localization."
   ]
 }
