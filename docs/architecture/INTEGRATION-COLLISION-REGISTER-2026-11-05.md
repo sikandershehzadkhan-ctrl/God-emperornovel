@@ -211,3 +211,29 @@ The canonical app already has the 14-language interface dictionary and selected 
 - The initial exact-head build identified two stale string-level assertions in existing tests, plus a selector-format assertion in the Library localization test. The implementation compatibility and test expectations were corrected, then the clean exact-head run passed.
 - PR #253 was squash-merged into the governed integration root as 6fa17d5ec807f6cf08a650f3584ad1dbb44482a2. It was not merged into main and does not authorize production deployment.
 - Creator-authored story titles, author names and dynamic catalog content remain excluded from automatic translation. No API, Worker, database entity, migration, account setting or production data change was introduced.
+
+
+### PR #143: settings and reader localization collision
+
+- The legacy localization branch is based on the older stacked 17.24 chain and replaces the reader function with a version that predates the canonical session-owned progress API. It is not safe to merge wholesale.
+- The canonical root already has a full settings page, six-theme preferences, account preference synchronization, reader progress synchronization, bookmarks and Crown unlock flows. Those implementations are preserved.
+- Ported the fourteen-locale settings dictionary and native-language selector into the existing settings page using the existing browser-local imperial_language preference.
+- Ported ten reader strings into the existing fourteen-locale dictionary, marking only static labels and resolving dynamic progress/footer copy through readerText. Chapter content and user-owned state remain unchanged.
+- Added settings and reader localization regression tests to the mandatory build, plus ADR-0025 and a feature contract.
+- No route signature, API contract, database entity, migration, production data mutation or deployment is introduced. Exact-head CI is required before integration.
+
+
+### Settings/reader localization build correction
+
+- The first exact-head build exposed that two legacy localization tests were still hard-coded to load the stale 17.24.0 bundle. The canonical platform serves 17.23.0, so the tests were corrected to validate public/app-17.23.0.js instead of importing or creating a stale 17.24 bundle.
+- Direct source checks now confirm the settings selector, fourteen-locale settings dictionary, ten reader translations, dynamic reader labels, and byte-identical canonical/versioned bundles. A fresh exact-head build is still required to certify the full suite.
+
+
+### Reader accessibility regression reconciliation
+
+- The first settings/reader localization build confirmed the new settings and reader locale tests were not yet the only integration gate: the existing reader accessibility test expected English-only progress aria-valuetext strings.
+- Updated the canonical reader to localize both initial and live progress announcements using readerText while preserving numeric progress values and progressbar semantics.
+- Updated the existing reader accessibility regression to assert localized initial/live value text, and registered the test in the settings-reader feature contract and platform integration governance.
+- No progress persistence, revision, bookmark, unlock or ownership behavior changed. A fresh exact-head build is required.
+
+- Follow-up refinement: the reader now reapplies the active locale after its markup handoff, translates bookmark and reader-theme accessible names, and uses the library dictionary for the remove-bookmark state. The canonical and served bundles are resynchronized; the feature contract records this lifecycle.
