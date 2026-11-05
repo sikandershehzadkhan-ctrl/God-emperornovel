@@ -54,6 +54,7 @@ try:
 except sqlite3.IntegrityError: pass
 assert db.execute("SELECT revoked_at FROM account_deletion_reviewer_assignments WHERE id=?",(revoke_id,)).fetchone()[0] is None
 assert db.execute("SELECT COUNT(*) FROM account_deletion_reviewer_assignment_events WHERE assignment_id=?",(revoke_id,)).fetchone()[0]==1
+db.execute("DROP TRIGGER injected_revocation_audit_failure")
 # Revoked reviewer cannot write specialist findings after the role has been revoked.
 db.executescript("""
 CREATE TABLE account_closure_requests(id INTEGER PRIMARY KEY,user_id INTEGER NOT NULL,status TEXT NOT NULL,FOREIGN KEY(user_id) REFERENCES users(id) ON DELETE RESTRICT);
