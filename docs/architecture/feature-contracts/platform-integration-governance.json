@@ -28,10 +28,15 @@
     "commerce-ledgers-payments",
     "admin-moderation-operations",
     "ai-trend-factory",
-    "omniportal-connectors"
+    "omniportal-connectors",
+    "ai",
+    "platform-data",
+    "platform-quality",
+    "repository-operations"
   ],
   "routes": [
-    "Existing canonical route set; update registry for behavior changes"
+    "Existing canonical route set; update registry for behavior changes",
+    "POST /api/author/ai/projects/:id/run uses an atomic token-fenced claim; GET /api/author/ai/projects/:id/jobs remains owner-scoped"
   ],
   "apiContracts": [
     "Existing API contracts; update method and authorization inventories for behavior changes",
@@ -42,14 +47,17 @@
     "GET /api/public-profile/:username exposes only public, non-banned profile projection and opt-in aggregate stats"
   ],
   "dataEntities": [
-    "Existing canonical D1 entities only; no duplicate ledgers or parallel account-deletion store"
+    "Existing canonical D1 entities only; no duplicate ledgers or parallel account-deletion store",
+    "ai_author_projects.active_run_token / active_run_started_at / active_run_owner_user_id",
+    "ai_chapter_jobs.run_token"
   ],
   "migrationPlan": {
     "required": true,
     "proposedNumbers": [
-      "0036-0045 already reconciled on this branch"
+      "0036-0045 already reconciled on this branch",
+      "0046 atomic AI generation claims"
     ],
-    "canonicalEntityReuse": "Reuse canonical account_closure_requests and current-main data model",
+    "canonicalEntityReuse": "Reuse canonical account_closure_requests and current-main data model; migration 0046 extends the existing AI Author Studio project/job tables without creating parallel entities.",
     "backwardCompatibility": "Preserve existing data and append only to globally sequenced migration history",
     "rollbackOrForwardRepair": "No production migration executed; use migration-specific forward repair for any future applied schema change"
   },
@@ -61,8 +69,8 @@
   },
   "privacySecurity": {
     "authentication": "Existing session authority remains canonical",
-    "authorization": "Authorization ownership matrix is authoritative for reviewed entries; unreviewed routes remain pending",
-    "ownerScoping": "User-owned records scoped by authenticated session owner",
+    "authorization": "Authorization ownership matrix is authoritative for reviewed entries; unreviewed routes remain pending; AI generation is strictly project-owner-only and does not permit administrator impersonation.",
+    "ownerScoping": "User-owned records scoped by authenticated session owner; each AI job and completion write is fenced by the active project claim token.",
     "csrf": "Existing write-route policy remains in force",
     "rateAndSizeLimits": "Preserve bounded route inputs and API method restrictions",
     "rightsAndPrivacy": "Homepage shelves include published rights-eligible novels only"
@@ -81,7 +89,9 @@
       "test-profile-account-api.mjs",
       "test-profile-account-api.mjs: account profile editor and preference sync UI",
       "test-creator-ownership-policy.mjs",
-      "test-comic-author-ui.mjs: chapter publication and edit policy guards"
+      "test-comic-author-ui.mjs: chapter publication and edit policy guards",
+      "test-atomic-ai-run-claims.mjs",
+      "test-ai-project-actor-ownership.mjs"
     ],
     "integration": [
       "test-platform-architecture-contract.mjs",
@@ -98,7 +108,8 @@
       "Account preference restoration and debounced cross-device synchronization",
       "Local Wrangler Worker and D1 account/reader isolation integration",
       "test-pr-shared-surface-lineage.mjs: enforce linear PR ancestry for overlapping serialized files",
-      "Local D1 Author Studio ownership, chapter route parsing, parent publication and rights-evidence integration"
+      "Local D1 Author Studio ownership, chapter route parsing, parent publication and rights-evidence integration",
+      "test-atomic-ai-run-claims.py: concurrent claims, stale recovery and late-worker rejection"
     ],
     "isolation": [
       "test-authorization-ownership-matrix.mjs",
@@ -134,7 +145,7 @@
   "collisionReview": {
     "duplicateRoutes": "Checked against canonical route registry",
     "duplicateEntities": "Checked against canonical schema and migration collision register",
-    "migrationAllocation": "0036-0045 reconciled against existing canonical sequence",
+    "migrationAllocation": "Migration 0046 reserved to the AI domain for PR 224; sequences 0001-0045 remain immutable.",
     "sharedSurfaceOwners": "Declared in ownership map and integration contract"
   },
   "affectedDomains": [
@@ -154,7 +165,7 @@
     "repository-operations",
     "rights"
   ],
-  "changeSummary": "Consolidates current-main platform/security foundations with homepage SSR and the six-theme experience, while introducing canonical ownership, dependency, migration and integration governance. Adds mandatory isolated identity and media policy validation gates without changing Worker routes, UI bundles or D1 schema. Adds owner-scoped reader progress API and ensures architecture/source CI runs on nested integration PRs. Adds the reader browser client integration to the existing owner-scoped reading-position API and mandatory regression coverage. Integrates owner-scoped profile and account-preference APIs and a visibility-filtered public profile projection into the same canonical Worker as reader progress. Adds the account profile editor and cross-device settings synchronization while preserving the reader-progress browser integration. Adds a PR-lineage gate that serializes overlapping Worker, browser bundle, identity, migration, route inventory, workflow and release-configuration changes. Extends serialized surface protection to every top-level served CSS, JavaScript and webmanifest asset so versioned style/service-worker files cannot diverge silently. Hardens Author Studio chapter editing and publication by enforcing parent publication state, rights evidence, comic page-sequence validation on edits, safe integer chapter costs and verified chapter-route identifier parsing.",
+  "changeSummary": "Consolidates current-main platform/security foundations with homepage SSR and the six-theme experience, while introducing canonical ownership, dependency, migration and integration governance. Adds mandatory isolated identity and media policy validation gates without changing Worker routes, UI bundles or D1 schema. Adds owner-scoped reader progress API and ensures architecture/source CI runs on nested integration PRs. Adds the reader browser client integration to the existing owner-scoped reading-position API and mandatory regression coverage. Integrates owner-scoped profile and account-preference APIs and a visibility-filtered public profile projection into the same canonical Worker as reader progress. Adds the account profile editor and cross-device settings synchronization while preserving the reader-progress browser integration. Adds a PR-lineage gate that serializes overlapping Worker, browser bundle, identity, migration, route inventory, workflow and release-configuration changes. Extends serialized surface protection to every top-level served CSS, JavaScript and webmanifest asset so versioned style/service-worker files cannot diverge silently. Hardens Author Studio chapter editing and publication by enforcing parent publication state, rights evidence, comic page-sequence validation on edits, safe integer chapter costs and verified chapter-route identifier parsing. Adds atomic token-fenced AI Author Studio generation claims with concurrent-run exclusion, stale-claim recovery, late-result rejection, owner-only authorization, and migration 0046.",
   "acceptanceCriteria": [
     "Every changed repository path resolves to one registered owner",
     "Dependency graph is acyclic and every edge points from consumer to lower-level dependency",
@@ -192,7 +203,12 @@
     "Chapter publication route extracts the chapter identifier from the dynamic path segment.",
     "Comic chapter content is revalidated on both create and edit.",
     "Chapter ticket costs are non-negative safe integers; fractional values are rejected.",
-    "Author Studio cross-account draft and chapter ownership isolation is exercised against local D1."
+    "Author Studio cross-account draft and chapter ownership isolation is exercised against local D1.",
+    "AI run claim is conditional and only one concurrent request succeeds per project.",
+    "Late AI workers cannot insert chapters or overwrite project progress after claim replacement.",
+    "Project configuration edits invalidate an active generation claim.",
+    "Migration 0046 is reserved and appended without modifying historical migrations.",
+    "AI generation remains restricted to the authenticated project owner; admins cannot impersonate creators."
   ],
   "sharedSurfaceSerialization": [
     ".github/workflows/",
