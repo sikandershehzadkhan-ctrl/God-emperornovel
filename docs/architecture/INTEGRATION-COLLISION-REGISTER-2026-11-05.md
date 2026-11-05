@@ -37,6 +37,8 @@ The original collision table below is retained as a historical snapshot. The fol
 | #251 alternate homepage localization | Closed as superseded by #253 | Same homepage/navigation surface; stale 17.23 branch failed a brittle Library localization assertion and omitted newer Settings/Rankings dictionaries. Its unique behavior is present in #253. |
 | #262 community localization | Open; refresh required | Current-root community localization candidate; six checks passed on recorded head, but it is one commit behind the current root. Rebase/port onto current head and rerun all six workflows. |
 | #263 bounded OmniPortal responses | Open, draft | Adds 1 MiB streaming JSON limit, 120-character search bound and eight-provider cap. Exact-head validation pending; no migration or deployment. |
+| #145 legacy homepage localization | Closed as superseded by #253 | Current-root HOME_LANG, accessible navigation, skip-link, RTL and SSR/client localization tests cover the same scope on the 17.23 runtime. |
+| #148 reader request history | Closed as superseded by canonical integration | Current Worker/UI and mandatory `test-reader-request-history.mjs` preserve owner scoping, bounded history and accessible status feedback. |
 
 ### Governance defects found and corrected
 
