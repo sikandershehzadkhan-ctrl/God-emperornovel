@@ -4,7 +4,52 @@
 
 This register records verified shared-file overlap among currently open pull requests targeting `main`. It is an integration-control artifact, not a declaration that any pull request is safe to merge independently. A PR being GitHub-`mergeable` only means GitHub currently sees no textual merge conflict against its base; it does not prove semantic compatibility with sibling PRs.
 
-## Verified collision set
+## Current disposition (verified 5 November 2026)
+
+The original collision table below is retained as a historical snapshot. The following updates supersede its former open-PR statuses and queue.
+
+| PR | Disposition | Evidence |
+|---|---|---|
+| #233 atomic community rate limits | Merged into the canonical integration root | Exact-head six-workflow validation passed after fixing the SQLite test separator and removing a duplicate claim insert |
+| #214 older community implementation | Closed as superseded | Its atomic quota behavior is represented by merged PR #233 |
+| #235 same-origin cover policy | Merged into the canonical integration root as `0f2a3a2c7144aa7ea56c529300a545363b5ef3f0` | Exact-head six-workflow validation passed, including cover-policy regression tests |
+| #213 older cover implementation | Closed as superseded | Its policy was ported to the canonical root and merged through PR #235 |
+| #236 main ancestry reconciliation | Merged into the canonical integration root as `4a538dfde11e301dfa4fb0aa65ea1b18c3f196e5` | Exact-head six-workflow validation passed; the integration root now contains the current main ancestry |
+| #234 earlier ancestry reconciliation attempt | Closed as duplicate | Replaced by #236, which reran checks against the refreshed canonical base |
+| #195 canonical architecture integration | Open, draft, not merged to main | Head `4a538dfde11e301dfa4fb0aa65ea1b18c3f196e5`; 588 commits ahead and 0 behind current main; all six CI workflows passed on this exact head |
+
+### Governance defects found and corrected
+
+1. The shared-surface lineage check could select the current PR as its own ancestor when a PR's base branch was also the head branch of a reverse-direction main-to-integration PR. The parent lookup now excludes the current PR and reverse-direction integration children.
+2. The lineage check now validates the actual ancestor stack without mistaking a PR that merges `main` into the integration root for a parent of the root-to-main PR.
+3. The community atomic-rate-limit test now constructs its SQLite statement separator without an escaped literal backslash and reuses the existing duplicate-report claim in its cascade assertion.
+4. The cover policy's exact Worker blob fingerprints, canonical domain ownership, ADR, feature contract and build regression gate were synchronized. The policy is enforced server-side on all four author/admin novel-cover write routes.
+
+### Remaining open-branch review
+
+The following groups remain open and have not been declared safe to merge or closed merely because they are old. Their unique behavior and tests must be reconciled against the canonical root before disposition:
+
+- #216 legacy core-schema rebuild plan and #208 governance closure register.
+- #189 older homepage-SSR/canonical-platform integration branch.
+- #176 platform completion register and #175 UX acceptance matrix.
+- #156 homepage SSR fallback and #155–#146 reader/home/catalog feature chain.
+- #145–#131 localization chain.
+- #127 design foundation, #122 sitemap, and #119 rating validation.
+- #95–#86 security hardening branches.
+- #49–#28 media, reader, security, product and research branches.
+- #8–#4 early product/engineering branches.
+
+These are stale-branch candidates, not automatically duplicate work. The root contains later canonical migrations through 0046 and a governed Worker, but individual feature parity and test coverage still require path-level review before any old branch is closed. No historical migration from an old branch may be copied or renumbered without the migration-allocation and ownership gates.
+
+### Current integration safety
+
+- Canonical root: `integration/architecture-governance-root-17-70`.
+- Current main ancestry is present in the root; comparison reports 588 commits ahead and 0 behind.
+- PR #195 remains draft. Passing CI is not approval to merge this 588-commit integration into main.
+- No production deployment or production D1 migration was performed as part of this reconciliation.
+- A successful exact-head CI run proves the tested commit passed those workflows; it does not certify every feature or production journey.
+
+## Historical collision snapshot (superseded by current disposition)
 
 All PRs below were observed open against the same base commit prefix `c909a8aa` during this audit.
 
