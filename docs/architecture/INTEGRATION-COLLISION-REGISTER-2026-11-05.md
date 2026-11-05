@@ -16,7 +16,7 @@ The original collision table below is retained as a historical snapshot. The fol
 | #213 older cover implementation | Closed as superseded | Its policy was ported to the canonical root and merged through PR #235 |
 | #236 main ancestry reconciliation | Merged into the canonical integration root as `4a538dfde11e301dfa4fb0aa65ea1b18c3f196e5` | Exact-head six-workflow validation passed; the integration root now contains the current main ancestry |
 | #234 earlier ancestry reconciliation attempt | Closed as duplicate | Replaced by #236, which reran checks against the refreshed canonical base |
-| #195 canonical architecture integration | Open, draft, not merged to main | Head `4a538dfde11e301dfa4fb0aa65ea1b18c3f196e5`; 588 commits ahead and 0 behind current main; all six CI workflows passed on this exact head |
+| #195 canonical architecture integration | Open, draft, not merged to main | Current candidate head follows the main-ancestry reconciliation; comparison confirms 0 commits behind current main. The latest full six-workflow exact-head validation passed on `d33f3d7e1511578021ceee277343b86d62b3f835`; this register refresh is documentation-only |
 
 ### Governance defects found and corrected
 
