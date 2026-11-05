@@ -1,0 +1,137 @@
+{
+  "featureId": "ai-atomic-run-claims",
+  "domainOwner": "ai",
+  "technicalIntegrator": "platform-kernel",
+  "ownedPaths": [
+    "src/index.js",
+    "migrations/0046_atomic_ai_run_claims.sql",
+    "migrations/.reservations/0046.json",
+    "scripts/test-atomic-ai-run-claims.mjs",
+    "scripts/test-atomic-ai-run-claims.py",
+    "package.json",
+    "docs/architecture/IMPERIAL-MIGRATION-ALLOCATIONS.json",
+    "docs/architecture/IMPERIAL-AUTHORIZATION-OWNERSHIP-MATRIX-01N-38.json",
+    "docs/architecture/IMPERIAL-API-ROUTE-METHOD-MATRIX-01N-37.json"
+  ],
+  "sharedSurfaces": [
+    "src/index.js",
+    "package.json",
+    "migrations/",
+    "docs/architecture/IMPERIAL-AUTHORIZATION-OWNERSHIP-MATRIX-01N-38.json",
+    "docs/architecture/IMPERIAL-API-ROUTE-METHOD-MATRIX-01N-37.json"
+  ],
+  "dependencies": [
+    "ai",
+    "platform-kernel",
+    "platform-data",
+    "platform-quality",
+    "platform-architecture",
+    "repository-operations",
+    "identity",
+    "publishing",
+    "rights"
+  ],
+  "routes": [
+    "POST /api/author/ai/projects/:id/run",
+    "GET /api/author/ai/projects/:id/jobs"
+  ],
+  "apiContracts": [
+    "Authenticated author/admin access; project ownership is checked before claim acquisition; no request-supplied owner is trusted.",
+    "Conditional D1 update grants one active token per project; token fences every late completion and generated chapter insertion.",
+    "Editing project configuration invalidates an active claim; stale claims are recoverable after 30 minutes."
+  ],
+  "dataEntities": [
+    "ai_author_projects.active_run_token",
+    "ai_author_projects.active_run_started_at",
+    "ai_author_projects.active_run_owner_user_id",
+    "ai_chapter_jobs.run_token"
+  ],
+  "migrationPlan": {
+    "required": true,
+    "proposedNumbers": [
+      46
+    ],
+    "canonicalEntityReuse": "Adds only four claim fields and one token lookup index to existing AI Author Studio tables.",
+    "backwardCompatibility": "Runtime schema bootstrap adds missing fields idempotently for legacy/local installs; production release must apply migration 0046 before deploying the Worker.",
+    "rollbackOrForwardRepair": "Forward-only; retain claim fields and clear stale tokens through a reviewed operational repair if required."
+  },
+  "uiLifecycle": {
+    "shellOwner": "experience-shell",
+    "ssrBehavior": "No SSR changes.",
+    "clientBootBehavior": "Existing Author Studio client continues to call the same run endpoint.",
+    "servedBundleParity": "No browser bundle changes."
+  },
+  "privacySecurity": {
+    "authentication": "Requires authenticated author/admin gate.",
+    "authorization": "Project owner checked against session user before acquiring a claim; admin override remains explicit.",
+    "ownerScoping": "All project/job mutations are scoped by project ID and token; generation run records use session user ID.",
+    "csrf": "Existing Worker same-origin POST policy remains in force.",
+    "rateAndSizeLimits": "Existing provider and request controls remain; one active run per project prevents concurrent duplicate generation.",
+    "concurrency": "Conditional UPDATE claim, unique token fencing, stale-claim expiry and D1 batch writes protect late workers."
+  },
+  "tests": {
+    "unit": [
+      "test-atomic-ai-run-claims.mjs"
+    ],
+    "integration": [
+      "test-atomic-ai-run-claims.py",
+      "full canonical migration replay",
+      "Cloudflare Worker dry-run build"
+    ],
+    "isolation": [
+      "two concurrent SQLite connections yield exactly one winner",
+      "replaced claim cannot insert a chapter or overwrite progress",
+      "project edit invalidates claim"
+    ],
+    "buildCommands": [
+      "npm run build",
+      "npm run check:cloudflare-readiness"
+    ]
+  },
+  "rollout": {
+    "flags": [
+      "No new feature flag; existing AI provider configuration remains required."
+    ],
+    "stagingSteps": [
+      "Apply migration 0046 to disposable D1",
+      "Run exact-head CI and concurrency regressions",
+      "Verify no production deployment until the full canonical migration release plan is approved."
+    ]
+  },
+  "rollback": {
+    "codeRollback": "Revert route integration while retaining additive fields and index.",
+    "dataRollbackOrForwardRepair": "Do not drop claim fields; forward repair only.",
+    "monitoringSignals": [
+      "409 active claim conflicts",
+      "stale claim recovery count",
+      "superseded late jobs",
+      "D1 batch failures"
+    ]
+  },
+  "collisionReview": {
+    "duplicateRoutes": "Reuses the existing AI project run and jobs endpoints.",
+    "duplicateEntities": "Extends existing AI Author Studio project/job tables.",
+    "migrationAllocation": "Reserved sequence 0046 for PR 224.",
+    "sharedSurfaceOwners": "Worker owned by platform-kernel; migrations by platform-data; tests by platform-quality; package root by repository-operations; architecture evidence refreshed to exact Worker blob."
+  },
+  "affectedDomains": [
+    "ai",
+    "platform-kernel",
+    "platform-data",
+    "platform-quality",
+    "platform-architecture",
+    "repository-operations",
+    "identity",
+    "publishing",
+    "rights"
+  ],
+  "changeSummary": "Adds atomic token-fenced AI generation claims to prevent concurrent duplicate runs and discard late results.",
+  "acceptanceCriteria": [
+    "All required workflows pass on exact head.",
+    "Migration 0046 is uniquely reserved and replayable.",
+    "Only one concurrent claim succeeds per project.",
+    "Late workers cannot insert chapters or overwrite progress after claim replacement.",
+    "Project edits invalidate outstanding claims.",
+    "No production D1 migration or Worker deployment is performed."
+  ]
+}
