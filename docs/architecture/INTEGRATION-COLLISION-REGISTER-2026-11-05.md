@@ -194,3 +194,11 @@ The canonical app already has the 14-language interface dictionary and selected 
 - Synchronized public/app.js and public/app-17.23.0.js; added dedicated 14-locale homepage and skip-navigation regressions to the mandatory build.
 - Added ADR-0019 and the homepage-navigation-localization feature contract. No API route, database entity, migration, account setting or production deployment is changed.
 - The refreshed integration candidate is on branch integration/homepage-navigation-localization-17-75. Exact-head validation remains required before merging into the governed root.
+
+
+### Homepage localization regression reconciliation
+
+- The first exact-head build confirmed the new homepage and navigation localization tests passed, then exposed two brittle legacy assertions in existing shared localization/accessibility checks: one expected the unmarked skip-link markup, and another expected the former RTL/fallback implementation strings.
+- The implementation keeps the accessible skip link marked for translation and correctly enables RTL for Urdu, Arabic and Persian. Existing Library/History locale application remains intact.
+- Updated the content-format regression to assert the new localized skip-link, Persian RTL and safe English-key fallback behavior. The Library selector compatibility regression was preserved by retaining its expected selector form.
+- The updated check is registered in the homepage localization feature contract. A fresh exact-head validation cycle is required; do not weaken or skip either legacy regression.
