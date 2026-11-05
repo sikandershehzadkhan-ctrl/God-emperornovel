@@ -104,7 +104,8 @@
       "name": "Community",
       "owns": [
         "src/domains/community/",
-        "src/community/"
+        "src/community/",
+        "src/published-engagement-policy.mjs"
       ],
       "responsibilities": [
         "discussions",
