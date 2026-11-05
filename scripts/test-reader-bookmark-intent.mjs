@@ -17,7 +17,7 @@ assert.ok(!reader.includes("api('/api/bookmark',{method:'POST'"),"Opening a chap
 assert.ok(reader.slice(handler).includes("method:bookmarked?'DELETE':'POST'"),"The explicit bookmark control must save and remove bookmarks");
 assert.ok(reader.includes("localStorage.getItem('readerBookmark:'+id)"),"Guest bookmark state must be restored on the reader route");
 assert.ok(reader.includes("localStorage.removeItem('readerBookmark:'+id)"),"Guest bookmark state must be removable");
-assert.ok(reader.includes('aria-pressed="\${bookmarked}"'),"Bookmark button must expose its initial pressed state");
+assert.ok(reader.includes('aria-pressed="${bookmarked}"'),"Bookmark button must expose its initial pressed state");
 assert.ok(reader.slice(handler).includes("setAttribute('aria-pressed',String(bookmarked))"),"Bookmark button must update its accessible pressed state");
 const deleteStart=worker.indexOf('if(p==="/api/bookmark"&&m==="DELETE")');
 assert.ok(deleteStart>=0,"Worker must expose bookmark removal");
