@@ -13,7 +13,7 @@ The current runtime feature schema is already at version 2 for reader progress. 
 ## Decision
 
 1. Enforce the 10-per-user rolling-hour comment and report quotas with SQLite BEFORE INSERT triggers so the check and event write occur in the same database statement.
-2. Serialize duplicate report claims with a primary key on `(user_id, comment_id)`; backfill existing reports with `INSERT OR IGNORE` before enabling the trigger.
+2. Serialize duplicate report claims with a primary key on `(user_id, comment_id)`; backfill only reports whose user and comment parents still exist with `INSERT OR IGNORE` before enabling the trigger. Both new tables use cascading foreign keys so user/comment deletion clears associated claims and rate-limit events.
 3. Prune expired rate-limit events after both comment and report inserts. Every trigger must contain executable SQL; empty trigger bodies are forbidden.
 4. Advance `runtime_feature_schema_version` from v1/v2 to v3 only after all additive tables, indexes, backfill and triggers are installed.
 5. Accept only positive safe-integer identifiers (or digit-only strings) on comment, like, report and follow writes.
