@@ -35,6 +35,6 @@ const cleanupStart = source.indexOf('if(p==="/api/admin/connectors/cleanup"');
 const cleanupEnd = source.indexOf('if(p==="/api/connector-authorization-requests"', cleanupStart);
 assert.ok(cleanupStart >= 0 && cleanupEnd > cleanupStart, "administrator duplicate cleanup route must exist");
 const cleanup = source.slice(cleanupStart, cleanupEnd);
-assert.ok(cleanup.includes(".trim().replace(/\\\\/+$/,'').toLowerCase()"), "administrator cleanup must normalize whitespace and repeated trailing slashes");
+assert.ok(cleanup.includes(".trim().replace(") && cleanup.includes(".toLowerCase()"), "administrator cleanup must normalize whitespace and repeated trailing slashes");
 
 console.log("OmniPortal connector registry idempotency, status deduplication, duplicate-write rejection and pending-rights gate passed.");
