@@ -17,7 +17,8 @@
     "public/index.html",
     "src/index.js",
     "wrangler.toml",
-    "docs/architecture/feature-contracts/omni-connector-registry-deduplication.json"
+    "docs/architecture/feature-contracts/omni-connector-registry-deduplication.json",
+    "docs/architecture/feature-contracts/homepage-navigation-localization.json"
   ],
   "dependencies": [
     "identity-security",
@@ -50,7 +51,8 @@
     "GET /for-you and GET /made-for-you are personalized HTML routes and receive noindex meta and X-Robots-Tag response directives.",
     "DELETE /api/bookmark removes only the selected chapter bookmark for session u.id; opening a chapter never creates a bookmark.",
     "GET /api/omni/status returns one stable public representative per normalized connector base URL; repeated registry seeding uses a normalized NOT EXISTS guard.",
-    "POST /api/admin/connectors remains administrator-only, validates an allowlisted HTTPS origin, rejects normalized duplicates with HTTP 409 and creates new connectors disabled/pending."
+    "POST /api/admin/connectors remains administrator-only, validates an allowlisted HTTPS origin, rejects normalized duplicates with HTTP 409 and creates new connectors disabled/pending.",
+    "Homepage static copy and the accessible skip-navigation label are localized in the browser shell; no API route is added."
   ],
   "apiContracts": [
     "Existing API contracts; update method and authorization inventories for behavior changes",
@@ -72,7 +74,8 @@
     "POST /api/admin/connectors rejects credentials, non-HTTPS origins, paths, queries, fragments and duplicate normalized base URLs; newly inserted connectors remain disabled with rights_status='pending' until evidence/terms review.",
     "POST /api/admin/connectors remains administrator-only; accepts only a normalized allowlisted HTTPS origin with no credentials, path, query or fragment, rejects normalized duplicates with HTTP 409, and creates records disabled with rights_status='pending'.",
     "GET /api/omni/status returns one non-secret representative per normalized connector base URL, preferring enabled or authorized rows and then the oldest stable ID.",
-    "OmniPortal registry seeding uses a normalized NOT EXISTS guard so repeated status requests do not add sequential duplicate registry rows."
+    "OmniPortal registry seeding uses a normalized NOT EXISTS guard so repeated status requests do not add sequential duplicate registry rows.",
+    "Homepage localization does not translate creator-authored novel titles, chapter text, author names or dynamic catalog metadata."
   ],
   "dataEntities": [
     "Existing canonical D1 entities only; no duplicate ledgers or parallel account-deletion store",
@@ -95,8 +98,8 @@
   "uiLifecycle": {
     "shellOwner": "experience-runtime",
     "ssrBehavior": "Worker emits escaped rights-eligible homepage markup; client preserves app root and hands off temporary SSR shell",
-    "clientBootBehavior": "One browser boot owner; no duplicate global navigation or destructive root reset",
-    "servedBundleParity": "public/app.js and public/app-17.23.0.js remain byte-identical"
+    "clientBootBehavior": "One browser boot owner; no duplicate global navigation or destructive root reset; homepage static copy is translated after SSR handoff or client fallback; dynamic creator-authored catalog cards are excluded and the observer disconnects when the app root is detached.",
+    "servedBundleParity": "public/app.js and public/app-17.23.0.js remain byte-identical after homepage and skip-navigation localization."
   },
   "privacySecurity": {
     "authentication": "Existing session authority remains canonical",
@@ -137,7 +140,9 @@
       "test-reader-accessibility.mjs: labeled chapter progress, live progress values, accessible drawer focus/Escape behavior and font control names.",
       "test-library-localization.mjs: 14 locale dictionary completeness, library/history localization, explicit bookmark removal, progress display and canonical ten-point rating formatter.",
       "test-omni-connector-deduplication.mjs: sequential idempotent registry seed, normalized public status deduplication, duplicate administrator registration rejection and rights-pending gate.",
-      "test-omni-connector-deduplication.mjs: idempotent registry seeding, normalized status deduplication, administrator duplicate rejection and pending-rights defaults."
+      "test-omni-connector-deduplication.mjs: idempotent registry seeding, normalized status deduplication, administrator duplicate rejection and pending-rights defaults.",
+      "test-homepage-localization.mjs: fourteen locale dictionaries, 54 core strings, 12 section strings, search placeholder and async static-copy observation.",
+      "test-navigation-accessibility-localization.mjs: fourteen skip-link translations, accessible search label and Urdu/Arabic/Persian RTL."
     ],
     "integration": [
       "test-platform-architecture-contract.mjs",
@@ -162,7 +167,8 @@
       "test-community-rate-limits-atomic.py: execute exact runtime trigger DDL under concurrent comment/report load, duplicate claims, legacy backfill and pruning",
       "test-published-comment-engagement.py: reject draft, archived and rights-ineligible engagement targets",
       "OmniPortal status projection and administrator connector registration source regression; no production D1 mutation.",
-      "OmniPortal connector registration and public status projection remain bounded to existing routes and existing D1 entities; no production D1 mutation or migration is part of this feature."
+      "OmniPortal connector registration and public status projection remain bounded to existing routes and existing D1 entities; no production D1 mutation or migration is part of this feature.",
+      "Homepage localization runs after SSR handoff or client fallback while preserving dynamic creator-authored story content and byte-identical 17.23 served bundle."
     ],
     "isolation": [
       "test-authorization-ownership-matrix.mjs",
@@ -185,7 +191,9 @@
       "node scripts/test-community-rate-limits-atomic.mjs",
       "python3 scripts/test-community-rate-limits-atomic.py",
       "python3 scripts/test-published-comment-engagement.py",
-      "node scripts/test-omni-connector-deduplication.mjs"
+      "node scripts/test-omni-connector-deduplication.mjs",
+      "node scripts/test-homepage-localization.mjs",
+      "node scripts/test-navigation-accessibility-localization.mjs"
     ]
   },
   "rollout": {
@@ -241,7 +249,7 @@
     "repository-operations",
     "rights"
   ],
-  "changeSummary": "Consolidates current-main platform/security foundations with homepage SSR and the six-theme experience, while introducing canonical ownership, dependency, migration and integration governance. Adds mandatory isolated identity and media policy validation gates without changing Worker routes, UI bundles or D1 schema. Adds owner-scoped reader progress API and ensures architecture/source CI runs on nested integration PRs. Adds the reader browser client integration to the existing owner-scoped reading-position API and mandatory regression coverage. Integrates owner-scoped profile and account-preference APIs and a visibility-filtered public profile projection into the same canonical Worker as reader progress. Adds the account profile editor and cross-device settings synchronization while preserving the reader-progress browser integration. Adds a PR-lineage gate that serializes overlapping Worker, browser bundle, identity, migration, route inventory, workflow and release-configuration changes. Extends serialized surface protection to every top-level served CSS, JavaScript and webmanifest asset so versioned style/service-worker files cannot diverge silently. Hardens Author Studio chapter editing and publication by enforcing parent publication state, rights evidence, comic page-sequence validation on edits, safe integer chapter costs and verified chapter-route identifier parsing. Adds atomic token-fenced AI Author Studio generation claims with concurrent-run exclusion, stale-claim recovery, late-result rejection, owner-only authorization, and migration 0046. Adds a fail-closed production release gate because the deploy workflow currently applies only migrations 0009-0011 while the canonical integration line contains later migrations. Aligns runtime first-install core DDL with immutable migration 0001, adds source and SQLite parity regression tests, and extends the read-only production schema preflight to report core foreign-key definitions and integrity violations. Enforces whole-number 1–10 rating input without rounding and adds mandatory malformed-input regression coverage. Adds strict reader progress target validation: bookmark/history writes require a positive safe-integer novel/chapter pair that resolves to the exact published chapter of a published, rights-eligible novel; invalid targets are rejected before mutation and ownership remains session-derived. Adds the same-origin novel cover destination policy, strict server-side validation on all author/admin publishing writes, route-scoped image CSP, bundled Author Studio cover choices, and regression coverage. Reconciles OmniPortal connector registry seeding and status projection: repeated public status reads no longer create sequential duplicate registry rows, duplicate normalized base URLs collapse to a stable representative, administrator connector creation rejects duplicates and leaves new entries pending until rights review.",
+  "changeSummary": "Consolidates current-main platform/security foundations with homepage SSR and the six-theme experience, while introducing canonical ownership, dependency, migration and integration governance. Adds mandatory isolated identity and media policy validation gates without changing Worker routes, UI bundles or D1 schema. Adds owner-scoped reader progress API and ensures architecture/source CI runs on nested integration PRs. Adds the reader browser client integration to the existing owner-scoped reading-position API and mandatory regression coverage. Integrates owner-scoped profile and account-preference APIs and a visibility-filtered public profile projection into the same canonical Worker as reader progress. Adds the account profile editor and cross-device settings synchronization while preserving the reader-progress browser integration. Adds a PR-lineage gate that serializes overlapping Worker, browser bundle, identity, migration, route inventory, workflow and release-configuration changes. Extends serialized surface protection to every top-level served CSS, JavaScript and webmanifest asset so versioned style/service-worker files cannot diverge silently. Hardens Author Studio chapter editing and publication by enforcing parent publication state, rights evidence, comic page-sequence validation on edits, safe integer chapter costs and verified chapter-route identifier parsing. Adds atomic token-fenced AI Author Studio generation claims with concurrent-run exclusion, stale-claim recovery, late-result rejection, owner-only authorization, and migration 0046. Adds a fail-closed production release gate because the deploy workflow currently applies only migrations 0009-0011 while the canonical integration line contains later migrations. Aligns runtime first-install core DDL with immutable migration 0001, adds source and SQLite parity regression tests, and extends the read-only production schema preflight to report core foreign-key definitions and integrity violations. Enforces whole-number 1–10 rating input without rounding and adds mandatory malformed-input regression coverage. Adds strict reader progress target validation: bookmark/history writes require a positive safe-integer novel/chapter pair that resolves to the exact published chapter of a published, rights-eligible novel; invalid targets are rejected before mutation and ownership remains session-derived. Adds the same-origin novel cover destination policy, strict server-side validation on all author/admin publishing writes, route-scoped image CSP, bundled Author Studio cover choices, and regression coverage. Reconciles OmniPortal connector registry seeding and status projection: repeated public status reads no longer create sequential duplicate registry rows, duplicate normalized base URLs collapse to a stable representative, administrator connector creation rejects duplicates and leaves new entries pending until rights review. Adds fourteen-locale homepage editorial copy and skip-navigation labels, localizes the search placeholder and accessible name, and enables RTL for Persian while leaving creator-authored story content unchanged.",
   "acceptanceCriteria": [
     "Every changed repository path resolves to one registered owner",
     "Dependency graph is acyclic and every edge points from consumer to lower-level dependency",
@@ -301,7 +309,9 @@
     "Repeated OmniPortal status requests do not create sequential duplicate connector registry entries.",
     "Public OmniPortal status deduplicates normalized base URLs and never projects connector credentials or secret names.",
     "Administrator connector creation requires an allowlisted HTTPS origin, rejects normalized duplicates, and leaves new connectors disabled and pending rights review.",
-    "The connector deduplication regression runs in the mandatory build; no migration or production data repair is implied."
+    "The connector deduplication regression runs in the mandatory build; no migration or production data repair is implied.",
+    "Homepage static copy and accessible skip navigation have complete fourteen-locale coverage.",
+    "Homepage localization preserves SSR fallback, dynamic creator-authored content and byte-identical served bundle parity."
   ],
   "sharedSurfaceSerialization": [
     ".github/workflows/",
@@ -327,6 +337,7 @@
     "public/author.html",
     "scripts/test-cover-url-policy.mjs",
     "docs/architecture/feature-contracts/personalized-route-indexing.json",
-    "docs/architecture/feature-contracts/omni-connector-registry-deduplication.json"
+    "docs/architecture/feature-contracts/omni-connector-registry-deduplication.json",
+    "docs/architecture/feature-contracts/homepage-navigation-localization.json"
   ]
 }
