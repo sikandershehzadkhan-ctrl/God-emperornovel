@@ -21,6 +21,8 @@ The original collision table below is retained as a historical snapshot. The fol
 | #216 legacy core-schema rebuild plan | Closed as superseded by PR #237 | The old plan referenced an obsolete migration head and stale PR numbers. Its read-only preflight, fail-closed data disposition, fixture, backup, restore, and D1 transaction requirements were preserved and refreshed |
 | #208 governance closure register | Closed as superseded by PR #237 | The old register contained historical PR/issue statuses and branch-protection observations. The useful closure gates were retained while volatile facts were marked for live re-verification |
 | #176 platform completion register | Closed as superseded by PR #237 | Ordered product, security, reader, author, community, payments, operations, and acceptance gates were preserved; the old mainline baseline and account-branch blockers were refreshed to avoid stale claims |
+| #122 dynamic public sitemap | Closed as superseded | Canonical `src/sitemap.mjs` and `src/seo.mjs` provide a stronger sharded sitemap index, bounded novel/chapter pagination, robots policy and route-aware SEO; `test-dynamic-sitemap.mjs` and `test-seo-foundation.mjs` cover the integrated implementation |
+| #119 rating input validation | Closed as superseded | Canonical Worker validation and `test-rating-input-validation.mjs` enforce whole-number ratings from 1–10; the old PR's separate 1–5 parser conflicts with the platform's 1–10 rating contract and is not to be reintroduced |
 
 ### Governance defects found and corrected
 
@@ -37,7 +39,7 @@ The following groups remain open and have not been declared safe to merge or clo
 - #175 UX acceptance matrix and route-to-screen coverage matrix were ported as dated canonical acceptance references in PR #239; its unique Worker noindex correction was handled separately by PR #238. Both replacement PRs passed validation and the stale PR was closed.
 - #156 homepage SSR fallback and #155–#146 reader/home/catalog feature chain.
 - #145–#131 localization chain.
-- #127 design foundation, #122 sitemap, and #119 rating validation.
+- #127 design foundation.
 - #95–#86 security hardening branches.
 - #49–#28 media, reader, security, product and research branches.
 - #8–#4 early product/engineering branches.
