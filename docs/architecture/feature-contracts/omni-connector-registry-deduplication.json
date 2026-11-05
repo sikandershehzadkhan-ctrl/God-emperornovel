@@ -11,7 +11,8 @@
     "docs/architecture/IMPERIAL-FEATURE-OWNERSHIP.json",
     "docs/architecture/IMPERIAL-API-ROUTE-METHOD-MATRIX-01N-37.json",
     "docs/architecture/IMPERIAL-AUTHORIZATION-OWNERSHIP-MATRIX-01N-38.json",
-    "docs/architecture/INTEGRATION-COLLISION-REGISTER-2026-11-05.md"
+    "docs/architecture/INTEGRATION-COLLISION-REGISTER-2026-11-05.md",
+    "docs/architecture/feature-contracts/platform-integration-governance.json"
   ],
   "sharedSurfaces": [
     "src/index.js",
