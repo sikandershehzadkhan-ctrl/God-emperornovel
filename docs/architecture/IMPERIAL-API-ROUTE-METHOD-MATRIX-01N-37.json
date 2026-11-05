@@ -1312,6 +1312,6 @@
     "Authorization labels are not inferred for exact routes. Verify anonymous, reader, author, owner, moderator, admin and cross-owner behavior separately.",
     "This matrix does not inspect DTO exposure, cache headers, CSRF, rate limits, body size, or database transaction semantics."
   ],
-  "sourceCommit": "Pending exact integration commit fingerprint refresh after documentation changes.",
+  "sourceCommit": "565cb3c1db1d688ce12c3dcaf33eac1d1aec1bdb",
   "refreshNote": "Refreshed to the exact Worker blob for the reader-progress target validation integration; route behavior changes only on existing POST methods."
 }
