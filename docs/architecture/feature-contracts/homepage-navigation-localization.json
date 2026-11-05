@@ -1,0 +1,110 @@
+{
+  "featureId": "homepage-navigation-localization",
+  "domainOwner": "experience-shell",
+  "technicalIntegrator": "platform-integrator",
+  "ownedPaths": [
+    "public/app.js",
+    "public/app-17.23.0.js",
+    "scripts/test-homepage-localization.mjs",
+    "scripts/test-navigation-accessibility-localization.mjs",
+    "package.json",
+    "docs/architecture/decisions/ADR-0019-homepage-and-navigation-localization.md",
+    "docs/architecture/feature-contracts/homepage-navigation-localization.json",
+    "docs/architecture/feature-contracts/platform-integration-governance.json"
+  ],
+  "sharedSurfaces": [
+    "public/app.js",
+    "public/app-17.23.0.js",
+    "package.json"
+  ],
+  "dependencies": [
+    "experience-shell",
+    "platform-quality",
+    "repository-operations",
+    "platform-architecture"
+  ],
+  "routes": [],
+  "apiContracts": [
+    "No API routes or server contracts change."
+  ],
+  "dataEntities": [
+    "No new database entities or migrations; the existing imperial_language browser preference remains canonical."
+  ],
+  "migrationPlan": {
+    "required": false,
+    "proposedNumbers": [],
+    "canonicalEntityReuse": "Uses the existing browser-local interface language preference and existing locale dictionaries.",
+    "backwardCompatibility": "English SSR remains a no-JavaScript fallback; the client applies the saved interface language after shell boot.",
+    "rollbackOrForwardRepair": "Revert the homepage dictionary, text-node wrapper, skip-link labels and tests; no data repair is needed."
+  },
+  "uiLifecycle": {
+    "shellOwner": "experience-shell",
+    "ssrBehavior": "The existing server-rendered English homepage remains readable without JavaScript; no SSR renderer or HTML route changes.",
+    "clientBootBehavior": "After SSR handoff or client rendering, exact static homepage copy is wrapped and translated using the saved locale. A child-list observer handles asynchronous page changes and disconnects when the app root is detached.",
+    "servedBundleParity": "public/app.js and public/app-17.23.0.js remain byte-identical."
+  },
+  "privacySecurity": {
+    "authentication": "No authentication changes.",
+    "authorization": "No authorization changes.",
+    "ownerScoping": "Creator-authored story titles, author names and dynamic catalog content are excluded from automatic translation.",
+    "csrf": "No CSRF behavior changes.",
+    "rateAndSizeLimits": "No API or input limits change; language selection remains a finite fourteen-locale allowlist."
+  },
+  "tests": {
+    "unit": [
+      "scripts/test-homepage-localization.mjs",
+      "scripts/test-navigation-accessibility-localization.mjs"
+    ],
+    "integration": [
+      "Homepage static copy localization across SSR handoff and client fallback; search placeholder/accessible name translation; skip-link language and RTL direction; canonical/versioned bundle parity."
+    ],
+    "isolation": [
+      "Dynamic creator-authored catalog content is excluded from automatic homepage copy translation."
+    ],
+    "buildCommands": [
+      "npm run build"
+    ]
+  },
+  "rollout": {
+    "flags": [
+      "No feature flag required."
+    ],
+    "stagingSteps": [
+      "Pass exact-head architecture, route, source, schema, migration and Graphify workflows.",
+      "Verify English, Urdu, Arabic and Persian homepage rendering on mobile and desktop.",
+      "Verify dynamic story titles remain unchanged across language switches."
+    ]
+  },
+  "rollback": {
+    "codeRollback": "Revert the homepage localization dictionary, text-node localization helper, skip-link translations and regression tests.",
+    "dataRollbackOrForwardRepair": "No database changes; restore the browser's interface locale through the existing language selector if needed.",
+    "monitoringSignals": [
+      "Homepage copy and search accessibility labels match the selected locale.",
+      "Observer does not produce repeated DOM mutation loops.",
+      "Versioned 17.23.0 asset remains byte-identical to public/app.js."
+    ]
+  },
+  "collisionReview": {
+    "duplicateRoutes": "None; no route or API method is added.",
+    "duplicateEntities": "None.",
+    "migrationAllocation": "No migration added.",
+    "sharedSurfaceOwners": "Browser bundles remain experience-shell-owned; tests remain platform-quality-owned; package build wiring remains repository-operations-owned; ADR and contract remain platform-architecture-owned."
+  },
+  "affectedDomains": [
+    "experience-shell",
+    "platform-quality",
+    "repository-operations",
+    "platform-architecture"
+  ],
+  "changeSummary": "Ports fourteen-locale homepage copy and accessible skip-navigation labels onto the canonical 17.23 runtime, including search placeholder/accessible-name translation and Persian RTL, without replacing current SSR or translating creator content.",
+  "acceptanceCriteria": [
+    "All 54 homepage core strings and 12 additional section strings have non-empty translations in all fourteen locales.",
+    "Homepage localization runs after both SSR handoff and client fallback.",
+    "Dynamic catalog story cards and creator-authored content are excluded from automatic translation.",
+    "The homepage search placeholder and accessible name follow the selected locale.",
+    "The skip-navigation link has a translation in all fourteen interface locales.",
+    "Urdu, Arabic and Persian set document direction to RTL.",
+    "The mutation observer does not repeatedly rewrite unchanged text and disconnects when the app root is detached.",
+    "public/app.js and public/app-17.23.0.js remain byte-identical."
+  ]
+}
