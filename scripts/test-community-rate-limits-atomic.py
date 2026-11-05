@@ -70,7 +70,7 @@ def run_report(path, comment_id, user_id=1):
 with tempfile.TemporaryDirectory() as directory:
     path = os.path.join(directory, "community.sqlite")
     db = connect(path)
-    db.executescript("\n".join(SCHEMA))
+    db.executescript(";\n".join(SCHEMA) + ";")
     # Simulate legacy duplicate reports, then apply the exact runtime backfill.
     db.execute("INSERT INTO comment_reports(user_id,comment_id,reason) VALUES(4,777,'spam')")
     db.execute("INSERT INTO comment_reports(user_id,comment_id,reason) VALUES(4,777,'other')")
