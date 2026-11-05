@@ -63,8 +63,8 @@
   },
   "privacySecurity": {
     "authentication": "Requires authenticated author/admin gate.",
-    "authorization": "Project owner checked against session user before acquiring a claim; admin override remains explicit.",
-    "ownerScoping": "All project/job mutations are scoped by project ID and token; generation run records use session user ID.",
+    "authorization": "The authenticated project owner alone may start a generation run; admin cannot impersonate a creator. Project ownership is checked against session user before acquiring a claim.",
+    "ownerScoping": "All project/job mutations are scoped by project ID and token; generation run records use the authenticated project owner ID.",
     "csrf": "Existing Worker same-origin POST policy remains in force.",
     "rateAndSizeLimits": "Existing provider and request controls remain; one active run per project prevents concurrent duplicate generation.",
     "concurrency": "Conditional UPDATE claim, unique token fencing, stale-claim expiry and D1 batch writes protect late workers."
