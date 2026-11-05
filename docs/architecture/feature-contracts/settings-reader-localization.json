@@ -1,0 +1,111 @@
+{
+  "featureId": "settings-reader-localization",
+  "domainOwner": "experience-shell",
+  "technicalIntegrator": "platform-integrator",
+  "ownedPaths": [
+    "scripts/test-settings-language-selector.mjs",
+    "scripts/test-reader-localization-completeness.mjs",
+    "scripts/check-content-formats.mjs"
+  ],
+  "sharedSurfaces": [
+    "public/app.js",
+    "public/app-17.23.0.js",
+    "package.json",
+    "docs/architecture/feature-contracts/platform-integration-governance.json"
+  ],
+  "dependencies": [
+    "experience-shell",
+    "reader",
+    "platform-quality",
+    "platform-architecture"
+  ],
+  "routes": [
+    "/settings (existing)",
+    "/read/:novelId/:chapterNumber (existing)"
+  ],
+  "apiContracts": [
+    "No API route or server-side authorization contract changes.",
+    "The existing reader progress API, bookmark API and chapter unlock API retain their canonical request/ownership behavior."
+  ],
+  "dataEntities": [
+    "No new database entity, column or migration. Existing imperial_language localStorage preference remains canonical."
+  ],
+  "migrationPlan": {
+    "required": false,
+    "proposedNumbers": [],
+    "canonicalEntityReuse": "Reuses the browser-local imperial_language preference and the existing IN_LANG dictionary.",
+    "backwardCompatibility": "Existing language preference remains valid; English remains the fallback when a translation key is unavailable.",
+    "rollbackOrForwardRepair": "Revert the selector, locale dictionary and reader text wrappers; no data repair is needed."
+  },
+  "uiLifecycle": {
+    "shellOwner": "experience-shell",
+    "ssrBehavior": "No SSR behavior changes.",
+    "clientBootBehavior": "Settings restores the existing language preference, and the reader resolves static/dynamic labels from the active fourteen-locale dictionary.",
+    "servedBundleParity": "public/app.js and public/app-17.23.0.js remain byte-identical."
+  },
+  "privacySecurity": {
+    "authentication": "No authentication changes.",
+    "authorization": "No authorization changes.",
+    "ownerScoping": "Reader progress, bookmarks and unlocks remain session-owned; no owner identifiers are introduced by localization.",
+    "csrf": "No mutation endpoint is added.",
+    "rateAndSizeLimits": "No API input or rate limits change.",
+    "rightsAndPrivacy": "Creator-authored chapter content is not translated or rewritten."
+  },
+  "tests": {
+    "unit": [
+      "test-settings-language-selector.mjs",
+      "test-reader-localization-completeness.mjs",
+      "Existing reader progress, bookmark and unlock regressions."
+    ],
+    "integration": [
+      "Settings language selection restores and updates the shared interface locale; reader progress/footer labels and locked-chapter copy use the selected locale."
+    ],
+    "isolation": [
+      "Creator-authored chapter text and account-owned reading state remain untouched."
+    ],
+    "buildCommands": [
+      "npm run build"
+    ]
+  },
+  "rollout": {
+    "flags": [],
+    "stagingSteps": [
+      "Run all six exact-head architecture, source, route, schema, migration and Graphify workflows.",
+      "Verify settings language restore and live switch across fourteen locales.",
+      "Verify reader locked chapter, progress and footer labels across Urdu, Arabic and Persian as well as LTR locales.",
+      "Verify source and versioned browser bundle parity."
+    ]
+  },
+  "rollback": {
+    "codeRollback": "Revert the settings selector, locale dictionary, readerText helper, marked labels and tests together.",
+    "dataRollbackOrForwardRepair": "No persistent data or database change.",
+    "monitoringSignals": [
+      "Settings language restore/switch regressions",
+      "Reader translation completeness",
+      "Source/served bundle parity",
+      "Existing reader progress and bookmark regressions"
+    ]
+  },
+  "collisionReview": {
+    "duplicateRoutes": "No new route; existing settings and reader routes reused.",
+    "duplicateEntities": "No entity added.",
+    "migrationAllocation": "No migration required.",
+    "sharedSurfaceOwners": "Experience shell owns settings and language selection; reader experience owns reader labels; platform quality owns tests; architecture owns contract."
+  },
+  "affectedDomains": [
+    "experience-shell",
+    "reader",
+    "platform-quality",
+    "platform-architecture"
+  ],
+  "changeSummary": "Adds a fourteen-locale settings language selector and ten reader strings on the canonical 17.23 runtime while preserving account preferences, progress synchronization, bookmarks, unlocks and six-theme reading.",
+  "acceptanceCriteria": [
+    "The existing settings page offers a native-language selector for all fourteen supported locales.",
+    "Saved imperial_language is restored when settings opens and changes immediately through setINLang.",
+    "Ten reader strings exist in all fourteen locales and dynamic progress/footer labels use readerText.",
+    "Locked-chapter explanation and Imperial Crowns label are translatable.",
+    "Existing reader progress, bookmark, unlock, library and account-preference behaviors remain unchanged.",
+    "Canonical and served 17.23 browser bundles are byte-identical.",
+    "No API route, database entity, migration, production data mutation or deployment is introduced."
+  ]
+}
