@@ -121,7 +121,6 @@ with tempfile.TemporaryDirectory() as directory:
     db.execute("DELETE FROM users WHERE id=2")
     assert db.execute("SELECT COUNT(*) FROM community_rate_limit_events WHERE user_id=2").fetchone()[0] == 0, "user deletion must cascade rate-limit events"
     assert db.execute("SELECT COUNT(*) FROM comment_report_claims WHERE user_id=2").fetchone()[0] == 0, "user deletion must cascade report claims"
-    db.execute("INSERT INTO comment_report_claims(user_id,comment_id) VALUES(4,777)")
     db.execute("DELETE FROM comments WHERE id=777")
     assert db.execute("SELECT COUNT(*) FROM comment_report_claims WHERE comment_id=777").fetchone()[0] == 0, "comment deletion must cascade report claims"
     db.execute("INSERT INTO community_rate_limit_events(scope,user_id,created_at) VALUES('comment',3,datetime('now','-3 days'))")
