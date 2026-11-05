@@ -1,0 +1,33 @@
+name: Imperial Novel Runtime Schema Parity
+on:
+  pull_request:
+    branches: [main, "integration/**"]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: imperial-runtime-schema-parity-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  runtime-schema-parity:
+    name: Runtime bootstrap and canonical migration parity
+    runs-on: ubuntu-latest
+    timeout-minutes: 6
+    steps:
+      - name: Checkout source
+        uses: actions/checkout@v4
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Check runtime SQL source constraints
+        run: node scripts/test-runtime-schema-parity.mjs
+      - name: Compare runtime and migration schemas in SQLite
+        run: python3 scripts/test-runtime-schema-parity.py
