@@ -30,7 +30,7 @@ The original collision table below is retained as a historical snapshot. The fol
 | #153 reader progress sync | Closed as superseded | Canonical `/api/reading-position`, browser synchronization, optimistic concurrency and offline fallback are covered by `test-reading-position-api` and reader-progress tests; its old migration 0016 conflicts with the canonical chapter-revisions migration and was not copied |
 | #154 reader accessibility | Closed as superseded by #241 | Keyboard drawer focus, Escape handling, progressbar semantics and descriptive controls are integrated in #241 |
 | #155 reader library controls | Closed as superseded by #242 | Fourteen-language Library/History/Following, progress display and bookmark removal are integrated; the legacy five-point rating logic was excluded |
-| #156 homepage SSR fallback | Open; partial parity only | Canonical SSR renderer, public-novel projection and integration regression test supersede the old SSR implementation, but #156 also carries homepage content localization and broader no-JS/RTL assertions absent from the canonical app/test. Port those unique requirements selectively before closing; do not merge its stale Worker/bundles |
+| #156 homepage SSR fallback | Open; partial parity only | Canonical SSR renderer and public-novel projection are present; canonical `test-homepage-ssr-integration.mjs` covers the current renderer. The legacy `test-homepage-ssr.mjs` is coupled to stale 17.23 client/SSR markup and is not a safe direct port. The unique connector-registry deduplication behavior has been reconstructed in PR #243. Homepage content localization and broader no-JS/RTL assertions remain unported; keep #156 open until those requirements are selectively reconciled. |
 | #127 visual design foundation | Open; partial parity only | Canonical `imperial-design-foundation.css` and design integration test supersede the old token/layout/reader/component foundation in part, but the old branch's admin tab keyboard/ARIA behavior is absent from canonical `public/admin.html`, and several admin/page-specific styles remain unmatched. Selectively reconcile before closing; do not merge its 17.24 assets wholesale |
 
 ### Governance defects found and corrected
@@ -141,3 +141,26 @@ For each item, first check whether a current route implements the same behavior 
 - PR #219 exact-head validation passed Migration Governance, Cloudflare Source Validation and Graphify on commit `9bd66b08413b2406569f2ba42e98c612bbd06ae7`.
 - Those checks apply only to those exact commits. Any subsequent commit requires fresh validation.
 - No production deployment or production D1 migration is authorized by this register.
+
+
+## Follow-up audit (2026-11-05 evening)
+
+### PR #156: selective parity, not wholesale merge
+
+The canonical root contains `src/homepage-ssr.mjs`, `src/public-novel.mjs` and `scripts/test-homepage-ssr-integration.mjs`. The older #156 branch has a materially different SSR renderer and a test coupled to its old homepage markup, old client bundle and old CSS. Replacing the current renderer or the active 17.23 browser bundle with those files would reintroduce stale runtime content.
+
+A separate test in #156 exposed a genuine remaining behavior gap: `seedOmni` used `INSERT OR IGNORE` despite the current `connectors` table having no matching unique constraint, and public OmniPortal status did not collapse duplicate normalized base URLs. That behavior has been selectively reconstructed on the canonical root in **PR #243**. The same slice also closes an authorization gap in the administrator connector-create route: new connectors are disabled and pending until evidence/terms review, rather than being inserted as authorized without evidence. PR #243 is open and awaits exact-head validation; it is not merged.
+
+### PRs #145–#131: localization chain remains a parity gap
+
+The legacy chain is based on the 17.24 runtime and includes stale migration files 0012–0015 plus old Worker and browser bundles. The canonical root is governed through migration 0046 and the active 17.23 browser bundle. The chain is hundreds of commits divergent from the current integration root; it must not be merged as a unit or have its migration numbering copied.
+
+The canonical app already has the 14-language interface dictionary and selected localized surfaces, including Library/History coverage, but the audit found missing canonical tests for several legacy surfaces and no equivalent `HOME_LANG` homepage-content dictionary in the current `public/app.js`. The unique localization requirements need path-by-path parity checks and bounded ports on a fresh canonical branch. Keep the legacy chain open until that work is accounted for; do not close it merely because its branches are stale.
+
+### PR #243: connector-registry acceptance boundary
+
+- Registry seed uses a normalized `NOT EXISTS` guard; public status selects one stable representative per normalized URL and prefers an enabled/authorized row.
+- Administrator connector creation validates an allowlisted HTTPS origin, rejects a normalized duplicate with HTTP 409, and creates a disabled/pending record.
+- Existing duplicate rows are not deleted by a public GET. The administrator cleanup endpoint remains the explicit repair path.
+- No migration, production D1 mutation or deployment is included.
+- The current table still has no database-enforced unique index on normalized `base_url`; this code-only slice does not claim uniqueness under every concurrent administrator write. A future unique-index migration requires a separate allocation and reviewed reference-preserving data repair.

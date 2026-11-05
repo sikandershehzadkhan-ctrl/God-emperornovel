@@ -1,10 +1,10 @@
 {
   "schemaVersion": 1,
-  "sourceBranch": "integration/architecture-governance-root-17-70",
-  "sourceBlob": "b51fe9309c16404554d6877970989d546be29f88",
+  "sourceBranch": "integration/omni-connector-dedup-17-73",
+  "sourceBlob": "3616e3e6d889de20ecd961814aa6a45c8b1cd152",
   "auditDate": "2026-11-05",
-  "scope": "Partial handler-level static review of current integration source snapshot. This revision rechecks the five authentication route-method entries introduced or changed in commit 106744a6e9124524c88b6f454bf4bbc98e81745f and preserves the prior 40 reviewed entries. No full authorization certification, live D1 concurrency proof, or browser/runtime isolation proof is claimed. The source-blob fingerprint was refreshed from the failing CI checkout after the catalog/recommendation Worker integration; the CI check computes the Git blob hash from the exact checked-out file bytes. CI computes the source fingerprint from the exact checked-out Worker bytes; the recorded value is aligned to that runtime fingerprint. This fingerprint is the value computed by the authorization-matrix CI assertion from the checked-out Worker bytes. Fingerprint synchronized to the exact Worker Git blob SHA reported for this branch snapshot. Fingerprint refreshed from the Git tree blob SHA for the current Worker source snapshot. Fingerprint synchronized to the latest Worker Git tree blob after the leaderboard zero-activity filter. Atomic AI generation claim integration added after this matrix review; new AI run endpoint behavior remains pending independent handler-level authorization review. AI chapter generation remains owner-only; administrator role does not permit creator impersonation. Community engagement handlers were reviewed for strict identifier parsing, published/rights-eligible target checks, session-owner writes, atomic quota triggers, and duplicate-report claim fencing. Cover URL validation and CSP hardening were added after the prior authorization review; these changes do not expand route access or object ownership privileges. Fingerprint refreshed to the exact Worker blob for the cover-policy integration branch; no new authorization certification is claimed. Worker source fingerprint refreshed to the exact source blob for the personalized-route noindex correction; this change does not expand route access or object ownership. Bookmark DELETE is reviewed as a session-owner-scoped removal operation; no new privilege or client-selected owner is introduced.",
-  "reviewedRouteCount": 56,
+  "scope": "Partial handler-level static review of current integration source snapshot. This revision rechecks the five authentication route-method entries introduced or changed in commit 106744a6e9124524c88b6f454bf4bbc98e81745f and preserves the prior 40 reviewed entries. No full authorization certification, live D1 concurrency proof, or browser/runtime isolation proof is claimed. The source-blob fingerprint was refreshed from the failing CI checkout after the catalog/recommendation Worker integration; the CI check computes the Git blob hash from the exact checked-out file bytes. CI computes the source fingerprint from the exact checked-out Worker bytes; the recorded value is aligned to that runtime fingerprint. This fingerprint is the value computed by the authorization-matrix CI assertion from the checked-out Worker bytes. Fingerprint synchronized to the exact Worker Git blob SHA reported for this branch snapshot. Fingerprint refreshed from the Git tree blob SHA for the current Worker source snapshot. Fingerprint synchronized to the latest Worker Git tree blob after the leaderboard zero-activity filter. Atomic AI generation claim integration added after this matrix review; new AI run endpoint behavior remains pending independent handler-level authorization review. AI chapter generation remains owner-only; administrator role does not permit creator impersonation. Community engagement handlers were reviewed for strict identifier parsing, published/rights-eligible target checks, session-owner writes, atomic quota triggers, and duplicate-report claim fencing. Cover URL validation and CSP hardening were added after the prior authorization review; these changes do not expand route access or object ownership privileges. Fingerprint refreshed to the exact Worker blob for the cover-policy integration branch; no new authorization certification is claimed. Worker source fingerprint refreshed to the exact source blob for the personalized-route noindex correction; this change does not expand route access or object ownership. Bookmark DELETE is reviewed as a session-owner-scoped removal operation; no new privilege or client-selected owner is introduced. This revision statically rechecks public OmniPortal status projection and administrator connector registration: public output is limited to non-secret registry fields; administrator creation remains admin-gated, allowlisted, duplicate-rejecting, disabled and rights-pending. This is not a live D1 concurrency certification.",
+  "reviewedRouteCount": 58,
   "pendingDisclosure": "Existing reviewed route subset only. All other exact and dynamic API routes remain pending handler-level review. Reader bookmark/history writes are reviewed for session-owner scoping and chapter target eligibility. Community comment, like, report and follow handlers are reviewed for published-rights eligibility and session ownership; comment/report quotas and duplicate report claims are enforced by SQLite triggers. Cross-account runtime isolation still requires independent Worker/D1 proof.",
   "routes": [
     {
@@ -653,6 +653,32 @@
         "anonymous voting denied",
         "closed request voting denied"
       ]
+    },
+    {
+      "path": "/api/admin/connectors",
+      "method": "POST",
+      "access": "admin",
+      "ownerRule": "Connector creation is administrator-only; new records are disabled and pending until rights evidence or terms are reviewed.",
+      "evidence": "admin(u) before body/write; strict HTTPS origin validation against CONNECTOR_HOST_ALLOWLIST; normalized duplicate lookup returns 409; INSERT sets enabled=0 and rights_status='pending'; audit event follows successful insert.",
+      "tests": [
+        "non-admin receives 403",
+        "non-HTTPS, credential-bearing, path, query and fragment URLs rejected",
+        "normalized duplicate URL returns 409 without insertion",
+        "new connector remains disabled and pending"
+      ]
+    },
+    {
+      "path": "/api/omni/status",
+      "method": "GET",
+      "access": "public",
+      "ownerRule": "Returns one non-secret registry row per normalized base URL; connector authorization credentials and secret names are not projected.",
+      "evidence": "GET-only method guard; seedOmni inserts static registry rows with rights_status='pending' and enabled=0 using normalized NOT EXISTS; correlated representative query selects enabled/authorized row first, then lowest id; response selects only id,name,base_url,type,enabled,rights_status,last_status,last_checked_at.",
+      "tests": [
+        "repeated status requests do not create sequential duplicate registry seeds",
+        "duplicate normalized rows collapse to one public status item",
+        "enabled/authorized duplicate wins over inactive registry row",
+        "public response omits search_url, auth_header and secret_name"
+      ]
     }
   ],
   "findings": [
@@ -746,8 +772,15 @@
       "status": "static-and-sqlite-tested-needs-worker-runtime",
       "detail": "Password recovery and email ownership verification now use rate-limited routes, purpose-bound token digests, email snapshots, one-time consumption IDs, generic recovery responses, provider fail-closed behavior, and session revocation on password reset. Local SQLite and helper tests cover key invariants; deployed Worker and live D1 runtime behavior remain unverified.",
       "action": "Add isolated Worker/D1 integration tests for enumeration resistance, concurrent token consumption, email changes, delivery failure, session revocation, and rollback before security sign-off."
+    },
+    {
+      "id": "AUTH-057",
+      "severity": "medium",
+      "status": "mitigated-static-only",
+      "detail": "OmniPortal connector seeding and status projection now deduplicate normalized base URLs, and administrator-created connectors remain pending until rights review. The existing table has no declared unique constraint on normalized base_url, so static checks do not establish a database-enforced uniqueness guarantee under every concurrent administrator write.",
+      "action": "If concurrent duplicate registration becomes an observed risk, reserve a forward-only migration to reconcile existing references and add a normalized unique index; validate on isolated D1 before production approval."
     }
   ],
-  "sourceReviewNote": "The reviewed API handler source was refreshed after adding explicit GET-only rejection for /api/novels and /api/admin/stats. Homepage SSR and theme work is confined to the Worker HTML renderer and browser assets; the existing 45 route-method ownership entries remain the reviewed subset, with all other routes still explicitly pending. Fingerprint refreshed for the schema-bootstrap-only Worker change in PR #228; no route declarations or authorization handler behavior changed. Fingerprint refreshed for strict whole-number 1–10 rating validation; existing authenticated-owner and rights checks are unchanged. POST /api/bookmark and POST /api/history now validate positive safe-integer targets and require the exact published chapter of a published rights-eligible novel before writing; user_id is derived only from authenticated session u.id. Cross-account runtime proof remains pending. Community engagement routes revalidated against the exact Worker blob; quota and duplicate-report behavior covered by SQLite trigger tests.",
-  "sourceCommit": "4fee7d078a53ebaae6316c6d602bfde435c46145"
+  "sourceReviewNote": "The reviewed API handler source was refreshed after adding explicit GET-only rejection for /api/novels and /api/admin/stats. Homepage SSR and theme work is confined to the Worker HTML renderer and browser assets; the existing 45 route-method ownership entries remain the reviewed subset, with all other routes still explicitly pending. Fingerprint refreshed for the schema-bootstrap-only Worker change in PR #228; no route declarations or authorization handler behavior changed. Fingerprint refreshed for strict whole-number 1–10 rating validation; existing authenticated-owner and rights checks are unchanged. POST /api/bookmark and POST /api/history now validate positive safe-integer targets and require the exact published chapter of a published rights-eligible novel before writing; user_id is derived only from authenticated session u.id. Cross-account runtime proof remains pending. Community engagement routes revalidated against the exact Worker blob; quota and duplicate-report behavior covered by SQLite trigger tests. OmniPortal connector registration now requires an allowlisted HTTPS origin, rejects normalized duplicate URLs, and leaves new rows disabled/pending; public status returns a single stable representative per normalized URL. Existing database-level uniqueness is not claimed.",
+  "sourceCommit": "3f1db595f2ac53925fbfa0f8e56a66b997fab5c8"
 }

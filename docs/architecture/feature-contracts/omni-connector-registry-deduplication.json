@@ -1,0 +1,112 @@
+{
+  "featureId": "omni-connector-registry-deduplication",
+  "domainOwner": "platform-kernel",
+  "technicalIntegrator": "platform-integrator",
+  "ownedPaths": [
+    "src/index.js",
+    "scripts/test-omni-connector-deduplication.mjs",
+    "package.json",
+    "docs/architecture/decisions/ADR-0018-omni-connector-registry-deduplication.md",
+    "docs/architecture/feature-contracts/omni-connector-registry-deduplication.json",
+    "docs/architecture/IMPERIAL-FEATURE-OWNERSHIP.json",
+    "docs/architecture/IMPERIAL-API-ROUTE-METHOD-MATRIX-01N-37.json",
+    "docs/architecture/IMPERIAL-AUTHORIZATION-OWNERSHIP-MATRIX-01N-38.json",
+    "docs/architecture/INTEGRATION-COLLISION-REGISTER-2026-11-05.md",
+    "docs/architecture/feature-contracts/platform-integration-governance.json"
+  ],
+  "sharedSurfaces": [
+    "src/index.js",
+    "package.json"
+  ],
+  "dependencies": [
+    "platform-kernel",
+    "rights",
+    "platform-quality",
+    "platform-architecture",
+    "repository-operations"
+  ],
+  "routes": [],
+  "apiContracts": [
+    "GET /api/omni/status returns one stable representative per normalized connector base URL.",
+    "Registry seeding is idempotent for sequential repeated requests even without relying on a unique database index.",
+    "POST /api/admin/connectors accepts only an allowlisted HTTPS origin and rejects a normalized duplicate with HTTP 409.",
+    "New administrator-created connectors remain disabled and pending until rights evidence or terms are reviewed."
+  ],
+  "dataEntities": [
+    "Reuses the existing connectors, import_jobs and connector_events entities; no new table or migration."
+  ],
+  "migrationPlan": {
+    "required": false,
+    "proposedNumbers": [],
+    "canonicalEntityReuse": "The existing connectors table and its base_url field remain canonical.",
+    "backwardCompatibility": "Existing duplicate rows remain stored. Public status projects one canonical row per normalized URL; the existing administrator cleanup endpoint remains the explicit repair mechanism.",
+    "rollbackOrForwardRepair": "Revert the Worker and regression test. No schema rollback or production data mutation is required."
+  },
+  "uiLifecycle": {
+    "shellOwner": "experience-shell",
+    "ssrBehavior": "No SSR behavior changes.",
+    "clientBootBehavior": "No browser bundle behavior changes.",
+    "servedBundleParity": "No browser bundle is changed."
+  },
+  "privacySecurity": {
+    "authentication": "No authentication changes.",
+    "authorization": "Connector creation remains administrator-only.",
+    "ownerScoping": "No user-owned records are modified.",
+    "csrf": "No CSRF behavior changes.",
+    "rateAndSizeLimits": "Connector base URLs must be allowlisted HTTPS origins without credentials, paths, queries or fragments; duplicate normalized URLs are rejected."
+  },
+  "tests": {
+    "unit": [
+      "scripts/test-omni-connector-deduplication.mjs"
+    ],
+    "integration": [
+      "OmniPortal status projection and administrator connector-create route source checks."
+    ],
+    "isolation": [],
+    "buildCommands": [
+      "npm run build",
+      "npm run check:cloudflare-readiness"
+    ]
+  },
+  "rollout": {
+    "flags": [
+      "No feature flag required."
+    ],
+    "stagingSteps": [
+      "Pass all exact-head validation workflows.",
+      "Review status projection and rights-pending behavior.",
+      "Deploy only through the separately approved production release process."
+    ]
+  },
+  "rollback": {
+    "codeRollback": "Revert the Worker connector registry changes and regression test.",
+    "dataRollbackOrForwardRepair": "No database changes are made. Existing duplicate rows remain available for explicit administrator cleanup.",
+    "monitoringSignals": [
+      "Repeated GET /api/omni/status calls do not increase seeded registry row count.",
+      "Public connector status contains one row per normalized base URL.",
+      "New connectors remain pending until evidence review."
+    ]
+  },
+  "collisionReview": {
+    "duplicateRoutes": "No route signatures are added or removed; existing OmniPortal and administrator connector routes receive stricter behavior.",
+    "duplicateEntities": "No new entities.",
+    "migrationAllocation": "No migration added.",
+    "sharedSurfaceOwners": "Worker behavior remains owned by platform-kernel; regression test by platform-quality; package script by repository-operations; architecture records by platform-architecture."
+  },
+  "affectedDomains": [
+    "platform-kernel",
+    "rights",
+    "platform-quality",
+    "platform-architecture",
+    "repository-operations"
+  ],
+  "changeSummary": "Prevents repeated OmniPortal registry seeding from creating duplicate rows, deduplicates public status, rejects duplicate administrator connector creation and keeps new connectors pending until rights review.",
+  "acceptanceCriteria": [
+    "Repeated registry seeding uses a normalized NOT EXISTS guard.",
+    "Public status returns one stable representative per normalized base URL.",
+    "Administrator connector creation validates an allowlisted HTTPS origin and rejects normalized duplicates.",
+    "New connector records are disabled and pending until rights evidence or terms are reviewed.",
+    "The regression test is included in the build command.",
+    "The exact PR head passes architecture, route, schema, build and Graphify validation."
+  ]
+}
