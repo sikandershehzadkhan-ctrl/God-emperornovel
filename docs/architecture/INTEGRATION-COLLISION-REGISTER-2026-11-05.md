@@ -2,7 +2,7 @@
 
 ## Purpose
 
-This register records verified shared-file overlap among currently open pull requests targeting `main`. It is an integration-control artifact, not a declaration that any pull request is safe to merge independently. A PR being GitHub-`mergeable` only means GitHub currently sees no textual merge conflict against its base; it does not prove semantic compatibility with sibling PRs.
+This register records verified shared-file overlap and integration disposition across open pull requests targeting `main` or the governed integration root. It is an integration-control artifact, not a declaration that any pull request is safe to merge independently. A PR being GitHub-`mergeable` only means GitHub currently sees no textual merge conflict against its base; it does not prove semantic compatibility with sibling PRs.
 
 ## Current disposition (verified 5 November 2026)
 
@@ -32,8 +32,11 @@ The original collision table below is retained as a historical snapshot. The fol
 | #153 reader progress sync | Closed as superseded | Canonical `/api/reading-position`, browser synchronization, optimistic concurrency and offline fallback are covered by `test-reading-position-api` and reader-progress tests; its old migration 0016 conflicts with the canonical chapter-revisions migration and was not copied |
 | #154 reader accessibility | Closed as superseded by #241 | Keyboard drawer focus, Escape handling, progressbar semantics and descriptive controls are integrated in #241 |
 | #155 reader library controls | Closed as superseded by #242 | Fourteen-language Library/History/Following, progress display and bookmark removal are integrated; the legacy five-point rating logic was excluded |
-| #156 homepage SSR fallback | Open; partial parity only | Canonical SSR renderer and public-novel projection are present; canonical `test-homepage-ssr-integration.mjs` covers the current renderer. The legacy `test-homepage-ssr.mjs` is coupled to stale 17.23 client/SSR markup and is not a safe direct port. The unique connector-registry deduplication behavior has been reconstructed in PR #243. Homepage content localization and broader no-JS/RTL assertions remain unported; keep #156 open until those requirements are selectively reconciled. |
-| #127 visual design foundation | Open; partial parity only | Canonical `imperial-design-foundation.css` and design integration test supersede the old token/layout/reader/component foundation in part, but the old branch's admin tab keyboard/ARIA behavior is absent from canonical `public/admin.html`, and several admin/page-specific styles remain unmatched. Selectively reconcile before closing; do not merge its 17.24 assets wholesale |
+| #156 homepage SSR fallback | Open; partial parity only | Canonical SSR renderer and public-novel projection are present; canonical `test-homepage-ssr-integration.mjs` covers the current renderer. The legacy `test-homepage-ssr.mjs` is coupled to stale 17.23 client/SSR markup and is not a safe direct port. Connector-registry deduplication is integrated through #244, and homepage/navigation localization is integrated through #253. Remaining work is limited to the unique no-JS/RTL and hydration assertions after path-level comparison; keep #156 open until those are reconciled. |
+| #127 visual design foundation | Open; partial parity only | Canonical `imperial-design-foundation.css` and its integration test supersede the old token/layout/reader/component foundation in part. The previously missing admin tab keyboard/ARIA behavior was integrated separately through merged PR #260. Remaining work is limited to unmatched admin/page-specific styles; selectively reconcile before closing and do not merge its 17.24 assets wholesale. |
+| #251 alternate homepage localization | Closed as superseded by #253 | Same homepage/navigation surface; stale 17.23 branch failed a brittle Library localization assertion and omitted newer Settings/Rankings dictionaries. Its unique behavior is present in #253. |
+| #262 community localization | Open; refresh required | Current-root community localization candidate; six checks passed on recorded head, but it is one commit behind the current root. Rebase/port onto current head and rerun all six workflows. |
+| #263 bounded OmniPortal responses | Open, draft | Adds 1 MiB streaming JSON limit, 120-character search bound and eight-provider cap. Exact-head validation pending; no migration or deployment. |
 
 ### Governance defects found and corrected
 
@@ -157,7 +160,7 @@ A separate test in #156 exposed a genuine remaining behavior gap: `seedOmni` use
 
 The legacy chain is based on the 17.24 runtime and includes stale migration files 0012–0015 plus old Worker and browser bundles. The canonical root is governed through migration 0046 and the active 17.23 browser bundle. The chain is hundreds of commits divergent from the current integration root; it must not be merged as a unit or have its migration numbering copied.
 
-The canonical app already has the 14-language interface dictionary and selected localized surfaces, including Library/History coverage, but the audit found missing canonical tests for several legacy surfaces and no equivalent `HOME_LANG` homepage-content dictionary in the current `public/app.js`. The unique localization requirements need path-by-path parity checks and bounded ports on a fresh canonical branch. Keep the legacy chain open until that work is accounted for; do not close it merely because its branches are stale.
+The canonical root now includes fourteen-language Library/History coverage (#242), homepage/navigation localization (#253), settings/reader localization (#256), and rankings/Tier List localization (#259). The current community localization candidate is PR #262; its six workflows passed on its recorded head, but that head is one commit behind the current root and requires refreshed exact-head validation. Remaining parity gaps include Author Studio, Catalog, Genre/Tag/Search, Formats and Reader Profile. Port only those missing surfaces onto the current 17.23 runtime with dedicated tests. PR #251 was closed as superseded by #253 after confirming its homepage behavior was already integrated and its stale bundle omitted newer Settings/Rankings dictionaries.
 
 ### PR #244: connector-registry acceptance boundary
 
