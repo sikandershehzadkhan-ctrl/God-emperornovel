@@ -237,3 +237,12 @@ The canonical app already has the 14-language interface dictionary and selected 
 - No progress persistence, revision, bookmark, unlock or ownership behavior changed. A fresh exact-head build is required.
 
 - Follow-up refinement: the reader now reapplies the active locale after its markup handoff, translates bookmark and reader-theme accessible names, and uses the library dictionary for the remove-bookmark state. The canonical and served bundles are resynchronized; the feature contract records this lifecycle.
+
+
+### PR #256 exact-head validation and integration
+
+- Settings and reader localization passed all six exact-head workflows: Architecture Governance, Cloudflare Source Validation, Route Registry, Runtime Schema Parity, Integration Migration Governance and Graphify.
+- The mandatory Cloudflare build passed the settings language selector, reader locale completeness, reader accessibility, library localization and all existing reader progress/bookmark/unlock regressions.
+- The first candidate exposed legacy tests hard-coded to the 17.24 asset and English-only progress announcements. Tests and reader aria-valuetext were updated to validate the canonical 17.23 bundle and localized progress text; no regression was removed or skipped.
+- Reader locale application now runs after markup handoff; bookmark and reader-theme accessible names are translated. Canonical progress synchronization, revision checks, bookmarks, Crown unlocks and creator-authored chapter content remain unchanged.
+- PR #256 was squash-merged into the governed integration root as 6774f37dd40a8966267bad3f697edbc6a48ed900. It was not merged into main and does not authorize production deployment.
