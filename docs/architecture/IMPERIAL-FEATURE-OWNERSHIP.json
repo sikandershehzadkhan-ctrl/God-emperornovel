@@ -89,7 +89,8 @@
       "name": "Reader experience",
       "owns": [
         "src/domains/reader/",
-        "src/reader/"
+        "src/reader/",
+        "src/reader-progress-policy.mjs"
       ],
       "responsibilities": [
         "reading progress",
