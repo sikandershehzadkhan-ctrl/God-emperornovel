@@ -184,3 +184,13 @@ The canonical app already has the 14-language interface dictionary and selected 
 - The first validation attempt exposed stale route-method and authorization Worker fingerprints. Both evidence files were refreshed to the exact Worker blob 830f6385856b11b356cba9352b776ae89d24b879; the corrected exact-head run then passed.
 - PR #248 was squash-merged into the governed integration root. The same changes are not merged into main and are not a production deployment approval.
 
+
+
+### PR #246: homepage and navigation localization collision
+
+- The legacy homepage-localization branch was two commits behind the refreshed integration root and shared the canonical browser bundles and package build script. It was not merged directly.
+- Ported only the 14-locale HOME_LANG dictionary, static text-node localization helper, async mutation observation with detached-root cleanup, localized search placeholder/accessibility name, skip-link translations, and Urdu/Arabic/Persian RTL behavior.
+- Preserved the canonical homepage SSR handoff, live catalog rendering, creator-authored story content, period-correct leaderboard UI and ten-point rating formatter. The localization observer excludes dynamic story cards and does not rewrite unchanged text.
+- Synchronized public/app.js and public/app-17.23.0.js; added dedicated 14-locale homepage and skip-navigation regressions to the mandatory build.
+- Added ADR-0019 and the homepage-navigation-localization feature contract. No API route, database entity, migration, account setting or production deployment is changed.
+- The refreshed integration candidate is on branch integration/homepage-navigation-localization-17-75. Exact-head validation remains required before merging into the governed root.
