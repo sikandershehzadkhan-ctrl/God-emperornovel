@@ -20,6 +20,7 @@ The original collision table below is retained as a historical snapshot. The fol
 | #189 homepage SSR / design foundation | Closed as superseded after path-level audit | SSR module and design stylesheet are byte-identical on the canonical root; equivalent Worker integration and regression tests are present. The old PR's 17.24 bundle is absent from the active 17.23 runtime and must not be reintroduced |
 | #216 legacy core-schema rebuild plan | Replaced by refreshed canonical safety plan in `docs/architecture/LEGACY-CORE-SCHEMA-REBUILD-PLAN.md` | The old plan referenced an obsolete migration head and stale PR numbers. Its read-only preflight, fail-closed data disposition, fixture, backup, restore, and D1 transaction requirements were preserved and refreshed |
 | #208 governance closure register | Replaced by refreshed canonical register in `docs/architecture/GOVERNANCE-CLOSURE-REGISTER-2026-11-05.md` | The old register contained historical PR/issue statuses and branch-protection observations. The useful closure gates were retained while volatile facts were marked for live re-verification |
+| #176 platform completion register | Replaced by refreshed canonical checklist in `docs/architecture/IMPERIAL-PLATFORM-COMPLETION-REGISTER-2026-11-05.md` | Ordered product, security, reader, author, community, payments, operations, and acceptance gates were preserved; the old mainline baseline and account-branch blockers were refreshed to avoid stale claims |
 
 ### Governance defects found and corrected
 
@@ -33,7 +34,7 @@ The original collision table below is retained as a historical snapshot. The fol
 The following groups remain open and have not been declared safe to merge or closed merely because they are old. Their unique behavior and tests must be reconciled against the canonical root before disposition:
 
 - #216 and #208 have been path-audited and their durable requirements ported into refreshed canonical documents; their old PRs still require closure after the replacement-document PR is accepted.
-- #176 platform completion register and #175 UX acceptance matrix.
+- #175 UX acceptance matrix and route-to-screen coverage matrix still require individual path-level review; do not close until their unique acceptance criteria and route evidence are accounted for.
 - #156 homepage SSR fallback and #155–#146 reader/home/catalog feature chain.
 - #145–#131 localization chain.
 - #127 design foundation, #122 sitemap, and #119 rating validation.
