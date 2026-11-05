@@ -72,7 +72,7 @@ def run_report(path, comment_id, user_id=1):
 with tempfile.TemporaryDirectory() as directory:
     path = os.path.join(directory, "community.sqlite")
     db = connect(path)
-    db.executescript(";\n".join(SCHEMA) + ";")
+    db.executescript((";" + chr(10)).join(SCHEMA) + ";")
     db.executemany("INSERT INTO users(id) VALUES(?)", [(1,), (2,), (3,), (4,)])
     db.execute("INSERT INTO comments(id,user_id,novel_id,body) VALUES(777,4,1,'legacy')")
     db.executemany(
