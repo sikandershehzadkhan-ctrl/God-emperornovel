@@ -13,6 +13,8 @@ for (const payload of [
   { novel_id: 1, chapter_number: 0 }, { novel_id: 1, chapter_number: -1 },
   { novel_id: 1, chapter_number: 1.5 }, { novel_id: 1, chapter_number: Number.MAX_SAFE_INTEGER + 1 },
   { novel_id: "not-a-number", chapter_number: 1 }, { novel_id: 1, chapter_number: "nope" },
+  { novel_id: true, chapter_number: 1 }, { novel_id: [1], chapter_number: 1 },
+  { novel_id: null, chapter_number: 1 }, { novel_id: 1, chapter_number: false },
 ]) assert.equal(parseReaderProgressTarget(payload).ok, false);
 
 const worker=fs.readFileSync("src/index.js","utf8");
