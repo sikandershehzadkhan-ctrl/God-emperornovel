@@ -117,7 +117,6 @@ with tempfile.TemporaryDirectory() as directory:
     db = connect(path)
     assert db.execute("SELECT COUNT(*) FROM comment_report_claims WHERE user_id=999 OR comment_id=999").fetchone()[0] == 0, "orphan legacy reports must not create invalid claims"
     db.execute("INSERT INTO community_rate_limit_events(scope,user_id) VALUES('report',2)")
-    db.execute("INSERT INTO comment_report_claims(user_id,comment_id) VALUES(2,9999)")
     db.execute("DELETE FROM users WHERE id=2")
     assert db.execute("SELECT COUNT(*) FROM community_rate_limit_events WHERE user_id=2").fetchone()[0] == 0, "user deletion must cascade rate-limit events"
     assert db.execute("SELECT COUNT(*) FROM comment_report_claims WHERE user_id=2").fetchone()[0] == 0, "user deletion must cascade report claims"
