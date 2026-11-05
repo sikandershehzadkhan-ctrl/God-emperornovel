@@ -7,7 +7,8 @@
     "scripts/test-rating-input-validation.mjs",
     "package.json",
     "docs/architecture/feature-contracts/rating-input-validation.json",
-    "docs/architecture/decisions/ADR-0015-rating-input-validation.md"
+    "docs/architecture/decisions/ADR-0015-rating-input-validation.md",
+    "scripts/test-rating-handler-canonical.mjs"
   ],
   "sharedSurfaces": [
     "src/index.js",
@@ -53,7 +54,8 @@
   },
   "tests": {
     "unit": [
-      "test-rating-input-validation.mjs: accepts whole-number 1–10 only; rejects fractions, NaN, Infinity, strings, null, out-of-range values and invalid novel IDs"
+      "test-rating-input-validation.mjs: accepts whole-number 1–10 only; rejects fractions, NaN, Infinity, strings, null, out-of-range values and invalid novel IDs",
+      "test-rating-handler-canonical.mjs: assert unique GET/POST handlers, publication and rights gates, 1–10 bounds and no rounding"
     ],
     "integration": [
       "Mandatory npm build executes rating input regression against the canonical Worker source."
