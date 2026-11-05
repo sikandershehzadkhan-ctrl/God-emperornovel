@@ -27,7 +27,7 @@ for(const r of manifest.patterns){
 for(const r of manifest.routes){
  if(r.renderer==="standalone-html")continue;
  const name=r.renderer.split(":")[0];
- if(["home","catalog","formatDirectory","genres","tags","search","library","history","following","tickets","omni","settings","account","authorStudio","trendFactory","formatLanding","chapters","novel","reader","authorPublic","authPage"].includes(name))assert.ok(client.includes(name),"client renderer missing: "+name+" at "+r.path);
+ if(["home","catalog","formatDirectory","genres","tags","search","library","history","following","tickets","omni","settings","account","authorStudio","trendFactory","formatLanding","chapters","novel","reader","authorPublic","authorDirectory","authPage"].includes(name))assert.ok(client.includes(name),"client renderer missing: "+name+" at "+r.path);
 }
 for(const p of manifest.sitemaps)assert.ok(worker.includes(JSON.stringify(p)),"sitemap endpoint missing: "+p);
 const noindex=worker.match(/const noindex=new Set\(\[([\s\S]*?)\]\)/);
