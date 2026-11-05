@@ -7,8 +7,8 @@ assert.match(schema, /runtime_feature_schema_version','3/);
 assert.match(schema, /CREATE TABLE IF NOT EXISTS community_rate_limit_events/);
 assert.match(schema, /CREATE TABLE IF NOT EXISTS comment_report_claims/);
 assert.match(schema, /idx_community_rate_limit_created/);
-assert.match(schema, /FOREIGN KEY\\(user_id\\) REFERENCES users\\(id\\) ON DELETE CASCADE/);
-assert.match(schema, /FOREIGN KEY\\(comment_id\\) REFERENCES comments\\(id\\) ON DELETE CASCADE/);
+assert.match(schema, /FOREIGN KEY\(user_id\) REFERENCES users\\(id\\) ON DELETE CASCADE/);
+assert.match(schema, /FOREIGN KEY\(comment_id\) REFERENCES comments\\(id\\) ON DELETE CASCADE/);
 assert.match(schema, /INSERT OR IGNORE INTO comment_report_claims\(user_id,comment_id\) SELECT DISTINCT/);
 for (const trigger of [
   "trg_comments_hourly_limit",
