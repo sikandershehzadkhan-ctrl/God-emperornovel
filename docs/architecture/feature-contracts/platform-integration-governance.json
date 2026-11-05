@@ -32,7 +32,8 @@
     "ai",
     "platform-data",
     "platform-quality",
-    "repository-operations"
+    "repository-operations",
+    "delivery-platform"
   ],
   "routes": [
     "Existing canonical route set; update registry for behavior changes",
@@ -91,7 +92,8 @@
       "test-creator-ownership-policy.mjs",
       "test-comic-author-ui.mjs: chapter publication and edit policy guards",
       "test-atomic-ai-run-claims.mjs",
-      "test-ai-project-actor-ownership.mjs"
+      "test-ai-project-actor-ownership.mjs",
+      "test-production-deploy-gates.mjs: block deployment when canonical migrations exceed the reviewed release set"
     ],
     "integration": [
       "test-platform-architecture-contract.mjs",
@@ -128,7 +130,8 @@
     "stagingSteps": [
       "Pass all CI workflows",
       "Review exact PR diff",
-      "Verify staging response and client handoff before production"
+      "Verify staging response and client handoff before production",
+      "Production deploy fails closed while migrations 0012+ lack an approved, resumable rollout plan."
     ]
   },
   "rollback": {
@@ -165,7 +168,7 @@
     "repository-operations",
     "rights"
   ],
-  "changeSummary": "Consolidates current-main platform/security foundations with homepage SSR and the six-theme experience, while introducing canonical ownership, dependency, migration and integration governance. Adds mandatory isolated identity and media policy validation gates without changing Worker routes, UI bundles or D1 schema. Adds owner-scoped reader progress API and ensures architecture/source CI runs on nested integration PRs. Adds the reader browser client integration to the existing owner-scoped reading-position API and mandatory regression coverage. Integrates owner-scoped profile and account-preference APIs and a visibility-filtered public profile projection into the same canonical Worker as reader progress. Adds the account profile editor and cross-device settings synchronization while preserving the reader-progress browser integration. Adds a PR-lineage gate that serializes overlapping Worker, browser bundle, identity, migration, route inventory, workflow and release-configuration changes. Extends serialized surface protection to every top-level served CSS, JavaScript and webmanifest asset so versioned style/service-worker files cannot diverge silently. Hardens Author Studio chapter editing and publication by enforcing parent publication state, rights evidence, comic page-sequence validation on edits, safe integer chapter costs and verified chapter-route identifier parsing. Adds atomic token-fenced AI Author Studio generation claims with concurrent-run exclusion, stale-claim recovery, late-result rejection, owner-only authorization, and migration 0046.",
+  "changeSummary": "Consolidates current-main platform/security foundations with homepage SSR and the six-theme experience, while introducing canonical ownership, dependency, migration and integration governance. Adds mandatory isolated identity and media policy validation gates without changing Worker routes, UI bundles or D1 schema. Adds owner-scoped reader progress API and ensures architecture/source CI runs on nested integration PRs. Adds the reader browser client integration to the existing owner-scoped reading-position API and mandatory regression coverage. Integrates owner-scoped profile and account-preference APIs and a visibility-filtered public profile projection into the same canonical Worker as reader progress. Adds the account profile editor and cross-device settings synchronization while preserving the reader-progress browser integration. Adds a PR-lineage gate that serializes overlapping Worker, browser bundle, identity, migration, route inventory, workflow and release-configuration changes. Extends serialized surface protection to every top-level served CSS, JavaScript and webmanifest asset so versioned style/service-worker files cannot diverge silently. Hardens Author Studio chapter editing and publication by enforcing parent publication state, rights evidence, comic page-sequence validation on edits, safe integer chapter costs and verified chapter-route identifier parsing. Adds atomic token-fenced AI Author Studio generation claims with concurrent-run exclusion, stale-claim recovery, late-result rejection, owner-only authorization, and migration 0046. Adds a fail-closed production release gate because the deploy workflow currently applies only migrations 0009-0011 while the canonical integration line contains later migrations.",
   "acceptanceCriteria": [
     "Every changed repository path resolves to one registered owner",
     "Dependency graph is acyclic and every edge points from consumer to lower-level dependency",
@@ -208,7 +211,8 @@
     "Late AI workers cannot insert chapters or overwrite project progress after claim replacement.",
     "Project configuration edits invalidate an active generation claim.",
     "Migration 0046 is reserved and appended without modifying historical migrations.",
-    "AI generation remains restricted to the authenticated project owner; admins cannot impersonate creators."
+    "AI generation remains restricted to the authenticated project owner; admins cannot impersonate creators.",
+    "The manual production deploy workflow must block if numbered migrations beyond 0011 exist until the complete canonical migration rollout is explicitly reviewed and implemented."
   ],
   "sharedSurfaceSerialization": [
     ".github/workflows/",
