@@ -10,7 +10,7 @@ source = Path("src/runtime-feature-schema.mjs").read_text(encoding="utf-8")
 trigger_sql = [part.strip() for part in source.split(chr(96)) if part.strip().startswith("CREATE TRIGGER IF NOT EXISTS")]
 assert len(trigger_sql) == 4, f"expected four runtime triggers, found {len(trigger_sql)}"
 assert all("BEGIN" in sql and sql.rstrip().endswith("END") for sql in trigger_sql)
-assert not any(re.search(r"BEGIN\\s*END$", sql) for sql in trigger_sql), "empty trigger body found"
+assert not any(re.search(r"BEGIN\s*END$", sql) for sql in trigger_sql), "empty trigger body found"
 
 def ddl_for(name):
     match = re.search(r'"(CREATE TABLE IF NOT EXISTS ' + re.escape(name) + r' [^"]+)"', source)
@@ -20,7 +20,7 @@ def ddl_for(name):
 def index_statements():
     return re.findall(r'"(CREATE INDEX IF NOT EXISTS idx_community_rate_limit_[^"]+)"', source)
 
-backfill = re.search(r'"(INSERT OR IGNORE INTO comment_report_claims\\(user_id,comment_id\\) SELECT DISTINCT [^"]+)"', source)
+backfill = re.search(r'"(INSERT OR IGNORE INTO comment_report_claims\(user_id,comment_id\) SELECT DISTINCT [^"]+)"', source)
 assert backfill, "runtime duplicate-report claim backfill missing"
 
 SCHEMA = [
