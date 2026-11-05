@@ -22,7 +22,7 @@ const client = readFileSync(new URL("../public/app.js", import.meta.url), "utf8"
 const authorStudio = readFileSync(new URL("../public/author.html", import.meta.url), "utf8");
 assert.equal(worker.split("normalizeCoverUrl(").length - 1, 4, "all author/admin cover write routes must validate");
 assert.ok(worker.includes("img-src 'self' data:"), "default CSP must restrict images to local/data sources");
-assert.ok(worker.includes("/read/\\d+\\/\\d+"), "only comic reader routes may opt into HTTPS page images");
+assert.ok(worker.includes("img-src 'self' data:") && worker.includes("test(p)?' https:'") && worker.includes("/^\\/read"), "only comic reader routes may opt into HTTPS page images");
 assert.ok(client.includes("/story-cover-placeholder.svg") && client.includes("ascendant|cartographer"), "client must use an allowlisted local fallback");
 assert.ok(authorStudio.includes('<select name="cover_url">') && authorStudio.includes("/covers/cartographer.jpg") && !authorStudio.includes('name="cover_url" type="url"'), "Author Studio must offer only bundled local cover choices");
 console.log("Cover URL policy and integration tests passed.");
