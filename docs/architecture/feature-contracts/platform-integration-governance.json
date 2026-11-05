@@ -45,7 +45,8 @@
     "POST /api/bookmark and POST /api/history require positive safe-integer targets and an exact published, rights-eligible novel/chapter relationship.",
     "POST /api/comments enforces the per-user rolling-hour quota in SQLite triggers, not a racy preflight count.",
     "POST /api/comments/report serializes duplicate claims and per-user rolling-hour quotas in SQLite triggers.",
-    "POST /api/comments/like and POST /api/follow require strict positive safe-integer identifiers and published rights-eligible targets."
+    "POST /api/comments/like and POST /api/follow require strict positive safe-integer identifiers and published rights-eligible targets.",
+    "GET /for-you and GET /made-for-you are personalized HTML routes and receive noindex meta and X-Robots-Tag response directives."
   ],
   "apiContracts": [
     "Existing API contracts; update method and authorization inventories for behavior changes",
@@ -58,7 +59,8 @@
     "POST /api/history validates the target chapter belongs to the requested published rights-eligible novel before writing only to session u.id.",
     "Comment creation and engagement identifiers are positive safe integers; malformed, fractional, boolean, object and unsafe values are rejected.",
     "Comment reads, likes, reports, and follows are restricted to published rights-eligible novels.",
-    "Community comment and report quotas are database-enforced at 10 per rolling hour; duplicate reports are serialized with a unique claim."
+    "Community comment and report quotas are database-enforced at 10 per rolling hour; duplicate reports are serialized with a unique claim.",
+    "Personalized recommendation HTML routes /for-you and /made-for-you are excluded from search indexing; crawler directives do not replace authentication or owner scoping."
   ],
   "dataEntities": [
     "Existing canonical D1 entities only; no duplicate ledgers or parallel account-deletion store",
@@ -115,7 +117,8 @@
       "test-published-engagement-policy.mjs",
       "test-published-comment-engagement.mjs",
       "test-community-rate-limits-atomic.mjs",
-      "test-runtime-feature-schema.mjs: v2-to-v3 upgrade and non-empty trigger checks"
+      "test-runtime-feature-schema.mjs: v2-to-v3 upgrade and non-empty trigger checks",
+      "test-seo-indexing-guards.mjs: personalized /for-you and /made-for-you routes remain noindex"
     ],
     "integration": [
       "test-platform-architecture-contract.mjs",
@@ -266,7 +269,8 @@
     "Production schema preflight reports core foreign keys and PRAGMA foreign_key_check without mutating D1.",
     "Rating writes accept only positive safe-integer novel IDs and whole-number ratings 1–10; no rounding or fractional coercion is permitted.",
     "Novel cover writes accept only bundled same-origin artwork or the built-in placeholder; remote destinations are rejected.",
-    "General HTML image CSP is same-origin only, with HTTPS image allowance limited to comic reader routes."
+    "General HTML image CSP is same-origin only, with HTTPS image allowance limited to comic reader routes.",
+    "Personalized recommendation HTML routes /for-you and /made-for-you are included in the exact Worker noindex policy and covered by regression tests."
   ],
   "sharedSurfaceSerialization": [
     ".github/workflows/",
@@ -290,6 +294,7 @@
     "wrangler.toml",
     "src/cover-url-policy.mjs",
     "public/author.html",
-    "scripts/test-cover-url-policy.mjs"
+    "scripts/test-cover-url-policy.mjs",
+    "docs/architecture/feature-contracts/personalized-route-indexing.json"
   ]
 }
