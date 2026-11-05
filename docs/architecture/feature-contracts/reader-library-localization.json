@@ -100,7 +100,7 @@
   ],
   "changeSummary": "Adds 14-language Library/History/Following localization, reading-progress visibility and bookmark removal controls while preserving the canonical ten-point rating model.",
   "acceptanceCriteria": [
-    "All 14 locale dictionaries contain all 23 required Library/History strings.",
+    "All 14 locale dictionaries contain all 25 required Library/History strings.",
     "Library, History and Following pages apply the selected language.",
     "Users can remove a saved bookmark without affecting other bookmark rows.",
     "Removing the last bookmark displays the empty state.",
