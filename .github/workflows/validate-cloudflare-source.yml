@@ -202,6 +202,9 @@ jobs:
       - name: Test runtime bootstrap and migration schema parity
         run: python3 scripts/test-runtime-schema-parity.py
 
+      - name: Test read-only legacy core schema auditor
+        run: python3 scripts/audit-legacy-core-schema.py --self-test
+
       - name: Test reader progress target integrity
         run: python3 scripts/test-reader-progress-targets.py
 
