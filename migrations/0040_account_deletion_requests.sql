@@ -1,7 +1,7 @@
--- Upgrade the canonical account_closure_requests table for the independent
--- account-deletion review workflow. Do not create a second request ledger.
--- Migration 0031 on this governed lineage already includes review metadata.
--- Preserve every existing field while widening the lifecycle status constraint.
+-- Rebuild the canonical account_closure_requests table at the account-deletion
+-- review boundary without creating a second request ledger. Migration 0031 on
+-- this governed lineage already includes the full review lifecycle status set.
+-- Preserve every existing field and historical review metadata exactly.
 CREATE TABLE account_closure_requests_v2 (
   id INTEGER PRIMARY KEY AUTOINCREMENT,
   user_id INTEGER NOT NULL,
