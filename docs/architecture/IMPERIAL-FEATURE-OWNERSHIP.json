@@ -183,7 +183,8 @@
         "src/domains/media/",
         "src/media/",
         "src/comic-chapter-policy.mjs",
-        "src/content-formats.mjs"
+        "src/content-formats.mjs",
+        "src/cover-url-policy.mjs"
       ],
       "responsibilities": [
         "uploads",
