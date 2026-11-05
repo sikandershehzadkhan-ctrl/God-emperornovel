@@ -1,8 +1,8 @@
 {
   "schemaVersion": 1,
   "name": "Imperial Novel API route method inventory",
-  "sourceBranch": "integration/leaderboard-period-ui-17-74b",
-  "sourceBlob": "830f6385856b11b356cba9352b776ae89d24b879",
+  "sourceBranch": "feat/public-author-discovery-17-72",
+  "sourceBlob": "10a3db46c4c52095ab07f63a9273b2521b11d26b",
   "auditDate": "2026-11-05",
   "scope": "Static dispatcher scan of the integrated Worker. Observed method guards only; this is not a complete permission or runtime contract. Bookmark and history POST writes now require positive safe-integer identifiers and an exact published chapter belonging to a published, rights-eligible novel; validation occurs before persistence. Community POST handlers now use strict positive safe-integer identifiers and published rights-eligible targets; comment/report quotas and duplicate report claims are database-trigger enforced. Worker source fingerprint refreshed to the exact source blob for the personalized-route noindex correction; this change does not expand route access or object ownership. Explicit bookmark removal is DELETE on the singular /api/bookmark resource; the plural /api/bookmarks resource is the authenticated GET list. OmniPortal connector registry seeding now uses a normalized NOT EXISTS guard; the public status projection deduplicates normalized base URLs and preserves the enabled/authorized representative. Administrator connector creation validates an allowlisted HTTPS origin, rejects duplicate URLs and creates new entries disabled/pending. No route signature was added or removed. The Worker source fingerprint is refreshed after the leaderboard chapter/time index addition; no route signature changed.",
   "exactRouteCount": 80,
@@ -893,12 +893,12 @@
         "GET"
       ],
       "sourceLines": [
-        526,
-        527
+        548,
+        549
       ],
       "unguardedLines": [],
       "methodGuardMissing": false,
-      "authorization": "requires handler-level review"
+      "authorization": "public aggregate projection; no session required; only published rights-eligible novels contribute; no private creator fields are returned"
     },
     {
       "path": "/api/random",
@@ -1314,5 +1314,5 @@
     "Community comment and report hourly quotas are enforced by SQLite BEFORE INSERT triggers; duplicate reports are fenced by a unique claim. Static route inventory does not itself certify trigger execution."
   ],
   "sourceCommit": "df84b84a51c0b5e24f72c016ddaf95e181be27d1",
-  "refreshNote": "Refreshed to the exact Worker blob after adding the idempotent chapter/time unlock lookup index for period-correct leaderboard queries; no route signatures changed."
+  "refreshNote": "Refreshed to the exact Worker blob after adding the idempotent chapter/time unlock lookup index for period-correct leaderboard queries; no route signatures changed. Public author directory handler rechecked: GET-only, bounded and escaped name search, rights-eligible aggregate-only output; no session identity is exposed."
 }
