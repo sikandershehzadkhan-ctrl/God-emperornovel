@@ -80,6 +80,10 @@ def orphan_count(conn: sqlite3.Connection, child: str, parent: str,
     return int(conn.execute(sql).fetchone()[0])
 
 
+def normalized_sql(value: str) -> str:
+    return re.sub(r"\\s+", " ", (value or "").strip().rstrip(";")).casefold()
+
+
 def audit_connections(actual: sqlite3.Connection,
                       canonical: sqlite3.Connection) -> dict:
     actual_tables = table_names(actual)
@@ -96,6 +100,7 @@ def audit_connections(actual: sqlite3.Connection,
         "duplicate_unique_groups": [],
         "invalid_check_rows": [],
         "missing_canonical_objects": [],
+        "object_definition_mismatches": [],
         "custom_objects": [],
         "errors": [],
     }
@@ -203,27 +208,36 @@ def audit_connections(actual: sqlite3.Connection,
     except sqlite3.DatabaseError as exc:
         report["errors"].append(f"foreign_key_check: {exc}")
 
-    expected_objects = {
-        (r[0], r[1]) for r in rows(
+    expected_object_sql = {
+        (r[0], r[1]): r[2] for r in rows(
             canonical,
-            "SELECT type,name FROM sqlite_master "
+            "SELECT type,name,sql FROM sqlite_master "
             "WHERE type IN ('index','trigger') AND sql IS NOT NULL"
         )
     }
-    actual_objects = {
-        (r[0], r[1]) for r in rows(
+    actual_object_sql = {
+        (r[0], r[1]): r[2] for r in rows(
             actual,
-            "SELECT type,name FROM sqlite_master "
+            "SELECT type,name,sql FROM sqlite_master "
             "WHERE type IN ('index','trigger') AND sql IS NOT NULL"
         )
     }
+    expected_objects = set(expected_object_sql)
+    actual_objects = set(actual_object_sql)
     for kind, name in sorted(expected_objects - actual_objects):
         report["missing_canonical_objects"].append({"type": kind, "name": name})
     for kind, name in sorted(actual_objects - expected_objects):
         report["custom_objects"].append({"type": kind, "name": name})
+    for key in sorted(expected_objects & actual_objects):
+        if normalized_sql(expected_object_sql[key]) != normalized_sql(actual_object_sql[key]):
+            report["object_definition_mismatches"].append({
+                "type": key[0], "name": key[1],
+                "expected_sql": expected_object_sql[key],
+                "actual_sql": actual_object_sql[key],
+            })
 
     report["schema_drift"] = bool(
-        report["missing_canonical_objects"] or
+        report["missing_canonical_objects"] or report["object_definition_mismatches"] or
         report["canonical_tables_missing"]
         or any(not (
             item["columns_match"] and item["foreign_keys_match"]
@@ -330,7 +344,18 @@ def self_test(migration_path: Path) -> None:
     )
     duplicate.close()
 
-    print("PASS: clean schema, drift, orphan/CHECK/unique violations, custom objects, and read-only guard")
+    # Same-name objects with altered SQL must not pass as canonical.
+    altered = sqlite3.connect(":memory:")
+    canonical.backup(altered)
+    altered.execute("DROP TRIGGER IF EXISTS trg_users_username_history_guard")
+    altered.execute("CREATE TRIGGER trg_users_username_history_guard AFTER INSERT ON users BEGIN SELECT 1; END")
+    altered.execute("PRAGMA query_only=ON")
+    altered_result = audit_connections(altered, canonical)
+    assert altered_result["object_definition_mismatches"], "same-name trigger/index definitions must be compared"
+    assert altered_result["schema_drift"], "altered canonical object definitions must be schema drift"
+    altered.close()
+
+    print("PASS: clean schema, drift, object-definition changes, orphan/CHECK/unique violations, custom objects, and read-only guard")
 
 
 def main() -> int:
