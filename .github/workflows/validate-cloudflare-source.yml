@@ -208,6 +208,12 @@ jobs:
       - name: Test reader progress target integrity
         run: python3 scripts/test-reader-progress-targets.py
 
+      - name: Test atomic community rate limits using runtime trigger SQL
+        run: python3 scripts/test-community-rate-limits-atomic.py
+
+      - name: Test published comment engagement boundaries
+        run: python3 scripts/test-published-comment-engagement.py
+
       - name: Test catalog query aggregation parity
         run: python3 scripts/test-catalog-query.py
 
