@@ -1,0 +1,86 @@
+{
+  "featureId": "cover-url-boundary",
+  "domainOwner": "media",
+  "technicalIntegrator": "platform-integrator",
+  "ownedPaths": [
+    "src/cover-url-policy.mjs",
+    "scripts/test-cover-url-policy.mjs"
+  ],
+  "sharedSurfaces": [
+    "src/index.js",
+    "public/app.js",
+    "public/app-17.23.0.js",
+    "public/author.html",
+    "package.json"
+  ],
+  "dependencies": [],
+  "affectedDomains": [
+    "media",
+    "platform-quality"
+  ],
+  "routes": [],
+  "apiContracts": [
+    "Author novel create and update reject remote, protocol-relative, malformed, unbundled and unsafe cover paths.",
+    "Administrator novel create and update enforce the same exact same-origin allowlist.",
+    "The default CSP blocks remote image sources; HTTPS is permitted only on chapter-reader routes."
+  ],
+  "dataEntities": [
+    "Existing novels.cover_url field only; no new entity or migration."
+  ],
+  "migrationPlan": {
+    "required": false,
+    "proposedNumbers": [],
+    "canonicalEntityReuse": "Reuse existing novels.cover_url field and bundled public/covers assets.",
+    "backwardCompatibility": "Existing known bundled paths remain valid; legacy remote cover values fall back to the safe local placeholder when changed.",
+    "rollbackOrForwardRepair": "Revert the code and UI boundary; no schema or data migration is introduced."
+  },
+  "uiLifecycle": {
+    "shellOwner": "experience-shell",
+    "ssrBehavior": "No SSR lifecycle change.",
+    "clientBootBehavior": "Client cover rendering uses an exact bundled allowlist and local placeholder.",
+    "servedBundleParity": "public/app.js and public/app-17.23.0.js remain byte-identical."
+  },
+  "privacySecurity": {
+    "authentication": "Existing author/admin authentication requirements remain unchanged.",
+    "authorization": "All author and admin write routes validate covers server-side.",
+    "ownerScoping": "Existing author ownership checks remain unchanged.",
+    "csrf": "Existing same-origin/session CSRF protection remains unchanged.",
+    "rateAndSizeLimits": "No new request size or rate-limit behavior.",
+    "rightsAndPrivacy": "Arbitrary remote cover URLs are rejected to prevent third-party tracking and untrusted image sources."
+  },
+  "tests": {
+    "unit": [
+      "node scripts/test-cover-url-policy.mjs"
+    ],
+    "integration": [
+      "Cloudflare Source Validation exact-head build and route checks"
+    ],
+    "isolation": [
+      "Server rejects external cover URLs on all four author/admin write paths."
+    ]
+  },
+  "rollout": {
+    "flags": [],
+    "stagingSteps": [
+      "Verify all eight bundled cover paths and placeholder exist in the deployed asset bundle.",
+      "Verify external, protocol-relative, javascript, data, file, traversal, query and fragment URLs are rejected.",
+      "Verify HTTPS comic page media remains available only on reader routes."
+    ]
+  },
+  "rollback": {
+    "codeRollback": "Revert cover URL policy, CSP and Author Studio selector changes.",
+    "dataRollbackOrForwardRepair": "No migration; legacy values are not bulk rewritten.",
+    "monitoringSignals": [
+      "Cover image fallback rate",
+      "Author/admin cover validation 400 responses",
+      "Comic reader image load failures"
+    ]
+  },
+  "collisionReview": {
+    "duplicateRoutes": "No routes added or removed.",
+    "duplicateEntities": "Existing novels.cover_url only.",
+    "migrationAllocation": "No migration required.",
+    "sharedSurfaceOwners": "Media owns policy; platform kernel integrates server guards; experience shell owns UI; platform quality owns tests."
+  },
+  "status": "Proposed; exact-head CI and review required."
+}
