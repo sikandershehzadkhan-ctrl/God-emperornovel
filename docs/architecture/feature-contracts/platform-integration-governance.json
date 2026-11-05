@@ -20,7 +20,8 @@
     "docs/architecture/feature-contracts/omni-connector-registry-deduplication.json",
     "docs/architecture/feature-contracts/homepage-navigation-localization.json",
     "docs/architecture/feature-contracts/settings-reader-localization.json",
-    "docs/architecture/feature-contracts/rankings-tier-list-localization.json"
+    "docs/architecture/feature-contracts/rankings-tier-list-localization.json",
+    "docs/architecture/feature-contracts/community-discovery-localization.json"
   ],
   "dependencies": [
     "identity-security",
@@ -158,7 +159,8 @@
       "test-reader-localization-completeness.mjs: ten reader strings in fourteen locales, dynamic progress/footer labels, accessibility labels and bundle parity.",
       "test-reader-accessibility.mjs: localized progress announcements retain progressbar semantics.",
       "test-rankings-localization.mjs: fourteen locale leaderboard/tier-list labels, period chapter-unlock metric, dynamic result localization, empty states and bundle parity.",
-      "test-period-correct-leaderboard.mjs: validates returned unlock counts using localized ranking labels without weakening period/rank semantics."
+      "test-period-correct-leaderboard.mjs: validates returned unlock counts using localized ranking labels without weakening period/rank semantics.",
+      "test-community-localization.mjs: fourteen-locale Community quick links, recent discussion labels, loading/empty states, creator-content preservation and bundle parity."
     ],
     "integration": [
       "test-platform-architecture-contract.mjs",
@@ -191,7 +193,8 @@
       "Reader progress aria-valuetext and visible progress labels use the active locale without changing persistence or revision semantics.",
       "Reader applies the active locale after rendering; bookmark and reader-theme accessible names are translated while progress persistence remains unchanged.",
       "Leaderboard and Tier List render the active locale after dynamic data loads while preserving period-scoped chapter-unlock ranking semantics.",
-      "Period-correct leaderboard regression remains compatible with localized unlock-count labels and the canonical numeric counts."
+      "Period-correct leaderboard regression remains compatible with localized unlock-count labels and the canonical numeric counts.",
+      "Community applies the active locale after initial rendering and after trending catalog responses without translating story titles, usernames or discussion bodies."
     ],
     "isolation": [
       "test-authorization-ownership-matrix.mjs",
@@ -345,7 +348,9 @@
     "Reader progress announcements use localized labels while retaining numeric progress values and accessible progressbar semantics.",
     "Reader bookmark and reader-theme accessible names follow the active locale after reader markup handoff.",
     "Leaderboard and Tier List labels are localized across fourteen locales and accurately describe period-scoped chapter-unlock rankings.",
-    "Dynamic ranking results reapply the selected locale without translating creator-authored titles or author names."
+    "Dynamic ranking results reapply the selected locale without translating creator-authored titles or author names.",
+    "Community landing-page static copy and discussion/catalog empty states are localized across fourteen locales.",
+    "Dynamic creator/community-authored content remains unchanged during Community localization."
   ],
   "sharedSurfaceSerialization": [
     ".github/workflows/",
@@ -373,6 +378,7 @@
     "docs/architecture/feature-contracts/personalized-route-indexing.json",
     "docs/architecture/feature-contracts/omni-connector-registry-deduplication.json",
     "docs/architecture/feature-contracts/settings-reader-localization.json",
-    "docs/architecture/feature-contracts/rankings-tier-list-localization.json"
+    "docs/architecture/feature-contracts/rankings-tier-list-localization.json",
+    "docs/architecture/feature-contracts/community-discovery-localization.json"
   ]
 }
