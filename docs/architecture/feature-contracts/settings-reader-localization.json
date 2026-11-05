@@ -100,7 +100,7 @@
     "platform-quality",
     "platform-architecture"
   ],
-  "changeSummary": "Adds a fourteen-locale settings language selector and ten reader strings on the canonical 17.23 runtime while preserving account preferences, progress synchronization, bookmarks, unlocks and six-theme reading. Keeps the existing reader accessibility regression aligned with translated progress value text.",
+  "changeSummary": "Adds a fourteen-locale settings language selector and ten reader strings on the canonical 17.23 runtime while preserving account preferences, progress synchronization, bookmarks, unlocks and six-theme reading. Keeps the existing reader accessibility regression aligned with translated progress value text. Applies the active locale after reader markup handoff so static chapter labels, bookmark controls and reader-theme accessibility names are translated.",
   "acceptanceCriteria": [
     "The existing settings page offers a native-language selector for all fourteen supported locales.",
     "Saved imperial_language is restored when settings opens and changes immediately through setINLang.",
@@ -109,6 +109,7 @@
     "Existing reader progress, bookmark, unlock, library and account-preference behaviors remain unchanged.",
     "Canonical and served 17.23 browser bundles are byte-identical.",
     "No API route, database entity, migration, production data mutation or deployment is introduced.",
-    "Initial and live reader progress announcements use the active locale while retaining labeled progressbar semantics."
+    "Initial and live reader progress announcements use the active locale while retaining labeled progressbar semantics.",
+    "Reader markup applies the active locale after rendering; bookmark and reader-theme accessible names follow the selected language."
   ]
 }
