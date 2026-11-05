@@ -276,3 +276,12 @@ The canonical app already has the 14-language interface dictionary and selected 
 - The mandatory build passed the fourteen-locale ranking test and the existing period-correct leaderboard regression after its unlock-count assertions were updated to use the active locale key. No ranking, numeric-count, rights or zero-activity assertion was removed.
 - PR #259 was squash-merged into the governed integration root as d962c637c228dce16a08c9d4ac3e03000570a01b. It was not merged into main and does not authorize production deployment.
 - The leaderboard now localizes the period chapter-unlock explanation and novel/author unlock metrics across fourteen interface locales. Tier List labels and empty states are also localized. Creator-authored titles and author names remain unchanged.
+
+
+### PR #136: Community discovery localization collision
+
+- The legacy Community localization PR is based on the 17.24 stacked branch and predates the canonical recent-discussions feed and the period-correct leaderboard metric. Its app bundle was not merged wholesale.
+- Ported the fourteen-locale Community dictionary onto the current 17.23 app, preserving the canonical quick links, recent-discussions feed, trending catalog query and rights-aware rendering.
+- Added translations for six additional discussion-feed labels and loading/empty/unavailable states. The active locale is applied after initial render and after catalog results update.
+- Novel titles, usernames, discussion bodies and creator/community-authored content remain unchanged.
+- Added ADR-0027, a feature contract and a mandatory 24-string/fourteen-locale regression. No route, API, D1 entity, migration or production deployment is introduced. Exact-head validation remains required.
