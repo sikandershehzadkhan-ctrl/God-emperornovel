@@ -21,7 +21,7 @@ for (const route of routes) {
   const end = source.indexOf(route.next, start + route.marker.length);
   assert.ok(start >= 0 && end > start, route.name + " route boundaries must exist");
   const handler = source.slice(start, end);
-  assert.ok(handler.includes("Number(row.owner_user_id)!==Number(u.id)"), route.name + " must enforce strict project ownership");
+  assert.match(handler, /Number\((?:row|existing)\.owner_user_id\)!==Number\(u\.id\)/, route.name + " must enforce strict project ownership");
   assert.ok(handler.includes(route.guard), route.name + " must return an explicit owner-only denial");
   assert.ok(!handler.includes("u.role!=='admin'&&Number(row.owner_user_id)!==Number(u.id)"), route.name + " must not allow admin impersonation of creator generation");
 }
