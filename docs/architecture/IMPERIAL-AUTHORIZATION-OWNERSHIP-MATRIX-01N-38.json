@@ -1,11 +1,11 @@
 {
   "schemaVersion": 1,
-  "sourceBranch": "integration/atomic-ai-run-claims-0046",
-  "sourceBlob": "8ee92eb7f1c62debbf95984bec141a1fef1e1224",
+  "sourceBranch": "integration/reader-progress-target-validation-0050",
+  "sourceBlob": "d9824a4811c02dd5daa32f1c0c144b8e57913f68",
   "auditDate": "2026-11-05",
   "scope": "Partial handler-level static review of current integration source snapshot. This revision rechecks the five authentication route-method entries introduced or changed in commit 106744a6e9124524c88b6f454bf4bbc98e81745f and preserves the prior 40 reviewed entries. No full authorization certification, live D1 concurrency proof, or browser/runtime isolation proof is claimed. The source-blob fingerprint was refreshed from the failing CI checkout after the catalog/recommendation Worker integration; the CI check computes the Git blob hash from the exact checked-out file bytes. CI computes the source fingerprint from the exact checked-out Worker bytes; the recorded value is aligned to that runtime fingerprint. This fingerprint is the value computed by the authorization-matrix CI assertion from the checked-out Worker bytes. Fingerprint synchronized to the exact Worker Git blob SHA reported for this branch snapshot. Fingerprint refreshed from the Git tree blob SHA for the current Worker source snapshot. Fingerprint synchronized to the latest Worker Git tree blob after the leaderboard zero-activity filter. Atomic AI generation claim integration added after this matrix review; new AI run endpoint behavior remains pending independent handler-level authorization review. AI chapter generation remains owner-only; administrator role does not permit creator impersonation.",
-  "reviewedRouteCount": 50,
-  "pendingDisclosure": "46 listed route-method entries have been reviewed in this source snapshot. All other exact and dynamic API routes remain pending handler-level review. Reader progress GET/POST is newly included with session-bound ownership and optimistic revision checks.",
+  "reviewedRouteCount": 52,
+  "pendingDisclosure": "Existing reviewed route subset only. All other exact and dynamic API routes remain pending handler-level review. Reader bookmark/history POST writes are reviewed for session-owner scoping and chapter target eligibility; cross-account runtime isolation still requires independent Worker/D1 proof.",
   "routes": [
     {
       "path": "/api/notifications",
@@ -575,6 +575,34 @@
         "public response excludes email and ticket balance",
         "reading stats hidden unless opted in"
       ]
+    },
+    {
+      "path": "/api/bookmark",
+      "method": "POST",
+      "access": "authenticated",
+      "ownerRule": "Bookmark writes are scoped exclusively to session u.id; novel_id and chapter_number must be positive safe integers, and the exact chapter must belong to the requested published, rights-eligible novel.",
+      "evidence": "need(u); parseReaderProgressTarget; SELECT novels JOIN chapters constrained by novel id, chapter number, published novel, eligible rights and published chapter; INSERT binds user_id=u.id.",
+      "tests": [
+        "anonymous writes denied",
+        "fractional, negative, zero, unsafe and malformed IDs rejected",
+        "missing, draft and cross-novel chapter targets rejected",
+        "existing bookmarks unchanged on rejected targets",
+        "account A cannot update account B bookmark"
+      ]
+    },
+    {
+      "path": "/api/history",
+      "method": "POST",
+      "access": "authenticated",
+      "ownerRule": "History writes are scoped exclusively to session u.id; novel_id and chapter_number must be positive safe integers, and the exact chapter must belong to the requested published, rights-eligible novel.",
+      "evidence": "need(u); parseReaderProgressTarget; SELECT novels JOIN chapters constrained by novel id, chapter number, published novel, eligible rights and published chapter; INSERT binds user_id=u.id.",
+      "tests": [
+        "anonymous writes denied",
+        "fractional, negative, zero, unsafe and malformed IDs rejected",
+        "missing, draft and cross-novel chapter targets rejected",
+        "existing history unchanged on rejected targets",
+        "account A cannot update account B history"
+      ]
     }
   ],
   "findings": [
@@ -670,6 +698,6 @@
       "action": "Add isolated Worker/D1 integration tests for enumeration resistance, concurrent token consumption, email changes, delivery failure, session revocation, and rollback before security sign-off."
     }
   ],
-  "sourceReviewNote": "The reviewed API handler source was refreshed after adding explicit GET-only rejection for /api/novels and /api/admin/stats. Homepage SSR and theme work is confined to the Worker HTML renderer and browser assets; the existing 45 route-method ownership entries remain the reviewed subset, with all other routes still explicitly pending. Fingerprint refreshed for the schema-bootstrap-only Worker change in PR #228; no route declarations or authorization handler behavior changed. Fingerprint refreshed for strict whole-number 1–10 rating validation; existing authenticated-owner and rights checks are unchanged.",
-  "sourceCommit": "444e141965e57ae4b89bb5eaf29231010a534424"
+  "sourceReviewNote": "The reviewed API handler source was refreshed after adding explicit GET-only rejection for /api/novels and /api/admin/stats. Homepage SSR and theme work is confined to the Worker HTML renderer and browser assets; the existing 45 route-method ownership entries remain the reviewed subset, with all other routes still explicitly pending. Fingerprint refreshed for the schema-bootstrap-only Worker change in PR #228; no route declarations or authorization handler behavior changed. Fingerprint refreshed for strict whole-number 1–10 rating validation; existing authenticated-owner and rights checks are unchanged. POST /api/bookmark and POST /api/history now validate positive safe-integer targets and require the exact published chapter of a published rights-eligible novel before writing; user_id is derived only from authenticated session u.id. Cross-account runtime proof remains pending.",
+  "sourceCommit": "565cb3c1db1d688ce12c3dcaf33eac1d1aec1bdb"
 }
