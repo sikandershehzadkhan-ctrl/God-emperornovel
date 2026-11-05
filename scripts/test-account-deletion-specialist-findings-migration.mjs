@@ -43,6 +43,16 @@ try:
  raise AssertionError("assignment survived failed audit insertion")
 except sqlite3.IntegrityError: pass
 assert db.execute("SELECT COUNT(*) FROM account_deletion_reviewer_assignments WHERE user_id=4").fetchone()[0]==0
+# A failed revocation audit insert must roll back the revocation update too.
+db.execute("INSERT INTO account_deletion_reviewer_assignments(user_id,role_key,assigned_by) VALUES(5,'support_reviewer',1)")
+revoke_id=db.execute("SELECT id FROM account_deletion_reviewer_assignments WHERE user_id=5").fetchone()[0]
+db.execute("CREATE TRIGGER injected_revocation_audit_failure BEFORE INSERT ON account_deletion_reviewer_assignment_events WHEN NEW.action='revoked' BEGIN SELECT RAISE(ABORT,'injected revocation audit failure'); END")
+try:
+ db.execute("UPDATE account_deletion_reviewer_assignments SET revoked_by=3,revoked_at=CURRENT_TIMESTAMP WHERE id=?",(revoke_id,))
+ raise AssertionError("revocation survived failed audit insertion")
+except sqlite3.IntegrityError: pass
+assert db.execute("SELECT revoked_at FROM account_deletion_reviewer_assignments WHERE id=?",(revoke_id,)).fetchone()[0] is None
+assert db.execute("SELECT COUNT(*) FROM account_deletion_reviewer_assignment_events WHERE assignment_id=?",(revoke_id,)).fetchone()[0]==1
 # Revoked reviewer cannot write specialist findings after the role has been revoked.
 db.executescript("""
 CREATE TABLE account_closure_requests(id INTEGER PRIMARY KEY,user_id INTEGER NOT NULL,status TEXT NOT NULL,FOREIGN KEY(user_id) REFERENCES users(id) ON DELETE RESTRICT);
