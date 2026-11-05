@@ -34,7 +34,7 @@ The original collision table below is retained as a historical snapshot. The fol
 The following groups remain open and have not been declared safe to merge or closed merely because they are old. Their unique behavior and tests must be reconciled against the canonical root before disposition:
 
 - #216, #208 and #176 were path-audited; their durable requirements were ported into canonical documents merged through PR #237, and the stale PRs were closed as superseded.
-- #175 UX acceptance matrix and route-to-screen coverage matrix still require individual path-level review; do not close until their unique acceptance criteria and route evidence are accounted for.
+- #175 UX acceptance matrix and route-to-screen coverage matrix have been ported as dated canonical acceptance references in PR #239; its unique Worker noindex correction is handled separately by PR #238. The older PR must remain open until both replacement paths pass validation.
 - #156 homepage SSR fallback and #155–#146 reader/home/catalog feature chain.
 - #145–#131 localization chain.
 - #127 design foundation, #122 sitemap, and #119 rating validation.
