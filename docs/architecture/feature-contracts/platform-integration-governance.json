@@ -148,7 +148,8 @@
       "test-omni-connector-deduplication.mjs: idempotent registry seeding, normalized status deduplication, administrator duplicate rejection and pending-rights defaults.",
       "test-period-correct-leaderboard.mjs: period validation, rights eligibility, published-chapter unlocks, zero-unlock suppression, visible metric/counts, bootstrap index and bundle parity.",
       "test-homepage-localization.mjs: fourteen locale dictionaries, 54 core strings, 12 section strings, search placeholder and async static-copy observation.",
-      "test-navigation-accessibility-localization.mjs: fourteen skip-link translations, accessible search label and Urdu/Arabic/Persian RTL."
+      "test-navigation-accessibility-localization.mjs: fourteen skip-link translations, accessible search label and Urdu/Arabic/Persian RTL.",
+      "check-content-formats.mjs: keyboard skip-link, locale fallback and Persian RTL compatibility with homepage/navigation localization."
     ],
     "integration": [
       "test-platform-architecture-contract.mjs",
@@ -175,7 +176,8 @@
       "OmniPortal status projection and administrator connector registration source regression; no production D1 mutation.",
       "OmniPortal connector registration and public status projection remain bounded to existing routes and existing D1 entities; no production D1 mutation or migration is part of this feature.",
       "Leaderboard UI displays period chapter-unlock ranking labels and returned unlock counts; canonical and versioned browser bundles remain byte-identical.",
-      "Homepage localization runs after SSR handoff or client fallback while preserving dynamic creator-authored story content and byte-identical 17.23 served bundle."
+      "Homepage localization runs after SSR handoff or client fallback while preserving dynamic creator-authored story content and byte-identical 17.23 served bundle.",
+      "Existing content-format accessibility checks remain aligned with the localized skip-link and Urdu/Arabic/Persian RTL behavior."
     ],
     "isolation": [
       "test-authorization-ownership-matrix.mjs",
