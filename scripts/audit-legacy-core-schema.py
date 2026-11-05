@@ -86,6 +86,8 @@ def audit_connections(actual: sqlite3.Connection,
     expected_tables = table_names(canonical)
     report = {
         "read_only": True,
+        "comparison_scope": "core-schema comparison against the supplied canonical migration only; not a complete production backup or full migration-chain audit",
+        "integrity_check": [],
         "canonical_tables_missing": sorted(expected_tables - actual_tables),
         "canonical_tables_present": sorted(expected_tables & actual_tables),
         "tables": {},
@@ -190,6 +192,11 @@ def audit_connections(actual: sqlite3.Connection,
                 })
 
     try:
+        report["integrity_check"] = [row[0] for row in actual.execute("PRAGMA integrity_check").fetchall()]
+    except sqlite3.DatabaseError as exc:
+        report["errors"].append(f"integrity_check: {exc}")
+
+    try:
         report["foreign_key_violations"] = [
             list(row) for row in actual.execute("PRAGMA foreign_key_check").fetchall()
         ]
@@ -224,7 +231,7 @@ def audit_connections(actual: sqlite3.Connection,
         ) for item in report["tables"].values())
     )
     report["data_violations"] = bool(
-        report["foreign_key_violations"] or report["orphan_relationships"]
+        report["integrity_check"] != ["ok"] or report["foreign_key_violations"] or report["orphan_relationships"]
         or report["duplicate_unique_groups"] or report["invalid_check_rows"]
     )
     report["core_schema_preflight_clean"] = not (
@@ -252,6 +259,7 @@ def self_test(migration_path: Path) -> None:
     canonical.backup(clean)
     clean.execute("PRAGMA query_only=ON")
     clean_result = audit_connections(clean, canonical)
+    assert clean_result["integrity_check"] == ["ok"], "clean fixture must pass integrity_check"
     assert clean_result["core_schema_preflight_clean"], (
         f"canonical fixture should pass: {clean_result}"
     )
@@ -287,6 +295,7 @@ def self_test(migration_path: Path) -> None:
     legacy.execute("PRAGMA query_only=ON")
     result = audit_connections(legacy, canonical)
     assert result["schema_drift"], "legacy constraints should be detected"
+    assert result["integrity_check"] == ["ok"], "legacy fixture must still be structurally sound"
     assert result["data_violations"], "invalid role/orphan fixture should be blocked"
     assert result["orphan_relationships"], "missing legacy FK must not hide orphan rows"
     assert result["invalid_check_rows"], "invalid role values must be detected explicitly"
