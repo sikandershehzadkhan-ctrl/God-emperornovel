@@ -14,7 +14,7 @@ for(const locale of locales){
  for(const key of keys)assert.ok(dictionaries[locale][key],"Missing "+locale+" translation: "+key);
 }
 assert.equal(Object.keys(dictionaries).length,14);
-assert.ok(app.includes("...(LIBRARY_LANG[c]||{})"),"Library translations must join the active language dictionary");
+assert.ok(app.includes("Object.assign(t,LIBRARY_LANG[c]||{})"),"Library translations must join the active language dictionary");
 assert.ok(app.includes("document.querySelectorAll('[data-in-lang]')"),"Language changes must update marked library/history text");
 assert.ok(app.includes("function applyLibraryTranslations(root,language)"),"Shared library translation helper missing");
 const libraryAt=app.indexOf("async function library(mode='library')");
