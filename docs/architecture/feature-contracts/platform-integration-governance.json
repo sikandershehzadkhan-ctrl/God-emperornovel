@@ -9,6 +9,7 @@
     "docs/architecture/feature-contracts/admin-tab-accessibility.json",
     "docs/architecture/feature-contracts/homepage-navigation-localization.json",
     "docs/architecture/feature-contracts/omni-connector-registry-deduplication.json",
+    "docs/architecture/feature-contracts/public-author-discovery.json",
     "docs/architecture/feature-contracts/rankings-tier-list-localization.json",
     "docs/architecture/feature-contracts/settings-reader-localization.json",
     "migrations/",
