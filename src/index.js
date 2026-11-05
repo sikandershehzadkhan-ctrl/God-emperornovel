@@ -5,7 +5,7 @@ import { requestEmailVerification } from "./email-verification-request.mjs";
 import { hashEmailVerificationToken } from "./email-verification-token.mjs";
 import { completeEmailVerification } from "./email-verification-store.mjs";
 import { toPublicNovel } from "./public-novel.mjs";
-import { parseReaderProgressTarget } from "./reader-progress-policy.mjs";
+import { parseReaderProgressTarget } from "./reader/progress-policy.mjs";
 import { renderHomepageHtml } from "./homepage-ssr.mjs";
 import { SITEMAP_PAGE_SIZE, renderSitemapIndex, renderStaticSitemap, renderNovelSitemap, renderChapterSitemap } from "./sitemap.mjs";
 import { buildRobotsTxt } from "./seo.mjs";
