@@ -2,6 +2,7 @@ import { spawnSync } from "node:child_process";
 import { readFileSync } from "node:fs";
 
 const migration=readFileSync(new URL("../migrations/0042_account_deletion_reviewer_roles.sql",import.meta.url),"utf8");
+const reviewStore=readFileSync(new URL("../migrations/0041_account_deletion_review_store.sql",import.meta.url),"utf8");
 const specialist=readFileSync(new URL("../migrations/0045_account_deletion_specialist_findings.sql",import.meta.url),"utf8");
 const script=String.raw`
 import json,sqlite3,sys
@@ -47,6 +48,7 @@ db.executescript("""
 CREATE TABLE account_closure_requests(id INTEGER PRIMARY KEY,user_id INTEGER NOT NULL,status TEXT NOT NULL,FOREIGN KEY(user_id) REFERENCES users(id) ON DELETE RESTRICT);
 INSERT INTO account_closure_requests(id,user_id,status) VALUES(10,1,'review_required');
 """)
+db.executescript(payload["reviewStore"])
 db.executescript(payload["specialist"])
 future='2999-01-01T00:00:00Z'
 db.execute("INSERT INTO account_deletion_reviewer_assignments(user_id,role_key,assigned_by) VALUES(2,'creator_rights_reviewer',1)")
@@ -58,7 +60,7 @@ try:
 except sqlite3.IntegrityError: pass
 print("PASS: reviewer assignment and revocation each generate exactly one scoped audit event; failed audit writes roll back the role change; revoked specialists cannot submit findings.")
 `;
-const result=spawnSync("python3",["-c",script],{input:JSON.stringify({migration,specialist}),encoding:"utf8"});
+const result=spawnSync("python3",["-c",script],{input:JSON.stringify({migration,reviewStore,specialist}),encoding:"utf8"});
 if(result.error) throw result.error;
 if(result.status!==0){process.stderr.write(result.stderr||"");process.stdout.write(result.stdout||"");process.exit(result.status||1)}
 process.stdout.write(result.stdout);
