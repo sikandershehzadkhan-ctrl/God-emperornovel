@@ -17,7 +17,9 @@ INSERT INTO novels(id,owner_user_id,publication_status,rights_status,rights_evid
  (11,1,'published','licensed','license proof'),
  (12,1,'published','licensed',''),
  (13,1,'archived','original',''),
- (14,3,'published','original','');
+ (14,3,'published','original',''),
+ (15,1,'published','original',''),
+ (16,1,'published','original','');
 """)
 db.executescript(sql)
 def rejected(fn):
@@ -46,7 +48,7 @@ pending=db.execute("SELECT id FROM novel_ownership_transfers WHERE novel_id=11")
 rejected(lambda: db.execute("UPDATE novel_ownership_transfers SET to_user_id=3 WHERE id=?",(pending,)))
 rejected(lambda: db.execute("UPDATE novel_ownership_transfers SET status='rejected' WHERE id=?",(pending,)))
 # Eligibility is rechecked at acceptance: reader, banned author, unverified licensed work, archived work fail.
-for novel,recipient in [(10,3),(10,4),(12,2),(13,2)]:
+for novel,recipient in [(15,3),(16,4),(12,2),(13,2)]:
  db.execute("INSERT INTO novel_ownership_transfers(novel_id,from_user_id,to_user_id,requested_at,expires_at) VALUES(?,1,?,1,9999999999)",(novel,recipient))
  transfer=db.execute("SELECT id FROM novel_ownership_transfers WHERE novel_id=? ORDER BY id DESC",(novel,)).fetchone()[0]
  rejected(lambda: db.execute("UPDATE novel_ownership_transfers SET status='accepted',decided_at=CAST(strftime('%s','now') AS INTEGER) WHERE id=?",(transfer,)))
