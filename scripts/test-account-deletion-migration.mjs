@@ -44,7 +44,12 @@ if(r.status!==0){process.stderr.write(r.stderr||"");process.stdout.write(r.stdou
 process.stdout.write(r.stdout);
 assert.match(upgrade,/review_reason,created_at,updated_at[\s\S]*SELECT[\s\S]*review_reason,created_at,updated_at/);
 assert.match(upgrade,/DROP TABLE account_closure_requests/);
-const copyProjection=upgrade.match(/INSERT INTO account_closure_requests_v2[\\s\\S]*?SELECT([\\s\\S]*?)FROM account_closure_requests;/)?.[1];
+const copyStart=upgrade.indexOf('INSERT INTO account_closure_requests_v2');
+assert.notEqual(copyStart,-1,'upgrade must copy rows from the canonical request table');
+const selectStart=upgrade.indexOf('SELECT',copyStart);
+const copyEnd=upgrade.indexOf('FROM account_closure_requests;',selectStart);
+assert.ok(selectStart>copyStart && copyEnd>selectStart,'upgrade must contain a bounded row-copy projection');
+const copyProjection=upgrade.slice(selectStart,copyEnd);
 assert.ok(copyProjection,"upgrade must copy rows from the canonical request table");
 assert.match(copyProjection,/review_reason,created_at,updated_at/,"upgrade must copy historical review metadata and timestamps");
 assert.doesNotMatch(copyProjection,/CURRENT_TIMESTAMP/,"row-copy projection must not replace historical timestamps; column defaults may still use CURRENT_TIMESTAMP for future inserts");
