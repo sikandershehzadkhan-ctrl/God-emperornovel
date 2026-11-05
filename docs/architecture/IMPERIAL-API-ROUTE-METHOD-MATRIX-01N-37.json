@@ -1,10 +1,10 @@
 {
   "schemaVersion": 1,
   "name": "Imperial Novel API route method inventory",
-  "sourceBranch": "fix/personalized-route-noindex-17-74",
-  "sourceBlob": "ba19a7353ef28d5a81a88e1b51e0cb1c1ad1661d",
+  "sourceBranch": "integration/reader-explicit-bookmark-intent-17-73",
+  "sourceBlob": "b51fe9309c16404554d6877970989d546be29f88",
   "auditDate": "2026-11-05",
-  "scope": "Static dispatcher scan of the integrated Worker. Observed method guards only; this is not a complete permission or runtime contract. Bookmark and history POST writes now require positive safe-integer identifiers and an exact published chapter belonging to a published, rights-eligible novel; validation occurs before persistence. Community POST handlers now use strict positive safe-integer identifiers and published rights-eligible targets; comment/report quotas and duplicate report claims are database-trigger enforced. Worker source fingerprint refreshed to the exact source blob for the personalized-route noindex correction; this change does not expand route access or object ownership.",
+  "scope": "Static dispatcher scan of the integrated Worker. Observed method guards only; this is not a complete permission or runtime contract. Bookmark and history POST writes now require positive safe-integer identifiers and an exact published chapter belonging to a published, rights-eligible novel; validation occurs before persistence. Community POST handlers now use strict positive safe-integer identifiers and published rights-eligible targets; comment/report quotas and duplicate report claims are database-trigger enforced. Worker source fingerprint refreshed to the exact source blob for the personalized-route noindex correction; this change does not expand route access or object ownership. Explicit bookmark removal is DELETE on the singular /api/bookmark resource; the plural /api/bookmarks resource is the authenticated GET list.",
   "exactRouteCount": 80,
   "dynamicRouteCount": 22,
   "exactRoutes": [
@@ -474,27 +474,27 @@
       "path": "/api/bookmark",
       "methods": [
         "POST",
-        "GET"
+        "DELETE"
       ],
       "sourceLines": [
-        585
+        587,
+        599
       ],
       "unguardedLines": [],
       "methodGuardMissing": false,
-      "authorization": "requires handler-level review"
+      "authorization": "POST and DELETE require an authenticated session and strict positive safe-integer novel/chapter targets; both writes are scoped to session u.id."
     },
     {
       "path": "/api/bookmarks",
       "methods": [
-        "POST",
         "GET"
       ],
       "sourceLines": [
-        570
+        640
       ],
       "unguardedLines": [],
       "methodGuardMissing": false,
-      "authorization": "requires handler-level review"
+      "authorization": "Authenticated owner-scoped bookmark list; the query binds user_id to session u.id and restricts novels to published, rights-eligible content."
     },
     {
       "path": "/api/comments",
