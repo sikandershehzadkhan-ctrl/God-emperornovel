@@ -34,6 +34,8 @@ const searchDisabled=buildRobotsTxt(origin,{allowOaiSearch:false});
 assert.match(searchDisabled,/User-agent: OAI-SearchBot\nDisallow: \/\n/);
 
 assert.match(getPageSeo("/catalog").title,/Discover Novels/);
+assert.match(getPageSeo("/authors").title,/Discover Authors/);
+assert.equal(robotsForPath("/authors"),"index,follow");
 assert.match(getPageSeo("/become-an-author").title,/Become an Author/);
 assert.match(getPageSeo("/become-an-author").description,/creator tools|editorial review/i);
 assert.equal(robotsForPath("/become-an-author"),"index,follow");
