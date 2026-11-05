@@ -82,5 +82,14 @@
     "dataMinimization": "No user identifier is accepted from request payload.",
     "rights": "Only published rights-eligible novel/chapter targets are accepted.",
     "residualRisk": "Static and SQLite tests do not replace a full cross-account Worker/D1 runtime isolation test."
+  },
+  "rollback": {
+    "codeRollback": "Revert the reader-progress target validation integration commit; existing stored bookmark/history rows and schema remain unchanged.",
+    "dataRollbackOrForwardRepair": "No database migration or production data mutation is introduced.",
+    "monitoringSignals": [
+      "Unexpected bookmark/history 400 or 404 responses",
+      "D1 write errors on bookmark/history endpoints",
+      "Reader progress API error rate"
+    ]
   }
 }
