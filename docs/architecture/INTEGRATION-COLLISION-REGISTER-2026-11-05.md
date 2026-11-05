@@ -164,3 +164,14 @@ The canonical app already has the 14-language interface dictionary and selected 
 - Existing duplicate rows are not deleted by a public GET. The administrator cleanup endpoint remains the explicit repair path.
 - No migration, production D1 mutation or deployment is included.
 - The current table still has no database-enforced unique index on normalized `base_url`; this code-only slice does not claim uniqueness under every concurrent administrator write. A future unique-index migration requires a separate allocation and reviewed reference-preserving data repair.
+
+
+## OmniPortal connector follow-up (2026-11-05)
+
+PR #243's first exact-head Cloudflare Source Validation run exposed a missing shared-surface contract update: the Worker and package build script changed, but `platform-integration-governance.json` was not included in the PR. The contract now records the connector registry's existing-table reuse, idempotent normalized seeding, public status projection, administrator-only allowlisted HTTPS registration, duplicate rejection, disabled/pending rights defaults, and regression test. No route signature or migration was added.
+
+- Contract correction commit: `52ec2b54906b851a7f6b5f4f23131abb669cda5a`.
+- On that exact head, Architecture Governance, Route Registry, and Runtime Schema Parity passed after the contract correction.
+- The initial Cloudflare Source Validation failure is superseded by the contract correction but still requires a fresh exact-head run. Integration Migration Governance and Graphify were cancelled before jobs started and likewise require fresh exact-head evidence.
+- Connector URL uniqueness is still not database-enforced under concurrent writes. This PR does not claim to solve that race; a future unique-index migration requires separate data reconciliation and migration reservation.
+- No production D1 mutation, migration, deployment, or connector cleanup was performed.
