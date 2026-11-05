@@ -3,7 +3,8 @@
   "domainOwner": "discovery",
   "technicalIntegrator": "platform-integrator",
   "ownedPaths": [
-    "scripts/test-rankings-localization.mjs"
+    "scripts/test-rankings-localization.mjs",
+    "scripts/test-period-correct-leaderboard.mjs"
   ],
   "sharedSurfaces": [
     "public/app.js",
@@ -53,7 +54,8 @@
   },
   "tests": {
     "unit": [
-      "test-rankings-localization.mjs"
+      "test-rankings-localization.mjs",
+      "test-period-correct-leaderboard.mjs: unlock count assertions use the active ranking locale key rather than hard-coded English."
     ],
     "integration": [
       "Fourteen-locale leaderboard and tier-list rendering, selected-period unlock metric labels, empty states, rating formatter and bundle parity."
@@ -96,7 +98,7 @@
     "platform-quality",
     "platform-architecture"
   ],
-  "changeSummary": "Adds fourteen-locale leaderboard and tier-list localization using the canonical period chapter-unlock metric and current 17.23 bundle.",
+  "changeSummary": "Adds fourteen-locale leaderboard and tier-list localization using the canonical period chapter-unlock metric and current 17.23 bundle. Updates the canonical period-ranking regression to validate localized unlock-count labels.",
   "acceptanceCriteria": [
     "All fourteen locales contain the leaderboard and tier-list labels used by the canonical UI.",
     "Weekly, monthly and all-time explanations accurately describe period-scoped chapter-unlock rankings.",
@@ -105,6 +107,7 @@
     "Creator-authored story titles and author names are not translated.",
     "Dynamic ranking results reapply the selected interface locale.",
     "Canonical and served 17.23 browser bundles remain byte-identical.",
-    "No API, database, migration, production data or deployment changes are introduced."
+    "No API, database, migration, production data or deployment changes are introduced.",
+    "The period-correct leaderboard regression accepts localized unlock-count labels while continuing to verify the returned numeric counts."
   ]
 }
