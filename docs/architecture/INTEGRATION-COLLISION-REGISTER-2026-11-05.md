@@ -16,7 +16,11 @@ The original collision table below is retained as a historical snapshot. The fol
 | #213 older cover implementation | Closed as superseded | Its policy was ported to the canonical root and merged through PR #235 |
 | #236 main ancestry reconciliation | Merged into the canonical integration root as `4a538dfde11e301dfa4fb0aa65ea1b18c3f196e5` | Exact-head six-workflow validation passed; the integration root now contains the current main ancestry |
 | #234 earlier ancestry reconciliation attempt | Closed as duplicate | Replaced by #236, which reran checks against the refreshed canonical base |
-| #195 canonical architecture integration | Open, draft, not merged to main | Current candidate head follows the main-ancestry reconciliation; comparison confirms 0 commits behind current main. The latest full six-workflow exact-head validation passed on `d33f3d7e1511578021ceee277343b86d62b3f835`; this register refresh is documentation-only |
+| #195 canonical architecture integration | Open, draft, not merged to main | Current candidate head follows the main-ancestry reconciliation. Consult the latest exact-head workflow runs and live compare before any merge decision; passing CI is not production approval |
+| #189 homepage SSR / design foundation | Closed as superseded after path-level audit | SSR module and design stylesheet are byte-identical on the canonical root; equivalent Worker integration and regression tests are present. The old PR's 17.24 bundle is absent from the active 17.23 runtime and must not be reintroduced |
+| #216 legacy core-schema rebuild plan | Replaced by refreshed canonical safety plan in `docs/architecture/LEGACY-CORE-SCHEMA-REBUILD-PLAN.md` | The old plan referenced an obsolete migration head and stale PR numbers. Its read-only preflight, fail-closed data disposition, fixture, backup, restore, and D1 transaction requirements were preserved and refreshed |
+| #208 governance closure register | Replaced by refreshed canonical register in `docs/architecture/GOVERNANCE-CLOSURE-REGISTER-2026-11-05.md` | The old register contained historical PR/issue statuses and branch-protection observations. The useful closure gates were retained while volatile facts were marked for live re-verification |
+| #176 platform completion register | Replaced by refreshed canonical checklist in `docs/architecture/IMPERIAL-PLATFORM-COMPLETION-REGISTER-2026-11-05.md` | Ordered product, security, reader, author, community, payments, operations, and acceptance gates were preserved; the old mainline baseline and account-branch blockers were refreshed to avoid stale claims |
 
 ### Governance defects found and corrected
 
@@ -29,9 +33,8 @@ The original collision table below is retained as a historical snapshot. The fol
 
 The following groups remain open and have not been declared safe to merge or closed merely because they are old. Their unique behavior and tests must be reconciled against the canonical root before disposition:
 
-- #216 legacy core-schema rebuild plan and #208 governance closure register.
-- #189 older homepage-SSR/canonical-platform integration branch.
-- #176 platform completion register and #175 UX acceptance matrix.
+- #216 and #208 have been path-audited and their durable requirements ported into refreshed canonical documents; their old PRs still require closure after the replacement-document PR is accepted.
+- #175 UX acceptance matrix and route-to-screen coverage matrix still require individual path-level review; do not close until their unique acceptance criteria and route evidence are accounted for.
 - #156 homepage SSR fallback and #155–#146 reader/home/catalog feature chain.
 - #145–#131 localization chain.
 - #127 design foundation, #122 sitemap, and #119 rating validation.
@@ -44,7 +47,7 @@ These are stale-branch candidates, not automatically duplicate work. The root co
 ### Current integration safety
 
 - Canonical root: `integration/architecture-governance-root-17-70`.
-- Current main ancestry is present in the root; comparison reports 588 commits ahead and 0 behind.
+- Current main ancestry is present in the root; re-run the compare immediately before any merge decision because commit counts are volatile.
 - PR #195 remains draft. Passing CI is not approval to merge this 588-commit integration into main.
 - No production deployment or production D1 migration was performed as part of this reconciliation.
 - A successful exact-head CI run proves the tested commit passed those workflows; it does not certify every feature or production journey.
