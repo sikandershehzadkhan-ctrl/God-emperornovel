@@ -276,3 +276,13 @@ The canonical app already has the 14-language interface dictionary and selected 
 - The mandatory build passed the fourteen-locale ranking test and the existing period-correct leaderboard regression after its unlock-count assertions were updated to use the active locale key. No ranking, numeric-count, rights or zero-activity assertion was removed.
 - PR #259 was squash-merged into the governed integration root as d962c637c228dce16a08c9d4ac3e03000570a01b. It was not merged into main and does not authorize production deployment.
 - The leaderboard now localizes the period chapter-unlock explanation and novel/author unlock metrics across fourteen interface locales. Tier List labels and empty states are also localized. Creator-authored titles and author names remain unchanged.
+
+### PR #263: bounded OmniPortal connector responses
+
+- Added a streaming JSON parser with a 1 MiB per-provider body limit, JSON content-type validation, strict UTF-8 decoding and malformed JSON rejection.
+- Bounded OmniPortal search input to 120 characters and external fan-out to eight enabled, rights-authorized connectors.
+- Preserved local catalog results, the existing connector HTTPS allowlist, seven-second timeout, rights checks, normalization and deduplication.
+- Added `scripts/test-bounded-json-response.mjs`, ADR-0028 and the `omniportal-bounded-json-response` feature contract.
+- Refreshed the route, API-method and authorization evidence fingerprints to the exact Worker blob and commit.
+- No migration, production data change, secret, chapter-body ingestion or deployment is included.
+- PR #263 targets the governed integration root and remains draft pending exact-head validation. Do not merge or deploy until all six required workflows pass on its final head.
