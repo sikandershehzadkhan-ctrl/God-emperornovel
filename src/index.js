@@ -807,7 +807,7 @@ async function api(req,env){
   const id=Number(p.split('/')[5]);
   const existing=await env.DB.prepare('SELECT * FROM ai_author_projects WHERE id=?').bind(id).first();
   if(!existing)return json({error:'AI project not found'},404);
-  if(u.role!=='admin'&&Number(existing.owner_user_id)!==Number(u.id))return json({error:'You do not own this project'},403);
+  if(Number(existing.owner_user_id)!==Number(u.id))return json({error:'Only the project owner can run generation jobs.'},403);
 
   // A conditional UPDATE is the lock. Only one concurrent request can claim a
   // project; stale claims may be replaced after 30 minutes, and the token fences
