@@ -23,6 +23,13 @@ The original collision table below is retained as a historical snapshot. The fol
 | #176 platform completion register | Closed as superseded by PR #237 | Ordered product, security, reader, author, community, payments, operations, and acceptance gates were preserved; the old mainline baseline and account-branch blockers were refreshed to avoid stale claims |
 | #122 dynamic public sitemap | Closed as superseded | Canonical `src/sitemap.mjs` and `src/seo.mjs` provide a stronger sharded sitemap index, bounded novel/chapter pagination, robots policy and route-aware SEO; `test-dynamic-sitemap.mjs` and `test-seo-foundation.mjs` cover the integrated implementation |
 | #119 rating input validation | Closed as superseded | Canonical Worker validation and `test-rating-input-validation.mjs` enforce whole-number ratings from 1–10; the old PR's separate 1–5 parser conflicts with the platform's 1–10 rating contract and is not to be reintroduced |
+| #240 explicit bookmark intent | Merged into canonical integration root | Chapter visits now update history only; explicit POST/DELETE actions are owner-scoped; exact-head six-workflow validation passed |
+| #241 reader accessibility controls | Merged into canonical integration root | Accessible chapter progress semantics, drawer relationships/focus/Escape behavior and named font controls; exact-head six-workflow validation passed |
+| #242 Library/History localization | Merged into canonical integration root | Fourteen locale dictionaries, localized Library/History/Following, reading progress and explicit bookmark removal; canonical ten-point ratings preserved; exact-head six-workflow validation passed |
+| #152 reader bookmark intent | Closed as superseded by #240 | The unique explicit-save/remove behavior is integrated in #240; the old automatic-on-open bookmark behavior is intentionally not preserved |
+| #153 reader progress sync | Closed as superseded | Canonical `/api/reading-position`, browser synchronization, optimistic concurrency and offline fallback are covered by `test-reading-position-api` and reader-progress tests; its old migration 0016 conflicts with the canonical chapter-revisions migration and was not copied |
+| #154 reader accessibility | Closed as superseded by #241 | Keyboard drawer focus, Escape handling, progressbar semantics and descriptive controls are integrated in #241 |
+| #155 reader library controls | Closed as superseded by #242 | Fourteen-language Library/History/Following, progress display and bookmark removal are integrated; the legacy five-point rating logic was excluded |
 | #156 homepage SSR fallback | Open; partial parity only | Canonical SSR renderer, public-novel projection and integration regression test supersede the old SSR implementation, but #156 also carries homepage content localization and broader no-JS/RTL assertions absent from the canonical app/test. Port those unique requirements selectively before closing; do not merge its stale Worker/bundles |
 | #127 visual design foundation | Open; partial parity only | Canonical `imperial-design-foundation.css` and design integration test supersede the old token/layout/reader/component foundation in part, but the old branch's admin tab keyboard/ARIA behavior is absent from canonical `public/admin.html`, and several admin/page-specific styles remain unmatched. Selectively reconcile before closing; do not merge its 17.24 assets wholesale |
 
@@ -39,7 +46,7 @@ The following groups remain open and have not been declared safe to merge or clo
 
 - #216, #208 and #176 were path-audited; their durable requirements were ported into canonical documents merged through PR #237, and the stale PRs were closed as superseded.
 - #175 UX acceptance matrix and route-to-screen coverage matrix were ported as dated canonical acceptance references in PR #239; its unique Worker noindex correction was handled separately by PR #238. Both replacement PRs passed validation and the stale PR was closed.
-- #156 homepage SSR and homepage-content localization parity; #155–#146 reader/home/catalog feature chain.
+- #156 homepage SSR and homepage-content localization parity; #151–#146 reader/home/catalog feature chain.
 - #145–#131 localization chain.
 - #127 design foundation, especially admin keyboard/ARIA behavior and remaining page-specific styling.
 - #95–#86 security hardening branches.
@@ -52,7 +59,7 @@ These are stale-branch candidates, not automatically duplicate work. The root co
 
 - Canonical root: `integration/architecture-governance-root-17-70`.
 - Current main ancestry is present in the root; re-run the compare immediately before any merge decision because commit counts are volatile.
-- PR #195 remains draft. Passing CI is not approval to merge this 588-commit integration into main.
+- PR #195 remains draft. It is a large integration candidate; recheck its live ahead/behind count and exact-head workflows before any merge decision. Passing CI is not approval to merge it into main.
 - No production deployment or production D1 migration was performed as part of this reconciliation.
 - A successful exact-head CI run proves the tested commit passed those workflows; it does not certify every feature or production journey.
 
