@@ -1,0 +1,6 @@
+{
+  "version": 1,
+  "number": 42,
+  "migration": "migrations/0042_account_deletion_reviewer_roles.sql",
+  "pullRequest": 195
+}
