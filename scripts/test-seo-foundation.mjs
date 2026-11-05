@@ -61,6 +61,7 @@ assert.equal((sitemap.match(/\/novel\/12/g)||[]).length,1);
 assert.doesNotMatch(sitemap,/\/novel\/bad/);
 assert.match(sitemap,/<loc>https:\/\/imperial\.example\/formats<\/loc>/);
 assert.match(sitemap,/\/format\/original/);
+assert.ok(sitemap.includes(origin+"/authors"),"static sitemap includes the public author directory");
 assert.match(sitemap,/become-an-author/);
 assert.ok(!sitemap.includes("<loc>https://imperial.example/author</loc>"));
 assert.match(sitemap,/\/format\/audiobook/);
