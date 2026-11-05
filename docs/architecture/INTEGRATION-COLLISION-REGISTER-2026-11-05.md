@@ -255,3 +255,9 @@ The canonical app already has the 14-language interface dictionary and selected 
 - Leaderboard and Tier List now reapply the selected locale after dynamic rendering. Creator-authored novel titles and author names remain unchanged.
 - Preserved the canonical ten-point rating formatter, published-rights filters, zero-unlock suppression, existing routes and API responses.
 - Added ADR-0026, a feature contract and a mandatory fourteen-locale regression. No API, database entity, migration or production deployment is included. Exact-head validation remains required.
+
+
+### Rankings localization regression adjustment
+
+- The first exact-head build confirmed the locale dictionary and other checks loaded, then exposed a brittle assertion that expected rankingText() to wrap explanatory copy directly. The implementation intentionally marks static explanation paragraphs with data-in-lang and reapplies setINLang after rendering; dynamic counts use rankingText().
+- Updated the regression to assert the actual static-markup and dynamic-count paths separately. The chapter-unlock wording remains unchanged and accurately reflects the canonical API. A clean exact-head run is required.
