@@ -235,3 +235,5 @@ The canonical app already has the 14-language interface dictionary and selected 
 - Updated the canonical reader to localize both initial and live progress announcements using readerText while preserving numeric progress values and progressbar semantics.
 - Updated the existing reader accessibility regression to assert localized initial/live value text, and registered the test in the settings-reader feature contract and platform integration governance.
 - No progress persistence, revision, bookmark, unlock or ownership behavior changed. A fresh exact-head build is required.
+
+- Follow-up refinement: the reader now reapplies the active locale after its markup handoff, translates bookmark and reader-theme accessible names, and uses the library dictionary for the remove-bookmark state. The canonical and served bundles are resynchronized; the feature contract records this lifecycle.
