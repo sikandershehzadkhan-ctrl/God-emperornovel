@@ -202,6 +202,9 @@ jobs:
       - name: Test runtime bootstrap and migration schema parity
         run: python3 scripts/test-runtime-schema-parity.py
 
+      - name: Test reader progress target integrity
+        run: python3 scripts/test-reader-progress-targets.py
+
       - name: Test catalog query aggregation parity
         run: python3 scripts/test-catalog-query.py
 
