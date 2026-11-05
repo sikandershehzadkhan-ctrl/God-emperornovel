@@ -1,6 +1,6 @@
 -- Imperial Novel: consent-based creator ownership transfer.
--- Transfer records intentionally retain numeric actor IDs for audit history.
--- No ownership is changed by inserting a request; acceptance is a separate guarded operation.
+-- Transfer records retain actor IDs for audit history and block parent deletion.
+-- Inserting a request never changes novel ownership; acceptance is a guarded transition.
 
 CREATE TABLE IF NOT EXISTS novel_ownership_transfers (
   id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -19,37 +19,42 @@ CREATE TABLE IF NOT EXISTS novel_ownership_transfers (
   CHECK (from_user_id > 0),
   CHECK (to_user_id > 0),
   CHECK (from_user_id <> to_user_id),
-  CHECK (expires_at > requested_at)
+  CHECK (expires_at > requested_at),
+  CHECK ((status = 'pending' AND decided_at IS NULL) OR
+         (status <> 'pending' AND decided_at IS NOT NULL)),
+  FOREIGN KEY (novel_id) REFERENCES novels(id) ON DELETE RESTRICT,
+  FOREIGN KEY (from_user_id) REFERENCES users(id) ON DELETE RESTRICT,
+  FOREIGN KEY (to_user_id) REFERENCES users(id) ON DELETE RESTRICT
 );
 
--- A novel may have at most one outstanding invitation at a time.
 CREATE UNIQUE INDEX IF NOT EXISTS uq_novel_ownership_transfer_pending
   ON novel_ownership_transfers(novel_id)
   WHERE status = 'pending';
-
 CREATE INDEX IF NOT EXISTS idx_ownership_transfer_recipient
   ON novel_ownership_transfers(to_user_id, status, expires_at);
-
 CREATE INDEX IF NOT EXISTS idx_ownership_transfer_owner
   ON novel_ownership_transfers(from_user_id, status, requested_at);
-
 CREATE INDEX IF NOT EXISTS idx_ownership_transfer_novel_history
   ON novel_ownership_transfers(novel_id, requested_at DESC);
-
 CREATE INDEX IF NOT EXISTS idx_ownership_transfer_expiry
   ON novel_ownership_transfers(status, expires_at);
 
--- Atomic guarded acceptance: ownership and invitation state share one SQLite statement.
+-- Identity fields and parent links are immutable. Terminal records are retained.
+CREATE TRIGGER IF NOT EXISTS trg_novel_ownership_transfer_identity_immutable
+BEFORE UPDATE OF novel_id,from_user_id,to_user_id,requested_at,expires_at
+ON novel_ownership_transfers
+BEGIN SELECT RAISE(ABORT,'ownership transfer identity is immutable'); END;
 
+CREATE TRIGGER IF NOT EXISTS trg_novel_ownership_transfer_terminal_immutable
+BEFORE UPDATE ON novel_ownership_transfers
+WHEN OLD.status <> 'pending'
+BEGIN SELECT RAISE(ABORT,'terminal ownership transfer is immutable'); END;
+
+-- Atomic guarded acceptance: ownership and invitation state share one SQLite statement.
 CREATE TRIGGER IF NOT EXISTS trg_novel_ownership_transfer_accept
 BEFORE UPDATE OF status ON novel_ownership_transfers
 WHEN NEW.status = 'accepted' AND OLD.status = 'pending'
 BEGIN
-  SELECT CASE WHEN NEW.novel_id <> OLD.novel_id
-    OR NEW.from_user_id <> OLD.from_user_id
-    OR NEW.to_user_id <> OLD.to_user_id
-    OR NEW.expires_at <> OLD.expires_at
-    THEN RAISE(ABORT, 'ownership transfer identity is immutable') END;
   SELECT CASE WHEN OLD.expires_at <= CAST(strftime('%s','now') AS INTEGER)
     THEN RAISE(ABORT, 'ownership transfer expired') END;
   SELECT CASE WHEN NOT EXISTS (
