@@ -1,0 +1,120 @@
+{
+  "featureId": "reader-progress-target-validation",
+  "domainOwner": "reader",
+  "technicalIntegrator": "platform-kernel",
+  "ownedPaths": [
+    "src/reader-progress-policy.mjs",
+    "scripts/test-reader-progress-policy.mjs",
+    "scripts/test-reader-progress-targets.py",
+    "docs/architecture/feature-contracts/reader-progress-target-validation.json",
+    "docs/architecture/decisions/ADR-0015-reader-progress-target-validation.md"
+  ],
+  "sharedSurfaces": [
+    "src/index.js",
+    "package.json",
+    ".github/workflows/validate-cloudflare-source.yml",
+    "docs/architecture/IMPERIAL-API-ROUTE-METHOD-MATRIX-01N-37.json",
+    "docs/architecture/IMPERIAL-AUTHORIZATION-OWNERSHIP-MATRIX-01N-38.json",
+    "docs/architecture/feature-contracts/platform-integration-governance.json"
+  ],
+  "dependencies": [
+    "reader-library-progress",
+    "platform-data",
+    "platform-quality",
+    "delivery-platform",
+    "platform-kernel",
+    "platform-architecture"
+  ],
+  "routes": [
+    "POST /api/bookmark",
+    "POST /api/history"
+  ],
+  "apiContracts": [
+    "Both write routes require positive safe-integer novel_id and chapter_number.",
+    "The exact chapter must belong to the requested published novel, have publication_status='published', and the novel must be rights-eligible.",
+    "The owner is always authenticated session u.id; request payload cannot select another user."
+  ],
+  "dataEntities": [
+    "Existing bookmarks and history tables only; no schema changes."
+  ],
+  "migrationPlan": {
+    "required": false,
+    "proposedNumbers": [],
+    "canonicalEntityReuse": "Reuses existing bookmarks/history, novels and chapters entities.",
+    "backwardCompatibility": "Valid existing published chapter targets continue to work; malformed or invalid targets now return 400 or 404 rather than being persisted.",
+    "rollbackOrForwardRepair": "Revert the route validation and tests if a regression is verified; no data migration or production D1 change is required."
+  },
+  "uiLifecycle": {
+    "shellOwner": "experience-runtime",
+    "ssrBehavior": "No SSR changes.",
+    "clientBootBehavior": "No browser boot changes.",
+    "servedBundleParity": "No served browser bundle changes."
+  },
+  "privacySecurity": {
+    "authentication": "Both POST handlers require the existing authenticated session.",
+    "authorization": "Writes bind owner exclusively to u.id.",
+    "ownerScoping": "No request-supplied user identifier is accepted; each row is stored under the authenticated session owner.",
+    "csrf": "Existing write-route policy remains unchanged.",
+    "rateAndSizeLimits": "Existing request body handling remains unchanged; identifiers are strictly validated.",
+    "rightsAndPrivacy": "Only published chapters under published rights-eligible novels can be stored as progress targets."
+  },
+  "tests": {
+    "unit": [
+      "test-reader-progress-policy.mjs"
+    ],
+    "integration": [
+      "test-reader-progress-targets.py",
+      "Canonical migration replay in isolated SQLite"
+    ],
+    "isolation": [
+      "Authenticated owner scoping remains u.id-only; local D1 cross-account integration remains a release criterion."
+    ],
+    "buildCommands": [
+      "node scripts/test-reader-progress-policy.mjs",
+      "python3 scripts/test-reader-progress-targets.py",
+      "npm run build"
+    ]
+  },
+  "rollout": {
+    "flags": [],
+    "stagingSteps": [
+      "Run all six integration workflows on exact PR head.",
+      "Verify invalid target requests return 400/404 without writes.",
+      "Verify two-account isolation in the local D1 Worker harness."
+    ]
+  },
+  "rollback": {
+    "codeRollback": "Revert this bounded route/policy slice if regressions are detected.",
+    "dataRollbackOrForwardRepair": "No schema or production data mutation.",
+    "monitoringSignals": [
+      "Bookmark/history invalid target responses",
+      "Reader progress write failures",
+      "Cross-account access regression tests"
+    ]
+  },
+  "collisionReview": {
+    "duplicateRoutes": "No new routes; existing POST /api/bookmark and POST /api/history behavior hardened.",
+    "duplicateEntities": "No new persistent entities.",
+    "migrationAllocation": "No migration allocated; historical migrations remain immutable.",
+    "sharedSurfaceOwners": "Worker route implementation by platform-kernel; policy by reader; inventories by platform-architecture; tests by platform-quality; CI by delivery-platform."
+  },
+  "affectedDomains": [
+    "reader",
+    "platform-kernel",
+    "platform-data",
+    "platform-quality",
+    "delivery-platform",
+    "platform-architecture",
+    "identity",
+    "rights"
+  ],
+  "changeSummary": "Validates bookmark and history write targets against exact published chapter and rights-eligible novel relationships before persisting session-owned progress.",
+  "acceptanceCriteria": [
+    "Positive safe-integer novel and chapter identifiers are required.",
+    "The exact requested chapter must belong to the requested novel and be published.",
+    "The novel must be published and rights-eligible.",
+    "Rejected targets do not mutate bookmark or history rows.",
+    "Writes bind user_id only to authenticated session u.id.",
+    "No migration or new route is introduced."
+  ]
+}
