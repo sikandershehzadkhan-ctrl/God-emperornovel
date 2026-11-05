@@ -34,7 +34,8 @@
     "platform-quality",
     "repository-operations",
     "delivery-platform",
-    "platform-kernel"
+    "platform-kernel",
+    "catalog"
   ],
   "routes": [
     "Existing canonical route set; update registry for behavior changes",
@@ -96,7 +97,9 @@
       "test-atomic-ai-run-claims.mjs",
       "test-ai-project-actor-ownership.mjs",
       "test-production-deploy-gates.mjs: block deployment when canonical migrations exceed the reviewed release set",
-      "test-runtime-schema-parity.mjs: runtime role constraint, foreign-key and default source assertions"
+      "test-runtime-schema-parity.mjs: runtime role constraint, foreign-key and default source assertions",
+      "test-rating-input-validation.mjs: whole-number 1–10 validation and malformed input rejection",
+      "test-rating-handler-canonical.mjs: canonical ten-point route, rights and direct safe-integer checks"
     ],
     "integration": [
       "test-platform-architecture-contract.mjs",
@@ -127,7 +130,8 @@
       "npm run build",
       "npm run check:cloudflare-readiness",
       "python3 scripts/test-runtime-schema-parity.py",
-      "node scripts/test-runtime-schema-parity.mjs"
+      "node scripts/test-runtime-schema-parity.mjs",
+      "node scripts/test-rating-input-validation.mjs"
     ]
   },
   "rollout": {
@@ -179,7 +183,7 @@
     "repository-operations",
     "rights"
   ],
-  "changeSummary": "Consolidates current-main platform/security foundations with homepage SSR and the six-theme experience, while introducing canonical ownership, dependency, migration and integration governance. Adds mandatory isolated identity and media policy validation gates without changing Worker routes, UI bundles or D1 schema. Adds owner-scoped reader progress API and ensures architecture/source CI runs on nested integration PRs. Adds the reader browser client integration to the existing owner-scoped reading-position API and mandatory regression coverage. Integrates owner-scoped profile and account-preference APIs and a visibility-filtered public profile projection into the same canonical Worker as reader progress. Adds the account profile editor and cross-device settings synchronization while preserving the reader-progress browser integration. Adds a PR-lineage gate that serializes overlapping Worker, browser bundle, identity, migration, route inventory, workflow and release-configuration changes. Extends serialized surface protection to every top-level served CSS, JavaScript and webmanifest asset so versioned style/service-worker files cannot diverge silently. Hardens Author Studio chapter editing and publication by enforcing parent publication state, rights evidence, comic page-sequence validation on edits, safe integer chapter costs and verified chapter-route identifier parsing. Adds atomic token-fenced AI Author Studio generation claims with concurrent-run exclusion, stale-claim recovery, late-result rejection, owner-only authorization, and migration 0046. Adds a fail-closed production release gate because the deploy workflow currently applies only migrations 0009-0011 while the canonical integration line contains later migrations. Aligns runtime first-install core DDL with immutable migration 0001, adds source and SQLite parity regression tests, and extends the read-only production schema preflight to report core foreign-key definitions and integrity violations.",
+  "changeSummary": "Consolidates current-main platform/security foundations with homepage SSR and the six-theme experience, while introducing canonical ownership, dependency, migration and integration governance. Adds mandatory isolated identity and media policy validation gates without changing Worker routes, UI bundles or D1 schema. Adds owner-scoped reader progress API and ensures architecture/source CI runs on nested integration PRs. Adds the reader browser client integration to the existing owner-scoped reading-position API and mandatory regression coverage. Integrates owner-scoped profile and account-preference APIs and a visibility-filtered public profile projection into the same canonical Worker as reader progress. Adds the account profile editor and cross-device settings synchronization while preserving the reader-progress browser integration. Adds a PR-lineage gate that serializes overlapping Worker, browser bundle, identity, migration, route inventory, workflow and release-configuration changes. Extends serialized surface protection to every top-level served CSS, JavaScript and webmanifest asset so versioned style/service-worker files cannot diverge silently. Hardens Author Studio chapter editing and publication by enforcing parent publication state, rights evidence, comic page-sequence validation on edits, safe integer chapter costs and verified chapter-route identifier parsing. Adds atomic token-fenced AI Author Studio generation claims with concurrent-run exclusion, stale-claim recovery, late-result rejection, owner-only authorization, and migration 0046. Adds a fail-closed production release gate because the deploy workflow currently applies only migrations 0009-0011 while the canonical integration line contains later migrations. Aligns runtime first-install core DDL with immutable migration 0001, adds source and SQLite parity regression tests, and extends the read-only production schema preflight to report core foreign-key definitions and integrity violations. Enforces whole-number 1–10 rating input without rounding and adds mandatory malformed-input regression coverage.",
   "acceptanceCriteria": [
     "Every changed repository path resolves to one registered owner",
     "Dependency graph is acyclic and every edge points from consumer to lower-level dependency",
@@ -227,7 +231,8 @@
     "Runtime bootstrap matches migration 0001 columns, defaults, primary keys and foreign keys for 17 audited core tables.",
     "Invalid user roles are rejected by both runtime bootstrap and canonical migration schema.",
     "No historical migration is modified and no new migration is allocated.",
-    "Production schema preflight reports core foreign keys and PRAGMA foreign_key_check without mutating D1."
+    "Production schema preflight reports core foreign keys and PRAGMA foreign_key_check without mutating D1.",
+    "Rating writes accept only positive safe-integer novel IDs and whole-number ratings 1–10; no rounding or fractional coercion is permitted."
   ],
   "sharedSurfaceSerialization": [
     ".github/workflows/",
