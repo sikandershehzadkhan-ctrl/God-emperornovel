@@ -1,0 +1,62 @@
+{
+  "featureId": "reader-progress-target-validation",
+  "domainOwner": "reader",
+  "technicalIntegrator": "platform-integrator",
+  "ownedPaths": [
+    "src/reader-progress-policy.mjs",
+    "scripts/test-reader-progress-policy.mjs",
+    "scripts/test-reader-progress-targets.py"
+  ],
+  "sharedSurfaces": [
+    "src/index.js",
+    "package.json",
+    ".github/workflows/validate-cloudflare-source.yml",
+    "docs/architecture/IMPERIAL-API-ROUTE-METHOD-MATRIX-01N-37.json",
+    "docs/architecture/IMPERIAL-AUTHORIZATION-OWNERSHIP-MATRIX-01N-38.json"
+  ],
+  "dependencies": [
+    "reader-library-progress",
+    "content-publication-rights",
+    "platform-kernel"
+  ],
+  "routes": [
+    {
+      "path": "/api/bookmark",
+      "method": "POST",
+      "change": "Validate positive safe-integer novel/chapter target; require exact published chapter in published rights-eligible novel; write only for session user."
+    },
+    {
+      "path": "/api/history",
+      "method": "POST",
+      "change": "Validate positive safe-integer novel/chapter target; require exact published chapter in published rights-eligible novel; write only for session user."
+    }
+  ],
+  "dataEntities": [
+    "Existing bookmarks and history tables only; no migration or new table."
+  ],
+  "invariants": [
+    "Novel ID and chapter number must be positive safe integers.",
+    "The exact chapter number must belong to the requested novel.",
+    "The novel must be published and rights-eligible.",
+    "The chapter must be published.",
+    "Rejected targets must not mutate existing bookmark or history rows.",
+    "The user owner is always taken from authenticated session u.id, never request payload."
+  ],
+  "validation": {
+    "unit": [
+      "node scripts/test-reader-progress-policy.mjs"
+    ],
+    "integration": [
+      "python3 scripts/test-reader-progress-targets.py",
+      "Cloudflare source validation on exact integration head"
+    ],
+    "isolation": [
+      "Worker D1 test must prove cross-account progress isolation before security sign-off."
+    ]
+  },
+  "rollout": {
+    "migration": "None",
+    "production": "No production mutation; retain existing migration release gate."
+  },
+  "status": "Proposed; exact-head CI and review required."
+}
