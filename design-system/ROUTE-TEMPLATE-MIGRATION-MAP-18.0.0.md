@@ -222,3 +222,14 @@ Required checks before marking this slice complete:
 **Accessibility and responsive source work:** keyboard focus, 44px primary controls, single-column small-screen forms and reduced-motion handling are included.
 
 **Still required:** all six theme screenshots; desktop/tablet/360px/390px layouts; RTL; long-form validation messages; loading, empty, permission-denied and API-error states; keyboard/screen-reader QA. The dedicated Author Studio page is separate from the shell's author dashboard, so both must remain in the route QA matrix.
+
+
+## 19. Reader utility and community activity route adoption
+
+**Implemented in source:** leaderboard rank badges and period selectors, tier-list panels/cards, random-discovery result cards, novel voting rows, request and OmniPortal form controls, ticket balance metrics and ledger rows now consume semantic six-theme roles. Focus indicators, 44px primary controls, small-screen random-result stacking and reduced-motion handling are included.
+
+**Behavior preserved:** existing leaderboard, tier-list, random-novel, vote, request, ticket-ledger and OmniPortal API calls remain unchanged. No payment, request quota, voting eligibility, connector access, rights, or import behavior was modified.
+
+**Important boundaries:** ticket displays remain the existing account ledger, not a payment gateway; OmniPortal remains rights-first and does not gain new connectors or import permissions from this visual work.
+
+**Still required:** six-theme screenshots; 360px/390px/tablet/desktop; RTL; no-data, API-error, signed-out and populated states; keyboard/screen-reader QA. This adoption covers existing route components, not a feature-completeness or security sign-off.
