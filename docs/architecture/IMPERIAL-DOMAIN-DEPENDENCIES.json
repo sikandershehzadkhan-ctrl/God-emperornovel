@@ -152,7 +152,7 @@
       "dependsOn": []
     },
     "repository-operations": {
-      "layer": 0,
+      "layer": 2,
       "dependsOn": [
         "platform-quality",
         "delivery-platform"
