@@ -303,3 +303,42 @@ The canonical root now includes fourteen-language Library/History coverage (#242
 - No route, API, database entity, migration, payment behavior or production deployment is introduced.
 - ADR allocation: Public Author Discovery remains ADR-0027, bounded OmniPortal responses remain ADR-0028, and Community discovery localization is ADR-0029.
 - Exact-head validation is required before integration. This record describes the clean-root port, not production release approval.
+
+
+## Follow-up audit (2026-11-06): architecture integration refresh
+
+### PR #293 remediation integrated
+
+- PR #293 (ADR identifier and migration-domain ownership remediation) was merged into the canonical integration root as `d1245321f82b3fdbce1875ee2a09986c7c5f2720`.
+- All six exact-head workflows passed on PR #293 head `fd51526160f1ec42b91df69b0e64bad33491e87b` before merge.
+- Nine colliding ADR records were renumbered to ADR-0030 through ADR-0038; the numbered ADR audit reports 38 canonical records and zero duplicate IDs.
+- Migration ownership allocation now covers 0001–0046 in contiguous, non-overlapping ranges. No SQL migration content was changed by PR #293.
+
+### PR #195 exact-head validation and scope
+
+- After PR #293 merged, PR #195 advanced to integration commit `d1245321f82b3fdbce1875ee2a09986c7c5f2720`; all six exact-head workflows passed.
+- The candidate contains 310 changed files, including Worker/browser runtime code, 35 SQL migrations (0012–0046), matching reservation records, architecture documents, tests and workflow changes. It is not a documentation-only change.
+- The editable and served browser JavaScript files `public/app.js` and `public/app-17.23.0.js` have identical Git blob SHA at the audited root.
+- Canonical ownership inventory: 19 domains, 218 owned paths, zero cross-domain path-prefix overlaps in the current ownership registry.
+- Domain dependency graph: 19 nodes, no unknown dependency references and no cycles.
+- Static route inventory: 80 exact paths and 22 dynamic patterns; 34 public screen routes are separately registered with no duplicate exact paths. These inventories do not prove every runtime route or authorization contract.
+
+### Authorization review remains a release blocker
+
+- The API method inventory contains 80 exact route entries and 22 dynamic route patterns, representing 154 method signatures.
+- The authorization ownership matrix reviews 59 route-method entries. Its own disclosure states that all other routes remain pending handler-level review. The remaining 95 method signatures must not be treated as authorization-approved.
+- The matrix records 14 findings (9 high, 5 medium). AUTH-001 and AUTH-012 still require two-account Worker/D1 runtime proof for cross-account and AI-project ownership isolation. Other findings still require the specific browser, D1 or Worker runtime tests described in the matrix.
+- AUTH-009 was refreshed to reflect exact-head CI validation of the ten-point rating migration and fresh SQLite migration checks. Production D1 rollout remains pending.
+
+### Production migration gate remains closed
+
+- The production deploy workflow is manual and explicitly blocks any canonical SQL migration numbered above 0011.
+- The current candidate contains migrations 0012–0046. They must not be applied to production until the remote migration ledger, recoverable backup, legacy compatibility and per-migration preflight/postflight are separately reviewed.
+- No production deployment, remote D1 migration or live-data mutation was performed during this audit.
+
+### Stale feature branches: no wholesale merges
+
+- PRs #149 and #146 overlap PR #195 on shared Worker, browser bundle, package and design/SEO surfaces. Their unique tests and behavior need selective parity review against the canonical root; their complete branches must not be merged wholesale.
+- PRs #131–#141 form an older stacked localization chain and share `public/app.js`, package scripts and/or the Cloudflare validation workflow. They also carry the older 17.24 browser bundle. Rebuild only missing localization surfaces on the current 17.23 canonical runtime, preserving source/served-bundle parity.
+- PR #156 and PR #127 remain partial-parity candidates as described above. Security PRs #86–#95 remain outside the active integration queue until the separately paused security review is resumed.
+- PR #195 remains draft despite passing six checks. It is not ready for mainline merge until the 95 pending authorization route-method reviews, required runtime isolation tests, stale-branch parity decisions and migration rollout boundary are resolved.
