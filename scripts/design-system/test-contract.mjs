@@ -144,3 +144,10 @@ assert.ok(components.includes("html[data-theme] .quickCard") && components.inclu
 assert.ok(components.includes("html[data-theme] #communityGrid .card") && components.includes("html[data-theme] .unlockBanner"), "Community story cards and discovery banner must be theme-aware");
 assert.ok(components.includes("html[data-theme] #communityDiscussions a:focus-visible") && components.includes("min-height:var(--in-touch-target)"), "Community navigation must preserve visible focus and touch targets");
 assert.ok(components.includes("@media(max-width:760px)") && components.includes("html[data-theme] .quickGrid{grid-template-columns:repeat(2"), "Community quick links must adapt to mobile widths");
+
+assert.ok(app.includes("tfSearch") && app.includes("tfResults") && app.includes("/api/novels?sort=trending"), "Trend Factory must retain its live published-catalog search and result flow");
+assert.ok(app.includes("chapter text") && app.includes("rights-first") && app.includes("trendPending"), "Trend Factory must retain its metadata-first rights boundary and disclose the unavailable admin review workspace");
+assert.ok(!app.includes('<a href="/admin">Open review center'), "Trend Factory must not send users to an unimplemented admin review route");
+assert.ok(components.includes("html[data-theme] .trendFactoryPage .trendFactoryHero") && components.includes("html[data-theme] .trendFactoryPage .trendControls"), "Trend Factory hero and live controls must consume semantic theme roles");
+assert.ok(components.includes("html[data-theme] .trendFactoryPage .trendResults .card") && components.includes("html[data-theme] .trendFactoryPage .trendSafetyCard"), "Trend Factory results and rights-safety cards must consume semantic theme roles");
+assert.ok(components.includes("html[data-theme] .trendFactoryPage input:focus-visible") && components.includes("html[data-theme] .trendFactoryPage .trendPending"), "Trend Factory must preserve visible focus and clearly disclose unavailable admin review");
