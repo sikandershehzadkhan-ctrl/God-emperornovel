@@ -1,0 +1,217 @@
+/* Imperial Novel Visual Design System
+ * Version: 17.24.0
+ * Purpose: shared semantic tokens for the existing Worker-served UI.
+ * Keep this file dependency-free and load it after the component stylesheets.
+ */
+
+:root {
+  color-scheme: light;
+
+  /* Brand identity */
+  --imperial-purple: #6d3be8;
+  --imperial-purple-hover: #5d2fd0;
+  --imperial-purple-soft: #f0eaff;
+  --imperial-sapphire: #246bce;
+  --imperial-sapphire-soft: #eaf2ff;
+  --imperial-obsidian: #11131a;
+  --imperial-midnight: #171c32;
+  --imperial-white: #ffffff;
+  --imperial-silver: #d8dce7;
+
+  /* Semantic surfaces and content */
+  --ds-canvas: #fbfcff;
+  --ds-surface: #ffffff;
+  --ds-surface-raised: #ffffff;
+  --ds-surface-muted: #f4f5fa;
+  --ds-text: #171629;
+  --ds-text-muted: #62657a;
+  --ds-text-subtle: #777b90;
+  --ds-border: #e1e4ee;
+  --ds-border-strong: #c9cede;
+  --ds-focus: #246bce;
+  --ds-success: #18794e;
+  --ds-warning: #946200;
+  --ds-danger: #b4233c;
+  --ds-selection: rgba(109, 59, 232, .18);
+
+  /* Compatibility aliases used by the existing application styles */
+  --in-obsidian: #11131a;
+  --in-panel: #ffffff;
+  --in-panel-raised: #f7f8fc;
+  --in-line: #e1e4ee;
+  --in-purple: #6d3be8;
+  --in-purple-bright: #5d2fd0;
+  --in-sapphire: #246bce;
+  --in-white: #171629;
+  --in-muted: #62657a;
+
+  --bg: var(--ds-canvas);
+  --bg2: var(--ds-surface-muted);
+  --panel: var(--ds-surface);
+  --panel2: var(--ds-surface-raised);
+  --panel3: var(--ds-surface-muted);
+  --text: var(--ds-text);
+  --muted: var(--ds-text-muted);
+  --line: var(--ds-border);
+  --violet: var(--imperial-purple);
+  --violet2: #8d68ed;
+  --violet3: var(--imperial-purple-soft);
+  --violet4: #5128b8;
+
+  /* Typography */
+  --font-ui: Inter, "Segoe UI", Roboto, ui-sans-serif, system-ui, sans-serif;
+  --font-display: Manrope, Inter, "Segoe UI", sans-serif;
+  --font-editorial: "Source Serif 4", Georgia, serif;
+  --text-xs: .75rem;
+  --text-sm: .875rem;
+  --text-base: 1rem;
+  --text-lg: 1.125rem;
+  --text-xl: 1.25rem;
+  --text-2xl: clamp(1.5rem, 2.5vw, 2rem);
+  --text-display: clamp(2.25rem, 5vw, 4.5rem);
+  --leading-tight: 1.15;
+  --leading-normal: 1.6;
+  --leading-reading: 1.85;
+
+  /* Spacing: 4px base scale */
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-5: 20px;
+  --space-6: 24px;
+  --space-8: 32px;
+  --space-10: 40px;
+  --space-12: 48px;
+  --space-16: 64px;
+
+  /* Shape, elevation and motion */
+  --radius-sm: 8px;
+  --radius-md: 12px;
+  --radius-lg: 16px;
+  --radius-xl: 22px;
+  --radius-pill: 999px;
+  --shadow-card: 0 8px 24px rgba(28, 31, 55, .055);
+  --shadow-overlay: 0 20px 56px rgba(17, 19, 35, .16);
+  --motion-fast: 140ms;
+  --motion-normal: 200ms;
+  --motion-slow: 280ms;
+  --ease-standard: cubic-bezier(.2, .7, .2, 1);
+
+  /* Layout and touch */
+  --content-max: 1440px;
+  --reading-max: 720px;
+  --page-gutter: clamp(12px, 2.4vw, 32px);
+  --control-min-height: 44px;
+}
+
+html[data-theme="dark"] {
+  color-scheme: dark;
+
+  --ds-canvas: #080a12;
+  --ds-surface: #101421;
+  --ds-surface-raised: #151b2b;
+  --ds-surface-muted: #0d1220;
+  --ds-text: #f5f7ff;
+  --ds-text-muted: #a3abc2;
+  --ds-text-subtle: #8791aa;
+  --ds-border: #292f43;
+  --ds-border-strong: #3a4260;
+  --ds-focus: #79a8ff;
+  --ds-success: #65c99a;
+  --ds-warning: #f0c66b;
+  --ds-danger: #ff8797;
+  --ds-selection: rgba(167, 139, 250, .26);
+
+  --in-obsidian: #080a12;
+  --in-panel: #101421;
+  --in-panel-raised: #151b2b;
+  --in-line: #292f43;
+  --in-purple: #8b5cf6;
+  --in-purple-bright: #a78bfa;
+  --in-sapphire: #4f8cff;
+  --in-white: #f5f7ff;
+  --in-muted: #a3abc2;
+
+  --bg: var(--ds-canvas);
+  --bg2: var(--ds-surface-muted);
+  --panel: var(--ds-surface);
+  --panel2: var(--ds-surface-raised);
+  --panel3: #1b2235;
+  --text: var(--ds-text);
+  --muted: var(--ds-text-muted);
+  --line: var(--ds-border);
+  --violet: var(--in-purple);
+  --violet2: #b69cff;
+  --violet3: rgba(139, 92, 246, .15);
+  --violet4: #d4c4ff;
+
+  --shadow-card: 0 8px 24px rgba(0, 0, 0, .16);
+  --shadow-overlay: 0 20px 56px rgba(0, 0, 0, .34);
+}
+
+html {
+  accent-color: var(--imperial-purple);
+  text-size-adjust: 100%;
+  -webkit-text-size-adjust: 100%;
+}
+
+body {
+  font-family: var(--font-ui);
+}
+
+::selection {
+  color: var(--ds-text);
+  background: var(--ds-selection);
+}
+
+:where(button, input, select, textarea, a[href], [tabindex]:not([tabindex="-1"])):focus-visible {
+  outline: 2px solid var(--ds-focus);
+  outline-offset: 3px;
+}
+
+:where(button, .primary, .secondary, .ghost, .iconbtn, .readerTool) {
+  min-height: var(--control-min-height);
+  transition:
+    background-color var(--motion-fast) var(--ease-standard),
+    border-color var(--motion-fast) var(--ease-standard),
+    color var(--motion-fast) var(--ease-standard),
+    transform var(--motion-fast) var(--ease-standard);
+}
+
+:where(input, select, textarea) {
+  accent-color: var(--imperial-purple);
+}
+
+:where(img, video, canvas, svg) {
+  max-width: 100%;
+}
+
+:where(.wrap, .readerMain) {
+  scroll-margin-top: 88px;
+}
+
+@media (max-width: 760px) {
+  :root {
+    --page-gutter: 12px;
+    --control-min-height: 44px;
+  }
+
+  /* Avoid expensive blur work on constrained mobile hardware. */
+  .top,
+  .mobileNav {
+    -webkit-backdrop-filter: none;
+    backdrop-filter: none;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    scroll-behavior: auto !important;
+    animation-duration: .01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: .01ms !important;
+  }
+}
