@@ -94,7 +94,8 @@ def execute_publication_batch(db, row):
 # Successful publication and stale-snapshot concurrent invocation.
 db = database()
 seed(db)
-cursor = db.execute(due_sql)\nrow = dict(zip([x[0] for x in cursor.description], cursor.fetchone()))
+cursor = db.execute(due_sql)
+row = dict(zip([x[0] for x in cursor.description], cursor.fetchone()))
 assert row["novel_id"] == 10
 assert execute_publication_batch(db, row) == 1
 assert db.execute("SELECT publication_status FROM chapters WHERE id=100").fetchone()[0] == "published"
