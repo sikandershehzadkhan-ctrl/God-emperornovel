@@ -1305,10 +1305,14 @@
         "POST"
       ],
       "sourceLines": [
-        883
+        29
       ],
       "methodGuardMissing": false,
-      "authorization": "author(u) or admin; parses chapter ID from route segment, joins to parent owner, and calls canPublishChapter to require a published parent novel plus eligible rights evidence."
+      "authorization": "author(u) or admin; parses chapter ID from route segment, joins to parent owner, and calls canPublishChapter to require a published parent novel plus eligible rights evidence.",
+      "sourceFile": "src/features/publishing-studio/index.mjs",
+      "workerDispatchLines": [
+        487
+      ]
     },
     {
       "pathPattern": "/^\\/api\\/author\\/chapters\\/\\d+$/",
@@ -1316,10 +1320,14 @@
         "PATCH"
       ],
       "sourceLines": [
-        876
+        4
       ],
       "methodGuardMissing": false,
-      "authorization": "author(u) or admin; joins chapter to parent novel and enforces owner_user_id=u.id; validates whole non-negative Crown cost and revalidates comic page-sequence content on edits."
+      "authorization": "author(u) or admin; joins chapter to parent novel and enforces owner_user_id=u.id; validates whole non-negative Crown cost and revalidates comic page-sequence content on edits.",
+      "sourceFile": "src/features/publishing-studio/index.mjs",
+      "workerDispatchLines": [
+        487
+      ]
     },
     {
       "pathPattern": "/^\\/api\\/author\\/novels\\/\\d+\\/submit$/",
