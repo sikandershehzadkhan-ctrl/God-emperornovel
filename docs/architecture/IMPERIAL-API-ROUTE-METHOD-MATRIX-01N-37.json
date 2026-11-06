@@ -1484,10 +1484,10 @@
     "This matrix does not inspect DTO exposure, cache headers, CSRF, rate limits, body size, or database transaction semantics.",
     "Community comment and report hourly quotas are enforced by SQLite BEFORE INSERT triggers; duplicate reports are fenced by a unique claim. Static route inventory does not itself certify trigger execution."
   ],
-  "sourceCommit": "8deb0c9b9a20c07e0b65a9c78aeb5fe5527a3c04",
+  "sourceCommit": "be97d04704655dc257b02ccfd3c69e0101f799c5",
   "refreshNote": "Refreshed after schedule cancellation gained an in-statement current-owner predicate and explicit changed-row handling.",
   "featureSourceBlobs": {
-    "src/features/creator-studio/index.mjs": "fe0cc01df6a789ea96989e4458fc5d8147fbf850",
+    "src/features/creator-studio/index.mjs": "42be0dc433512ae6dea0c1f997114df7b7a6888d",
     "src/features/publishing-studio/index.mjs": "b86153b275051e7487108fe1ec1baafa8e791cbd"
   }
 }
