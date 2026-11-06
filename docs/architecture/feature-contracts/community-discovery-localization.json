@@ -72,11 +72,12 @@
       "Verify all 24 Community strings in fourteen locales.",
       "Verify recent discussion and trending empty/loading states.",
       "Verify dynamic story titles, usernames and discussion bodies remain unmodified.",
-      "Verify source and served browser bundles are byte-identical."
+      "Verify source and served browser bundles are byte-identical.",
+      "Validate the bundle-only canonical port on the exact pull-request head with all six required integration workflows."
     ]
   },
   "rollback": {
-    "codeRollback": "Revert Community locale dictionary, marked static labels, helper and regression together.",
+    "codeRollback": "Revert the Community locale dictionary, rendering labels, helper and regression together; preserve canonical Community discussion and trending behavior.",
     "dataRollbackOrForwardRepair": "No database or content mutation.",
     "monitoringSignals": [
       "Community locale completeness",
@@ -98,7 +99,7 @@
     "platform-quality",
     "platform-architecture"
   ],
-  "changeSummary": "Adds fourteen-locale Community landing-page localization for discovery cards, trending stories, recent discussions, loading/empty states and the discovery banner.",
+  "changeSummary": "Adds fourteen-locale Community landing-page localization. This canonical integration changes only synchronized browser bundles while retaining the existing regression, governance and build registration.",
   "acceptanceCriteria": [
     "All 24 Community interface strings exist in fourteen locales.",
     "The active locale is applied after Community page rendering and after dynamic catalog results load.",
