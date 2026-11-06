@@ -548,7 +548,9 @@ async function api(req,env){
  if(p==="/api/tags")return json((await env.DB.prepare("SELECT * FROM tags ORDER BY name").all()).results);
  if(p==="/api/public-authors"&&m!=="GET")return json({error:"Method not allowed"},405);
  if(p==="/api/public-authors") {
-  const q=String(url.searchParams.get("q")||"").trim().toLowerCase().slice(0,80);
+  const rawQuery=String(url.searchParams.get("q")||"").trim();
+  if(rawQuery.length>80)return json({error:"Search query must be 80 characters or fewer"},400);
+  const q=rawQuery.toLowerCase();
   const escaped=q.replace(/[\\%_]/g,character=> "\\"+character);
   const where="publication_status='published' AND rights_status IN ('original','public_domain','licensed','authorized') AND TRIM(author)<>''";
   const select="SELECT author,COUNT(*) novel_count,COALESCE(SUM(views),0) views,ROUND(AVG(CASE WHEN rating BETWEEN 1 AND 10 THEN rating END)) rating,MAX(updated_at) updated_at FROM novels WHERE "+where;
