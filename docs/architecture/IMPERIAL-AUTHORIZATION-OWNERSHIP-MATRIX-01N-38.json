@@ -685,7 +685,7 @@
       "method": "GET",
       "access": "public",
       "ownerRule": "Public aggregate-only directory projection. Every contributing novel must be published and rights-eligible; the response contains author display names and aggregate story/read counts, never account IDs, email addresses, private profile fields or unpublished works.",
-      "evidence": "Explicit GET-only method guard; query capped at 80 characters and escapes LIKE wildcard characters; SQL filters publication_status='published', rights_status IN ('original','public_domain','licensed','authorized') and TRIM(author)<>''; results limited to 50 for search and 100 for directory; views use COALESCE; rating aggregate includes only valid 1–10 ratings and rounds to integer.",
+      "evidence": "Explicit GET-only method guard; query capped at 80 characters with HTTP 400 for overlong input and escapes LIKE wildcard characters; SQL filters publication_status='published', rights_status IN ('original','public_domain','licensed','authorized') and TRIM(author)<>''; results limited to 50 for search and 100 for directory; views use COALESCE; rating aggregate includes only valid 1–10 ratings and rounds to integer.",
       "tests": [
         "anonymous GET returns only aggregate author rows",
         "unpublished novels do not contribute to author counts",

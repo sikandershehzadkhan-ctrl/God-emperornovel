@@ -99,9 +99,18 @@ try{
  assert.equal(bounded.status,200);
  assert.equal(bounded.data.length,50,"search results must be capped at 50");
  assert.ok(bounded.data.every(x=>x.author.startsWith("DirectoryAuthor")));
+ const exactBoundary=await request(origin,"/api/public-authors?q="+("x".repeat(80)));
+ assert.equal(exactBoundary.status,200,"an 80-character query must be accepted");
+ const trimmedBoundary=await request(origin,"/api/public-authors?q="+encodeURIComponent(" "+"x".repeat(80)+" "));
+ assert.equal(trimmedBoundary.status,200,"surrounding whitespace must be trimmed before the 80-character limit is evaluated");
+ const overBoundary=await request(origin,"/api/public-authors?q="+("x".repeat(81)));
+ assert.equal(overBoundary.status,400,"an 81-character query must be rejected");
+ const whitespaceOnly=await request(origin,"/api/public-authors?q="+encodeURIComponent("   "));
+ assert.equal(whitespaceOnly.status,200,"whitespace-only input must follow the empty-query directory behavior");
+ assert.equal(whitespaceOnly.data.length,100,"whitespace-only input must return the bounded directory projection");
  const long=await request(origin,"/api/public-authors?q="+("x".repeat(200)));
- assert.equal(long.status,200,"overlong search input must be safely bounded; response="+JSON.stringify(long)+"; Worker logs="+serverLogs);
- assert.deepEqual(long.data,[]);
+ assert.equal(long.status,400,"overlong search input must be rejected at the API boundary before SQL execution");
+ assert.equal(long.data.error,"Search query must be 80 characters or fewer");
  console.log("PASS: local D1 Worker public-author integration: GET-only method guard, exact aggregate projection, rights/publication filtering, null-safe aggregates, literal wildcard search and 50/100 result bounds.");
 }catch(error){console.error(error);if(serverLogs)console.error(serverLogs);process.exitCode=1}
 finally{

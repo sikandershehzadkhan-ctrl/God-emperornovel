@@ -463,7 +463,7 @@ async function api(req,env){
  if(p==="/api/public-authors"&&m!=="GET")return json({error:"Method not allowed"},405);
  if(p==="/api/public-authors") {
   const rawQuery=String(url.searchParams.get("q")||"").trim();
-  if(rawQuery.length>80)return json([]);
+  if(rawQuery.length>80)return json({error:"Search query must be 80 characters or fewer"},400);
   await ensureCoreSchema(env);
   await ensureRuntimeFeatureSchema(env);
   const q=rawQuery.toLowerCase();

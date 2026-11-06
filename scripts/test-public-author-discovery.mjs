@@ -21,7 +21,8 @@ assert.ok(worker.includes('if(p==="/api/public-authors"&&m!=="GET")'),"Author di
 assert.ok(endpoint.includes("publication_status='published'"),"Directory must exclude unpublished works");
 assert.ok(endpoint.includes("rights_status IN ('original','public_domain','licensed','authorized')"),"Directory must include only rights-cleared works");
 assert.ok(endpoint.includes("TRIM(author)<>''"),"Blank author names must not appear in the directory");
-assert.ok(endpoint.includes("rawQuery.length>80")&&endpoint.includes("return json([])"),"Overlong search input must be rejected before database work at the 80-character boundary");
+assert.ok(endpoint.includes('if(rawQuery.length>80)return json({error:"Search query must be 80 characters or fewer"},400);'),"Search input above 80 characters must be rejected explicitly");
+assert.ok(endpoint.indexOf("if(rawQuery.length>80)")<endpoint.indexOf("env.DB.prepare(sql)"),"Overlong search input must be rejected before SQL preparation");
 assert.ok(endpoint.includes("q.replace(")&&endpoint.includes("ESCAPE char(92)"),"LIKE wildcard characters must be escaped literally");
 assert.ok(endpoint.includes("COALESCE(SUM(views),0)"),"Missing view totals must be represented as zero, not null");
 assert.ok(endpoint.includes("rating BETWEEN 1 AND 10"),"Only valid ten-point ratings may contribute to the aggregate");
