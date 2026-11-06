@@ -82,3 +82,10 @@
 .in-avatar--fallback{font-family:var(--in-font-sans);font-size:var(--in-text-sm);font-weight:var(--in-weight-bold)}
 .in-dialog::backdrop{background:rgb(11 18 21 / .58)}
 @media(prefers-reduced-motion:reduce){.in-button[aria-busy="true"]::after{animation:none;border-inline-end-color:currentColor}}
+
+/* Shared-shell theme selector. Native select keeps keyboard and screen-reader behavior. */
+.themePickerLabel{display:inline-flex;align-items:center;min-height:var(--in-touch-target)}
+.themePicker{min-height:var(--in-touch-target);max-width:9.5rem;padding-inline:var(--in-space-3);border:1px solid var(--in-border-default);border-radius:var(--in-radius-md);background:var(--in-bg-surface);color:var(--in-text-primary);font:500 var(--in-text-sm)/1.2 var(--in-font-sans)}
+.themePicker:focus-visible{outline:3px solid var(--in-focus-ring);outline-offset:3px}
+.sr-only{position:absolute!important;width:1px!important;height:1px!important;padding:0!important;margin:-1px!important;overflow:hidden!important;clip:rect(0,0,0,0)!important;white-space:nowrap!important;border:0!important}
+@media(max-width:30rem){.themePicker{max-width:7.25rem;padding-inline:var(--in-space-2)}}
