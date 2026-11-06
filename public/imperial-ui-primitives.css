@@ -316,9 +316,10 @@ html[data-theme] .accountGrid .panel,
 html[data-theme] .accountGrid .metric,
 html[data-theme] .accountGrid .notice,
 html[data-theme] .accountGrid .empty,
-html[data-theme] .accountGrid .grid > .card,
-html[data-theme] .accountGrid .statline,
-html[data-theme] .accountGrid .tabs{
+html[data-theme] .page .grid > .card,
+html[data-theme] .page .statline,
+html[data-theme] .page .empty,
+html[data-theme] .page .tabs{
   background:var(--in-bg-surface);
   border-color:var(--in-border-default);
   color:var(--in-text-primary);
@@ -326,13 +327,13 @@ html[data-theme] .accountGrid .tabs{
 }
 html[data-theme] .accountGrid .panel h2,
 html[data-theme] .accountGrid .metric b,
-html[data-theme] .accountGrid .cardTitle,
-html[data-theme] .accountGrid .statline b{
+html[data-theme] .page .cardTitle,
+html[data-theme] .page .statline b{
   color:var(--in-text-primary);
 }
 html[data-theme] .accountGrid .muted,
 html[data-theme] .accountGrid .metric .muted,
-html[data-theme] .accountGrid .statline,
+html[data-theme] .page .statline,
 html[data-theme] .accountGrid .accountMenu a{
   color:var(--in-text-secondary);
 }
@@ -341,8 +342,8 @@ html[data-theme] .accountGrid .accountMenu a:hover{
   background:color-mix(in srgb,var(--in-action-primary) 12%,var(--in-bg-surface));
   color:var(--in-action-primary);
 }
-html[data-theme] .accountGrid .tabs a{color:var(--in-text-secondary)}
-html[data-theme] .accountGrid .tabs a.active{
+html[data-theme] .page .tabs a{color:var(--in-text-secondary)}
+html[data-theme] .page .tabs a.active{
   color:var(--in-action-primary);
   border-bottom-color:var(--in-action-primary);
 }
@@ -350,13 +351,16 @@ html[data-theme] .accountGrid .avatar{
   border-color:var(--in-border-strong);
 }
 html[data-theme] .accountGrid a:focus-visible,
-html[data-theme] .accountGrid button:focus-visible{
+html[data-theme] .accountGrid button:focus-visible,
+html[data-theme] .page .grid a:focus-visible,
+html[data-theme] .page .grid button:focus-visible,
+html[data-theme] .page .tabs a:focus-visible{
   outline:3px solid var(--in-focus-ring);
   outline-offset:3px;
 }
 html[data-theme] .accountGrid .accountMenu a,
-html[data-theme] .accountGrid .removeLibrary,
-html[data-theme] .accountGrid .statline a{
+html[data-theme] .page .removeLibrary,
+html[data-theme] .page .statline a{
   min-height:var(--in-touch-target);
 }
 html[data-theme] .accountGrid .accountMenu a{
@@ -377,10 +381,12 @@ html[data-theme] .accountGrid .notice{
     top:auto;
   }
   html[data-theme] .accountGrid .accountMenu a{flex:0 0 auto}
+  html[data-theme] .page .tabs{gap:2px}
+  html[data-theme] .page .tabs a{padding-inline:12px}
   html[data-theme] .accountGrid .metricGrid{grid-template-columns:repeat(2,minmax(0,1fr))}
 }
 @media(prefers-reduced-motion:reduce){
-  html[data-theme] .accountGrid .card,
+  html[data-theme] .page .grid > .card,
   html[data-theme] .accountGrid .accountMenu a,
-  html[data-theme] .accountGrid .tabs a{transition:none}
+  html[data-theme] .page .tabs a{transition:none}
 }
