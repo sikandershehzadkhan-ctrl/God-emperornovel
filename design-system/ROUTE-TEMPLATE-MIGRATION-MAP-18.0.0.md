@@ -110,6 +110,12 @@ The audit also found legacy physical-direction declarations in the versioned app
 
 Regression coverage now prevents new physical left/right positioning and left/right margin, padding, inset or border longhands from entering the shared component-primitives stylesheet. It intentionally does not rewrite the legacy stylesheets in bulk, because those declarations may encode intentional LTR layouts or require component-specific RTL treatment.
 
+## 5B. Legacy RTL bridge slice
+
+A bounded RTL override slice now mirrors high-impact legacy layout details: chapter drawer placement and edge, active side-navigation indicator, catalog metadata alignment, status badge placement, reader action spacing, community reply indentation, format-experience alignment, format arrow placement, legal list/notice accents, Trend Factory note accents, homepage feature/status positioning, and selected decorative hero anchors.
+
+These overrides are scoped to `[dir="rtl"]` and do not alter centered text or the underlying route/API behavior. They are source-level CSS bridges only. They do not constitute complete RTL certification: other legacy selectors, nested responsive states, icons, overlays and route-specific content still require rendered Urdu, Arabic and Persian review at mobile and desktop widths.
+
 ## 6. Current migration status
 
 - Shared token/primitive assets are registered for all Worker-served HTML templates.
