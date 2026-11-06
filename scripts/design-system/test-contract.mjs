@@ -97,7 +97,7 @@ assert.match(tokens, /prefers-reduced-motion:reduce/, "token motion fallback is 
 assert.ok(spec.includes("WCAG 2.2 AA"), "accessibility target missing from specification");
 assert.ok(spec.includes("RTL"), "RTL guidance missing from specification");
 assert.ok(usage.includes("Dialog behavior must be implemented") && usage.includes("server must enforce"), "component usage guide must document behavior and security boundaries");
-assert.ok(routeMap.includes("33 explicit static route entries") && routeMap.includes("/read/:id/:chapter") && routeMap.includes("No route family is declared migrated"), "route migration map must inventory templates and preserve honest migration status");
+assert.ok(routeMap.includes("33 explicit static route entries") && routeMap.includes("/read/:id/:chapter") && routeMap.includes("No route family is declared fully migrated"), "route migration map must inventory templates and preserve honest migration status");
 assert.ok(spec.includes("primitives are opt-in") || spec.includes("Do not bulk-replace legacy selectors"), "rollout boundary must be documented");
 assert.ok(html.includes('href="/imperial-design-tokens.css"'), "semantic tokens must be loaded by the application shell");
 assert.ok(html.includes('href="/imperial-ui-primitives.css"'), "component primitives must be loaded by the application shell");
@@ -106,5 +106,8 @@ assert.ok(app.includes("const IMPERIAL_THEMES=['light','dark','midnight','sepia'
 assert.ok(app.includes('id="imperialThemeSelect"') && app.includes("applyImperialTheme(event.target.value)"), "shared theme selector must be operable and update the root theme");
 assert.ok(worker.includes('["light","dark","midnight","sepia","imperial","cosmic"].includes(t)?t:"light"'), "Worker theme bootstrap must preserve all six themes before hydration");
 assert.ok(components.includes(".themePicker:focus-visible") && components.includes(".themePicker{"), "theme selector must have a visible keyboard focus state and shared styling");
+assert.ok(tokens.includes("--bg:var(--in-bg-canvas)") && tokens.includes("--panel:var(--in-bg-surface)") && tokens.includes("--text:var(--in-text-primary)"), "legacy page tokens must bridge to semantic theme roles");
+assert.ok(components.includes("html[data-theme] .top") && components.includes("html[data-theme] .menuDrawer") && components.includes("html[data-theme] .nextHero"), "shared shell and homepage must consume semantic theme roles");
+assert.ok(components.includes("html[data-theme] .homeFormatShelf") && components.includes("html[data-theme] .nextFeatureTile"), "homepage discovery and feature surfaces must consume semantic theme roles");
 assert.ok(packageJson.scripts.build.startsWith("node scripts/design-system/test-contract.mjs && "), "design-system contract must run before the platform build");
 console.log("Imperial Novel design-system contract passed: six complete themes, semantic roles, contrast, component primitives, 44px targets, focus, reduced motion, forced colors, WCAG, RTL and runtime asset registration.");
