@@ -1399,7 +1399,7 @@
       "authorization": "Public projection only for public, non-banned profiles; excludes email, tickets and private fields; aggregate stats require opt-in."
     },
     {
-      "pathPattern": "/^\\\\/api\\\\/author\\\\/chapters\\\\/\\\\d+\\\\/revisions$/",
+      "pathPattern": "/^\\/api\\/author\\/chapters\\/\\d+\\/revisions$/",
       "methods": [
         "GET"
       ],
@@ -1414,7 +1414,7 @@
       "authorization": "author(u); revision reads join chapter to parent novel and require owner_user_id=u.id."
     },
     {
-      "pathPattern": "/^\\\\/api\\\\/author\\\\/chapters\\\\/\\\\d+\\\\/schedule$/",
+      "pathPattern": "/^\\/api\\/author\\/chapters\\/\\d+\\/schedule$/",
       "methods": [
         "POST"
       ],
@@ -1429,7 +1429,7 @@
       "authorization": "author(u); scheduling and cancellation require the chapter's parent novel owner_user_id=u.id; rights and published-parent eligibility are rechecked."
     },
     {
-      "pathPattern": "/^\\\\/api\\\\/author\\\\/notes\\\\/(\\\\d+)$/",
+      "pathPattern": "/^\\/api\\/author\\/notes\\/(\\d+)$/",
       "methods": [
         "PATCH",
         "DELETE"
