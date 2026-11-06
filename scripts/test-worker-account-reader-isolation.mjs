@@ -158,12 +158,12 @@ try{
 
   // Public author discovery is exercised through the actual local Worker and isolated D1.
   const authorFixtures=[
-    "INSERT INTO novels(id,title,author,rights_status,publication_status,owner_user_id,views,rating) VALUES(990003,'Wildcard Percent One','Wildcard % Author','original','published',"+NULL+",4,8.4)",
-    "INSERT INTO novels(id,title,author,rights_status,publication_status,owner_user_id,views,rating) VALUES(990004,'Wildcard Percent Two','Wildcard % Author','licensed','published',"+NULL+",0,9)",
-    "INSERT INTO novels(id,title,author,rights_status,publication_status,owner_user_id,views,rating) VALUES(990005,'Wildcard Underscore','Wildcard _ Author','original','published',"+NULL+",7,11)",
-    "INSERT INTO novels(id,title,author,rights_status,publication_status,owner_user_id,views,rating) VALUES(990006,'Wildcard Backslash','Wildcard \\ Author','original','published',"+NULL+",0,0)",
-    "INSERT INTO novels(id,title,author,rights_status,publication_status,owner_user_id,views,rating) VALUES(990007,'Excluded Draft','Excluded Draft Author','original','draft',"+NULL+",500,10)",
-    "INSERT INTO novels(id,title,author,rights_status,publication_status,owner_user_id,views,rating) VALUES(990008,'Excluded Rights','Excluded Rights Author','pending','published',"+NULL+",500,10)"
+    "INSERT INTO novels(id,title,author,rights_status,publication_status,owner_user_id,views,rating) VALUES(990003,'Wildcard Percent One','Wildcard % Author','original','published',NULL,4,8.4)",
+    "INSERT INTO novels(id,title,author,rights_status,publication_status,owner_user_id,views,rating) VALUES(990004,'Wildcard Percent Two','Wildcard % Author','licensed','published',NULL,0,9)",
+    "INSERT INTO novels(id,title,author,rights_status,publication_status,owner_user_id,views,rating) VALUES(990005,'Wildcard Underscore','Wildcard _ Author','original','published',NULL,7,11)",
+    "INSERT INTO novels(id,title,author,rights_status,publication_status,owner_user_id,views,rating) VALUES(990006,'Wildcard Backslash','Wildcard \\ Author','original','published',NULL,0,0)",
+    "INSERT INTO novels(id,title,author,rights_status,publication_status,owner_user_id,views,rating) VALUES(990007,'Excluded Draft','Excluded Draft Author','original','draft',NULL,500,10)",
+    "INSERT INTO novels(id,title,author,rights_status,publication_status,owner_user_id,views,rating) VALUES(990008,'Excluded Rights','Excluded Rights Author','pending','published',NULL,500,10)"
   ];
   for(let i=0;i<105;i++){
     const id=991000+i;
