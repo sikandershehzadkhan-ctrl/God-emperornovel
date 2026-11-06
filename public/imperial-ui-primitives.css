@@ -780,3 +780,75 @@ html[data-theme] body.taxonomyPage .tax-links a:hover{border-color:var(--in-acti
  html[data-theme] body.taxonomyPage *,html[data-theme] body.taxonomyPage *::before,
  html[data-theme] body.taxonomyPage *::after{scroll-behavior:auto!important;transition:none!important;animation:none!important}
 }
+
+
+/* Standalone Author Studio document: bridge its legacy local class names to the shared six-theme roles. */
+html[data-theme] body.authorStudioPage{
+ background:var(--in-bg-canvas);color:var(--in-text-primary);
+}
+html[data-theme] body.authorStudioPage .wrap{color:var(--in-text-primary)}
+html[data-theme] body.authorStudioPage .card,
+html[data-theme] body.authorStudioPage .ai-bible,
+html[data-theme] body.authorStudioPage .ai-project{
+ background:var(--in-bg-surface);color:var(--in-text-primary);
+ border-color:var(--in-border-default);box-shadow:var(--in-shadow-sm);
+}
+html[data-theme] body.authorStudioPage .brand,
+html[data-theme] body.authorStudioPage h1,
+html[data-theme] body.authorStudioPage h2,
+html[data-theme] body.authorStudioPage h3,
+html[data-theme] body.authorStudioPage label{color:var(--in-text-primary)}
+html[data-theme] body.authorStudioPage .sub,
+html[data-theme] body.authorStudioPage .msg,
+html[data-theme] body.authorStudioPage .stats,
+html[data-theme] body.authorStudioPage .meta,
+html[data-theme] body.authorStudioPage .muted{color:var(--in-text-secondary)}
+html[data-theme] body.authorStudioPage input,
+html[data-theme] body.authorStudioPage textarea,
+html[data-theme] body.authorStudioPage select{
+ background:var(--in-bg-elevated);color:var(--in-text-primary);
+ border:1px solid var(--in-border-strong);
+}
+html[data-theme] body.authorStudioPage input::placeholder,
+html[data-theme] body.authorStudioPage textarea::placeholder{color:var(--in-text-muted)}
+html[data-theme] body.authorStudioPage .ghost,
+html[data-theme] body.authorStudioPage .check,
+html[data-theme] body.authorStudioPage .badge,
+html[data-theme] body.authorStudioPage .ai-badge{
+ background:color-mix(in srgb,var(--in-action-primary) 10%,var(--in-bg-surface));
+ color:var(--in-action-primary);border:1px solid var(--in-border-default);
+}
+html[data-theme] body.authorStudioPage .danger{
+ background:var(--in-status-danger-bg);color:var(--in-status-danger);
+ border:1px solid var(--in-status-danger);
+}
+html[data-theme] body.authorStudioPage .primary{
+ background:var(--in-action-primary);color:var(--in-action-primary-text);
+}
+html[data-theme] body.authorStudioPage .notice,
+html[data-theme] body.authorStudioPage .airow,
+html[data-theme] body.authorStudioPage .ai-actions,
+html[data-theme] body.authorStudioPage .ai-bible{
+ border-color:var(--in-border-default);
+}
+html[data-theme] body.authorStudioPage a{color:var(--in-link)}
+html[data-theme] body.authorStudioPage a:focus-visible,
+html[data-theme] body.authorStudioPage button:focus-visible,
+html[data-theme] body.authorStudioPage input:focus-visible,
+html[data-theme] body.authorStudioPage textarea:focus-visible,
+html[data-theme] body.authorStudioPage select:focus-visible{
+ outline:3px solid var(--in-focus-ring);outline-offset:3px;
+}
+html[data-theme] body.authorStudioPage button,
+html[data-theme] body.authorStudioPage .ghost,
+html[data-theme] body.authorStudioPage .primary{min-height:var(--in-touch-target)}
+@media(max-width:650px){
+ html[data-theme] body.authorStudioPage .wrap{padding:12px}
+ html[data-theme] body.authorStudioPage .grid{grid-template-columns:minmax(0,1fr)}
+ html[data-theme] body.authorStudioPage .field.full{grid-column:auto}
+}
+@media(prefers-reduced-motion:reduce){
+ html[data-theme] body.authorStudioPage *,
+ html[data-theme] body.authorStudioPage *::before,
+ html[data-theme] body.authorStudioPage *::after{scroll-behavior:auto!important;transition:none!important;animation:none!important}
+}
