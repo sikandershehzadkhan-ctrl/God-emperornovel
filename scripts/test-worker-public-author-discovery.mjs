@@ -56,7 +56,7 @@ try{
   ["Eligible Author","original","published",120,9],
   ["Draft Only Author","original","draft",500,10],
   ["Pending Rights Author","pending","published",700,10],
-  ["Public Domain Author","public_domain","published",null,8],
+  ["Public Domain Author","public_domain","published",0,8],
   ["Licensed Author","licensed","published",20,7],
   ["Authorized Author","authorized","published",10,6],
   ["Wildcard%Author","original","published",1,5],
@@ -102,7 +102,7 @@ try{
  const long=await request(origin,"/api/public-authors?q="+("x".repeat(200)));
  assert.equal(long.status,200,"overlong search input must be safely bounded rather than causing a query error");
  assert.deepEqual(long.data,[]);
- console.log("PASS: local D1 Worker public-author integration: GET-only method guard, exact aggregate projection, rights/publication filtering, null-safe aggregates, literal wildcard search and 50/100 result bounds.");
+ console.log("PASS: local D1 Worker public-author integration: GET-only method guard, exact aggregate projection, rights/publication filtering, zero-view aggregate handling, literal wildcard search and 50/100 result bounds.");
 }catch(error){console.error(error);if(serverLogs)console.error(serverLogs);process.exitCode=1}
 finally{
  if(server){stop(server);await Promise.race([once(server,"close"),wait(5000)])}
