@@ -3,7 +3,7 @@
   "domainOwner": "publishing",
   "technicalIntegrator": "platform-integrator",
   "ownedPaths": [
-    "src/domains/publishing/scheduled-chapter-publication.mjs",
+    "src/features/publishing-studio/index.mjs",
     "scripts/test-scheduled-publication-atomicity.mjs"
   ],
   "sharedSurfaces": [
@@ -24,7 +24,7 @@
   ],
   "routes": [],
   "apiContracts": [
-    "No HTTP route is introduced by this isolated processor module.",
+    "No additional HTTP route is introduced by the scheduler processor; existing chapter schedule and cancellation routes remain in Publishing Studio.",
     "Runtime invocation from the canonical Worker scheduled() handler is pending and must preserve the existing runAutomation() call.",
     "The due-row projection includes the parent novel ID. A chapter is considered published only when the conditional draft-to-published update changes exactly one row.",
     "Schedule cleanup, parent novel timestamp update and audit insertion are sequentially gated by changes()=1 in the same ordered D1 batch. Notification and the success counter depend on the chapter update result."
@@ -100,7 +100,7 @@
     "platform-quality",
     "platform-architecture"
   ],
-  "changeSummary": "Adds a publishing-owned scheduled chapter execution processor as an isolated module, correcting the missing parent novel ID projection and gating schedule cleanup, parent timestamp update and audit insertion behind the successful conditional chapter transition. The processor is intentionally not yet wired into the Worker.",
+  "changeSummary": "Documents and regression-tests the existing Publishing-owned scheduled chapter processor, including the parent novel ID projection and sequential D1 changes() gates. The processor is already composed by the canonical Worker; exact-head local D1 and CI validation remain pending.",
   "acceptanceCriteria": [
     "The due query selects n.id AS novel_id.",
     "The chapter update is conditional on draft state and current novel owner, publication status and rights eligibility.",
