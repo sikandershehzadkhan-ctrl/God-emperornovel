@@ -154,7 +154,7 @@ assert.ok(components.includes("html[data-theme] .trendFactoryPage .trendFactoryH
 assert.ok(components.includes("html[data-theme] .trendFactoryPage .trendResults .card") && components.includes("html[data-theme] .trendFactoryPage .trendSafetyCard"), "Trend Factory results and rights-safety cards must consume semantic theme roles");
 assert.ok(components.includes("html[data-theme] .trendFactoryPage input:focus-visible") && components.includes("html[data-theme] .trendFactoryPage .trendPending"), "Trend Factory must preserve visible focus and clearly disclose unavailable admin review");
 
-assert.ok(worker.includes('"/admin":"admin.html"') && worker.includes('if(file==="admin.html")text.replace'), "Worker must serve the dedicated noindex Admin template with its page identity");
+assert.ok(worker.includes('"/admin":"admin.html"') && worker.includes('if(file==="admin.html")text=text.replace'), "Worker must serve the dedicated noindex Admin template with its page identity");
 assert.ok(adminHtml.includes("me.user?.role!=='admin'") && adminHtml.includes("api('/api/me')"), "Admin template must verify the signed-in role before showing its command center");
 assert.ok(worker.includes('const admin=u=>u?.role==="admin"?null:json({error:"Administrator access required"},403)'), "Admin API routes must use the server-side administrator role guard");
 for (const endpoint of ['if(p==="/api/admin/stats")','if(p==="/api/admin/users"&&m==="GET")','if(p==="/api/admin/publishing"&&m==="GET")','if(p==="/api/admin/connectors"&&m==="GET")']) {
