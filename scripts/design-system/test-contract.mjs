@@ -8,6 +8,7 @@ const html = fs.readFileSync("public/index.html", "utf8");
 const app = fs.readFileSync("public/app.js", "utf8");
 const versionedApp = fs.readFileSync("public/app-17.23.0.js", "utf8");
 const adminHtml = fs.readFileSync("public/admin.html", "utf8");
+const authorHtml = fs.readFileSync("public/author.html", "utf8");
 const taxonomyHtml = fs.readFileSync("public/community-taxonomy.html", "utf8");
 const worker = fs.readFileSync("src/index.js", "utf8");
 const packageJson = JSON.parse(fs.readFileSync("package.json", "utf8"));
@@ -172,3 +173,8 @@ assert.ok(worker.includes('if(file==="community-taxonomy.html")text=text.replace
 assert.ok(taxonomyHtml.includes('id="taxonomy-form"') && taxonomyHtml.includes('fetch("/api/taxonomy"'), "Community Taxonomy form and submission API must remain intact");
 assert.ok(components.includes("html[data-theme] body.taxonomyPage .tax-card") && components.includes("html[data-theme] body.taxonomyPage .tax-field input"), "Community Taxonomy panels and fields must consume semantic theme roles");
 assert.ok(components.includes("html[data-theme] body.taxonomyPage .tax-submit") && components.includes("html[data-theme] body.taxonomyPage .tax-links a:focus-visible"), "Community Taxonomy actions must preserve touch targets and visible focus");
+
+assert.ok(authorHtml.includes('class="wrap"') && authorHtml.includes('id="createForm"') && authorHtml.includes('id="aiCreateForm"'), "Standalone Author Studio must retain its real chapter and AI project workspaces");
+assert.ok(worker.includes('if(file==="author.html")text=text.replace("<body>",\'<body class="authorStudioPage">\')'), "Worker must mark the standalone Author Studio document for shared theme adoption");
+assert.ok(components.includes("html[data-theme] body.authorStudioPage .card") && components.includes("html[data-theme] body.authorStudioPage input"), "Standalone Author Studio cards and form controls must consume semantic theme roles");
+assert.ok(components.includes("html[data-theme] body.authorStudioPage button:focus-visible") && components.includes("body.authorStudioPage .grid{grid-template-columns:minmax(0,1fr)}"), "Standalone Author Studio must preserve visible focus and narrow-screen layout");
