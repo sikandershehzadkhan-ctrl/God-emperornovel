@@ -390,3 +390,87 @@ html[data-theme] .accountGrid .notice{
   html[data-theme] .accountGrid .accountMenu a,
   html[data-theme] .page .tabs a{transition:none}
 }
+
+
+/* Settings and notification center semantic theme adoption. */
+html[data-theme] .settingsGridPro .settingsPanel,
+html[data-theme] .settingsGridPro .settingsNotice,
+html[data-theme] .page .chapterList .chapter{
+  background:var(--in-bg-surface);
+  border-color:var(--in-border-default);
+  color:var(--in-text-primary);
+  box-shadow:var(--in-shadow-sm);
+}
+html[data-theme] .settingsGridPro .settingsPanel h2,
+html[data-theme] .settingsGridPro .settingRow b,
+html[data-theme] .settingsGridPro .checkRow b,
+html[data-theme] .page .chapterList .chapter b{
+  color:var(--in-text-primary);
+}
+html[data-theme] .settingsGridPro .settingRow,
+html[data-theme] .settingsGridPro .checkRow{
+  border-color:var(--in-border-default);
+}
+html[data-theme] .settingsGridPro .settingRow small,
+html[data-theme] .settingsGridPro .checkRow small,
+html[data-theme] .settingsGridPro .muted,
+html[data-theme] .page .chapterList .chapter .muted{
+  color:var(--in-text-secondary);
+}
+html[data-theme] .settingsGridPro .settingRow select,
+html[data-theme] .settingsGridPro .settingRow input[type=range]{
+  accent-color:var(--in-action-primary);
+}
+html[data-theme] .settingsGridPro .settingRow select{
+  min-height:var(--in-touch-target);
+  background:var(--in-bg-elevated);
+  border:1px solid var(--in-border-default);
+  border-radius:10px;
+  color:var(--in-text-primary);
+}
+html[data-theme] .settingsGridPro .checkRow input{
+  accent-color:var(--in-action-primary);
+}
+html[data-theme] .settingsGridPro .settingsActions .primary{
+  background:var(--in-action-primary);
+  border-color:var(--in-action-primary);
+  color:var(--in-action-primary-text);
+}
+html[data-theme] .settingsGridPro .settingsActions .secondary{
+  background:var(--in-bg-elevated);
+  border-color:var(--in-border-default);
+  color:var(--in-text-primary);
+}
+html[data-theme] .settingsGridPro button:focus-visible,
+html[data-theme] .settingsGridPro a:focus-visible,
+html[data-theme] .settingsGridPro input:focus-visible,
+html[data-theme] .settingsGridPro select:focus-visible,
+html[data-theme] .page .chapterList a:focus-visible,
+html[data-theme] .page #markRead:focus-visible{
+  outline:3px solid var(--in-focus-ring);
+  outline-offset:3px;
+}
+html[data-theme] .settingsGridPro .settingRow select,
+html[data-theme] .settingsGridPro .settingsActions > *,
+html[data-theme] .page #markRead{
+  min-height:var(--in-touch-target);
+}
+html[data-theme] .page .chapterList .chapter.unreadNotice{
+  background:color-mix(in srgb,var(--in-action-primary) 9%,var(--in-bg-surface));
+  border-color:var(--in-action-primary);
+}
+html[data-theme] .page .chapterList .chapter .chapterNo{
+  color:var(--in-action-primary);
+}
+html[data-theme] .settingsGridPro .settingsNotice{
+  background:var(--in-bg-elevated);
+  color:var(--in-text-primary);
+}
+@media(max-width:620px){
+  html[data-theme] .settingsGridPro .settingRow select{width:100%;max-width:none}
+  html[data-theme] .settingsGridPro .settingsActions > *{flex:1 1 100%}
+}
+@media(prefers-reduced-motion:reduce){
+  html[data-theme] .settingsGridPro *,
+  html[data-theme] .page .chapterList .chapter{transition:none}
+}
