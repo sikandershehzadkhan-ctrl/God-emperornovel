@@ -28,7 +28,7 @@ const featureSources = [
 ];
 for(const file of featureSources){
  const featureSource=fs.readFileSync(file,"utf8");
- const featureBlob=crypto.createHash("sha1").update(`blob ${Buffer.byteLength(featureSource)}\\0`).update(featureSource).digest("hex");
+ const featureBlob=crypto.createHash("sha1").update(`blob ${Buffer.byteLength(featureSource)}\0`).update(featureSource).digest("hex");
  assert.equal(data.featureSourceBlobs?.[file],featureBlob,"authorization matrix feature source fingerprint is stale: "+file);
 }
 assert.ok(Array.isArray(data.pendingRouteMethods),"new unreviewed route-methods must be disclosed explicitly");
