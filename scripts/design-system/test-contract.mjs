@@ -6,6 +6,7 @@ const components = fs.readFileSync("public/imperial-ui-primitives.css", "utf8");
 const spec = fs.readFileSync("design-system/IMPERIAL-DESIGN-SYSTEM-18.0.0.md", "utf8");
 const html = fs.readFileSync("public/index.html", "utf8");
 const app = fs.readFileSync("public/app.js", "utf8");
+const versionedApp = fs.readFileSync("public/app-17.23.0.js", "utf8");
 const adminHtml = fs.readFileSync("public/admin.html", "utf8");
 const worker = fs.readFileSync("src/index.js", "utf8");
 const packageJson = JSON.parse(fs.readFileSync("package.json", "utf8"));
@@ -163,3 +164,5 @@ for (const endpoint of ['if(p==="/api/admin/stats")','if(p==="/api/admin/users"&
 assert.ok(components.includes("html[data-theme] body.adminDashboardPage .adminHero") && components.includes("html[data-theme] body.adminDashboardPage .adminTable"), "Dedicated Admin hero and tables must consume semantic theme roles");
 assert.ok(components.includes("html[data-theme] body.adminDashboardPage .adminNav button") && components.includes("html[data-theme] body.adminDashboardPage button:focus-visible"), "Admin navigation must preserve touch targets and visible keyboard focus");
 assert.ok(components.includes("html[data-theme] body.adminDashboardPage .adminForm input") && components.includes("prefers-reduced-motion:reduce"), "Admin forms and motion must follow the semantic theme and accessibility contract");
+
+assert.equal(app, versionedApp, "the versioned public browser bundle must stay synchronized with the editable application source");
