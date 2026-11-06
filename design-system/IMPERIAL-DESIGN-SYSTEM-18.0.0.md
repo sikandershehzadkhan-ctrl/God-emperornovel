@@ -193,3 +193,12 @@ The shared application shell now exposes a native, keyboard-operable theme selec
 The selector is intentionally a native select rather than a custom menu, preserving built-in keyboard and assistive-technology behavior. The design-system contract test verifies the six options, persistence/application path, pre-hydration allowlist and visible focus styling.
 
 This global selector does not yet claim that the separate legacy Reader theme controls have been unified. That requires a reader-specific migration and preference compatibility tests.
+
+
+## 11. Shared shell and homepage theme adoption
+
+The public shell and homepage now have a semantic compatibility layer. Existing legacy page variables (`--bg`, `--panel`, `--text`, `--line`, violet/action, status and shadow aliases) resolve through the six theme semantic roles. This avoids requiring a risky, repository-wide selector replacement before page-family migration.
+
+The shared top navigation, brand, navigation links, search controls, mobile drawer, hero, format shelf, story cards, feature tiles, creator band and reader promise now have theme-aware overrides using semantic roles. Focus visibility is retained, and reduced-motion preferences are respected for the touched interactions.
+
+This is a first bounded adoption slice, not a claim that every homepage descendant or every dedicated route template is fully migrated. The design-system contract now asserts the semantic compatibility bridge and key shared-shell/homepage selectors. Visual browser QA remains a release gate.
