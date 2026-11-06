@@ -42,14 +42,17 @@
   ],
   "dataEntities": [
     "Reuses novels, chapters, ratings, comments, chapter_views and unlocks.",
-    "Reuses author_story_goals from migration 0032 and author_private_notes from migration 0033."
+    "Reuses author_story_goals from migration 0032 and author_private_notes from migration 0033.",
+    "Migration 0047 rebuilds author_story_goals with a composite (owner_user_id,novel_id) primary key, preserving each former owner's private goal while allowing the current owner a separate row."
   ],
   "migrationPlan": {
-    "required": false,
-    "proposedNumbers": [],
-    "canonicalEntityReuse": "Migrations 0032 and 0033 already define the canonical goals and private notes tables. No parallel Creator Studio tables are introduced.",
-    "backwardCompatibility": "Existing author application, AI project, novel and chapter routes remain in the Worker and are not replaced by this workspace module.",
-    "rollbackOrForwardRepair": "Remove Creator Studio dispatch and module together; no schema rollback or data deletion is required."
+    "required": true,
+    "proposedNumbers": [
+      47
+    ],
+    "canonicalEntityReuse": "Migration 0032 remains immutable. Migration 0047 rebuilds the existing goals table with a composite owner/novel key and preserves all existing rows; no parallel goals table is introduced.",
+    "backwardCompatibility": "Existing goal rows and values are copied unchanged. Creator API upserts now target (owner_user_id,novel_id), so ownership transfer does not expose or overwrite a former creator's private goal.",
+    "rollbackOrForwardRepair": "Migration history is append-only. If code rollback is needed, retain the composite schema and restore compatible owner+novel upsert behavior; do not attempt to reintroduce novel_id-only uniqueness."
   },
   "uiLifecycle": {
     "shellOwner": "experience-shell",
@@ -123,6 +126,7 @@
     "Lifetime analytics totals cover every owned novel, independent of the top-100 list.",
     "Private note mutations verify both note owner and current parent novel owner.",
     "Existing author applications, AI projects and publishing routes remain available.",
-    "New Creator endpoints remain authorization-pending until two-account Worker/D1 tests pass."
+    "New Creator endpoints remain authorization-pending until two-account Worker/D1 tests pass.",
+    "After ownership transfer, the former creator cannot read the old private goal and the new owner can create a separate goal for the same novel."
   ]
 }
