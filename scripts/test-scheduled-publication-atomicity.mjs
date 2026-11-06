@@ -1,5 +1,5 @@
 import assert from "node:assert/strict";
-import { publishDueChapters } from "../src/domains/publishing/scheduled-chapter-publication.mjs";
+import { publishDueChapters } from "../src/features/publishing-studio/index.mjs";
 
 function makeDb(chapterChanges) {
   const batchStatements = [];
