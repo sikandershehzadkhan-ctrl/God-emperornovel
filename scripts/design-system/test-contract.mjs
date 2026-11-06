@@ -179,6 +179,12 @@ assert.ok(releaseStylesheets[0].includes(".navright{margin-inline-start:auto;"),
 assert.ok(releaseStylesheets[0].includes(".nextReaderPromise>a{margin-inline-start:52px}"), "mobile reader promise link indentation must follow writing direction");
 assert.ok(!/(?:^|[;{])\s*(?:left|right|margin-left|margin-right|padding-left|padding-right|border-left|border-right)(?:-[a-z]+)?\s*:/im.test(releaseStylesheets[0]), "main stylesheet must not reintroduce physical horizontal positioning or spacing properties");
 
+assert.ok(releaseStylesheets[0].includes(".randomCard{display:grid;grid-template-columns:180px 1fr;gap:24px;text-align:start;"), "random discovery card copy must follow writing direction");
+assert.ok(releaseStylesheets[0].includes(".settingRow output{min-width:48px;text-align:end;"), "settings value output must align to logical end");
+assert.ok(releaseStylesheets[0].includes(".readerBook{text-align:start}"), "mobile reader title alignment must follow writing direction");
+assert.ok(releaseStylesheets[0].includes(".settingsPanel .settingRow output{min-width:42px;text-align:end;"), "advanced settings value output must align to logical end");
+assert.ok(releaseStylesheets[3].includes(".formatExperience{display:flex;align-items:center;gap:6px;max-width:48%;font-size:10px;line-height:1.3;text-align:end;"), "format experience metadata must align to logical end");
+
 assert.ok(releaseStylesheets[0].includes(".side a:hover,.side a.active{background:linear-gradient(90deg,rgba(117,48,255,.18),rgba(242,216,137,.05));color:#fff;border-inline-start:2px solid"), "active side navigation indicator must use a logical border");
 assert.ok(releaseStylesheets[0].includes(".menuDrawer{position:fixed;z-index:9999;inset-block:0;inset-inline-start:0;inset-inline-end:auto;"), "menu drawer must anchor to the logical start edge");
 assert.ok(releaseStylesheets[0].includes('[dir="rtl"] .menuDrawer{transform:translateX(105%)}[dir="rtl"] .menuDrawer.is-open{transform:translateX(0)}'), "RTL menu drawer must enter from the right and retain its open state");
