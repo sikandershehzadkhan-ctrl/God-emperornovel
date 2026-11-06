@@ -11,15 +11,15 @@ The scan counted physical CSS property declarations, not selector count. These d
 | Stylesheet | Physical declarations | Observed properties |
 |---|---:|---|
 | `public/style-17.23.0.css` | 41 | left: 3; right: 20; margin-left: 5; margin-right: 5; padding-left: 1; border-left: 5; border-left-color: 1; border-right: 1 |
-| `public/app-17.23.0.css` | 2 | margin-left: 2 |
+| `public/app-17.23.0.css` | 0 after targeted patch | community reply indentation now uses `margin-inline-start` at desktop and mobile widths |
 | `public/imperial-luxury-17.23.0.css` | 4 | right: 4 |
-| `public/imperial-formats-17.23.0.css` | 1 | margin-left: 1 |
+| `public/imperial-formats-17.23.0.css` | 0 after targeted patch | homepage format arrow now uses `margin-inline-start` |
 | `public/imperial-comic-reader-17.23.0.css` | 0 | none found |
 | `public/imperial-glass.css` | 0 | none found |
 | `public/imperial-design-tokens.css` | 0 | none found |
 | `public/imperial-ui-primitives.css` | 0 | none found |
 
-The new token and primitive layers are clean in this scan. Legacy physical declarations remain concentrated in the main stylesheet and include navigation/drawer, mobile navigation, tooltip, decorative hero, and component accents. The declaration inventory alone cannot determine which ones need mirroring.
+The new token and primitive layers are clean in this scan. The two safe, component-scoped LTR assumptions found in the community reply indentation and homepage format arrow were migrated to logical properties and guarded by the design-system contract test. Remaining legacy physical declarations are concentrated in the main stylesheet and include navigation/drawer, mobile navigation, tooltip, decorative hero, and component accents. The declaration inventory alone cannot determine which ones need mirroring.
 
 ## 2. Responsive breakpoint inventory
 
