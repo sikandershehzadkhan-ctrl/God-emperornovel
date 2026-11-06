@@ -756,9 +756,9 @@
     {
       "id": "AUTH-009",
       "severity": "high",
-      "status": "implemented-pending-ci",
-      "detail": "The duplicate legacy POST /api/rating handler has been removed. The remaining handler accepts only safe whole-number ratings from 1 to 10 and retains published/rights-eligible novel checks. The runtime ratings CHECK constraint, catalog minimum-rating cap, public rating formatter, library/author displays, reader ten-choice control and responsive ten-column layout have been updated. Fresh-install and existing-install migration 0034/0035 fixtures, migration sequence validation and CI integrity checks are wired; the latest full CI result remains pending.",
-      "action": "Require the full source-validation workflow to pass the 35-migration fresh replay, foreign_key_check, integrity_check, rating migration fixture, public/served asset parity and Worker build. Do not apply the rating migration to production D1 until the remote migration ledger and recoverable backup are verified."
+      "status": "ci-validated-production-rollout-pending",
+      "detail": "The duplicate legacy POST /api/rating handler has been removed. The remaining handler accepts only safe whole-number ratings from 1 to 10 and retains published/rights-eligible novel checks. The runtime ratings CHECK constraint, catalog minimum-rating cap, public rating formatter, library/author displays, reader ten-choice control and responsive ten-column layout are covered by the integrated implementation. Exact-head Cloudflare Source Validation passed on d1245321f82b3fdbce1875ee2a09986c7c5f2720, including fresh SQLite migration validation and the fresh/legacy ten-point rating migration fixture. Production D1 rollout remains blocked pending remote migration-ledger reconciliation, recoverable backup verification and the separately reviewed migration rollout.",
+      "action": "Do not apply migrations 0034/0035 or any migration above 0011 to production D1 under the current deployment workflow. Before a future release, verify the remote migration ledger and recoverable backup, then approve a separately reviewed preflight/postflight plan for the full canonical migration chain."
     },
     {
       "id": "AUTH-010",
