@@ -39,3 +39,4 @@ The due-row projection must include n.id AS novel_id; the parent novel update mu
 - Verify direct chapter publication fails when ownership or rights change between preflight read and conditional write.
 - Run all required exact-head governance, schema parity, route registry, Graphify and Cloudflare source workflows.
 - Do not deploy or apply D1 migrations as part of this integration.
+\n- The two-account local Worker test now manually triggers Wrangler's scheduled-event endpoint to exercise the due-publication processor against fresh D1.\n
