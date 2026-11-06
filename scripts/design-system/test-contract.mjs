@@ -35,5 +35,5 @@ assert.match(components, /prefers-reduced-motion:reduce/, "reduced-motion suppor
 assert.match(tokens, /prefers-reduced-motion:reduce/, "token motion fallback is required");
 assert.match(spec, /WCAG 2\.2 AA/, "accessibility target missing from specification");
 assert.match(spec, /RTL/, "RTL guidance missing from specification");
-assert.match(spec, /not linked into production|not linked into production/i, "rollout boundary must be documented");
+assert.match(spec, /not linked into production|Do not load the new stylesheet on production routes until/i, "rollout boundary must be documented");
 console.log("Imperial Novel design-system contract passed: 6 themes, semantic tokens, component primitives, focus, reduced motion, WCAG and RTL documentation.");
