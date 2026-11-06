@@ -8,7 +8,8 @@
     "scripts/test-public-author-discovery.mjs",
     "scripts/test-seo-foundation.mjs",
     "scripts/test-dynamic-sitemap.mjs",
-    "scripts/test-route-registry.mjs"
+    "scripts/test-route-registry.mjs",
+    "scripts/test-worker-public-author-discovery.mjs"
   ],
   "sharedSurfaces": [
     "docs/architecture/IMPERIAL-API-ROUTE-METHOD-MATRIX-01N-37.json",
@@ -35,7 +36,7 @@
     "GET /api/public-authors (public aggregate projection)"
   ],
   "apiContracts": [
-    "GET-only; optional q parameter capped at 80 characters; escaped LIKE wildcard characters; max 50 matching authors or 100 directory authors; aggregate output only."
+    "GET-only; optional q parameter is trimmed and capped at 80 characters by rejecting longer input with HTTP 400 before SQL preparation; accepted input uses literal LIKE wildcard escaping; max 50 matching authors or 100 directory authors; aggregate output only."
   ],
   "dataEntities": [
     "No new entities. Aggregate data is derived only from novels that are published and have rights_status in original, public_domain, licensed or authorized."
@@ -58,22 +59,25 @@
     "authorization": "The endpoint exposes only author display names and aggregate counts derived from published, rights-eligible novels.",
     "ownerScoping": "No account IDs, emails, private profile fields or unpublished works are returned.",
     "csrf": "GET-only read surface; no state mutation.",
-    "rateAndSizeLimits": "Search query is capped at 80 characters and result rows are capped at 50 for search and 100 for directory.",
+    "rateAndSizeLimits": "Raw trimmed search query above 80 characters returns HTTP 400 before database query preparation. Accepted search uses escaped LIKE literals and result rows are capped at 50 for search and 100 for directory.",
     "rightsAndPrivacy": "Only original, public-domain, licensed or authorized published novels contribute to the public directory."
   },
   "tests": {
     "unit": [
       "test-public-author-discovery.mjs validates route, rights filtering, wildcard escaping, bounds, safe rendering, SEO and bundle parity.",
       "test-seo-foundation.mjs validates public metadata, indexability and sitemap inclusion.",
-      "test-dynamic-sitemap.mjs validates static sitemap inclusion."
+      "test-dynamic-sitemap.mjs validates static sitemap inclusion.",
+      "test-worker-public-author-discovery.mjs runs the actual Worker against fresh local D1 fixtures and verifies method guard, exact public aggregate fields, literal wildcard escaping, rating bounds, and result limits."
     ],
     "integration": [
       "Desktop and mobile navigation link to /authors; client route renders a searchable author directory and links to existing public author profiles.",
-      "The API rejects non-GET methods and returns bounded aggregates only."
+      "The API rejects non-GET methods and returns bounded aggregates only.",
+      "Fresh local D1 Worker integration verifies that a search query longer than 80 characters is rejected with HTTP 400 before SQL execution; valid 80-character and shorter queries remain bounded."
     ],
     "isolation": [
       "Anonymous directory access exposes no account identity or private creator fields.",
-      "Unpublished and rights-ineligible novels do not contribute to author counts or recorded reads."
+      "Unpublished and rights-ineligible novels do not contribute to author counts or recorded reads.",
+      "Anonymous runtime response contains only approved aggregate fields and no account identifiers, emails, password hashes, owner IDs, rights evidence or unpublished creator data."
     ],
     "buildCommands": [
       "npm run build"
@@ -87,7 +91,8 @@
       "Search author names containing percent, underscore and backslash; verify literal matching.",
       "Verify only published rights-eligible novels contribute to counts and reads.",
       "Verify the 14 supported interface languages, RTL direction and desktop/mobile navigation.",
-      "Verify public/app.js and public/app-17.23.0.js are byte-identical."
+      "Verify public/app.js and public/app-17.23.0.js are byte-identical.",
+      "Verify a query longer than 80 characters receives HTTP 400 without executing a database query."
     ]
   },
   "rollback": {
@@ -113,7 +118,7 @@
     "platform-quality",
     "platform-architecture"
   ],
-  "changeSummary": "Reconstructs the missing public author directory as a bounded, localized feature slice on the canonical integration root. Reuses the existing public-author API but hardens search and aggregates, adds /authors routing and SEO/sitemap coverage, integrates desktop/mobile navigation, and synchronizes the editable and served app bundles.",
+  "changeSummary": "Reconstructs the missing public author directory as a bounded, localized feature slice on the canonical integration root. Reuses the existing public-author API but hardens search and aggregates, adds /authors routing and SEO/sitemap coverage, integrates desktop/mobile navigation, and synchronizes the editable and served app bundles. Adds a local Worker/D1 integration test and makes the 80-character search boundary explicit: overlong public-author queries receive HTTP 400 before SQL preparation.",
   "acceptanceCriteria": [
     "/authors resolves to a dedicated authors.html shell and appears in the canonical route registry and static sitemap.",
     "Desktop and mobile navigation expose the directory in all fourteen supported locales.",
@@ -124,6 +129,7 @@
     "No private creator or account fields are returned.",
     "SEO metadata is indexable and canonical; app.js and app-17.23.0.js are byte-identical.",
     "Route, API method, authorization and sitemap inventories match the implemented behavior.",
-    "All six exact-head integration workflows pass; no production deployment or D1 migration is performed."
+    "All six exact-head integration workflows pass; no production deployment or D1 migration is performed.",
+    "The public-author Worker rejects raw trimmed search input longer than 80 characters with HTTP 400 before preparing SQL; exact-head local D1 integration proves this boundary."
   ]
 }
