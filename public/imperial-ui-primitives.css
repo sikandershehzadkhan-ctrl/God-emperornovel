@@ -852,3 +852,82 @@ html[data-theme] body.authorStudioPage .primary{min-height:var(--in-touch-target
  html[data-theme] body.authorStudioPage *::before,
  html[data-theme] body.authorStudioPage *::after{scroll-behavior:auto!important;transition:none!important;animation:none!important}
 }
+
+
+/* Community activity and reader utility routes: ranking, tiers, random discovery, voting and requests. */
+html[data-theme] #app .rankBadge{
+ display:inline-grid;place-items:center;min-width:38px;min-height:38px;
+ border-radius:12px;background:color-mix(in srgb,var(--in-action-primary) 12%,var(--in-bg-surface));
+ border:1px solid var(--in-border-default);color:var(--in-action-primary);font-weight:800;
+}
+html[data-theme] #app .period{
+ display:inline-flex;align-items:center;justify-content:center;min-height:var(--in-touch-target);
+ padding:8px 14px;border:1px solid var(--in-border-default);border-radius:999px;
+ color:var(--in-text-secondary);background:var(--in-bg-surface);
+}
+html[data-theme] #app .period.active{
+ background:color-mix(in srgb,var(--in-action-primary) 13%,var(--in-bg-surface));
+ border-color:var(--in-action-primary);color:var(--in-text-primary);
+}
+html[data-theme] #app .tierPanel{
+ background:var(--in-bg-surface);border:1px solid var(--in-border-default);
+ border-radius:18px;padding:clamp(14px,2.5vw,22px);box-shadow:var(--in-shadow-sm);
+}
+html[data-theme] #app .tierPanel h2{color:var(--in-text-primary)}
+html[data-theme] #app .miniCard{
+ background:var(--in-bg-elevated);border:1px solid var(--in-border-default);
+ border-radius:14px;color:var(--in-text-primary);
+}
+html[data-theme] #app .miniCard b{color:var(--in-text-primary)}
+html[data-theme] #app .miniCard span{color:var(--in-text-secondary)}
+html[data-theme] #app .randomPanel{
+ display:grid;gap:18px;max-width:860px;margin-inline:auto;
+ background:var(--in-bg-surface);border:1px solid var(--in-border-default);
+ box-shadow:var(--in-shadow-sm);
+}
+html[data-theme] #app .randomCard{
+ display:grid;grid-template-columns:minmax(120px,190px) minmax(0,1fr);
+ gap:18px;align-items:center;background:var(--in-bg-elevated);
+ border:1px solid var(--in-border-default);border-radius:16px;padding:14px;
+}
+html[data-theme] #app .randomCard h2{color:var(--in-text-primary)}
+html[data-theme] #app .randomCard p{color:var(--in-text-secondary)}
+html[data-theme] #app .voteRow{
+ background:var(--in-bg-elevated);border:1px solid var(--in-border-default);
+ border-radius:12px;margin:8px 0;padding:12px;
+}
+html[data-theme] #app .voteRow .chapterNo{color:var(--in-action-primary)}
+html[data-theme] #app .voteRow .voteBtn{min-height:var(--in-touch-target)}
+html[data-theme] #app #req input,
+html[data-theme] #app #omni input{
+ min-height:var(--in-touch-target);background:var(--in-bg-elevated);
+ color:var(--in-text-primary);border:1px solid var(--in-border-strong);
+}
+html[data-theme] #app #reqMsg .notice{border-color:var(--in-border-default)}
+html[data-theme] #app .metricGrid .metric{
+ background:var(--in-bg-elevated);border:1px solid var(--in-border-default);
+ border-radius:14px;color:var(--in-text-primary);
+}
+html[data-theme] #app .metricGrid .metric b{color:var(--in-text-primary)}
+html[data-theme] #app .metricGrid .metric .muted{color:var(--in-text-secondary)}
+html[data-theme] #app .chapterList .chapter{
+ border-color:var(--in-border-default);color:var(--in-text-primary);
+}
+html[data-theme] #app .chapterList .chapter .muted{color:var(--in-text-secondary)}
+html[data-theme] #app .period:focus-visible,
+html[data-theme] #app .miniCard:focus-visible,
+html[data-theme] #app .randomPanel button:focus-visible,
+html[data-theme] #app .voteRow button:focus-visible,
+html[data-theme] #app #req input:focus-visible,
+html[data-theme] #app #omni input:focus-visible{
+ outline:3px solid var(--in-focus-ring);outline-offset:3px;
+}
+@media(max-width:640px){
+ html[data-theme] #app .randomCard{grid-template-columns:minmax(0,1fr)}
+ html[data-theme] #app .randomCard img{max-width:190px;width:100%;margin-inline:auto}
+ html[data-theme] #app .period{padding-inline:10px}
+}
+@media(prefers-reduced-motion:reduce){
+ html[data-theme] #app .tierPanel *,html[data-theme] #app .randomPanel *,
+ html[data-theme] #app .voteRow *{scroll-behavior:auto!important;transition:none!important;animation:none!important}
+}
