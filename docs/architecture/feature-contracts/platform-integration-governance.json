@@ -274,7 +274,7 @@
     "repository-operations",
     "rights"
   ],
-  "changeSummary": "Consolidates current-main platform/security foundations with homepage SSR and the six-theme experience, while introducing canonical ownership, dependency, migration and integration governance. Adds mandatory isolated identity and media policy validation gates without changing Worker routes, UI bundles or D1 schema. Adds owner-scoped reader progress API and ensures architecture/source CI runs on nested integration PRs. Adds the reader browser client integration to the existing owner-scoped reading-position API and mandatory regression coverage. Integrates owner-scoped profile and account-preference APIs and a visibility-filtered public profile projection into the same canonical Worker as reader progress. Adds the account profile editor and cross-device settings synchronization while preserving the reader-progress browser integration. Adds a PR-lineage gate that serializes overlapping Worker, browser bundle, identity, migration, route inventory, workflow and release-configuration changes. Extends serialized surface protection to every top-level served CSS, JavaScript and webmanifest asset so versioned style/service-worker files cannot diverge silently. Hardens Author Studio chapter editing and publication by enforcing parent publication state, rights evidence, comic page-sequence validation on edits, safe integer chapter costs and verified chapter-route identifier parsing. Adds atomic token-fenced AI Author Studio generation claims with concurrent-run exclusion, stale-claim recovery, late-result rejection, owner-only authorization, and migration 0046. Adds a fail-closed production release gate because the deploy workflow currently applies only migrations 0009-0011 while the canonical integration line contains later migrations. Aligns runtime first-install core DDL with immutable migration 0001, adds source and SQLite parity regression tests, and extends the read-only production schema preflight to report core foreign-key definitions and integrity violations. Enforces whole-number 1–10 rating input without rounding and adds mandatory malformed-input regression coverage. Adds strict reader progress target validation: bookmark/history writes require a positive safe-integer novel/chapter pair that resolves to the exact published chapter of a published, rights-eligible novel; invalid targets are rejected before mutation and ownership remains session-derived. Adds the same-origin novel cover destination policy, strict server-side validation on all author/admin publishing writes, route-scoped image CSP, bundled Author Studio cover choices, and regression coverage. Reconciles OmniPortal connector registry seeding and status projection: repeated public status reads no longer create sequential duplicate registry rows, duplicate normalized base URLs collapse to a stable representative, administrator connector creation rejects duplicates and leaves new entries pending until rights review. Adds fourteen-locale homepage editorial copy and skip-navigation labels, localizes the search placeholder and accessible name, and enables RTL for Persian while leaving creator-authored story content unchanged.",
+  "changeSummary": "Consolidates current-main platform/security foundations with homepage SSR and the six-theme experience, while introducing canonical ownership, dependency, migration and integration governance. Adds mandatory isolated identity and media policy validation gates without changing Worker routes, UI bundles or D1 schema. Adds owner-scoped reader progress API and ensures architecture/source CI runs on nested integration PRs. Adds the reader browser client integration to the existing owner-scoped reading-position API and mandatory regression coverage. Integrates owner-scoped profile and account-preference APIs and a visibility-filtered public profile projection into the same canonical Worker as reader progress. Adds the account profile editor and cross-device settings synchronization while preserving the reader-progress browser integration. Adds a PR-lineage gate that serializes overlapping Worker, browser bundle, identity, migration, route inventory, workflow and release-configuration changes. Extends serialized surface protection to every top-level served CSS, JavaScript and webmanifest asset so versioned style/service-worker files cannot diverge silently. Hardens Author Studio chapter editing and publication by enforcing parent publication state, rights evidence, comic page-sequence validation on edits, safe integer chapter costs and verified chapter-route identifier parsing. Adds atomic token-fenced AI Author Studio generation claims with concurrent-run exclusion, stale-claim recovery, late-result rejection, owner-only authorization, and migration 0046. Adds a fail-closed production release gate because the deploy workflow currently applies only migrations 0009-0011 while the canonical integration line contains later migrations. Aligns runtime first-install core DDL with immutable migration 0001, adds source and SQLite parity regression tests, and extends the read-only production schema preflight to report core foreign-key definitions and integrity violations. Enforces whole-number 1–10 rating input without rounding and adds mandatory malformed-input regression coverage. Adds strict reader progress target validation: bookmark/history writes require a positive safe-integer novel/chapter pair that resolves to the exact published chapter of a published, rights-eligible novel; invalid targets are rejected before mutation and ownership remains session-derived. Adds the same-origin novel cover destination policy, strict server-side validation on all author/admin publishing writes, route-scoped image CSP, bundled Author Studio cover choices, and regression coverage. Reconciles OmniPortal connector registry seeding and status projection: repeated public status reads no longer create sequential duplicate registry rows, duplicate normalized base URLs collapse to a stable representative, administrator connector creation rejects duplicates and leaves new entries pending until rights review. Adds fourteen-locale homepage editorial copy and skip-navigation labels, localizes the search placeholder and accessible name, and enables RTL for Persian while leaving creator-authored story content unchanged. Reconciles the bounded OmniPortal external JSON response parser, its streaming 1 MiB limit, and its regression suite as serialized shared platform surfaces; author discovery must not remove or bypass these controls.",
   "acceptanceCriteria": [
     "Every changed repository path resolves to one registered owner",
     "Dependency graph is acyclic and every edge points from consumer to lower-level dependency",
@@ -355,7 +355,12 @@
     "docs/architecture/IMPERIAL-AUTHORIZATION-OWNERSHIP-MATRIX-01N-38.json",
     "docs/architecture/IMPERIAL-ROUTE-REGISTRY-01N.json",
     "docs/architecture/decisions/",
+    "docs/architecture/feature-contracts/omni-connector-registry-deduplication.json",
+    "docs/architecture/feature-contracts/omniportal-bounded-json-response.json",
+    "docs/architecture/feature-contracts/personalized-route-indexing.json",
     "docs/architecture/feature-contracts/platform-integration-governance.json",
+    "docs/architecture/feature-contracts/rankings-tier-list-localization.json",
+    "docs/architecture/feature-contracts/settings-reader-localization.json",
     "migrations/",
     "package-lock.json",
     "package.json",
@@ -364,17 +369,15 @@
     "public/*.webmanifest",
     "public/app-*.js",
     "public/app.js",
+    "public/author.html",
     "public/index.html",
     "public/sw.js",
+    "scripts/test-bounded-json-response.mjs",
+    "scripts/test-cover-url-policy.mjs",
+    "src/cover-url-policy.mjs",
     "src/identity/",
     "src/index.js",
-    "wrangler.toml",
-    "src/cover-url-policy.mjs",
-    "public/author.html",
-    "scripts/test-cover-url-policy.mjs",
-    "docs/architecture/feature-contracts/personalized-route-indexing.json",
-    "docs/architecture/feature-contracts/omni-connector-registry-deduplication.json",
-    "docs/architecture/feature-contracts/settings-reader-localization.json",
-    "docs/architecture/feature-contracts/rankings-tier-list-localization.json"
+    "src/platform/bounded-json-response.mjs",
+    "wrangler.toml"
   ]
 }
