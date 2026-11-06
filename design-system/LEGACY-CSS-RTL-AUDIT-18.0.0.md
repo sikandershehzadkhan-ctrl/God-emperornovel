@@ -10,7 +10,7 @@ The scan counted physical CSS property declarations, not selector count. These d
 
 | Stylesheet | Physical declarations | Observed properties |
 |---|---:|---|
-| `public/style-17.23.0.css` | 9 after targeted patches | margin-left: 4; margin-right: 2; border-left: 1; border-left-color: 1; right: 1 |
+| `public/style-17.23.0.css` | 7 after targeted patches | margin-left: 4; margin-right: 2; border-left-color: 1 |
 | `public/app-17.23.0.css` | 0 after targeted patch | community reply indentation now uses `margin-inline-start` at desktop and mobile widths |
 | `public/imperial-luxury-17.23.0.css` | 0 after targeted patch | dark archive hero celestial ornaments now use logical inline-end positioning at desktop and mobile widths |
 | `public/imperial-formats-17.23.0.css` | 0 after targeted patch | homepage format arrow now uses `margin-inline-start` |
@@ -19,7 +19,7 @@ The scan counted physical CSS property declarations, not selector count. These d
 | `public/imperial-design-tokens.css` | 0 | none found |
 | `public/imperial-ui-primitives.css` | 0 | none found |
 
-The new token and primitive layers are clean in this scan. The safe, component-scoped direction assumptions found in community reply indentation, homepage format arrow, mobile navigation viewport anchoring, catalog metadata alignment, catalog status badge anchoring, reader lock-action spacing, menu drawer anchoring and RTL slide direction, active navigation indicators, menu icon spacing, legal list and notice accents, active filter label spacing, Trend Factory note accents, tooltip centering, homepage celestial artwork positioning, and archive hero desktop/mobile ornaments were migrated to logical properties and guarded by the design-system contract test. Remaining physical declarations in the main stylesheet are now concentrated in reader drawer anchoring/borders and a small number of icon/status/navigation spacing rules. Homepage celestial ornaments, archive hero ornaments, tooltip centering, legal accents, and Trend Factory note accents now use logical properties. The declaration inventory alone cannot determine which ones need mirroring. The latest homepage/luxury visual slice reduced the main stylesheet's physical-direction inventory from 28 to 9 declarations and the luxury stylesheet from 4 to 0.
+The new token and primitive layers are clean in this scan. The safe, component-scoped direction assumptions found in community reply indentation, homepage format arrow, mobile navigation viewport anchoring, catalog metadata alignment, catalog status badge anchoring, reader lock-action spacing, menu drawer anchoring and RTL slide direction, active navigation indicators, menu icon spacing, legal list and notice accents, active filter label spacing, Trend Factory note accents, tooltip centering, homepage celestial artwork positioning, archive hero desktop/mobile ornaments, and reader chapter drawer anchoring/divider were migrated to logical properties and guarded by the design-system contract test. Remaining physical declarations in the main stylesheet are now concentrated in a small number of icon/status/navigation spacing rules and one remaining legacy border-color declaration. Reader chapter drawer anchoring and divider now use logical properties. Homepage celestial ornaments, archive hero ornaments, tooltip centering, legal accents, and Trend Factory note accents now use logical properties. The declaration inventory alone cannot determine which ones need mirroring. The latest homepage/luxury visual slice reduced the main stylesheet's physical-direction inventory from 28 to 7 declarations and the luxury stylesheet from 4 to 0.
 
 ## 2. Responsive breakpoint inventory
 
@@ -39,7 +39,7 @@ The PR is titled for design system v18.0.0, while the inspected candidate's `pac
 
 ## 5. Next bounded implementation order
 
-1. Reader: chapter drawer anchoring and border, toolbar, progress and text/comic controls.
+1. Reader: remaining toolbar, progress and text/comic controls. Chapter drawer anchoring and divider are migrated.
 2. Shell/navigation: remaining header and icon/status spacing.
 3. Discovery: filter chips, cards, catalog metadata and pagination.
 4. Account and creator surfaces: account menu, settings controls, studio panels.
