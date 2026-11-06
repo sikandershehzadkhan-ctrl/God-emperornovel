@@ -1,8 +1,8 @@
 {
   "schemaVersion": 1,
   "name": "Imperial Novel API route method inventory",
-  "sourceBranch": "security/omni-bounded-json-response-17-79",
-  "sourceBlob": "09d967a1204849653731a1b5a4dd98bba69d06fb",
+  "sourceBranch": "integration/public-author-discovery-rebased-17-80",
+  "sourceBlob": "7036e1ae4a6ef032e7663d96e3cbee3fc5124026",
   "auditDate": "2026-11-05",
   "scope": "Static dispatcher scan of the integrated Worker. Observed method guards only; this is not a complete permission or runtime contract. Bookmark and history POST writes now require positive safe-integer identifiers and an exact published chapter belonging to a published, rights-eligible novel; validation occurs before persistence. Community POST handlers now use strict positive safe-integer identifiers and published rights-eligible targets; comment/report quotas and duplicate report claims are database-trigger enforced. Worker source fingerprint refreshed to the exact source blob for the personalized-route noindex correction; this change does not expand route access or object ownership. Explicit bookmark removal is DELETE on the singular /api/bookmark resource; the plural /api/bookmarks resource is the authenticated GET list. OmniPortal connector registry seeding now uses a normalized NOT EXISTS guard; the public status projection deduplicates normalized base URLs and preserves the enabled/authorized representative. Administrator connector creation validates an allowlisted HTTPS origin, rejects duplicate URLs and creates new entries disabled/pending. No route signature was added or removed. The Worker source fingerprint is refreshed after the leaderboard chapter/time index addition; no route signature changed.",
   "exactRouteCount": 80,
@@ -833,7 +833,7 @@
       ],
       "unguardedLines": [],
       "methodGuardMissing": false,
-      "authorization": "Public read-only GET. Query is trimmed and capped at 120 characters; only the first eight enabled rights-authorized connectors are queried; each external response is strict JSON capped at 1 MiB while streaming. Local catalog results and publication/rights eligibility filters are preserved."
+      "authorization": "requires handler-level review"
     },
     {
       "path": "/api/omni/smart-unlock",
@@ -893,12 +893,12 @@
         "GET"
       ],
       "sourceLines": [
-        527,
-        528
+        549,
+        550
       ],
       "unguardedLines": [],
       "methodGuardMissing": false,
-      "authorization": "requires handler-level review"
+      "authorization": "public aggregate projection; no session required; published rights-eligible novels with non-empty author names only; bounded escaped search; no private creator fields"
     },
     {
       "path": "/api/random",
@@ -1313,6 +1313,6 @@
     "This matrix does not inspect DTO exposure, cache headers, CSRF, rate limits, body size, or database transaction semantics.",
     "Community comment and report hourly quotas are enforced by SQLite BEFORE INSERT triggers; duplicate reports are fenced by a unique claim. Static route inventory does not itself certify trigger execution."
   ],
-  "sourceCommit": "c9710a8c4dbf7a9bbca4ac1c448b7800f7d68947",
-  "refreshNote": "Refreshed to the exact Worker blob after adding the idempotent chapter/time unlock lookup index for period-correct leaderboard queries; no route signatures changed."
+  "sourceCommit": "f0f965a9a646bbc897078c07a1432689cfd2439a",
+  "refreshNote": "Refreshed to the exact Worker blob after adding the idempotent chapter/time unlock lookup index for period-correct leaderboard queries; no route signatures changed. Public author directory handler rechecked: GET-only, bounded and escaped name search, rights-eligible aggregate-only output; no session identity is exposed. Public author aggregate is bounded and LIKE-wildcard escaped; only valid 1–10 ratings contribute and aggregate ratings use integer scale. Worker source fingerprint and dispatcher line references refreshed after bounded-response hardening; GET /api/public-authors remains the sole new public aggregate route in this feature."
 }
