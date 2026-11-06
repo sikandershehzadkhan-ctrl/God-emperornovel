@@ -123,7 +123,7 @@ assert.ok(components.includes("html[data-theme] .readerPage .readerTool{") && co
 assert.ok(components.includes("html[data-theme] .readerPage .readerPrefs select") && components.includes("prefers-reduced-motion:reduce"), "reader preferences must retain semantic focus and reduced-motion support");
 
 assert.ok(components.includes("html[data-theme] .accountGrid .accountMenu") && components.includes("html[data-theme] .accountGrid .metric"), "account navigation and profile metrics must consume semantic theme roles");
-assert.ok(components.includes("html[data-theme] .accountGrid .grid > .card") && components.includes("html[data-theme] .accountGrid .statline"), "library cards and bookmark/history rows must consume semantic theme roles");
+assert.ok(components.includes("html[data-theme] .page .grid > .card") && components.includes("html[data-theme] .page .statline"), "library cards and bookmark/history rows must consume semantic theme roles outside the account dashboard grid");
 assert.ok(components.includes("html[data-theme] .accountGrid a:focus-visible") && components.includes("html[data-theme] .accountGrid button:focus-visible"), "account and library actions must preserve visible keyboard focus");
 assert.ok(components.includes("html[data-theme] .accountGrid .accountMenu a{") && components.includes("min-height:var(--in-touch-target)"), "account navigation targets must meet the 44px touch target");
 assert.ok(components.includes("@media(max-width:760px)") && components.includes("html[data-theme] .accountGrid .metricGrid"), "account navigation and profile metrics must adapt to mobile widths");
