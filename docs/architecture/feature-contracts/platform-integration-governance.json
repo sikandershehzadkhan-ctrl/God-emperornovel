@@ -37,7 +37,10 @@
     "docs/architecture/decisions/ADR-0028-community-localization-bundle-integration.md",
     "docs/architecture/decisions/ADR-0031-author-publishing-domain-separation.md",
     "docs/architecture/feature-contracts/publishing-scheduled-chapter-execution.json",
-    "scripts/test-scheduled-publication-atomicity.mjs"
+    "scripts/test-scheduled-publication-atomicity.mjs",
+    "scripts/test-creator-publishing-domain-boundaries.mjs",
+    "src/features/creator-studio/index.mjs",
+    "src/features/publishing-studio/index.mjs"
   ],
   "dependencies": [
     "identity-security",
