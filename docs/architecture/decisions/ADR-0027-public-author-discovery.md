@@ -14,7 +14,7 @@ The canonical Worker already exposes a GET-only `/api/public-authors` aggregate,
 1. Reconstruct the author directory as a bounded feature slice on the canonical integration root.
 2. Route `/authors` to a dedicated page shell using the canonical application shell and localized client.
 3. Add desktop and mobile navigation links in all fourteen interface locales; preserve existing `/author/:name` profile URLs.
-4. Keep the public author API GET-only. Reject search text longer than 80 characters with HTTP 400 before D1 access, escape backslash/percent/underscore LIKE wildcards, and bound output to 50 search results or 100 directory results.
+4. Keep the public author API GET-only. Reject search text longer than 80 characters with HTTP 400 before D1 access, escape backslash/percent/underscore LIKE wildcards for shorter searches, use literal substring matching for longer accepted searches, and bound output to 50 search results or 100 directory results.
 5. Aggregate only novels with `publication_status='published'` and `rights_status` in `original`, `public_domain`, `licensed` or `authorized`. Use `COALESCE` for recorded views and include only valid 1–10 ratings in any rating aggregate.
 6. Return only author display names and aggregate story/read metadata. Never expose account IDs, email addresses, private profile fields or unpublished works.
 7. Include `/authors` in canonical SEO metadata, static sitemap output, route registry, API method inventory and handler-level authorization inventory.
@@ -24,7 +24,7 @@ The canonical Worker already exposes a GET-only `/api/public-authors` aggregate,
 
 - Readers can discover authors without relying on a direct profile URL.
 - The directory is indexable and reachable from desktop and mobile navigation.
-- Overlong searches receive HTTP 400 before D1 access; accepted searches are bounded and literal for SQL LIKE wildcard characters.
+- Overlong searches receive HTTP 400 before D1 access; accepted searches are bounded; shorter searches escape SQL LIKE wildcards and longer searches use literal substring matching.
 - Existing public author profile routes and data remain compatible.
 - The legacy branch's obsolete Worker and browser snapshots are not imported.
 

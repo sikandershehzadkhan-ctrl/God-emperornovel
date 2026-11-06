@@ -95,7 +95,7 @@
     "Homepage localization does not translate creator-authored novel titles, chapter text, author names or dynamic catalog metadata.",
     "The existing settings page can change the browser-local imperial_language preference; no account preference API or database field is introduced.",
     "Reader localization changes only interface labels; canonical session-owned progress, bookmark and chapter unlock API contracts remain unchanged.",
-    "GET /api/public-authors: aggregate-only projection; 80-character pre-D1 query guard; escaped literal LIKE matching; 50/100 result caps; published rights-eligible works only."
+    "GET /api/public-authors: aggregate-only projection; 80-character pre-D1 query guard with HTTP 400 for overlong input; escaped LIKE matching for shorter terms and literal substring matching for longer accepted terms; 50/100 result caps; published rights-eligible works only."
   ],
   "dataEntities": [
     "Existing canonical D1 entities only; no duplicate ledgers or parallel account-deletion store",

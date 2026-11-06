@@ -37,7 +37,7 @@
     "GET /api/public-authors (public aggregate projection)"
   ],
   "apiContracts": [
-    "GET-only; optional q parameter must be at most 80 characters; longer queries return HTTP 400 before database access; accepted searches escape LIKE wildcard characters; max 50 matching authors or 100 directory authors; aggregate output only."
+    "GET-only; optional q parameter must be at most 80 characters; longer queries return HTTP 400 before database access; shorter searches escape LIKE wildcard characters and longer accepted searches use literal substring matching; max 50 matching authors or 100 directory authors; aggregate output only."
   ],
   "dataEntities": [
     "No new entities. Aggregate data is derived only from novels that are published and have rights_status in original, public_domain, licensed or authorized."
@@ -60,7 +60,7 @@
     "authorization": "The endpoint exposes only author display names and aggregate counts derived from published, rights-eligible novels.",
     "ownerScoping": "No account IDs, emails, private profile fields or unpublished works are returned.",
     "csrf": "GET-only read surface; no state mutation.",
-    "rateAndSizeLimits": "Search query is limited to 80 characters; overlong queries return HTTP 400 without a database query; result rows are capped at 50 for search and 100 for directory.",
+    "rateAndSizeLimits": "Search query is limited to 80 characters; overlong queries return HTTP 400 without a database query; long accepted searches use literal substring matching to avoid LIKE-pattern limits; result rows are capped at 50 for search and 100 for directory.",
     "rightsAndPrivacy": "Only original, public-domain, licensed or authorized published novels contribute to the public directory."
   },
   "tests": {
@@ -115,12 +115,12 @@
     "platform-quality",
     "platform-architecture"
   ],
-  "changeSummary": "Reconstructs the missing public author directory as a bounded, localized feature slice on the canonical integration root. Reuses the existing public-author API but hardens search and aggregates, adds /authors routing and SEO/sitemap coverage, integrates desktop/mobile navigation, and synchronizes the editable and served app bundles.",
+  "changeSummary": "Reconstructs the missing public author directory as a bounded, localized feature slice on the canonical integration root. Reuses the existing public-author API but hardens search and aggregates, adds /authors routing and SEO/sitemap coverage, integrates desktop/mobile navigation, and synchronizes the editable and served app bundles. Longer accepted search terms use literal substring matching rather than oversized LIKE patterns.",
   "acceptanceCriteria": [
     "/authors resolves to a dedicated authors.html shell and appears in the canonical route registry and static sitemap.",
     "Desktop and mobile navigation expose the directory in all fourteen supported locales.",
     "The client renders author names as text and links safely to existing /author/:name profiles.",
-    "The API is GET-only, rejects q values longer than 80 characters with HTTP 400 before database access, escapes LIKE wildcard characters literally, and limits output to 50/100 rows.",
+    "The API is GET-only, rejects q values longer than 80 characters with HTTP 400 before database access, escapes LIKE wildcard characters literally for shorter terms and uses literal substring matching for longer accepted terms, and limits output to 50/100 rows.",
     "Only published novels with original, public_domain, licensed or authorized rights contribute to aggregates.",
     "Views are coalesced to zero and invalid ratings outside 1–10 are excluded from aggregates.",
     "No private creator or account fields are returned.",

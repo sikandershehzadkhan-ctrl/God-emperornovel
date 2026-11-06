@@ -470,8 +470,13 @@ async function api(req,env){
   const escaped=q.replace(/[\\%_]/g,character=> "\\"+character);
   const where="publication_status='published' AND rights_status IN ('original','public_domain','licensed','authorized') AND TRIM(author)<>''";
   const select="SELECT author,COUNT(*) novel_count,COALESCE(SUM(views),0) views,ROUND(AVG(CASE WHEN rating BETWEEN 1 AND 10 THEN rating END)) rating,MAX(updated_at) updated_at FROM novels WHERE "+where;
-  const sql=q?select+" AND LOWER(author) LIKE ? ESCAPE char(92) GROUP BY author ORDER BY novel_count DESC,views DESC,author COLLATE NOCASE LIMIT 50":select+" GROUP BY author ORDER BY novel_count DESC,views DESC,author COLLATE NOCASE LIMIT 100";
-  return json((await env.DB.prepare(sql).bind(...(q?["%"+escaped+"%"]:[])).all()).results||[]);
+  // Keep LIKE patterns small for D1. Longer accepted searches use literal
+  // substring matching, avoiding SQLite/D1 LIKE-pattern limits without truncation.
+  const useLiteralSearch=q.length>60;
+  const searchPredicate=useLiteralSearch?"instr(LOWER(author),?)>0":"LOWER(author) LIKE ? ESCAPE char(92)";
+  const searchValue=useLiteralSearch?q:"%"+escaped+"%";
+  const sql=q?select+" AND "+searchPredicate+" GROUP BY author ORDER BY novel_count DESC,views DESC,author COLLATE NOCASE LIMIT 50":select+" GROUP BY author ORDER BY novel_count DESC,views DESC,author COLLATE NOCASE LIMIT 100";
+  return json((await env.DB.prepare(sql).bind(...(q?[searchValue]:[])).all()).results||[]);
  }
  await ensureCoreSchema(env);
  await ensureRuntimeFeatureSchema(env);

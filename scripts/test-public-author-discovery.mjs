@@ -24,6 +24,7 @@ assert.ok(endpoint.includes("TRIM(author)<>''"),"Blank author names must not app
 assert.ok(endpoint.includes('if(rawQuery.length>80)return json({error:"Search query must be 80 characters or fewer"},400);'),"Search input above 80 characters must be rejected explicitly");
 assert.ok(endpoint.indexOf("if(rawQuery.length>80)")<endpoint.indexOf("env.DB.prepare(sql)"),"Overlong search input must be rejected before SQL preparation");
 assert.ok(endpoint.includes("q.replace(")&&endpoint.includes("ESCAPE char(92)"),"LIKE wildcard characters must be escaped literally");
+assert.ok(endpoint.includes("instr(LOWER(author),?)>0"),"long accepted searches must use bounded literal substring matching");
 assert.ok(endpoint.includes("COALESCE(SUM(views),0)"),"Missing view totals must be represented as zero, not null");
 assert.ok(endpoint.includes("rating BETWEEN 1 AND 10"),"Only valid ten-point ratings may contribute to the aggregate");
 assert.ok(endpoint.includes("ROUND(AVG(CASE WHEN rating BETWEEN 1 AND 10 THEN rating END))"),"Aggregate ratings must remain whole numbers on the ten-point scale");
