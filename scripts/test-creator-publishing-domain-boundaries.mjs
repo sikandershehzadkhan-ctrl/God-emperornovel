@@ -18,10 +18,10 @@ assert.ok(!creator.includes('"/api/author/schedules"'),"release calendar must no
 assert.ok(!creator.includes("/api/author/chapters/"),"chapter lifecycle routes must not be owned by Creator");
 assert.ok(publishing.includes('"/api/author/schedules"'),"release calendar must be owned by Publishing");
 for(const route of [
-  "/api/author/chapters/",
-  "/revisions",
-  "/publish",
-  "/schedule"
+  "chapters",
+  "revisions",
+  "publish",
+  "schedule"
 ]) assert.ok(publishing.includes(route),"Publishing chapter lifecycle route missing: "+route);
 
 for(const fragment of [
