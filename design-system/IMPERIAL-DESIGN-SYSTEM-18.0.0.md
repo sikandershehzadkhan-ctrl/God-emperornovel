@@ -146,6 +146,7 @@ Use the same component contracts with role-specific information architecture. Au
 - All controls have programmatic names; errors connect with `aria-describedby`.
 - Keyboard operation and logical focus order are mandatory.
 - Reduced-motion preference removes non-essential transitions and animated skeletons.
+- The in-app high-contrast preference strengthens semantic text, border and focus roles across all six global themes; native forced-colors support remains a separate system-level mode.
 - RTL uses logical CSS properties (`margin-inline`, `padding-inline`, `inset-inline`) and mirrors directional icons only when their meaning is directional.
 - Do not auto-translate creator-authored story content. UI locale and chapter language/direction remain independent.
 - Support browser zoom to 200% and reflow at 320 CSS px without loss of essential functionality.
