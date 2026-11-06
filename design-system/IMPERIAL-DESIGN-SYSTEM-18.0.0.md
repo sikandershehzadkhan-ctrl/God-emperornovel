@@ -209,3 +209,12 @@ This is a first bounded adoption slice, not a claim that every homepage descenda
 The catalog filter panel, filter controls, result cards, active-filter chips, empty state, format directory links, genre cards, tag tiles and search controls now consume semantic theme roles. Existing API requests, query parameters, filter semantics, pagination and route destinations are unchanged. The styles preserve visible keyboard focus, 44px minimum filter controls on compact layouts, and reduced-motion preferences.
 
 This is source-level theme adoption. It does not certify every catalog state or every viewport visually. Browser review across all six themes, 360px/390px widths, tablet/desktop, RTL and loading/error/empty/populated states remains required.
+
+
+## 13. Story detail and chapter navigation adoption
+
+The novel overview, metadata/stat surfaces, overview tabs, chapter rows and chapter-list interactions now consume semantic theme roles. Reader toolbar controls, chapter drawer entries and preference selects receive visible focus treatment and 44px minimum targets. Reduced-motion preferences are respected.
+
+The chapter article itself retains its independent reader-theme preference (Light, Dark, Midnight, Sepia, Imperial and Cosmic). This slice deliberately does not unify the global application theme with saved reader preferences or change reading-progress, bookmark, chapter-unlock, comic-viewer or navigation behavior. That compatibility work remains a separate migration and must preserve existing saved preferences.
+
+Source-level adoption is covered by the design-system contract. Visual review across all six global themes, reader themes, mobile widths, RTL, long titles, locked chapters, empty/error states and text/comic chapters remains required before this page family can be marked complete.
