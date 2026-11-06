@@ -1,10 +1,10 @@
 {
   "schemaVersion": 1,
   "name": "Imperial Novel route registry",
-  "sourceBranch": "security/omni-bounded-json-response-17-79",
+  "sourceBranch": "integration/public-author-discovery-rebased-17-80",
   "sourceCommit": "c9710a8c4dbf7a9bbca4ac1c448b7800f7d68947",
   "auditDate": "2026-11-05",
-  "scope": "Current-main static route reconciliation. Does not prove deployed behavior, runtime routing, or authorization correctness.",
+  "scope": "Current-main static route reconciliation. Does not prove deployed behavior, runtime routing, or authorization correctness. The /authors public directory route is included; static registry does not certify deployed runtime behavior.",
   "routes": [
     {
       "path": "/",
@@ -20,6 +20,14 @@
       "shell": "catalog.html",
       "screen": "catalog",
       "renderer": "catalog",
+      "robots": "index"
+    },
+    {
+      "path": "/authors",
+      "kind": "exact",
+      "shell": "authors.html",
+      "screen": "author-directory",
+      "renderer": "authorDirectory",
       "robots": "index"
     },
     {
