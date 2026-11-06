@@ -156,6 +156,9 @@ assert.ok(worker.includes("'/imperial-design-tokens.css'") && worker.includes("'
 assert.ok(app.includes("const IMPERIAL_THEMES=['light','dark','midnight','sepia','imperial','cosmic']"), "shared shell must expose all six supported themes");
 assert.ok(app.includes('document.documentElement.dir=(c==="ur"||c==="ar"||c==="fa")?"rtl":"ltr"'), "Urdu, Arabic and Persian interface locales must set RTL document direction");
 assert.ok(components.includes('[dir="rtl"] .in-switch:checked::after{transform:translateX(-1.25rem)}'), "shared switch thumb must mirror its checked position in RTL layouts");
+assert.doesNotMatch(components, /(?:^|[;{])\s*(?:margin|padding|inset|border)-(?:left|right)\s*:/m, "shared component primitives must use logical directional properties");
+assert.doesNotMatch(components, /(?:^|[;{])\s*(?:left|right)\s*:/m, "shared component primitives must not hard-code physical positioning");
+
 assert.ok(app.includes('id="imperialThemeSelect"') && app.includes("applyImperialTheme(event.target.value)"), "shared theme selector must be operable and update the root theme");
 assert.ok(app.includes("</footer>`);applyImperialTheme(document.documentElement.dataset.theme)}"), "shared shell must synchronize the saved theme into the selector after it mounts");
 assert.ok(app.includes('id="setSiteTheme"><option value="light">Light</option><option value="dark">Dark</option><option value="midnight">Midnight</option><option value="sepia">Sepia</option><option value="imperial">Imperial</option><option value="cosmic">Cosmic</option>'), "Settings must expose the complete six-theme global palette");
