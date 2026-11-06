@@ -27,7 +27,7 @@ const usage = fs.readFileSync("design-system/COMPONENT-USAGE-18.0.0.md", "utf8")
 const routeMap = fs.readFileSync("design-system/ROUTE-TEMPLATE-MIGRATION-MAP-18.0.0.md", "utf8");
 
 function readHex(block, token, theme) {
-  const match = block.match(new RegExp(token + ":\s*(#[0-9A-Fa-f]{6})"));
+  const match = block.match(new RegExp(token + ":[\\t\\r\\n ]*(#[0-9A-Fa-f]{6})"));
   assert.ok(match, theme + " is missing a valid hex value for " + token);
   return match[1];
 }
@@ -53,7 +53,7 @@ const themeRoles = [
   "--in-reader-paper", "--in-reader-ink"
 ];
 for (const theme of themes) {
-  const match = tokens.match(new RegExp('(?:^|,)\s*\\[data-theme="' + theme + '"\\]\s*\\{([^}]*)\\}', "m"));
+  const match = tokens.match(new RegExp('(?:^|,)[\\t\\r\\n ]*\\[data-theme="' + theme + '"\\][\\t\\r\\n ]*\\{([^}]*)\\}', "m"));
   assert.ok(match, "missing theme: " + theme);
   for (const role of themeRoles) {
     assert.ok(match[1].includes(role + ":"), theme + " theme is missing semantic role: " + role);
