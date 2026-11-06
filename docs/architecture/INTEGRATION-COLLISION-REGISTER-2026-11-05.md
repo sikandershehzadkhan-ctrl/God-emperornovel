@@ -342,3 +342,20 @@ The canonical root now includes fourteen-language Library/History coverage (#242
 - PRs #131–#141 form an older stacked localization chain and share `public/app.js`, package scripts and/or the Cloudflare validation workflow. They also carry the older 17.24 browser bundle. Rebuild only missing localization surfaces on the current 17.23 canonical runtime, preserving source/served-bundle parity.
 - PR #156 and PR #127 remain partial-parity candidates as described above. Security PRs #86–#95 remain outside the active integration queue until the separately paused security review is resumed.
 - PR #195 remains draft despite passing six checks. It is not ready for mainline merge until the 95 pending authorization route-method reviews, required runtime isolation tests, stale-branch parity decisions and migration rollout boundary are resolved.
+
+
+## Follow-up audit: legacy localization branch compatibility (2026-11-06)
+
+### Author Studio localization branch #140
+
+- The current integration root is package/browser release `17.23.0`; `public/index.html` serves `/app-17.23.0.js`. PR #140's test expects `app-17.24.0.js` and that stale branch's source/served parity. Its test cannot be copied unchanged.
+- The old #140 Author Studio implementation contains a 14-locale dictionary with 49 strings, but its expanded UI also calls author endpoints absent from the current Worker: `/api/author/analytics`, `/api/author/feedback`, `/api/author/planning`, `/api/author/goals`, `/api/author/notes`, `/api/author/readiness` and `/api/author/calendar`.
+- The current canonical Author Studio handler is materially smaller (15,543 characters at the audited root versus 45,355 in the old branch). Only 19 of the old dictionary's 49 English keys occur in the current handler. The additional 30 keys describe absent analytics, feedback, planning, goals, notes, readiness, release-calendar and expanded application UI.
+- Therefore PR #140 is not a safe localization-only cherry-pick. Importing its UI or dictionary without its matching, reviewed backend contracts would create dead controls or failed requests and reintroduce a feature collision.
+- Decision: keep #140 unmerged. First define and review each desired Author Studio capability as an owned domain contract, implement and test its Worker/API and data isolation, then localize only the supported current UI. Do not port the 17.24 bundle or its package script wholesale.
+
+### Localization test-stack compatibility
+
+- The #138–#141 tests are tied to `app-17.24.0.js` and their historical stacked branch content. They must be rewritten against the canonical `17.23.0` entry and current route/API contracts before they can become build gates.
+- The #141 community-expansion branch includes a broad discovery-localization bundle. It is not interchangeable with the previously integrated static Community UI localization; compare each discovery screen and API contract separately before selective porting.
+- No localization source, Worker route, database schema, package script or production artifact was changed in this audit. This entry records verified incompatibilities to prevent unsafe branch integration.
