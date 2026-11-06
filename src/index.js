@@ -458,6 +458,22 @@ async function api(req,env){
  // or session reads. Keep this path fast and side-effect-free for platform probes.
  if(p==="/api/health"&&m!=="GET")return json({error:"Method not allowed"},405);
  if(p==="/api/health"&&m==="GET"){let db=true;try{await env.DB.prepare("SELECT 1").first()}catch{db=false}return json({ok:db,service:env.SITE_NAME||"Imperial Novel",version:env.APP_VERSION||"5.0.0",database:db,time:new Date().toISOString()})}
+ // Public author discovery is an anonymous, read-only endpoint. Resolve its
+ // method guard and bounded-query fast path before schema bootstrap or session
+ // lookup so oversized input cannot trigger unrelated account/database work.
+ if(p==="/api/public-authors"&&m!=="GET")return json({error:"Method not allowed"},405);
+ if(p==="/api/public-authors") {
+  const rawQuery=String(url.searchParams.get("q")||"").trim();
+  // Reject overlong directory searches before touching D1. This keeps the public
+  // endpoint bounded and avoids turning hostile query sizes into database work.
+  if(rawQuery.length>80)return json([]);
+  const q=rawQuery.toLowerCase();
+  const escaped=q.replace(/[\\%_]/g,character=> "\\"+character);
+  const where="publication_status='published' AND rights_status IN ('original','public_domain','licensed','authorized') AND TRIM(author)<>''";
+  const select="SELECT author,COUNT(*) novel_count,COALESCE(SUM(views),0) views,ROUND(AVG(CASE WHEN rating BETWEEN 1 AND 10 THEN rating END)) rating,MAX(updated_at) updated_at FROM novels WHERE "+where;
+  const sql=q?select+" AND LOWER(author) LIKE ? ESCAPE char(92) GROUP BY author ORDER BY novel_count DESC,views DESC,author COLLATE NOCASE LIMIT 50":select+" GROUP BY author ORDER BY novel_count DESC,views DESC,author COLLATE NOCASE LIMIT 100";
+  return json((await env.DB.prepare(sql).bind(...(q?["%"+escaped+"%"]:[])).all()).results||[]);
+ }
  await ensureCoreSchema(env);
  await ensureRuntimeFeatureSchema(env);
  const u=await getUser(req,env);
@@ -546,19 +562,6 @@ async function api(req,env){
  if(p==="/api/genres")return json((await env.DB.prepare("SELECT * FROM genres ORDER BY name").all()).results);
  if(p==="/api/tags"&&m!=="GET")return json({error:"Method not allowed"},405);
  if(p==="/api/tags")return json((await env.DB.prepare("SELECT * FROM tags ORDER BY name").all()).results);
- if(p==="/api/public-authors"&&m!=="GET")return json({error:"Method not allowed"},405);
- if(p==="/api/public-authors") {
-  const rawQuery=String(url.searchParams.get("q")||"").trim();
-  // Reject overlong directory searches before touching D1. This keeps the public
-  // endpoint bounded and avoids turning hostile query sizes into database work.
-  if(rawQuery.length>80)return json([]);
-  const q=rawQuery.toLowerCase();
-  const escaped=q.replace(/[\\%_]/g,character=> "\\"+character);
-  const where="publication_status='published' AND rights_status IN ('original','public_domain','licensed','authorized') AND TRIM(author)<>''";
-  const select="SELECT author,COUNT(*) novel_count,COALESCE(SUM(views),0) views,ROUND(AVG(CASE WHEN rating BETWEEN 1 AND 10 THEN rating END)) rating,MAX(updated_at) updated_at FROM novels WHERE "+where;
-  const sql=q?select+" AND LOWER(author) LIKE ? ESCAPE char(92) GROUP BY author ORDER BY novel_count DESC,views DESC,author COLLATE NOCASE LIMIT 50":select+" GROUP BY author ORDER BY novel_count DESC,views DESC,author COLLATE NOCASE LIMIT 100";
-  return json((await env.DB.prepare(sql).bind(...(q?["%"+escaped+"%"]:[])).all()).results||[]);
- }
  if(p==="/api/sources"&&m!=="GET")return json({error:"Method not allowed"},405);
  if(p==="/api/sources")return json(SOURCES.map(x=>({name:x[0],host:x[1],path:x[2],speed:x[3],connection:x[3].includes('required')?'authorized API/feed required':'registry only until connected'})));
  if(p==="/api/omni/status"&&m!=="GET")return json({error:"Method not allowed"},405);
