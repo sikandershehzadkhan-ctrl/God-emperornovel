@@ -27,7 +27,7 @@
 .homeFormatCopy{display:flex;flex-direction:column;gap:5px;min-width:0}
 .homeFormatCopy b{font-size:13px;line-height:1.25;font-weight:700}
 .homeFormatCopy small{font-size:11px;line-height:1.4;color:var(--muted,#a3abc2)}
-.homeFormatArrow{margin-left:auto;color:var(--in-sapphire,#4f8cff);font-size:17px}
+.homeFormatArrow{margin-inline-start:auto;color:var(--in-sapphire,#4f8cff);font-size:17px}
 @media(max-width:760px){.homeFormatGrid{grid-template-columns:repeat(2,minmax(0,1fr))}.homeFormatHeading{align-items:flex-start;flex-direction:column}.homeFormatShelf{margin:24px 0;padding:17px}}
 @media(max-width:420px){.homeFormatGrid{grid-template-columns:minmax(0,1fr)}.homeFormatCard{min-height:70px;padding:12px}}
 @media(prefers-reduced-motion:reduce){.homeFormatCard{transition:none}.homeFormatCard:hover{transform:none}}
