@@ -22,6 +22,15 @@ const termsHtml = fs.readFileSync("public/terms.html", "utf8");
 const copyrightHtml = fs.readFileSync("public/copyright.html", "utf8");
 const taxonomyHtml = fs.readFileSync("public/community-taxonomy.html", "utf8");
 const worker = fs.readFileSync("src/index.js", "utf8");
+const localeSource = app.match(/const IN_LANG=(\\{.*?\\});function setINLang/s)?.[1];
+assert.ok(localeSource, "interface locale dictionaries must remain available for contract validation");
+const localeDictionaries = JSON.parse(localeSource);
+const expectedLocales = ["en","ur","hi","zh-CN","zh-TW","es","fr","id","ja","ko","pt-BR","ar","vi","fa"];
+assert.deepEqual(Object.keys(localeDictionaries).sort(), expectedLocales.sort(), "all fourteen supported interface locales must have dictionaries");
+const englishLocaleKeys = Object.keys(localeDictionaries.en).sort();
+for (const [locale, dictionary] of Object.entries(localeDictionaries)) {
+  assert.deepEqual(Object.keys(dictionary).sort(), englishLocaleKeys, locale + " must cover every English interface string");
+}
 const packageJson = JSON.parse(fs.readFileSync("package.json", "utf8"));
 const usage = fs.readFileSync("design-system/COMPONENT-USAGE-18.0.0.md", "utf8");
 const routeMap = fs.readFileSync("design-system/ROUTE-TEMPLATE-MIGRATION-MAP-18.0.0.md", "utf8");
