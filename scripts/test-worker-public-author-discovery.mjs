@@ -81,10 +81,15 @@ try{
   assert.ok(row.rating===null||(Number.isInteger(row.rating)&&row.rating>=1&&row.rating<=10));
   assert.equal(typeof row.updated_at,"string");
  }
- const eligible=all.data.find(x=>x.author==="Eligible Author");
+ const searchAuthor=async name=>{
+  const result=await request(origin,"/api/public-authors?q="+encodeURIComponent(name));
+  assert.equal(result.status,200);
+  return result.data.find(x=>x.author===name)||null;
+ };
+ const eligible=await searchAuthor("Eligible Author");
  assert.deepEqual({novel_count:eligible?.novel_count,views:eligible?.views,rating:eligible?.rating},{novel_count:1,views:120,rating:9});
- for(const hidden of ["Draft Only Author","Pending Rights Author"])assert.equal(all.data.some(x=>x.author===hidden),false,hidden+" must not appear");
- for(const visible of ["Public Domain Author","Licensed Author","Authorized Author"])assert.equal(all.data.some(x=>x.author===visible),true,visible+" should be eligible");
+ for(const hidden of ["Draft Only Author","Pending Rights Author"])assert.equal(await searchAuthor(hidden),null,hidden+" must not appear");
+ for(const visible of ["Public Domain Author","Licensed Author","Authorized Author"])assert.ok(await searchAuthor(visible),visible+" should be eligible");
  for(const [needle,expected] of [["%", "Wildcard%Author"],["_","Wildcard_Author"],["\\","Wildcard\\Author"]]){
   const result=await request(origin,"/api/public-authors?q="+encodeURIComponent(needle));
   assert.equal(result.status,200);
