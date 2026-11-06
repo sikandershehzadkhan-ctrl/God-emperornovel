@@ -291,3 +291,15 @@ The canonical root now includes fourteen-language Library/History coverage (#242
 - Refreshed the route, API-method and authorization evidence fingerprints to the exact Worker blob and commit.
 - No migration, production data change, secret, chapter-body ingestion or deployment is included.
 - PR #263 targets the governed integration root and remains draft pending exact-head validation. Do not merge or deploy until all six required workflows pass on its final head.
+
+
+### PR #262: Community discovery localization, clean-root port (2026-11-06)
+
+- The original Community localization branch was based on a stale 17.24 app bundle and diverged from the canonical root. Its app bundle was not merged wholesale.
+- Ported the fourteen-locale COMMUNITY_LANG dictionary additively onto the canonical root after Public Author Discovery, preserving the /authors route, author navigation, and current ranking dictionary.
+- Added Community static labels and loading/empty/unavailable states with locale reapplication after initial render and after the trending catalog response.
+- Creator-authored novel titles, usernames, discussion bodies and descriptions remain unchanged. Existing Community and trending API requests, publication filters and rights eligibility are unchanged.
+- Added a dedicated localization regression and retained the isolated rankings dictionary test. The mandatory build continues to include bounded JSON and all six account-lifecycle migration regressions.
+- No route, API, database entity, migration, payment behavior or production deployment is introduced.
+- ADR allocation: Public Author Discovery remains ADR-0027, bounded OmniPortal responses remain ADR-0028, and Community discovery localization is ADR-0029.
+- Exact-head validation is required before integration. This record describes the clean-root port, not production release approval.
