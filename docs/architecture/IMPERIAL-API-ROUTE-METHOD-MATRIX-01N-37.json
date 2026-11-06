@@ -514,7 +514,7 @@
       ],
       "sourceLines": [
         100,
-        110
+        111
       ],
       "sourceFile": "src/features/creator-studio/index.mjs",
       "workerDispatchLines": [
@@ -544,7 +544,7 @@
         "GET"
       ],
       "sourceLines": [
-        175
+        174
       ],
       "sourceFile": "src/features/creator-studio/index.mjs",
       "workerDispatchLines": [
@@ -560,7 +560,7 @@
         "GET"
       ],
       "sourceLines": [
-        150
+        149
       ],
       "sourceFile": "src/features/creator-studio/index.mjs",
       "workerDispatchLines": [
