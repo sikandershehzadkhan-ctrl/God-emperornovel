@@ -308,3 +308,79 @@ html[data-theme] .readerPage .chapterDrawer{
   html[data-theme] .readerPage .readerTool,
   html[data-theme] .readerPage .readerChapterItem{transition:none}
 }
+
+
+/* Account, personal library, history and following page adoption. */
+html[data-theme] .accountGrid .accountMenu,
+html[data-theme] .accountGrid .panel,
+html[data-theme] .accountGrid .metric,
+html[data-theme] .accountGrid .notice,
+html[data-theme] .accountGrid .empty,
+html[data-theme] .accountGrid .grid > .card,
+html[data-theme] .accountGrid .statline,
+html[data-theme] .accountGrid .tabs{
+  background:var(--in-bg-surface);
+  border-color:var(--in-border-default);
+  color:var(--in-text-primary);
+  box-shadow:var(--in-shadow-sm);
+}
+html[data-theme] .accountGrid .panel h2,
+html[data-theme] .accountGrid .metric b,
+html[data-theme] .accountGrid .cardTitle,
+html[data-theme] .accountGrid .statline b{
+  color:var(--in-text-primary);
+}
+html[data-theme] .accountGrid .muted,
+html[data-theme] .accountGrid .metric .muted,
+html[data-theme] .accountGrid .statline,
+html[data-theme] .accountGrid .accountMenu a{
+  color:var(--in-text-secondary);
+}
+html[data-theme] .accountGrid .accountMenu a.active,
+html[data-theme] .accountGrid .accountMenu a:hover{
+  background:color-mix(in srgb,var(--in-action-primary) 12%,var(--in-bg-surface));
+  color:var(--in-action-primary);
+}
+html[data-theme] .accountGrid .tabs a{color:var(--in-text-secondary)}
+html[data-theme] .accountGrid .tabs a.active{
+  color:var(--in-action-primary);
+  border-bottom-color:var(--in-action-primary);
+}
+html[data-theme] .accountGrid .avatar{
+  border-color:var(--in-border-strong);
+}
+html[data-theme] .accountGrid a:focus-visible,
+html[data-theme] .accountGrid button:focus-visible{
+  outline:3px solid var(--in-focus-ring);
+  outline-offset:3px;
+}
+html[data-theme] .accountGrid .accountMenu a,
+html[data-theme] .accountGrid .removeLibrary,
+html[data-theme] .accountGrid .statline a{
+  min-height:var(--in-touch-target);
+}
+html[data-theme] .accountGrid .accountMenu a{
+  display:flex;
+  align-items:center;
+}
+html[data-theme] .accountGrid .notice{
+  background:var(--in-bg-elevated);
+}
+@media(max-width:760px){
+  html[data-theme] .accountGrid{grid-template-columns:minmax(0,1fr)}
+  html[data-theme] .accountGrid .accountMenu{
+    display:flex;
+    gap:5px;
+    overflow-x:auto;
+    white-space:nowrap;
+    position:relative;
+    top:auto;
+  }
+  html[data-theme] .accountGrid .accountMenu a{flex:0 0 auto}
+  html[data-theme] .accountGrid .metricGrid{grid-template-columns:repeat(2,minmax(0,1fr))}
+}
+@media(prefers-reduced-motion:reduce){
+  html[data-theme] .accountGrid .card,
+  html[data-theme] .accountGrid .accountMenu a,
+  html[data-theme] .accountGrid .tabs a{transition:none}
+}
