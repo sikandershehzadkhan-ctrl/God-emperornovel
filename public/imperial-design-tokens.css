@@ -124,3 +124,31 @@
 @media(prefers-reduced-motion:reduce) {
   :root { --in-motion-fast:0ms; --in-motion-normal:0ms; --in-motion-slow:0ms; }
 }
+
+
+/* Temporary compatibility bridge: legacy page styles resolve through semantic roles.
+   New components should use --in-* tokens directly; do not add raw palette dependencies. */
+:root {
+  --bg:var(--in-bg-canvas);
+  --bg2:var(--in-bg-subtle);
+  --panel:var(--in-bg-surface);
+  --panel2:var(--in-bg-elevated);
+  --panel3:var(--in-bg-subtle);
+  --text:var(--in-text-primary);
+  --muted:var(--in-text-muted);
+  --line:var(--in-border-default);
+  --silver:var(--in-border-strong);
+  --silver2:var(--in-border-default);
+  --violet:var(--in-action-primary);
+  --violet2:var(--in-action-primary-hover);
+  --violet3:color-mix(in srgb,var(--in-action-primary) 12%,var(--in-bg-surface));
+  --violet4:var(--in-action-primary);
+  --good:var(--in-status-success);
+  --danger:var(--in-status-danger);
+  --shadow:var(--in-shadow-lg);
+  --shadowSoft:var(--in-shadow-sm);
+  --max:var(--in-content-max);
+  --brand-purple:var(--in-action-primary);
+  --brand-sapphire:var(--in-action-secondary);
+  --brand-black:var(--in-brand-obsidian);
+}
