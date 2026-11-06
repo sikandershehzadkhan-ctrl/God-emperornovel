@@ -510,3 +510,77 @@ html[data-theme] .page .authorStudioLayout button:disabled{opacity:.55;cursor:no
 @media(min-width:900px){html[data-theme] .page .authorStudioLayout{grid-template-columns:minmax(0,.9fr) minmax(0,1.1fr);align-items:start}html[data-theme] .page .authorStudioIntro{grid-column:1/-1}html[data-theme] .page .authorWorksPanel{grid-column:1/-1}}
 @media(max-width:620px){html[data-theme] .page .authorFormGrid,html[data-theme] .page .comicPageComposerGrid{grid-template-columns:minmax(0,1fr)}html[data-theme] .page .authorWorkTop,html[data-theme] .page .authorWorksPanel .sectionHead{flex-wrap:wrap}html[data-theme] .page .authorWorkActions > *{flex:1 1 100%;justify-content:center;text-align:center}html[data-theme] .page .authorEditForm,html[data-theme] .page .authorChapterForm{padding:12px}}
 @media(prefers-reduced-motion:reduce){html[data-theme] .page .authorStudioLayout *,html[data-theme] .page .authorWork{transition:none}}
+
+
+/* Community discovery and public discussion feed. */
+html[data-theme] .quickCard{
+  min-width:0;background:var(--in-bg-surface);border-color:var(--in-border-default);
+  color:var(--in-text-primary);box-shadow:var(--in-shadow-sm);
+}
+html[data-theme] .quickCard:hover{
+  border-color:var(--in-action-primary);background:var(--in-bg-elevated);
+}
+html[data-theme] .quickCard>span{
+  background:color-mix(in srgb,var(--in-action-primary) 12%,var(--in-bg-elevated));
+  color:var(--in-action-primary);
+}
+html[data-theme] .quickCard b,
+html[data-theme] .sectionHead h2,
+html[data-theme] .unlockBanner h2{
+  color:var(--in-text-primary);
+}
+html[data-theme] .quickCard small,
+html[data-theme] .sectionHead p,
+html[data-theme] .unlockBanner p{
+  color:var(--in-text-secondary);
+}
+html[data-theme] #communityDiscussions{
+  display:grid;gap:10px;padding:clamp(14px,2vw,20px);
+  background:var(--in-bg-surface);border:1px solid var(--in-border-default);
+  border-radius:var(--in-radius-lg);color:var(--in-text-primary);
+  box-shadow:var(--in-shadow-sm);
+}
+html[data-theme] #communityDiscussions .chapter{
+  display:block;min-width:0;padding:14px;
+  background:var(--in-bg-elevated);border:1px solid var(--in-border-default);
+  border-radius:12px;color:var(--in-text-primary);
+}
+html[data-theme] #communityDiscussions .chapter a{
+  color:var(--in-action-primary);text-decoration:none;
+}
+html[data-theme] #communityDiscussions .chapter a:hover{text-decoration:underline}
+html[data-theme] #communityDiscussions .chapter p{
+  color:var(--in-text-primary);line-height:1.65;
+}
+html[data-theme] #communityGrid .card{
+  background:var(--in-bg-surface);border-color:var(--in-border-default);
+  color:var(--in-text-primary);box-shadow:var(--in-shadow-sm);
+}
+html[data-theme] #communityGrid .cardTitle{color:var(--in-text-primary)}
+html[data-theme] #communityGrid .meta{color:var(--in-text-secondary)}
+html[data-theme] .unlockBanner{
+  background:linear-gradient(135deg,color-mix(in srgb,var(--in-action-primary) 10%,var(--in-bg-surface)),var(--in-bg-surface));
+  border-color:var(--in-border-default);box-shadow:var(--in-shadow-sm);
+}
+html[data-theme] .quickCard:focus-visible,
+html[data-theme] #communityDiscussions a:focus-visible,
+html[data-theme] #communityGrid a:focus-visible,
+html[data-theme] .unlockBanner a:focus-visible{
+  outline:3px solid var(--in-focus-ring);outline-offset:3px;
+}
+html[data-theme] .quickCard,
+html[data-theme] .unlockBanner a{min-height:var(--in-touch-target)}
+@media(max-width:760px){
+  html[data-theme] .quickGrid{grid-template-columns:repeat(2,minmax(0,1fr))}
+  html[data-theme] .sectionHead{align-items:flex-start;flex-wrap:wrap}
+  html[data-theme] .unlockBanner{align-items:flex-start;flex-direction:column}
+}
+@media(max-width:420px){
+  html[data-theme] .quickGrid{grid-template-columns:minmax(0,1fr)}
+  html[data-theme] #communityDiscussions{padding:10px}
+  html[data-theme] #communityDiscussions .chapter{padding:12px}
+}
+@media(prefers-reduced-motion:reduce){
+  html[data-theme] .quickCard,html[data-theme] .unlockBanner,
+  html[data-theme] #communityGrid .card{transition:none;transform:none}
+}
