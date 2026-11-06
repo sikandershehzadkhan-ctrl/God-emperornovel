@@ -139,3 +139,12 @@ Required checks before marking this slice complete:
 **Implemented in source:** semantic theme overrides for catalog filter panels and controls, result cards, active filter chips, empty states, format directory links, genre cards, tag tiles and search controls. Existing data/API behavior, query parameters, pagination and route destinations were not changed.
 
 **Still required before declaring the discovery family complete:** visual browser review for all six themes and populated/loading/empty/error states; desktop, tablet, 390px and 360px layouts; RTL; keyboard traversal; filter control contrast; long titles and tags; image fallback behavior. Source CSS and passing contract tests do not substitute for visual QA.
+
+
+## 10. Story detail and chapter navigation source adoption
+
+**Implemented in source:** semantic theme overrides for the novel hero, cover frame, title, metadata/stat cards, overview tabs, chapter rows and chapter hover state. Reader toolbar controls, chapter drawer links and preference selects have visible focus and 44px minimum targets; reduced-motion preferences are respected.
+
+**Intentionally unchanged:** novel/chapter API calls, route destinations, ratings/comments/reactions, library/follow actions, chapter unlocks, reading progress, bookmarks, comic page sequencing and the reader's independent theme preference. Reader article colors remain controlled by the reader preference until a separate compatibility migration is tested.
+
+**Still required:** browser screenshots for all six global themes and six reader themes; desktop/tablet/390px/360px; Urdu/Arabic/Persian RTL; long titles; locked/unlocked chapter rows; populated/empty/error/loading states; keyboard and screen-reader review; comic and text chapter verification. Source CSS and contract tests are not visual sign-off.
