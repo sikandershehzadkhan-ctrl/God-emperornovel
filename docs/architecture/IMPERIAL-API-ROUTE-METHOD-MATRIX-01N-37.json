@@ -2,8 +2,8 @@
   "schemaVersion": 1,
   "name": "Imperial Novel API route method inventory",
   "sourceBranch": "integration/public-author-discovery-rebased-17-80",
-  "sourceBlob": "7036e1ae4a6ef032e7663d96e3cbee3fc5124026",
-  "auditDate": "2026-11-05",
+  "sourceBlob": "eccc7c65dbd601e2e6ec780016bf03cfb1783f1b",
+  "auditDate": "2026-11-06",
   "scope": "Static dispatcher scan of the integrated Worker. Observed method guards only; this is not a complete permission or runtime contract. Bookmark and history POST writes now require positive safe-integer identifiers and an exact published chapter belonging to a published, rights-eligible novel; validation occurs before persistence. Community POST handlers now use strict positive safe-integer identifiers and published rights-eligible targets; comment/report quotas and duplicate report claims are database-trigger enforced. Worker source fingerprint refreshed to the exact source blob for the personalized-route noindex correction; this change does not expand route access or object ownership. Explicit bookmark removal is DELETE on the singular /api/bookmark resource; the plural /api/bookmarks resource is the authenticated GET list. OmniPortal connector registry seeding now uses a normalized NOT EXISTS guard; the public status projection deduplicates normalized base URLs and preserves the enabled/authorized representative. Administrator connector creation validates an allowlisted HTTPS origin, rejects duplicate URLs and creates new entries disabled/pending. No route signature was added or removed. The Worker source fingerprint is refreshed after the leaderboard chapter/time index addition; no route signature changed.",
   "exactRouteCount": 80,
   "dynamicRouteCount": 22,
@@ -15,8 +15,8 @@
         "PUT"
       ],
       "sourceLines": [
-        685,
-        686
+        687,
+        688
       ],
       "unguardedLines": [],
       "methodGuardMissing": false,
@@ -54,7 +54,7 @@
         "GET"
       ],
       "sourceLines": [
-        685
+        687
       ],
       "unguardedLines": [],
       "methodGuardMissing": false,
@@ -68,8 +68,8 @@
         "PATCH"
       ],
       "sourceLines": [
-        580,
-        581
+        582,
+        583
       ],
       "unguardedLines": [],
       "methodGuardMissing": false,
@@ -82,8 +82,8 @@
         "GET"
       ],
       "sourceLines": [
-        582,
-        583
+        584,
+        585
       ],
       "unguardedLines": [],
       "methodGuardMissing": false,
@@ -96,7 +96,7 @@
         "GET"
       ],
       "sourceLines": [
-        939
+        941
       ],
       "unguardedLines": [],
       "methodGuardMissing": false,
@@ -110,9 +110,9 @@
         "PATCH"
       ],
       "sourceLines": [
-        931,
-        932,
-        936
+        933,
+        934,
+        938
       ],
       "unguardedLines": [],
       "methodGuardMissing": false,
@@ -124,7 +124,7 @@
         "POST"
       ],
       "sourceLines": [
-        934
+        936
       ],
       "unguardedLines": [],
       "methodGuardMissing": false,
@@ -138,7 +138,7 @@
         "PATCH"
       ],
       "sourceLines": [
-        926
+        928
       ],
       "unguardedLines": [],
       "methodGuardMissing": false,
@@ -151,7 +151,7 @@
         "POST"
       ],
       "sourceLines": [
-        933
+        935
       ],
       "unguardedLines": [],
       "methodGuardMissing": false,
@@ -164,7 +164,7 @@
         "POST"
       ],
       "sourceLines": [
-        862
+        864
       ],
       "unguardedLines": [],
       "methodGuardMissing": false,
@@ -177,7 +177,7 @@
         "GET"
       ],
       "sourceLines": [
-        925
+        927
       ],
       "unguardedLines": [],
       "methodGuardMissing": false,
@@ -190,7 +190,7 @@
         "DELETE"
       ],
       "sourceLines": [
-        910
+        912
       ],
       "unguardedLines": [],
       "methodGuardMissing": false,
@@ -203,7 +203,7 @@
         "POST"
       ],
       "sourceLines": [
-        863
+        865
       ],
       "unguardedLines": [],
       "methodGuardMissing": false,
@@ -216,7 +216,7 @@
         "GET"
       ],
       "sourceLines": [
-        928
+        930
       ],
       "unguardedLines": [],
       "methodGuardMissing": false,
@@ -230,7 +230,7 @@
         "PATCH"
       ],
       "sourceLines": [
-        937
+        939
       ],
       "unguardedLines": [],
       "methodGuardMissing": false,
@@ -242,8 +242,8 @@
         "GET"
       ],
       "sourceLines": [
-        714,
-        715
+        716,
+        717
       ],
       "unguardedLines": [],
       "methodGuardMissing": false,
@@ -271,7 +271,7 @@
         "GET"
       ],
       "sourceLines": [
-        930
+        932
       ],
       "unguardedLines": [],
       "methodGuardMissing": false,
@@ -284,7 +284,7 @@
         "PATCH"
       ],
       "sourceLines": [
-        716
+        718
       ],
       "unguardedLines": [],
       "methodGuardMissing": false,
@@ -385,8 +385,8 @@
         "POST"
       ],
       "sourceLines": [
-        795,
-        801
+        797,
+        803
       ],
       "unguardedLines": [],
       "methodGuardMissing": false,
@@ -399,8 +399,8 @@
         "POST"
       ],
       "sourceLines": [
-        724,
-        728
+        726,
+        730
       ],
       "unguardedLines": [],
       "methodGuardMissing": false,
@@ -412,7 +412,7 @@
         "GET"
       ],
       "sourceLines": [
-        720
+        722
       ],
       "unguardedLines": [],
       "methodGuardMissing": false,
@@ -424,7 +424,7 @@
         "POST"
       ],
       "sourceLines": [
-        669
+        671
       ],
       "unguardedLines": [],
       "methodGuardMissing": false,
@@ -436,7 +436,7 @@
         "GET"
       ],
       "sourceLines": [
-        663
+        665
       ],
       "unguardedLines": [],
       "methodGuardMissing": false,
@@ -449,8 +449,8 @@
         "POST"
       ],
       "sourceLines": [
-        864,
-        868
+        866,
+        870
       ],
       "unguardedLines": [],
       "methodGuardMissing": false,
@@ -463,8 +463,8 @@
         "POST"
       ],
       "sourceLines": [
-        832,
-        836
+        834,
+        838
       ],
       "unguardedLines": [],
       "methodGuardMissing": false,
@@ -477,8 +477,8 @@
         "DELETE"
       ],
       "sourceLines": [
-        588,
-        600
+        590,
+        602
       ],
       "unguardedLines": [],
       "methodGuardMissing": false,
@@ -490,7 +490,7 @@
         "GET"
       ],
       "sourceLines": [
-        641
+        643
       ],
       "unguardedLines": [],
       "methodGuardMissing": false,
@@ -503,8 +503,8 @@
         "GET"
       ],
       "sourceLines": [
-        636,
-        637
+        638,
+        639
       ],
       "unguardedLines": [],
       "methodGuardMissing": false,
@@ -516,7 +516,7 @@
         "POST"
       ],
       "sourceLines": [
-        638
+        640
       ],
       "unguardedLines": [],
       "methodGuardMissing": false,
@@ -529,7 +529,7 @@
         "GET"
       ],
       "sourceLines": [
-        639
+        641
       ],
       "unguardedLines": [],
       "methodGuardMissing": false,
@@ -542,7 +542,7 @@
         "GET"
       ],
       "sourceLines": [
-        606
+        608
       ],
       "unguardedLines": [],
       "methodGuardMissing": false,
@@ -567,7 +567,7 @@
         "POST"
       ],
       "sourceLines": [
-        935
+        937
       ],
       "unguardedLines": [],
       "methodGuardMissing": false,
@@ -579,7 +579,7 @@
         "POST"
       ],
       "sourceLines": [
-        585
+        587
       ],
       "unguardedLines": [],
       "methodGuardMissing": false,
@@ -592,7 +592,7 @@
         "POST"
       ],
       "sourceLines": [
-        667
+        669
       ],
       "unguardedLines": [],
       "methodGuardMissing": false,
@@ -604,7 +604,7 @@
         "GET"
       ],
       "sourceLines": [
-        661
+        663
       ],
       "unguardedLines": [],
       "methodGuardMissing": false,
@@ -657,8 +657,8 @@
         "GET"
       ],
       "sourceLines": [
-        617,
-        618
+        619,
+        620
       ],
       "unguardedLines": [],
       "methodGuardMissing": false,
@@ -670,7 +670,7 @@
         "GET"
       ],
       "sourceLines": [
-        618
+        620
       ],
       "unguardedLines": [],
       "methodGuardMissing": false,
@@ -683,8 +683,8 @@
         "GET"
       ],
       "sourceLines": [
-        569,
-        570
+        571,
+        572
       ],
       "unguardedLines": [],
       "methodGuardMissing": false,
@@ -696,7 +696,7 @@
         "GET"
       ],
       "sourceLines": [
-        637
+        639
       ],
       "unguardedLines": [],
       "methodGuardMissing": false,
@@ -736,7 +736,7 @@
         "POST"
       ],
       "sourceLines": [
-        656
+        658
       ],
       "unguardedLines": [],
       "methodGuardMissing": false,
@@ -749,7 +749,7 @@
         "POST"
       ],
       "sourceLines": [
-        657
+        659
       ],
       "unguardedLines": [],
       "methodGuardMissing": false,
@@ -762,8 +762,8 @@
         "POST"
       ],
       "sourceLines": [
-        572,
-        573
+        574,
+        575
       ],
       "unguardedLines": [],
       "methodGuardMissing": false,
@@ -867,7 +867,7 @@
         "POST"
       ],
       "sourceLines": [
-        602
+        604
       ],
       "unguardedLines": [],
       "methodGuardMissing": false,
@@ -880,8 +880,8 @@
         "PUT"
       ],
       "sourceLines": [
-        683,
-        684
+        685,
+        686
       ],
       "unguardedLines": [],
       "methodGuardMissing": false,
@@ -906,7 +906,7 @@
         "GET"
       ],
       "sourceLines": [
-        633
+        635
       ],
       "unguardedLines": [],
       "methodGuardMissing": false,
@@ -919,8 +919,8 @@
         "GET"
       ],
       "sourceLines": [
-        578,
-        579
+        580,
+        581
       ],
       "unguardedLines": [],
       "methodGuardMissing": false,
@@ -933,8 +933,8 @@
         "POST"
       ],
       "sourceLines": [
-        567,
-        574
+        569,
+        576
       ],
       "unguardedLines": [],
       "methodGuardMissing": false,
@@ -946,7 +946,7 @@
         "GET"
       ],
       "sourceLines": [
-        660
+        662
       ],
       "unguardedLines": [],
       "methodGuardMissing": false,
@@ -959,7 +959,7 @@
         "GET"
       ],
       "sourceLines": [
-        658
+        660
       ],
       "unguardedLines": [],
       "methodGuardMissing": false,
@@ -972,8 +972,8 @@
         "GET"
       ],
       "sourceLines": [
-        603,
-        604
+        605,
+        606
       ],
       "unguardedLines": [],
       "methodGuardMissing": false,
@@ -1025,7 +1025,7 @@
         "GET"
       ],
       "sourceLines": [
-        659
+        661
       ],
       "unguardedLines": [],
       "methodGuardMissing": false,
@@ -1037,7 +1037,7 @@
         "GET"
       ],
       "sourceLines": [
-        628
+        630
       ],
       "unguardedLines": [],
       "methodGuardMissing": false,
@@ -1050,8 +1050,8 @@
         "POST"
       ],
       "sourceLines": [
-        645,
-        649
+        647,
+        651
       ],
       "unguardedLines": [],
       "methodGuardMissing": false,
@@ -1065,7 +1065,7 @@
         "PATCH"
       ],
       "sourceLines": [
-        940
+        942
       ],
       "methodGuardMissing": false,
       "authorization": "requires handler-level review"
@@ -1076,7 +1076,7 @@
         "PATCH"
       ],
       "sourceLines": [
-        927
+        929
       ],
       "methodGuardMissing": false,
       "authorization": "requires handler-level review"
@@ -1087,7 +1087,7 @@
         "GET"
       ],
       "sourceLines": [
-        878
+        880
       ],
       "methodGuardMissing": false,
       "authorization": "requires handler-level review"
@@ -1098,7 +1098,7 @@
         "PATCH"
       ],
       "sourceLines": [
-        886
+        888
       ],
       "methodGuardMissing": false,
       "authorization": "requires handler-level review"
@@ -1109,7 +1109,7 @@
         "PATCH"
       ],
       "sourceLines": [
-        877
+        879
       ],
       "methodGuardMissing": false,
       "authorization": "requires handler-level review"
@@ -1120,7 +1120,7 @@
         "PATCH"
       ],
       "sourceLines": [
-        929
+        931
       ],
       "methodGuardMissing": false,
       "authorization": "requires handler-level review"
@@ -1131,7 +1131,7 @@
         "PATCH"
       ],
       "sourceLines": [
-        717
+        719
       ],
       "methodGuardMissing": false,
       "authorization": "requires handler-level review"
@@ -1143,9 +1143,9 @@
         "PATCH"
       ],
       "sourceLines": [
-        738,
-        739,
-        743
+        740,
+        741,
+        745
       ],
       "methodGuardMissing": false,
       "authorization": "requires handler-level review"
@@ -1156,7 +1156,7 @@
         "POST"
       ],
       "sourceLines": [
-        751
+        753
       ],
       "methodGuardMissing": false,
       "authorization": "requires handler-level review"
@@ -1167,7 +1167,7 @@
         "GET"
       ],
       "sourceLines": [
-        791
+        793
       ],
       "methodGuardMissing": false,
       "authorization": "requires handler-level review"
@@ -1178,7 +1178,7 @@
         "POST"
       ],
       "sourceLines": [
-        762
+        764
       ],
       "methodGuardMissing": false,
       "authorization": "requires handler-level review"
@@ -1189,7 +1189,7 @@
         "POST"
       ],
       "sourceLines": [
-        883
+        885
       ],
       "methodGuardMissing": false,
       "authorization": "author(u) or admin; parses chapter ID from route segment, joins to parent owner, and calls canPublishChapter to require a published parent novel plus eligible rights evidence."
@@ -1200,7 +1200,7 @@
         "PATCH"
       ],
       "sourceLines": [
-        876
+        878
       ],
       "methodGuardMissing": false,
       "authorization": "author(u) or admin; joins chapter to parent novel and enforces owner_user_id=u.id; validates whole non-negative Crown cost and revalidates comic page-sequence content on edits."
@@ -1211,7 +1211,7 @@
         "POST"
       ],
       "sourceLines": [
-        846
+        848
       ],
       "methodGuardMissing": false,
       "authorization": "author(u) or admin; loads the novel and enforces owner_user_id=u.id; validates rights status and requires evidence for non-original works before moving the novel to review."
@@ -1222,7 +1222,7 @@
         "PATCH"
       ],
       "sourceLines": [
-        852
+        854
       ],
       "methodGuardMissing": false,
       "authorization": "author(u) or admin; loads target novel and enforces owner_user_id=u.id; rights/cover/source changes pause published work for renewed rights review."
@@ -1233,7 +1233,7 @@
         "GET"
       ],
       "sourceLines": [
-        563
+        565
       ],
       "methodGuardMissing": false,
       "authorization": "requires handler-level review"
@@ -1244,7 +1244,7 @@
         "POST"
       ],
       "sourceLines": [
-        564
+        566
       ],
       "methodGuardMissing": false,
       "authorization": "requires handler-level review"
@@ -1255,7 +1255,7 @@
         "POST"
       ],
       "sourceLines": [
-        565
+        567
       ],
       "methodGuardMissing": false,
       "authorization": "requires handler-level review"
@@ -1266,7 +1266,7 @@
         "GET"
       ],
       "sourceLines": [
-        562
+        564
       ],
       "methodGuardMissing": false,
       "authorization": "requires handler-level review"
@@ -1277,7 +1277,7 @@
         "GET"
       ],
       "sourceLines": [
-        687
+        689
       ],
       "methodGuardMissing": false,
       "authorization": "Public projection only for public, non-banned profiles; excludes email, tickets and private fields; aggregate stats require opt-in."
@@ -1288,7 +1288,7 @@
         "PATCH"
       ],
       "sourceLines": [
-        692
+        694
       ],
       "methodGuardMissing": false,
       "authorization": "requires handler-level review"
@@ -1299,7 +1299,7 @@
         "PATCH"
       ],
       "sourceLines": [
-        938
+        940
       ],
       "methodGuardMissing": false,
       "authorization": "requires handler-level review"
@@ -1313,6 +1313,6 @@
     "This matrix does not inspect DTO exposure, cache headers, CSRF, rate limits, body size, or database transaction semantics.",
     "Community comment and report hourly quotas are enforced by SQLite BEFORE INSERT triggers; duplicate reports are fenced by a unique claim. Static route inventory does not itself certify trigger execution."
   ],
-  "sourceCommit": "f0f965a9a646bbc897078c07a1432689cfd2439a",
-  "refreshNote": "Refreshed to the exact Worker blob after adding the idempotent chapter/time unlock lookup index for period-correct leaderboard queries; no route signatures changed. Public author directory handler rechecked: GET-only, bounded and escaped name search, rights-eligible aggregate-only output; no session identity is exposed. Public author aggregate is bounded and LIKE-wildcard escaped; only valid 1–10 ratings contribute and aggregate ratings use integer scale. Worker source fingerprint and dispatcher line references refreshed after bounded-response hardening; GET /api/public-authors remains the sole new public aggregate route in this feature."
+  "sourceCommit": "f731ee8e84ffde192a8ef9e38ce0ae15f17de5de",
+  "refreshNote": "Refreshed to the exact Worker blob after adding the idempotent chapter/time unlock lookup index for period-correct leaderboard queries; no route signatures changed. Public author directory handler rechecked: GET-only, bounded and escaped name search, rights-eligible aggregate-only output; no session identity is exposed. Public author aggregate is bounded and LIKE-wildcard escaped; only valid 1–10 ratings contribute and aggregate ratings use integer scale. Worker source fingerprint and dispatcher line references refreshed after bounded-response hardening; GET /api/public-authors remains the sole new public aggregate route in this feature. Refreshed after adding an explicit pre-SQL 80-character validation boundary to GET /api/public-authors: overlong queries now return HTTP 400 before query preparation; normal literal wildcard escaping, aggregate projection and route signatures remain unchanged. Source line evidence shifted to the exact Worker snapshot."
 }
