@@ -18,7 +18,7 @@
   --in-text-muted:#5F6D75;
   --in-text-inverse:#FFFFFF;
   --in-border-default:#D9E0E5;
-  --in-border-strong:#9AA8B1;
+  --in-border-strong:#7A8790;
   --in-action-primary:#6A0DAD;
   --in-action-primary-hover:#560B8C;
   --in-action-primary-active:#43086D;
@@ -70,7 +70,7 @@
   color-scheme:light;
   --in-bg-canvas:#F4EBDD; --in-bg-subtle:#EDE1D0; --in-bg-surface:#FBF4E8; --in-bg-elevated:#FFF9EF; --in-bg-inverse:#30271D;
   --in-text-primary:#30271D; --in-text-secondary:#594A39; --in-text-muted:#6D5A45; --in-text-inverse:#FBF4E8;
-  --in-border-default:#D8C7AE; --in-border-strong:#A58A68;
+  --in-border-default:#D8C7AE; --in-border-strong:#806B50;
   --in-action-primary:#67418A; --in-action-primary-hover:#53346F; --in-action-primary-active:#422957; --in-action-primary-text:#FFFFFF;
   --in-action-secondary:#285A83; --in-action-secondary-hover:#1E4668; --in-action-secondary-text:#FFFFFF; --in-focus-ring:#285A83; --in-link:#245B8C;
   --in-status-success:#246444; --in-status-success-bg:#E5F3E9; --in-status-warning:#704600; --in-status-warning-bg:#FFF1D2;
