@@ -4,7 +4,8 @@
   "technicalIntegrator": "platform-integrator",
   "ownedPaths": [
     "src/features/publishing-studio/index.mjs",
-    "scripts/test-scheduled-publication-atomicity.mjs"
+    "scripts/test-scheduled-publication-atomicity.mjs",
+    "scripts/test-creator-publishing-domain-boundaries.mjs"
   ],
   "sharedSurfaces": [
     "src/index.js",
@@ -24,7 +25,7 @@
   ],
   "routes": [],
   "apiContracts": [
-    "No additional HTTP route is introduced by the scheduler processor; existing chapter schedule and cancellation routes remain in Publishing Studio.",
+    "The release calendar GET route is Publishing-owned and lives beside chapter scheduling, publication and revision lifecycle handlers. The isolated scheduler processor adds no additional HTTP route.",
     "Runtime invocation from the canonical Worker scheduled() handler is pending and must preserve the existing runAutomation() call.",
     "The due-row projection includes the parent novel ID. A chapter is considered published only when the conditional draft-to-published update changes exactly one row.",
     "Schedule cleanup, parent novel timestamp update and audit insertion are sequentially gated by changes()=1 in the same ordered D1 batch. Notification and the success counter depend on the chapter update result."
@@ -56,7 +57,8 @@
   },
   "tests": {
     "unit": [
-      "test-scheduled-publication-atomicity.mjs checks parent ID projection, ordered write gates, race-loser behavior, notification behavior and rights denial using a deterministic D1 adapter stub."
+      "test-scheduled-publication-atomicity.mjs checks parent ID projection, ordered write gates, race-loser behavior, notification behavior and rights denial using a deterministic D1 adapter stub.",
+      "test-creator-publishing-domain-boundaries.mjs checks Creator/Publishing route ownership, Worker composition, preserved scheduled automation, stale schedule cleanup, parent ID projection and sequential publication gates."
     ],
     "integration": [
       "Local D1 tests for successful publication, stale schedules, rights changes and overlapping scheduled invocations remain required before Worker wiring."
@@ -100,7 +102,7 @@
     "platform-quality",
     "platform-architecture"
   ],
-  "changeSummary": "Documents and regression-tests the existing Publishing-owned scheduled chapter processor, including the parent novel ID projection and sequential D1 changes() gates. The processor is already composed by the canonical Worker; exact-head local D1 and CI validation remain pending.",
+  "changeSummary": "Documents and regression-tests the Publishing-owned chapter lifecycle and scheduled execution boundary. The release calendar is colocated with chapter scheduling in Publishing Studio. The processor includes the parent novel ID projection, stale schedule cleanup and sequential D1 changes() gates. The canonical Worker composes the processor while preserving scheduled automation; exact-head local D1 and CI validation remain pending.",
   "acceptanceCriteria": [
     "The due query selects n.id AS novel_id.",
     "The chapter update is conditional on draft state and current novel owner, publication status and rights eligibility.",
