@@ -3,8 +3,7 @@
   "domainOwner": "creator",
   "technicalIntegrator": "platform-integrator",
   "ownedPaths": [
-    "src/features/creator-studio/index.mjs",
-    "scripts/test-creator-publishing-domain-boundaries.mjs"
+    "src/features/creator-studio/index.mjs"
   ],
   "sharedSurfaces": [
     "src/index.js",
