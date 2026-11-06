@@ -183,7 +183,7 @@ for (const token of ['if(kind===\'leaderboard\')','if(kind===\'tier-list\')','if
  assert.ok(app.includes(token), "Expected existing reader utility route renderer: "+token);
 }
 assert.ok(app.includes('class="rankBadge"') && app.includes('class="tierPanel"') && app.includes('class="randomCard"'), "Ranking, tier and random discovery must retain their actual route components");
-assert.ok(app.includes('class="voteRow"') && app.includes('id="req"') && app.includes('id="omni"'), "Voting, request and OmniPortal controls must retain their actual route components");
+assert.ok(app.includes("voteRow") && app.includes('id="req"') && app.includes('id="omni"'), "Voting, request and OmniPortal controls must retain their actual route components");
 assert.ok(components.includes("html[data-theme] #app .rankBadge") && components.includes("html[data-theme] #app .tierPanel") && components.includes("html[data-theme] #app .randomCard"), "Ranking, tier and random discovery must consume semantic theme roles");
 assert.ok(components.includes("html[data-theme] #app .voteRow") && components.includes("html[data-theme] #app #req input") && components.includes("html[data-theme] #app #omni input"), "Voting, request and OmniPortal controls must consume semantic theme roles");
 assert.ok(components.includes("html[data-theme] #app .period:focus-visible") && components.includes("html[data-theme] #app .randomCard{grid-template-columns:minmax(0,1fr)}"), "Utility routes must retain keyboard focus and small-screen layouts");
