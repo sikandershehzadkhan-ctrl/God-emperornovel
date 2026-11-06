@@ -175,3 +175,12 @@ Required checks before marking this slice complete:
 **Intentionally unchanged:** role gating, private drafts, rights evidence, author APIs, publication review, chapter submission, ticket fields and comic sequence limits.
 
 **Still required:** browser QA for unauthenticated/non-author/author/admin states, empty/populated/error work lists, story editing, chapter/comic creation, six themes, RTL, keyboard/screen reader and mobile widths. Source checks are not visual sign-off.
+
+
+## 14. Community discovery source adoption
+
+**Implemented in source:** quick destination cards, public discussion feed, trending-story cards and discovery banner use semantic six-theme roles. Focus visibility, touch targets, tablet/mobile grid behavior and reduced motion are covered.
+
+**Intentionally unchanged:** discussion API, public/rights-cleared story visibility, story links and all moderation or social permissions. This route has no composer, so no new posting capability is implied.
+
+**Still required:** populated/empty/error discussion states, empty catalog, six-theme visual QA, RTL, keyboard/screen-reader review, reduced-motion checks and 360px/390px mobile layouts.
