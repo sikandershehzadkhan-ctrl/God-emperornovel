@@ -102,6 +102,14 @@ Each family must pass:
 - server-side authorization unchanged;
 - screenshots and visual regression review before enabling the family.
 
+## 5A. RTL source audit boundary
+
+The shared component-primitives stylesheet uses logical layout properties and includes an RTL-specific switch-thumb mirror. The interface locale controller sets document direction for Urdu, Arabic and Persian.
+
+The audit also found legacy physical-direction declarations in the versioned application stylesheets, including the main site stylesheet and format styles, with no stylesheet-wide RTL selector coverage in those legacy files. Therefore, the logical-property contract applies to the new shared primitives only. It does not prove that every legacy page, drawer, icon, alignment, or overlay is correctly mirrored. Full RTL sign-off remains blocked on route-level Urdu, Arabic and Persian browser checks at mobile and desktop widths.
+
+Regression coverage now prevents new physical left/right positioning and left/right margin, padding, inset or border longhands from entering the shared component-primitives stylesheet. It intentionally does not rewrite the legacy stylesheets in bulk, because those declarations may encode intentional LTR layouts or require component-specific RTL treatment.
+
 ## 6. Current migration status
 
 - Shared token/primitive assets are registered for all Worker-served HTML templates.
