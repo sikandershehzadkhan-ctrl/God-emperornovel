@@ -138,3 +138,9 @@ assert.ok(components.includes("html[data-theme] .page .authorStudioLayout") && c
 assert.ok(components.includes("html[data-theme] .page .authorWork") && components.includes("html[data-theme] .page .authorChapterForm"), "author work cards and chapter composer must be theme-aware");
 assert.ok(components.includes("html[data-theme] .page .comicAuthorBuilder") && components.includes("html[data-theme] .page .authorStudioLayout input:focus-visible"), "comic composer and keyboard focus must be styled");
 assert.ok(components.includes("html[data-theme] .page .authorWorkActions > *") && components.includes("min-height:var(--in-touch-target)"), "author actions must preserve touch targets");
+
+assert.ok(app.includes("communityDiscussions") && app.includes("communityGrid") && app.includes("quickGrid"), "Community renderer must retain its real discovery and discussion regions");
+assert.ok(components.includes("html[data-theme] .quickCard") && components.includes("html[data-theme] #communityDiscussions"), "Community discovery links and discussion feed must consume semantic theme roles");
+assert.ok(components.includes("html[data-theme] #communityGrid .card") && components.includes("html[data-theme] .unlockBanner"), "Community story cards and discovery banner must be theme-aware");
+assert.ok(components.includes("html[data-theme] #communityDiscussions a:focus-visible") && components.includes("min-height:var(--in-touch-target)"), "Community navigation must preserve visible focus and touch targets");
+assert.ok(components.includes("@media(max-width:760px)") && components.includes("html[data-theme] .quickGrid{grid-template-columns:repeat(2"), "Community quick links must adapt to mobile widths");
