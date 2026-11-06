@@ -190,9 +190,9 @@ try{
   assert.equal(underscoreSearch.data.length,1,"underscore must be treated literally, not as a SQL wildcard");
   assert.equal(underscoreSearch.data[0].author,"Wildcard _ Author");
   assert.equal(underscoreSearch.data[0].rating,null,"out-of-range ratings must not become public averages");
-  const backslashSearch=await request(origin,"/api/public-authors?q="+encodeURIComponent("\\\\"));
+  const backslashSearch=await request(origin,"/api/public-authors?q="+encodeURIComponent("\\"));
   assert.equal(backslashSearch.data.length,1,"backslash must be treated literally in LIKE search");
-  assert.equal(backslashSearch.data[0].author,"Wildcard \\\\ Author");
+  assert.equal(backslashSearch.data[0].author,"Wildcard \\ Author");
   const excludedDraft=await request(origin,"/api/public-authors?q="+encodeURIComponent("Excluded Draft"));
   assert.equal(excludedDraft.data.length,0,"unpublished novels must not contribute authors");
   const excludedRights=await request(origin,"/api/public-authors?q="+encodeURIComponent("Excluded Rights"));
