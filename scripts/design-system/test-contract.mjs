@@ -60,6 +60,10 @@ for (const theme of themes) {
   }
   const canvas = readHex(match[1], "--in-bg-canvas", theme);
   const primaryText = readHex(match[1], "--in-text-primary", theme);
+  const secondaryText = readHex(match[1], "--in-text-secondary", theme);
+  const mutedText = readHex(match[1], "--in-text-muted", theme);
+  const readerInk = readHex(match[1], "--in-reader-ink", theme);
+  const readerPaper = readHex(match[1], "--in-reader-paper", theme);
   const primary = readHex(match[1], "--in-action-primary", theme);
   const primaryActionText = readHex(match[1], "--in-action-primary-text", theme);
   const secondary = readHex(match[1], "--in-action-secondary", theme);
@@ -67,6 +71,10 @@ for (const theme of themes) {
   const link = readHex(match[1], "--in-link", theme);
   const focus = readHex(match[1], "--in-focus-ring", theme);
   assert.ok(contrastRatio(primaryText, canvas) >= 4.5, theme + " body text fails WCAG AA contrast");
+  assert.ok(contrastRatio(secondaryText, canvas) >= 4.5, theme + " secondary text fails WCAG AA contrast");
+  assert.ok(contrastRatio(mutedText, canvas) >= 4.5, theme + " muted text fails WCAG AA contrast");
+  assert.ok(contrastRatio(primaryText, readHex(match[1], "--in-bg-surface", theme)) >= 4.5, theme + " primary text fails on surface backgrounds");
+  assert.ok(contrastRatio(readerInk, readerPaper) >= 4.5, theme + " reader ink/paper pair fails WCAG AA contrast");
   assert.ok(contrastRatio(primaryActionText, primary) >= 4.5, theme + " primary action text fails WCAG AA contrast");
   assert.ok(contrastRatio(secondaryActionText, secondary) >= 4.5, theme + " secondary action text fails WCAG AA contrast");
   assert.ok(contrastRatio(link, canvas) >= 4.5, theme + " link color fails WCAG AA contrast");
@@ -148,7 +156,7 @@ assert.ok(components.includes("html[data-theme] .genreCard") && components.inclu
 assert.ok(components.includes("html[data-theme] .formatLink") && components.includes("html[data-theme] #sf input"), "format directory and search controls must consume semantic theme roles");
 assert.ok(components.includes("prefers-reduced-motion:reduce") && components.includes("html[data-theme] .catalogGrid a:focus-visible"), "discovery interactions must preserve reduced motion and visible focus");
 assert.ok(packageJson.scripts.build.startsWith("node scripts/design-system/test-contract.mjs && "), "design-system contract must run before the platform build");
-console.log("Imperial Novel design-system contract passed: six complete themes, semantic roles, contrast, component primitives, 44px targets, focus, reduced motion, forced colors, WCAG, RTL and runtime asset registration.");
+
 
 assert.ok(components.includes("html[data-theme] .novelHero") && components.includes("html[data-theme] .novelInfo h1"), "novel detail surfaces must consume semantic theme roles");
 assert.ok(components.includes("html[data-theme] .chapter:hover") && components.includes("html[data-theme] .tabs a.active"), "chapter navigation and novel tabs must consume semantic theme roles");
@@ -224,3 +232,5 @@ for (const [name, page] of [["privacy", privacyHtml], ["terms", termsHtml], ["co
 assert.ok(components.includes("html[data-theme] body.legalPage .legalHero") && components.includes("html[data-theme] body.legalPage .legalSection"), "Standalone legal documents must consume semantic theme surfaces");
 assert.ok(components.includes("html[data-theme] body.legalPage a:focus-visible") && components.includes("body.legalPage .legalSection{padding:16px}"), "Legal documents must preserve visible keyboard focus and mobile reading layout");
 assert.ok(worker.includes('"\/privacy":"privacy.html"') && worker.includes('"\/terms":"terms.html"') && worker.includes('"\/copyright":"copyright.html"'), "Worker must continue routing the three legal documents");
+
+console.log("Imperial Novel design-system contract passed: six themes, body/secondary/muted and reader contrast, action/status pairs, semantic tokens, component primitives, 44px targets, focus, reduced motion, forced colors, RTL, route adoption and runtime asset registration.");
