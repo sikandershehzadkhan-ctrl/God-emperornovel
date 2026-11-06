@@ -218,3 +218,12 @@ The novel overview, metadata/stat surfaces, overview tabs, chapter rows and chap
 The chapter article itself retains its independent reader-theme preference (Light, Dark, Midnight, Sepia, Imperial and Cosmic). This slice deliberately does not unify the global application theme with saved reader preferences or change reading-progress, bookmark, chapter-unlock, comic-viewer or navigation behavior. That compatibility work remains a separate migration and must preserve existing saved preferences.
 
 Source-level adoption is covered by the design-system contract. Visual review across all six global themes, reader themes, mobile widths, RTL, long titles, locked chapters, empty/error states and text/comic chapters remains required before this page family can be marked complete.
+
+
+## 14. Account and personal library adoption
+
+Account navigation, profile panels and metrics, personal-library story cards, reading-history/bookmark rows, notices and account tabs now consume semantic theme roles. Account links and buttons have visible keyboard focus; navigation and row actions use the shared touch-target token. At mobile widths the account navigation becomes a horizontal scroll shelf and profile metrics reflow to two columns.
+
+This is a visual/source adoption slice only. Authentication, profile APIs, library membership, history, bookmarks, following, ticket ledger and user data isolation are unchanged. No user data or server behavior is altered by these styles.
+
+Visual QA remains required across all six themes, signed-in/signed-out states, empty/populated/error states, 360px/390px/mobile/tablet/desktop, long usernames and story titles, RTL, keyboard traversal and screen-reader naming. The Following route currently shares the library renderer; this CSS does not alter or claim to repair its underlying content behavior.
