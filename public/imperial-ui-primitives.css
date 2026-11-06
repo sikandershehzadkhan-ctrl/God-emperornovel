@@ -474,3 +474,39 @@ html[data-theme] .settingsGridPro .settingsNotice{
   html[data-theme] .settingsGridPro *,
   html[data-theme] .page .chapterList .chapter{transition:none}
 }
+
+
+/* Author Studio: private draft creation, work list and chapter composer. */
+html[data-theme] .page .authorStudioIntro,html[data-theme] .page .authorCreateForm,html[data-theme] .page .authorWorksPanel,html[data-theme] .page .authorWork{
+  min-width:0;background:var(--in-bg-surface);border:1px solid var(--in-border-default);border-radius:var(--in-radius-lg);color:var(--in-text-primary);box-shadow:var(--in-shadow-sm);
+}
+html[data-theme] .page .authorStudioLayout{display:grid;grid-template-columns:minmax(0,1fr);gap:16px}
+html[data-theme] .page .authorStudioIntro{padding:clamp(18px,3vw,28px);background:linear-gradient(135deg,color-mix(in srgb,var(--in-action-primary) 8%,var(--in-bg-surface)),var(--in-bg-surface) 68%)}
+html[data-theme] .page .authorStudioIntro h2,html[data-theme] .page .authorCreateForm h2,html[data-theme] .page .authorWorksPanel h2,html[data-theme] .page .authorWork h3{color:var(--in-text-primary);letter-spacing:-.035em}
+html[data-theme] .page .authorStudioIntro p,html[data-theme] .page .authorWorksPanel .muted,html[data-theme] .page .authorWork .muted,html[data-theme] .page .authorEditForm .muted,html[data-theme] .page .authorChapterForm .muted{color:var(--in-text-secondary)}
+html[data-theme] .page .authorCreateForm,html[data-theme] .page .authorWorksPanel{padding:clamp(16px,2.5vw,24px)}
+html[data-theme] .page .authorCreateForm .fieldLabel,html[data-theme] .page .authorEditForm .fieldLabel,html[data-theme] .page .authorChapterForm .fieldLabel,html[data-theme] .page .comicPageComposerGrid label{display:block;margin:14px 0 7px;color:var(--in-text-secondary);font-size:12px;font-weight:700}
+html[data-theme] .page .authorCreateForm input,html[data-theme] .page .authorCreateForm select,html[data-theme] .page .authorCreateForm textarea,html[data-theme] .page .authorEditForm input,html[data-theme] .page .authorEditForm select,html[data-theme] .page .authorEditForm textarea,html[data-theme] .page .authorChapterForm input,html[data-theme] .page .authorChapterForm textarea,html[data-theme] .page .comicPageComposerGrid input{box-sizing:border-box;width:100%;min-width:0;min-height:var(--in-touch-target);padding:11px 12px;border:1px solid var(--in-border-default);border-radius:11px;background:var(--in-bg-elevated);color:var(--in-text-primary);font:inherit}
+html[data-theme] .page .authorCreateForm textarea,html[data-theme] .page .authorEditForm textarea,html[data-theme] .page .authorChapterForm textarea{min-height:112px;resize:vertical}
+html[data-theme] .page .authorFormGrid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;margin-top:10px}
+html[data-theme] .page .authorWorksPanel .sectionHead,html[data-theme] .page .authorWorkTop,html[data-theme] .page .comicAuthorBuilderHead{display:flex;align-items:flex-start;justify-content:space-between;gap:14px}
+html[data-theme] .page .authorWorksList{display:grid;gap:12px;margin-top:16px}
+html[data-theme] .page .authorWork{padding:16px}
+html[data-theme] .page .authorWorkTop h3{margin:5px 0;font-size:18px}
+html[data-theme] .page .authorStatus{flex:none;padding:6px 10px;border:1px solid var(--in-border-default);border-radius:999px;background:var(--in-bg-elevated);color:var(--in-text-secondary);font-size:11px;font-weight:750}
+html[data-theme] .page .authorStatus.status-published{color:var(--in-status-success);border-color:var(--in-status-success);background:var(--in-status-success-bg)}
+html[data-theme] .page .authorStatus.status-review{color:var(--in-status-info);border-color:var(--in-status-info);background:var(--in-status-info-bg)}
+html[data-theme] .page .authorStatus.status-rejected{color:var(--in-status-danger);border-color:var(--in-status-danger);background:var(--in-status-danger-bg)}
+html[data-theme] .page .authorWorkActions{display:flex;flex-wrap:wrap;align-items:center;gap:9px;margin-top:14px}
+html[data-theme] .page .authorWorkActions > *{min-height:var(--in-touch-target)}
+html[data-theme] .page .authorWorkActions .primary,html[data-theme] .page .authorCreateForm > button.primary{background:var(--in-action-primary);border-color:var(--in-action-primary);color:var(--in-action-primary-text)}
+html[data-theme] .page .authorWorkActions .secondary,html[data-theme] .page #refreshAuthorWorks{background:var(--in-bg-elevated);border-color:var(--in-border-default);color:var(--in-text-primary)}
+html[data-theme] .page .authorEditForm,html[data-theme] .page .authorChapterForm{margin-top:14px;padding:16px;border:1px solid var(--in-border-default);border-radius:14px;background:var(--in-bg-subtle)}
+html[data-theme] .page .comicAuthorBuilder{margin:14px 0;padding:14px;border:1px solid var(--in-border-default);border-radius:14px;background:var(--in-bg-surface)}
+html[data-theme] .page .comicAuthorBuilderHead p,html[data-theme] .page [data-page-status]{color:var(--in-text-secondary);font-size:12px;line-height:1.6}
+html[data-theme] .page .comicPageComposerGrid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;align-items:end}
+html[data-theme] .page .authorStudioLayout button:focus-visible,html[data-theme] .page .authorStudioLayout a:focus-visible,html[data-theme] .page .authorStudioLayout input:focus-visible,html[data-theme] .page .authorStudioLayout select:focus-visible,html[data-theme] .page .authorStudioLayout textarea:focus-visible{outline:3px solid var(--in-focus-ring);outline-offset:3px}
+html[data-theme] .page .authorStudioLayout button:disabled{opacity:.55;cursor:not-allowed}
+@media(min-width:900px){html[data-theme] .page .authorStudioLayout{grid-template-columns:minmax(0,.9fr) minmax(0,1.1fr);align-items:start}html[data-theme] .page .authorStudioIntro{grid-column:1/-1}html[data-theme] .page .authorWorksPanel{grid-column:1/-1}}
+@media(max-width:620px){html[data-theme] .page .authorFormGrid,html[data-theme] .page .comicPageComposerGrid{grid-template-columns:minmax(0,1fr)}html[data-theme] .page .authorWorkTop,html[data-theme] .page .authorWorksPanel .sectionHead{flex-wrap:wrap}html[data-theme] .page .authorWorkActions > *{flex:1 1 100%;justify-content:center;text-align:center}html[data-theme] .page .authorEditForm,html[data-theme] .page .authorChapterForm{padding:12px}}
+@media(prefers-reduced-motion:reduce){html[data-theme] .page .authorStudioLayout *,html[data-theme] .page .authorWork{transition:none}}
