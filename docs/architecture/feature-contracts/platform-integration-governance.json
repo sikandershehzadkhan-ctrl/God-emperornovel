@@ -34,7 +34,11 @@
     "docs/architecture/feature-contracts/community-discovery-localization.json",
     "scripts/test-community-localization.mjs",
     "scripts/test-rankings-localization.mjs",
-    "docs/architecture/decisions/ADR-0028-community-localization-bundle-integration.md"
+    "docs/architecture/decisions/ADR-0028-community-localization-bundle-integration.md",
+    "docs/architecture/decisions/ADR-0031-author-publishing-domain-separation.md",
+    "docs/architecture/feature-contracts/publishing-scheduled-chapter-execution.json",
+    "src/domains/publishing/scheduled-chapter-publication.mjs",
+    "scripts/test-scheduled-publication-atomicity.mjs"
   ],
   "dependencies": [
     "identity-security",
