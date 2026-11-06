@@ -2,7 +2,7 @@
 
 **Product:** Imperial Novel  
 **Motto:** Read • Create • Conquer  
-**Status:** Canonical design-system specification and additive implementation assets. Runtime-wide adoption is a separate gated rollout, not implied by these files.
+**Status:** Canonical specification, complete six-theme semantic token contract, opt-in component primitives, and application-shell asset registration. Existing page components have not yet been migrated to the new primitives.
 
 ## 1. Product design principles
 
@@ -140,7 +140,7 @@ Use the same component contracts with role-specific information architecture. Au
 - Respect `prefers-reduced-motion`, `prefers-contrast` where supported, forced colors and safe areas.
 - Prefer CSS-only primitives and native controls over a new component framework.
 - Keep component CSS namespaced and additive during migration.
-- Do not load the new stylesheet on production routes until template coverage, cascade compatibility and visual regression checks pass.
+- The token and primitive stylesheets are registered after the existing application stylesheets. Tokens are additive; primitives are opt-in through `in-` classes. Do not bulk-replace legacy selectors or migrate page templates until route coverage, cascade compatibility and visual regression checks pass.
 
 ## 10. Governance and versioning
 
@@ -166,4 +166,4 @@ The design system is not considered production-adopted until all are true:
 8. No duplicate global tokens, regressions or unowned shared files remain.
 9. Release is deployed and live assets are verified.
 
-**Honest status:** this PR adds the canonical specification and namespaced foundation assets. It does not claim that every legacy page has already migrated or that visual/browser QA has passed.
+**Honest status:** the six theme palettes now define the full semantic color contract, the primitive layer includes accessible controls and feedback patterns, and both stylesheets are registered in the application shell. Existing page templates still primarily use legacy selectors. This PR does not claim full page migration, six-theme global preference UI, or completed visual/browser QA.
