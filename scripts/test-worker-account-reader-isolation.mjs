@@ -277,6 +277,100 @@ try{
   const fractionalTicketCost=await request(origin,"/api/author/chapters",{method:"POST",cookie:accountA.cookie,origin,body:{novel_id:authorNovelId,chapter_number:2,title:"Invalid cost chapter",content:"Text",ticket_cost:1.5}});
   assert.equal(fractionalTicketCost.status,400,"chapter ticket cost must be a whole number");
 
+
+  // Author Studio planning, private notes, revision history and scheduled publishing stay owner-scoped.
+  const ownerBNovel=await request(origin,"/api/author/novels",{method:"POST",cookie:accountB.cookie,origin,body:{title:"Owner B Private Work",author:accountB.username,kind:"original",rights_status:"original",description:"Second author isolation fixture."}});
+  assert.equal(ownerBNovel.status,201,"second author should create a private work");
+  const ownerBNovelId=ownerBNovel.data.id;
+
+  const goalSave=await request(origin,"/api/author/goals",{method:"PUT",cookie:accountA.cookie,origin,body:{novel_id:authorNovelId,target_chapters:12,target_words:48000,target_date:"2026-12-31"}});
+  assert.equal(goalSave.status,200,"owner should save writing goals");
+  const goalsA=await request(origin,"/api/author/goals",{cookie:accountA.cookie});
+  const goalsB=await request(origin,"/api/author/goals",{cookie:accountB.cookie});
+  assert.equal(goalsA.data.goals.some(g=>g.novel_id===authorNovelId),true,"owner should see the saved writing goal");
+  assert.equal(goalsB.data.goals.some(g=>g.novel_id===authorNovelId),false,"another author must not see private writing goals");
+  const foreignGoal=await request(origin,"/api/author/goals",{method:"PUT",cookie:accountB.cookie,origin,body:{novel_id:authorNovelId,target_chapters:99,target_words:99000,target_date:"2026-12-31"}});
+  assert.equal(foreignGoal.status,404,"another author must not create or overwrite a goal for a foreign novel");
+  const invalidGoal=await request(origin,"/api/author/goals",{method:"PUT",cookie:accountA.cookie,origin,body:{novel_id:authorNovelId,target_chapters:1.5,target_words:1000,target_date:"2026-12-31"}});
+  assert.equal(invalidGoal.status,400,"writing goals must reject fractional chapter targets");
+
+  const noteCreate=await request(origin,"/api/author/notes",{method:"POST",cookie:accountA.cookie,origin,body:{novel_id:authorNovelId,chapter_id:authorChapterId,note:"Private editorial note for owner A."}});
+  assert.equal(noteCreate.status,201,"owner should create a private editorial note");
+  const noteId=noteCreate.data.id;
+  const notesA=await request(origin,"/api/author/notes",{cookie:accountA.cookie});
+  const notesB=await request(origin,"/api/author/notes",{cookie:accountB.cookie});
+  assert.equal(notesA.data.notes.some(n=>n.id===noteId),true,"owner should see the private note");
+  assert.equal(notesB.data.notes.some(n=>n.id===noteId),false,"another author must never see the private note");
+  const foreignNoteCreate=await request(origin,"/api/author/notes",{method:"POST",cookie:accountB.cookie,origin,body:{novel_id:authorNovelId,chapter_id:authorChapterId,note:"Attempted foreign note."}});
+  assert.equal(foreignNoteCreate.status,404,"another author must not attach a note to a foreign novel");
+  const foreignNoteEdit=await request(origin,"/api/author/notes/"+noteId,{method:"PATCH",cookie:accountB.cookie,origin,body:{note:"Attempted edit"}});
+  assert.equal(foreignNoteEdit.status,404,"another author must not edit a foreign private note");
+  const ownerNoteEdit=await request(origin,"/api/author/notes/"+noteId,{method:"PATCH",cookie:accountA.cookie,origin,body:{note:"Updated private editorial note."}});
+  assert.equal(ownerNoteEdit.status,200,"owner should update a private note");
+  const foreignNoteDelete=await request(origin,"/api/author/notes/"+noteId,{method:"DELETE",cookie:accountB.cookie,origin});
+  assert.equal(foreignNoteDelete.status,404,"another author must not delete a foreign private note");
+  const ownerNoteDelete=await request(origin,"/api/author/notes/"+noteId,{method:"DELETE",cookie:accountA.cookie,origin});
+  assert.equal(ownerNoteDelete.status,200,"owner should delete a private note");
+
+  const readinessA=await request(origin,"/api/author/readiness",{cookie:accountA.cookie});
+  const readinessB=await request(origin,"/api/author/readiness",{cookie:accountB.cookie});
+  assert.equal(readinessA.data.items.some(x=>x.novel_id===authorNovelId),true,"readiness should include the owner's work");
+  assert.equal(readinessB.data.items.some(x=>x.novel_id===authorNovelId),false,"readiness must not include another author's work");
+  const planningA=await request(origin,"/api/author/planning",{cookie:accountA.cookie});
+  const planningB=await request(origin,"/api/author/planning",{cookie:accountB.cookie});
+  assert.equal(planningA.data.items.some(x=>x.novel_id===comicNovel.data.id),true,"planning should include the owner's draft comic work");
+  assert.equal(planningB.data.items.some(x=>x.novel_id===comicNovel.data.id),false,"planning must not include another author's work");
+  const analyticsA=await request(origin,"/api/author/analytics",{cookie:accountA.cookie});
+  const analyticsB=await request(origin,"/api/author/analytics",{cookie:accountB.cookie});
+  assert.equal(analyticsA.data.novels.some(n=>n.id===authorNovelId),true,"analytics should include the owner's work");
+  assert.equal(analyticsB.data.novels.some(n=>n.id===authorNovelId),false,"analytics must not expose another author's work");
+
+  const readerComment=await request(origin,"/api/comments",{method:"POST",cookie:accountB.cookie,origin,body:{novel_id:authorNovelId,body:"Visible feedback from the second author account."}});
+  assert.equal(readerComment.status,200,"reader should be able to comment on a published rights-eligible novel");
+  const readerRating=await request(origin,"/api/rating",{method:"POST",cookie:accountB.cookie,origin,body:{novel_id:authorNovelId,rating:8}});
+  assert.equal(readerRating.status,200,"reader should be able to rate a published rights-eligible novel");
+  const feedbackA=await request(origin,"/api/author/feedback",{cookie:accountA.cookie});
+  const feedbackB=await request(origin,"/api/author/feedback",{cookie:accountB.cookie});
+  assert.equal(feedbackA.data.items.some(x=>x.kind==="comment"&&x.body==="Visible feedback from the second author account."),true,"owner should see visible reader comments on owned works");
+  assert.equal(feedbackA.data.items.some(x=>x.kind==="rating"&&x.username==="Reader"),true,"rating feedback should be pseudonymous");
+  assert.equal(feedbackA.data.items.some(x=>x.kind==="rating"&&x.username===accountB.username),false,"author feedback must not disclose the rating user's identity");
+  assert.equal(feedbackB.data.items.some(x=>x.novel_id===authorNovelId),false,"another author must not see feedback for a foreign work");
+
+  const revisionEdit=await request(origin,"/api/author/chapters/"+authorChapterId,{method:"PATCH",cookie:accountA.cookie,origin,body:{title:"Revised chapter",content:"Revised chapter text for revision history."}});
+  assert.equal(revisionEdit.status,200,"owner should edit a chapter and create a prior-version snapshot");
+  const revisionsA=await request(origin,"/api/author/chapters/"+authorChapterId+"/revisions",{cookie:accountA.cookie});
+  const revisionsB=await request(origin,"/api/author/chapters/"+authorChapterId+"/revisions",{cookie:accountB.cookie});
+  assert.equal(revisionsA.status,200,"owner should view chapter revision history");
+  assert.equal(revisionsA.data.some(r=>r.title==="Draft chapter"&&r.content==="Original chapter text for local integration."),true,"revision history should preserve the prior chapter version");
+  assert.equal(revisionsB.status,403,"another author must not view a foreign chapter's revision history");
+
+  const scheduledChapter=await request(origin,"/api/author/chapters",{method:"POST",cookie:accountA.cookie,origin,body:{novel_id:authorNovelId,chapter_number:2,title:"Scheduled chapter",content:"This chapter is scheduled for later publication."}});
+  assert.equal(scheduledChapter.status,201,"owner should create a draft chapter for scheduling");
+  const scheduledChapterId=scheduledChapter.data.id;
+  const foreignSchedule=await request(origin,"/api/author/chapters/"+scheduledChapterId+"/schedule",{method:"POST",cookie:accountB.cookie,origin,body:{publish_at:new Date(Date.now()+10*60*1000).toISOString()}});
+  assert.equal(foreignSchedule.status,403,"another author must not schedule a foreign chapter");
+  const tooSoonSchedule=await request(origin,"/api/author/chapters/"+scheduledChapterId+"/schedule",{method:"POST",cookie:accountA.cookie,origin,body:{publish_at:new Date(Date.now()+60*1000).toISOString()}});
+  assert.equal(tooSoonSchedule.status,400,"scheduled publication must be at least five minutes in the future");
+  const tooLateSchedule=await request(origin,"/api/author/chapters/"+scheduledChapterId+"/schedule",{method:"POST",cookie:accountA.cookie,origin,body:{publish_at:new Date(Date.now()+366*24*60*60*1000).toISOString()}});
+  assert.equal(tooLateSchedule.status,400,"scheduled publication must be within 365 days");
+  const scheduleFuture=await request(origin,"/api/author/chapters/"+scheduledChapterId+"/schedule",{method:"POST",cookie:accountA.cookie,origin,body:{publish_at:new Date(Date.now()+10*60*1000).toISOString()}});
+  assert.equal(scheduleFuture.status,200,"owner should schedule a chapter on a published rights-eligible novel");
+  const schedulesA=await request(origin,"/api/author/schedules",{cookie:accountA.cookie});
+  const schedulesB=await request(origin,"/api/author/schedules",{cookie:accountB.cookie});
+  assert.equal(schedulesA.data.items.some(s=>s.chapter_id===scheduledChapterId),true,"owner should see the scheduled chapter");
+  assert.equal(schedulesB.data.items.some(s=>s.chapter_id===scheduledChapterId),false,"another author must not see a foreign schedule");
+  const authorChapters=await request(origin,"/api/author/chapters?novel_id="+authorNovelId,{cookie:accountA.cookie});
+  assert.equal(authorChapters.data.some(c=>c.id===scheduledChapterId&&c.scheduled_at),"scheduled chapter metadata should appear in the chapter manager");
+  const manualPublish=await request(origin,"/api/author/chapters/"+scheduledChapterId+"/publish",{method:"POST",cookie:accountA.cookie,origin,body:{publication_status:"published"}});
+  assert.equal(manualPublish.status,200,"owner should publish a scheduled chapter manually");
+  const schedulesAfterPublish=await request(origin,"/api/author/schedules",{cookie:accountA.cookie});
+  assert.equal(schedulesAfterPublish.data.items.some(s=>s.chapter_id===scheduledChapterId),false,"manual publication must remove the pending schedule");
+
+  const pendingChapter=await request(origin,"/api/author/chapters",{method:"POST",cookie:accountA.cookie,origin,body:{novel_id:990002,chapter_number:1,title:"Pending rights chapter",content:"This must not be scheduled."}});
+  assert.equal(pendingChapter.status,201,"owner should be able to draft against a pending-rights novel");
+  const pendingSchedule=await request(origin,"/api/author/chapters/"+pendingChapter.data.id+"/schedule",{method:"POST",cookie:accountA.cookie,origin,body:{publish_at:new Date(Date.now()+10*60*1000).toISOString()}});
+  assert.equal(pendingSchedule.status,403,"a pending-rights novel must not accept scheduled publication");
+
   const logout=await request(origin,"/api/auth/logout",{method:"POST",cookie:accountA.cookie,origin});
   assert.equal(logout.status,200);
   const afterLogout=await request(origin,"/api/profile",{cookie:accountA.cookie});
