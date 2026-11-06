@@ -202,3 +202,12 @@ Required checks before marking this slice complete:
 **Implemented in source:** the dedicated Admin template's hero, cards, navigation, tables, forms, notices, status labels and actions now consume semantic six-theme roles. Keyboard focus, 44px navigation/action targets, narrow-screen table scrolling and reduced-motion behavior are included. Existing administration workflows, API calls and authorization logic are unchanged.
 
 **Still required:** full endpoint-by-endpoint authorization review, CSRF/session review, owner/admin privilege-boundary tests, all six themes, mobile/tablet/desktop screenshots, RTL, keyboard and screen-reader QA, and populated/empty/error states. This is a source-level visual adoption, not a security sign-off or production release.
+
+
+## 17. Community Taxonomy standalone route adoption
+
+**Implemented in source:** the Worker now marks the dedicated `community-taxonomy.html` template with a page class, allowing the shared semantic theme layer to override its former fixed dark-only palette. The proposal form, guidance cards, status messages, links and form fields now follow all six themes. Keyboard focus, 44px primary action/link targets and reduced-motion behavior are included.
+
+**Behavior preserved:** the existing taxonomy submission form and `POST /api/taxonomy` request remain unchanged. The moderation decision, data validation and server-side policy are not modified by this visual migration.
+
+**Still required:** all six theme screenshots, RTL, 360px/390px mobile, desktop, form validation/error/success states, keyboard/screen-reader QA and the remaining standalone templates.
