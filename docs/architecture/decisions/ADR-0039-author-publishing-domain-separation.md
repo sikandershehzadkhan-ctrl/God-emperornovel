@@ -26,7 +26,7 @@ The due-row projection must include n.id AS novel_id; the parent novel update mu
 
 - Creator Studio and Publishing Studio have distinct domain owners and implementation modules.
 - The canonical Worker composes both modules without replacing its existing runAutomation() scheduled path.
-- The Publishing Studio scheduler is wired into the existing scheduled handler. This does not authorize production deployment or migration.
+- The Publishing Studio scheduler is wired into the existing scheduled handler. The release calendar is also Publishing-owned. Creator lifetime analytics totals are aggregated independently of the bounded top-100 display list, and direct chapter publication rechecks current owner and rights in its conditional SQL write. This does not authorize production deployment or migration.
 - Candidate-only combined Author Studio dispatch must not be imported; preserve existing creator applications, AI project routes, novels and chapter behavior.
 
 ## Validation required before merge or deployment
@@ -35,5 +35,7 @@ The due-row projection must include n.id AS novel_id; the parent novel update mu
 - Verify D1 batch changes() chaining against the supported Wrangler/D1 runtime.
 - Verify the existing runAutomation() cron path still executes on every configured schedule.
 - Verify notification is emitted once only after the successful chapter transition.
+- Verify analytics lifetime totals include all owned novels, including accounts with more than 100 novels.
+- Verify direct chapter publication fails when ownership or rights change between preflight read and conditional write.
 - Run all required exact-head governance, schema parity, route registry, Graphify and Cloudflare source workflows.
 - Do not deploy or apply D1 migrations as part of this integration.
