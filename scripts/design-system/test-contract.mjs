@@ -109,5 +109,9 @@ assert.ok(components.includes(".themePicker:focus-visible") && components.includ
 assert.ok(tokens.includes("--bg:var(--in-bg-canvas)") && tokens.includes("--panel:var(--in-bg-surface)") && tokens.includes("--text:var(--in-text-primary)"), "legacy page tokens must bridge to semantic theme roles");
 assert.ok(components.includes("html[data-theme] .top") && components.includes("html[data-theme] .menuDrawer") && components.includes("html[data-theme] .nextHero"), "shared shell and homepage must consume semantic theme roles");
 assert.ok(components.includes("html[data-theme] .homeFormatShelf") && components.includes("html[data-theme] .nextFeatureTile"), "homepage discovery and feature surfaces must consume semantic theme roles");
+assert.ok(components.includes("html[data-theme] .catalogTop") && components.includes("html[data-theme] .catalogCard"), "catalog filters and story cards must consume semantic theme roles");
+assert.ok(components.includes("html[data-theme] .genreCard") && components.includes("html[data-theme] .tagTile"), "genre and tag discovery surfaces must consume semantic theme roles");
+assert.ok(components.includes("html[data-theme] .formatLink") && components.includes("html[data-theme] #sf input"), "format directory and search controls must consume semantic theme roles");
+assert.ok(components.includes("prefers-reduced-motion:reduce") && components.includes("html[data-theme] .catalogGrid a:focus-visible"), "discovery interactions must preserve reduced motion and visible focus");
 assert.ok(packageJson.scripts.build.startsWith("node scripts/design-system/test-contract.mjs && "), "design-system contract must run before the platform build");
 console.log("Imperial Novel design-system contract passed: six complete themes, semantic roles, contrast, component primitives, 44px targets, focus, reduced motion, forced colors, WCAG, RTL and runtime asset registration.");
