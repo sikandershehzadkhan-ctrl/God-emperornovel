@@ -898,7 +898,7 @@
       ],
       "unguardedLines": [],
       "methodGuardMissing": false,
-      "authorization": "Public aggregate projection; no session lookup; overlong query rejected before D1; published rights-eligible novels with non-empty author names only; escaped bounded search; no private creator fields."
+      "authorization": "public aggregate projection; no session lookup; overlong query rejected before D1; published rights-eligible novels with non-empty author names only; escaped bounded search; no private creator fields."
     },
     {
       "path": "/api/random",
