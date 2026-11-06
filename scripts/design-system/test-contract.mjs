@@ -115,6 +115,10 @@ assert.match(components, /aria-busy="true"/, "button loading state must be style
 assert.match(components, /in-dialog::backdrop/, "dialog backdrop primitive is required");
 assert.match(components, /prefers-reduced-motion:reduce/, "reduced-motion support is required");
 assert.match(components, /forced-colors:active/, "forced-colors support is required");
+for (const theme of ["light","dark","midnight","sepia","imperial","cosmic"]) {
+  assert.ok(components.includes('html[data-high-contrast="true"][data-theme="'+theme+'"]') || (theme==="light" && components.includes('html[data-high-contrast="true"][data-theme="light"]')) || (theme==="sepia" && components.includes('html[data-high-contrast="true"][data-theme="sepia"]')), "high-contrast semantic overrides must cover theme: "+theme);
+}
+assert.ok(components.includes("--in-text-secondary:var(--in-text-primary)") && components.includes("--in-border-default:#8799A3") && components.includes("--in-border-default:#68757D"), "high-contrast mode must strengthen semantic text, borders and focus in light and dark theme families");
 assert.ok(components.includes(".in-button--sm{min-height:var(--in-touch-target)"), "small button variant must preserve the 44px target");
 const checkRow = components.slice(components.indexOf(".in-check-row{"), components.indexOf(".in-check-row{") + 220);
 assert.ok(checkRow.includes("min-height:var(--in-touch-target)"), "checkbox/radio row must preserve the 44px target");
