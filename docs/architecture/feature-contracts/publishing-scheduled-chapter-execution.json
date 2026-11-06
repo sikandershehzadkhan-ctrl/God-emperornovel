@@ -1,0 +1,112 @@
+{
+  "featureId": "publishing-scheduled-chapter-execution",
+  "domainOwner": "publishing",
+  "technicalIntegrator": "platform-integrator",
+  "ownedPaths": [
+    "src/domains/publishing/scheduled-chapter-publication.mjs",
+    "scripts/test-scheduled-publication-atomicity.mjs"
+  ],
+  "sharedSurfaces": [
+    "src/index.js",
+    "wrangler.toml",
+    "docs/architecture/IMPERIAL-FEATURE-OWNERSHIP.json",
+    "docs/architecture/IMPERIAL-API-ROUTE-METHOD-MATRIX-01N-37.json",
+    "docs/architecture/IMPERIAL-AUTHORIZATION-OWNERSHIP-MATRIX-01N-38.json",
+    "docs/architecture/feature-contracts/platform-integration-governance.json",
+    "package.json"
+  ],
+  "dependencies": [
+    "publishing",
+    "platform-data",
+    "platform-kernel",
+    "platform-quality",
+    "platform-architecture"
+  ],
+  "routes": [],
+  "apiContracts": [
+    "No HTTP route is introduced by this isolated processor module.",
+    "Runtime invocation from the canonical Worker scheduled() handler is pending and must preserve the existing runAutomation() call.",
+    "The due-row projection includes the parent novel ID. A chapter is considered published only when the conditional draft-to-published update changes exactly one row.",
+    "Schedule cleanup, parent novel timestamp update and audit insertion are sequentially gated by changes()=1 in the same ordered D1 batch. Notification and the success counter depend on the chapter update result."
+  ],
+  "dataEntities": [
+    "Reuses scheduled_chapter_publications, chapters, novels and audit_logs.",
+    "Reuses existing migrations 0016, 0017, 0032 and 0033; no new migration is required for the isolated processor."
+  ],
+  "migrationPlan": {
+    "required": false,
+    "proposedNumbers": [],
+    "canonicalEntityReuse": "Uses the existing scheduled_chapter_publications table from migration 0017 and canonical chapters, novels and audit_logs entities.",
+    "backwardCompatibility": "No route or schema behavior changes until the processor is wired into the canonical Worker.",
+    "rollbackOrForwardRepair": "Remove the isolated module and its regression test; no data repair is needed because the module is not yet invoked."
+  },
+  "uiLifecycle": {
+    "shellOwner": "experience-shell",
+    "ssrBehavior": "No UI or shell changes.",
+    "clientBootBehavior": "No browser assets are loaded by this processor.",
+    "servedBundleParity": "No browser bundle changes."
+  },
+  "privacySecurity": {
+    "authentication": "No direct HTTP authentication surface; the Worker scheduled event is the only intended invocation.",
+    "authorization": "Publication eligibility is rechecked against current novel ownership, publication status and rights evidence in the conditional chapter update.",
+    "ownerScoping": "A scheduled row must match the novel owner and the schedule creator; the write query rechecks the current owner.",
+    "csrf": "Not applicable; no HTTP mutation route is introduced.",
+    "rateAndSizeLimits": "Processes at most 100 due schedules per invocation.",
+    "rightsAndPrivacy": "Only published novels with an allowed rights status and required evidence are eligible; no chapter body is copied into logs or notifications."
+  },
+  "tests": {
+    "unit": [
+      "test-scheduled-publication-atomicity.mjs checks parent ID projection, ordered write gates, race-loser behavior, notification behavior and rights denial using a deterministic D1 adapter stub."
+    ],
+    "integration": [
+      "Local D1 tests for successful publication, stale schedules, rights changes and overlapping scheduled invocations remain required before Worker wiring."
+    ],
+    "isolation": [
+      "A competing scheduled invocation must not create a duplicate audit record or notification when its conditional chapter update changes zero rows."
+    ],
+    "buildCommands": [
+      "node scripts/test-scheduled-publication-atomicity.mjs",
+      "node --check src/domains/publishing/scheduled-chapter-publication.mjs"
+    ]
+  },
+  "rollout": {
+    "flags": [],
+    "stagingSteps": [
+      "Do not invoke the module from production Worker until local D1 concurrency tests and exact-head CI pass.",
+      "When integrating, preserve the canonical runAutomation(env,event.cron) scheduled path and all existing cron expressions.",
+      "Verify only one audit record and one notification are emitted for a successfully published chapter."
+    ]
+  },
+  "rollback": {
+    "codeRollback": "Remove the isolated publishing processor module and its test before Worker wiring; after wiring, revert the Worker composition and module together.",
+    "dataRollbackOrForwardRepair": "No migration or production data mutation is part of this isolated change.",
+    "monitoringSignals": [
+      "Scheduled publication success and failure counts",
+      "Duplicate audit records per chapter",
+      "Notification count per successful chapter transition",
+      "D1 batch errors"
+    ]
+  },
+  "collisionReview": {
+    "duplicateRoutes": "None; this isolated processor adds no route.",
+    "duplicateEntities": "None; existing schedule, chapter, novel and audit entities are reused.",
+    "migrationAllocation": "No new migration; migration 0017 already defines the scheduled publication table.",
+    "sharedSurfaceOwners": "publishing owns the processor; platform-kernel owns scheduled Worker composition; platform-data owns persistence and migrations; platform-quality owns regression tests; platform-architecture owns route and authorization inventories; platform-integrator coordinates shared files."
+  },
+  "affectedDomains": [
+    "publishing",
+    "platform-data",
+    "platform-kernel",
+    "platform-quality",
+    "platform-architecture"
+  ],
+  "changeSummary": "Adds a publishing-owned scheduled chapter execution processor as an isolated module, correcting the missing parent novel ID projection and gating schedule cleanup, parent timestamp update and audit insertion behind the successful conditional chapter transition. The processor is intentionally not yet wired into the Worker.",
+  "acceptanceCriteria": [
+    "The due query selects n.id AS novel_id.",
+    "The chapter update is conditional on draft state and current novel owner, publication status and rights eligibility.",
+    "Schedule deletion, parent novel update and audit insertion each require the preceding statement to have changed exactly one row.",
+    "A lost concurrency race produces no success count and no author notification.",
+    "No route, cron configuration, browser asset, migration or production behavior changes in this isolated slice.",
+    "Local D1 concurrency tests and exact-head CI are required before runtime integration."
+  ]
+}
