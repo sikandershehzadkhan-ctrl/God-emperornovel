@@ -148,3 +148,12 @@ Required checks before marking this slice complete:
 **Intentionally unchanged:** novel/chapter API calls, route destinations, ratings/comments/reactions, library/follow actions, chapter unlocks, reading progress, bookmarks, comic page sequencing and the reader's independent theme preference. Reader article colors remain controlled by the reader preference until a separate compatibility migration is tested.
 
 **Still required:** browser screenshots for all six global themes and six reader themes; desktop/tablet/390px/360px; Urdu/Arabic/Persian RTL; long titles; locked/unlocked chapter rows; populated/empty/error/loading states; keyboard and screen-reader review; comic and text chapter verification. Source CSS and contract tests are not visual sign-off.
+
+
+## 11. Account and personal library source adoption
+
+**Implemented in source:** semantic theme overrides for account navigation, profile panels/metrics, library story cards, history/bookmark rows, notices and tabs. Account links and buttons have visible focus; account navigation and row actions use the 44px touch-target token. At narrow widths, the account menu becomes a horizontal scroll shelf and profile metrics use a two-column layout.
+
+**Intentionally unchanged:** authentication, account/profile APIs, library membership, reading history, bookmarks, following, ticket ledger and user data boundaries. The Following route continues to use its existing shared library renderer; no behavior change is implied by this CSS slice.
+
+**Still required:** visual QA for six themes; signed-in/signed-out and empty/populated/error states; 360px/390px/mobile/tablet/desktop; long usernames/titles; RTL; keyboard and screen-reader review. Source CSS and contract assertions are not visual sign-off.
