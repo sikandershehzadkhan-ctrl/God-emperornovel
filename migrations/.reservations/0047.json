@@ -1,0 +1,6 @@
+{
+  "version": 1,
+  "number": 47,
+  "migration": "migrations/0047_author_story_goals_owner_scope.sql",
+  "pullRequest": 294
+}

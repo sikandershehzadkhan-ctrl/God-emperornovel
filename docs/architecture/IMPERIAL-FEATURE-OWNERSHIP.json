@@ -74,7 +74,8 @@
       "owns": [
         "src/domains/publishing/",
         "src/publishing/",
-        "src/content-quality-policy.mjs"
+        "src/content-quality-policy.mjs",
+        "src/features/publishing-studio/"
       ],
       "responsibilities": [
         "novels",
@@ -121,7 +122,8 @@
         "src/domains/creator/",
         "src/author/",
         "src/creator-ownership-policy.mjs",
-        "src/author-application-policy.mjs"
+        "src/author-application-policy.mjs",
+        "src/features/creator-studio/"
       ],
       "responsibilities": [
         "author applications",

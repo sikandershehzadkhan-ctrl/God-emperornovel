@@ -3,9 +3,14 @@ import { spawnSync } from "node:child_process";
 import { readFileSync } from "node:fs";
 
 const sql=readFileSync(new URL("../migrations/0039_novel_ownership_transfers.sql",import.meta.url),"utf8");
+const goalsBase=readFileSync(new URL("../migrations/0032_author_story_goals.sql",import.meta.url),"utf8");
+const goalsOwner=readFileSync(new URL("../migrations/0047_author_story_goals_owner_scope.sql",import.meta.url),"utf8");
 const py=String.raw`
 import json,sqlite3,sys
-sql=json.load(sys.stdin)["sql"]
+data=json.load(sys.stdin)
+sql=data["sql"]
+goals_base=data["goalsBase"]
+goals_owner=data["goalsOwner"]
 db=sqlite3.connect(":memory:")
 db.execute("PRAGMA foreign_keys=ON")
 db.executescript("""
@@ -21,6 +26,8 @@ INSERT INTO novels(id,owner_user_id,publication_status,rights_status,rights_evid
  (15,1,'published','original',''),
  (16,1,'published','original','');
 """)
+db.executescript(goals_base)
+db.execute("INSERT INTO author_story_goals(owner_user_id,novel_id,target_chapters,target_words) VALUES(1,10,7,7000)")
 db.executescript(sql)
 def rejected(fn):
  try: fn()
@@ -38,6 +45,9 @@ rejected(lambda: db.execute("INSERT INTO novel_ownership_transfers(novel_id,from
 # Acceptance atomically changes owner and finalizes invitation.
 db.execute("UPDATE novel_ownership_transfers SET status='accepted',decided_at=CAST(strftime('%s','now') AS INTEGER) WHERE id=?",(tid,))
 assert db.execute("SELECT owner_user_id FROM novels WHERE id=10").fetchone()[0]==2
+db.executescript(goals_owner)
+db.execute("INSERT INTO author_story_goals(owner_user_id,novel_id,target_chapters,target_words) VALUES(2,10,12,12000)")
+assert db.execute("SELECT owner_user_id,novel_id,target_chapters FROM author_story_goals WHERE novel_id=10 ORDER BY owner_user_id").fetchall()==[(1,10,7),(2,10,12)]
 assert db.execute("SELECT status,decided_at FROM novel_ownership_transfers WHERE id=?",(tid,)).fetchone()[0]=='accepted'
 # Terminal record cannot be rewritten or reopened.
 rejected(lambda: db.execute("UPDATE novel_ownership_transfers SET status='pending',decided_at=NULL WHERE id=?",(tid,)))
@@ -64,7 +74,7 @@ assert db.execute("PRAGMA integrity_check").fetchone()[0]=='ok'
 assert db.execute("PRAGMA foreign_key_check").fetchall()==[]
 print("PASS: ownership transfer FK retention, inert requests, duplicate prevention, atomic acceptance, immutable history, recipient/rights/publication rechecks, and expiry.")
 `;
-const result=spawnSync("python3",["-c",py],{input:JSON.stringify({sql}),encoding:"utf8"});
+const result=spawnSync("python3",["-c",py],{input:JSON.stringify({sql,goalsBase,goalsOwner}),encoding:"utf8"});
 if(result.error) throw result.error;
 if(result.status!==0){process.stderr.write(result.stderr||"");process.stdout.write(result.stdout||"");process.exit(result.status||1)}
 process.stdout.write(result.stdout);

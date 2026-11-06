@@ -1,0 +1,132 @@
+{
+  "featureId": "publishing-studio",
+  "domainOwner": "publishing",
+  "technicalIntegrator": "platform-integrator",
+  "ownedPaths": [
+    "src/features/publishing-studio/index.mjs"
+  ],
+  "sharedSurfaces": [
+    "src/index.js",
+    "wrangler.toml",
+    "docs/architecture/IMPERIAL-FEATURE-OWNERSHIP.json",
+    "docs/architecture/IMPERIAL-API-ROUTE-METHOD-MATRIX-01N-37.json",
+    "docs/architecture/IMPERIAL-AUTHORIZATION-OWNERSHIP-MATRIX-01N-38.json",
+    "docs/architecture/feature-contracts/platform-integration-governance.json",
+    "package.json"
+  ],
+  "dependencies": [
+    "publishing",
+    "rights",
+    "creator",
+    "platform-data",
+    "platform-kernel",
+    "platform-quality",
+    "platform-architecture"
+  ],
+  "routes": [
+    "PATCH /api/author/chapters/:id",
+    "GET /api/author/chapters/:id/revisions",
+    "POST /api/author/chapters/:id/publish",
+    "POST /api/author/chapters/:id/schedule",
+    "GET /api/author/schedules"
+  ],
+  "apiContracts": [
+    "Chapter edit and direct publication routes require author(u); admin may perform the existing moderation/edit bypass, while creator ownership is rechecked in the conditional write.",
+    "Chapter publication rechecks current parent ownership, publication status and rights evidence in the UPDATE predicate; a stale preflight read cannot authorize a later write.",
+    "Revision history and scheduling require strict chapter ownership by session u.id; administrators do not impersonate creators for these private/release-calendar routes.",
+    "Scheduling requires an approved published parent, eligible rights status and required evidence, and constrains publish_at to at least five minutes and at most 365 days in the future.",
+    "Release calendar results are scoped to parent novels owned by u.id and bounded to 200 rows.",
+    "Due publication cleans stale schedules, selects n.id AS novel_id, conditionally transitions draft chapters, and gates schedule cleanup, parent timestamp update and audit insertion through ordered D1 changes() checks. Notifications depend on the successful chapter update."
+  ],
+  "dataEntities": [
+    "Reuses chapters, chapter_revisions, scheduled_chapter_publications, novels and audit_logs.",
+    "Reuses migrations 0016 for revisions and 0017 for scheduled chapter publications."
+  ],
+  "migrationPlan": {
+    "required": false,
+    "proposedNumbers": [],
+    "canonicalEntityReuse": "Migrations 0016 and 0017 already define chapter revisions and scheduled chapter publications. No duplicate migration is introduced.",
+    "backwardCompatibility": "Existing chapter creation, novel submission, rights review and creator application routes remain in the Worker.",
+    "rollbackOrForwardRepair": "Remove Publishing Studio dispatch and module together; existing migration data remains canonical and is not deleted."
+  },
+  "uiLifecycle": {
+    "shellOwner": "experience-shell",
+    "ssrBehavior": "No SSR route changes.",
+    "clientBootBehavior": "Existing chapter management and release calendar UI consume Publishing-owned APIs.",
+    "servedBundleParity": "No new browser asset is introduced by the Publishing API module."
+  },
+  "privacySecurity": {
+    "authentication": "Requires author(u) session.",
+    "authorization": "Chapter edit/direct publish preserve the existing administrator moderation bypass; revision reads, schedule create/cancel and release calendar remain strict owner-only. This asymmetry is explicitly pending independent authorization review.",
+    "ownerScoping": "Conditional chapter updates recheck current owner and rights. Private revisions, schedules and release calendar bind to u.id.",
+    "csrf": "Existing Worker origin and session protections remain in force.",
+    "rateAndSizeLimits": "Revision history capped at 10; release calendar capped at 200; due processor capped at 100 schedules per invocation.",
+    "rightsAndPrivacy": "Publication requires published parent and eligible rights/evidence. No chapter content is copied into public analytics or notifications."
+  },
+  "tests": {
+    "unit": [
+      "test-scheduled-publication-atomicity.mjs checks the due-row parent ID, sequential D1 gates, race-loser behavior and notification behavior using a deterministic adapter stub.",
+      "test-creator-publishing-domain-boundaries.mjs checks Publishing route ownership, conditional owner/rights publication predicates and preserved scheduled automation.",
+      "test-scheduled-publication-sql.py executes the ordered publication batch against SQLite with stale due-row snapshots, rights changes, ownership changes and stale schedule cleanup."
+    ],
+    "integration": [
+      "Cloudflare D1/Worker runtime validation remains required; the SQLite test validates SQLite transaction semantics but is not a deployed D1 test.",
+      "test-worker-account-reader-isolation.mjs runs the actual local Worker with a fresh D1 database and two author accounts to verify Creator and Publishing route isolation, goals/notes CRUD, analytics/feedback/readiness/planning ownership, revision privacy, schedule create/cancel, ownership-transfer cancellation and a manually triggered local scheduled() publication.",
+      "test-scheduled-publication-sql.py verifies SQLite changes() chaining and stale-snapshot concurrency behavior; this complements but does not replace the local Worker scheduled-event test."
+    ],
+    "isolation": [
+      "Author A cannot read Author B revisions or schedules, create/cancel Author B schedules, or view Author B release calendar.",
+      "An ownership or rights change between preflight and write must prevent chapter publication.",
+      "The local Worker integration test verifies the former owner cannot cancel a schedule after ownership transfer while the current owner can."
+    ],
+    "buildCommands": [
+      "node scripts/test-scheduled-publication-atomicity.mjs",
+      "node scripts/test-creator-publishing-domain-boundaries.mjs",
+      "node --check src/features/publishing-studio/index.mjs",
+      "python3 scripts/test-scheduled-publication-sql.py"
+    ]
+  },
+  "rollout": {
+    "flags": [],
+    "stagingSteps": [
+      "Run exact-head governance, route, schema parity, Graphify and Cloudflare validation.",
+      "Verify all existing cron expressions remain configured and runAutomation() continues after due publication.",
+      "Run local D1 concurrency and ownership-transfer tests before deployment."
+    ]
+  },
+  "rollback": {
+    "codeRollback": "Revert Publishing Studio dispatch and module together; preserve existing scheduled agent automation.",
+    "dataRollbackOrForwardRepair": "No new migration or production data mutation is included.",
+    "monitoringSignals": [
+      "Scheduled publication success/failure counts",
+      "Stale schedule cleanup count",
+      "Duplicate audit records per chapter",
+      "Owner/rights conditional update denials",
+      "Notification count per successful publication"
+    ]
+  },
+  "collisionReview": {
+    "duplicateRoutes": "Chapter lifecycle and release calendar are exclusively Publishing-owned; Creator retains only its planning read model.",
+    "duplicateEntities": "Existing chapter/revision/schedule tables are reused.",
+    "migrationAllocation": "Migrations 0016 and 0017 are reused; no new migration.",
+    "sharedSurfaceOwners": "publishing owns chapter lifecycle; rights owns eligibility policy; platform-kernel owns Worker/cron composition; platform-data owns persistence; platform-quality owns tests; platform-architecture owns inventories; platform-integrator coordinates shared surfaces."
+  },
+  "affectedDomains": [
+    "publishing",
+    "rights",
+    "creator",
+    "platform-data",
+    "platform-kernel",
+    "platform-quality",
+    "platform-architecture"
+  ],
+  "changeSummary": "Defines the Publishing-owned chapter lifecycle and scheduled release boundary. It moves the release calendar into Publishing Studio, makes chapter publication recheck current owner and rights in the conditional write, and preserves cron automation plus stale schedule cleanup.",
+  "acceptanceCriteria": [
+    "All Publishing routes are present in the API method inventory with module source evidence.",
+    "Release calendar, revisions and schedule mutations are strictly owner-scoped.",
+    "Chapter publication rechecks current ownership and rights in the SQL write predicate.",
+    "Scheduled publication gates dependent writes and notifications on the successful chapter transition.",
+    "Existing migrations 0016 and 0017 are reused without new migration.",
+    "No production deployment occurs until exact-head CI and local Worker scheduled-event plus SQLite concurrency tests pass."
+  ]
+}

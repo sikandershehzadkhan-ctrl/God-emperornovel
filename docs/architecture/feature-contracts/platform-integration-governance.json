@@ -34,7 +34,22 @@
     "docs/architecture/feature-contracts/community-discovery-localization.json",
     "scripts/test-community-localization.mjs",
     "scripts/test-rankings-localization.mjs",
-    "docs/architecture/decisions/ADR-0028-community-localization-bundle-integration.md"
+    "docs/architecture/decisions/ADR-0028-community-localization-bundle-integration.md",
+    "docs/architecture/decisions/ADR-0039-author-publishing-domain-separation.md",
+    "docs/architecture/feature-contracts/publishing-scheduled-chapter-execution.json",
+    "scripts/test-scheduled-publication-atomicity.mjs",
+    "scripts/test-creator-publishing-domain-boundaries.mjs",
+    "src/features/creator-studio/index.mjs",
+    "src/features/publishing-studio/index.mjs",
+    "docs/architecture/decisions/ADR-0040-english-notification-empty-state-localization.md",
+    "scripts/test-scheduled-publication-sql.py",
+    "docs/architecture/feature-contracts/creator-studio.json",
+    "docs/architecture/feature-contracts/publishing-studio.json",
+    "migrations/0047_author_story_goals_owner_scope.sql",
+    "migrations/.reservations/0047.json",
+    "scripts/test-ownership-transfer-migration.mjs",
+    "docs/architecture/IMPERIAL-MIGRATION-ALLOCATIONS.json",
+    "docs/architecture/CANONICAL-MIGRATION-COLLISION-REGISTER.md"
   ],
   "dependencies": [
     "identity-security",
