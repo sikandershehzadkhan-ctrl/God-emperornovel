@@ -1,7 +1,6 @@
 /* Imperial Novel Design System 18.0.0
-   Canonical semantic tokens. Components consume roles, never raw brand values.
-   This file is intentionally additive and is not linked into production until
-   the route/template integration audit and visual QA are complete. */
+   Complete semantic theme contract. Components consume roles, never raw brand values.
+   Theme attributes may be applied to the document root or a scoped application surface. */
 :root,
 [data-theme="light"] {
   color-scheme: light;
@@ -43,173 +42,82 @@
   --in-shadow-lg:0 18px 48px rgb(11 18 21 / .12);
 }
 [data-theme="dark"] {
-  color-scheme: dark;
-  --in-bg-canvas:#0B1215;
-  --in-bg-subtle:#111B20;
-  --in-bg-surface:#142027;
-  --in-bg-elevated:#1A2A33;
-  --in-bg-inverse:#FFFFFF;
-  --in-text-primary:#F4F7F8;
-  --in-text-secondary:#C4D0D5;
-  --in-text-muted:#A5B4BB;
-  --in-text-inverse:#0B1215;
-  --in-border-default:#34464F;
-  --in-border-strong:#627781;
-  --in-action-primary:#B879E8;
-  --in-action-primary-hover:#CA9AF0;
-  --in-action-primary-active:#A65CDB;
-  --in-action-primary-text:#170D20;
-  --in-action-secondary:#79AFFF;
-  --in-action-secondary-hover:#A0C5FF;
-  --in-focus-ring:#79AFFF;
-  --in-link:#91BDFF;
-  --in-status-success:#7ED5A5;
-  --in-status-success-bg:#153526;
-  --in-status-warning:#F3CB75;
-  --in-status-warning-bg:#3A2C13;
-  --in-status-danger:#FF9EAA;
-  --in-status-danger-bg:#421E25;
-  --in-status-info:#91C8FF;
-  --in-status-info-bg:#172F46;
-  --in-reader-paper:#172027;
-  --in-reader-ink:#F1EEE7;
-  --in-shadow-sm:0 1px 2px rgb(0 0 0 / .2);
-  --in-shadow-md:0 8px 24px rgb(0 0 0 / .24);
-  --in-shadow-lg:0 18px 48px rgb(0 0 0 / .32);
+  color-scheme:dark;
+  --in-bg-canvas:#0B1215; --in-bg-subtle:#111B20; --in-bg-surface:#142027; --in-bg-elevated:#1A2A33; --in-bg-inverse:#FFFFFF;
+  --in-text-primary:#F4F7F8; --in-text-secondary:#C4D0D5; --in-text-muted:#A5B4BB; --in-text-inverse:#0B1215;
+  --in-border-default:#34464F; --in-border-strong:#627781;
+  --in-action-primary:#B879E8; --in-action-primary-hover:#CA9AF0; --in-action-primary-active:#A65CDB; --in-action-primary-text:#170D20;
+  --in-action-secondary:#79AFFF; --in-action-secondary-hover:#A0C5FF; --in-focus-ring:#79AFFF; --in-link:#91BDFF;
+  --in-status-success:#7ED5A5; --in-status-success-bg:#153526; --in-status-warning:#F3CB75; --in-status-warning-bg:#3A2C13;
+  --in-status-danger:#FF9EAA; --in-status-danger-bg:#421E25; --in-status-info:#91C8FF; --in-status-info-bg:#172F46;
+  --in-reader-paper:#172027; --in-reader-ink:#F1EEE7;
+  --in-shadow-sm:0 1px 2px rgb(0 0 0 / .2); --in-shadow-md:0 8px 24px rgb(0 0 0 / .24); --in-shadow-lg:0 18px 48px rgb(0 0 0 / .32);
 }
 [data-theme="midnight"] {
-  color-scheme: dark;
-  --in-bg-canvas:#070B18;
-  --in-bg-subtle:#0D1426;
-  --in-bg-surface:#111C33;
-  --in-bg-elevated:#182544;
-  --in-text-primary:#F2F5FF;
-  --in-text-secondary:#C0CAE2;
-  --in-text-muted:#9BA9C8;
-  --in-border-default:#2B3A5C;
-  --in-border-strong:#52658F;
-  --in-action-primary:#B29AFF;
-  --in-action-primary-hover:#C6B4FF;
-  --in-action-primary-active:#9675F2;
-  --in-action-primary-text:#17102A;
-  --in-action-secondary:#82B7FF;
-  --in-focus-ring:#82B7FF;
-  --in-link:#9BC6FF;
-  --in-reader-paper:#111A2B;
-  --in-reader-ink:#E9EDFA;
+  color-scheme:dark;
+  --in-bg-canvas:#070B18; --in-bg-subtle:#0D1426; --in-bg-surface:#111C33; --in-bg-elevated:#182544; --in-bg-inverse:#F2F5FF;
+  --in-text-primary:#F2F5FF; --in-text-secondary:#C0CAE2; --in-text-muted:#9BA9C8; --in-text-inverse:#10182C;
+  --in-border-default:#2B3A5C; --in-border-strong:#52658F;
+  --in-action-primary:#B29AFF; --in-action-primary-hover:#C6B4FF; --in-action-primary-active:#9675F2; --in-action-primary-text:#17102A;
+  --in-action-secondary:#82B7FF; --in-action-secondary-hover:#A6CCFF; --in-focus-ring:#82B7FF; --in-link:#9BC6FF;
+  --in-status-success:#83DDB0; --in-status-success-bg:#153A32; --in-status-warning:#F4D17D; --in-status-warning-bg:#403216;
+  --in-status-danger:#FFA6B3; --in-status-danger-bg:#45202D; --in-status-info:#9BCFFF; --in-status-info-bg:#18334F;
+  --in-reader-paper:#111A2B; --in-reader-ink:#E9EDFA;
+  --in-shadow-sm:0 1px 2px rgb(0 0 0 / .24); --in-shadow-md:0 8px 24px rgb(0 0 0 / .28); --in-shadow-lg:0 18px 48px rgb(0 0 0 / .36);
 }
 [data-theme="sepia"] {
-  color-scheme: light;
-  --in-bg-canvas:#F4EBDD;
-  --in-bg-subtle:#EDE1D0;
-  --in-bg-surface:#FBF4E8;
-  --in-bg-elevated:#FFF9EF;
-  --in-text-primary:#30271D;
-  --in-text-secondary:#594A39;
-  --in-text-muted:#6D5A45;
-  --in-border-default:#D8C7AE;
-  --in-border-strong:#A58A68;
-  --in-action-primary:#67418A;
-  --in-action-primary-hover:#53346F;
-  --in-action-primary-active:#422957;
-  --in-action-primary-text:#FFFFFF;
-  --in-action-secondary:#285A83;
-  --in-focus-ring:#285A83;
-  --in-link:#245B8C;
-  --in-reader-paper:#F8EFDF;
-  --in-reader-ink:#30271D;
+  color-scheme:light;
+  --in-bg-canvas:#F4EBDD; --in-bg-subtle:#EDE1D0; --in-bg-surface:#FBF4E8; --in-bg-elevated:#FFF9EF; --in-bg-inverse:#30271D;
+  --in-text-primary:#30271D; --in-text-secondary:#594A39; --in-text-muted:#6D5A45; --in-text-inverse:#FBF4E8;
+  --in-border-default:#D8C7AE; --in-border-strong:#A58A68;
+  --in-action-primary:#67418A; --in-action-primary-hover:#53346F; --in-action-primary-active:#422957; --in-action-primary-text:#FFFFFF;
+  --in-action-secondary:#285A83; --in-action-secondary-hover:#1E4668; --in-focus-ring:#285A83; --in-link:#245B8C;
+  --in-status-success:#246444; --in-status-success-bg:#E5F3E9; --in-status-warning:#704600; --in-status-warning-bg:#FFF1D2;
+  --in-status-danger:#8D2635; --in-status-danger-bg:#FCE8EA; --in-status-info:#174D76; --in-status-info-bg:#E7F1F8;
+  --in-reader-paper:#F8EFDF; --in-reader-ink:#30271D;
+  --in-shadow-sm:0 1px 2px rgb(48 39 29 / .06); --in-shadow-md:0 8px 24px rgb(48 39 29 / .09); --in-shadow-lg:0 18px 48px rgb(48 39 29 / .13);
 }
 [data-theme="imperial"] {
-  color-scheme: dark;
-  --in-bg-canvas:#0B1215;
-  --in-bg-subtle:#111B20;
-  --in-bg-surface:#17242B;
-  --in-bg-elevated:#20323B;
-  --in-text-primary:#F7F9FA;
-  --in-text-secondary:#C9D5DA;
-  --in-text-muted:#A7B7BE;
-  --in-border-default:#3B505B;
-  --in-border-strong:#718892;
-  --in-action-primary:#C18BEA;
-  --in-action-primary-hover:#D2A8F0;
-  --in-action-primary-active:#A96CD8;
-  --in-action-primary-text:#1B1022;
-  --in-action-secondary:#82B7FF;
-  --in-focus-ring:#82B7FF;
-  --in-link:#9CC6FF;
-  --in-reader-paper:#18242A;
-  --in-reader-ink:#F3F0E8;
+  color-scheme:dark;
+  --in-bg-canvas:#0B1215; --in-bg-subtle:#111B20; --in-bg-surface:#17242B; --in-bg-elevated:#20323B; --in-bg-inverse:#F7F9FA;
+  --in-text-primary:#F7F9FA; --in-text-secondary:#C9D5DA; --in-text-muted:#A7B7BE; --in-text-inverse:#0B1215;
+  --in-border-default:#3B505B; --in-border-strong:#718892;
+  --in-action-primary:#C18BEA; --in-action-primary-hover:#D2A8F0; --in-action-primary-active:#A96CD8; --in-action-primary-text:#1B1022;
+  --in-action-secondary:#82B7FF; --in-action-secondary-hover:#A6CCFF; --in-focus-ring:#82B7FF; --in-link:#9CC6FF;
+  --in-status-success:#8ADBB0; --in-status-success-bg:#183A30; --in-status-warning:#F4D17D; --in-status-warning-bg:#403216;
+  --in-status-danger:#FFA6B3; --in-status-danger-bg:#45202D; --in-status-info:#9BCFFF; --in-status-info-bg:#18334F;
+  --in-reader-paper:#18242A; --in-reader-ink:#F3F0E8;
+  --in-shadow-sm:0 1px 2px rgb(0 0 0 / .22); --in-shadow-md:0 8px 24px rgb(0 0 0 / .27); --in-shadow-lg:0 18px 48px rgb(0 0 0 / .35);
 }
 [data-theme="cosmic"] {
-  color-scheme: dark;
-  --in-bg-canvas:#090D1B;
-  --in-bg-subtle:#10172B;
-  --in-bg-surface:#17213A;
-  --in-bg-elevated:#202E4E;
-  --in-text-primary:#F5F6FF;
-  --in-text-secondary:#C9D0EA;
-  --in-text-muted:#A6B0D0;
-  --in-border-default:#39476B;
-  --in-border-strong:#6879A5;
-  --in-action-primary:#C0A1FF;
-  --in-action-primary-hover:#D2BBFF;
-  --in-action-primary-active:#A985F0;
-  --in-action-primary-text:#1A1230;
-  --in-action-secondary:#83C2FF;
-  --in-focus-ring:#83C2FF;
-  --in-link:#A3D0FF;
-  --in-reader-paper:#151D32;
-  --in-reader-ink:#F0F1FA;
+  color-scheme:dark;
+  --in-bg-canvas:#090D1B; --in-bg-subtle:#10172B; --in-bg-surface:#17213A; --in-bg-elevated:#202E4E; --in-bg-inverse:#F5F6FF;
+  --in-text-primary:#F5F6FF; --in-text-secondary:#C9D0EA; --in-text-muted:#A6B0D0; --in-text-inverse:#10152A;
+  --in-border-default:#39476B; --in-border-strong:#6879A5;
+  --in-action-primary:#C0A1FF; --in-action-primary-hover:#D2BBFF; --in-action-primary-active:#A985F0; --in-action-primary-text:#1A1230;
+  --in-action-secondary:#83C2FF; --in-action-secondary-hover:#A8D7FF; --in-focus-ring:#83C2FF; --in-link:#A3D0FF;
+  --in-status-success:#8BDDB9; --in-status-success-bg:#173A35; --in-status-warning:#F4D58A; --in-status-warning-bg:#40351B;
+  --in-status-danger:#FFADB8; --in-status-danger-bg:#47232F; --in-status-info:#A2D4FF; --in-status-info-bg:#193650;
+  --in-reader-paper:#151D32; --in-reader-ink:#F0F1FA;
+  --in-shadow-sm:0 1px 2px rgb(0 0 0 / .24); --in-shadow-md:0 8px 24px rgb(0 0 0 / .29); --in-shadow-lg:0 18px 48px rgb(0 0 0 / .38);
 }
 :root {
   --in-font-sans:Inter,ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
   --in-font-serif:Georgia,"Times New Roman",serif;
   --in-font-mono:ui-monospace,SFMono-Regular,Consolas,monospace;
-  --in-text-xs:.75rem;
-  --in-text-sm:.875rem;
-  --in-text-md:1rem;
-  --in-text-lg:1.125rem;
-  --in-text-xl:1.25rem;
-  --in-text-2xl:1.5rem;
-  --in-text-3xl:1.875rem;
-  --in-text-4xl:2.25rem;
-  --in-leading-tight:1.2;
-  --in-leading-normal:1.5;
-  --in-leading-reading:1.78;
-  --in-weight-regular:400;
-  --in-weight-medium:500;
-  --in-weight-semibold:600;
-  --in-weight-bold:700;
-  --in-space-0:0;
-  --in-space-1:.25rem;
-  --in-space-2:.5rem;
-  --in-space-3:.75rem;
-  --in-space-4:1rem;
-  --in-space-5:1.25rem;
-  --in-space-6:1.5rem;
-  --in-space-8:2rem;
-  --in-space-10:2.5rem;
-  --in-space-12:3rem;
-  --in-space-16:4rem;
-  --in-radius-sm:.375rem;
-  --in-radius-md:.625rem;
-  --in-radius-lg:.875rem;
-  --in-radius-xl:1.25rem;
-  --in-radius-2xl:1.75rem;
-  --in-radius-pill:999px;
-  --in-control-height-sm:2.25rem;
-  --in-control-height-md:2.75rem;
-  --in-control-height-lg:3rem;
-  --in-touch-target:2.75rem;
-  --in-content-max:80rem;
-  --in-reading-max:46rem;
-  --in-z-header:20;
-  --in-z-drawer:40;
-  --in-z-dialog:60;
-  --in-z-toast:80;
-  --in-motion-fast:120ms;
-  --in-motion-normal:180ms;
-  --in-motion-slow:260ms;
+  --in-text-xs:.75rem; --in-text-sm:.875rem; --in-text-md:1rem; --in-text-lg:1.125rem; --in-text-xl:1.25rem;
+  --in-text-2xl:1.5rem; --in-text-3xl:1.875rem; --in-text-4xl:2.25rem;
+  --in-leading-tight:1.2; --in-leading-normal:1.5; --in-leading-reading:1.78;
+  --in-weight-regular:400; --in-weight-medium:500; --in-weight-semibold:600; --in-weight-bold:700;
+  --in-space-0:0; --in-space-1:.25rem; --in-space-2:.5rem; --in-space-3:.75rem; --in-space-4:1rem;
+  --in-space-5:1.25rem; --in-space-6:1.5rem; --in-space-8:2rem; --in-space-10:2.5rem;
+  --in-space-12:3rem; --in-space-16:4rem;
+  --in-radius-sm:.375rem; --in-radius-md:.625rem; --in-radius-lg:.875rem; --in-radius-xl:1.25rem;
+  --in-radius-2xl:1.75rem; --in-radius-pill:999px;
+  --in-control-height-sm:2.25rem; --in-control-height-md:2.75rem; --in-control-height-lg:3rem;
+  --in-touch-target:2.75rem; --in-content-max:80rem; --in-reading-max:46rem;
+  --in-z-header:20; --in-z-drawer:40; --in-z-dialog:60; --in-z-toast:80;
+  --in-motion-fast:120ms; --in-motion-normal:180ms; --in-motion-slow:260ms;
   --in-ease-standard:cubic-bezier(.2,.8,.2,1);
 }
 @media(prefers-reduced-motion:reduce) {
