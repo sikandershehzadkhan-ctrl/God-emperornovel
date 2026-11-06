@@ -152,7 +152,7 @@ Required checks before marking this slice complete:
 
 ## 11. Account and personal library source adoption
 
-**Implemented in source:** semantic theme overrides for account navigation, profile panels/metrics, library story cards, history/bookmark rows, notices and tabs. Account links and buttons have visible focus; account navigation and row actions use the 44px touch-target token. At narrow widths, the account menu becomes a horizontal scroll shelf and profile metrics use a two-column layout.
+**Implemented in source:** semantic theme overrides for account navigation, profile panels/metrics, page-level library story cards, history/bookmark rows, notices and tabs. Account links and buttons have visible focus; account navigation and row actions use the 44px touch-target token. At narrow widths, the account menu becomes a horizontal scroll shelf and profile metrics use a two-column layout.
 
 **Intentionally unchanged:** authentication, account/profile APIs, library membership, reading history, bookmarks, following, ticket ledger and user data boundaries. The Following route continues to use its existing shared library renderer; no behavior change is implied by this CSS slice.
 
