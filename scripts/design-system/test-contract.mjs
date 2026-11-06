@@ -8,7 +8,8 @@ const releaseStylesheets = [
   "public/app-17.23.0.css",
   "public/imperial-luxury-17.23.0.css",
   "public/imperial-formats-17.23.0.css",
-  "public/imperial-comic-reader-17.23.0.css"
+  "public/imperial-comic-reader-17.23.0.css",
+  "public/imperial-glass.css"
 ].map(path => fs.readFileSync(path, "utf8"));
 const spec = fs.readFileSync("design-system/IMPERIAL-DESIGN-SYSTEM-18.0.0.md", "utf8");
 const html = fs.readFileSync("public/index.html", "utf8");
