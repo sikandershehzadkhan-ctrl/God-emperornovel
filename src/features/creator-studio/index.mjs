@@ -87,10 +87,9 @@ if(p==="/api/author/goals"&&m==="GET"){
   }
   const saved=await env.DB.prepare(`INSERT INTO author_story_goals(novel_id,owner_user_id,target_chapters,target_words,target_date,updated_at)
    SELECT ?,id,?,?,?,CURRENT_TIMESTAMP FROM novels WHERE id=? AND owner_user_id=?
-   ON CONFLICT(novel_id) DO UPDATE SET
+   ON CONFLICT(owner_user_id,novel_id) DO UPDATE SET
    target_chapters=excluded.target_chapters,target_words=excluded.target_words,target_date=excluded.target_date,
-   updated_at=CURRENT_TIMESTAMP WHERE author_story_goals.owner_user_id=excluded.owner_user_id
-   AND EXISTS(SELECT 1 FROM novels WHERE id=excluded.novel_id AND owner_user_id=excluded.owner_user_id)`)
+   updated_at=CURRENT_TIMESTAMP`)
    .bind(u.id,targetChapters,targetWords,rawDate||null,novelId,u.id).run();
   if(!Number(saved.meta?.changes||0))return json({error:'Story not found.'},404);
   await audit(env,u,'author_story_goal_saved',`novel=${novelId};chapters=${targetChapters};words=${targetWords}`);
