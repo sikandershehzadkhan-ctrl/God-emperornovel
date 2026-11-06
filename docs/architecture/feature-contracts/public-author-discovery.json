@@ -1,0 +1,131 @@
+{
+  "featureId": "public-author-discovery",
+  "domainOwner": "catalog",
+  "technicalIntegrator": "platform-integrator",
+  "ownedPaths": [
+    "public/authors.html",
+    "public/authors-page.js",
+    "scripts/test-public-author-discovery.mjs",
+    "scripts/test-seo-foundation.mjs",
+    "scripts/test-dynamic-sitemap.mjs",
+    "scripts/test-route-registry.mjs",
+    "scripts/test-worker-public-author-discovery.mjs"
+  ],
+  "sharedSurfaces": [
+    "docs/architecture/IMPERIAL-API-ROUTE-METHOD-MATRIX-01N-37.json",
+    "docs/architecture/IMPERIAL-AUTHORIZATION-OWNERSHIP-MATRIX-01N-38.json",
+    "docs/architecture/IMPERIAL-ROUTE-REGISTRY-01N.json",
+    "docs/architecture/feature-contracts/platform-integration-governance.json",
+    "package.json",
+    "public/app-17.23.0.js",
+    "public/app.js",
+    "public/sitemap.xml",
+    "src/index.js",
+    "src/seo.mjs",
+    "src/sitemap.mjs",
+    "scripts/test-worker-account-reader-isolation.mjs"
+  ],
+  "dependencies": [
+    "catalog",
+    "experience-shell",
+    "platform-kernel",
+    "platform-quality",
+    "platform-architecture"
+  ],
+  "routes": [
+    "GET /authors (indexable public page)",
+    "GET /api/public-authors (public aggregate projection)"
+  ],
+  "apiContracts": [
+    "GET-only; optional q parameter must be at most 80 characters; longer queries return an empty array before database access; accepted searches escape LIKE wildcard characters; max 50 matching authors or 100 directory authors; aggregate output only."
+  ],
+  "dataEntities": [
+    "No new entities. Aggregate data is derived only from novels that are published and have rights_status in original, public_domain, licensed or authorized."
+  ],
+  "migrationPlan": {
+    "required": false,
+    "proposedNumbers": [],
+    "canonicalEntityReuse": "Reuses existing novels and author display-name fields. No schema changes.",
+    "backwardCompatibility": "Existing /author/:name profile URLs and GET /api/public-authors remain compatible; the endpoint is hardened without changing its response fields.",
+    "rollbackOrForwardRepair": "Revert the page, renderer, navigation and route additions together. The hardened read-only API can remain or be reverted independently; no data repair is required."
+  },
+  "uiLifecycle": {
+    "shellOwner": "experience-shell",
+    "ssrBehavior": "The Worker serves a dedicated authors.html shell at /authors and applies the static canonical SEO metadata.",
+    "clientBootBehavior": "The canonical localized app shell renders the searchable directory, uses the public aggregate API and links to existing public author profiles.",
+    "servedBundleParity": "public/app.js and public/app-17.23.0.js must remain byte-identical; authors-page.js loads before the versioned application bundle."
+  },
+  "privacySecurity": {
+    "authentication": "The directory and aggregate endpoint are public and do not require a session.",
+    "authorization": "The endpoint exposes only author display names and aggregate counts derived from published, rights-eligible novels.",
+    "ownerScoping": "No account IDs, emails, private profile fields or unpublished works are returned.",
+    "csrf": "GET-only read surface; no state mutation.",
+    "rateAndSizeLimits": "Search query is limited to 80 characters; overlong queries return an empty array without a database query; result rows are capped at 50 for search and 100 for directory.",
+    "rightsAndPrivacy": "Only original, public-domain, licensed or authorized published novels contribute to the public directory."
+  },
+  "tests": {
+    "unit": [
+      "test-public-author-discovery.mjs validates route, rights filtering, 80-character pre-query guard, escaped literal LIKE search, bounds, safe rendering, SEO and bundle parity."
+    ],
+    "integration": [
+      "Desktop and mobile navigation link to /authors; client route renders a searchable author directory and links to existing public author profiles.",
+      "The API rejects non-GET methods and returns bounded aggregates only.",
+      "test-worker-public-author-discovery.mjs starts the actual Worker against fresh local D1 and verifies method guards, aggregate projection, rights filtering, literal wildcard searches, overlong-query rejection and result bounds."
+    ],
+    "isolation": [
+      "Anonymous directory access exposes no account identity or private creator fields.",
+      "Unpublished and rights-ineligible novels do not contribute to author counts or recorded reads.",
+      "test-worker-account-reader-isolation.mjs verifies anonymous author discovery exposes aggregate fields only and excludes unpublished or rights-ineligible works."
+    ],
+    "buildCommands": [
+      "npm run build"
+    ]
+  },
+  "rollout": {
+    "flags": [],
+    "stagingSteps": [
+      "Run all six exact-head integration workflows.",
+      "Verify /authors resolves to authors.html and receives canonical indexable SEO metadata.",
+      "Search author names containing percent, underscore and backslash; verify literal matching; verify queries longer than 80 characters return an empty array without D1 access.",
+      "Verify only published rights-eligible novels contribute to counts and reads.",
+      "Verify the 14 supported interface languages, RTL direction and desktop/mobile navigation.",
+      "Verify public/app.js and public/app-17.23.0.js are byte-identical."
+    ]
+  },
+  "rollback": {
+    "codeRollback": "Revert the author directory page, page renderer, route/navigation wiring, SEO and route/matrix records as one feature slice.",
+    "dataRollbackOrForwardRepair": "No database migration or data mutation exists.",
+    "monitoringSignals": [
+      "Public author endpoint error rate and response size",
+      "Author directory search response latency",
+      "Rights-eligible aggregate counts",
+      "SEO canonical and sitemap coverage"
+    ]
+  },
+  "collisionReview": {
+    "duplicateRoutes": "/authors is absent from the canonical route registry before this change; /author/:name remains the existing individual profile route.",
+    "duplicateEntities": "No new entity; aggregate uses existing novels.author.",
+    "migrationAllocation": "No migration allocation required.",
+    "sharedSurfaceOwners": "catalog owns the aggregate projection; experience-shell owns the page and application shell; platform-kernel owns Worker/SEO integration; platform-quality owns tests; platform-architecture owns route/method/auth inventories and ADR; platform-integrator serializes shared surfaces."
+  },
+  "affectedDomains": [
+    "catalog",
+    "experience-shell",
+    "platform-kernel",
+    "platform-quality",
+    "platform-architecture"
+  ],
+  "changeSummary": "Reconstructs the missing public author directory as a bounded, localized feature slice on the canonical integration root. Reuses the existing public-author API but hardens search and aggregates, adds /authors routing and SEO/sitemap coverage, integrates desktop/mobile navigation, and synchronizes the editable and served app bundles.",
+  "acceptanceCriteria": [
+    "/authors resolves to a dedicated authors.html shell and appears in the canonical route registry and static sitemap.",
+    "Desktop and mobile navigation expose the directory in all fourteen supported locales.",
+    "The client renders author names as text and links safely to existing /author/:name profiles.",
+    "The API is GET-only, rejects q values longer than 80 characters before database access, escapes LIKE wildcard characters literally, and limits output to 50/100 rows.",
+    "Only published novels with original, public_domain, licensed or authorized rights contribute to aggregates.",
+    "Views are coalesced to zero and invalid ratings outside 1–10 are excluded from aggregates.",
+    "No private creator or account fields are returned.",
+    "SEO metadata is indexable and canonical; app.js and app-17.23.0.js are byte-identical.",
+    "Route, API method, authorization and sitemap inventories match the implemented behavior.",
+    "All six exact-head integration workflows pass; no production deployment or D1 migration is performed."
+  ]
+}
