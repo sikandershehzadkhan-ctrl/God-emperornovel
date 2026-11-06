@@ -2,7 +2,7 @@
   "schemaVersion": 1,
   "name": "Imperial Novel route registry",
   "sourceBranch": "feat/public-author-discovery-17-72",
-  "sourceCommit": "bb4ec3ce8ae5da675a0ca85661f90f983f4feafc",
+  "sourceCommit": "21e7e1d36d3a3974152e7e59eeafc5210a6c19f3",
   "auditDate": "2026-11-05",
   "scope": "Canonical integration-root exact-route inventory. The /authors directory is a public shell route; this static registry does not by itself certify deployed runtime behavior.",
   "routes": [
