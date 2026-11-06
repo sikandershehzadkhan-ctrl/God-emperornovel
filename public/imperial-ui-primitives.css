@@ -584,3 +584,62 @@ html[data-theme] .unlockBanner a{min-height:var(--in-touch-target)}
   html[data-theme] .quickCard,html[data-theme] .unlockBanner,
   html[data-theme] #communityGrid .card{transition:none;transform:none}
 }
+
+
+/* Trend Factory: semantic six-theme adoption for the existing metadata-first workspace. */
+html[data-theme] .trendFactoryPage,
+html[data-theme] .trendFactoryPage .trendFactoryHero,
+html[data-theme] .trendFactoryPage .trendControls,
+html[data-theme] .trendFactoryPage .trendSafetyCard,
+html[data-theme] .trendFactoryPage .trendFactoryNote{color:var(--in-text-primary)}
+html[data-theme] .trendFactoryPage .trendFactoryHero{
+ background:linear-gradient(135deg,color-mix(in srgb,var(--in-action-primary) 13%,var(--in-bg-surface)),var(--in-bg-elevated));
+ border-color:var(--in-border-default);box-shadow:var(--in-shadow-sm)
+}
+html[data-theme] .trendFactoryPage .trendFactoryHero h2,
+html[data-theme] .trendFactoryPage .trendSafetyCard h3,
+html[data-theme] .trendFactoryPage .trendControls h2{color:var(--in-text-primary)}
+html[data-theme] .trendFactoryPage .trendFactoryHero p,
+html[data-theme] .trendFactoryPage .trendSafetyCard p,
+html[data-theme] .trendFactoryPage .trendFactoryNote,
+html[data-theme] .trendFactoryPage .trendStep small{color:var(--in-text-secondary)}
+html[data-theme] .trendFactoryPage .trendPipeline{
+ background:var(--in-bg-surface);border:1px solid var(--in-border-default);border-radius:16px;box-shadow:var(--in-shadow-sm)
+}
+html[data-theme] .trendFactoryPage .trendStep{background:var(--in-bg-elevated);border-color:var(--in-border-default);color:var(--in-text-primary)}
+html[data-theme] .trendFactoryPage .trendStep.active{background:color-mix(in srgb,var(--in-action-primary) 12%,var(--in-bg-surface));border-color:var(--in-action-primary)}
+html[data-theme] .trendFactoryPage .trendControls,
+html[data-theme] .trendFactoryPage .trendSafetyCard,
+html[data-theme] .trendFactoryPage .trendFactoryNote{
+ background:var(--in-bg-surface);border:1px solid var(--in-border-default);border-radius:16px;box-shadow:var(--in-shadow-sm)
+}
+html[data-theme] .trendFactoryPage .trendControlRow input,
+html[data-theme] .trendFactoryPage .trendControlRow select{
+ min-height:var(--in-touch-target);background:var(--in-bg-elevated);color:var(--in-text-primary);border:1px solid var(--in-border-strong)
+}
+html[data-theme] .trendFactoryPage .trendDataTag,
+html[data-theme] .trendFactoryPage .trendMeta{color:var(--in-text-secondary)}
+html[data-theme] .trendFactoryPage .trendResults .card{
+ background:var(--in-bg-elevated);border:1px solid var(--in-border-default);color:var(--in-text-primary);box-shadow:var(--in-shadow-sm)
+}
+html[data-theme] .trendFactoryPage .trendResults .card h3,
+html[data-theme] .trendFactoryPage .trendResults .card b{color:var(--in-text-primary)}
+html[data-theme] .trendFactoryPage .trendResults .card p,
+html[data-theme] .trendFactoryPage .trendResults .card small{color:var(--in-text-secondary)}
+html[data-theme] .trendFactoryPage .trendSafetyCard a{color:var(--in-action-primary)}
+html[data-theme] .trendFactoryPage .trendPending{display:block;margin-top:12px;color:var(--in-text-secondary);font-size:.9rem;line-height:1.5}
+html[data-theme] .trendFactoryPage a:focus-visible,
+html[data-theme] .trendFactoryPage button:focus-visible,
+html[data-theme] .trendFactoryPage input:focus-visible,
+html[data-theme] .trendFactoryPage select:focus-visible{outline:3px solid var(--in-focus-ring);outline-offset:3px}
+html[data-theme] .trendFactoryPage .trendControlRow button,
+html[data-theme] .trendFactoryPage .trendSafetyCard a{min-height:var(--in-touch-target)}
+@media(max-width:760px){
+ html[data-theme] .trendFactoryPage .trendControlRow{grid-template-columns:minmax(0,1fr)}
+ html[data-theme] .trendFactoryPage .trendSearch{grid-column:auto}
+ html[data-theme] .trendFactoryPage .trendPipeline{overflow-x:auto}
+ html[data-theme] .trendFactoryPage .trendSafetyGrid{grid-template-columns:minmax(0,1fr)}
+}
+@media(prefers-reduced-motion:reduce){
+ html[data-theme] .trendFactoryPage *,html[data-theme] .trendFactoryPage *::before,html[data-theme] .trendFactoryPage *::after{scroll-behavior:auto!important;transition:none!important;animation:none!important}
+}
