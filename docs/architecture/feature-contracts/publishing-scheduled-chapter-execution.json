@@ -3,9 +3,7 @@
   "domainOwner": "publishing",
   "technicalIntegrator": "platform-integrator",
   "ownedPaths": [
-    "src/features/publishing-studio/index.mjs",
-    "scripts/test-scheduled-publication-atomicity.mjs",
-    "scripts/test-creator-publishing-domain-boundaries.mjs"
+    "src/features/publishing-studio/index.mjs"
   ],
   "sharedSurfaces": [
     "src/index.js",
