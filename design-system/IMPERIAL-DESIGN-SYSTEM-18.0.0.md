@@ -60,7 +60,7 @@ The static design-system test calculates contrast from the actual CSS hex values
 | Imperial | 17.89:1 | 7.12:1 | 9.15:1 | 7.58:1 minimum | 5.07:1 |
 | Cosmic | 17.98:1 | 8.34:1 | 10.25:1 | 7.69:1 minimum | 4.49:1 |
 
-Text combinations exceed the WCAG AA normal-text threshold of 4.5:1. Focus indicators and strong control boundaries are separately checked against the 3:1 non-text threshold. The light and sepia strong-border values were darkened to meet that target. These are palette checks, not a substitute for inspecting rendered component states.
+Text combinations exceed the WCAG AA normal-text threshold of 4.5:1. Focus indicators and the optional strong-boundary token are checked against the 3:1 non-text threshold. The light and sepia strong-border values were darkened to meet that enhanced boundary target. WCAG 2.2 SC 1.4.11 applies the 3:1 requirement to visual information necessary to identify active controls and states; it does not require every control to have a visible hit-area border when visible text or an icon already identifies the control. Thin strokes should also be avoided where anti-aliasing could make them appear weaker. These are palette checks, not a substitute for inspecting rendered component states.
 
 ### Theme contract
 
