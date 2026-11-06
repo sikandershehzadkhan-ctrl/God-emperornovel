@@ -202,3 +202,10 @@ The public shell and homepage now have a semantic compatibility layer. Existing 
 The shared top navigation, brand, navigation links, search controls, mobile drawer, hero, format shelf, story cards, feature tiles, creator band and reader promise now have theme-aware overrides using semantic roles. Focus visibility is retained, and reduced-motion preferences are respected for the touched interactions.
 
 This is a first bounded adoption slice, not a claim that every homepage descendant or every dedicated route template is fully migrated. The design-system contract now asserts the semantic compatibility bridge and key shared-shell/homepage selectors. Visual browser QA remains a release gate.
+
+
+## 12. Discovery page-family adoption
+
+The catalog filter panel, filter controls, result cards, active-filter chips, empty state, format directory links, genre cards, tag tiles and search controls now consume semantic theme roles. Existing API requests, query parameters, filter semantics, pagination and route destinations are unchanged. The styles preserve visible keyboard focus, 44px minimum filter controls on compact layouts, and reduced-motion preferences.
+
+This is source-level theme adoption. It does not certify every catalog state or every viewport visually. Browser review across all six themes, 360px/390px widths, tablet/desktop, RTL and loading/error/empty/populated states remains required.
