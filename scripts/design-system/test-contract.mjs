@@ -160,6 +160,15 @@ assert.doesNotMatch(components, /(?:^|[;{])\s*(?:margin|padding|inset|border)-(?
 assert.doesNotMatch(components, /(?:^|[;{])\s*(?:left|right)\s*:/m, "shared component primitives must not hard-code physical positioning");
 assert.ok(components.includes('[dir="rtl"] .chapterDrawer{inset-inline-start:0;border-inline-start:1px solid'), "chapter drawer must mirror to the inline-start edge using logical properties");
 assert.ok(components.includes('[dir="rtl"] .side a:hover,[dir="rtl"] .side a.active{border-inline-start:2px solid'), "active side navigation indicator must mirror using logical borders");
+assert.ok(releaseStylesheets[0].includes(".side a:hover,.side a.active{background:linear-gradient(90deg,rgba(117,48,255,.18),rgba(242,216,137,.05));color:#fff;border-inline-start:2px solid"), "active side navigation indicator must use a logical border");
+assert.ok(releaseStylesheets[0].includes(".menuDrawer{position:fixed;z-index:9999;inset-block:0;inset-inline-start:0;inset-inline-end:auto;"), "menu drawer must anchor to the logical start edge");
+assert.ok(releaseStylesheets[0].includes('[dir="rtl"] .menuDrawer{transform:translateX(105%)}[dir="rtl"] .menuDrawer.is-open{transform:translateX(0)}'), "RTL menu drawer must enter from the right and retain its open state");
+assert.ok(releaseStylesheets[0].includes(".menuDrawer .imperialIcon{margin-inline-end:10px;"), "menu drawer icon spacing must follow writing direction");
+assert.ok(releaseStylesheets[0].includes(".legalSection ul{padding-inline-start:22px}"), "legal list indentation must follow writing direction");
+assert.ok(releaseStylesheets[0].includes(".legalNotice{padding:13px 15px;border-inline-start:3px solid"), "legal notice accent must follow writing direction");
+assert.ok(releaseStylesheets[0].includes(".activeFiltersLabel{font-size:10px;font-weight:850;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);margin-inline-end:3px}"), "active filter label spacing must follow writing direction");
+assert.ok(releaseStylesheets[0].includes(".trendFactoryNote{display:flex;gap:12px;align-items:flex-start;padding:15px 17px;margin-top:16px;border-inline-start:2px solid"), "Trend Factory note accent must follow writing direction");
+
 assert.ok(releaseStylesheets[0].includes(".mobileNav{display:flex;position:fixed;bottom:0;inset-inline:0;"), "mobile navigation must span the viewport using logical inline insets");
 assert.ok(releaseStylesheets[0].includes(".catalogMeta b{margin-inline-end:auto;"), "catalog metadata alignment must follow writing direction");
 assert.ok(releaseStylesheets[0].includes(".statusBadge{position:absolute;inset-inline-start:9px;"), "catalog status badge must anchor to the inline start edge");
