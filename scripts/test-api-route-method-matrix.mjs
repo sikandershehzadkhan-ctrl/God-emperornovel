@@ -54,7 +54,7 @@ const sourceFiles = {
   "src/features/creator-studio/index.mjs": fs.readFileSync(path.join(root,"src/features/creator-studio/index.mjs"),"utf8"),
   "src/features/publishing-studio/index.mjs": fs.readFileSync(path.join(root,"src/features/publishing-studio/index.mjs"),"utf8")
 };
-const gitBlob = source => crypto.createHash("sha1").update(`blob ${Buffer.byteLength(source)}\\0`).update(source).digest("hex");
+const gitBlob = source => crypto.createHash("sha1").update(`blob ${Buffer.byteLength(source)}\0`).update(source).digest("hex");
 assert.equal(matrix.sourceBlob,gitBlob(worker),"route inventory Worker source fingerprint is stale");
 for(const [file,source] of Object.entries(sourceFiles)){
   assert.equal(matrix.featureSourceBlobs?.[file],gitBlob(source),"route inventory feature source fingerprint is stale: "+file);
@@ -64,7 +64,7 @@ for(const route of [...matrix.exactRoutes,...matrix.dynamicRoutes]){
   const source=sourceFiles[route.sourceFile];
   assert.ok(source,"route source file is not registered: "+route.sourceFile);
   for(const lineNumber of route.sourceLines){
-    const line=source.split("\\n")[lineNumber-1]||"";
+    const line=source.split("\n")[lineNumber-1]||"";
     assert.ok(line.includes("m==="),"domain route evidence line must include a method guard: "+route.path||route.pathPattern);
     assert.ok(route.methods.some(method=>line.includes(method)),"domain route evidence method mismatch: "+(route.path||route.pathPattern));
   }
