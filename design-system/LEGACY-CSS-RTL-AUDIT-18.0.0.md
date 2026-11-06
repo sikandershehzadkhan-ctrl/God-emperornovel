@@ -10,7 +10,7 @@ The scan counted physical CSS property declarations, not selector count. These d
 
 | Stylesheet | Physical declarations | Observed properties |
 |---|---:|---|
-| `public/style-17.23.0.css` | 36 after targeted patch | left: 1; right: 19; margin-left: 4; margin-right: 4; padding-left: 1; border-left: 5; border-left-color: 1; border-right: 1 |
+| `public/style-17.23.0.css` | 28 after targeted patches | left: 1; right: 19; margin-left: 4; margin-right: 2; border-left: 1; border-left-color: 1 |
 | `public/app-17.23.0.css` | 0 after targeted patch | community reply indentation now uses `margin-inline-start` at desktop and mobile widths |
 | `public/imperial-luxury-17.23.0.css` | 4 | right: 4 |
 | `public/imperial-formats-17.23.0.css` | 0 after targeted patch | homepage format arrow now uses `margin-inline-start` |
@@ -19,7 +19,7 @@ The scan counted physical CSS property declarations, not selector count. These d
 | `public/imperial-design-tokens.css` | 0 | none found |
 | `public/imperial-ui-primitives.css` | 0 | none found |
 
-The new token and primitive layers are clean in this scan. The safe, component-scoped direction assumptions found in community reply indentation, homepage format arrow, mobile navigation viewport anchoring, catalog metadata alignment, catalog status badge anchoring, and reader lock-action spacing were migrated to logical properties and guarded by the design-system contract test. Remaining legacy physical declarations are concentrated in the main stylesheet and include navigation/drawer, mobile navigation, tooltip, decorative hero, and component accents. The declaration inventory alone cannot determine which ones need mirroring.
+The new token and primitive layers are clean in this scan. The safe, component-scoped direction assumptions found in community reply indentation, homepage format arrow, mobile navigation viewport anchoring, catalog metadata alignment, catalog status badge anchoring, reader lock-action spacing, menu drawer anchoring and RTL slide direction, active navigation indicators, menu icon spacing, legal list and notice accents, active filter label spacing, and Trend Factory note accents were migrated to logical properties and guarded by the design-system contract test. Remaining legacy physical declarations are concentrated in the main stylesheet and include navigation/drawer, mobile navigation, tooltip, decorative hero, and component accents. The declaration inventory alone cannot determine which ones need mirroring. The latest shared-shell slice reduced the main stylesheet's physical-direction inventory from 36 to 28 declarations.
 
 ## 2. Responsive breakpoint inventory
 
@@ -51,6 +51,6 @@ For each slice: make only component-scoped logical-property changes; add a sourc
 
 - Source inventory completed for the eight registered stylesheets listed above.
 - New token and primitive stylesheets contain no physical left/right declarations in the scan.
-- Legacy declarations are catalogued, not yet bulk-rewritten.
+- Remaining legacy declarations are catalogued; no global rewrite was applied.
 - 320px and multilingual browser visual QA remain outstanding.
 - No merge, production deployment, or runtime behavior change is claimed.
