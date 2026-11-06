@@ -236,3 +236,12 @@ Settings panels, appearance/accessibility preference rows, native preference con
 This migration changes presentation only. It does not change local preference keys, export/reset behavior, reader preference semantics, notification API calls, read-state mutation, account authentication or server data. Settings that are explicitly device-local remain device-local.
 
 Visual QA remains required across all six themes, keyboard-only use, high-contrast and reduced-motion modes, notification empty/unread/read/error states, 360px/390px layouts, RTL and screen-reader announcements.
+
+
+## 16. Author Studio source adoption
+
+The current Author Studio route is rendered through the shared page template. Its actual creation, works-list, edit-story, chapter-composer and comic-page-composer classes now receive six-theme semantic styling. The layout adapts from a single-column mobile flow to a two-column desktop workspace, with the introduction and work list spanning the full width. Status chips use semantic success, info and danger roles; form controls, action surfaces and keyboard focus use shared tokens.
+
+This is a CSS-only adoption. It does not change author/admin role gates, private-draft creation, rights-evidence requirements, chapter submission, ticket fields, comic page ordering/limits, or any author API. No upload/image-hosting capability is implied.
+
+Browser QA is still required for author and admin roles, non-author application state, unauthenticated state, populated/empty/error work lists, editing, chapter and comic forms, all six themes, RTL, keyboard and screen-reader use, and mobile widths.
