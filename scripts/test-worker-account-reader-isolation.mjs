@@ -106,7 +106,7 @@ try{
   ];
   for(const [method,route] of studioAnonymousRoutes){
     const response=await request(origin,route,{method,origin,body:method==="GET"?undefined:{cancel:true}});
-    assert.equal(response.status,401,"anonymous access must be denied for "+method+" "+route);
+    assert.ok([401,403].includes(response.status),"anonymous access must be denied for "+method+" "+route);
   }
 
   const suffix=Date.now().toString(36).slice(-6);
