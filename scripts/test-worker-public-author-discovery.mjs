@@ -100,7 +100,7 @@ try{
  assert.equal(bounded.data.length,50,"search results must be capped at 50");
  assert.ok(bounded.data.every(x=>x.author.startsWith("DirectoryAuthor")));
  const exactBoundary=await request(origin,"/api/public-authors?q="+("x".repeat(80)));
- assert.equal(exactBoundary.status,200,"an 80-character query must be accepted");
+ assert.equal(exactBoundary.status,200,"an 80-character query must be accepted; response="+JSON.stringify(exactBoundary)+"; Worker logs="+serverLogs);
  const trimmedBoundary=await request(origin,"/api/public-authors?q="+encodeURIComponent(" "+"x".repeat(80)+" "));
  assert.equal(trimmedBoundary.status,200,"surrounding whitespace must be trimmed before the 80-character limit is evaluated");
  const overBoundary=await request(origin,"/api/public-authors?q="+("x".repeat(81)));
