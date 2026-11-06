@@ -193,3 +193,12 @@ Required checks before marking this slice complete:
 **Integrity correction:** the rights-review card no longer links to `/admin` as though a working review center exists. It now states that the admin review workspace is not available yet. The frontend boot router currently has no dedicated `/admin` renderer; no admin dashboard or authorization capability is implied by this design migration.
 
 **Still required:** browser QA for all six themes; live, empty, loading and API-error states; long titles; desktop/tablet/360px/390px layouts; RTL; keyboard and screen-reader checks. Admin remains a separate functional and server-authorization workstream.
+
+
+## 16. Dedicated Admin template source adoption
+
+**Route correction:** `/admin` is served by the Worker as `public/admin.html`; it is not rendered by the public `app.js` shell router. The dedicated template calls `/api/me` and replaces its body unless the authenticated role is `admin`. The Worker API layer also has a server-side administrator guard, and the audited stats, users, publishing and connector endpoints invoke it.
+
+**Implemented in source:** the dedicated Admin template's hero, cards, navigation, tables, forms, notices, status labels and actions now consume semantic six-theme roles. Keyboard focus, 44px navigation/action targets, narrow-screen table scrolling and reduced-motion behavior are included. Existing administration workflows, API calls and authorization logic are unchanged.
+
+**Still required:** full endpoint-by-endpoint authorization review, CSRF/session review, owner/admin privilege-boundary tests, all six themes, mobile/tablet/desktop screenshots, RTL, keyboard and screen-reader QA, and populated/empty/error states. This is a source-level visual adoption, not a security sign-off or production release.
