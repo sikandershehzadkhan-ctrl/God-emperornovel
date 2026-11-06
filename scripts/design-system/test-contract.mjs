@@ -81,6 +81,13 @@ for (const theme of themes) {
   assert.ok(contrastRatio(focus, canvas) >= 3, theme + " focus indicator fails non-text contrast");
   const strongBorder = readHex(match[1], "--in-border-strong", theme);
   assert.ok(contrastRatio(strongBorder, canvas) >= 3, theme + " strong control border fails non-text contrast");
+  const highContrastLight = ["light", "sepia"].includes(theme);
+  const highContrastBorder = highContrastLight ? "#68757D" : "#8799A3";
+  const highContrastStrongBorder = highContrastLight ? "#46535B" : "#B1C0C7";
+  const highContrastFocus = highContrastLight ? "#064A9E" : "#A9D0FF";
+  assert.ok(contrastRatio(highContrastBorder, canvas) >= 3, theme + " high-contrast default boundary fails non-text contrast");
+  assert.ok(contrastRatio(highContrastStrongBorder, canvas) >= 3, theme + " high-contrast strong boundary fails non-text contrast");
+  assert.ok(contrastRatio(highContrastFocus, canvas) >= 3, theme + " high-contrast focus indicator fails non-text contrast");
   for (const status of ["success", "warning", "danger", "info"]) {
     const foreground = readHex(match[1], "--in-status-" + status, theme);
     const background = readHex(match[1], "--in-status-" + status + "-bg", theme);
