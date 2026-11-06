@@ -63,6 +63,8 @@ for (const theme of themes) {
   assert.ok(contrastRatio(secondaryActionText, secondary) >= 4.5, theme + " secondary action text fails WCAG AA contrast");
   assert.ok(contrastRatio(link, canvas) >= 4.5, theme + " link color fails WCAG AA contrast");
   assert.ok(contrastRatio(focus, canvas) >= 3, theme + " focus indicator fails non-text contrast");
+  const strongBorder = readHex(match[1], "--in-border-strong", theme);
+  assert.ok(contrastRatio(strongBorder, canvas) >= 3, theme + " strong control border fails non-text contrast");
   for (const status of ["success", "warning", "danger", "info"]) {
     const foreground = readHex(match[1], "--in-status-" + status, theme);
     const background = readHex(match[1], "--in-status-" + status + "-bg", theme);
