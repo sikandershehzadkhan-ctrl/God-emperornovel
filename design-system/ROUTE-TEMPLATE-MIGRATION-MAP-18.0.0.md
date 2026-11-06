@@ -166,3 +166,12 @@ Required checks before marking this slice complete:
 **Intentionally unchanged:** device-local preference keys, export/reset behavior, independent reader preferences, notification API/read-state behavior, authentication and server data.
 
 **Still required:** six-theme visual QA; keyboard-only and screen-reader review; high-contrast/reduced-motion checks; read/unread/empty/error notification states; 360px/390px layouts and RTL. Source CSS and contract assertions are not visual sign-off.
+
+
+## 13. Author Studio source adoption
+
+**Implemented in source:** actual authorStudioLayout, authorCreateForm, authorWorksPanel, authorWork, authorEditForm, authorChapterForm and comicAuthorBuilder regions receive semantic six-theme styling. Desktop uses a two-column workspace; mobile collapses forms and actions to one column. Status chips, inputs, focus states and action touch targets use semantic roles.
+
+**Intentionally unchanged:** role gating, private drafts, rights evidence, author APIs, publication review, chapter submission, ticket fields and comic sequence limits.
+
+**Still required:** browser QA for unauthenticated/non-author/author/admin states, empty/populated/error work lists, story editing, chapter/comic creation, six themes, RTL, keyboard/screen reader and mobile widths. Source checks are not visual sign-off.
