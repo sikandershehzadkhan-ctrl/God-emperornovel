@@ -1,0 +1,113 @@
+{
+  "featureId": "rankings-tier-list-localization",
+  "domainOwner": "discovery",
+  "technicalIntegrator": "platform-integrator",
+  "ownedPaths": [
+    "scripts/test-rankings-localization.mjs",
+    "scripts/test-period-correct-leaderboard.mjs"
+  ],
+  "sharedSurfaces": [
+    "public/app.js",
+    "public/app-17.23.0.js",
+    "package.json",
+    "docs/architecture/feature-contracts/platform-integration-governance.json"
+  ],
+  "dependencies": [
+    "discovery",
+    "experience-shell",
+    "platform-quality",
+    "platform-architecture"
+  ],
+  "routes": [
+    "/leaderboard (existing)",
+    "/tier-list (existing)",
+    "GET /api/leaderboard (existing)",
+    "GET /api/tier-list (existing)"
+  ],
+  "apiContracts": [
+    "No route or API response shape changes.",
+    "Weekly, monthly and all-time leaderboard semantics remain period-scoped chapter unlocks; only interface labels are localized."
+  ],
+  "dataEntities": [
+    "No new entity, column or migration; existing public aggregate ranking data is reused."
+  ],
+  "migrationPlan": {
+    "required": false,
+    "proposedNumbers": [],
+    "canonicalEntityReuse": "Uses existing leaderboard and tier-list API responses and the browser-local imperial_language preference.",
+    "backwardCompatibility": "English remains the fallback; existing ranking data and routes are unchanged.",
+    "rollbackOrForwardRepair": "Revert the ranking locale dictionary, localized rendering labels and regression; no data repair is needed."
+  },
+  "uiLifecycle": {
+    "shellOwner": "experience-shell",
+    "ssrBehavior": "No SSR changes.",
+    "clientBootBehavior": "Leaderboard and tier-list static labels are translated on render; dynamic cards use the active locale for UI labels while creator-authored names remain unchanged.",
+    "servedBundleParity": "public/app.js and public/app-17.23.0.js remain byte-identical."
+  },
+  "privacySecurity": {
+    "authentication": "Existing public aggregate read behavior is unchanged.",
+    "authorization": "No new route or write operation.",
+    "ownerScoping": "Only existing public aggregate ranking results are rendered; no owner-scoped data is added.",
+    "csrf": "No mutation.",
+    "rateAndSizeLimits": "No API limits change.",
+    "rightsAndPrivacy": "Published rights-eligible ranking filters remain unchanged; creator-authored titles and author names are not translated."
+  },
+  "tests": {
+    "unit": [
+      "test-rankings-localization.mjs",
+      "test-period-correct-leaderboard.mjs: unlock count assertions use the active ranking locale key rather than hard-coded English."
+    ],
+    "integration": [
+      "Fourteen-locale leaderboard and tier-list rendering, selected-period unlock metric labels, empty states, rating formatter and bundle parity."
+    ],
+    "isolation": [
+      "Dynamic creator-authored titles and author names remain untouched."
+    ],
+    "buildCommands": [
+      "npm run build"
+    ]
+  },
+  "rollout": {
+    "flags": [],
+    "stagingSteps": [
+      "Run all six exact-head workflows.",
+      "Verify weekly/monthly/all-time labels and chapter-unlock explanations across fourteen locales.",
+      "Verify novel and author unlock counts are displayed without changing API ranking semantics.",
+      "Verify tier-list labels, empty states and source/served bundle parity."
+    ]
+  },
+  "rollback": {
+    "codeRollback": "Revert ranking localization dictionary, render labels and test together.",
+    "dataRollbackOrForwardRepair": "No data or database changes.",
+    "monitoringSignals": [
+      "Ranking locale completeness",
+      "Dynamic page localization after render",
+      "Source/served bundle parity",
+      "Existing leaderboard regression"
+    ]
+  },
+  "collisionReview": {
+    "duplicateRoutes": "No route added; existing leaderboard and tier-list routes reused.",
+    "duplicateEntities": "No entity added.",
+    "migrationAllocation": "No migration required.",
+    "sharedSurfaceOwners": "Discovery owns ranking semantics; experience shell owns presentation; platform quality owns regression; architecture records shared-surface ownership."
+  },
+  "affectedDomains": [
+    "discovery",
+    "experience-shell",
+    "platform-quality",
+    "platform-architecture"
+  ],
+  "changeSummary": "Adds fourteen-locale leaderboard and tier-list localization using the canonical period chapter-unlock metric and current 17.23 bundle. Updates the canonical period-ranking regression to validate localized unlock-count labels.",
+  "acceptanceCriteria": [
+    "All fourteen locales contain the leaderboard and tier-list labels used by the canonical UI.",
+    "Weekly, monthly and all-time explanations accurately describe period-scoped chapter-unlock rankings.",
+    "Novel and author unlock metrics, empty states and tier labels are localized.",
+    "The canonical ten-point rating formatter and published-rights eligibility semantics remain unchanged.",
+    "Creator-authored story titles and author names are not translated.",
+    "Dynamic ranking results reapply the selected interface locale.",
+    "Canonical and served 17.23 browser bundles remain byte-identical.",
+    "No API, database, migration, production data or deployment changes are introduced.",
+    "The period-correct leaderboard regression accepts localized unlock-count labels while continuing to verify the returned numeric counts."
+  ]
+}

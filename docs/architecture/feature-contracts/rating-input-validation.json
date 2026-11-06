@@ -1,0 +1,109 @@
+{
+  "featureId": "rating-input-validation",
+  "domainOwner": "catalog",
+  "technicalIntegrator": "platform-kernel",
+  "ownedPaths": [
+    "src/index.js",
+    "scripts/test-rating-input-validation.mjs",
+    "package.json",
+    "docs/architecture/feature-contracts/rating-input-validation.json",
+    "docs/architecture/decisions/ADR-0015-rating-input-validation.md",
+    "scripts/test-rating-handler-canonical.mjs"
+  ],
+  "sharedSurfaces": [
+    "src/index.js",
+    "package.json"
+  ],
+  "dependencies": [
+    "platform-kernel",
+    "platform-quality",
+    "repository-operations",
+    "platform-architecture"
+  ],
+  "routes": [
+    "POST /api/rating retains its canonical route; no route or response shape change."
+  ],
+  "apiContracts": [
+    "Rating writes accept only positive safe-integer novel IDs and whole-number ratings from 1 through 10.",
+    "Fractional, non-finite, string-typed, missing, null, out-of-range and unsafe integer inputs are rejected with HTTP 400.",
+    "The server does not round or coerce a fractional rating into an accepted value."
+  ],
+  "dataEntities": [
+    "ratings; existing canonical table and 1–10 range are reused; no schema change."
+  ],
+  "migrationPlan": {
+    "required": false,
+    "proposedNumbers": [],
+    "canonicalEntityReuse": "Reuse the existing ratings table and its 1–10 CHECK constraint. No migration is required.",
+    "backwardCompatibility": "No stored data or schema changes. Existing valid integer ratings remain accepted.",
+    "rollbackOrForwardRepair": "Revert the route-only validation simplification if an unexpected API regression appears; no data repair is required."
+  },
+  "uiLifecycle": {
+    "shellOwner": "experience-shell",
+    "ssrBehavior": "No SSR changes.",
+    "clientBootBehavior": "No browser changes.",
+    "servedBundleParity": "No browser asset changes."
+  },
+  "privacySecurity": {
+    "authentication": "Existing authenticated-session requirement remains.",
+    "authorization": "Only the authenticated user can write their own rating.",
+    "ownerScoping": "Rating writes continue to bind user_id to authenticated session user.",
+    "csrf": "Existing write-route CSRF protections remain unchanged.",
+    "rateAndSizeLimits": "Existing request body and route limits remain unchanged.",
+    "referentialIntegrity": "Existing novel publication and rights-eligibility checks remain unchanged."
+  },
+  "tests": {
+    "unit": [
+      "test-rating-input-validation.mjs: accepts whole-number 1–10 only; rejects fractions, NaN, Infinity, strings, null, out-of-range values and invalid novel IDs",
+      "test-rating-handler-canonical.mjs: assert unique GET/POST handlers, publication and rights gates, 1–10 bounds and no rounding"
+    ],
+    "integration": [
+      "Mandatory npm build executes rating input regression against the canonical Worker source."
+    ],
+    "isolation": [
+      "No ownership or session boundary changes."
+    ],
+    "buildCommands": [
+      "npm run build"
+    ]
+  },
+  "rollout": {
+    "flags": [
+      "No feature flag."
+    ],
+    "stagingSteps": [
+      "Run the mandatory build and Cloudflare Source Validation on the exact PR head.",
+      "Confirm route registry and API/authorization source fingerprints match the Worker snapshot."
+    ]
+  },
+  "rollback": {
+    "codeRollback": "Revert the route-only validation simplification and regression test if unexpected behavior appears.",
+    "dataRollbackOrForwardRepair": "No schema or data changes.",
+    "monitoringSignals": [
+      "HTTP 400 rates for invalid rating submissions",
+      "Rating write error rate",
+      "Rating aggregate consistency"
+    ]
+  },
+  "collisionReview": {
+    "duplicateRoutes": "No route added; existing POST /api/rating is updated in place.",
+    "duplicateEntities": "No new table or data entity.",
+    "migrationAllocation": "No migration allocated; canonical ratings schema remains unchanged.",
+    "sharedSurfaceOwners": "Worker route owned by platform-kernel; regression test by platform-quality; package script by repository-operations; contract and ADR by platform-architecture."
+  },
+  "affectedDomains": [
+    "catalog",
+    "platform-kernel",
+    "platform-quality",
+    "repository-operations",
+    "platform-architecture"
+  ],
+  "changeSummary": "Removes redundant Math.round from rating input handling after explicit safe-integer validation, making the 1–10 whole-number contract direct and regression-tested.",
+  "acceptanceCriteria": [
+    "Only positive safe-integer novel IDs are accepted.",
+    "Only whole-number ratings 1–10 are accepted.",
+    "No rounding or fractional coercion occurs.",
+    "Published and rights-eligible novel checks remain unchanged.",
+    "No migration, route addition, response-shape change or browser bundle change."
+  ]
+}

@@ -1,0 +1,101 @@
+{
+  "featureId": "reader-accessibility-controls",
+  "domainOwner": "reader",
+  "technicalIntegrator": "platform-integrator",
+  "ownedPaths": [
+    "scripts/test-reader-accessibility.mjs"
+  ],
+  "sharedSurfaces": [
+    "public/app.js",
+    "public/app-17.23.0.js",
+    "package.json",
+    "docs/architecture/feature-contracts/platform-integration-governance.json"
+  ],
+  "dependencies": [
+    "reader",
+    "experience-shell",
+    "platform-quality",
+    "platform-architecture"
+  ],
+  "routes": [],
+  "apiContracts": [
+    "Chapter completion is exposed as a labeled progressbar with a bounded 0–100 value that updates during scrolling.",
+    "Novel chapter position remains separate from within-chapter completion.",
+    "The chapter drawer is connected to its trigger, moves focus when opened, and closes on Escape while restoring focus to the trigger.",
+    "Font-size controls expose descriptive accessible names."
+  ],
+  "dataEntities": [
+    "No data entities changed."
+  ],
+  "migrationPlan": {
+    "required": false,
+    "proposedNumbers": [],
+    "canonicalEntityReuse": "No persistence changes; existing reading_positions remain unchanged.",
+    "backwardCompatibility": "No API or storage contract changes.",
+    "rollbackOrForwardRepair": "Code-only rollback; no database repair required."
+  },
+  "uiLifecycle": {
+    "shellOwner": "experience-shell",
+    "ssrBehavior": "No SSR changes.",
+    "clientBootBehavior": "Reader progress and chapter drawer semantics are added after the existing reader route renders.",
+    "servedBundleParity": "public/app.js and public/app-17.23.0.js are byte-identical."
+  },
+  "privacySecurity": {
+    "authentication": "No authentication changes.",
+    "authorization": "No API route changes.",
+    "ownerScoping": "No data ownership changes.",
+    "csrf": "Not applicable; no writes or routes added.",
+    "rateAndSizeLimits": "No new inputs or payloads.",
+    "rightsAndPrivacy": "No content projection changes."
+  },
+  "tests": {
+    "unit": [
+      "test-reader-accessibility.mjs"
+    ],
+    "integration": [
+      "Reader source and served bundle parity; accessible reader state and focus behavior assertions."
+    ],
+    "isolation": [],
+    "buildCommands": [
+      "npm run build"
+    ]
+  },
+  "rollout": {
+    "flags": [],
+    "stagingSteps": [
+      "Run all exact-head integration workflows.",
+      "Verify keyboard-only drawer open/close and focus restoration.",
+      "Verify progressbar value follows scroll and reports chapter completion only."
+    ]
+  },
+  "rollback": {
+    "codeRollback": "Revert the reader markup and focus/progress semantics together.",
+    "dataRollbackOrForwardRepair": "No database changes.",
+    "monitoringSignals": [
+      "Reader accessibility regression suite",
+      "Source/served bundle parity"
+    ]
+  },
+  "collisionReview": {
+    "duplicateRoutes": "No routes added or changed.",
+    "duplicateEntities": "No data entities added.",
+    "migrationAllocation": "No migration required.",
+    "sharedSurfaceOwners": "Reader and experience-shell own the browser behavior; platform-quality owns regression checks; architecture contract is updated."
+  },
+  "affectedDomains": [
+    "reader",
+    "experience-shell",
+    "platform-quality",
+    "platform-architecture"
+  ],
+  "changeSummary": "Adds screen-reader progress semantics, accessible drawer relationships and focus management, Escape-to-close behavior, and descriptive font control names without changing reader persistence.",
+  "acceptanceCriteria": [
+    "Progressbar exposes label, min, max and current chapter percentage.",
+    "Progressbar value updates while scrolling.",
+    "Chapter completion is not confused with novel chapter position.",
+    "Drawer opens with focus moved to its close control and Escape closes it with focus restored.",
+    "Font-size controls have accessible names.",
+    "Served bundle matches source.",
+    "No API, migration or production data changes."
+  ]
+}

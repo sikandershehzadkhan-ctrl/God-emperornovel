@@ -1,0 +1,25 @@
+import assert from "node:assert/strict";
+import fs from "node:fs";
+
+const app=fs.readFileSync("public/app.js","utf8");
+const served=fs.readFileSync("public/app-17.23.0.js","utf8");
+const html=fs.readFileSync("public/index.html","utf8");
+const start=app.indexOf("async function reader(){");
+assert.ok(start>=0,"Reader route must exist");
+const end=app.indexOf("\nasync function ",start+30);
+assert.ok(end>start,"Reader route boundary must exist");
+const reader=app.slice(start,end);
+assert.ok(reader.includes('role="progressbar" aria-label="Chapter progress"'),"Chapter progress must expose a labeled progressbar");
+assert.ok(reader.includes('aria-valuemin="0" aria-valuemax="100" aria-valuenow="${chapterPct}"'),"Initial progress must expose its numeric range and current value");
+assert.ok(reader.includes('aria-valuetext="${chapterPct}% ${readerText(\'through chapter\')}"'),"Initial progress must expose a readable value");
+assert.ok(reader.includes("const updateReaderProgressAria=pct=>"),"Live progress must have one accessible update path");
+assert.ok(reader.includes("setAttribute('aria-valuenow',String(pct))")&&reader.includes("setAttribute('aria-valuetext',pct+'% '+readerText('through chapter'))"),"Progress announcements must track live reader progress");
+assert.ok(reader.includes('aria-controls="chapterDrawer"')&&reader.includes('aria-labelledby="chapterDrawerTitle"'),"Chapter menu and drawer must have an accessible relationship");
+assert.ok(reader.includes("if(!drawer.hidden)$('#closeChapterMenu').focus()"),"Opening the drawer must move focus to its close control");
+assert.ok(reader.includes("e.key==='Escape'&&!drawer.hidden")&&reader.includes("chapterMenuButton.focus()"),"Escape must close the drawer and restore focus to its trigger");
+assert.ok(reader.includes('aria-label="Decrease font size"')&&reader.includes('aria-label="Increase font size"'),"Font controls must have descriptive accessible names");
+assert.ok(reader.includes('id="progressText">${chapterPct}% ${readerText(\'through chapter\')} · ${initialNovelProgress}% ${readerText(\'through novel\')}'),"Chapter completion must not be confused with novel chapter position");
+assert.ok(reader.includes("button.setAttribute('aria-pressed',String(bookmarked))"),"Explicit bookmark control must retain its accessible toggle state");
+assert.equal(app,served,"Served reader bundle must match source app.js");
+assert.ok(html.includes("/app-17.23.0.js"),"Public entry must load the synchronized versioned asset");
+console.log("Reader accessibility passed: progress semantics, live value updates, drawer relationships/focus, Escape handling and font control names.");

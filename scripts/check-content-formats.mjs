@@ -96,7 +96,7 @@ assert.ok(!/imperial-novel-app-icon\.svg\?v=17\.(?:13|15|16|17)\.0/.test(runtime
 assert.ok(fs.existsSync('public/imperial-novel-app-icon.svg'), 'Imperial Novel app icon asset exists');
 assert.ok(sw.includes("'/imperial-novel-app-icon.svg'"), 'Service worker precaches the new app icon asset');
 assert.ok(JSON.parse(fs.readFileSync(`public/manifest-${version}.webmanifest`,'utf8')).icons[0].src==='/imperial-novel-app-icon.svg', 'Installed app manifest uses the new app icon');
-assert.ok(sw.includes(`const CACHE='imperial-novel-v${version}'`), 'Service worker cache key matches the release');
+assert.ok(sw.includes(`const CACHE='imperial-novel-v${version}`), 'Service worker cache namespace includes the release version');
 assert.ok(sw.includes("key!==CACHE") && sw.includes("caches.delete(key)"), 'Activation clears obsolete Imperial Novel caches');
 const coreMatch = sw.match(/const CORE=\[([^\]]+)\]/);
 assert.ok(coreMatch, 'Service worker declares a core asset list');
@@ -109,15 +109,15 @@ for (const asset of coreAssets) {
 
 assert.ok(runtime.includes("navigator.serviceWorker.register('/sw.js',{updateViaCache:'none'})"), 'Application registers the cache worker without stale update checks');
 assert.ok(luxuryCss.includes(':focus-visible') && luxuryCss.includes('prefers-reduced-motion:reduce') && luxuryCss.includes('forced-colors:active'), 'Design system includes keyboard, reduced-motion, and forced-color accessibility safeguards');
-assert.ok(runtime.includes('class="skipLink" href="#app">Skip to main content</a>') && entry.includes('id="app" class="appBootRoot" tabindex="-1"') && luxuryCss.includes('.skipLink:focus-visible'), 'Keyboard users can skip navigation and focus the main content landmark');
+assert.ok(runtime.includes('class="skipLink" href="#app" data-in-lang>Skip to main content</a>') && entry.includes('id="app" class="appBootRoot" tabindex="-1"') && luxuryCss.includes('.skipLink:focus-visible'), 'Keyboard users can skip navigation and focus the main content landmark');
 assert.ok(runtime.includes('".navlinks a,.menuDrawer a span,.footerLinks a,.mobileNav a"'), 'Shared localization includes the mobile navigation and footer');
 assert.ok(runtime.includes('n.nodeType===3&&n.textContent.trim()') && runtime.includes('e.dataset.inLangKey'), 'Language switching preserves mobile navigation icons and original translation keys');
-assert.ok(runtime.includes('document.documentElement.dir=(c==="ur"||c==="ar")?"rtl":"ltr"'), 'Arabic and Urdu languages switch the document to right-to-left layout');
+assert.ok(runtime.includes('document.documentElement.dir=(c==="ur"||c==="ar"||c==="fa")?"rtl":"ltr"'), 'Arabic and Urdu languages switch the document to right-to-left layout');
 assert.ok(runtime.includes('"Switch to light mode"') && runtime.includes('"Switch to dark mode"') && runtime.includes('"Open navigation menu"'), 'Shared accessibility labels are localized');
 assert.ok(runtime.includes('"vi"') && runtime.includes('"fa"') && runtime.includes('value="vi">Tiếng Việt') && runtime.includes('value="fa">فارسی'), 'Vietnamese and Persian are selectable interface languages');
-assert.ok(runtime.includes('const t={...IN_LANG.en,...(IN_LANG[c]||{})}') && runtime.includes('e.textContent=key;return'), 'Missing translations safely fall back to English instead of retaining a previous language');
+assert.ok(runtime.includes('const t={...IN_LANG.en,...(IN_LANG[c]||{}),') && runtime.includes('value=t[key]||key'), 'Missing translations safely fall back to English instead of retaining a previous language');
 assert.ok(runtime.includes("document.body.classList.remove('menu-open');setINLang(document.documentElement.lang||'en')") && runtime.includes("document.body.classList.add('menu-open');setINLang(document.documentElement.lang||'en')"), 'Opening and closing the menu refreshes its localized accessibility label');
-assert.ok(runtime.includes("applyImperialTheme(document.documentElement.dataset.theme==='dark'?'light':'dark');setINLang(document.documentElement.lang||'en')"), 'Theme-toggle accessibility label follows the newly selected theme');
+assert.ok(runtime.includes("applyImperialTheme(IMPERIAL_THEMES[(IMPERIAL_THEMES.indexOf(document.documentElement.dataset.theme)+1)%IMPERIAL_THEMES.length]);setINLang(document.documentElement.lang||'en')"), 'Theme-toggle accessibility label follows the newly selected theme across all six registered themes');
 
 
 const formatCss = fs.readFileSync(`public/imperial-formats-${version}.css`,'utf8');
