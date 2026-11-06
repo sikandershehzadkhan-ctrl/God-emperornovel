@@ -643,3 +643,80 @@ html[data-theme] .trendFactoryPage .trendSafetyCard a{min-height:var(--in-touch-
 @media(prefers-reduced-motion:reduce){
  html[data-theme] .trendFactoryPage *,html[data-theme] .trendFactoryPage *::before,html[data-theme] .trendFactoryPage *::after{scroll-behavior:auto!important;transition:none!important;animation:none!important}
 }
+
+
+/* Dedicated Admin template: semantic theme adoption without changing its permissions or workflows. */
+html[data-theme] body.adminDashboardPage{background:var(--in-bg-canvas);color:var(--in-text-primary)}
+html[data-theme] body.adminDashboardPage .adminWrap{color:var(--in-text-primary)}
+html[data-theme] body.adminDashboardPage .adminHero,
+html[data-theme] body.adminDashboardPage .adminCard,
+html[data-theme] body.adminDashboardPage .adminWrap .panel{
+ background:var(--in-bg-surface);color:var(--in-text-primary);
+ border:1px solid var(--in-border-default);box-shadow:var(--in-shadow-sm);
+}
+html[data-theme] body.adminDashboardPage .adminHero{
+ background:linear-gradient(135deg,color-mix(in srgb,var(--in-action-primary) 12%,var(--in-bg-surface)),var(--in-bg-elevated));
+}
+html[data-theme] body.adminDashboardPage .adminHero h1,
+html[data-theme] body.adminDashboardPage .adminWrap h2,
+html[data-theme] body.adminDashboardPage .adminCard b.big{color:var(--in-text-primary)}
+html[data-theme] body.adminDashboardPage .adminHero p,
+html[data-theme] body.adminDashboardPage .adminCard small,
+html[data-theme] body.adminDashboardPage .muted2{color:var(--in-text-secondary)}
+html[data-theme] body.adminDashboardPage .adminNav{scrollbar-width:thin}
+html[data-theme] body.adminDashboardPage .adminNav button{
+ min-height:var(--in-touch-target);background:var(--in-bg-elevated);
+ color:var(--in-text-secondary);border:1px solid var(--in-border-default);
+}
+html[data-theme] body.adminDashboardPage .adminNav button.active{
+ background:color-mix(in srgb,var(--in-action-primary) 14%,var(--in-bg-surface));
+ border-color:var(--in-action-primary);color:var(--in-text-primary);
+}
+html[data-theme] body.adminDashboardPage .adminTable{background:var(--in-bg-surface);color:var(--in-text-primary)}
+html[data-theme] body.adminDashboardPage .adminTable th{
+ background:var(--in-bg-subtle);color:var(--in-text-secondary);
+ border-color:var(--in-border-default);
+}
+html[data-theme] body.adminDashboardPage .adminTable td{
+ color:var(--in-text-primary);border-color:var(--in-border-default);
+}
+html[data-theme] body.adminDashboardPage .adminForm input,
+html[data-theme] body.adminDashboardPage .adminForm select,
+html[data-theme] body.adminDashboardPage .adminForm textarea,
+html[data-theme] body.adminDashboardPage #chapterForm input,
+html[data-theme] body.adminDashboardPage #chapterForm textarea{
+ background:var(--in-bg-elevated);color:var(--in-text-primary);
+ border:1px solid var(--in-border-strong);
+}
+html[data-theme] body.adminDashboardPage .mini{
+ background:var(--in-bg-elevated);color:var(--in-text-primary)!important;
+ border-color:var(--in-border-strong);
+}
+html[data-theme] body.adminDashboardPage .status{
+ color:var(--in-text-primary);border-color:var(--in-border-default);
+}
+html[data-theme] body.adminDashboardPage .adminMsg,
+html[data-theme] body.adminDashboardPage .notice{
+ color:var(--in-text-primary);border-color:var(--in-border-default);
+}
+html[data-theme] body.adminDashboardPage a:focus-visible,
+html[data-theme] body.adminDashboardPage button:focus-visible,
+html[data-theme] body.adminDashboardPage input:focus-visible,
+html[data-theme] body.adminDashboardPage select:focus-visible,
+html[data-theme] body.adminDashboardPage textarea:focus-visible,
+html[data-theme] body.adminDashboardPage summary:focus-visible{
+ outline:3px solid var(--in-focus-ring);outline-offset:3px;
+}
+html[data-theme] body.adminDashboardPage .adminNav button,
+html[data-theme] body.adminDashboardPage .rowActions button,
+html[data-theme] body.adminDashboardPage .mobileAdmin a{min-height:var(--in-touch-target)}
+@media(max-width:760px){
+ html[data-theme] body.adminDashboardPage .adminWrap{padding-inline:12px}
+ html[data-theme] body.adminDashboardPage .adminNav{padding-bottom:8px}
+ html[data-theme] body.adminDashboardPage .adminTable{min-width:720px}
+}
+@media(prefers-reduced-motion:reduce){
+ html[data-theme] body.adminDashboardPage *,
+ html[data-theme] body.adminDashboardPage *::before,
+ html[data-theme] body.adminDashboardPage *::after{scroll-behavior:auto!important;transition:none!important;animation:none!important}
+}
