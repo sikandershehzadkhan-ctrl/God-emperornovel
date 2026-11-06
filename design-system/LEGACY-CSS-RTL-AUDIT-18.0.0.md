@@ -10,7 +10,7 @@ The scan counted physical CSS property declarations, not selector count. These d
 
 | Stylesheet | Physical declarations | Observed properties |
 |---|---:|---|
-| `public/style-17.23.0.css` | 7 after targeted patches | margin-left: 4; margin-right: 2; border-left-color: 1 |
+| `public/style-17.23.0.css` | 0 in current scan | no physical left/right properties or left/right text alignment found |
 | `public/app-17.23.0.css` | 0 after targeted patch | community reply indentation now uses `margin-inline-start` at desktop and mobile widths |
 | `public/imperial-luxury-17.23.0.css` | 0 after targeted patch | dark archive hero celestial ornaments now use logical inline-end positioning at desktop and mobile widths |
 | `public/imperial-formats-17.23.0.css` | 0 after targeted patch | homepage format arrow now uses `margin-inline-start` |
@@ -19,7 +19,7 @@ The scan counted physical CSS property declarations, not selector count. These d
 | `public/imperial-design-tokens.css` | 0 | none found |
 | `public/imperial-ui-primitives.css` | 0 | none found |
 
-The new token and primitive layers are clean in this scan. The safe, component-scoped direction assumptions found in community reply indentation, homepage format arrow, mobile navigation viewport anchoring, catalog metadata alignment, catalog status badge anchoring, reader lock-action spacing, menu drawer anchoring and RTL slide direction, active navigation indicators, menu icon spacing, legal list and notice accents, active filter label spacing, Trend Factory note accents, tooltip centering, homepage celestial artwork positioning, archive hero desktop/mobile ornaments, and reader chapter drawer anchoring/divider were migrated to logical properties and guarded by the design-system contract test. Remaining physical declarations in the main stylesheet are now concentrated in a small number of icon/status/navigation spacing rules and one remaining legacy border-color declaration. Reader chapter drawer anchoring and divider now use logical properties. Homepage celestial ornaments, archive hero ornaments, tooltip centering, legal accents, and Trend Factory note accents now use logical properties. The declaration inventory alone cannot determine which ones need mirroring. The latest homepage/luxury visual slice reduced the main stylesheet's physical-direction inventory from 28 to 7 declarations and the luxury stylesheet from 4 to 0.
+The new token and primitive layers are clean in this scan. Component-scoped migrations now cover community reply indentation, homepage format arrow, mobile navigation anchoring, catalog metadata and status badge placement, reader lock-action spacing, menu drawer anchoring and RTL slide direction, active navigation indicators, menu icon spacing, legal list and notice accents, active filter label spacing, Trend Factory note accents, tooltip centering, homepage celestial artwork, archive hero desktop/mobile ornaments, and reader chapter drawer anchoring/divider. The reader, random-discovery card, settings outputs, and format-experience text alignment now use `start`/`end` alignment rather than physical `left`/`right`. The current source scan finds no physical left/right positioning, margin, padding, inset, border longhands, or `text-align:left/right` declarations in the eight registered stylesheets. This is a source inventory only and does not prove correct visual behavior in every route or state.
 
 ## 2. Responsive breakpoint inventory
 
@@ -51,6 +51,7 @@ For each slice: make only component-scoped logical-property changes; add a sourc
 
 - Source inventory completed for the eight registered stylesheets listed above.
 - New token and primitive stylesheets contain no physical left/right declarations in the scan.
-- Remaining legacy declarations are catalogued; no global rewrite was applied.
+- The current scan finds zero physical-direction declarations across the eight registered stylesheets; no global rewrite was applied.
 - 320px and multilingual browser visual QA remain outstanding.
+- Source scan also found no `text-align:left/right`, `float:left/right`, or `clear:left/right` declarations in the eight registered stylesheets.
 - No merge, production deployment, or runtime behavior change is claimed.
