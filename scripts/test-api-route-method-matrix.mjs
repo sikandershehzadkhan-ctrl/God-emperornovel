@@ -65,7 +65,7 @@ for(const route of [...matrix.exactRoutes,...matrix.dynamicRoutes]){
   assert.ok(source,"route source file is not registered: "+route.sourceFile);
 
   if(route.routeMatchLine){
-    const matchLine=source.split("\\n")[route.routeMatchLine-1]||"";
+    const matchLine=source.split("\n")[route.routeMatchLine-1]||"";
     assert.ok(matchLine.includes("p.match")&&matchLine.includes("author"),"dynamic route match evidence must identify its route in "+route.sourceFile);
   }
   for(const lineNumber of route.sourceLines){
