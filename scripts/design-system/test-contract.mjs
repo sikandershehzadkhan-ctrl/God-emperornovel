@@ -27,7 +27,7 @@ const usage = fs.readFileSync("design-system/COMPONENT-USAGE-18.0.0.md", "utf8")
 const routeMap = fs.readFileSync("design-system/ROUTE-TEMPLATE-MIGRATION-MAP-18.0.0.md", "utf8");
 
 function readHex(block, token, theme) {
-  const match = block.match(new RegExp(token + ":\\s*(#[0-9A-Fa-f]{6})"));
+  const match = block.match(new RegExp(token + ":\s*(#[0-9A-Fa-f]{6})"));
   assert.ok(match, theme + " is missing a valid hex value for " + token);
   return match[1];
 }
@@ -53,7 +53,7 @@ const themeRoles = [
   "--in-reader-paper", "--in-reader-ink"
 ];
 for (const theme of themes) {
-  const match = tokens.match(new RegExp('(?:^|,)\\s*\\[data-theme="' + theme + '"\\]\\s*\\{([^}]*)\\}', "m"));
+  const match = tokens.match(new RegExp('(?:^|,)\s*\\[data-theme="' + theme + '"\\]\s*\\{([^}]*)\\}', "m"));
   assert.ok(match, "missing theme: " + theme);
   for (const role of themeRoles) {
     assert.ok(match[1].includes(role + ":"), theme + " theme is missing semantic role: " + role);
@@ -177,7 +177,7 @@ assert.ok(releaseStylesheets[0].includes(".liveBadge{margin-inline-start:auto;")
 assert.ok(releaseStylesheets[0].includes(".trendDataTag i{display:inline-block;width:6px;height:6px;border-radius:50%;background:currentColor;margin-inline-end:6px}"), "Trend Factory data indicator spacing must follow writing direction");
 assert.ok(releaseStylesheets[0].includes(".navright{margin-inline-start:auto;"), "mobile navigation action group must align to logical end");
 assert.ok(releaseStylesheets[0].includes(".nextReaderPromise>a{margin-inline-start:52px}"), "mobile reader promise link indentation must follow writing direction");
-assert.ok(!/(?:^|[;{])\\s*(?:left|right|margin-left|margin-right|padding-left|padding-right|border-left|border-right)(?:-[a-z]+)?\\s*:/im.test(releaseStylesheets[0]), "main stylesheet must not reintroduce physical horizontal positioning or spacing properties");
+assert.ok(!/(?:^|[;{])\s*(?:left|right|margin-left|margin-right|padding-left|padding-right|border-left|border-right)(?:-[a-z]+)?\s*:/im.test(releaseStylesheets[0]), "main stylesheet must not reintroduce physical horizontal positioning or spacing properties");
 
 assert.ok(releaseStylesheets[0].includes(".side a:hover,.side a.active{background:linear-gradient(90deg,rgba(117,48,255,.18),rgba(242,216,137,.05));color:#fff;border-inline-start:2px solid"), "active side navigation indicator must use a logical border");
 assert.ok(releaseStylesheets[0].includes(".menuDrawer{position:fixed;z-index:9999;inset-block:0;inset-inline-start:0;inset-inline-end:auto;"), "menu drawer must anchor to the logical start edge");
@@ -192,8 +192,8 @@ assert.ok(releaseStylesheets[0].includes(".mobileNav{display:flex;position:fixed
 assert.ok(releaseStylesheets[0].includes(".catalogMeta b{margin-inline-end:auto;"), "catalog metadata alignment must follow writing direction");
 assert.ok(releaseStylesheets[0].includes(".statusBadge{position:absolute;inset-inline-start:9px;"), "catalog status badge must anchor to the inline start edge");
 assert.ok(releaseStylesheets[0].includes(".readerLock .secondary{display:inline-flex;margin-inline-start:7px}"), "reader lock action spacing must follow writing direction");
-assert.ok(!/\\.mobileNav\\{[^}]*\\bleft\\s*:|\\.mobileNav\\{[^}]*\\bright\\s*:/.test(releaseStylesheets[0]), "mobile navigation must not regress to physical viewport edges");
-assert.ok(!/\\.catalogMeta b\\{[^}]*margin-right\\s*:|\\.statusBadge\\{[^}]*left\\s*:|\\.readerLock \\.secondary\\{[^}]*margin-left\\s*:/.test(releaseStylesheets[0]), "shared catalog and reader alignment must not regress to physical left/right declarations");
+assert.ok(!/\\.mobileNav\\{[^}]*\\bleft\s*:|\\.mobileNav\\{[^}]*\\bright\s*:/.test(releaseStylesheets[0]), "mobile navigation must not regress to physical viewport edges");
+assert.ok(!/\\.catalogMeta b\\{[^}]*margin-right\s*:|\\.statusBadge\\{[^}]*left\s*:|\\.readerLock \\.secondary\\{[^}]*margin-left\s*:/.test(releaseStylesheets[0]), "shared catalog and reader alignment must not regress to physical left/right declarations");
 
 assert.ok(releaseStylesheets[1].includes(".commentReply{margin-inline-start:28px}") && !components.includes(".commentReply{"), "community reply indentation must follow writing direction without a physical RTL override");
 assert.ok(components.includes('[dir="rtl"] .legalSection ul{padding-inline-start:22px}'), "legal list indentation must mirror using logical padding");
@@ -301,8 +301,8 @@ assert.ok(app.includes("$('#resetPrefs').onclick=()=>") && app.includes("if(!con
 assert.ok(app.includes("$('#clearLocalReading').onclick=()=>") && app.includes("if(!confirm('Clear local reading progress and bookmark helpers? Server account data will not be deleted.'))return"), "Local reading cleanup must explain its scope and require confirmation");
 
 assert.ok(releaseStylesheets[1].includes(".commentReply{margin-inline-start:28px}") && releaseStylesheets[1].includes(".commentReply{margin-inline-start:12px}"), "Community reply indentation must follow the active writing direction at desktop and mobile widths");
-assert.ok(!/\\.commentReply\\{[^}]*margin-left\\s*:/.test(releaseStylesheets[1]), "Community reply indentation must not regress to a physical left margin");
+assert.ok(!/\\.commentReply\\{[^}]*margin-left\s*:/.test(releaseStylesheets[1]), "Community reply indentation must not regress to a physical left margin");
 assert.ok(releaseStylesheets[3].includes(".homeFormatArrow{margin-inline-start:auto;"), "Home format shelf arrow must follow the active writing direction");
-assert.ok(!/\\.homeFormatArrow\\{[^}]*margin-left\\s*:/.test(releaseStylesheets[3]), "Home format shelf arrow must not regress to a physical left margin");
+assert.ok(!/\\.homeFormatArrow\\{[^}]*margin-left\s*:/.test(releaseStylesheets[3]), "Home format shelf arrow must not regress to a physical left margin");
 
 console.log("Imperial Novel design-system contract passed: six themes, body/secondary/muted and reader contrast, action/status pairs, semantic tokens, component primitives, 44px targets, focus, reduced motion, forced colors, RTL, route adoption and runtime asset registration.");
