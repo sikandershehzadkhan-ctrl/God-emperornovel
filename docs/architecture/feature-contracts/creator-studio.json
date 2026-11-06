@@ -86,7 +86,8 @@
     ],
     "buildCommands": [
       "node scripts/test-creator-publishing-domain-boundaries.mjs",
-      "node scripts/test-api-route-method-matrix.mjs"
+      "node scripts/test-api-route-method-matrix.mjs",
+      "node scripts/test-ownership-transfer-migration.mjs"
     ]
   },
   "rollout": {
