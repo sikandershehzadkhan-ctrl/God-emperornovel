@@ -1,0 +1,44 @@
+/* Imperial Novel Design System 18.0.0 component primitives.
+   Namespaced to avoid overriding legacy application selectors during rollout. */
+.in-button{display:inline-flex;align-items:center;justify-content:center;gap:var(--in-space-2);min-height:var(--in-control-height-md);padding:0 var(--in-space-4);border:1px solid transparent;border-radius:var(--in-radius-md);font:600 var(--in-text-sm)/1 var(--in-font-sans);text-decoration:none;cursor:pointer;transition:background var(--in-motion-fast) var(--in-ease-standard),border-color var(--in-motion-fast) var(--in-ease-standard),color var(--in-motion-fast) var(--in-ease-standard);touch-action:manipulation}
+.in-button:focus-visible,.in-field:focus-visible,.in-select:focus-visible,.in-checkbox:focus-visible,.in-link:focus-visible{outline:3px solid var(--in-focus-ring);outline-offset:3px}
+.in-button:disabled,.in-button[aria-disabled="true"]{opacity:.55;cursor:not-allowed}
+.in-button--primary{background:var(--in-action-primary);color:var(--in-action-primary-text);border-color:var(--in-action-primary)}
+.in-button--primary:hover:not(:disabled){background:var(--in-action-primary-hover);border-color:var(--in-action-primary-hover)}
+.in-button--secondary{background:var(--in-bg-surface);color:var(--in-text-primary);border-color:var(--in-border-default)}
+.in-button--secondary:hover:not(:disabled){background:var(--in-bg-subtle);border-color:var(--in-border-strong)}
+.in-button--quiet{background:transparent;color:var(--in-text-secondary);border-color:transparent}
+.in-button--danger{background:var(--in-status-danger);color:#fff}
+.in-button--sm{min-height:var(--in-control-height-sm);padding-inline:var(--in-space-3)}
+.in-button--lg{min-height:var(--in-control-height-lg);padding-inline:var(--in-space-6)}
+.in-field,.in-select,.in-textarea{display:block;width:100%;min-height:var(--in-control-height-md);padding:var(--in-space-3);border:1px solid var(--in-border-default);border-radius:var(--in-radius-md);background:var(--in-bg-surface);color:var(--in-text-primary);font:400 var(--in-text-md)/var(--in-leading-normal) var(--in-font-sans)}
+.in-field::placeholder,.in-textarea::placeholder{color:var(--in-text-muted)}
+.in-field[aria-invalid="true"],.in-select[aria-invalid="true"],.in-textarea[aria-invalid="true"]{border-color:var(--in-status-danger)}
+.in-field-label{display:block;margin-block-end:var(--in-space-2);color:var(--in-text-primary);font-size:var(--in-text-sm);font-weight:var(--in-weight-semibold)}
+.in-field-help{display:block;margin-block-start:var(--in-space-1);color:var(--in-text-muted);font-size:var(--in-text-xs)}
+.in-checkbox{width:1.125rem;height:1.125rem;accent-color:var(--in-action-primary)}
+.in-card{min-width:0;border:1px solid var(--in-border-default);border-radius:var(--in-radius-lg);background:var(--in-bg-surface);color:var(--in-text-primary)}
+.in-card__body{padding:var(--in-space-4)}
+.in-card__title{margin:0;color:var(--in-text-primary);font-size:var(--in-text-lg);font-weight:var(--in-weight-semibold);line-height:var(--in-leading-tight)}
+.in-badge{display:inline-flex;align-items:center;gap:var(--in-space-1);min-height:1.5rem;padding:.125rem .5rem;border:1px solid var(--in-border-default);border-radius:var(--in-radius-pill);background:var(--in-bg-subtle);color:var(--in-text-secondary);font-size:var(--in-text-xs);font-weight:var(--in-weight-semibold)}
+.in-badge--success{background:var(--in-status-success-bg);border-color:var(--in-status-success);color:var(--in-status-success)}
+.in-badge--warning{background:var(--in-status-warning-bg);border-color:var(--in-status-warning);color:var(--in-status-warning)}
+.in-badge--danger{background:var(--in-status-danger-bg);border-color:var(--in-status-danger);color:var(--in-status-danger)}
+.in-badge--info{background:var(--in-status-info-bg);border-color:var(--in-status-info);color:var(--in-status-info)}
+.in-link{color:var(--in-link);text-decoration:underline;text-underline-offset:.18em}
+.in-avatar{display:inline-grid;place-items:center;overflow:hidden;width:2.5rem;aspect-ratio:1;border-radius:50%;background:var(--in-bg-subtle);color:var(--in-text-primary);font-weight:700}
+.in-avatar img{width:100%;height:100%;object-fit:cover}
+.in-tabs{display:flex;gap:var(--in-space-2);overflow-x:auto;border-block-end:1px solid var(--in-border-default)}
+.in-tabs [role="tab"]{min-height:var(--in-touch-target);padding-inline:var(--in-space-3);border:0;border-block-end:2px solid transparent;background:transparent;color:var(--in-text-secondary);white-space:nowrap}
+.in-tabs [role="tab"][aria-selected="true"]{border-block-end-color:var(--in-action-primary);color:var(--in-text-primary);font-weight:700}
+.in-table{width:100%;border-collapse:collapse;color:var(--in-text-primary);font-size:var(--in-text-sm)}
+.in-table th,.in-table td{padding:var(--in-space-3);border-block-end:1px solid var(--in-border-default);text-align:start;vertical-align:middle}
+.in-table th{color:var(--in-text-secondary);font-weight:700}
+.in-dialog{width:min(36rem,calc(100vw - 2rem));max-height:min(85vh,48rem);overflow:auto;padding:var(--in-space-6);border:1px solid var(--in-border-default);border-radius:var(--in-radius-xl);background:var(--in-bg-elevated);color:var(--in-text-primary);box-shadow:var(--in-shadow-lg)}
+.in-toast{display:flex;align-items:flex-start;gap:var(--in-space-3);max-width:min(26rem,calc(100vw - 2rem));padding:var(--in-space-3) var(--in-space-4);border:1px solid var(--in-border-default);border-radius:var(--in-radius-lg);background:var(--in-bg-elevated);color:var(--in-text-primary);box-shadow:var(--in-shadow-md)}
+.in-tooltip{max-width:18rem;padding:var(--in-space-2) var(--in-space-3);border-radius:var(--in-radius-sm);background:var(--in-bg-inverse);color:var(--in-text-inverse);font-size:var(--in-text-xs)}
+.in-empty-state{display:grid;justify-items:center;gap:var(--in-space-3);padding:var(--in-space-8);text-align:center;border:1px dashed var(--in-border-strong);border-radius:var(--in-radius-lg);color:var(--in-text-secondary)}
+.in-skeleton{border-radius:var(--in-radius-md);background:linear-gradient(90deg,var(--in-bg-subtle),var(--in-border-default),var(--in-bg-subtle));background-size:200% 100%;animation:in-skeleton 1.2s linear infinite}
+@keyframes in-skeleton{to{background-position:-200% 0}}
+@media(prefers-reduced-motion:reduce){.in-skeleton{animation:none;background:var(--in-bg-subtle)}}
+@media(max-width:48rem){.in-card__body{padding:var(--in-space-3)}.in-dialog{padding:var(--in-space-4)}}
