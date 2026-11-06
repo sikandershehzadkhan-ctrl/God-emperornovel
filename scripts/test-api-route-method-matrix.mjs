@@ -63,6 +63,11 @@ for(const route of [...matrix.exactRoutes,...matrix.dynamicRoutes]){
   if(!route.sourceFile)continue;
   const source=sourceFiles[route.sourceFile];
   assert.ok(source,"route source file is not registered: "+route.sourceFile);
+
+  if(route.routeMatchLine){
+    const matchLine=source.split("\\n")[route.routeMatchLine-1]||"";
+    assert.ok(matchLine.includes("p.match")&&matchLine.includes("author"),"dynamic route match evidence must identify its route in "+route.sourceFile);
+  }
   for(const lineNumber of route.sourceLines){
     const line=source.split("\n")[lineNumber-1]||"";
     assert.ok(line.includes("m==="),"domain route evidence line must include a method guard: "+route.path||route.pathPattern);
