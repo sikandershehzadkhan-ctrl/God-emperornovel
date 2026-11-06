@@ -245,3 +245,12 @@ The current Author Studio route is rendered through the shared page template. It
 This is a CSS-only adoption. It does not change author/admin role gates, private-draft creation, rights-evidence requirements, chapter submission, ticket fields, comic page ordering/limits, or any author API. No upload/image-hosting capability is implied.
 
 Browser QA is still required for author and admin roles, non-author application state, unauthenticated state, populated/empty/error work lists, editing, chapter and comic forms, all six themes, RTL, keyboard and screen-reader use, and mobile widths.
+
+
+## 17. Community discovery source adoption
+
+The existing Community route is a discovery landing page rather than a discussion composer. Its four quick destinations, public recent-discussion feed, trending story shelf and discovery banner now consume semantic six-theme roles. Discussion entries retain their existing published-story links and text content while receiving clearer card surfaces, readable metadata and keyboard focus. The quick-link grid adapts to tablet and narrow mobile widths.
+
+This is presentation-only. It does not add a comment composer, direct messages, follows, moderation, reporting or new social capabilities. Existing community discussion API visibility and rights-cleared story constraints remain unchanged.
+
+Browser QA remains required for populated/empty/error discussion feeds, no-story catalog states, all six themes, RTL, keyboard/screen-reader behavior, reduced motion and 360px/390px layouts.
