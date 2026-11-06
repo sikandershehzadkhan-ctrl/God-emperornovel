@@ -13,7 +13,8 @@
     "public/index.html",
     "scripts/design-system/test-contract.mjs",
     "package.json",
-    "src/index.js"
+    "src/index.js",
+    "design-system/ROUTE-TEMPLATE-MIGRATION-MAP-18.0.0.md"
   ],
   "invariants": [
     "Do not link the new stylesheets into production templates until route/template adoption and visual QA are complete.",
@@ -33,7 +34,8 @@
     "Every theme supplies a complete semantic role set and automated WCAG AA text contrast checks pass.",
     "Component usage guidance distinguishes CSS styling from application-owned keyboard behavior, focus management, persistence, authorization and async state.",
     "Application shell loads both new stylesheets without bulk-migrating legacy templates.",
-    "All Worker-served HTML templates receive the design-system token and primitive stylesheets exactly once through the shared releaseStyles list."
+    "All Worker-served HTML templates receive the design-system token and primitive stylesheets exactly once through the shared releaseStyles list.",
+    "The design-system documentation contains the 33 explicit Worker route mappings, dynamic route patterns, renderer families and page-family migration acceptance gates."
   ],
   "releaseBoundary": "Foundation only; not production-adopted and not a deployment authorization."
 }
