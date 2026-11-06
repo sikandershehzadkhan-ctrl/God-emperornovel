@@ -222,3 +222,89 @@ html[data-theme] .formatDirectoryGrid a:focus-visible{outline:3px solid var(--in
 @media(prefers-reduced-motion:reduce){
  html[data-theme] .catalogCard img,html[data-theme] .genreCard,html[data-theme] .formatLink{transition:none}
 }
+
+
+/* Story detail and chapter navigation adoption.
+   Reader article colors remain owned by its independent reading preference until
+   the global/reader preference compatibility migration is separately tested. */
+html[data-theme] .novelHero,
+html[data-theme] .novelHero .stat,
+html[data-theme] .chapter,
+html[data-theme] .novelHero .novelCover{
+  background:var(--in-bg-surface);
+  border-color:var(--in-border-default);
+  color:var(--in-text-primary);
+  box-shadow:var(--in-shadow-sm);
+}
+html[data-theme] .novelInfo h1,
+html[data-theme] .novelHero .stat b,
+html[data-theme] .chapter b{
+  color:var(--in-text-primary);
+}
+html[data-theme] .novelInfo .muted,
+html[data-theme] .novelHero .stat,
+html[data-theme] .chapter .muted,
+html[data-theme] .chapter .lock{
+  color:var(--in-text-secondary);
+}
+html[data-theme] .novelHero .eyebrow,
+html[data-theme] .chapterNo{
+  color:var(--in-action-primary);
+}
+html[data-theme] .novelHero .primary,
+html[data-theme] .chapterList + .actions .primary{
+  background:var(--in-action-primary);
+  border-color:var(--in-action-primary);
+  color:var(--in-action-primary-text);
+}
+html[data-theme] .novelHero .ghost,
+html[data-theme] .tabs a,
+html[data-theme] .chapterList .chapter{
+  border-color:var(--in-border-default);
+}
+html[data-theme] .tabs{border-color:var(--in-border-default)}
+html[data-theme] .tabs a{color:var(--in-text-secondary)}
+html[data-theme] .tabs a.active{
+  color:var(--in-action-primary);
+  border-bottom-color:var(--in-action-primary);
+}
+html[data-theme] .chapter:hover{
+  background:var(--in-bg-elevated);
+  border-color:var(--in-action-primary);
+}
+html[data-theme] .novelHero a:focus-visible,
+html[data-theme] .tabs a:focus-visible,
+html[data-theme] .chapterList a:focus-visible,
+html[data-theme] .readerPage .readerTool:focus-visible,
+html[data-theme] .readerPage .readerBack:focus-visible,
+html[data-theme] .readerPage .readerChapterItem:focus-visible,
+html[data-theme] .readerPage .readerPrefs select:focus-visible{
+  outline:3px solid var(--in-focus-ring);
+  outline-offset:3px;
+}
+html[data-theme] .readerPage .readerTool,
+html[data-theme] .readerPage .readerPrefs select,
+html[data-theme] .readerPage .readerChapterItem,
+html[data-theme] .readerPage .readerBack{
+  min-height:var(--in-touch-target);
+}
+html[data-theme] .readerPage .readerTool{
+  min-width:var(--in-touch-target);
+}
+html[data-theme] .readerPage .readerPrefs select{
+  border-color:var(--in-border-default);
+}
+html[data-theme] .readerPage .chapterDrawer{
+  border-color:var(--in-border-default);
+}
+@media(max-width:760px){
+  html[data-theme] .novelHero{gap:12px}
+  html[data-theme] .chapter{min-height:var(--in-touch-target)}
+  html[data-theme] .readerPage .readerTools{gap:5px}
+}
+@media(prefers-reduced-motion:reduce){
+  html[data-theme] .chapter,
+  html[data-theme] .tabs a,
+  html[data-theme] .readerPage .readerTool,
+  html[data-theme] .readerPage .readerChapterItem{transition:none}
+}
