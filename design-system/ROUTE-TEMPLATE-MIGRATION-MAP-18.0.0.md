@@ -211,3 +211,14 @@ Required checks before marking this slice complete:
 **Behavior preserved:** the existing taxonomy submission form and `POST /api/taxonomy` request remain unchanged. The moderation decision, data validation and server-side policy are not modified by this visual migration.
 
 **Still required:** all six theme screenshots, RTL, 360px/390px mobile, desktop, form validation/error/success states, keyboard/screen-reader QA and the remaining standalone templates.
+
+
+## 18. Standalone Author Studio document adoption
+
+**Implemented in source:** the Worker already decorates the dedicated `public/author.html` response with `authorStudioPage` and injects the six-theme bootstrap and shared token styles. The standalone document's local legacy palette is now bridged to semantic canvas, surface, text, border, action, status and focus roles. This covers novel/chapter creation forms, work cards, status badges, notices and the AI project area.
+
+**Behavior preserved:** existing author APIs, draft creation, chapter workflows, AI project creation and role checks are unchanged. This does not enable an AI provider or imply upload/media-hosting capabilities.
+
+**Accessibility and responsive source work:** keyboard focus, 44px primary controls, single-column small-screen forms and reduced-motion handling are included.
+
+**Still required:** all six theme screenshots; desktop/tablet/360px/390px layouts; RTL; long-form validation messages; loading, empty, permission-denied and API-error states; keyboard/screen-reader QA. The dedicated Author Studio page is separate from the shell's author dashboard, so both must remain in the route QA matrix.
