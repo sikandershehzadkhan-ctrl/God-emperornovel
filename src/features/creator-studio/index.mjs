@@ -3,7 +3,7 @@ export async function handleCreatorStudioRequest({req,env,url,u,body,json,author
  const p=url.pathname,m=req.method;
 if(p==="/api/author/analytics"&&m==="GET"){
   const e=author(u);if(e)return e;
-  const [novelRows,chapterRows]=await Promise.all([
+  const [novelRows,chapterRows,totalsRow]=await Promise.all([
    env.DB.prepare(`SELECT n.id,n.title,n.publication_status,n.views,n.rating,n.updated_at,
     (SELECT COUNT(*) FROM ratings r WHERE r.novel_id=n.id) rating_count,
     (SELECT COUNT(*) FROM chapters c WHERE c.novel_id=n.id AND c.publication_status='published') published_chapters,
@@ -21,13 +21,29 @@ if(p==="/api/author/analytics"&&m==="GET"){
     (SELECT COUNT(*) FROM unlocks x WHERE x.chapter_id=c.id AND x.cost>0) paid_unlocks
     FROM chapters c JOIN novels n ON n.id=c.novel_id LEFT JOIN chapter_views v ON v.chapter_id=c.id
     WHERE n.owner_user_id=? AND c.publication_status='published'
-    ORDER BY views DESC,unlocks DESC,c.id DESC LIMIT 10`).bind(u.id).all()
+    ORDER BY views DESC,unlocks DESC,c.id DESC LIMIT 10`).bind(u.id).all(),
+   env.DB.prepare(`SELECT COUNT(*) novels,
+    COALESCE(SUM(CASE WHEN n.publication_status='published' THEN 1 ELSE 0 END),0) published_novels,
+    COALESCE(SUM(n.views),0) novel_views,
+    (SELECT COUNT(*) FROM chapters c JOIN novels n2 ON n2.id=c.novel_id WHERE n2.owner_user_id=? AND c.publication_status='published') published_chapters,
+    (SELECT COUNT(*) FROM chapters c JOIN novels n2 ON n2.id=c.novel_id WHERE n2.owner_user_id=? AND c.publication_status='draft') draft_chapters,
+    (SELECT COALESCE(SUM(v.views),0) FROM chapter_views v JOIN chapters c ON c.id=v.chapter_id JOIN novels n2 ON n2.id=c.novel_id WHERE n2.owner_user_id=?) chapter_views,
+    (SELECT COUNT(*) FROM ratings r JOIN novels n2 ON n2.id=r.novel_id WHERE n2.owner_user_id=?) ratings,
+    (SELECT COUNT(*) FROM unlocks x JOIN chapters c ON c.id=x.chapter_id JOIN novels n2 ON n2.id=c.novel_id WHERE n2.owner_user_id=?) unlocks,
+    (SELECT COALESCE(SUM(x.cost),0) FROM unlocks x JOIN chapters c ON c.id=x.chapter_id JOIN novels n2 ON n2.id=c.novel_id WHERE n2.owner_user_id=? AND x.cost>0) reader_crown_spend,
+    (SELECT COUNT(*) FROM unlocks x JOIN chapters c ON c.id=x.chapter_id JOIN novels n2 ON n2.id=c.novel_id WHERE n2.owner_user_id=? AND x.cost>0) paid_unlocks
+    FROM novels n WHERE n.owner_user_id=?`).bind(u.id,u.id,u.id,u.id,u.id,u.id,u.id,u.id).first()
   ]);
-  const novels=novelRows.results||[],sum=key=>novels.reduce((total,row)=>total+Number(row[key]||0),0);
-  return json({generated_at:new Date().toISOString(),scope:"lifetime_counters",totals:{novels:novels.length,published_novels:novels.filter(n=>n.publication_status==="published").length,published_chapters:sum("published_chapters"),draft_chapters:sum("draft_chapters"),novel_views:sum("views"),chapter_views:sum("chapter_views"),ratings:sum("rating_count"),unlocks:sum("unlocks"),reader_crown_spend:sum("reader_crown_spend"),paid_unlocks:sum("paid_unlocks")},novels,top_chapters:chapterRows.results||[]})
+  const totals=totalsRow||{};
+  return json({generated_at:new Date().toISOString(),scope:"lifetime_counters",totals:{
+   novels:Number(totals.novels||0),published_novels:Number(totals.published_novels||0),
+   published_chapters:Number(totals.published_chapters||0),draft_chapters:Number(totals.draft_chapters||0),
+   novel_views:Number(totals.novel_views||0),chapter_views:Number(totals.chapter_views||0),
+   ratings:Number(totals.ratings||0),unlocks:Number(totals.unlocks||0),
+   reader_crown_spend:Number(totals.reader_crown_spend||0),paid_unlocks:Number(totals.paid_unlocks||0)
+  },novels:novelRows.results||[],top_chapters:chapterRows.results||[]})
  }
-
-
+ 
 if(p==="/api/author/feedback"&&m==="GET"){
   const e=author(u);if(e)return e;
   const [ratings,comments,ratingTotal,commentTotal]=await Promise.all([
