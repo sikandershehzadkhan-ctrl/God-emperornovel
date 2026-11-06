@@ -55,4 +55,8 @@ assert.ok(publishing.includes("(?=1 OR n.owner_user_id=?)"),"chapter publication
 assert.ok(publishing.includes("n.rights_status IN ('original','public_domain','licensed','authorized')"),"chapter publication must recheck rights in the write predicate");
 assert.ok(publishing.includes("WHERE id=? AND changes()=1"),"chapter publication side effects must be gated by the successful chapter update");
 
+
+assert.ok(publishing.includes("c.id=scheduled_chapter_publications.chapter_id AND n.owner_user_id=?"),"schedule cancellation must recheck current chapter ownership in the DELETE predicate");
+assert.ok(publishing.includes("removed.meta?.changes||removed.changes||0"),"schedule cancellation must distinguish a successful delete from a stale or missing schedule");
+
 console.log("Creator/Publishing domain boundary and scheduler source checks passed.");
