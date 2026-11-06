@@ -750,7 +750,7 @@ html[data-theme] body.taxonomyPage .tax-field textarea{
  border:1px solid var(--in-border-strong);
 }
 html[data-theme] body.taxonomyPage .tax-field input::placeholder,
-html[data-theme] body.taxonomyPage .tax-field textarea::placeholder{color:var(--in-text-tertiary)}
+html[data-theme] body.taxonomyPage .tax-field textarea::placeholder{color:var(--in-text-muted)}
 html[data-theme] body.taxonomyPage .tax-field input:focus-visible,
 html[data-theme] body.taxonomyPage .tax-field select:focus-visible,
 html[data-theme] body.taxonomyPage .tax-field textarea:focus-visible,
@@ -760,7 +760,7 @@ html[data-theme] body.taxonomyPage .tax-links a:focus-visible{
 }
 html[data-theme] body.taxonomyPage .tax-submit{
  min-height:var(--in-touch-target);background:var(--in-action-primary);
- color:var(--in-text-on-action);border:1px solid var(--in-action-primary);
+ color:var(--in-action-primary-text);border:1px solid var(--in-action-primary);
 }
 html[data-theme] body.taxonomyPage .tax-submit:disabled{opacity:.65}
 html[data-theme] body.taxonomyPage .tax-status{
