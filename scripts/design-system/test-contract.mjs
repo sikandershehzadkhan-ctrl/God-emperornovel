@@ -158,11 +158,11 @@ assert.ok(app.includes('document.documentElement.dir=(c==="ur"||c==="ar"||c==="f
 assert.ok(components.includes('[dir="rtl"] .in-switch:checked::after{transform:translateX(-1.25rem)}'), "shared switch thumb must mirror its checked position in RTL layouts");
 assert.doesNotMatch(components, /(?:^|[;{])\s*(?:margin|padding|inset|border)-(?:left|right)\s*:/m, "shared component primitives must use logical directional properties");
 assert.doesNotMatch(components, /(?:^|[;{])\s*(?:left|right)\s*:/m, "shared component primitives must not hard-code physical positioning");
-assert.ok(components.includes('[dir="rtl"] .chapterDrawer{right:auto;left:0;'), "chapter drawer must mirror to the inline-start edge in RTL");
-assert.ok(components.includes('[dir="rtl"] .side a:hover,[dir="rtl"] .side a.active{border-left:0;border-right:2px solid'), "active side navigation indicator must mirror in RTL");
-assert.ok(components.includes('[dir="rtl"] .commentReply{margin-left:0;margin-right:28px}'), "nested community replies must mirror their indentation in RTL");
-assert.ok(components.includes('[dir="rtl"] .legalSection ul{padding-left:0;padding-right:22px}'), "legal list indentation must mirror in RTL");
-assert.ok(components.includes('[dir="rtl"] .formatExperience{text-align:left}'), "format experience alignment must mirror in RTL");
+assert.ok(components.includes('[dir="rtl"] .chapterDrawer{inset-inline-start:0;border-inline-start:1px solid'), "chapter drawer must mirror to the inline-start edge using logical properties");
+assert.ok(components.includes('[dir="rtl"] .side a:hover,[dir="rtl"] .side a.active{border-inline-start:2px solid'), "active side navigation indicator must mirror using logical borders");
+assert.ok(releaseStylesheets[1].includes(".commentReply{margin-inline-start:28px}") && !components.includes(".commentReply{"), "community reply indentation must follow writing direction without a physical RTL override");
+assert.ok(components.includes('[dir="rtl"] .legalSection ul{padding-inline-start:22px}'), "legal list indentation must mirror using logical padding");
+assert.ok(components.includes('[dir="rtl"] .formatExperience{text-align:start}'), "format experience alignment must follow RTL writing direction");
 
 
 assert.ok(app.includes('id="imperialThemeSelect"') && app.includes("applyImperialTheme(event.target.value)"), "shared theme selector must be operable and update the root theme");
