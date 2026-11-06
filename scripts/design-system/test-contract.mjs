@@ -132,6 +132,7 @@ assert.ok(routeMap.includes("33 explicit static route entries") && routeMap.incl
 assert.ok(spec.includes("primitives are opt-in") || spec.includes("Do not bulk-replace legacy selectors"), "rollout boundary must be documented");
 assert.ok(html.includes('href="/imperial-design-tokens.css"'), "semantic tokens must be loaded by the application shell");
 assert.ok(html.includes('href="/imperial-ui-primitives.css"'), "component primitives must be loaded by the application shell");
+assert.ok(html.includes('href="/imperial-glass.css"'), "glass foundation stylesheet must be loaded by the application shell");
 assert.ok(worker.includes("'/imperial-design-tokens.css'") && worker.includes("'/imperial-ui-primitives.css'"), "Worker must register both stylesheets for every HTML template");
 assert.ok(app.includes("const IMPERIAL_THEMES=['light','dark','midnight','sepia','imperial','cosmic']"), "shared shell must expose all six supported themes");
 assert.ok(app.includes('document.documentElement.dir=(c==="ur"||c==="ar"||c==="fa")?"rtl":"ltr"'), "Urdu, Arabic and Persian interface locales must set RTL document direction");
