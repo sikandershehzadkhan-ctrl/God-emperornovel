@@ -160,6 +160,15 @@ assert.doesNotMatch(components, /(?:^|[;{])\s*(?:margin|padding|inset|border)-(?
 assert.doesNotMatch(components, /(?:^|[;{])\s*(?:left|right)\s*:/m, "shared component primitives must not hard-code physical positioning");
 assert.ok(components.includes('[dir="rtl"] .chapterDrawer{inset-inline-start:0;border-inline-start:1px solid'), "chapter drawer must mirror to the inline-start edge using logical properties");
 assert.ok(components.includes('[dir="rtl"] .side a:hover,[dir="rtl"] .side a.active{border-inline-start:2px solid'), "active side navigation indicator must mirror using logical borders");
+assert.ok(releaseStylesheets[0].includes(".tooltip[data-tooltip]:hover:after,[data-tooltip]:focus-visible:after{content:attr(data-tooltip);position:absolute;z-index:100;bottom:calc(100% + 8px);inset-inline-start:50%;transform:translateX(-50%)"), "tooltip centering anchor must use a logical inline start");
+assert.ok(releaseStylesheets[0].includes(".heroSigil{position:absolute;inset-inline-end:10%;"), "homepage celestial sigil must mirror with writing direction");
+assert.ok(releaseStylesheets[0].includes(".heroOrbit{position:absolute;inset-inline-end:6%;"), "homepage orbit must mirror with writing direction");
+assert.ok(releaseStylesheets[0].includes(".heroCornerMark{position:absolute;inset-inline-end:24px;"), "homepage hero corner mark must follow writing direction");
+assert.ok(releaseStylesheets[0].includes(".nextHeroGlow{position:absolute;z-index:-1;inset-inline-end:25%;"), "next homepage hero glow must follow writing direction");
+assert.ok(releaseStylesheets[2].includes("inset-inline-end:-7%;top:50%;transform:translateY(-50%)"), "dark archive hero celestial ring must mirror with writing direction");
+assert.ok(releaseStylesheets[2].includes("inset-inline-end:calc(clamp(250px,38vw,500px)*.43);top:50%"), "dark archive hero inner ornament must mirror with writing direction");
+assert.ok(releaseStylesheets[2].includes("width:210px;inset-inline-end:-95px;top:20%") && releaseStylesheets[2].includes("width:74px;inset-inline-end:36px;top:25%"), "dark archive hero mobile ornaments must preserve responsive logical anchoring");
+
 assert.ok(releaseStylesheets[0].includes(".side a:hover,.side a.active{background:linear-gradient(90deg,rgba(117,48,255,.18),rgba(242,216,137,.05));color:#fff;border-inline-start:2px solid"), "active side navigation indicator must use a logical border");
 assert.ok(releaseStylesheets[0].includes(".menuDrawer{position:fixed;z-index:9999;inset-block:0;inset-inline-start:0;inset-inline-end:auto;"), "menu drawer must anchor to the logical start edge");
 assert.ok(releaseStylesheets[0].includes('[dir="rtl"] .menuDrawer{transform:translateX(105%)}[dir="rtl"] .menuDrawer.is-open{transform:translateX(0)}'), "RTL menu drawer must enter from the right and retain its open state");
