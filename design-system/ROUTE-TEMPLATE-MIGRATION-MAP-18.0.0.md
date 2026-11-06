@@ -106,9 +106,9 @@ Each family must pass:
 
 The shared component-primitives stylesheet uses logical layout properties and includes an RTL-specific switch-thumb mirror. The interface locale controller sets document direction for Urdu, Arabic and Persian.
 
-The audit also found legacy physical-direction declarations in the versioned application stylesheets, including the main site stylesheet and format styles, with no stylesheet-wide RTL selector coverage in those legacy files. Therefore, the logical-property contract applies to the new shared primitives only. It does not prove that every legacy page, drawer, icon, alignment, or overlay is correctly mirrored. Full RTL sign-off remains blocked on route-level Urdu, Arabic and Persian browser checks at mobile and desktop widths.
+The latest source-level audit of all eight Worker-registered stylesheets found no physical left/right positioning, margin, padding, inset or border declarations, and no `text-align:left/right`, `float:left/right` or `clear:left/right` declarations. Component-scoped logical-property migrations now cover the high-impact shell, discovery, reader, format, legal and decorative hero selectors recorded in `LEGACY-CSS-RTL-AUDIT-18.0.0.md`. This is a source inventory, not proof that every legacy page, icon, alignment, overlay, or responsive state renders correctly in RTL. Full RTL sign-off remains blocked on route-level Urdu, Arabic and Persian browser checks at mobile and desktop widths.
 
-Regression coverage now prevents new physical left/right positioning and left/right margin, padding, inset or border longhands from entering the shared component-primitives stylesheet. It intentionally does not rewrite the legacy stylesheets in bulk, because those declarations may encode intentional LTR layouts or require component-specific RTL treatment.
+Regression coverage prevents new physical left/right positioning and left/right margin, padding, inset or border longhands from entering the shared component-primitives stylesheet, and targeted assertions protect the migrated legacy selectors. Component-level review remains mandatory: source cleanliness alone cannot certify route behavior.
 
 ## 5B. Legacy RTL bridge slice
 
