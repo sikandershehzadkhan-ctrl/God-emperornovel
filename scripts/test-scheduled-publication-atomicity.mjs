@@ -10,6 +10,7 @@ function makeDb(chapterChanges) {
         sql,
         values: [],
         bind(...values) { this.values = values; return this; },
+        async run() { return { meta: { changes: 0 } }; },
         async all() {
           dueQuery = this.sql;
           return { results: [{
