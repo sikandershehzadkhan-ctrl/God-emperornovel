@@ -227,3 +227,12 @@ Account navigation, profile panels and metrics, personal-library story cards, re
 This is a visual/source adoption slice only. Authentication, profile APIs, library membership, history, bookmarks, following, ticket ledger and user data isolation are unchanged. No user data or server behavior is altered by these styles.
 
 Visual QA remains required across all six themes, signed-in/signed-out states, empty/populated/error states, 360px/390px/mobile/tablet/desktop, long usernames and story titles, RTL, keyboard traversal and screen-reader naming. The Following route currently shares the library renderer; this CSS does not alter or claim to repair its underlying content behavior.
+
+
+## 15. Settings and notification center adoption
+
+Settings panels, appearance/accessibility preference rows, native preference controls, save-status notices and action links now consume semantic theme roles. Notification rows, unread state and the mark-all-read action receive matching semantic surfaces, visible focus and touch-target sizing. Mobile settings controls retain full-width layout and reduced-motion preferences are respected.
+
+This migration changes presentation only. It does not change local preference keys, export/reset behavior, reader preference semantics, notification API calls, read-state mutation, account authentication or server data. Settings that are explicitly device-local remain device-local.
+
+Visual QA remains required across all six themes, keyboard-only use, high-contrast and reduced-motion modes, notification empty/unread/read/error states, 360px/390px layouts, RTL and screen-reader announcements.
