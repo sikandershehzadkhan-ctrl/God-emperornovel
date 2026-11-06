@@ -44,7 +44,10 @@
     "docs/architecture/decisions/ADR-0040-english-notification-empty-state-localization.md",
     "scripts/test-scheduled-publication-sql.py",
     "docs/architecture/feature-contracts/creator-studio.json",
-    "docs/architecture/feature-contracts/publishing-studio.json"
+    "docs/architecture/feature-contracts/publishing-studio.json",
+    "migrations/0047_author_story_goals_owner_scope.sql",
+    "migrations/.reservations/0047.json",
+    "scripts/test-ownership-transfer-migration.mjs"
   ],
   "dependencies": [
     "identity-security",
