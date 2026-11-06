@@ -223,3 +223,16 @@ The #146 SSR module is independently useful and escapes story metadata, validate
 - PR #146's Worker diff is stacked with unrelated catalog/search changes from #149 and must not be copied wholesale.
 
 **Safe next step:** split the SSR module into content-only rendering (or refactor its header to use the canonical shell), add a root-only Worker render path that queries published, rights-cleared novels with a strict limit, and change client boot to preserve and progressively enhance that exact SSR root without injecting duplicate navigation. Add tests for no-JS output, duplicate header/footer absence, theme and locale boot, hydration preservation, empty data, escaping, cover URL validation, cache headers, and canonical SEO/noindex behavior. Until these conditions are met, keep the current client-rendered homepage and do not claim SSR is live.
+
+
+## Migration 0047: owner-scoped Creator story goals
+
+Migration 0047 is reserved to PR #294 and allocated to the Creator domain. Migration 0032 remains immutable. The original `author_story_goals` table used `novel_id` as its sole primary key, which prevented a new owner from creating a private goal after a consent-based ownership transfer even though the former owner's goal must remain private.
+
+- Canonical migration: `migrations/0047_author_story_goals_owner_scope.sql`
+- Reservation: `migrations/.reservations/0047.json`
+- Owner: `creator`
+- Change: rebuild the existing table with composite primary key `(owner_user_id, novel_id)`, copy all existing goal rows unchanged, and recreate owner/novel indexes.
+- Runtime behavior: Creator goal upserts now conflict on `(owner_user_id, novel_id)`. A former owner's goal remains private and is not visible to the new owner; the new owner may create a separate goal row for the same novel.
+- Validation: `scripts/test-ownership-transfer-migration.mjs` applies migrations 0032, 0039 and 0047 against SQLite and verifies both goal rows remain isolated. The local Worker/D1 account-isolation test verifies the transfer behavior through the API.
+- Deployment status: reserved and branch-integrated only. No production D1 migration has been applied.
