@@ -1,11 +1,11 @@
 {
   "schemaVersion": 1,
-  "sourceBranch": "integration/public-author-discovery-root-port-17-90",
-  "sourceBlob": "1efa3870de6260efd2c721ef06f6392e280a9130",
+  "sourceBranch": "integration/author-studio-reconciliation-17-93",
+  "sourceBlob": "527e914c19b979ed72d2935b300dec37eefa0316",
   "auditDate": "2026-11-06",
   "scope": "Partial handler-level static review of current integration source snapshot. This revision rechecks the five authentication route-method entries introduced or changed in commit 106744a6e9124524c88b6f454bf4bbc98e81745f and preserves the prior 40 reviewed entries. No full authorization certification, live D1 concurrency proof, or browser/runtime isolation proof is claimed. The source-blob fingerprint was refreshed from the failing CI checkout after the catalog/recommendation Worker integration; the CI check computes the Git blob hash from the exact checked-out file bytes. CI computes the source fingerprint from the exact checked-out Worker bytes; the recorded value is aligned to that runtime fingerprint. This fingerprint is the value computed by the authorization-matrix CI assertion from the checked-out Worker bytes. Fingerprint synchronized to the exact Worker Git blob SHA reported for this branch snapshot. Fingerprint refreshed from the Git tree blob SHA for the current Worker source snapshot. Fingerprint synchronized to the latest Worker Git tree blob after the leaderboard zero-activity filter. Atomic AI generation claim integration added after this matrix review; new AI run endpoint behavior remains pending independent handler-level authorization review. AI chapter generation remains owner-only; administrator role does not permit creator impersonation. Community engagement handlers were reviewed for strict identifier parsing, published/rights-eligible target checks, session-owner writes, atomic quota triggers, and duplicate-report claim fencing. Cover URL validation and CSP hardening were added after the prior authorization review; these changes do not expand route access or object ownership privileges. Fingerprint refreshed to the exact Worker blob for the cover-policy integration branch; no new authorization certification is claimed. Worker source fingerprint refreshed to the exact source blob for the personalized-route noindex correction; this change does not expand route access or object ownership. Bookmark DELETE is reviewed as a session-owner-scoped removal operation; no new privilege or client-selected owner is introduced. This revision statically rechecks public OmniPortal status projection and administrator connector registration: public output is limited to non-secret registry fields; administrator creation remains admin-gated, allowlisted, duplicate-rejecting, disabled and rights-pending. This is not a live D1 concurrency certification. Public author directory GET projection statically reviewed for rights filtering, bounded escaped search and aggregate-only disclosure; this is not live privacy certification.",
   "reviewedRouteCount": 59,
-  "pendingDisclosure": "Existing reviewed route subset only. All other exact and dynamic API routes remain pending handler-level review. Reader bookmark/history writes are reviewed for session-owner scoping and chapter target eligibility. Community comment, like, report and follow handlers are reviewed for published-rights eligibility and session ownership; comment/report quotas and duplicate report claims are enforced by SQLite triggers. Cross-account runtime isolation still requires independent Worker/D1 proof.",
+  "pendingDisclosure": "Existing reviewed route subset only. All other exact and dynamic API routes remain pending handler-level review. Reader bookmark/history writes are reviewed for session-owner scoping and chapter target eligibility. Community comment, like, report and follow handlers are reviewed for published-rights eligibility and session ownership; comment/report quotas and duplicate report claims are enforced by SQLite triggers. Cross-account runtime isolation still requires independent Worker/D1 proof. New Creator Studio routes (analytics, feedback, goals, notes, readiness, planning), note PATCH/DELETE, Publishing release calendar, chapter revision reads and schedule POST are explicitly pending handler-level and two-account runtime review. The existing chapter edit and publish handlers have moved to Publishing Studio; module source provenance is recorded separately.",
   "routes": [
     {
       "path": "/api/account/preferences",
@@ -332,11 +332,15 @@
       "method": "PATCH",
       "access": "author or admin",
       "ownerRule": "joins chapter to novel and compares parent owner_user_id",
-      "evidence": "chapter/novel join; explicit owner comparison; Number.isSafeInteger non-negative ticket cost; validateComicChapterContent on comic edits",
+      "evidence": "Publishing Studio handler joins chapter to parent novel, enforces owner_user_id unless admin, validates whole non-negative ticket cost and revalidates comic content.",
       "tests": [
         "author A cannot edit author B chapter",
         "comic chapter edits cannot bypass page-sequence validation",
         "fractional chapter ticket cost rejected"
+      ],
+      "sourceFile": "src/features/publishing-studio/index.mjs",
+      "sourceLines": [
+        4
       ]
     },
     {
@@ -344,7 +348,7 @@
       "method": "POST",
       "access": "author or admin",
       "ownerRule": "parent owner check plus novel rights eligibility",
-      "evidence": "author(u); chapter id from route segment 4; joined parent owner check; canPublishChapter requires parent publication_status='published', eligible rights status and evidence for non-original rights",
+      "evidence": "Publishing Studio handler parses chapter ID from route segment, checks parent owner unless admin, and calls canPublishChapter to require a published parent novel plus eligible rights evidence.",
       "tests": [
         "author A cannot publish author B chapter",
         "ineligible rights cannot publish",
@@ -352,6 +356,10 @@
         "draft/review parent cannot publish chapter",
         "licensed work without evidence cannot publish chapter",
         "valid published parent and rights evidence allow chapter publication"
+      ],
+      "sourceFile": "src/features/publishing-studio/index.mjs",
+      "sourceLines": [
+        29
       ]
     },
     {
@@ -794,8 +802,86 @@
       "status": "mitigated-static-only",
       "detail": "OmniPortal connector seeding and status projection now deduplicate normalized base URLs, and administrator-created connectors remain pending until rights review. The existing table has no declared unique constraint on normalized base_url, so static checks do not establish a database-enforced uniqueness guarantee under every concurrent administrator write.",
       "action": "If concurrent duplicate registration becomes an observed risk, reserve a forward-only migration to reconcile existing references and add a normalized unique index; validate on isolated D1 before production approval."
+    },
+    {
+      "id": "AUTH-058",
+      "severity": "high",
+      "status": "pending-handler-and-runtime-review",
+      "detail": "Creator Studio and Publishing Studio introduce thirteen route-methods that are now listed in the route inventory but are not yet included in the reviewed authorization subset. Static owner predicates are present, but cross-account runtime isolation and edge-case behavior are not certified.",
+      "action": "Add two-account Worker/D1 tests for analytics, feedback, goals, private notes CRUD, readiness, planning, release calendar, chapter revisions and schedule creation/cancellation; review admin asymmetry and verify rights changes before marking these routes reviewed."
     }
   ],
-  "sourceReviewNote": "The reviewed API handler source was refreshed after adding explicit GET-only rejection for /api/novels and /api/admin/stats. Homepage SSR and theme work is confined to the Worker HTML renderer and browser assets; the existing 45 route-method ownership entries remain the reviewed subset, with all other routes still explicitly pending. Fingerprint refreshed for the schema-bootstrap-only Worker change in PR #228; no route declarations or authorization handler behavior changed. Fingerprint refreshed for strict whole-number 1–10 rating validation; existing authenticated-owner and rights checks are unchanged. POST /api/bookmark and POST /api/history now validate positive safe-integer targets and require the exact published chapter of a published rights-eligible novel before writing; user_id is derived only from authenticated session u.id. Cross-account runtime proof remains pending. Community engagement routes revalidated against the exact Worker blob; quota and duplicate-report behavior covered by SQLite trigger tests. OmniPortal connector registration now requires an allowlisted HTTPS origin, rejects normalized duplicate URLs, and leaves new rows disabled/pending; public status returns a single stable representative per normalized URL. Existing database-level uniqueness is not claimed. Fingerprint refreshed after the non-authorization leaderboard bootstrap index change. No route access, ownership rule or authorization behavior changed; prior partial-review limitations remain.",
-  "sourceCommit": "6532514197d58c14de9a0f529b07b01ad212babd"
+  "sourceReviewNote": "The reviewed API handler source was refreshed after adding explicit GET-only rejection for /api/novels and /api/admin/stats. Homepage SSR and theme work is confined to the Worker HTML renderer and browser assets; the existing 45 route-method ownership entries remain the reviewed subset, with all other routes still explicitly pending. Fingerprint refreshed for the schema-bootstrap-only Worker change in PR #228; no route declarations or authorization handler behavior changed. Fingerprint refreshed for strict whole-number 1–10 rating validation; existing authenticated-owner and rights checks are unchanged. POST /api/bookmark and POST /api/history now validate positive safe-integer targets and require the exact published chapter of a published rights-eligible novel before writing; user_id is derived only from authenticated session u.id. Cross-account runtime proof remains pending. Community engagement routes revalidated against the exact Worker blob; quota and duplicate-report behavior covered by SQLite trigger tests. OmniPortal connector registration now requires an allowlisted HTTPS origin, rejects normalized duplicate URLs, and leaves new rows disabled/pending; public status returns a single stable representative per normalized URL. Existing database-level uniqueness is not claimed. Fingerprint refreshed after the non-authorization leaderboard bootstrap index change. No route access, ownership rule or authorization behavior changed; prior partial-review limitations remain. Creator and Publishing Studio handlers are now split into domain modules. Their exact module blobs are recorded separately; new Creator workspace and Publishing release-calendar/revision/schedule route-methods remain pending independent handler-level and two-account Worker/D1 review.",
+  "sourceCommit": "e26abda1aaade30dc739f399846c6332ddf23120",
+  "featureSourceBlobs": {
+    "src/features/creator-studio/index.mjs": "6af4bd4fd31f7f8c293fd2d486a1802ecdcb3b68",
+    "src/features/publishing-studio/index.mjs": "e25028315eb98631f1371e5860059d36a11a0b2d"
+  },
+  "pendingRouteMethods": [
+    {
+      "path": "/api/author/analytics",
+      "method": "GET",
+      "domainOwner": "creator"
+    },
+    {
+      "path": "/api/author/feedback",
+      "method": "GET",
+      "domainOwner": "creator"
+    },
+    {
+      "path": "/api/author/goals",
+      "method": "GET",
+      "domainOwner": "creator"
+    },
+    {
+      "path": "/api/author/goals",
+      "method": "PUT",
+      "domainOwner": "creator"
+    },
+    {
+      "path": "/api/author/notes",
+      "method": "GET",
+      "domainOwner": "creator"
+    },
+    {
+      "path": "/api/author/notes",
+      "method": "POST",
+      "domainOwner": "creator"
+    },
+    {
+      "path": "/api/author/notes/:id",
+      "method": "PATCH",
+      "domainOwner": "creator"
+    },
+    {
+      "path": "/api/author/notes/:id",
+      "method": "DELETE",
+      "domainOwner": "creator"
+    },
+    {
+      "path": "/api/author/readiness",
+      "method": "GET",
+      "domainOwner": "creator"
+    },
+    {
+      "path": "/api/author/planning",
+      "method": "GET",
+      "domainOwner": "creator"
+    },
+    {
+      "path": "/api/author/schedules",
+      "method": "GET",
+      "domainOwner": "publishing"
+    },
+    {
+      "path": "/api/author/chapters/:id/revisions",
+      "method": "GET",
+      "domainOwner": "publishing"
+    },
+    {
+      "path": "/api/author/chapters/:id/schedule",
+      "method": "POST",
+      "domainOwner": "publishing"
+    }
+  ]
 }
