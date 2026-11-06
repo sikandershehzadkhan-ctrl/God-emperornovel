@@ -478,7 +478,7 @@
         "GET"
       ],
       "sourceLines": [
-        31
+        47
       ],
       "sourceFile": "src/features/creator-studio/index.mjs",
       "workerDispatchLines": [
@@ -495,8 +495,8 @@
         "PUT"
       ],
       "sourceLines": [
-        44,
-        53
+        60,
+        69
       ],
       "sourceFile": "src/features/creator-studio/index.mjs",
       "workerDispatchLines": [
@@ -513,8 +513,8 @@
         "POST"
       ],
       "sourceLines": [
-        85,
-        96
+        101,
+        112
       ],
       "sourceFile": "src/features/creator-studio/index.mjs",
       "workerDispatchLines": [
@@ -544,7 +544,7 @@
         "GET"
       ],
       "sourceLines": [
-        159
+        175
       ],
       "sourceFile": "src/features/creator-studio/index.mjs",
       "workerDispatchLines": [
@@ -560,7 +560,7 @@
         "GET"
       ],
       "sourceLines": [
-        134
+        150
       ],
       "sourceFile": "src/features/creator-studio/index.mjs",
       "workerDispatchLines": [
@@ -576,7 +576,7 @@
         "GET"
       ],
       "sourceLines": [
-        43
+        61
       ],
       "sourceFile": "src/features/publishing-studio/index.mjs",
       "workerDispatchLines": [
@@ -1214,7 +1214,7 @@
         "PATCH"
       ],
       "sourceLines": [
-        886
+        4
       ],
       "methodGuardMissing": false,
       "authorization": "requires handler-level review"
@@ -1427,7 +1427,7 @@
         "POST"
       ],
       "sourceLines": [
-        36
+        54
       ],
       "sourceFile": "src/features/publishing-studio/index.mjs",
       "workerDispatchLines": [
@@ -1443,8 +1443,8 @@
         "DELETE"
       ],
       "sourceLines": [
-        113,
-        123
+        129,
+        139
       ],
       "sourceFile": "src/features/creator-studio/index.mjs",
       "workerDispatchLines": [
@@ -1484,10 +1484,10 @@
     "This matrix does not inspect DTO exposure, cache headers, CSRF, rate limits, body size, or database transaction semantics.",
     "Community comment and report hourly quotas are enforced by SQLite BEFORE INSERT triggers; duplicate reports are fenced by a unique claim. Static route inventory does not itself certify trigger execution."
   ],
-  "sourceCommit": "e26abda1aaade30dc739f399846c6332ddf23120",
-  "refreshNote": "Refreshed to the exact Worker and Creator/Publishing module blobs after the Author Studio domain split; exact and dynamic route signatures now include Creator workspace and Publishing release-calendar/scheduling endpoints.",
+  "sourceCommit": "c8e68b5340590c73be33ec099f3ecd90eec6911a",
+  "refreshNote": "Refreshed after correcting lifetime analytics aggregation and adding atomic current-owner/current-rights checks to chapter publication; feature-module source line evidence and Git blob fingerprints match the reviewed modules.",
   "featureSourceBlobs": {
-    "src/features/creator-studio/index.mjs": "6af4bd4fd31f7f8c293fd2d486a1802ecdcb3b68",
-    "src/features/publishing-studio/index.mjs": "e25028315eb98631f1371e5860059d36a11a0b2d"
+    "src/features/creator-studio/index.mjs": "fe0cc01df6a789ea96989e4458fc5d8147fbf850",
+    "src/features/publishing-studio/index.mjs": "faee91e3b555926b660e13902e1f3d310d875701"
   }
 }
