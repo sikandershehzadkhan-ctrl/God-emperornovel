@@ -36,7 +36,8 @@
     "Feedback returns only ratings and visible comments attached to novels owned by u.id; rating identities are represented as Reader.",
     "Story goals are unique per novel and may be cleared by setting all targets and target date empty. Target counts and date values are bounded and validated.",
     "Private notes are limited to 4,000 characters, can optionally target a chapter belonging to the selected owned novel, and all reads/updates/deletes require owner_user_id=u.id plus current parent ownership.",
-    "Readiness and planning projections are read-only and bounded to 100 owned novels/items. Planning excludes drafts that already have a scheduled publication."
+    "Readiness and planning projections are read-only and bounded to 100 owned novels/items. Planning excludes drafts that already have a scheduled publication.",
+    "Private note chapter metadata is joined through both chapter ID and the note's parent novel ID so a malformed cross-novel reference cannot expose another story's chapter title."
   ],
   "dataEntities": [
     "Reuses novels, chapters, ratings, comments, chapter_views and unlocks.",
