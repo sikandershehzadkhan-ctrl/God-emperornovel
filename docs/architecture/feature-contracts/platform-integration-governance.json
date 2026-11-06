@@ -43,7 +43,8 @@
     "src/features/publishing-studio/index.mjs",
     "docs/architecture/decisions/ADR-0040-english-notification-empty-state-localization.md",
     "docs/architecture/feature-contracts/creator-studio-workspace.json",
-    "docs/architecture/feature-contracts/publishing-studio-lifecycle.json"
+    "docs/architecture/feature-contracts/publishing-studio-lifecycle.json",
+    "scripts/test-scheduled-publication-sql.py"
   ],
   "dependencies": [
     "identity-security",
