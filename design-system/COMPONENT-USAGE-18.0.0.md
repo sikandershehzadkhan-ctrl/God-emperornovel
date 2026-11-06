@@ -12,7 +12,7 @@ Set one supported theme on the document root:
 <html lang="en" data-theme="light">
 ```
 
-Theme preference persistence belongs to the application preference layer. CSS does not write to storage. The current global shell selector remains Light/Dark; the six complete token palettes are ready for controlled theme-picker integration. Reader theme preferences remain a separate feature until the reader is migrated and visually verified.
+Theme preference persistence belongs to the application preference layer. CSS does not write to storage. The shared shell provides a native six-theme selector (Light, Dark, Midnight, Sepia, Imperial and Cosmic). The selected theme is validated, persisted in the existing `imperial_theme` preference and applied before frontend hydration. Reader-specific preferences remain independent until reader migration. Reader theme preferences remain a separate feature until the reader is migrated and visually verified.
 
 ## Buttons
 
