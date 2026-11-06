@@ -1,12 +1,12 @@
 {
   "schemaVersion": 1,
   "name": "Imperial Novel API route method inventory",
-  "sourceBranch": "integration/public-author-discovery-root-port-17-90",
-  "sourceBlob": "1efa3870de6260efd2c721ef06f6392e280a9130",
+  "sourceBranch": "integration/author-studio-reconciliation-17-93",
+  "sourceBlob": "527e914c19b979ed72d2935b300dec37eefa0316",
   "auditDate": "2026-11-06",
-  "scope": "Static dispatcher scan of the integrated Worker. Observed method guards only; this is not a complete permission or runtime contract. Bookmark and history POST writes now require positive safe-integer identifiers and an exact published chapter belonging to a published, rights-eligible novel; validation occurs before persistence. Community POST handlers now use strict positive safe-integer identifiers and published rights-eligible targets; comment/report quotas and duplicate report claims are database-trigger enforced. Worker source fingerprint refreshed to the exact source blob for the personalized-route noindex correction; this change does not expand route access or object ownership. Explicit bookmark removal is DELETE on the singular /api/bookmark resource; the plural /api/bookmarks resource is the authenticated GET list. OmniPortal connector registry seeding now uses a normalized NOT EXISTS guard; the public status projection deduplicates normalized base URLs and preserves the enabled/authorized representative. Administrator connector creation validates an allowlisted HTTPS origin, rejects duplicate URLs and creates new entries disabled/pending. No route signature was added or removed. The Worker source fingerprint is refreshed after the leaderboard chapter/time index addition; no route signature changed. Public author directory GET handler is moved before schema/session bootstrap and enforces bounded rights-filtered aggregate reads.",
-  "exactRouteCount": 80,
-  "dynamicRouteCount": 22,
+  "scope": "Static dispatcher scan of the integrated Worker. Observed method guards only; this is not a complete permission or runtime contract. Bookmark and history POST writes now require positive safe-integer identifiers and an exact published chapter belonging to a published, rights-eligible novel; validation occurs before persistence. Community POST handlers now use strict positive safe-integer identifiers and published rights-eligible targets; comment/report quotas and duplicate report claims are database-trigger enforced. Worker source fingerprint refreshed to the exact source blob for the personalized-route noindex correction; this change does not expand route access or object ownership. Explicit bookmark removal is DELETE on the singular /api/bookmark resource; the plural /api/bookmarks resource is the authenticated GET list. OmniPortal connector registry seeding now uses a normalized NOT EXISTS guard; the public status projection deduplicates normalized base URLs and preserves the enabled/authorized representative. Administrator connector creation validates an allowlisted HTTPS origin, rejects duplicate URLs and creates new entries disabled/pending. No route signature was added or removed. The Worker source fingerprint is refreshed after the leaderboard chapter/time index addition; no route signature changed. Public author directory GET handler is moved before schema/session bootstrap and enforces bounded rights-filtered aggregate reads. Creator Studio and Publishing Studio routes are delegated by the Worker to separately owned modules; sourceFile/sourceLines identify the domain handler and workerDispatchLines identify the composition call. The release calendar is Publishing-owned.",
+  "exactRouteCount": 87,
+  "dynamicRouteCount": 25,
   "exactRoutes": [
     {
       "path": "/api/account/preferences",
@@ -419,6 +419,22 @@
       "authorization": "requires handler-level review"
     },
     {
+      "path": "/api/author/analytics",
+      "methods": [
+        "GET"
+      ],
+      "sourceLines": [
+        4
+      ],
+      "sourceFile": "src/features/creator-studio/index.mjs",
+      "workerDispatchLines": [
+        486
+      ],
+      "unguardedLines": [],
+      "methodGuardMissing": false,
+      "authorization": "author(u); analytics queries filter every novel and chapter aggregate by owner_user_id=u.id."
+    },
+    {
       "path": "/api/author/applications",
       "methods": [
         "POST"
@@ -457,6 +473,58 @@
       "authorization": "author(u) or admin; GET and POST load the parent novel and compare owner_user_id to u.id unless admin; POST validates comic page sequences and whole non-negative Crown cost."
     },
     {
+      "path": "/api/author/feedback",
+      "methods": [
+        "GET"
+      ],
+      "sourceLines": [
+        31
+      ],
+      "sourceFile": "src/features/creator-studio/index.mjs",
+      "workerDispatchLines": [
+        486
+      ],
+      "unguardedLines": [],
+      "methodGuardMissing": false,
+      "authorization": "author(u); ratings and visible comments are joined through novels owned by owner_user_id=u.id."
+    },
+    {
+      "path": "/api/author/goals",
+      "methods": [
+        "GET",
+        "PUT"
+      ],
+      "sourceLines": [
+        44,
+        53
+      ],
+      "sourceFile": "src/features/creator-studio/index.mjs",
+      "workerDispatchLines": [
+        486
+      ],
+      "unguardedLines": [],
+      "methodGuardMissing": false,
+      "authorization": "author(u); reads and writes require novel owner_user_id=u.id and goal owner_user_id=u.id."
+    },
+    {
+      "path": "/api/author/notes",
+      "methods": [
+        "GET",
+        "POST"
+      ],
+      "sourceLines": [
+        85,
+        96
+      ],
+      "sourceFile": "src/features/creator-studio/index.mjs",
+      "workerDispatchLines": [
+        486
+      ],
+      "unguardedLines": [],
+      "methodGuardMissing": false,
+      "authorization": "author(u); note reads/writes bind owner_user_id=u.id and validate the referenced novel/chapter relationship."
+    },
+    {
       "path": "/api/author/novels",
       "methods": [
         "GET",
@@ -469,6 +537,54 @@
       "unguardedLines": [],
       "methodGuardMissing": false,
       "authorization": "author(u) or admin; GET filters owner_user_id=u.id; POST binds owner_user_id to u.id and always creates a draft."
+    },
+    {
+      "path": "/api/author/planning",
+      "methods": [
+        "GET"
+      ],
+      "sourceLines": [
+        159
+      ],
+      "sourceFile": "src/features/creator-studio/index.mjs",
+      "workerDispatchLines": [
+        486
+      ],
+      "unguardedLines": [],
+      "methodGuardMissing": false,
+      "authorization": "author(u); planning queue queries filter n.owner_user_id=u.id and are bounded to 100 rows."
+    },
+    {
+      "path": "/api/author/readiness",
+      "methods": [
+        "GET"
+      ],
+      "sourceLines": [
+        134
+      ],
+      "sourceFile": "src/features/creator-studio/index.mjs",
+      "workerDispatchLines": [
+        486
+      ],
+      "unguardedLines": [],
+      "methodGuardMissing": false,
+      "authorization": "author(u); readiness projection is limited to novels with owner_user_id=u.id."
+    },
+    {
+      "path": "/api/author/schedules",
+      "methods": [
+        "GET"
+      ],
+      "sourceLines": [
+        43
+      ],
+      "sourceFile": "src/features/publishing-studio/index.mjs",
+      "workerDispatchLines": [
+        487
+      ],
+      "unguardedLines": [],
+      "methodGuardMissing": false,
+      "authorization": "author(u); release calendar filters parent novel owner_user_id=u.id and is bounded to 200 rows."
     },
     {
       "path": "/api/bookmark",
@@ -1283,6 +1399,53 @@
       "authorization": "Public projection only for public, non-banned profiles; excludes email, tickets and private fields; aggregate stats require opt-in."
     },
     {
+      "pathPattern": "/^\\\\/api\\\\/author\\\\/chapters\\\\/\\\\d+\\\\/revisions$/",
+      "methods": [
+        "GET"
+      ],
+      "sourceLines": [
+        22
+      ],
+      "sourceFile": "src/features/publishing-studio/index.mjs",
+      "workerDispatchLines": [
+        487
+      ],
+      "methodGuardMissing": false,
+      "authorization": "author(u); revision reads join chapter to parent novel and require owner_user_id=u.id."
+    },
+    {
+      "pathPattern": "/^\\\\/api\\\\/author\\\\/chapters\\\\/\\\\d+\\\\/schedule$/",
+      "methods": [
+        "POST"
+      ],
+      "sourceLines": [
+        36
+      ],
+      "sourceFile": "src/features/publishing-studio/index.mjs",
+      "workerDispatchLines": [
+        487
+      ],
+      "methodGuardMissing": false,
+      "authorization": "author(u); scheduling and cancellation require the chapter's parent novel owner_user_id=u.id; rights and published-parent eligibility are rechecked."
+    },
+    {
+      "pathPattern": "/^\\\\/api\\\\/author\\\\/notes\\\\/(\\\\d+)$/",
+      "methods": [
+        "PATCH",
+        "DELETE"
+      ],
+      "sourceLines": [
+        113,
+        123
+      ],
+      "sourceFile": "src/features/creator-studio/index.mjs",
+      "workerDispatchLines": [
+        486
+      ],
+      "methodGuardMissing": false,
+      "authorization": "author(u); note mutation predicates require owner_user_id=u.id and confirm the parent novel remains owned by u.id."
+    },
+    {
       "pathPattern": "^/api/admin/author-applications/{applicationId}$",
       "methods": [
         "PATCH"
@@ -1313,6 +1476,10 @@
     "This matrix does not inspect DTO exposure, cache headers, CSRF, rate limits, body size, or database transaction semantics.",
     "Community comment and report hourly quotas are enforced by SQLite BEFORE INSERT triggers; duplicate reports are fenced by a unique claim. Static route inventory does not itself certify trigger execution."
   ],
-  "sourceCommit": "6532514197d58c14de9a0f529b07b01ad212babd",
-  "refreshNote": "Refreshed to the exact Worker blob after adding the idempotent chapter/time unlock lookup index for period-correct leaderboard queries; no route signatures changed."
+  "sourceCommit": "e26abda1aaade30dc739f399846c6332ddf23120",
+  "refreshNote": "Refreshed to the exact Worker and Creator/Publishing module blobs after the Author Studio domain split; exact and dynamic route signatures now include Creator workspace and Publishing release-calendar/scheduling endpoints.",
+  "featureSourceBlobs": {
+    "src/features/creator-studio/index.mjs": "6af4bd4fd31f7f8c293fd2d486a1802ecdcb3b68",
+    "src/features/publishing-studio/index.mjs": "e25028315eb98631f1371e5860059d36a11a0b2d"
+  }
 }
