@@ -265,4 +265,9 @@ assert.ok(app.includes("$('#exportPrefs').onclick=()=>") && app.includes("imperi
 assert.ok(app.includes("$('#resetPrefs').onclick=()=>") && app.includes("if(!confirm('Reset appearance and reader preferences on this device?'))return") && app.includes("location.reload()"), "Preference reset must require confirmation and reinitialize defaults after clearing preferences");
 assert.ok(app.includes("$('#clearLocalReading').onclick=()=>") && app.includes("if(!confirm('Clear local reading progress and bookmark helpers? Server account data will not be deleted.'))return"), "Local reading cleanup must explain its scope and require confirmation");
 
+assert.ok(releaseStylesheets[1].includes(".commentReply{margin-inline-start:28px}") && releaseStylesheets[1].includes(".commentReply{margin-inline-start:12px}"), "Community reply indentation must follow the active writing direction at desktop and mobile widths");
+assert.ok(!/\\.commentReply\\{[^}]*margin-left\\s*:/.test(releaseStylesheets[1]), "Community reply indentation must not regress to a physical left margin");
+assert.ok(releaseStylesheets[3].includes(".homeFormatArrow{margin-inline-start:auto;"), "Home format shelf arrow must follow the active writing direction");
+assert.ok(!/\\.homeFormatArrow\\{[^}]*margin-left\\s*:/.test(releaseStylesheets[3]), "Home format shelf arrow must not regress to a physical left margin");
+
 console.log("Imperial Novel design-system contract passed: six themes, body/secondary/muted and reader contrast, action/status pairs, semantic tokens, component primitives, 44px targets, focus, reduced motion, forced colors, RTL, route adoption and runtime asset registration.");
