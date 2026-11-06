@@ -1313,6 +1313,6 @@
     "This matrix does not inspect DTO exposure, cache headers, CSRF, rate limits, body size, or database transaction semantics.",
     "Community comment and report hourly quotas are enforced by SQLite BEFORE INSERT triggers; duplicate reports are fenced by a unique claim. Static route inventory does not itself certify trigger execution."
   ],
-  "sourceCommit": "bb4ec3ce8ae5da675a0ca85661f90f983f4feafc",
+  "sourceCommit": "21e7e1d36d3a3974152e7e59eeafc5210a6c19f3",
   "refreshNote": "Refreshed to the exact Worker blob after adding the idempotent chapter/time unlock lookup index for period-correct leaderboard queries; no route signatures changed. Public author directory handler rechecked: GET-only, bounded and escaped name search, rights-eligible aggregate-only output; no session identity is exposed. Public author aggregate is bounded and LIKE-wildcard escaped; only valid 1–10 ratings contribute and aggregate ratings use integer scale. Worker source fingerprint and dispatcher line references refreshed after bounded-response hardening; GET /api/public-authors remains the sole new public aggregate route in this feature."
 }
