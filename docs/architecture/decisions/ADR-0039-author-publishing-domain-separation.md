@@ -1,4 +1,4 @@
-# ADR-0031: Separate creator workspace from publishing execution
+# ADR-0039: Separate creator workspace from publishing execution
 
 - Status: Accepted and implemented on the reconciliation branch; exact-head validation remains pending.
 - Date: 2026-11-06
