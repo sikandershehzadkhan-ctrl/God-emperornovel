@@ -1,4 +1,4 @@
-# ADR-0019: Keep personalized recommendation routes out of search indexes
+# ADR-0037: Keep personalized recommendation routes out of search indexes
 
 **Status:** Accepted for the canonical integration candidate  
 **Date:** 5 November 2026

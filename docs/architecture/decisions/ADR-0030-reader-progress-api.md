@@ -1,4 +1,4 @@
-# ADR-0003: Owner-scoped reader progress API
+# ADR-0030: Owner-scoped reader progress API
 
 ## Status
 Proposed in governed integration PR. No production deployment or live schema mutation has occurred.

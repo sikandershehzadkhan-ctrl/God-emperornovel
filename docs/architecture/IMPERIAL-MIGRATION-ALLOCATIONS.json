@@ -10,38 +10,81 @@
     "neverReuseNumbers": true,
     "oneBusinessConceptOneTable": true,
     "forwardOnlyCorrections": true,
-    "productionExecutionRequiresReleaseApproval": true
+    "productionExecutionRequiresReleaseApproval": true,
+    "ownerSemantics": "Each range owner is the business domain accountable for the migration's schema concept and review, not a central sequence allocator or file custodian."
   },
   "ranges": [
     {
       "from": 1,
       "to": 11,
       "owner": "platform-data",
-      "status": "existing canonical baseline"
+      "status": "existing canonical baseline; platform schema foundation"
     },
     {
       "from": 12,
-      "to": 27,
+      "to": 15,
+      "owner": "identity",
+      "status": "user profile, username history and account preferences"
+    },
+    {
+      "from": 16,
+      "to": 17,
+      "owner": "publishing",
+      "status": "chapter revision and scheduled publication"
+    },
+    {
+      "from": 18,
+      "to": 23,
       "owner": "media",
-      "status": "existing reconciled platform/media/rights/payment migrations"
+      "status": "media registry, rights review, quotas and comic page guards"
+    },
+    {
+      "from": 24,
+      "to": 27,
+      "owner": "payments",
+      "status": "donation review, ticket adjustments and novel-request refunds"
     },
     {
       "from": 28,
-      "to": 35,
+      "to": 30,
       "owner": "platform-data",
-      "status": "existing runtime integrity, analytics, rating and schema reconciliation"
+      "status": "runtime integrity, chapter timestamps and analytics infrastructure"
+    },
+    {
+      "from": 31,
+      "to": 31,
+      "owner": "identity",
+      "status": "reversible account closure request"
+    },
+    {
+      "from": 32,
+      "to": 33,
+      "owner": "creator",
+      "status": "private Author Studio story goals and editorial notes"
+    },
+    {
+      "from": 34,
+      "to": 35,
+      "owner": "community",
+      "status": "reader rating baseline and ten-point rating model"
     },
     {
       "from": 36,
-      "to": 39,
+      "to": 38,
       "owner": "identity",
-      "status": "existing recovery, verification and ownership transfer"
+      "status": "password reset and email verification"
+    },
+    {
+      "from": 39,
+      "to": 39,
+      "owner": "creator",
+      "status": "consent-based novel ownership transfer"
     },
     {
       "from": 40,
       "to": 45,
       "owner": "identity",
-      "status": "existing account closure and specialist review"
+      "status": "account deletion review, disposition and specialist findings"
     },
     {
       "from": 46,

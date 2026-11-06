@@ -1,4 +1,4 @@
-# ADR-0015: Strict whole-number rating input
+# ADR-0033: Strict whole-number rating input
 
 - **Status:** Proposed
 - **Date:** 2026-11-05

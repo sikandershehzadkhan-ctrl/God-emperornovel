@@ -1,4 +1,4 @@
-# ADR-0004: Validate governed integration pull requests
+# ADR-0031: Validate governed integration pull requests
 
 ## Status
 Proposed in integration PR.

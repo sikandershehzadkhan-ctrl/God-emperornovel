@@ -1,4 +1,4 @@
-# ADR-0018: Idempotent OmniPortal connector registry
+# ADR-0036: Idempotent OmniPortal connector registry
 
 - **Status:** Accepted for the canonical integration candidate
 - **Date:** 2026-11-05

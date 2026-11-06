@@ -1,4 +1,4 @@
-# ADR-0015: Validate reader progress against published chapter targets
+# ADR-0034: Validate reader progress against published chapter targets
 
 - **Status:** Proposed
 - **Date:** 2026-11-05

@@ -1,4 +1,4 @@
-# ADR-0028: Canonical Community localization browser-bundle integration
+# ADR-0038: Canonical Community localization browser-bundle integration
 
 **Status:** Accepted for the governed integration candidate  
 **Date:** 6 November 2026  

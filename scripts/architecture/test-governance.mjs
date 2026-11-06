@@ -8,6 +8,22 @@ const ownership=read('docs/architecture/IMPERIAL-FEATURE-OWNERSHIP.json');
 const graph=read('docs/architecture/IMPERIAL-DOMAIN-DEPENDENCIES.json');
 const migrations=read('docs/architecture/IMPERIAL-MIGRATION-ALLOCATIONS.json');
 const fail=(m)=>{throw new Error('[architecture-governance] '+m)};
+// ADR numbers are canonical identifiers: filenames and H1 headings must agree,
+// and no two decisions may claim the same numeric identifier.
+const adrDir='docs/architecture/decisions';
+if(fs.existsSync(adrDir)){
+ const adrFiles=fs.readdirSync(adrDir).filter(name=>/^ADR-\d{4}-.+\.md$/.test(name)&&!/^ADR-\d{4}-\d{2}-\d{2}-/.test(name)).sort();
+ const adrIds=new Map();
+ for(const name of adrFiles){
+  const match=name.match(/^ADR-(\d{4})-/);
+  const id=match[1];
+  if(adrIds.has(id))fail('duplicate ADR identifier '+id+': '+adrIds.get(id)+' and '+name);
+  adrIds.set(id,name);
+  const heading=fs.readFileSync(path.join(adrDir,name),'utf8').match(/^# ADR-(\d{4}):/m);
+  if(!heading||heading[1]!==id)fail('ADR filename and heading identifier do not match: '+name);
+ }
+ console.log('ADR identifiers checked: '+adrFiles.length+' unique numbered decisions.');
+}
 const domains=new Map(ownership.domains.map(d=>[d.id,d]));
 assert.equal(domains.size,ownership.domains.length,'duplicate domain id');
 const roots=[];

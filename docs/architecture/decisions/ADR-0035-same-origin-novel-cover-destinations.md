@@ -1,4 +1,4 @@
-# ADR-0017: Same-origin novel cover destinations
+# ADR-0035: Same-origin novel cover destinations
 
 **Status:** Accepted for the canonical integration branch  
 **Date:** 5 November 2026
