@@ -467,6 +467,10 @@ async function api(req,env){
   // Reject overlong directory searches before touching D1. This keeps the public
   // endpoint bounded and avoids turning hostile query sizes into database work.
   if(rawQuery.length>80)return json([]);
+  // Normal directory reads still initialize the canonical schema, but do not
+  // perform an account/session lookup because this projection is public.
+  await ensureCoreSchema(env);
+  await ensureRuntimeFeatureSchema(env);
   const q=rawQuery.toLowerCase();
   const escaped=q.replace(/[\\%_]/g,character=> "\\"+character);
   const where="publication_status='published' AND rights_status IN ('original','public_domain','licensed','authorized') AND TRIM(author)<>''";
