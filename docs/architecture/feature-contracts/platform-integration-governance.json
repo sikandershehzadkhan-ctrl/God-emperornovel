@@ -162,7 +162,8 @@
       "test-reader-localization-completeness.mjs: ten reader strings in fourteen locales, dynamic progress/footer labels, accessibility labels and bundle parity.",
       "test-reader-accessibility.mjs: localized progress announcements retain progressbar semantics.",
       "test-rankings-localization.mjs: fourteen locale leaderboard/tier-list labels, period chapter-unlock metric, dynamic result localization, empty states and bundle parity.",
-      "test-period-correct-leaderboard.mjs: validates returned unlock counts using localized ranking labels without weakening period/rank semantics."
+      "test-period-correct-leaderboard.mjs: validates returned unlock counts using localized ranking labels without weakening period/rank semantics.",
+      "test-worker-public-author-discovery.mjs: local Wrangler Worker/D1 assertions for rights filtering, aggregate privacy projection, literal wildcard search, result bounds and GET-only behavior."
     ],
     "integration": [
       "test-platform-architecture-contract.mjs",
@@ -195,7 +196,8 @@
       "Reader progress aria-valuetext and visible progress labels use the active locale without changing persistence or revision semantics.",
       "Reader applies the active locale after rendering; bookmark and reader-theme accessible names are translated while progress persistence remains unchanged.",
       "Leaderboard and Tier List render the active locale after dynamic data loads while preserving period-scoped chapter-unlock ranking semantics.",
-      "Period-correct leaderboard regression remains compatible with localized unlock-count labels and the canonical numeric counts."
+      "Period-correct leaderboard regression remains compatible with localized unlock-count labels and the canonical numeric counts.",
+      "test-worker-public-author-discovery.mjs: isolated local D1 fixtures exercise anonymous GET and non-GET public author directory requests; no production D1."
     ],
     "isolation": [
       "test-authorization-ownership-matrix.mjs",
@@ -203,7 +205,8 @@
       "Author A cannot list or edit Author B novels and chapters",
       "Reader bookmark/history writes remain scoped to session u.id; cross-account isolation must pass in local D1 Worker tests.",
       "Concurrent requests cannot exceed 10 comments or 10 reports per user per rolling hour",
-      "A user cannot create duplicate reports for the same comment, including concurrent attempts"
+      "A user cannot create duplicate reports for the same comment, including concurrent attempts",
+      "Public author directory response contains only approved aggregate fields and excludes private account, ownership and rights evidence fields."
     ],
     "buildCommands": [
       "npm run build",
@@ -220,7 +223,8 @@
       "python3 scripts/test-published-comment-engagement.py",
       "node scripts/test-omni-connector-deduplication.mjs",
       "node scripts/test-homepage-localization.mjs",
-      "node scripts/test-navigation-accessibility-localization.mjs"
+      "node scripts/test-navigation-accessibility-localization.mjs",
+      "node scripts/test-worker-public-author-discovery.mjs"
     ]
   },
   "rollout": {
@@ -236,7 +240,8 @@
       "Use the read-only production schema preflight to inspect existing foreign keys and PRAGMA foreign_key_check before any future migration plan.",
       "Verify bookmark/history reject missing, unpublished, rights-ineligible and cross-novel chapter targets without mutating existing progress.",
       "Verify v2-to-v3 runtime schema upgrade, atomic quota behavior under concurrent writes, legacy duplicate-report backfill and expired-event pruning before any production release.",
-      "Verify connector status deduplication and administrator registration behavior on isolated test data before any release; do not run cleanup or mutate production connector records as part of this PR."
+      "Verify connector status deduplication and administrator registration behavior on isolated test data before any release; do not run cleanup or mutate production connector records as part of this PR.",
+      "Exercise the public author directory in representative LTR and RTL browser locales before release; browser-level locale rendering remains a staging acceptance gate."
     ]
   },
   "rollback": {
@@ -276,7 +281,7 @@
     "repository-operations",
     "rights"
   ],
-  "changeSummary": "Consolidates current-main platform/security foundations with homepage SSR and the six-theme experience, while introducing canonical ownership, dependency, migration and integration governance. Adds mandatory isolated identity and media policy validation gates without changing Worker routes, UI bundles or D1 schema. Adds owner-scoped reader progress API and ensures architecture/source CI runs on nested integration PRs. Adds the reader browser client integration to the existing owner-scoped reading-position API and mandatory regression coverage. Integrates owner-scoped profile and account-preference APIs and a visibility-filtered public profile projection into the same canonical Worker as reader progress. Adds the account profile editor and cross-device settings synchronization while preserving the reader-progress browser integration. Adds a PR-lineage gate that serializes overlapping Worker, browser bundle, identity, migration, route inventory, workflow and release-configuration changes. Extends serialized surface protection to every top-level served CSS, JavaScript and webmanifest asset so versioned style/service-worker files cannot diverge silently. Hardens Author Studio chapter editing and publication by enforcing parent publication state, rights evidence, comic page-sequence validation on edits, safe integer chapter costs and verified chapter-route identifier parsing. Adds atomic token-fenced AI Author Studio generation claims with concurrent-run exclusion, stale-claim recovery, late-result rejection, owner-only authorization, and migration 0046. Adds a fail-closed production release gate because the deploy workflow currently applies only migrations 0009-0011 while the canonical integration line contains later migrations. Aligns runtime first-install core DDL with immutable migration 0001, adds source and SQLite parity regression tests, and extends the read-only production schema preflight to report core foreign-key definitions and integrity violations. Enforces whole-number 1–10 rating input without rounding and adds mandatory malformed-input regression coverage. Adds strict reader progress target validation: bookmark/history writes require a positive safe-integer novel/chapter pair that resolves to the exact published chapter of a published, rights-eligible novel; invalid targets are rejected before mutation and ownership remains session-derived. Adds the same-origin novel cover destination policy, strict server-side validation on all author/admin publishing writes, route-scoped image CSP, bundled Author Studio cover choices, and regression coverage. Reconciles OmniPortal connector registry seeding and status projection: repeated public status reads no longer create sequential duplicate registry rows, duplicate normalized base URLs collapse to a stable representative, administrator connector creation rejects duplicates and leaves new entries pending until rights review. Adds fourteen-locale homepage editorial copy and skip-navigation labels, localizes the search placeholder and accessible name, and enables RTL for Persian while leaving creator-authored story content unchanged. Adds the bounded public author directory as a read-only, rights-filtered aggregate surface while retaining bounded OmniPortal response parsing and its regression contract. Static sitemap renderer and fallback sitemap are serialized shared surfaces for public directory changes.",
+  "changeSummary": "Consolidates current-main platform/security foundations with homepage SSR and the six-theme experience, while introducing canonical ownership, dependency, migration and integration governance. Adds mandatory isolated identity and media policy validation gates without changing Worker routes, UI bundles or D1 schema. Adds owner-scoped reader progress API and ensures architecture/source CI runs on nested integration PRs. Adds the reader browser client integration to the existing owner-scoped reading-position API and mandatory regression coverage. Integrates owner-scoped profile and account-preference APIs and a visibility-filtered public profile projection into the same canonical Worker as reader progress. Adds the account profile editor and cross-device settings synchronization while preserving the reader-progress browser integration. Adds a PR-lineage gate that serializes overlapping Worker, browser bundle, identity, migration, route inventory, workflow and release-configuration changes. Extends serialized surface protection to every top-level served CSS, JavaScript and webmanifest asset so versioned style/service-worker files cannot diverge silently. Hardens Author Studio chapter editing and publication by enforcing parent publication state, rights evidence, comic page-sequence validation on edits, safe integer chapter costs and verified chapter-route identifier parsing. Adds atomic token-fenced AI Author Studio generation claims with concurrent-run exclusion, stale-claim recovery, late-result rejection, owner-only authorization, and migration 0046. Adds a fail-closed production release gate because the deploy workflow currently applies only migrations 0009-0011 while the canonical integration line contains later migrations. Aligns runtime first-install core DDL with immutable migration 0001, adds source and SQLite parity regression tests, and extends the read-only production schema preflight to report core foreign-key definitions and integrity violations. Enforces whole-number 1–10 rating input without rounding and adds mandatory malformed-input regression coverage. Adds strict reader progress target validation: bookmark/history writes require a positive safe-integer novel/chapter pair that resolves to the exact published chapter of a published, rights-eligible novel; invalid targets are rejected before mutation and ownership remains session-derived. Adds the same-origin novel cover destination policy, strict server-side validation on all author/admin publishing writes, route-scoped image CSP, bundled Author Studio cover choices, and regression coverage. Reconciles OmniPortal connector registry seeding and status projection: repeated public status reads no longer create sequential duplicate registry rows, duplicate normalized base URLs collapse to a stable representative, administrator connector creation rejects duplicates and leaves new entries pending until rights review. Adds fourteen-locale homepage editorial copy and skip-navigation labels, localizes the search placeholder and accessible name, and enables RTL for Persian while leaving creator-authored story content unchanged. Adds the bounded public author directory as a read-only, rights-filtered aggregate surface while retaining bounded OmniPortal response parsing and its regression contract. Static sitemap renderer and fallback sitemap are serialized shared surfaces for public directory changes. Adds a local Wrangler Worker/D1 runtime regression for the public author directory; source-level assertions remain supplementary and production D1 is never used.",
   "acceptanceCriteria": [
     "Every changed repository path resolves to one registered owner",
     "Dependency graph is acyclic and every edge points from consumer to lower-level dependency",
@@ -349,7 +354,10 @@
     "Reader progress announcements use localized labels while retaining numeric progress values and accessible progressbar semantics.",
     "Reader bookmark and reader-theme accessible names follow the active locale after reader markup handoff.",
     "Leaderboard and Tier List labels are localized across fourteen locales and accurately describe period-scoped chapter-unlock rankings.",
-    "Dynamic ranking results reapply the selected locale without translating creator-authored titles or author names."
+    "Dynamic ranking results reapply the selected locale without translating creator-authored titles or author names.",
+    "Public author discovery is exercised against a local Wrangler Worker and fresh local D1 fixture, not source assertions alone.",
+    "Public author directory returns only published rights-eligible authors and exposes only author, novel_count, views, rating and updated_at aggregate fields.",
+    "Percent, underscore and backslash are literal search characters; unfiltered results cap at 100, search results cap at 50, and non-GET requests return 405."
   ],
   "sharedSurfaceSerialization": [
     ".github/workflows/",
