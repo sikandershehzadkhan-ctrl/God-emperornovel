@@ -115,3 +115,9 @@ assert.ok(components.includes("html[data-theme] .formatLink") && components.incl
 assert.ok(components.includes("prefers-reduced-motion:reduce") && components.includes("html[data-theme] .catalogGrid a:focus-visible"), "discovery interactions must preserve reduced motion and visible focus");
 assert.ok(packageJson.scripts.build.startsWith("node scripts/design-system/test-contract.mjs && "), "design-system contract must run before the platform build");
 console.log("Imperial Novel design-system contract passed: six complete themes, semantic roles, contrast, component primitives, 44px targets, focus, reduced motion, forced colors, WCAG, RTL and runtime asset registration.");
+
+assert.ok(components.includes("html[data-theme] .novelHero") && components.includes("html[data-theme] .novelInfo h1"), "novel detail surfaces must consume semantic theme roles");
+assert.ok(components.includes("html[data-theme] .chapter:hover") && components.includes("html[data-theme] .tabs a.active"), "chapter navigation and novel tabs must consume semantic theme roles");
+assert.ok(components.includes("html[data-theme] .readerPage .readerTool:focus-visible") && components.includes("html[data-theme] .readerPage .readerChapterItem:focus-visible"), "reader controls and chapter drawer must preserve visible keyboard focus");
+assert.ok(components.includes("html[data-theme] .readerPage .readerTool{") && components.includes("min-width:var(--in-touch-target)"), "reader tool controls must preserve 44px touch targets");
+assert.ok(components.includes("html[data-theme] .readerPage .readerPrefs select") && components.includes("prefers-reduced-motion:reduce"), "reader preferences must retain semantic focus and reduced-motion support");
