@@ -169,7 +169,7 @@ try{
     const id=991000+i;
     authorFixtures.push("INSERT INTO novels(id,title,author,rights_status,publication_status,owner_user_id,views,rating) VALUES("+id+",'Bounded Author "+i+"','Bounded Author "+i+"','original','published',"+Number(accountA.user.id)+",0,8)");
   }
-  await wrangler(["d1","execute","god-emperornovel-db","--local","--persist-to",persist,"--command",authorFixtures.join(";\\n")+";"]);
+  await wrangler(["d1","execute","god-emperornovel-db","--local","--persist-to",persist,"--command",authorFixtures.join(";\n")+";"]);
 
   const publicAuthors=await request(origin,"/api/public-authors");
   assert.equal(publicAuthors.status,200,"anonymous author directory reads must succeed");
