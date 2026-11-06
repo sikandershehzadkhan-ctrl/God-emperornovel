@@ -28,7 +28,7 @@ for(const route of matrix.exactRoutes){
   for(const method of route.methods)assert.ok(validMethods.has(method),"unsupported HTTP method "+method+" at "+route.path);
   assert.ok(Array.isArray(route.sourceLines)&&route.sourceLines.length>0,"source line evidence missing: "+route.path);
   assert.ok(route.sourceLines.every(line=>Number.isInteger(line)&&line>0),"invalid source line evidence: "+route.path);
-  const routeSource=sourceFor(route);assert.ok(route.sourceLines.every(line=>line<=routeSource.split("\\n").length),"source line exceeds declared file: "+route.path);
+  const routeSource=sourceFor(route);assert.ok(route.sourceLines.every(line=>line<=routeSource.split("\n").length),"source line exceeds declared file: "+route.path);
   assert.equal(route.methodGuardMissing,route.unguardedLines.length>0,"method guard flag disagrees with unguarded line evidence: "+route.path);
   assert.ok(typeof route.authorization==="string"&&route.authorization.length>0,"authorization review status missing: "+route.path);
 }
@@ -47,7 +47,7 @@ for(const route of matrix.dynamicRoutes){
   assert.ok(Array.isArray(route.methods),"dynamic methods must be an array: "+route.pathPattern);
   for(const method of route.methods)assert.ok(validMethods.has(method),"unsupported dynamic HTTP method "+method);
   assert.ok(Array.isArray(route.sourceLines)&&route.sourceLines.length>0,"dynamic source line evidence missing");
-  const routeSource=sourceFor(route);assert.ok(route.sourceLines.every(line=>line<=routeSource.split("\\n").length),"dynamic source line exceeds declared file: "+route.pathPattern);
+  const routeSource=sourceFor(route);assert.ok(route.sourceLines.every(line=>line<=routeSource.split("\n").length),"dynamic source line exceeds declared file: "+route.pathPattern);
   assert.ok(typeof route.methodGuardMissing==="boolean","dynamic guard status must be explicit");
   assert.ok(typeof route.authorization==="string"&&route.authorization.length>0,"dynamic authorization review status missing");
 }
