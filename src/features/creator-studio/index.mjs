@@ -170,11 +170,6 @@ if(p==="/api/author/planning"&&m==="GET"){
  }
  
 
-if(p==="/api/author/schedules"&&m==="GET"){
-  const e=author(u);if(e)return e;
-  const rows=await env.DB.prepare(`SELECT s.chapter_id,s.publish_at,s.created_at,s.updated_at,c.chapter_number,c.title chapter_title,n.id novel_id,n.title novel_title,n.owner_user_id FROM scheduled_chapter_publications s JOIN chapters c ON c.id=s.chapter_id JOIN novels n ON n.id=c.novel_id WHERE n.owner_user_id=? ORDER BY s.publish_at ASC LIMIT 200`).bind(u.id).all();
-  return json(rows.results||[])
- }
- 
+
  return null;
 }
