@@ -3,6 +3,13 @@ import assert from "node:assert/strict";
 
 const tokens = fs.readFileSync("public/imperial-design-tokens.css", "utf8");
 const components = fs.readFileSync("public/imperial-ui-primitives.css", "utf8");
+const releaseStylesheets = [
+  "public/style-17.23.0.css",
+  "public/app-17.23.0.css",
+  "public/imperial-luxury-17.23.0.css",
+  "public/imperial-formats-17.23.0.css",
+  "public/imperial-comic-reader-17.23.0.css"
+].map(path => fs.readFileSync(path, "utf8"));
 const spec = fs.readFileSync("design-system/IMPERIAL-DESIGN-SYSTEM-18.0.0.md", "utf8");
 const html = fs.readFileSync("public/index.html", "utf8");
 const app = fs.readFileSync("public/app.js", "utf8");
@@ -106,6 +113,15 @@ const primitiveTokenReferences = [...components.matchAll(/var\((--in-[a-z0-9-]+)
 const definedTokenNames = new Set([...tokens.matchAll(/(--in-[a-z0-9-]+)\s*:/g)].map(match => match[1]));
 for (const token of new Set(primitiveTokenReferences)) {
   assert.ok(definedTokenNames.has(token), "component stylesheet references an undefined design token: " + token);
+}
+const releaseCss = releaseStylesheets.join("\n") + "\n" + components;
+const releaseTokenReferences = [...releaseCss.matchAll(/var\((--in-[a-z0-9-]+)/g)].map(match => match[1]);
+const releaseDefinedTokenNames = new Set([
+  ...definedTokenNames,
+  ...releaseCss.matchAll(/(--in-[a-z0-9-]+)\s*:/g)
+].map(match => Array.isArray(match) ? match[1] : match[1]));
+for (const token of new Set(releaseTokenReferences)) {
+  assert.ok(releaseDefinedTokenNames.has(token), "loaded release stylesheet references an undefined semantic token: " + token);
 }
 assert.match(tokens, /prefers-reduced-motion:reduce/, "token motion fallback is required");
 assert.ok(spec.includes("WCAG 2.2 AA"), "accessibility target missing from specification");
