@@ -53,5 +53,5 @@ for(const route of matrix.dynamicRoutes){
 }
 assert.ok(worker.includes("async function api("),"Worker API dispatcher could not be located");
 assert.ok(typeof matrix.sourceBlob==="string"&&matrix.sourceBlob.length>=40,"source blob metadata is required");
-for(const source of matrix.featureSourceBlobs||[]){const content=fs.readFileSync(path.join(root,source.path),"utf8");const hash=crypto.createHash("sha1").update(`blob ${Buffer.byteLength(content)}\\0`).update(content).digest("hex");assert.equal(source.sha,hash,"feature source fingerprint mismatch: "+source.path)}
+for(const source of matrix.featureSourceBlobs||[]){const content=fs.readFileSync(path.join(root,source.path),"utf8");const hash=crypto.createHash("sha1").update(`blob ${Buffer.byteLength(content)}\0`).update(content).digest("hex");assert.equal(source.sha,hash,"feature source fingerprint mismatch: "+source.path)}
 console.log("API method inventory validated: "+matrix.exactRoutes.length+" exact endpoints, "+matrix.dynamicRoutes.length+" dynamic endpoints. Authorization remains a separate handler-level review.");
