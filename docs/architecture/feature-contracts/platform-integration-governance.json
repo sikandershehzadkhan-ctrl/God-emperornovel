@@ -47,7 +47,9 @@
     "docs/architecture/feature-contracts/publishing-studio.json",
     "migrations/0047_author_story_goals_owner_scope.sql",
     "migrations/.reservations/0047.json",
-    "scripts/test-ownership-transfer-migration.mjs"
+    "scripts/test-ownership-transfer-migration.mjs",
+    "docs/architecture/IMPERIAL-MIGRATION-ALLOCATIONS.json",
+    "docs/architecture/CANONICAL-MIGRATION-COLLISION-REGISTER.md"
   ],
   "dependencies": [
     "identity-security",
