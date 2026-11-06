@@ -222,7 +222,7 @@ Source-level adoption is covered by the design-system contract. Visual review ac
 
 ## 14. Account and personal library adoption
 
-Account navigation, profile panels and metrics, personal-library story cards, reading-history/bookmark rows, notices and account tabs now consume semantic theme roles. Account links and buttons have visible keyboard focus; navigation and row actions use the shared touch-target token. At mobile widths the account navigation becomes a horizontal scroll shelf and profile metrics reflow to two columns.
+Account navigation, profile panels and metrics, personal-library story cards, reading-history/bookmark rows, notices and page-level library tabs now consume semantic theme roles. Account links and buttons have visible keyboard focus; navigation and row actions use the shared touch-target token. At mobile widths the account navigation becomes a horizontal scroll shelf and profile metrics reflow to two columns.
 
 This is a visual/source adoption slice only. Authentication, profile APIs, library membership, history, bookmarks, following, ticket ledger and user data isolation are unchanged. No user data or server behavior is altered by these styles.
 
