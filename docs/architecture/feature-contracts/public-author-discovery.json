@@ -35,7 +35,7 @@
     "GET /api/public-authors (public aggregate projection)"
   ],
   "apiContracts": [
-    "GET-only; optional q parameter capped at 80 characters; escaped LIKE wildcard characters; max 50 matching authors or 100 directory authors; aggregate output only."
+    "GET-only; optional q parameter must be at most 80 characters; longer queries return an empty array before database access; accepted searches escape LIKE wildcard characters; max 50 matching authors or 100 directory authors; aggregate output only."
   ],
   "dataEntities": [
     "No new entities. Aggregate data is derived only from novels that are published and have rights_status in original, public_domain, licensed or authorized."
@@ -58,14 +58,12 @@
     "authorization": "The endpoint exposes only author display names and aggregate counts derived from published, rights-eligible novels.",
     "ownerScoping": "No account IDs, emails, private profile fields or unpublished works are returned.",
     "csrf": "GET-only read surface; no state mutation.",
-    "rateAndSizeLimits": "Search query is capped at 80 characters and result rows are capped at 50 for search and 100 for directory.",
+    "rateAndSizeLimits": "Search query is limited to 80 characters; overlong queries return an empty array without a database query; result rows are capped at 50 for search and 100 for directory.",
     "rightsAndPrivacy": "Only original, public-domain, licensed or authorized published novels contribute to the public directory."
   },
   "tests": {
     "unit": [
-      "test-public-author-discovery.mjs validates route, rights filtering, wildcard escaping, bounds, safe rendering, SEO and bundle parity.",
-      "test-seo-foundation.mjs validates public metadata, indexability and sitemap inclusion.",
-      "test-dynamic-sitemap.mjs validates static sitemap inclusion."
+      "test-public-author-discovery.mjs validates route, rights filtering, 80-character pre-query guard, escaped literal LIKE search, bounds, safe rendering, SEO and bundle parity."
     ],
     "integration": [
       "Desktop and mobile navigation link to /authors; client route renders a searchable author directory and links to existing public author profiles.",
@@ -84,7 +82,7 @@
     "stagingSteps": [
       "Run all six exact-head integration workflows.",
       "Verify /authors resolves to authors.html and receives canonical indexable SEO metadata.",
-      "Search author names containing percent, underscore and backslash; verify literal matching.",
+      "Search author names containing percent, underscore and backslash; verify literal matching; verify queries longer than 80 characters return an empty array without D1 access.",
       "Verify only published rights-eligible novels contribute to counts and reads.",
       "Verify the 14 supported interface languages, RTL direction and desktop/mobile navigation.",
       "Verify public/app.js and public/app-17.23.0.js are byte-identical."
@@ -118,7 +116,7 @@
     "/authors resolves to a dedicated authors.html shell and appears in the canonical route registry and static sitemap.",
     "Desktop and mobile navigation expose the directory in all fourteen supported locales.",
     "The client renders author names as text and links safely to existing /author/:name profiles.",
-    "The API is GET-only, caps q at 80 characters, escapes LIKE wildcard characters, and limits output to 50/100 rows.",
+    "The API is GET-only, rejects q values longer than 80 characters before database access, escapes LIKE wildcard characters literally, and limits output to 50/100 rows.",
     "Only published novels with original, public_domain, licensed or authorized rights contribute to aggregates.",
     "Views are coalesced to zero and invalid ratings outside 1–10 are excluded from aggregates.",
     "No private creator or account fields are returned.",
