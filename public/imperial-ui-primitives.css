@@ -96,3 +96,48 @@
 .in-textarea:focus-visible,.in-radio:focus-visible,.in-switch:focus-visible{outline:3px solid var(--in-focus-ring);outline-offset:3px}
 .in-checkbox:disabled,.in-radio:disabled{opacity:.6;cursor:not-allowed}
 .in-check-row:has(input:disabled){opacity:.65;cursor:not-allowed}
+
+
+/* Public shell + homepage theme adoption, v18.0.1.
+   These overrides consume semantic roles so all six root themes stay coherent. */
+html[data-theme] body{background:var(--in-bg-canvas);color:var(--in-text-primary)}
+html[data-theme] .top{background:color-mix(in srgb,var(--in-bg-surface) 90%,transparent);border-color:var(--in-border-default)}
+html[data-theme] .brand b,html[data-theme] .brand small{color:var(--in-text-primary)}
+html[data-theme] .mark{background:var(--in-bg-elevated);border-color:var(--in-border-default);color:var(--in-action-primary)}
+html[data-theme] .navlinks a{color:var(--in-text-secondary)}
+html[data-theme] .navlinks a:hover,html[data-theme] .navlinks a.active{background:var(--violet3);color:var(--in-text-primary)}
+html[data-theme] .iconbtn,html[data-theme] .ghost,html[data-theme] .search{background:var(--in-bg-surface);border-color:var(--in-border-default);color:var(--in-text-primary)}
+html[data-theme] .search input{color:var(--in-text-primary)}
+html[data-theme] .search input::placeholder{color:var(--in-text-muted)}
+html[data-theme] .menuDrawer{background:var(--in-bg-elevated);border-color:var(--in-border-strong);color:var(--in-text-primary)}
+html[data-theme] .menuDrawerHead{border-color:var(--in-border-default)}
+html[data-theme] .menuDrawerBrand span,html[data-theme] .menuDrawerLabel,html[data-theme] .menuDrawer>a:not(.menuDrawerBrand){color:var(--in-text-primary)}
+html[data-theme] .menuDrawerBrand small{color:var(--in-text-secondary)}
+html[data-theme] .menuClose{background:var(--in-bg-surface);border-color:var(--in-border-default);color:var(--in-text-primary)}
+html[data-theme] .menuDrawer>a:not(.menuDrawerBrand):hover{background:var(--in-bg-subtle)}
+html[data-theme] .nextHero{border-color:var(--in-border-default);background:radial-gradient(ellipse at 4% 0%,color-mix(in srgb,var(--in-action-primary) 16%,transparent),transparent 44%),radial-gradient(ellipse at 92% 90%,color-mix(in srgb,var(--in-action-secondary) 12%,transparent),transparent 38%),linear-gradient(135deg,var(--in-bg-elevated),var(--in-bg-canvas) 72%)}
+html[data-theme] .nextHeroCopy h1,html[data-theme] .nextFeatureIntro h2,html[data-theme] .nextCreatorBand h2{color:var(--in-text-primary)}
+html[data-theme] .nextHeroCopy p,html[data-theme] .nextFeatureIntro p,html[data-theme] .nextCreatorBand p{color:var(--in-text-secondary)}
+html[data-theme] .nextHero .heroSearch,html[data-theme] .nextHero .heroTags a{background:var(--in-bg-surface);border-color:var(--in-border-default);color:var(--in-text-primary)}
+html[data-theme] .nextHero .heroSearch input{color:var(--in-text-primary)}
+html[data-theme] .homeFormatShelf,html[data-theme] .nextFeatureTile,html[data-theme] .nextCreatorBand,html[data-theme] .nextReaderPromise{background:var(--in-bg-surface);border-color:var(--in-border-default);color:var(--in-text-primary)}
+html[data-theme] .homeFormatCard{background:var(--in-bg-elevated);border-color:var(--in-border-default);color:var(--in-text-primary)}
+html[data-theme] .homeFormatCopy b,html[data-theme] .nextFeatureTile>b,html[data-theme] .nextReaderPromise b{color:var(--in-text-primary)}
+html[data-theme] .homeFormatCopy small,html[data-theme] .nextFeatureTile p,html[data-theme] .nextReaderPromise p{color:var(--in-text-secondary)}
+html[data-theme] .homePage .sectionHead h2,html[data-theme] .homePage .sectionHead p{color:var(--in-text-primary)}
+html[data-theme] .homePage .sectionHead p{color:var(--in-text-muted)}
+html[data-theme] .homePage .card,html[data-theme] .homePage .skeletonCard{background:var(--in-bg-surface);border-color:var(--in-border-default)}
+html[data-theme] .homePage .cardTitle{color:var(--in-text-primary)}
+html[data-theme] .homePage .muted,html[data-theme] .homePage .meta,html[data-theme] .homePage .statline{color:var(--in-text-muted)}
+html[data-theme] .homePage .primary{background:var(--in-action-primary);border-color:var(--in-action-primary);color:var(--in-action-primary-text)}
+html[data-theme] .homePage a:focus-visible,html[data-theme] .top a:focus-visible,html[data-theme] .menuDrawer a:focus-visible,html[data-theme] .themePicker:focus-visible{outline:3px solid var(--in-focus-ring);outline-offset:3px}
+@media(max-width:760px){
+ html[data-theme] .nav{gap:8px}
+ html[data-theme] .brand{min-width:0}
+ html[data-theme] .brandText b{font-size:14px}
+ html[data-theme] .navright{gap:5px}
+ html[data-theme] .themePicker{max-width:7rem}
+}
+@media(prefers-reduced-motion:reduce){
+ html[data-theme] .menuDrawer,html[data-theme] .homeFormatCard,html[data-theme] .nextFeatureTile{transition:none}
+}
