@@ -206,7 +206,7 @@ body:after{
 .readerArticle h1{color:#fff}.readerContent{color:#ddd4e7}.readerDivider{background:linear-gradient(90deg,transparent,var(--gold2),var(--violet),transparent);width:130px}
 .readerLock,.readerFooterCard{background:linear-gradient(135deg,rgba(28,15,47,.94),rgba(11,7,19,.96));border-color:rgba(242,216,137,.18)}
 .lockIcon{background:rgba(116,48,255,.14);color:var(--gold2);border:1px solid rgba(190,150,255,.18)}.lockCost b{color:var(--gold2)}
-.chapterDrawer{background:rgba(12,7,21,.98);border-left-color:rgba(242,216,137,.18);box-shadow:-20px 0 60px rgba(0,0,0,.45)}
+.chapterDrawer{background:rgba(12,7,21,.98);border-inline-start-color:rgba(242,216,137,.18);box-shadow:-20px 0 60px rgba(0,0,0,.45)}
 .readerChapterItem{background:rgba(20,12,34,.82);border-color:var(--line)}.readerChapterItem.current{border-color:var(--gold2);box-shadow:0 0 0 1px rgba(242,216,137,.25),0 0 25px rgba(242,216,137,.07)}
 .accountMenu{background:rgba(15,9,26,.92);border-color:var(--line)}.accountMenu a{color:#a096ad}.accountMenu a.active,.accountMenu a:hover{background:rgba(116,48,255,.14);color:#fff}
 .footer{background:rgba(5,4,9,.9);border-top:1px solid rgba(242,216,137,.13);color:#8f849d}.footerInner{padding:28px 0}.footer b{color:var(--gold2)!important}
