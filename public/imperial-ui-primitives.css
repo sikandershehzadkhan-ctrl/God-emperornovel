@@ -720,3 +720,63 @@ html[data-theme] body.adminDashboardPage .mobileAdmin a{min-height:var(--in-touc
  html[data-theme] body.adminDashboardPage *::before,
  html[data-theme] body.adminDashboardPage *::after{scroll-behavior:auto!important;transition:none!important;animation:none!important}
 }
+
+
+/* Community taxonomy: bring the standalone governance form into the six-theme system. */
+html[data-theme] body.taxonomyPage{
+ background:var(--in-bg-canvas);color:var(--in-text-primary);
+}
+html[data-theme] body.taxonomyPage::before{display:none}
+html[data-theme] body.taxonomyPage .tax-tagline,
+html[data-theme] body.taxonomyPage .tax-lede,
+html[data-theme] body.taxonomyPage .tax-card p,
+html[data-theme] body.taxonomyPage .tax-field small,
+html[data-theme] body.taxonomyPage .tax-note,
+html[data-theme] body.taxonomyPage .tax-rules li,
+html[data-theme] body.taxonomyPage .tax-footer{color:var(--in-text-secondary)}
+html[data-theme] body.taxonomyPage .tax-eyebrow{color:var(--in-action-primary)}
+html[data-theme] body.taxonomyPage .tax-title,
+html[data-theme] body.taxonomyPage .tax-brand,
+html[data-theme] body.taxonomyPage .tax-card h2,
+html[data-theme] body.taxonomyPage .tax-rules strong{color:var(--in-text-primary)}
+html[data-theme] body.taxonomyPage .tax-card{
+ background:var(--in-bg-surface);border:1px solid var(--in-border-default);
+ box-shadow:var(--in-shadow-md);backdrop-filter:blur(18px);
+}
+html[data-theme] body.taxonomyPage .tax-field input,
+html[data-theme] body.taxonomyPage .tax-field select,
+html[data-theme] body.taxonomyPage .tax-field textarea{
+ background:var(--in-bg-elevated);color:var(--in-text-primary);
+ border:1px solid var(--in-border-strong);
+}
+html[data-theme] body.taxonomyPage .tax-field input::placeholder,
+html[data-theme] body.taxonomyPage .tax-field textarea::placeholder{color:var(--in-text-tertiary)}
+html[data-theme] body.taxonomyPage .tax-field input:focus-visible,
+html[data-theme] body.taxonomyPage .tax-field select:focus-visible,
+html[data-theme] body.taxonomyPage .tax-field textarea:focus-visible,
+html[data-theme] body.taxonomyPage .tax-submit:focus-visible,
+html[data-theme] body.taxonomyPage .tax-links a:focus-visible{
+ outline:3px solid var(--in-focus-ring);outline-offset:3px;
+}
+html[data-theme] body.taxonomyPage .tax-submit{
+ min-height:var(--in-touch-target);background:var(--in-action-primary);
+ color:var(--in-text-on-action);border:1px solid var(--in-action-primary);
+}
+html[data-theme] body.taxonomyPage .tax-submit:disabled{opacity:.65}
+html[data-theme] body.taxonomyPage .tax-status{
+ background:var(--in-bg-subtle);color:var(--in-text-primary);
+ border:1px solid var(--in-border-default);
+}
+html[data-theme] body.taxonomyPage .tax-status[data-kind="error"]{color:var(--in-status-danger)}
+html[data-theme] body.taxonomyPage .tax-status[data-kind="success"]{color:var(--in-status-success)}
+html[data-theme] body.taxonomyPage .tax-note,
+html[data-theme] body.taxonomyPage .tax-rules li{border-color:var(--in-border-default)}
+html[data-theme] body.taxonomyPage .tax-links a{
+ min-height:var(--in-touch-target);display:inline-flex;align-items:center;
+ color:var(--in-action-primary);border-color:var(--in-border-default);
+}
+html[data-theme] body.taxonomyPage .tax-links a:hover{border-color:var(--in-action-primary)}
+@media(prefers-reduced-motion:reduce){
+ html[data-theme] body.taxonomyPage *,html[data-theme] body.taxonomyPage *::before,
+ html[data-theme] body.taxonomyPage *::after{scroll-behavior:auto!important;transition:none!important;animation:none!important}
+}
