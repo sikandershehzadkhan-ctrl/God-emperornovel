@@ -62,4 +62,5 @@ assert.ok(publishing.includes("removed.meta?.changes||removed.changes||0"),"sche
 assert.ok(creator.includes("LEFT JOIN chapters c ON c.id=pn.chapter_id AND c.novel_id=pn.novel_id"),"private note reads must not project a chapter outside the note's parent novel");
 assert.ok(creator.includes("Number.isFinite(parsedDate.getTime())"),"invalid goal dates must return a validation response rather than throw");
 assert.ok(creator.includes("SELECT ?,id,?,?,?,CURRENT_TIMESTAMP FROM novels WHERE id=? AND owner_user_id=?"),"goal upsert must bind the session owner to owner_user_id and the selected novel to novel_id");
+assert.ok(creator.includes("ON CONFLICT(owner_user_id,novel_id) DO UPDATE SET"),"story goals must be unique per owner and novel so ownership transfers preserve private prior goals");
 console.log("Creator/Publishing domain boundary and scheduler source checks passed.");
