@@ -70,12 +70,14 @@
       "test-scheduled-publication-sql.py executes the ordered publication batch against SQLite with stale due-row snapshots, rights changes, ownership changes and stale schedule cleanup."
     ],
     "integration": [
-      "Local D1 and Worker tests for successful publication, stale schedules, rights changes, ownership transfer races and two overlapping invocations remain required.",
-      "Cloudflare D1/Worker runtime validation remains required; the SQLite test validates SQLite transaction semantics but is not a deployed D1 test."
+      "Cloudflare D1/Worker runtime validation remains required; the SQLite test validates SQLite transaction semantics but is not a deployed D1 test.",
+      "test-worker-account-reader-isolation.mjs runs the actual local Worker with a fresh D1 database and two author accounts to verify Creator and Publishing route isolation, goals/notes CRUD, analytics/feedback/readiness/planning ownership, revision privacy, schedule create/cancel, ownership-transfer cancellation and a manually triggered local scheduled() publication.",
+      "test-scheduled-publication-sql.py verifies SQLite changes() chaining and stale-snapshot concurrency behavior; this complements but does not replace the local Worker scheduled-event test."
     ],
     "isolation": [
       "Author A cannot read Author B revisions or schedules, create/cancel Author B schedules, or view Author B release calendar.",
-      "An ownership or rights change between preflight and write must prevent chapter publication."
+      "An ownership or rights change between preflight and write must prevent chapter publication.",
+      "The local Worker integration test verifies the former owner cannot cancel a schedule after ownership transfer while the current owner can."
     ],
     "buildCommands": [
       "node scripts/test-scheduled-publication-atomicity.mjs",
@@ -125,6 +127,6 @@
     "Chapter publication rechecks current ownership and rights in the SQL write predicate.",
     "Scheduled publication gates dependent writes and notifications on the successful chapter transition.",
     "Existing migrations 0016 and 0017 are reused without new migration.",
-    "No production deployment occurs until exact-head CI and local D1 concurrency/isolation tests pass."
+    "No production deployment occurs until exact-head CI and local Worker scheduled-event plus SQLite concurrency tests pass."
   ]
 }
