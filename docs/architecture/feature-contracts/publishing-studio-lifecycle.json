@@ -68,10 +68,12 @@
   "tests": {
     "unit": [
       "test-scheduled-publication-atomicity.mjs checks the due-row parent ID, sequential D1 gates, race-loser behavior and notification behavior using a deterministic adapter stub.",
-      "test-creator-publishing-domain-boundaries.mjs checks Publishing route ownership, conditional owner/rights publication predicates and preserved scheduled automation."
+      "test-creator-publishing-domain-boundaries.mjs checks Publishing route ownership, conditional owner/rights publication predicates and preserved scheduled automation.",
+      "test-scheduled-publication-sql.py executes the ordered publication batch against SQLite with stale due-row snapshots, rights changes, ownership changes and stale schedule cleanup."
     ],
     "integration": [
-      "Local D1 and Worker tests for successful publication, stale schedules, rights changes, ownership transfer races and two overlapping invocations remain required."
+      "Local D1 and Worker tests for successful publication, stale schedules, rights changes, ownership transfer races and two overlapping invocations remain required.",
+      "Cloudflare D1/Worker runtime validation remains required; the SQLite test validates SQLite transaction semantics but is not a deployed D1 test."
     ],
     "isolation": [
       "Author A cannot read Author B revisions or schedules, create/cancel Author B schedules, or view Author B release calendar.",
@@ -80,7 +82,8 @@
     "buildCommands": [
       "node scripts/test-scheduled-publication-atomicity.mjs",
       "node scripts/test-creator-publishing-domain-boundaries.mjs",
-      "node --check src/features/publishing-studio/index.mjs"
+      "node --check src/features/publishing-studio/index.mjs",
+      "python3 scripts/test-scheduled-publication-sql.py"
     ]
   },
   "rollout": {
