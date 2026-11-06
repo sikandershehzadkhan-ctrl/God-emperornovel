@@ -1,0 +1,125 @@
+{
+  "featureId": "creator-studio",
+  "domainOwner": "creator",
+  "technicalIntegrator": "platform-integrator",
+  "ownedPaths": [
+    "src/features/creator-studio/index.mjs"
+  ],
+  "sharedSurfaces": [
+    "src/index.js",
+    "docs/architecture/IMPERIAL-FEATURE-OWNERSHIP.json",
+    "docs/architecture/IMPERIAL-API-ROUTE-METHOD-MATRIX-01N-37.json",
+    "docs/architecture/IMPERIAL-AUTHORIZATION-OWNERSHIP-MATRIX-01N-38.json",
+    "docs/architecture/feature-contracts/platform-integration-governance.json",
+    "package.json"
+  ],
+  "dependencies": [
+    "identity",
+    "publishing",
+    "platform-kernel",
+    "platform-quality",
+    "platform-architecture"
+  ],
+  "routes": [
+    "GET /api/author/analytics",
+    "GET /api/author/feedback",
+    "GET and PUT /api/author/goals",
+    "GET and POST /api/author/notes",
+    "PATCH and DELETE /api/author/notes/:id",
+    "GET /api/author/readiness",
+    "GET /api/author/planning"
+  ],
+  "apiContracts": [
+    "Every endpoint requires author(u), which accepts an authenticated author or administrator session.",
+    "Creator records and story projections are scoped to the authenticated session owner u.id. Administrator role does not permit reading another creator's private goals, notes, analytics or feedback through these workspace endpoints.",
+    "Analytics returns a bounded top-100 novel list and top-10 chapter list, while lifetime totals are calculated separately across all novels owned by u.id; Crown spend is reader spending, not author earnings or payout balance.",
+    "Feedback returns only ratings and visible comments attached to novels owned by u.id; rating identities are represented as Reader.",
+    "Story goals are unique per novel and may be cleared by setting all targets and target date empty. Target counts and date values are bounded and validated.",
+    "Private notes are limited to 4,000 characters, can optionally target a chapter belonging to the selected owned novel, and all reads/updates/deletes require owner_user_id=u.id plus current parent ownership.",
+    "Readiness and planning projections are read-only and bounded to 100 owned novels/items. Planning excludes drafts that already have a scheduled publication.",
+    "Private note chapter metadata is joined through both chapter ID and the note's parent novel ID so a malformed cross-novel reference cannot expose another story's chapter title.",
+    "Story goal date parsing rejects invalid calendar values with a 400 validation response and must not throw on out-of-range month/day inputs."
+  ],
+  "dataEntities": [
+    "Reuses novels, chapters, ratings, comments, chapter_views and unlocks.",
+    "Reuses author_story_goals from migration 0032 and author_private_notes from migration 0033."
+  ],
+  "migrationPlan": {
+    "required": false,
+    "proposedNumbers": [],
+    "canonicalEntityReuse": "Migrations 0032 and 0033 already define the canonical goals and private notes tables. No parallel Creator Studio tables are introduced.",
+    "backwardCompatibility": "Existing author application, AI project, novel and chapter routes remain in the Worker and are not replaced by this workspace module.",
+    "rollbackOrForwardRepair": "Remove Creator Studio dispatch and module together; no schema rollback or data deletion is required."
+  },
+  "uiLifecycle": {
+    "shellOwner": "experience-shell",
+    "ssrBehavior": "No SSR route changes in this slice.",
+    "clientBootBehavior": "Existing Author Studio shell consumes the authenticated Creator workspace APIs; no duplicate browser boot owner is introduced.",
+    "servedBundleParity": "No new browser asset is introduced by the Creator API module."
+  },
+  "privacySecurity": {
+    "authentication": "Requires authenticated author or administrator session through author(u).",
+    "authorization": "Every route checks author(u); data access is constrained to the authenticated owner rather than administrator impersonation.",
+    "ownerScoping": "All creator-facing story queries and note mutations bind owner_user_id to u.id and recheck parent novel ownership.",
+    "csrf": "Existing Worker origin and session protections remain in force.",
+    "rateAndSizeLimits": "Private notes max 4,000 characters; analytics, feedback, readiness and planning reads are bounded.",
+    "rightsAndPrivacy": "Analytics and feedback are scoped to the creator's owned stories. No public endpoint or chapter-body ingestion is added."
+  },
+  "tests": {
+    "unit": [
+      "test-creator-publishing-domain-boundaries.mjs validates Creator/Publishing ownership boundaries and owner-scope source predicates.",
+      "test-api-route-method-matrix.mjs verifies route source line evidence and feature module Git blob fingerprints."
+    ],
+    "integration": [
+      "Two-account Worker/D1 tests for analytics, feedback, goals, private notes CRUD, readiness and planning remain required before authorization certification."
+    ],
+    "isolation": [
+      "Author A must not read or mutate Author B goals or private notes, nor view Author B analytics, feedback, readiness or planning results."
+    ],
+    "buildCommands": [
+      "node scripts/test-creator-publishing-domain-boundaries.mjs",
+      "node scripts/test-api-route-method-matrix.mjs"
+    ]
+  },
+  "rollout": {
+    "flags": [],
+    "stagingSteps": [
+      "Run exact-head architecture, route, schema parity, Graphify and Cloudflare validation.",
+      "Run two-account Worker/D1 tests before marking the Creator routes authorization-reviewed.",
+      "Verify analytics totals across more than 100 owned novels and ensure the top-100 display cap does not cap totals."
+    ]
+  },
+  "rollback": {
+    "codeRollback": "Revert Creator Studio module dispatch and module together; retain existing canonical creator application and AI routes.",
+    "dataRollbackOrForwardRepair": "No migration or data mutation is required for rollback.",
+    "monitoringSignals": [
+      "Creator workspace API error rates",
+      "Analytics total versus top-list consistency",
+      "Private note owner-scope denials",
+      "Feedback query latency"
+    ]
+  },
+  "collisionReview": {
+    "duplicateRoutes": "No duplicate Creator routes are intended; the release calendar and chapter lifecycle routes are Publishing-owned.",
+    "duplicateEntities": "No duplicate goals, notes, chapter or account entities are introduced.",
+    "migrationAllocation": "Migrations 0032 and 0033 are reused; no new migration.",
+    "sharedSurfaceOwners": "creator owns workspace behavior; platform-kernel owns Worker dispatch; platform-data owns existing persistence; platform-quality owns tests; platform-architecture owns route and authorization inventories; platform-integrator serializes shared changes."
+  },
+  "affectedDomains": [
+    "creator",
+    "publishing",
+    "identity",
+    "platform-kernel",
+    "platform-quality",
+    "platform-architecture"
+  ],
+  "changeSummary": "Defines the Creator-owned editorial workspace boundary for analytics, reader feedback, writing goals, private notes, editorial readiness and planning. Lifetime analytics totals are independent of the top-100 display list. Existing goals and notes migrations are reused.",
+  "acceptanceCriteria": [
+    "All Creator routes are present in the API method inventory with module source evidence.",
+    "All creator-facing reads and mutations are scoped to session u.id; admin role does not enable cross-owner access.",
+    "Lifetime analytics totals cover every owned novel, independent of the top-100 list.",
+    "Private note mutations verify both note owner and current parent novel owner.",
+    "Existing author applications, AI projects and publishing routes remain available.",
+    "New Creator endpoints remain authorization-pending until two-account Worker/D1 tests pass."
+  ]
+}
