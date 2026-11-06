@@ -1,4 +1,5 @@
 import assert from "node:assert/strict";
+import crypto from "node:crypto";
 import fs from "node:fs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
@@ -48,4 +49,36 @@ for(const route of matrix.dynamicRoutes){
 }
 assert.ok(worker.includes("async function api("),"Worker API dispatcher could not be located");
 assert.ok(typeof matrix.sourceBlob==="string"&&matrix.sourceBlob.length>=40,"source blob metadata is required");
+
+const sourceFiles = {
+  "src/features/creator-studio/index.mjs": fs.readFileSync(path.join(root,"src/features/creator-studio/index.mjs"),"utf8"),
+  "src/features/publishing-studio/index.mjs": fs.readFileSync(path.join(root,"src/features/publishing-studio/index.mjs"),"utf8")
+};
+const gitBlob = source => crypto.createHash("sha1").update(`blob ${Buffer.byteLength(source)}\\0`).update(source).digest("hex");
+assert.equal(matrix.sourceBlob,gitBlob(worker),"route inventory Worker source fingerprint is stale");
+for(const [file,source] of Object.entries(sourceFiles)){
+  assert.equal(matrix.featureSourceBlobs?.[file],gitBlob(source),"route inventory feature source fingerprint is stale: "+file);
+}
+for(const route of [...matrix.exactRoutes,...matrix.dynamicRoutes]){
+  if(!route.sourceFile)continue;
+  const source=sourceFiles[route.sourceFile];
+  assert.ok(source,"route source file is not registered: "+route.sourceFile);
+  for(const lineNumber of route.sourceLines){
+    const line=source.split("\\n")[lineNumber-1]||"";
+    assert.ok(line.includes("m==="),"domain route evidence line must include a method guard: "+route.path||route.pathPattern);
+    assert.ok(route.methods.some(method=>line.includes(method)),"domain route evidence method mismatch: "+(route.path||route.pathPattern));
+  }
+}
+const expectedCreatorPaths=[
+  "/api/author/analytics","/api/author/feedback","/api/author/goals",
+  "/api/author/notes","/api/author/planning","/api/author/readiness"
+];
+for(const routePath of expectedCreatorPaths){
+  assert.ok(matrix.exactRoutes.some(route=>route.path===routePath),"Creator route missing from inventory: "+routePath);
+}
+assert.ok(matrix.exactRoutes.some(route=>route.path==="/api/author/schedules"&&route.sourceFile==="src/features/publishing-studio/index.mjs"),"Publishing release calendar route missing or assigned to the wrong domain");
+assert.ok(matrix.dynamicRoutes.some(route=>route.pathPattern.includes("notes")&&route.methods.includes("PATCH")&&route.methods.includes("DELETE")),"private note mutation routes missing from dynamic inventory");
+assert.ok(matrix.dynamicRoutes.some(route=>route.pathPattern.includes("revisions")&&route.methods.includes("GET")),"chapter revision route missing from dynamic inventory");
+assert.ok(matrix.dynamicRoutes.some(route=>route.pathPattern.includes("schedule")&&route.methods.includes("POST")),"chapter scheduling route missing from dynamic inventory");
+
 console.log("API method inventory validated: "+matrix.exactRoutes.length+" exact endpoints, "+matrix.dynamicRoutes.length+" dynamic endpoints. Authorization remains a separate handler-level review.");
