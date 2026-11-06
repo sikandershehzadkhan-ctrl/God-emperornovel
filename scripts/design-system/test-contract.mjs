@@ -118,8 +118,8 @@ const releaseCss = releaseStylesheets.join("\n") + "\n" + components;
 const releaseTokenReferences = [...releaseCss.matchAll(/var\((--in-[a-z0-9-]+)/g)].map(match => match[1]);
 const releaseDefinedTokenNames = new Set([
   ...definedTokenNames,
-  ...releaseCss.matchAll(/(--in-[a-z0-9-]+)\s*:/g)
-].map(match => Array.isArray(match) ? match[1] : match[1]));
+  ...[...releaseCss.matchAll(/(--in-[a-z0-9-]+)\s*:/g)].map(match => match[1])
+]);
 for (const token of new Set(releaseTokenReferences)) {
   assert.ok(releaseDefinedTokenNames.has(token), "loaded release stylesheet references an undefined semantic token: " + token);
 }
