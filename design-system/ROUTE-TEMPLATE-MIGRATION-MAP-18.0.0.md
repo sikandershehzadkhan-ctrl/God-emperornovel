@@ -132,3 +132,10 @@ Required checks before marking this slice complete:
 **Implemented in source:** semantic legacy-variable bridge in the design token stylesheet, plus six-theme overrides for the public header/navigation, search controls, mobile drawer, homepage hero, format shelf, story cards, feature tiles, creator band and reader promise. The shared shell's six-theme selector remains native and keyboard operable.
 
 **Still required before declaring this family complete:** live browser review of all six themes; 360px and 390px mobile layouts; tablet and desktop navigation overflow; Urdu/Arabic/Persian RTL; focus order and Escape behavior in the drawer; footer theme consistency; check all hero/form descendants and catalog empty/error states. This source-level slice does not constitute visual regression sign-off.
+
+
+## 9. Discovery source adoption slice
+
+**Implemented in source:** semantic theme overrides for catalog filter panels and controls, result cards, active filter chips, empty states, format directory links, genre cards, tag tiles and search controls. Existing data/API behavior, query parameters, pagination and route destinations were not changed.
+
+**Still required before declaring the discovery family complete:** visual browser review for all six themes and populated/loading/empty/error states; desktop, tablet, 390px and 360px layouts; RTL; keyboard traversal; filter control contrast; long titles and tags; image fallback behavior. Source CSS and passing contract tests do not substitute for visual QA.
