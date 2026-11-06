@@ -34,6 +34,8 @@ const searchDisabled=buildRobotsTxt(origin,{allowOaiSearch:false});
 assert.match(searchDisabled,/User-agent: OAI-SearchBot\nDisallow: \/\n/);
 
 assert.match(getPageSeo("/catalog").title,/Discover Novels/);
+assert.match(getPageSeo("/authors").title,/Discover Authors/);
+assert.equal(robotsForPath("/authors"),"index,follow");
 assert.match(getPageSeo("/become-an-author").title,/Become an Author/);
 assert.match(getPageSeo("/become-an-author").description,/creator tools|editorial review/i);
 assert.equal(robotsForPath("/become-an-author"),"index,follow");
@@ -59,6 +61,7 @@ assert.equal((sitemap.match(/\/novel\/12/g)||[]).length,1);
 assert.doesNotMatch(sitemap,/\/novel\/bad/);
 assert.match(sitemap,/<loc>https:\/\/imperial\.example\/formats<\/loc>/);
 assert.match(sitemap,/\/format\/original/);
+assert.ok(sitemap.includes(origin+"/authors"),"static sitemap includes the public author directory");
 assert.match(sitemap,/become-an-author/);
 assert.ok(!sitemap.includes("<loc>https://imperial.example/author</loc>"));
 assert.match(sitemap,/\/format\/audiobook/);
