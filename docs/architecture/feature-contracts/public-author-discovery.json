@@ -8,7 +8,8 @@
     "scripts/test-public-author-discovery.mjs",
     "scripts/test-seo-foundation.mjs",
     "scripts/test-dynamic-sitemap.mjs",
-    "scripts/test-route-registry.mjs"
+    "scripts/test-route-registry.mjs",
+    "scripts/test-worker-public-author-discovery.mjs"
   ],
   "sharedSurfaces": [
     "docs/architecture/IMPERIAL-API-ROUTE-METHOD-MATRIX-01N-37.json",
@@ -21,7 +22,8 @@
     "public/sitemap.xml",
     "src/index.js",
     "src/seo.mjs",
-    "src/sitemap.mjs"
+    "src/sitemap.mjs",
+    "scripts/test-worker-account-reader-isolation.mjs"
   ],
   "dependencies": [
     "catalog",
@@ -67,11 +69,13 @@
     ],
     "integration": [
       "Desktop and mobile navigation link to /authors; client route renders a searchable author directory and links to existing public author profiles.",
-      "The API rejects non-GET methods and returns bounded aggregates only."
+      "The API rejects non-GET methods and returns bounded aggregates only.",
+      "test-worker-public-author-discovery.mjs starts the actual Worker against fresh local D1 and verifies method guards, aggregate projection, rights filtering, literal wildcard searches, overlong-query rejection and result bounds."
     ],
     "isolation": [
       "Anonymous directory access exposes no account identity or private creator fields.",
-      "Unpublished and rights-ineligible novels do not contribute to author counts or recorded reads."
+      "Unpublished and rights-ineligible novels do not contribute to author counts or recorded reads.",
+      "test-worker-account-reader-isolation.mjs verifies anonymous author discovery exposes aggregate fields only and excludes unpublished or rights-ineligible works."
     ],
     "buildCommands": [
       "npm run build"
