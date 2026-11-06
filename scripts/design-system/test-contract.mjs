@@ -132,3 +132,9 @@ assert.ok(components.includes("html[data-theme] .settingsGridPro .settingsPanel"
 assert.ok(components.includes("html[data-theme] .settingsGridPro select:focus-visible") || components.includes("html[data-theme] .settingsGridPro input:focus-visible"), "settings controls must preserve visible keyboard focus");
 assert.ok(components.includes("html[data-theme] .page .chapterList .chapter.unreadNotice"), "unread notification rows must use semantic theme roles");
 assert.ok(components.includes("html[data-theme] .page #markRead") && components.includes("min-height:var(--in-touch-target)"), "notification actions must preserve touch targets");
+
+assert.ok(app.includes('class="authorStudioLayout"') && app.includes('class="authorCreateForm"') && app.includes('class="authorWorksPanel"'), "Author Studio source must retain its real creation and works regions");
+assert.ok(components.includes("html[data-theme] .page .authorStudioLayout") && components.includes("html[data-theme] .page .authorCreateForm"), "Author Studio layout and creation form must consume semantic theme roles");
+assert.ok(components.includes("html[data-theme] .page .authorWork") && components.includes("html[data-theme] .page .authorChapterForm"), "author work cards and chapter composer must be theme-aware");
+assert.ok(components.includes("html[data-theme] .page .comicAuthorBuilder") && components.includes("html[data-theme] .page .authorStudioLayout input:focus-visible"), "comic composer and keyboard focus must be styled");
+assert.ok(components.includes("html[data-theme] .page .authorWorkActions > *") && components.includes("min-height:var(--in-touch-target)"), "author actions must preserve touch targets");
