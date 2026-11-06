@@ -6,6 +6,7 @@ const components = fs.readFileSync("public/imperial-ui-primitives.css", "utf8");
 const spec = fs.readFileSync("design-system/IMPERIAL-DESIGN-SYSTEM-18.0.0.md", "utf8");
 const html = fs.readFileSync("public/index.html", "utf8");
 const app = fs.readFileSync("public/app.js", "utf8");
+const adminHtml = fs.readFileSync("public/admin.html", "utf8");
 const worker = fs.readFileSync("src/index.js", "utf8");
 const packageJson = JSON.parse(fs.readFileSync("package.json", "utf8"));
 const usage = fs.readFileSync("design-system/COMPONENT-USAGE-18.0.0.md", "utf8");
@@ -151,3 +152,14 @@ assert.ok(!app.includes('<a href="/admin">Open review center'), "Trend Factory m
 assert.ok(components.includes("html[data-theme] .trendFactoryPage .trendFactoryHero") && components.includes("html[data-theme] .trendFactoryPage .trendControls"), "Trend Factory hero and live controls must consume semantic theme roles");
 assert.ok(components.includes("html[data-theme] .trendFactoryPage .trendResults .card") && components.includes("html[data-theme] .trendFactoryPage .trendSafetyCard"), "Trend Factory results and rights-safety cards must consume semantic theme roles");
 assert.ok(components.includes("html[data-theme] .trendFactoryPage input:focus-visible") && components.includes("html[data-theme] .trendFactoryPage .trendPending"), "Trend Factory must preserve visible focus and clearly disclose unavailable admin review");
+
+assert.ok(worker.includes('"/admin":"admin.html"') && worker.includes('if(file==="admin.html")text.replace'), "Worker must serve the dedicated noindex Admin template with its page identity");
+assert.ok(adminHtml.includes("me.user?.role!=='admin'") && adminHtml.includes("api('/api/me')"), "Admin template must verify the signed-in role before showing its command center");
+assert.ok(worker.includes('const admin=u=>u?.role==="admin"?null:json({error:"Administrator access required"},403)'), "Admin API routes must use the server-side administrator role guard");
+for (const endpoint of ['if(p==="/api/admin/stats")','if(p==="/api/admin/users"&&m==="GET")','if(p==="/api/admin/publishing"&&m==="GET")','if(p==="/api/admin/connectors"&&m==="GET")']) {
+ const pos=worker.indexOf(endpoint);
+ assert.ok(pos>=0 && worker.slice(pos,pos+180).includes("admin(u)"), "Admin endpoint must enforce the server-side role guard: "+endpoint);
+}
+assert.ok(components.includes("html[data-theme] body.adminDashboardPage .adminHero") && components.includes("html[data-theme] body.adminDashboardPage .adminTable"), "Dedicated Admin hero and tables must consume semantic theme roles");
+assert.ok(components.includes("html[data-theme] body.adminDashboardPage .adminNav button") && components.includes("html[data-theme] body.adminDashboardPage button:focus-visible"), "Admin navigation must preserve touch targets and visible keyboard focus");
+assert.ok(components.includes("html[data-theme] body.adminDashboardPage .adminForm input") && components.includes("prefers-reduced-motion:reduce"), "Admin forms and motion must follow the semantic theme and accessibility contract");
