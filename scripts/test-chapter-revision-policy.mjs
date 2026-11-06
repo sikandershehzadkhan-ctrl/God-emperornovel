@@ -24,7 +24,8 @@ assert.ok(migration.includes("ON DELETE CASCADE"), "Chapter deletion must remove
 assert.ok(migration.includes("idx_chapter_revisions_chapter_created"), "Revision history must have a chapter/time index.");
 const app = fs.readFileSync("public/app.js", "utf8");
 const shipped = fs.readFileSync("public/app-17.23.0.js", "utf8");
-const css = fs.readFileSync("public/app-17.23.0.css", "utf8");
+const css = fs.readFileSync("public/features/author-studio/index.css", "utf8");
+const feature = fs.readFileSync("public/features/author-studio/index.js", "utf8");
 for (const [label, browser] of [["source", app], ["served asset", shipped]]) {
   assert.ok(browser.includes("async function openAuthorChapterManager"), label + " must provide the chapter management view.");
   assert.ok(browser.includes("authorManageChapters"), label + " must expose chapter management from each story.");

@@ -3,6 +3,7 @@ import fs from "node:fs";
 const worker=fs.readFileSync("src/index.js","utf8");
 const authorModule=fs.readFileSync("src/features/author-studio/index.mjs","utf8");
 const app=fs.readFileSync("public/app.js","utf8");
+const authorFeature=fs.readFileSync("public/features/author-studio/index.js","utf8");
 const shipped=fs.readFileSync("public/app-17.23.0.js","utf8");
 const at=authorModule.indexOf('if(p==="/api/author/feedback"&&m==="GET")');
 assert.ok(at>=0,"Author feedback inbox route must exist.");

@@ -5,6 +5,7 @@ const worker = fs.readFileSync("src/index.js", "utf8");
 const authorModule = fs.readFileSync("src/features/author-studio/index.mjs", "utf8");
 const migration = fs.readFileSync("migrations/0017_scheduled_chapter_publications.sql", "utf8");
 const app = fs.readFileSync("public/app.js", "utf8");
+const feature = fs.readFileSync("public/features/author-studio/index.js", "utf8");
 const shipped = fs.readFileSync("public/app-17.23.0.js", "utf8");
 const wrangler = fs.readFileSync("wrangler.toml", "utf8");
 
