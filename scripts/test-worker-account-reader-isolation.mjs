@@ -395,6 +395,23 @@ try{
   assert.equal(cancelA.status,200);
   assert.equal(cancelA.data.cancelled,true,"the schedule owner should cancel an active release");
 
+  // Trigger the actual local Worker scheduled() handler with one eligible due chapter.
+  const cronNovel=await request(origin,"/api/author/novels",{method:"POST",cookie:accountA.cookie,origin,body:{title:"Scheduled Worker Runtime Test",author:accountA.username,kind:"original",rights_status:"original"}});
+  assert.equal(cronNovel.status,201);
+  const cronChapter=await request(origin,"/api/author/chapters",{method:"POST",cookie:accountA.cookie,origin,body:{novel_id:cronNovel.data.id,chapter_number:1,title:"Cron Draft",content:"Scheduled Worker runtime chapter."}});
+  assert.equal(cronChapter.status,201);
+  await wrangler(["d1","execute","god-emperornovel-db","--local","--persist-to",persist,"--command","UPDATE novels SET publication_status='published' WHERE id="+Number(cronNovel.data.id)]);
+  const cronSchedule=await request(origin,"/api/author/chapters/"+cronChapter.data.id+"/schedule",{method:"POST",cookie:accountA.cookie,origin,body:{publish_at:new Date(Date.now()+10*60*1000).toISOString()}});
+  assert.equal(cronSchedule.status,200);
+  await wrangler(["d1","execute","god-emperornovel-db","--local","--persist-to",persist,"--command","UPDATE scheduled_chapter_publications SET publish_at='2000-01-01T00:00:00Z' WHERE chapter_id="+Number(cronChapter.data.id)]);
+  const scheduledEvent=await fetch(origin+"/cdn-cgi/local/scheduled",{signal:AbortSignal.timeout(60000)});
+  assert.equal(scheduledEvent.status,200,"local Wrangler scheduled event should invoke the canonical Worker scheduler");
+  const cronChapters=await request(origin,"/api/author/chapters?novel_id="+cronNovel.data.id,{cookie:accountA.cookie});
+  assert.equal(cronChapters.status,200);
+  assert.equal(cronChapters.data.find(chapter=>chapter.id===cronChapter.data.id)?.publication_status,"published","the actual Worker cron should publish an eligible due chapter");
+  const cronCalendar=await request(origin,"/api/author/schedules",{cookie:accountA.cookie});
+  assert.equal(cronCalendar.data.some(schedule=>schedule.chapter_id===cronChapter.data.id),false,"successful cron publication should remove its release schedule");
+
   // A transferred chapter's old owner cannot cancel its schedule; the current owner can.
   const transferNovel=await request(origin,"/api/author/novels",{method:"POST",cookie:accountA.cookie,origin,body:{title:"Schedule Transfer Guard",author:accountA.username,kind:"original",rights_status:"original"}});
   assert.equal(transferNovel.status,201);
