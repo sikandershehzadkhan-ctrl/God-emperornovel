@@ -48,4 +48,11 @@ assert.ok(dueQuery.includes("changes()=1"),"dependent D1 writes must be gated by
 assert.ok(dueQuery.includes("row.novel_id"),"parent novel timestamp update must use the selected novel id");
 assert.ok(dueQuery.includes("if(changed===1)"),"notification must depend on a successful chapter transition");
 
+
+assert.ok(creator.includes("SELECT COUNT(*) novels"),"analytics lifetime totals must be aggregated independently of the top-100 novel list");
+assert.ok(creator.includes("FROM novels n WHERE n.owner_user_id=?"),"analytics totals must remain scoped to the authenticated creator");
+assert.ok(publishing.includes("(?=1 OR n.owner_user_id=?)"),"chapter publication must recheck current ownership in the write predicate");
+assert.ok(publishing.includes("n.rights_status IN ('original','public_domain','licensed','authorized')"),"chapter publication must recheck rights in the write predicate");
+assert.ok(publishing.includes("WHERE id=? AND changes()=1"),"chapter publication side effects must be gated by the successful chapter update");
+
 console.log("Creator/Publishing domain boundary and scheduler source checks passed.");
