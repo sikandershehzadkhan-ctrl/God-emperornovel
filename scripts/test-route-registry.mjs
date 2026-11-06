@@ -7,6 +7,7 @@ const manifest=JSON.parse(fs.readFileSync(path.join(root,"docs/architecture/IMPE
 const worker=fs.readFileSync(path.join(root,"src/index.js"),"utf8");
 const clientFile=fs.existsSync(path.join(root,"public/app-17.23.0.js"))?"public/app-17.23.0.js":"public/app.js";
 const client=fs.readFileSync(path.join(root,clientFile),"utf8");
+const authorDirectoryClient=fs.readFileSync(path.join(root,"public/authors-page.js"),"utf8");
 assert.equal(manifest.schemaVersion,1);
 assert.ok(manifest.routes.length>=30,"exact route inventory unexpectedly small");
 assert.ok(manifest.patterns.length>=5,"dynamic route inventory unexpectedly small");
@@ -27,7 +28,8 @@ for(const r of manifest.patterns){
 for(const r of manifest.routes){
  if(r.renderer==="standalone-html")continue;
  const name=r.renderer.split(":")[0];
- if(["home","catalog","formatDirectory","genres","tags","search","library","history","following","tickets","omni","settings","account","authorStudio","trendFactory","formatLanding","chapters","novel","reader","authorPublic","authPage"].includes(name))assert.ok(client.includes(name),"client renderer missing: "+name+" at "+r.path);
+ if(name==="authorDirectory")assert.ok(authorDirectoryClient.includes("async function authors()"),"dedicated author-directory renderer missing: "+r.path);
+ else if(["home","catalog","formatDirectory","genres","tags","search","library","history","following","tickets","omni","settings","account","authorStudio","trendFactory","formatLanding","chapters","novel","reader","authorPublic","authPage"].includes(name))assert.ok(client.includes(name),"client renderer missing: "+name+" at "+r.path);
 }
 for(const p of manifest.sitemaps)assert.ok(worker.includes(JSON.stringify(p)),"sitemap endpoint missing: "+p);
 const noindex=worker.match(/const noindex=new Set\(\[([\s\S]*?)\]\)/);

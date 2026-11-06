@@ -17,10 +17,10 @@ assert.ok(index.includes(origin + "/sitemap-chapters.xml?page=1"), "index must p
 const bounded = renderSitemapIndex(origin, 50000, 50000);
 assert.equal((bounded.match(/<sitemap>/g) || []).length, 50000, "sitemap index must stay within 50,000 child entries");
 const staticMap = renderStaticSitemap(origin);
-for (const path of ["/", "/catalog", "/formats", "/genres", "/community", "/privacy", "/copyright"]) {
+for (const path of ["/", "/catalog", "/authors", "/formats", "/genres", "/community", "/privacy", "/copyright"]) {
   assert.ok(staticMap.includes(origin + path), "static sitemap includes " + path);
 }
-assert.ok(!staticMap.includes("/admin") && !staticMap.includes("/author"), "private account surfaces must not be indexed");
+assert.ok(!staticMap.includes(origin + "/admin") && !staticMap.includes(origin + "/author</loc>"), "private account surfaces must not be indexed");
 const novels = renderNovelSitemap(origin, [
   { id: 7, updated_at: "2026-11-03 10:30:00" },
   { id: "<script>", updated_at: "bad" },
@@ -53,6 +53,6 @@ for (const path of ["/sitemap.xml", "/sitemap-static.xml", "/sitemap-novels.xml"
   assert.ok(exactRoute || wildcardRoute, "Cloudflare routes " + path + " through an exact or covering Worker-first route");
 }
 assert.ok(robots.includes("Sitemap: " + origin.replace("https://stories.example", "https://god-emperornovel.sikandershehzadkhan.workers.dev") + "/sitemap.xml"), "robots.txt advertises the canonical sitemap");
-assert.ok(fallback.includes("/catalog") && fallback.includes("/copyright"), "static fallback sitemap contains core public pages");
+assert.ok(fallback.includes("/catalog") && fallback.includes("/authors") && fallback.includes("/copyright"), "static fallback sitemap contains core public pages");
 assert.equal(SITEMAP_PAGE_SIZE, 10000, "sitemap chunks stay bounded");
 console.log("Dynamic sitemap index, static routes, rights-filtered novels/chapters, pagination and robots.txt tests passed.");
