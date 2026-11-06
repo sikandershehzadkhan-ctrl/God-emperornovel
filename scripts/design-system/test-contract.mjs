@@ -242,4 +242,7 @@ assert.ok(components.includes("html[data-theme] body.legalPage .legalHero") && c
 assert.ok(components.includes("html[data-theme] body.legalPage a:focus-visible") && components.includes("body.legalPage .legalSection{padding:16px}"), "Legal documents must preserve visible keyboard focus and mobile reading layout");
 assert.ok(worker.includes('"\/privacy":"privacy.html"') && worker.includes('"\/terms":"terms.html"') && worker.includes('"\/copyright":"copyright.html"'), "Worker must continue routing the three legal documents");
 
+assert.ok(app.includes("['#setSiteTheme','#setReaderTheme'].forEach(s=>$(s)?.addEventListener('change',save))"), "Theme preference selects must save reliably on change as well as input");
+assert.ok(app.includes("['imperial_theme','imperial_reader_theme','readerSize','imperial_font_size','imperial_reader_line_height','imperial_line_height','imperial_reader_width','imperial_reduced_motion','imperial_high_contrast','imperial_compact_cards'].forEach(k=>localStorage.removeItem(k))"), "Reset preferences must clear only the documented appearance and reading preference keys");
+assert.ok(app.includes("/^(readerProgress:|readerProgressChapter:|readerBookmark:)/.test(k)"), "Clearing local reading helpers must remain scoped to local progress and bookmark keys");
 console.log("Imperial Novel design-system contract passed: six themes, body/secondary/muted and reader contrast, action/status pairs, semantic tokens, component primitives, 44px targets, focus, reduced motion, forced colors, RTL, route adoption and runtime asset registration.");
