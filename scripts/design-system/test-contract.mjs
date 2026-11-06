@@ -5,6 +5,7 @@ const tokens = fs.readFileSync("public/imperial-design-tokens.css", "utf8");
 const components = fs.readFileSync("public/imperial-ui-primitives.css", "utf8");
 const spec = fs.readFileSync("design-system/IMPERIAL-DESIGN-SYSTEM-18.0.0.md", "utf8");
 const html = fs.readFileSync("public/index.html", "utf8");
+const app = fs.readFileSync("public/app.js", "utf8");
 const worker = fs.readFileSync("src/index.js", "utf8");
 const packageJson = JSON.parse(fs.readFileSync("package.json", "utf8"));
 const usage = fs.readFileSync("design-system/COMPONENT-USAGE-18.0.0.md", "utf8");
@@ -98,5 +99,9 @@ assert.ok(spec.includes("primitives are opt-in") || spec.includes("Do not bulk-r
 assert.ok(html.includes('href="/imperial-design-tokens.css"'), "semantic tokens must be loaded by the application shell");
 assert.ok(html.includes('href="/imperial-ui-primitives.css"'), "component primitives must be loaded by the application shell");
 assert.ok(worker.includes("'/imperial-design-tokens.css'") && worker.includes("'/imperial-ui-primitives.css'"), "Worker must register both stylesheets for every HTML template");
+assert.ok(app.includes("const IMPERIAL_THEMES=['light','dark','midnight','sepia','imperial','cosmic']"), "shared shell must expose all six supported themes");
+assert.ok(app.includes('id="imperialThemeSelect"') && app.includes("applyImperialTheme(event.target.value)"), "shared theme selector must be operable and update the root theme");
+assert.ok(worker.includes('["light","dark","midnight","sepia","imperial","cosmic"].includes(t)?t:"light"'), "Worker theme bootstrap must preserve all six themes before hydration");
+assert.ok(components.includes(".themePicker:focus-visible") && components.includes(".themePicker{"), "theme selector must have a visible keyboard focus state and shared styling");
 assert.ok(packageJson.scripts.build.startsWith("node scripts/design-system/test-contract.mjs && "), "design-system contract must run before the platform build");
 console.log("Imperial Novel design-system contract passed: six complete themes, semantic roles, contrast, component primitives, 44px targets, focus, reduced motion, forced colors, WCAG, RTL and runtime asset registration.");
