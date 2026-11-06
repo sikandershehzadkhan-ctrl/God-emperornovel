@@ -20,7 +20,7 @@ const staticMap = renderStaticSitemap(origin);
 for (const path of ["/", "/catalog", "/authors", "/formats", "/genres", "/community", "/privacy", "/copyright"]) {
   assert.ok(staticMap.includes(origin + path), "static sitemap includes " + path);
 }
-assert.ok(!staticMap.includes("/admin") && !staticMap.includes("/author"), "private account surfaces must not be indexed");
+assert.ok(!staticMap.includes(origin + "/admin") && !staticMap.includes(origin + "/author</loc>"), "private account surfaces must not be indexed");
 const novels = renderNovelSitemap(origin, [
   { id: 7, updated_at: "2026-11-03 10:30:00" },
   { id: "<script>", updated_at: "bad" },
