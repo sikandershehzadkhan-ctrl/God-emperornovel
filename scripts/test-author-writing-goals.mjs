@@ -1,7 +1,7 @@
 import assert from "node:assert/strict";
 import fs from "node:fs";
 
-const worker=fs.readFileSync("src/index.js","utf8");
+const worker=fs.readFileSync("src/features/author-studio/index.mjs","utf8");
 const app=fs.readFileSync("public/app.js","utf8");
 const shipped=fs.readFileSync("public/app-17.23.0.js","utf8");
 const css=fs.readFileSync("public/app-17.23.0.css","utf8");

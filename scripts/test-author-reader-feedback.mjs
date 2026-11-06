@@ -1,11 +1,12 @@
 import assert from "node:assert/strict";
 import fs from "node:fs";
 const worker=fs.readFileSync("src/index.js","utf8");
+const authorModule=fs.readFileSync("src/features/author-studio/index.mjs","utf8");
 const app=fs.readFileSync("public/app.js","utf8");
 const shipped=fs.readFileSync("public/app-17.23.0.js","utf8");
-const at=worker.indexOf('if(p==="/api/author/feedback"&&m==="GET")');
+const at=authorModule.indexOf('if(p==="/api/author/feedback"&&m==="GET")');
 assert.ok(at>=0,"Author feedback inbox route must exist.");
-const route=worker.slice(at,worker.indexOf('if(p==="/api/author/novels"',at));
+const route=authorModule.slice(at,authorModule.indexOf('if(p==="/api/author/feedback"',at+10)>0?authorModule.indexOf('if(p==="/api/author/feedback"',at+10):authorModule.indexOf("return null",at));
 assert.ok(route.includes("const e=author(u)"),"Feedback must require an author/admin session.");
 assert.ok(route.includes("n.owner_user_id=?"),"Feedback must be restricted to stories owned by the current author.");
 assert.ok(route.includes("c.status='visible'"),"Hidden or removed comments must not appear in the creator inbox.");

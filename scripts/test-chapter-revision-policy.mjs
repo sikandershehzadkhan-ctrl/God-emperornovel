@@ -1,7 +1,7 @@
 import assert from "node:assert/strict";
 import fs from "node:fs";
 
-const source = fs.readFileSync("src/index.js", "utf8");
+const source = fs.readFileSync("src/features/author-studio/index.mjs", "utf8");
 const migration = fs.readFileSync("migrations/0016_chapter_revisions.sql", "utf8");
 const patchAt = source.indexOf('if(/^\\/api\\/author\\/chapters\\/\\d+$/.test(p)&&m==="PATCH")');
 const revisionsAt = source.indexOf('if(/^\\/api\\/author\\/chapters\\/\\d+\\/revisions$/.test(p)&&m==="GET")');

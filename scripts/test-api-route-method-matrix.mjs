@@ -1,11 +1,14 @@
 import assert from "node:assert/strict";
 import fs from "node:fs";
+import crypto from "node:crypto";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 
 const root=path.resolve(path.dirname(fileURLToPath(import.meta.url)),"..");
 const matrix=JSON.parse(fs.readFileSync(path.join(root,"docs/architecture/IMPERIAL-API-ROUTE-METHOD-MATRIX-01N-37.json"),"utf8"));
 const worker=fs.readFileSync(path.join(root,"src/index.js"),"utf8");
+const sourceCache=new Map([["src/index.js",worker]]);
+function sourceFor(route){const file=route.sourceFile||"src/index.js";if(!sourceCache.has(file))sourceCache.set(file,fs.readFileSync(path.join(root,file),"utf8"));return sourceCache.get(file)}
 const validMethods=new Set(["GET","HEAD","POST","PUT","PATCH","DELETE","OPTIONS"]);
 
 assert.equal(matrix.schemaVersion,1,"unsupported API inventory schema");
@@ -25,6 +28,7 @@ for(const route of matrix.exactRoutes){
   for(const method of route.methods)assert.ok(validMethods.has(method),"unsupported HTTP method "+method+" at "+route.path);
   assert.ok(Array.isArray(route.sourceLines)&&route.sourceLines.length>0,"source line evidence missing: "+route.path);
   assert.ok(route.sourceLines.every(line=>Number.isInteger(line)&&line>0),"invalid source line evidence: "+route.path);
+  const routeSource=sourceFor(route);assert.ok(route.sourceLines.every(line=>line<=routeSource.split("\\n").length),"source line exceeds declared file: "+route.path);
   assert.equal(route.methodGuardMissing,route.unguardedLines.length>0,"method guard flag disagrees with unguarded line evidence: "+route.path);
   assert.ok(typeof route.authorization==="string"&&route.authorization.length>0,"authorization review status missing: "+route.path);
 }
@@ -43,9 +47,11 @@ for(const route of matrix.dynamicRoutes){
   assert.ok(Array.isArray(route.methods),"dynamic methods must be an array: "+route.pathPattern);
   for(const method of route.methods)assert.ok(validMethods.has(method),"unsupported dynamic HTTP method "+method);
   assert.ok(Array.isArray(route.sourceLines)&&route.sourceLines.length>0,"dynamic source line evidence missing");
+  const routeSource=sourceFor(route);assert.ok(route.sourceLines.every(line=>line<=routeSource.split("\\n").length),"dynamic source line exceeds declared file: "+route.pathPattern);
   assert.ok(typeof route.methodGuardMissing==="boolean","dynamic guard status must be explicit");
   assert.ok(typeof route.authorization==="string"&&route.authorization.length>0,"dynamic authorization review status missing");
 }
 assert.ok(worker.includes("async function api("),"Worker API dispatcher could not be located");
 assert.ok(typeof matrix.sourceBlob==="string"&&matrix.sourceBlob.length>=40,"source blob metadata is required");
+for(const source of matrix.featureSourceBlobs||[]){const content=fs.readFileSync(path.join(root,source.path),"utf8");const hash=crypto.createHash("sha1").update(`blob ${Buffer.byteLength(content)}\\0`).update(content).digest("hex");assert.equal(source.sha,hash,"feature source fingerprint mismatch: "+source.path)}
 console.log("API method inventory validated: "+matrix.exactRoutes.length+" exact endpoints, "+matrix.dynamicRoutes.length+" dynamic endpoints. Authorization remains a separate handler-level review.");
