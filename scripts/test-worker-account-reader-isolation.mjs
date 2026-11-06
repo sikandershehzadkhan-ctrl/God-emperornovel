@@ -156,6 +156,50 @@ try{
   ].join(";\n")+";";
   await wrangler(["d1","execute","god-emperornovel-db","--local","--persist-to",persist,"--command",sql]);
 
+  // Public author discovery is exercised through the actual local Worker and isolated D1.
+  const authorFixtures=[
+    "INSERT INTO novels(id,title,author,rights_status,publication_status,owner_user_id,views,rating) VALUES(990003,'Wildcard Percent One','Wildcard % Author','original','published',NULL,4,8.4)",
+    "INSERT INTO novels(id,title,author,rights_status,publication_status,owner_user_id,views,rating) VALUES(990004,'Wildcard Percent Two','Wildcard % Author','licensed','published',NULL,0,9)",
+    "INSERT INTO novels(id,title,author,rights_status,publication_status,owner_user_id,views,rating) VALUES(990005,'Wildcard Underscore','Wildcard _ Author','original','published',NULL,7,11)",
+    "INSERT INTO novels(id,title,author,rights_status,publication_status,owner_user_id,views,rating) VALUES(990006,'Wildcard Backslash','Wildcard \\ Author','original','published',NULL,0,0)",
+    "INSERT INTO novels(id,title,author,rights_status,publication_status,owner_user_id,views,rating) VALUES(990007,'Excluded Draft','Excluded Draft Author','original','draft',NULL,500,10)",
+    "INSERT INTO novels(id,title,author,rights_status,publication_status,owner_user_id,views,rating) VALUES(990008,'Excluded Rights','Excluded Rights Author','pending','published',NULL,500,10)"
+  ];
+  for(let i=0;i<105;i++){
+    const id=991000+i;
+    authorFixtures.push("INSERT INTO novels(id,title,author,rights_status,publication_status,owner_user_id,views,rating) VALUES("+id+",'Bounded Author "+i+"','Bounded Author "+i+"','original','published',NULL,0,8)");
+  }
+  await wrangler(["d1","execute","god-emperornovel-db","--local","--persist-to",persist,"--command",authorFixtures.join(";\n")+";"]);
+
+  const publicAuthors=await request(origin,"/api/public-authors");
+  assert.equal(publicAuthors.status,200,"anonymous author directory reads must succeed");
+  assert.ok(Array.isArray(publicAuthors.data),"public author endpoint must return an array");
+  assert.ok(publicAuthors.data.length<=100,"unfiltered author rows must be capped at 100");
+  for(const row of publicAuthors.data){
+    assert.deepEqual(Object.keys(row).sort(),["author","novel_count","rating","updated_at","views"],"public author projection must contain only approved aggregate fields");
+    for(const field of ["id","user_id","email","password_hash","owner_user_id","rights_evidence"])assert.equal(Object.hasOwn(row,field),false,"public author projection must not expose "+field);
+  }
+  const percentSearch=await request(origin,"/api/public-authors?q="+encodeURIComponent("%"));
+  assert.equal(percentSearch.status,200);
+  assert.equal(percentSearch.data.length,1,"percent must be treated literally, not as a SQL wildcard");
+  assert.equal(percentSearch.data[0].author,"Wildcard % Author");
+  assert.equal(percentSearch.data[0].novel_count,2);
+  assert.equal(percentSearch.data[0].views,4);
+  assert.equal(percentSearch.data[0].rating,9,"ratings must aggregate only values within the 1–10 range");
+  const underscoreSearch=await request(origin,"/api/public-authors?q="+encodeURIComponent("_"));
+  assert.equal(underscoreSearch.data.length,1,"underscore must be treated literally, not as a SQL wildcard");
+  assert.equal(underscoreSearch.data[0].author,"Wildcard _ Author");
+  assert.equal(underscoreSearch.data[0].rating,null,"out-of-range ratings must not become public averages");
+  const backslashSearch=await request(origin,"/api/public-authors?q="+encodeURIComponent("\\"));
+  assert.equal(backslashSearch.data.length,1,"backslash must be treated literally in LIKE search");
+  assert.equal(backslashSearch.data[0].author,"Wildcard \\ Author");
+  const excludedDraft=await request(origin,"/api/public-authors?q="+encodeURIComponent("Excluded Draft"));
+  assert.equal(excludedDraft.data.length,0,"unpublished novels must not contribute authors");
+  const excludedRights=await request(origin,"/api/public-authors?q="+encodeURIComponent("Excluded Rights"));
+  assert.equal(excludedRights.data.length,0,"rights-ineligible novels must not contribute authors");
+  const methodGuard=await request(origin,"/api/public-authors",{method:"POST",origin,body:{}});
+  assert.equal(methodGuard.status,405,"public author discovery must be GET-only");
+
   const emptyA=await request(origin,"/api/reading-position?novel_id=990001",{cookie:accountA.cookie});
   const emptyB=await request(origin,"/api/reading-position?novel_id=990001",{cookie:accountB.cookie});
   assert.equal(emptyA.status,200);
