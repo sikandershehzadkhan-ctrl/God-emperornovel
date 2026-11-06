@@ -17,6 +17,7 @@ def database():
       CREATE TABLE users(id INTEGER PRIMARY KEY);
       CREATE TABLE novels(
         id INTEGER PRIMARY KEY,
+        title TEXT NOT NULL,
         owner_user_id INTEGER NOT NULL,
         publication_status TEXT NOT NULL,
         rights_status TEXT NOT NULL,
@@ -60,7 +61,7 @@ ORDER BY s.publish_at LIMIT 100
 
 def seed(db):
     db.execute("INSERT INTO users(id) VALUES(1)")
-    db.execute("INSERT INTO novels(id,owner_user_id,publication_status,rights_status,rights_evidence,updated_at) VALUES(10,1,'published','original','', '2000-01-01')")
+    db.execute("INSERT INTO novels(id,title,owner_user_id,publication_status,rights_status,rights_evidence,updated_at) VALUES(10,'Imperial Test',1,'published','original','', '2000-01-01')")
     db.execute("INSERT INTO chapters(id,novel_id,chapter_number,title,publication_status,updated_at) VALUES(100,10,4,'A New Dawn','draft','2000-01-01')")
     db.execute("INSERT INTO scheduled_chapter_publications(chapter_id,publish_at,created_by) VALUES(100,'2000-01-01T00:00:00Z',1)")
 
@@ -93,7 +94,7 @@ def execute_publication_batch(db, row):
 # Successful publication and stale-snapshot concurrent invocation.
 db = database()
 seed(db)
-row = dict(zip([x[0] for x in db.execute(due_sql).description], db.execute(due_sql).fetchone()))
+cursor = db.execute(due_sql)\nrow = dict(zip([x[0] for x in cursor.description], cursor.fetchone()))
 assert row["novel_id"] == 10
 assert execute_publication_batch(db, row) == 1
 assert db.execute("SELECT publication_status FROM chapters WHERE id=100").fetchone()[0] == "published"
@@ -117,5 +118,25 @@ for change_sql in [
     assert db.execute("SELECT publication_status FROM chapters WHERE id=100").fetchone()[0] == "draft"
     assert db.execute("SELECT COUNT(*) FROM audit_logs").fetchone()[0] == 0
     db.close()
+
+
+# Stale schedules are cleaned when the chapter is no longer a draft or rights eligibility is lost.
+db = database()
+seed(db)
+db.execute("UPDATE chapters SET publication_status='published' WHERE id=100")
+stale_cleanup = """
+DELETE FROM scheduled_chapter_publications
+WHERE NOT EXISTS(
+ SELECT 1 FROM chapters c JOIN novels n ON n.id=c.novel_id
+ WHERE c.id=scheduled_chapter_publications.chapter_id
+   AND c.publication_status='draft' AND n.publication_status='published'
+   AND n.owner_user_id=scheduled_chapter_publications.created_by
+   AND n.rights_status IN ('original','public_domain','licensed','authorized')
+   AND (n.rights_status='original' OR TRIM(COALESCE(n.rights_evidence,''))<>'')
+)
+"""
+db.execute(stale_cleanup)
+assert db.execute("SELECT COUNT(*) FROM scheduled_chapter_publications").fetchone()[0] == 0
+db.close()
 
 print("Scheduled publication SQLite transaction checks passed.")
