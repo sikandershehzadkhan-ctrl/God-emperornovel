@@ -184,3 +184,12 @@ The design system is not considered production-adopted until all are true:
 9. Release is deployed and live assets are verified.
 
 **Honest status:** the six theme palettes now define the full semantic color contract, the primitive layer includes accessible controls and feedback patterns, and both stylesheets are registered in the application shell. Existing page templates still primarily use legacy selectors. This PR does not claim full page migration, six-theme global preference UI, or completed visual/browser QA.
+
+
+## 10. Global theme selection implementation
+
+The shared application shell now exposes a native, keyboard-operable theme selector for all six supported themes: Light, Dark, Midnight, Sepia, Imperial and Cosmic. The selected value is stored under the existing `imperial_theme` preference key, validated against the six-theme allowlist, and applied to the document root. The Worker bootstrap uses the same allowlist before frontend hydration to avoid a dark/light-only flash that would overwrite the selected theme.
+
+The selector is intentionally a native select rather than a custom menu, preserving built-in keyboard and assistive-technology behavior. The design-system contract test verifies the six options, persistence/application path, pre-hydration allowlist and visible focus styling.
+
+This global selector does not yet claim that the separate legacy Reader theme controls have been unified. That requires a reader-specific migration and preference compatibility tests.
