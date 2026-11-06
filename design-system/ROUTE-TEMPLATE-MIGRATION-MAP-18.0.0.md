@@ -157,3 +157,12 @@ Required checks before marking this slice complete:
 **Intentionally unchanged:** authentication, account/profile APIs, library membership, reading history, bookmarks, following, ticket ledger and user data boundaries. The Following route continues to use its existing shared library renderer; no behavior change is implied by this CSS slice.
 
 **Still required:** visual QA for six themes; signed-in/signed-out and empty/populated/error states; 360px/390px/mobile/tablet/desktop; long usernames/titles; RTL; keyboard and screen-reader review. Source CSS and contract assertions are not visual sign-off.
+
+
+## 12. Settings and notification center source adoption
+
+**Implemented in source:** semantic theme overrides for settings panels, appearance/accessibility rows, selects/range controls, save notices and action links; notification rows, unread state and mark-all-read action receive semantic surfaces, focus and touch-target styling. Mobile settings controls retain full-width layout; reduced-motion is respected.
+
+**Intentionally unchanged:** device-local preference keys, export/reset behavior, independent reader preferences, notification API/read-state behavior, authentication and server data.
+
+**Still required:** six-theme visual QA; keyboard-only and screen-reader review; high-contrast/reduced-motion checks; read/unread/empty/error notification states; 360px/390px layouts and RTL. Source CSS and contract assertions are not visual sign-off.
