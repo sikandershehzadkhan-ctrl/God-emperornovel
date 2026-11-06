@@ -2,7 +2,7 @@
   "schemaVersion": 1,
   "name": "Imperial Novel route registry",
   "sourceBranch": "integration/public-author-discovery-root-port-17-90",
-  "sourceCommit": "d2a55d289e017b1171f9e835ee21869843b6d2aa",
+  "sourceCommit": "6532514197d58c14de9a0f529b07b01ad212babd",
   "auditDate": "2026-11-06",
   "scope": "Current-main static route reconciliation. Does not prove deployed behavior, runtime routing, or authorization correctness. Public author directory route is registered; static inventory does not certify deployment.",
   "routes": [
@@ -366,5 +366,5 @@
     "HTTP method and object-level permissions are not certified by this UI route manifest.",
     "Production status, active assets, cache behavior and browser navigation remain unverified."
   ],
-  "sourceBlob": "edf2ac4b63260c4621d17feb69e2f138c881bf00"
+  "sourceBlob": "1efa3870de6260efd2c721ef06f6392e280a9130"
 }
