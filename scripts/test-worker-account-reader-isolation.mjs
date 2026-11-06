@@ -320,6 +320,13 @@ try{
   const noteDelete=await request(origin,"/api/author/notes/"+noteAId,{method:"DELETE",cookie:accountA.cookie,origin});
   assert.equal(noteDelete.status,200,"the note owner can delete its note");
 
+  const analyticsFixtures=[];
+  for(let i=0;i<105;i++){
+    const id=993000+i;
+    analyticsFixtures.push("INSERT INTO novels(id,title,author,rights_status,publication_status,owner_user_id,views,rating,updated_at) VALUES("+id+",'Analytics Fixture "+i+"','Reader Alpha','original','draft',"+Number(accountA.user.id)+",0,0,'2000-01-01')");
+  }
+  await wrangler(["d1","execute","god-emperornovel-db","--local","--persist-to",persist,"--command",analyticsFixtures.join(";")+";"]);
+
   const analyticsA=await request(origin,"/api/author/analytics",{cookie:accountA.cookie});
   const analyticsB=await request(origin,"/api/author/analytics",{cookie:accountB.cookie});
   assert.equal(analyticsA.status,200);
@@ -329,6 +336,8 @@ try{
   assert.ok(analyticsB.data.novels.some(n=>n.id===authorNovelBId),"account B analytics should include its own novel");
   assert.equal(analyticsB.data.novels.some(n=>n.id===authorNovelId),false,"account B analytics must exclude account A novels");
   assert.ok(analyticsA.data.totals.novels>=1&&analyticsB.data.totals.novels>=1,"lifetime totals must be calculated for each authenticated owner");
+  assert.equal(analyticsA.data.novels.length,100,"analytics display list should remain bounded to 100 novels");
+  assert.ok(analyticsA.data.totals.novels>analyticsA.data.novels.length,"lifetime analytics totals must include owned novels beyond the top-100 display list");
   const feedbackA=await request(origin,"/api/author/feedback",{cookie:accountA.cookie});
   const feedbackB=await request(origin,"/api/author/feedback",{cookie:accountB.cookie});
   assert.ok(feedbackA.data.items.some(item=>item.body==="A story feedback comment"),"account A should see feedback on its own story");
