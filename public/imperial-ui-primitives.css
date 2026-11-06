@@ -184,29 +184,29 @@ html[data-theme] .filterChip,
 html[data-theme] .activeFilter{background:var(--in-bg-subtle);border-color:var(--in-border-default);color:var(--in-text-secondary)}
 html[data-theme] .filterChip.active,
 html[data-theme] .filterChip:hover,
-html[data-theme] .activeFilter:hover{background:var(--in-action-primary-subtle);border-color:var(--in-action-primary);color:var(--in-text-primary)}
+html[data-theme] .activeFilter:hover{background:color-mix(in srgb,var(--in-action-primary) 12%,var(--in-bg-surface));border-color:var(--in-action-primary);color:var(--in-text-primary)}
 html[data-theme] .activeFilter b{background:var(--in-bg-elevated);color:var(--in-text-primary)}
 html[data-theme] .clearFilters,
 html[data-theme] .genreGlyph,
 html[data-theme] .tagTile span,
 html[data-theme] .readMini{color:var(--in-action-primary)}
-html[data-theme] .readMini{background:var(--in-action-primary-subtle)}
+html[data-theme] .readMini{background:color-mix(in srgb,var(--in-action-primary) 12%,var(--in-bg-surface))}
 html[data-theme] .catalogEmpty{background:var(--in-bg-surface);border-color:var(--in-border-strong);box-shadow:none}
-html[data-theme] .catalogEmptyIcon{background:var(--in-action-primary-subtle);border-color:var(--in-border-default);color:var(--in-action-primary)}
+html[data-theme] .catalogEmptyIcon{background:color-mix(in srgb,var(--in-action-primary) 12%,var(--in-bg-surface));border-color:var(--in-border-default);color:var(--in-action-primary)}
 html[data-theme] .catalogEmpty p,
 html[data-theme] .catalogLegal{color:var(--in-text-secondary)}
 html[data-theme] .catalogLegal{border-color:var(--in-border-default)}
 html[data-theme] .formatLink{background:var(--in-bg-elevated);border-color:var(--in-border-default);color:var(--in-text-primary)}
 html[data-theme] .formatLink span:last-child{color:var(--in-action-primary)}
 html[data-theme] .formatLink:hover,
-html[data-theme] .formatLink:focus-visible{background:var(--in-action-primary-subtle);border-color:var(--in-action-primary);outline:3px solid var(--in-focus-ring);outline-offset:2px}
+html[data-theme] .formatLink:focus-visible{background:color-mix(in srgb,var(--in-action-primary) 12%,var(--in-bg-surface));border-color:var(--in-action-primary);outline:3px solid var(--in-focus-ring);outline-offset:2px}
 html[data-theme] .formatProfile strong{color:var(--in-text-primary)}
-html[data-theme] .genreGlyph{background:var(--in-action-primary-subtle);border-color:var(--in-border-default)}
+html[data-theme] .genreGlyph{background:color-mix(in srgb,var(--in-action-primary) 12%,var(--in-bg-surface));border-color:var(--in-border-default)}
 html[data-theme] .tagTile:hover{background:var(--in-bg-elevated);border-color:var(--in-action-primary)}
 html[data-theme] .catalogTop .actions .ghost,
 html[data-theme] #sf .actions .ghost{background:var(--in-bg-elevated);border-color:var(--in-border-default);color:var(--in-text-primary)}
 html[data-theme] .catalogTop .actions .ghost:hover,
-html[data-theme] #sf .actions .ghost:hover{background:var(--in-action-primary-subtle);border-color:var(--in-action-primary)}
+html[data-theme] #sf .actions .ghost:hover{background:color-mix(in srgb,var(--in-action-primary) 12%,var(--in-bg-surface));border-color:var(--in-action-primary)}
 html[data-theme] .catalogTop button.primary,
 html[data-theme] #sf button.primary{background:var(--in-action-primary);border-color:var(--in-action-primary);color:var(--in-action-primary-text)}
 html[data-theme] .catalogGrid a:focus-visible,
