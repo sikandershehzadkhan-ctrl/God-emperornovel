@@ -116,6 +116,8 @@ Six themes are supported by the token contract: Light, Dark, Midnight, Sepia, Im
 - State uses native semantics first: `:disabled`, `:focus-visible`, `[aria-selected]`, `[aria-invalid]`, `[aria-pressed]`.
 - Do not introduce a second global reset, icon pack, typography system or competing token namespace.
 
+Implementation examples and accessibility responsibilities for every primitive are maintained in [COMPONENT-USAGE-18.0.0.md](./COMPONENT-USAGE-18.0.0.md). The usage guide distinguishes CSS appearance from application-owned keyboard, focus, persistence, authorization and async behavior.
+
 ## 7. Product patterns
 
 ### Forms
