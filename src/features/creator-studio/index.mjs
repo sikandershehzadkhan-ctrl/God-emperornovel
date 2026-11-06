@@ -104,7 +104,7 @@ if(p==="/api/author/notes"&&m==="GET"){
   if(!Number.isSafeInteger(novelId)||novelId<0||!Number.isSafeInteger(chapterId)||chapterId<0)return json({error:'Invalid story or chapter.'},400);
   const rows=await env.DB.prepare(`SELECT pn.id,pn.novel_id,pn.chapter_id,pn.note,pn.created_at,pn.updated_at,n.title novel_title,c.chapter_number,c.title chapter_title
    FROM author_private_notes pn JOIN novels n ON n.id=pn.novel_id
-   LEFT JOIN chapters c ON c.id=pn.chapter_id
+   LEFT JOIN chapters c ON c.id=pn.chapter_id AND c.novel_id=pn.novel_id
    WHERE pn.owner_user_id=? AND n.owner_user_id=? AND (?=0 OR pn.novel_id=?) AND (?=0 OR pn.chapter_id=?)
    ORDER BY pn.updated_at DESC,pn.id DESC LIMIT 100`).bind(u.id,u.id,novelId,novelId,chapterId,chapterId).all();
   return json(rows.results||[])
