@@ -71,10 +71,13 @@
       "test-api-route-method-matrix.mjs verifies route source line evidence and feature module Git blob fingerprints."
     ],
     "integration": [
-      "Two-account Worker/D1 tests for analytics, feedback, goals, private notes CRUD, readiness and planning remain required before authorization certification."
+      "test-worker-account-reader-isolation.mjs verifies two-account Worker/D1 isolation for all Creator Studio route-methods, including analytics, feedback, goals, private notes CRUD, readiness and planning.",
+      "The same local Worker/D1 test verifies Publishing release calendar, revision privacy, schedule create/cancel and ownership-transfer cancellation."
     ],
     "isolation": [
-      "Author A must not read or mutate Author B goals or private notes, nor view Author B analytics, feedback, readiness or planning results."
+      "Author A must not read or mutate Author B goals or private notes, nor view Author B analytics, feedback, readiness or planning results.",
+      "Author A and B cannot read or mutate each other's Creator Studio records or Publishing release records.",
+      "A former owner cannot cancel a schedule after ownership changes; the current owner can."
     ],
     "buildCommands": [
       "node scripts/test-creator-publishing-domain-boundaries.mjs",
