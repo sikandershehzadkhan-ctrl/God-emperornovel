@@ -11,7 +11,7 @@ const source=fs.readFileSync("src/index.js","utf8");
 const gitBlob=crypto.createHash("sha1").update(`blob ${Buffer.byteLength(source)}\0`).update(source).digest("hex");
 assert.equal(data.sourceBlob,gitBlob,"ownership matrix must identify the exact Worker source blob under review");
 assert.equal(data.routes.length,data.reviewedRouteCount);
-for(const feature of data.featureSources||[]){const content=fs.readFileSync(feature.path,"utf8");const hash=crypto.createHash("sha1").update(`blob ${Buffer.byteLength(content)}\\0`).update(content).digest("hex");assert.equal(feature.sha,hash,"feature source fingerprint mismatch: "+feature.path)}
+for(const feature of data.featureSources||[]){const content=fs.readFileSync(feature.path,"utf8");const hash=crypto.createHash("sha1").update(`blob ${Buffer.byteLength(content)}\0`).update(content).digest("hex");assert.equal(feature.sha,hash,"feature source fingerprint mismatch: "+feature.path)}
 assert.ok(data.reviewedRouteCount>=15);
 assert.ok(data.pendingDisclosure.length>20);
 const seen=new Set();
