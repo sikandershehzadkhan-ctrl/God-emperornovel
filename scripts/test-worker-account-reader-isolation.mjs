@@ -415,12 +415,20 @@ try{
   // A transferred chapter's old owner cannot cancel its schedule; the current owner can.
   const transferNovel=await request(origin,"/api/author/novels",{method:"POST",cookie:accountA.cookie,origin,body:{title:"Schedule Transfer Guard",author:accountA.username,kind:"original",rights_status:"original"}});
   assert.equal(transferNovel.status,201);
+  const transferGoalA=await request(origin,"/api/author/goals",{method:"PUT",cookie:accountA.cookie,origin,body:{novel_id:transferNovel.data.id,target_chapters:3,target_words:6000}});
+  assert.equal(transferGoalA.status,200,"former owner should have a private goal before transfer");
   const transferChapter=await request(origin,"/api/author/chapters",{method:"POST",cookie:accountA.cookie,origin,body:{novel_id:transferNovel.data.id,chapter_number:1,title:"Transfer Draft",content:"Transfer guard chapter."}});
   assert.equal(transferChapter.status,201);
   await wrangler(["d1","execute","god-emperornovel-db","--local","--persist-to",persist,"--command","UPDATE novels SET publication_status='published' WHERE id="+Number(transferNovel.data.id)]);
   const transferSchedule=await request(origin,"/api/author/chapters/"+transferChapter.data.id+"/schedule",{method:"POST",cookie:accountA.cookie,origin,body:{publish_at:new Date(Date.now()+10*60*1000).toISOString()}});
   assert.equal(transferSchedule.status,200);
   await wrangler(["d1","execute","god-emperornovel-db","--local","--persist-to",persist,"--command","UPDATE novels SET owner_user_id="+Number(accountB.user.id)+" WHERE id="+Number(transferNovel.data.id)]);
+  const transferGoalB=await request(origin,"/api/author/goals",{method:"PUT",cookie:accountB.cookie,origin,body:{novel_id:transferNovel.data.id,target_chapters:12,target_words:12000}});
+  assert.equal(transferGoalB.status,200,"new owner must be able to create a separate goal for a transferred novel");
+  const transferGoalsB=await request(origin,"/api/author/goals",{cookie:accountB.cookie});
+  const transferGoalsA=await request(origin,"/api/author/goals",{cookie:accountA.cookie});
+  assert.ok(transferGoalsB.data.some(g=>g.novel_id===transferNovel.data.id&&g.target_chapters===12),"new owner should see only its own goal row");
+  assert.equal(transferGoalsA.data.some(g=>g.novel_id===transferNovel.data.id),false,"former owner cannot read its private goal after ownership transfer");
   const oldOwnerCancel=await request(origin,"/api/author/chapters/"+transferChapter.data.id+"/schedule",{method:"POST",cookie:accountA.cookie,origin,body:{cancel:true}});
   assert.equal(oldOwnerCancel.status,403,"former owner cannot cancel a schedule after ownership changes");
   const newOwnerSchedules=await request(origin,"/api/author/schedules",{cookie:accountB.cookie});
