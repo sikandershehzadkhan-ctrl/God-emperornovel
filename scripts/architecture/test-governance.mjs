@@ -12,7 +12,7 @@ const fail=(m)=>{throw new Error('[architecture-governance] '+m)};
 // and no two decisions may claim the same numeric identifier.
 const adrDir='docs/architecture/decisions';
 if(fs.existsSync(adrDir)){
- const adrFiles=fs.readdirSync(adrDir).filter(name=>/^ADR-\d{4}-.+\.md$/.test(name)).sort();
+ const adrFiles=fs.readdirSync(adrDir).filter(name=>/^ADR-\d{4}-.+\.md$/.test(name)&&!/^ADR-\d{4}-\d{2}-\d{2}-/.test(name)).sort();
  const adrIds=new Map();
  for(const name of adrFiles){
   const match=name.match(/^ADR-(\d{4})-/);
