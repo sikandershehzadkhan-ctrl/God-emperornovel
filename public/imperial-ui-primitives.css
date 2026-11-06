@@ -975,3 +975,24 @@ html[data-theme] body.legalPage .secondary{
  html[data-theme] body.legalPage *::before,
  html[data-theme] body.legalPage *::after{scroll-behavior:auto!important;transition:none!important;animation:none!important}
 }
+
+
+/* High-contrast preference applies to semantic components in every global theme. */
+html[data-high-contrast="true"][data-theme="light"],
+html[data-high-contrast="true"][data-theme="sepia"]{
+ --in-text-secondary:var(--in-text-primary);
+ --in-text-muted:var(--in-text-primary);
+ --in-border-default:#68757D;
+ --in-border-strong:#46535B;
+ --in-focus-ring:#064A9E;
+}
+html[data-high-contrast="true"][data-theme="dark"],
+html[data-high-contrast="true"][data-theme="midnight"],
+html[data-high-contrast="true"][data-theme="imperial"],
+html[data-high-contrast="true"][data-theme="cosmic"]{
+ --in-text-secondary:var(--in-text-primary);
+ --in-text-muted:var(--in-text-primary);
+ --in-border-default:#8799A3;
+ --in-border-strong:#B1C0C7;
+ --in-focus-ring:#A9D0FF;
+}
