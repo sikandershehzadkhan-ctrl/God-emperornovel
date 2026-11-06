@@ -58,17 +58,20 @@
   "tests": {
     "unit": [
       "test-scheduled-publication-atomicity.mjs checks parent ID projection, ordered write gates, race-loser behavior, notification behavior and rights denial using a deterministic D1 adapter stub.",
-      "test-creator-publishing-domain-boundaries.mjs checks Creator/Publishing route ownership, Worker composition, preserved scheduled automation, stale schedule cleanup, parent ID projection and sequential publication gates."
+      "test-creator-publishing-domain-boundaries.mjs checks Creator/Publishing route ownership, Worker composition, preserved scheduled automation, stale schedule cleanup, parent ID projection and sequential publication gates.",
+      "test-scheduled-publication-sql.py validates SQLite sequential changes() gates and stale-snapshot race behavior."
     ],
     "integration": [
-      "Local D1 tests for successful publication, stale schedules, rights changes and overlapping scheduled invocations remain required before Worker wiring."
+      "Local D1 tests for successful publication, stale schedules, rights changes and overlapping scheduled invocations remain required before Worker wiring.",
+      "SQLite validation is not a substitute for a local Wrangler D1/Worker integration test."
     ],
     "isolation": [
       "A competing scheduled invocation must not create a duplicate audit record or notification when its conditional chapter update changes zero rows."
     ],
     "buildCommands": [
       "node scripts/test-scheduled-publication-atomicity.mjs",
-      "node --check src/domains/publishing/scheduled-chapter-publication.mjs"
+      "node --check src/domains/publishing/scheduled-chapter-publication.mjs",
+      "python3 scripts/test-scheduled-publication-sql.py"
     ]
   },
   "rollout": {
