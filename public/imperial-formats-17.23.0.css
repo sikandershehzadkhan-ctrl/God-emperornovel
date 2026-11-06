@@ -7,7 +7,7 @@
 .formatLinkMain{display:flex;flex-direction:column;gap:4px;min-width:0}
 .formatLinkMain b{font-size:14px;font-weight:650}
 .formatLinkMain small{font-size:11px;line-height:1.35;color:var(--muted,#a3abc2);font-weight:400}
-.formatExperience{display:flex;align-items:center;gap:6px;max-width:48%;font-size:10px;line-height:1.3;text-align:right;color:var(--muted,#a3abc2)}
+.formatExperience{display:flex;align-items:center;gap:6px;max-width:48%;font-size:10px;line-height:1.3;text-align:end;color:var(--muted,#a3abc2)}
 .formatProfile{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;margin:16px 0;padding:16px;border:1px solid var(--line,rgba(150,160,190,.2));border-radius:16px;background:var(--panel,#101421)}
 .formatProfile>div{display:flex;flex-direction:column;gap:6px;min-width:0}
 .formatProfile strong{font-size:14px;font-weight:600}
