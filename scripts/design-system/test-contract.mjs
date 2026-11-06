@@ -160,6 +160,13 @@ assert.doesNotMatch(components, /(?:^|[;{])\s*(?:margin|padding|inset|border)-(?
 assert.doesNotMatch(components, /(?:^|[;{])\s*(?:left|right)\s*:/m, "shared component primitives must not hard-code physical positioning");
 assert.ok(components.includes('[dir="rtl"] .chapterDrawer{inset-inline-start:0;border-inline-start:1px solid'), "chapter drawer must mirror to the inline-start edge using logical properties");
 assert.ok(components.includes('[dir="rtl"] .side a:hover,[dir="rtl"] .side a.active{border-inline-start:2px solid'), "active side navigation indicator must mirror using logical borders");
+assert.ok(releaseStylesheets[0].includes(".mobileNav{display:flex;position:fixed;bottom:0;inset-inline:0;"), "mobile navigation must span the viewport using logical inline insets");
+assert.ok(releaseStylesheets[0].includes(".catalogMeta b{margin-inline-end:auto;"), "catalog metadata alignment must follow writing direction");
+assert.ok(releaseStylesheets[0].includes(".statusBadge{position:absolute;inset-inline-start:9px;"), "catalog status badge must anchor to the inline start edge");
+assert.ok(releaseStylesheets[0].includes(".readerLock .secondary{display:inline-flex;margin-inline-start:7px}"), "reader lock action spacing must follow writing direction");
+assert.ok(!/\\.mobileNav\\{[^}]*\\bleft\\s*:|\\.mobileNav\\{[^}]*\\bright\\s*:/.test(releaseStylesheets[0]), "mobile navigation must not regress to physical viewport edges");
+assert.ok(!/\\.catalogMeta b\\{[^}]*margin-right\\s*:|\\.statusBadge\\{[^}]*left\\s*:|\\.readerLock \\.secondary\\{[^}]*margin-left\\s*:/.test(releaseStylesheets[0]), "shared catalog and reader alignment must not regress to physical left/right declarations");
+
 assert.ok(releaseStylesheets[1].includes(".commentReply{margin-inline-start:28px}") && !components.includes(".commentReply{"), "community reply indentation must follow writing direction without a physical RTL override");
 assert.ok(components.includes('[dir="rtl"] .legalSection ul{padding-inline-start:22px}'), "legal list indentation must mirror using logical padding");
 assert.ok(components.includes('[dir="rtl"] .formatExperience{text-align:start}'), "format experience alignment must follow RTL writing direction");
