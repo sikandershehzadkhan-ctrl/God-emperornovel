@@ -5,6 +5,8 @@ const tokens = fs.readFileSync("public/imperial-design-tokens.css", "utf8");
 const components = fs.readFileSync("public/imperial-ui-primitives.css", "utf8");
 const spec = fs.readFileSync("design-system/IMPERIAL-DESIGN-SYSTEM-18.0.0.md", "utf8");
 const html = fs.readFileSync("public/index.html", "utf8");
+const worker = fs.readFileSync("src/index.js", "utf8");
+const packageJson = JSON.parse(fs.readFileSync("package.json", "utf8"));
 const usage = fs.readFileSync("design-system/COMPONENT-USAGE-18.0.0.md", "utf8");
 
 function readHex(block, token, theme) {
@@ -93,4 +95,6 @@ assert.ok(usage.includes("Dialog behavior must be implemented") && usage.include
 assert.ok(spec.includes("primitives are opt-in") || spec.includes("Do not bulk-replace legacy selectors"), "rollout boundary must be documented");
 assert.ok(html.includes('href="/imperial-design-tokens.css"'), "semantic tokens must be loaded by the application shell");
 assert.ok(html.includes('href="/imperial-ui-primitives.css"'), "component primitives must be loaded by the application shell");
+assert.ok(worker.includes("'/imperial-design-tokens.css'") && worker.includes("'/imperial-ui-primitives.css'"), "Worker must register both stylesheets for every HTML template");
+assert.ok(packageJson.scripts.build.startsWith("node scripts/design-system/test-contract.mjs && "), "design-system contract must run before the platform build");
 console.log("Imperial Novel design-system contract passed: six complete themes, semantic roles, contrast, component primitives, 44px targets, focus, reduced motion, forced colors, WCAG, RTL and runtime asset registration.");
