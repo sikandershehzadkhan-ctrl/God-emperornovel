@@ -184,3 +184,12 @@ Required checks before marking this slice complete:
 **Intentionally unchanged:** discussion API, public/rights-cleared story visibility, story links and all moderation or social permissions. This route has no composer, so no new posting capability is implied.
 
 **Still required:** populated/empty/error discussion states, empty catalog, six-theme visual QA, RTL, keyboard/screen-reader review, reduced-motion checks and 360px/390px mobile layouts.
+
+
+## 15. Trend Factory source adoption
+
+**Implemented in source:** the existing metadata-first Trend Factory hero, pipeline, search/sort/format controls, catalog result cards, safety guidance and integrity note consume semantic six-theme roles. Controls retain visible keyboard focus, 44px targets, narrow-screen stacking and reduced-motion behavior. Existing published-catalog API, filtering and rights-first boundaries are unchanged.
+
+**Integrity correction:** the rights-review card no longer links to `/admin` as though a working review center exists. It now states that the admin review workspace is not available yet. The frontend boot router currently has no dedicated `/admin` renderer; no admin dashboard or authorization capability is implied by this design migration.
+
+**Still required:** browser QA for all six themes; live, empty, loading and API-error states; long titles; desktop/tablet/360px/390px layouts; RTL; keyboard and screen-reader checks. Admin remains a separate functional and server-authorization workstream.
