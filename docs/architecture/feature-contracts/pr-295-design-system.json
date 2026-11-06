@@ -12,7 +12,8 @@
     "public/imperial-ui-primitives.css",
     "public/index.html",
     "scripts/design-system/test-contract.mjs",
-    "package.json"
+    "package.json",
+    "src/index.js"
   ],
   "invariants": [
     "Do not link the new stylesheets into production templates until route/template adoption and visual QA are complete.",
@@ -22,7 +23,8 @@
     "Do not change application runtime behavior, routes, D1 schema, Worker configuration, secrets, or production data.",
     "Register the token and primitive stylesheets after existing application styles; keep all component classes opt-in and namespaced.",
     "Do not change the existing global Light/Dark preference behavior or the reader's independent theme preference in this foundation PR.",
-    "Do not claim visual QA or page-family migration from static CSS contract tests."
+    "Do not claim visual QA or page-family migration from static CSS contract tests.",
+    "Worker HTML response assembly must include both design-system assets for every mapped HTML template, not only the root index shell."
   ],
   "acceptance": [
     "The design-system contract test passes in the Cloudflare source-validation workflow.",
@@ -30,7 +32,8 @@
     "Runtime adoption is handled by a separate reviewed integration change with desktop, mobile, and RTL visual QA.",
     "Every theme supplies a complete semantic role set and automated WCAG AA text contrast checks pass.",
     "Component usage guidance distinguishes CSS styling from application-owned keyboard behavior, focus management, persistence, authorization and async state.",
-    "Application shell loads both new stylesheets without bulk-migrating legacy templates."
+    "Application shell loads both new stylesheets without bulk-migrating legacy templates.",
+    "All Worker-served HTML templates receive the design-system token and primitive stylesheets exactly once through the shared releaseStyles list."
   ],
   "releaseBoundary": "Foundation only; not production-adopted and not a deployment authorization."
 }
