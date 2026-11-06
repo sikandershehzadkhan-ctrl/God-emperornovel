@@ -125,3 +125,10 @@ Required checks before marking this slice complete:
 - Search and all navigation links retain their exact destinations.
 - No new fabricated catalog data or feature claims are introduced.
 - CI and responsive visual review pass at desktop, tablet, 390px and 360px widths.
+
+
+## 8. Shared shell and homepage adoption slice
+
+**Implemented in source:** semantic legacy-variable bridge in the design token stylesheet, plus six-theme overrides for the public header/navigation, search controls, mobile drawer, homepage hero, format shelf, story cards, feature tiles, creator band and reader promise. The shared shell's six-theme selector remains native and keyboard operable.
+
+**Still required before declaring this family complete:** live browser review of all six themes; 360px and 390px mobile layouts; tablet and desktop navigation overflow; Urdu/Arabic/Persian RTL; focus order and Escape behavior in the drawer; footer theme consistency; check all hero/form descendants and catalog empty/error states. This source-level slice does not constitute visual regression sign-off.
