@@ -576,7 +576,7 @@
         "GET"
       ],
       "sourceLines": [
-        61
+        70
       ],
       "sourceFile": "src/features/publishing-studio/index.mjs",
       "workerDispatchLines": [
@@ -1484,10 +1484,10 @@
     "This matrix does not inspect DTO exposure, cache headers, CSRF, rate limits, body size, or database transaction semantics.",
     "Community comment and report hourly quotas are enforced by SQLite BEFORE INSERT triggers; duplicate reports are fenced by a unique claim. Static route inventory does not itself certify trigger execution."
   ],
-  "sourceCommit": "c8e68b5340590c73be33ec099f3ecd90eec6911a",
-  "refreshNote": "Refreshed after correcting lifetime analytics aggregation and adding atomic current-owner/current-rights checks to chapter publication; feature-module source line evidence and Git blob fingerprints match the reviewed modules.",
+  "sourceCommit": "8deb0c9b9a20c07e0b65a9c78aeb5fe5527a3c04",
+  "refreshNote": "Refreshed after schedule cancellation gained an in-statement current-owner predicate and explicit changed-row handling.",
   "featureSourceBlobs": {
     "src/features/creator-studio/index.mjs": "fe0cc01df6a789ea96989e4458fc5d8147fbf850",
-    "src/features/publishing-studio/index.mjs": "faee91e3b555926b660e13902e1f3d310d875701"
+    "src/features/publishing-studio/index.mjs": "b86153b275051e7487108fe1ec1baafa8e791cbd"
   }
 }
