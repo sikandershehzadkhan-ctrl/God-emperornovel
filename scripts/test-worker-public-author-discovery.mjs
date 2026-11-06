@@ -100,8 +100,8 @@ try{
  assert.equal(bounded.data.length,50,"search results must be capped at 50");
  assert.ok(bounded.data.every(x=>x.author.startsWith("DirectoryAuthor")));
  const long=await request(origin,"/api/public-authors?q="+("x".repeat(200)));
- assert.equal(long.status,200,"overlong search input must be safely bounded rather than causing a query error");
- assert.deepEqual(long.data,[]);
+ assert.equal(long.status,400,"overlong search input must be rejected at the API boundary before SQL execution");
+ assert.equal(long.data.error,"Search query must be 80 characters or fewer");
  console.log("PASS: local D1 Worker public-author integration: GET-only method guard, exact aggregate projection, rights/publication filtering, null-safe aggregates, literal wildcard search and 50/100 result bounds.");
 }catch(error){console.error(error);if(serverLogs)console.error(serverLogs);process.exitCode=1}
 finally{
