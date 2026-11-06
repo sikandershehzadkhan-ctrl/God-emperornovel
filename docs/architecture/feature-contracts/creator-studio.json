@@ -71,11 +71,13 @@
   "tests": {
     "unit": [
       "test-creator-publishing-domain-boundaries.mjs validates Creator/Publishing ownership boundaries and owner-scope source predicates.",
-      "test-api-route-method-matrix.mjs verifies route source line evidence and feature module Git blob fingerprints."
+      "test-api-route-method-matrix.mjs verifies route source line evidence and feature module Git blob fingerprints.",
+      "test-ownership-transfer-migration.mjs validates migration 0047 preserves the former creator's private goal and permits a separate goal row for the new owner."
     ],
     "integration": [
       "test-worker-account-reader-isolation.mjs verifies two-account Worker/D1 isolation for all Creator Studio route-methods, including analytics, feedback, goals, private notes CRUD, readiness and planning.",
-      "The same local Worker/D1 test verifies Publishing release calendar, revision privacy, schedule create/cancel and ownership-transfer cancellation."
+      "The same local Worker/D1 test verifies Publishing release calendar, revision privacy, schedule create/cancel and ownership-transfer cancellation.",
+      "The two-account Worker/D1 test transfers a novel after the former owner creates a goal, then verifies the new owner can create and read a separate goal while the former owner cannot read it."
     ],
     "isolation": [
       "Author A must not read or mutate Author B goals or private notes, nor view Author B analytics, feedback, readiness or planning results.",
@@ -127,6 +129,7 @@
     "Private note mutations verify both note owner and current parent novel owner.",
     "Existing author applications, AI projects and publishing routes remain available.",
     "New Creator endpoints remain authorization-pending until two-account Worker/D1 tests pass.",
-    "After ownership transfer, the former creator cannot read the old private goal and the new owner can create a separate goal for the same novel."
+    "After ownership transfer, the former creator cannot read the old private goal and the new owner can create a separate goal for the same novel.",
+    "Migration 0047 is reserved to PR #294, preserves existing goal rows, and is validated by the ownership-transfer migration test."
   ]
 }
