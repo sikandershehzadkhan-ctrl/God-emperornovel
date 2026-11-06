@@ -1,0 +1,27 @@
+{
+  "schemaVersion": 1,
+  "contractId": "PR-295-imperial-design-system-v18",
+  "pullRequest": 295,
+  "status": "proposed",
+  "owner": "design-system",
+  "decision": "Establish a canonical, additive design-token and UI-primitive layer without changing the current production cascade.",
+  "scope": [
+    "design-system/IMPERIAL-DESIGN-SYSTEM-18.0.0.md",
+    "public/imperial-design-tokens.css",
+    "public/imperial-ui-primitives.css",
+    "scripts/design-system/test-contract.mjs"
+  ],
+  "invariants": [
+    "Do not link the new stylesheets into production templates until route/template adoption and visual QA are complete.",
+    "Do not replace or rename existing theme attributes or legacy selectors in this foundation PR.",
+    "Keep all new component selectors namespaced with the in- prefix.",
+    "Preserve WCAG 2.2 AA contrast targets, visible keyboard focus, reduced-motion behavior, and RTL compatibility.",
+    "Do not change application runtime behavior, routes, D1 schema, Worker configuration, secrets, or production data."
+  ],
+  "acceptance": [
+    "The design-system contract test passes in the Cloudflare source-validation workflow.",
+    "Architecture ownership governance recognizes this same-PR feature contract.",
+    "Runtime adoption is handled by a separate reviewed integration change with desktop, mobile, and RTL visual QA."
+  ],
+  "releaseBoundary": "Foundation only; not production-adopted and not a deployment authorization."
+}
