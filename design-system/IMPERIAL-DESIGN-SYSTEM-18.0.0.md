@@ -42,10 +42,25 @@ The CSS token file is the source of truth. Components must consume semantic role
 | `--in-border-default` | Standard separation |
 | `--in-border-strong` | High-emphasis boundaries |
 | `--in-action-primary` | Main action and creation |
-| `--in-action-secondary` | Discovery and secondary action |
+| `--in-action-secondary` / `--in-action-secondary-text` | Discovery and secondary action with a defined readable foreground |
 | `--in-focus-ring` | Visible keyboard focus |
 | `--in-status-success/warning/danger/info` | Semantic feedback |
 | `--in-reader-paper/ink` | Reader-specific surfaces |
+
+### Palette contrast verification
+
+The static design-system test calculates contrast from the actual CSS hex values for every theme. Current palette spot-checks:
+
+| Theme | Body text | Primary action | Secondary action | Status text |
+|---|---:|---:|---:|---:|
+| Light | 16.51:1 | 9.24:1 | 7.15:1 | 5.87:1 minimum |
+| Dark | 17.55:1 | 6.22:1 | 8.45:1 | 7.43:1 minimum |
+| Midnight | 18.02:1 | 7.83:1 | 9.50:1 | 7.58:1 minimum |
+| Sepia | 12.40:1 | 7.78:1 | 6.17:1 | 6.15:1 minimum |
+| Imperial | 17.89:1 | 7.12:1 | 9.15:1 | 7.58:1 minimum |
+| Cosmic | 17.98:1 | 8.34:1 | 10.25:1 | 7.69:1 minimum |
+
+All listed text combinations exceed the WCAG AA normal-text threshold of 4.5:1. Focus indicators are separately checked against the 3:1 non-text threshold. These values are palette checks, not a substitute for inspecting rendered component states.
 
 ### Theme contract
 
