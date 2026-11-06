@@ -2,7 +2,7 @@
   "schemaVersion": 1,
   "name": "Global D1 migration allocation register",
   "sequencePattern": "^([0-9]{4})_",
-  "lastObservedSequence": 46,
+  "lastObservedSequence": 47,
   "canonicalSource": "migrations/",
   "policy": {
     "reserveBeforeAuthoring": true,
@@ -91,6 +91,12 @@
       "to": 46,
       "owner": "ai",
       "status": "atomic AI generation claim and token-fenced completion"
+    },
+    {
+      "from": 47,
+      "to": 47,
+      "owner": "creator",
+      "status": "owner-scoped private story goals across novel ownership transfers"
     }
   ],
   "allocations": []
