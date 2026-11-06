@@ -1,0 +1,1026 @@
+/* Imperial Novel Design System 18.0.0 component primitives.
+   Namespaced to avoid overriding legacy application selectors during rollout. */
+.in-button{display:inline-flex;align-items:center;justify-content:center;gap:var(--in-space-2);min-height:var(--in-control-height-md);padding:0 var(--in-space-4);border:1px solid transparent;border-radius:var(--in-radius-md);font:600 var(--in-text-sm)/1 var(--in-font-sans);text-decoration:none;cursor:pointer;transition:background var(--in-motion-fast) var(--in-ease-standard),border-color var(--in-motion-fast) var(--in-ease-standard),color var(--in-motion-fast) var(--in-ease-standard);touch-action:manipulation}
+.in-button:focus-visible,.in-field:focus-visible,.in-select:focus-visible,.in-textarea:focus-visible,.in-checkbox:focus-visible,.in-radio:focus-visible,.in-switch:focus-visible,.in-link:focus-visible,.in-nav-link:focus-visible,.in-pagination a:focus-visible{outline:3px solid var(--in-focus-ring);outline-offset:3px}
+.in-button:disabled,.in-button[aria-disabled="true"]{opacity:.55;cursor:not-allowed}
+.in-button--primary{background:var(--in-action-primary);color:var(--in-action-primary-text);border-color:var(--in-action-primary)}
+.in-button--primary:hover:not(:disabled){background:var(--in-action-primary-hover);border-color:var(--in-action-primary-hover)}
+.in-button--secondary{background:var(--in-bg-surface);color:var(--in-text-primary);border-color:var(--in-border-default)}
+.in-button--secondary:hover:not(:disabled){background:var(--in-bg-subtle);border-color:var(--in-border-strong)}
+.in-button--quiet{background:transparent;color:var(--in-text-secondary);border-color:transparent}
+.in-button--danger{background:var(--in-status-danger-bg);color:var(--in-status-danger);border-color:var(--in-status-danger)}
+.in-button--danger:hover:not(:disabled){filter:brightness(.97)}
+.in-button--quiet:hover:not(:disabled){background:var(--in-bg-subtle);color:var(--in-text-primary)}
+.in-button--sm{min-height:var(--in-touch-target);padding-inline:var(--in-space-3)}
+.in-button--lg{min-height:var(--in-control-height-lg);padding-inline:var(--in-space-6)}
+.in-field,.in-select,.in-textarea{display:block;width:100%;min-height:var(--in-control-height-md);padding:var(--in-space-3);border:1px solid var(--in-border-default);border-radius:var(--in-radius-md);background:var(--in-bg-surface);color:var(--in-text-primary);font:400 var(--in-text-md)/var(--in-leading-normal) var(--in-font-sans)}
+.in-field::placeholder,.in-textarea::placeholder{color:var(--in-text-muted)}
+.in-field[aria-invalid="true"],.in-select[aria-invalid="true"],.in-textarea[aria-invalid="true"]{border-color:var(--in-status-danger)}
+.in-field-label{display:block;margin-block-end:var(--in-space-2);color:var(--in-text-primary);font-size:var(--in-text-sm);font-weight:var(--in-weight-semibold)}
+.in-field-help{display:block;margin-block-start:var(--in-space-1);color:var(--in-text-muted);font-size:var(--in-text-xs)}
+.in-checkbox{width:1.125rem;height:1.125rem;accent-color:var(--in-action-primary)}
+.in-card{min-width:0;border:1px solid var(--in-border-default);border-radius:var(--in-radius-lg);background:var(--in-bg-surface);color:var(--in-text-primary)}
+.in-card__body{padding:var(--in-space-4)}
+.in-card__title{margin:0;color:var(--in-text-primary);font-size:var(--in-text-lg);font-weight:var(--in-weight-semibold);line-height:var(--in-leading-tight)}
+.in-badge{display:inline-flex;align-items:center;gap:var(--in-space-1);min-height:1.5rem;padding:.125rem .5rem;border:1px solid var(--in-border-default);border-radius:var(--in-radius-pill);background:var(--in-bg-subtle);color:var(--in-text-secondary);font-size:var(--in-text-xs);font-weight:var(--in-weight-semibold)}
+.in-badge--success{background:var(--in-status-success-bg);border-color:var(--in-status-success);color:var(--in-status-success)}
+.in-badge--warning{background:var(--in-status-warning-bg);border-color:var(--in-status-warning);color:var(--in-status-warning)}
+.in-badge--danger{background:var(--in-status-danger-bg);border-color:var(--in-status-danger);color:var(--in-status-danger)}
+.in-badge--info{background:var(--in-status-info-bg);border-color:var(--in-status-info);color:var(--in-status-info)}
+.in-link{color:var(--in-link);text-decoration:underline;text-underline-offset:.18em}
+.in-avatar{display:inline-grid;place-items:center;overflow:hidden;width:2.5rem;aspect-ratio:1;border-radius:50%;background:var(--in-bg-subtle);color:var(--in-text-primary);font-weight:700}
+.in-avatar img{width:100%;height:100%;object-fit:cover}
+.in-tabs{display:flex;gap:var(--in-space-2);overflow-x:auto;border-block-end:1px solid var(--in-border-default)}
+.in-tabs [role="tab"]{min-height:var(--in-touch-target);padding-inline:var(--in-space-3);border:0;border-block-end:2px solid transparent;background:transparent;color:var(--in-text-secondary);white-space:nowrap}
+.in-tabs [role="tab"][aria-selected="true"]{border-block-end-color:var(--in-action-primary);color:var(--in-text-primary);font-weight:700}
+.in-table{width:100%;border-collapse:collapse;color:var(--in-text-primary);font-size:var(--in-text-sm)}
+.in-table th,.in-table td{padding:var(--in-space-3);border-block-end:1px solid var(--in-border-default);text-align:start;vertical-align:middle}
+.in-table th{color:var(--in-text-secondary);font-weight:700}
+.in-dialog{width:min(36rem,calc(100vw - 2rem));max-height:min(85vh,48rem);overflow:auto;padding:var(--in-space-6);border:1px solid var(--in-border-default);border-radius:var(--in-radius-xl);background:var(--in-bg-elevated);color:var(--in-text-primary);box-shadow:var(--in-shadow-lg)}
+.in-toast{display:flex;align-items:flex-start;gap:var(--in-space-3);max-width:min(26rem,calc(100vw - 2rem));padding:var(--in-space-3) var(--in-space-4);border:1px solid var(--in-border-default);border-radius:var(--in-radius-lg);background:var(--in-bg-elevated);color:var(--in-text-primary);box-shadow:var(--in-shadow-md)}
+.in-tooltip{max-width:18rem;padding:var(--in-space-2) var(--in-space-3);border-radius:var(--in-radius-sm);background:var(--in-bg-inverse);color:var(--in-text-inverse);font-size:var(--in-text-xs)}
+.in-empty-state{display:grid;justify-items:center;gap:var(--in-space-3);padding:var(--in-space-8);text-align:center;border:1px dashed var(--in-border-strong);border-radius:var(--in-radius-lg);color:var(--in-text-secondary)}
+.in-skeleton{border-radius:var(--in-radius-md);background:linear-gradient(90deg,var(--in-bg-subtle),var(--in-border-default),var(--in-bg-subtle));background-size:200% 100%;animation:in-skeleton 1.2s linear infinite}
+@keyframes in-skeleton{to{background-position:-200% 0}}
+@media(prefers-reduced-motion:reduce){.in-skeleton{animation:none;background:var(--in-bg-subtle)}}
+@media(max-width:48rem){.in-card__body{padding:var(--in-space-3)}.in-dialog{padding:var(--in-space-4)}}
+
+/* Additional accessible controls and feedback primitives. */
+.in-check-row{display:flex;align-items:center;gap:var(--in-space-3);min-height:var(--in-touch-target);color:var(--in-text-primary);cursor:pointer}
+.in-radio{width:1.125rem;height:1.125rem;accent-color:var(--in-action-primary)}
+.in-switch{position:relative;display:inline-flex;align-items:center;width:2.75rem;height:1.5rem;padding:0;border:1px solid var(--in-border-strong);border-radius:var(--in-radius-pill);background:var(--in-bg-subtle);cursor:pointer;appearance:none;vertical-align:middle;transition:background var(--in-motion-fast) var(--in-ease-standard)}
+.in-switch::after{content:"";position:absolute;inset-block-start:3px;inset-inline-start:3px;width:1rem;height:1rem;border-radius:50%;background:var(--in-text-secondary);transition:transform var(--in-motion-fast) var(--in-ease-standard)}
+.in-switch:checked{background:var(--in-action-primary);border-color:var(--in-action-primary)}
+.in-switch:checked::after{background:var(--in-action-primary-text);transform:translateX(1.25rem)}
+[dir="rtl"] .in-switch:checked::after{transform:translateX(-1.25rem)}
+.in-switch:focus-visible,.in-radio:focus-visible,.in-check-row:focus-within{outline:3px solid var(--in-focus-ring);outline-offset:3px}
+.in-switch:disabled{opacity:.55;cursor:not-allowed}
+.in-alert{display:flex;align-items:flex-start;gap:var(--in-space-3);padding:var(--in-space-3) var(--in-space-4);border:1px solid var(--in-border-default);border-inline-start:4px solid var(--in-status-info);border-radius:var(--in-radius-md);background:var(--in-status-info-bg);color:var(--in-text-primary)}
+.in-alert--success{border-inline-start-color:var(--in-status-success);background:var(--in-status-success-bg)}
+.in-alert--warning{border-inline-start-color:var(--in-status-warning);background:var(--in-status-warning-bg)}
+.in-alert--danger{border-inline-start-color:var(--in-status-danger);background:var(--in-status-danger-bg)}
+.in-progress{display:block;width:100%;height:.5rem;overflow:hidden;border:0;border-radius:var(--in-radius-pill);background:var(--in-bg-subtle);accent-color:var(--in-action-primary)}
+.in-progress::-webkit-progress-bar{background:var(--in-bg-subtle);border-radius:var(--in-radius-pill)}
+.in-progress::-webkit-progress-value{background:var(--in-action-primary);border-radius:var(--in-radius-pill)}
+.in-progress::-moz-progress-bar{background:var(--in-action-primary);border-radius:var(--in-radius-pill)}
+.in-divider{height:1px;border:0;background:var(--in-border-default);margin-block:var(--in-space-4)}
+.in-nav-link{display:inline-flex;align-items:center;gap:var(--in-space-2);min-height:var(--in-touch-target);padding-inline:var(--in-space-3);border-radius:var(--in-radius-md);color:var(--in-text-secondary);text-decoration:none}
+.in-nav-link:hover,.in-nav-link[aria-current="page"]{background:var(--in-bg-subtle);color:var(--in-text-primary)}
+.in-pagination{display:flex;align-items:center;justify-content:center;gap:var(--in-space-2);flex-wrap:wrap}
+.in-pagination>*{min-width:var(--in-touch-target);min-height:var(--in-touch-target)}
+@media(forced-colors:active){.in-button,.in-field,.in-select,.in-textarea,.in-card,.in-alert{border:1px solid ButtonText}.in-button:focus-visible,.in-field:focus-visible,.in-select:focus-visible,.in-textarea:focus-visible{outline:2px solid Highlight}}
+
+/* Explicit interaction states. Behavior and announcements remain application-owned. */
+.in-button:active:not(:disabled),.in-button[aria-pressed="true"]{transform:translateY(1px)}
+.in-button[aria-busy="true"]{cursor:progress}
+.in-button[aria-busy="true"]::after{content:"";width:1rem;height:1rem;flex:none;border:2px solid currentColor;border-inline-end-color:transparent;border-radius:50%;animation:in-spin .8s linear infinite}
+@keyframes in-spin{to{transform:rotate(360deg)}}
+.in-field:disabled,.in-select:disabled,.in-textarea:disabled{opacity:.6;cursor:not-allowed;background:var(--in-bg-subtle)}
+.in-card--interactive{transition:border-color var(--in-motion-fast) var(--in-ease-standard),box-shadow var(--in-motion-fast) var(--in-ease-standard)}
+.in-card--interactive:hover{border-color:var(--in-border-strong);box-shadow:var(--in-shadow-md)}
+.in-card--interactive:focus-within{outline:3px solid var(--in-focus-ring);outline-offset:2px}
+.in-card[aria-selected="true"]{border-color:var(--in-action-primary);box-shadow:0 0 0 1px var(--in-action-primary)}
+.in-tabs [role="tab"]:disabled,.in-tabs [role="tab"][aria-disabled="true"]{opacity:.55;cursor:not-allowed}
+.in-avatar--fallback{font-family:var(--in-font-sans);font-size:var(--in-text-sm);font-weight:var(--in-weight-bold)}
+.in-dialog::backdrop{background:rgb(11 18 21 / .58)}
+@media(prefers-reduced-motion:reduce){.in-button[aria-busy="true"]::after{animation:none;border-inline-end-color:currentColor}}
+
+/* Shared-shell theme selector. Native select keeps keyboard and screen-reader behavior. */
+.themePickerLabel{display:inline-flex;align-items:center;min-height:var(--in-touch-target)}
+.themePicker{min-height:var(--in-touch-target);max-width:9.5rem;padding-inline:var(--in-space-3);border:1px solid var(--in-border-default);border-radius:var(--in-radius-md);background:var(--in-bg-surface);color:var(--in-text-primary);font:500 var(--in-text-sm)/1.2 var(--in-font-sans)}
+.themePicker:focus-visible{outline:3px solid var(--in-focus-ring);outline-offset:3px}
+.sr-only{position:absolute!important;width:1px!important;height:1px!important;padding:0!important;margin:-1px!important;overflow:hidden!important;clip:rect(0,0,0,0)!important;white-space:nowrap!important;border:0!important}
+@media(max-width:30rem){.themePicker{max-width:7.25rem;padding-inline:var(--in-space-2)}}
+
+/* Complete keyboard and disabled states for every native form primitive. */
+.in-textarea:focus-visible,.in-radio:focus-visible,.in-switch:focus-visible{outline:3px solid var(--in-focus-ring);outline-offset:3px}
+.in-checkbox:disabled,.in-radio:disabled{opacity:.6;cursor:not-allowed}
+.in-check-row:has(input:disabled){opacity:.65;cursor:not-allowed}
+
+
+/* Public shell + homepage theme adoption, v18.0.1.
+   These overrides consume semantic roles so all six root themes stay coherent. */
+html[data-theme] body{background:var(--in-bg-canvas);color:var(--in-text-primary)}
+html[data-theme] .top{background:color-mix(in srgb,var(--in-bg-surface) 90%,transparent);border-color:var(--in-border-default)}
+html[data-theme] .brand b,html[data-theme] .brand small{color:var(--in-text-primary)}
+html[data-theme] .mark{background:var(--in-bg-elevated);border-color:var(--in-border-default);color:var(--in-action-primary)}
+html[data-theme] .navlinks a{color:var(--in-text-secondary)}
+html[data-theme] .navlinks a:hover,html[data-theme] .navlinks a.active{background:var(--violet3);color:var(--in-text-primary)}
+html[data-theme] .iconbtn,html[data-theme] .ghost,html[data-theme] .search{background:var(--in-bg-surface);border-color:var(--in-border-default);color:var(--in-text-primary)}
+html[data-theme] .search input{color:var(--in-text-primary)}
+html[data-theme] .search input::placeholder{color:var(--in-text-muted)}
+html[data-theme] .menuDrawer{background:var(--in-bg-elevated);border-color:var(--in-border-strong);color:var(--in-text-primary)}
+html[data-theme] .menuDrawerHead{border-color:var(--in-border-default)}
+html[data-theme] .menuDrawerBrand span,html[data-theme] .menuDrawerLabel,html[data-theme] .menuDrawer>a:not(.menuDrawerBrand){color:var(--in-text-primary)}
+html[data-theme] .menuDrawerBrand small{color:var(--in-text-secondary)}
+html[data-theme] .menuClose{background:var(--in-bg-surface);border-color:var(--in-border-default);color:var(--in-text-primary)}
+html[data-theme] .menuDrawer>a:not(.menuDrawerBrand):hover{background:var(--in-bg-subtle)}
+html[data-theme] .nextHero{border-color:var(--in-border-default);background:radial-gradient(ellipse at 4% 0%,color-mix(in srgb,var(--in-action-primary) 16%,transparent),transparent 44%),radial-gradient(ellipse at 92% 90%,color-mix(in srgb,var(--in-action-secondary) 12%,transparent),transparent 38%),linear-gradient(135deg,var(--in-bg-elevated),var(--in-bg-canvas) 72%)}
+html[data-theme] .nextHeroCopy h1,html[data-theme] .nextFeatureIntro h2,html[data-theme] .nextCreatorBand h2{color:var(--in-text-primary)}
+html[data-theme] .nextHeroCopy p,html[data-theme] .nextFeatureIntro p,html[data-theme] .nextCreatorBand p{color:var(--in-text-secondary)}
+html[data-theme] .nextHero .heroSearch,html[data-theme] .nextHero .heroTags a{background:var(--in-bg-surface);border-color:var(--in-border-default);color:var(--in-text-primary)}
+html[data-theme] .nextHero .heroSearch input{color:var(--in-text-primary)}
+html[data-theme] .homeFormatShelf,html[data-theme] .nextFeatureTile,html[data-theme] .nextCreatorBand,html[data-theme] .nextReaderPromise{background:var(--in-bg-surface);border-color:var(--in-border-default);color:var(--in-text-primary)}
+html[data-theme] .homeFormatCard{background:var(--in-bg-elevated);border-color:var(--in-border-default);color:var(--in-text-primary)}
+html[data-theme] .homeFormatCopy b,html[data-theme] .nextFeatureTile>b,html[data-theme] .nextReaderPromise b{color:var(--in-text-primary)}
+html[data-theme] .homeFormatCopy small,html[data-theme] .nextFeatureTile p,html[data-theme] .nextReaderPromise p{color:var(--in-text-secondary)}
+html[data-theme] .homePage .sectionHead h2,html[data-theme] .homePage .sectionHead p{color:var(--in-text-primary)}
+html[data-theme] .homePage .sectionHead p{color:var(--in-text-muted)}
+html[data-theme] .homePage .card,html[data-theme] .homePage .skeletonCard{background:var(--in-bg-surface);border-color:var(--in-border-default)}
+html[data-theme] .homePage .cardTitle{color:var(--in-text-primary)}
+html[data-theme] .homePage .muted,html[data-theme] .homePage .meta,html[data-theme] .homePage .statline{color:var(--in-text-muted)}
+html[data-theme] .homePage .primary{background:var(--in-action-primary);border-color:var(--in-action-primary);color:var(--in-action-primary-text)}
+html[data-theme] .homePage a:focus-visible,html[data-theme] .top a:focus-visible,html[data-theme] .menuDrawer a:focus-visible,html[data-theme] .themePicker:focus-visible{outline:3px solid var(--in-focus-ring);outline-offset:3px}
+@media(max-width:760px){
+ html[data-theme] .nav{gap:8px}
+ html[data-theme] .brand{min-width:0}
+ html[data-theme] .brandText b{font-size:14px}
+ html[data-theme] .navright{gap:5px}
+ html[data-theme] .themePicker{max-width:7rem}
+}
+@media(prefers-reduced-motion:reduce){
+ html[data-theme] .menuDrawer,html[data-theme] .homeFormatCard,html[data-theme] .nextFeatureTile{transition:none}
+}
+
+
+/* Discovery family adoption: catalog, formats, genres, tags and search.
+   Theme values come exclusively from semantic roles; filtering and routes stay untouched. */
+html[data-theme] .catalogTop,
+html[data-theme] .catalogTop.panel,
+html[data-theme] .searchPage .panel,
+html[data-theme] .formatGroup,
+html[data-theme] .formatProfile,
+html[data-theme] .genreCard,
+html[data-theme] .tagTile{background:var(--in-bg-surface);border-color:var(--in-border-default);color:var(--in-text-primary)}
+html[data-theme] .catalogTop .filterLabel,
+html[data-theme] .catalogMeta,
+html[data-theme] .catalogMeta b,
+html[data-theme] .catalogStats,
+html[data-theme] .catalogBody .muted{color:var(--in-text-secondary)}
+html[data-theme] .catalogTop input,
+html[data-theme] .catalogTop select,
+html[data-theme] #sf input,
+html[data-theme] .catalogSearch input{
+ background:var(--in-bg-elevated);border:1px solid var(--in-border-default);
+ color:var(--in-text-primary);border-radius:var(--in-radius-md);
+}
+html[data-theme] .catalogTop input::placeholder,
+html[data-theme] #sf input::placeholder{color:var(--in-text-muted)}
+html[data-theme] .catalogTop input:focus-visible,
+html[data-theme] .catalogTop select:focus-visible,
+html[data-theme] #sf input:focus-visible{
+ outline:3px solid var(--in-focus-ring);outline-offset:2px;
+}
+html[data-theme] .catalogCard,
+html[data-theme] .homePage .catalogCard{background:var(--in-bg-surface);border-color:var(--in-border-default);box-shadow:var(--in-shadow-sm)}
+html[data-theme] .catalogCover{background:var(--in-bg-subtle)}
+html[data-theme] .catalogBody{background:var(--in-bg-surface)}
+html[data-theme] .catalogTitle,
+html[data-theme] .genreCard h3,
+html[data-theme] .catalogEmpty h2{color:var(--in-text-primary)}
+html[data-theme] .catalogTags .pill,
+html[data-theme] .catalogBody .pill,
+html[data-theme] .filterChip,
+html[data-theme] .activeFilter{background:var(--in-bg-subtle);border-color:var(--in-border-default);color:var(--in-text-secondary)}
+html[data-theme] .filterChip.active,
+html[data-theme] .filterChip:hover,
+html[data-theme] .activeFilter:hover{background:color-mix(in srgb,var(--in-action-primary) 12%,var(--in-bg-surface));border-color:var(--in-action-primary);color:var(--in-text-primary)}
+html[data-theme] .activeFilter b{background:var(--in-bg-elevated);color:var(--in-text-primary)}
+html[data-theme] .clearFilters,
+html[data-theme] .genreGlyph,
+html[data-theme] .tagTile span,
+html[data-theme] .readMini{color:var(--in-action-primary)}
+html[data-theme] .readMini{background:color-mix(in srgb,var(--in-action-primary) 12%,var(--in-bg-surface))}
+html[data-theme] .catalogEmpty{background:var(--in-bg-surface);border-color:var(--in-border-strong);box-shadow:none}
+html[data-theme] .catalogEmptyIcon{background:color-mix(in srgb,var(--in-action-primary) 12%,var(--in-bg-surface));border-color:var(--in-border-default);color:var(--in-action-primary)}
+html[data-theme] .catalogEmpty p,
+html[data-theme] .catalogLegal{color:var(--in-text-secondary)}
+html[data-theme] .catalogLegal{border-color:var(--in-border-default)}
+html[data-theme] .formatLink{background:var(--in-bg-elevated);border-color:var(--in-border-default);color:var(--in-text-primary)}
+html[data-theme] .formatLink span:last-child{color:var(--in-action-primary)}
+html[data-theme] .formatLink:hover,
+html[data-theme] .formatLink:focus-visible{background:color-mix(in srgb,var(--in-action-primary) 12%,var(--in-bg-surface));border-color:var(--in-action-primary);outline:3px solid var(--in-focus-ring);outline-offset:2px}
+html[data-theme] .formatProfile strong{color:var(--in-text-primary)}
+html[data-theme] .genreGlyph{background:color-mix(in srgb,var(--in-action-primary) 12%,var(--in-bg-surface));border-color:var(--in-border-default)}
+html[data-theme] .tagTile:hover{background:var(--in-bg-elevated);border-color:var(--in-action-primary)}
+html[data-theme] .catalogTop .actions .ghost,
+html[data-theme] #sf .actions .ghost{background:var(--in-bg-elevated);border-color:var(--in-border-default);color:var(--in-text-primary)}
+html[data-theme] .catalogTop .actions .ghost:hover,
+html[data-theme] #sf .actions .ghost:hover{background:color-mix(in srgb,var(--in-action-primary) 12%,var(--in-bg-surface));border-color:var(--in-action-primary)}
+html[data-theme] .catalogTop button.primary,
+html[data-theme] #sf button.primary{background:var(--in-action-primary);border-color:var(--in-action-primary);color:var(--in-action-primary-text)}
+html[data-theme] .catalogGrid a:focus-visible,
+html[data-theme] .genreGrid a:focus-visible,
+html[data-theme] .tagGrid a:focus-visible,
+html[data-theme] .formatDirectoryGrid a:focus-visible{outline:3px solid var(--in-focus-ring);outline-offset:3px}
+@media(max-width:760px){
+ html[data-theme] .catalogTop .filterRow{gap:12px}
+ html[data-theme] .catalogTop .filterGroup{min-width:min(100%,220px)}
+ html[data-theme] .catalogTop .filterGroup input,
+ html[data-theme] .catalogTop .filterGroup select{min-height:44px;max-width:100%}
+}
+@media(prefers-reduced-motion:reduce){
+ html[data-theme] .catalogCard img,html[data-theme] .genreCard,html[data-theme] .formatLink{transition:none}
+}
+
+
+/* Story detail and chapter navigation adoption.
+   Reader article colors remain owned by its independent reading preference until
+   the global/reader preference compatibility migration is separately tested. */
+html[data-theme] .novelHero,
+html[data-theme] .novelHero .stat,
+html[data-theme] .chapter,
+html[data-theme] .novelHero .novelCover{
+  background:var(--in-bg-surface);
+  border-color:var(--in-border-default);
+  color:var(--in-text-primary);
+  box-shadow:var(--in-shadow-sm);
+}
+html[data-theme] .novelInfo h1,
+html[data-theme] .novelHero .stat b,
+html[data-theme] .chapter b{
+  color:var(--in-text-primary);
+}
+html[data-theme] .novelInfo .muted,
+html[data-theme] .novelHero .stat,
+html[data-theme] .chapter .muted,
+html[data-theme] .chapter .lock{
+  color:var(--in-text-secondary);
+}
+html[data-theme] .novelHero .eyebrow,
+html[data-theme] .chapterNo{
+  color:var(--in-action-primary);
+}
+html[data-theme] .novelHero .primary,
+html[data-theme] .chapterList + .actions .primary{
+  background:var(--in-action-primary);
+  border-color:var(--in-action-primary);
+  color:var(--in-action-primary-text);
+}
+html[data-theme] .novelHero .ghost,
+html[data-theme] .tabs a,
+html[data-theme] .chapterList .chapter{
+  border-color:var(--in-border-default);
+}
+html[data-theme] .tabs{border-color:var(--in-border-default)}
+html[data-theme] .tabs a{color:var(--in-text-secondary)}
+html[data-theme] .tabs a.active{
+  color:var(--in-action-primary);
+  border-bottom-color:var(--in-action-primary);
+}
+html[data-theme] .chapter:hover{
+  background:var(--in-bg-elevated);
+  border-color:var(--in-action-primary);
+}
+html[data-theme] .novelHero a:focus-visible,
+html[data-theme] .tabs a:focus-visible,
+html[data-theme] .chapterList a:focus-visible,
+html[data-theme] .readerPage .readerTool:focus-visible,
+html[data-theme] .readerPage .readerBack:focus-visible,
+html[data-theme] .readerPage .readerChapterItem:focus-visible,
+html[data-theme] .readerPage .readerPrefs select:focus-visible{
+  outline:3px solid var(--in-focus-ring);
+  outline-offset:3px;
+}
+html[data-theme] .readerPage .readerTool,
+html[data-theme] .readerPage .readerPrefs select,
+html[data-theme] .readerPage .readerChapterItem,
+html[data-theme] .readerPage .readerBack{
+  min-height:var(--in-touch-target);
+}
+html[data-theme] .readerPage .readerTool{
+  min-width:var(--in-touch-target);
+}
+html[data-theme] .readerPage .readerPrefs select{
+  border-color:var(--in-border-default);
+}
+html[data-theme] .readerPage .chapterDrawer{
+  border-color:var(--in-border-default);
+}
+@media(max-width:760px){
+  html[data-theme] .novelHero{gap:12px}
+  html[data-theme] .chapter{min-height:var(--in-touch-target)}
+  html[data-theme] .readerPage .readerTools{gap:5px}
+}
+@media(prefers-reduced-motion:reduce){
+  html[data-theme] .chapter,
+  html[data-theme] .tabs a,
+  html[data-theme] .readerPage .readerTool,
+  html[data-theme] .readerPage .readerChapterItem{transition:none}
+}
+
+
+/* Account, personal library, history and following page adoption. */
+html[data-theme] .accountGrid .accountMenu,
+html[data-theme] .accountGrid .panel,
+html[data-theme] .accountGrid .metric,
+html[data-theme] .accountGrid .notice,
+html[data-theme] .accountGrid .empty,
+html[data-theme] .page .grid > .card,
+html[data-theme] .page .statline,
+html[data-theme] .page .empty,
+html[data-theme] .page .tabs{
+  background:var(--in-bg-surface);
+  border-color:var(--in-border-default);
+  color:var(--in-text-primary);
+  box-shadow:var(--in-shadow-sm);
+}
+html[data-theme] .accountGrid .panel h2,
+html[data-theme] .accountGrid .metric b,
+html[data-theme] .page .cardTitle,
+html[data-theme] .page .statline b{
+  color:var(--in-text-primary);
+}
+html[data-theme] .accountGrid .muted,
+html[data-theme] .accountGrid .metric .muted,
+html[data-theme] .page .statline,
+html[data-theme] .accountGrid .accountMenu a{
+  color:var(--in-text-secondary);
+}
+html[data-theme] .accountGrid .accountMenu a.active,
+html[data-theme] .accountGrid .accountMenu a:hover{
+  background:color-mix(in srgb,var(--in-action-primary) 12%,var(--in-bg-surface));
+  color:var(--in-action-primary);
+}
+html[data-theme] .page .tabs a{color:var(--in-text-secondary)}
+html[data-theme] .page .tabs a.active{
+  color:var(--in-action-primary);
+  border-bottom-color:var(--in-action-primary);
+}
+html[data-theme] .accountGrid .avatar{
+  border-color:var(--in-border-strong);
+}
+html[data-theme] .accountGrid a:focus-visible,
+html[data-theme] .accountGrid button:focus-visible,
+html[data-theme] .page .grid a:focus-visible,
+html[data-theme] .page .grid button:focus-visible,
+html[data-theme] .page .tabs a:focus-visible{
+  outline:3px solid var(--in-focus-ring);
+  outline-offset:3px;
+}
+html[data-theme] .accountGrid .accountMenu a,
+html[data-theme] .page .removeLibrary,
+html[data-theme] .page .statline a{
+  min-height:var(--in-touch-target);
+}
+html[data-theme] .accountGrid .accountMenu a{
+  display:flex;
+  align-items:center;
+}
+html[data-theme] .accountGrid .notice{
+  background:var(--in-bg-elevated);
+}
+@media(max-width:760px){
+  html[data-theme] .accountGrid{grid-template-columns:minmax(0,1fr)}
+  html[data-theme] .accountGrid .accountMenu{
+    display:flex;
+    gap:5px;
+    overflow-x:auto;
+    white-space:nowrap;
+    position:relative;
+    top:auto;
+  }
+  html[data-theme] .accountGrid .accountMenu a{flex:0 0 auto}
+  html[data-theme] .page .tabs{gap:2px}
+  html[data-theme] .page .tabs a{padding-inline:12px}
+  html[data-theme] .accountGrid .metricGrid{grid-template-columns:repeat(2,minmax(0,1fr))}
+}
+@media(prefers-reduced-motion:reduce){
+  html[data-theme] .page .grid > .card,
+  html[data-theme] .accountGrid .accountMenu a,
+  html[data-theme] .page .tabs a{transition:none}
+}
+
+
+/* Settings and notification center semantic theme adoption. */
+html[data-theme] .settingsGridPro .settingsPanel,
+html[data-theme] .settingsGridPro .settingsNotice,
+html[data-theme] .page .chapterList .chapter{
+  background:var(--in-bg-surface);
+  border-color:var(--in-border-default);
+  color:var(--in-text-primary);
+  box-shadow:var(--in-shadow-sm);
+}
+html[data-theme] .settingsGridPro .settingsPanel h2,
+html[data-theme] .settingsGridPro .settingRow b,
+html[data-theme] .settingsGridPro .checkRow b,
+html[data-theme] .page .chapterList .chapter b{
+  color:var(--in-text-primary);
+}
+html[data-theme] .settingsGridPro .settingRow,
+html[data-theme] .settingsGridPro .checkRow{
+  border-color:var(--in-border-default);
+}
+html[data-theme] .settingsGridPro .settingRow small,
+html[data-theme] .settingsGridPro .checkRow small,
+html[data-theme] .settingsGridPro .muted,
+html[data-theme] .page .chapterList .chapter .muted{
+  color:var(--in-text-secondary);
+}
+html[data-theme] .settingsGridPro .settingRow select,
+html[data-theme] .settingsGridPro .settingRow input[type=range]{
+  accent-color:var(--in-action-primary);
+}
+html[data-theme] .settingsGridPro .settingRow select{
+  min-height:var(--in-touch-target);
+  background:var(--in-bg-elevated);
+  border:1px solid var(--in-border-default);
+  border-radius:10px;
+  color:var(--in-text-primary);
+}
+html[data-theme] .settingsGridPro .checkRow input{
+  accent-color:var(--in-action-primary);
+}
+html[data-theme] .settingsGridPro .settingsActions .primary{
+  background:var(--in-action-primary);
+  border-color:var(--in-action-primary);
+  color:var(--in-action-primary-text);
+}
+html[data-theme] .settingsGridPro .settingsActions .secondary{
+  background:var(--in-bg-elevated);
+  border-color:var(--in-border-default);
+  color:var(--in-text-primary);
+}
+html[data-theme] .settingsGridPro button:focus-visible,
+html[data-theme] .settingsGridPro a:focus-visible,
+html[data-theme] .settingsGridPro input:focus-visible,
+html[data-theme] .settingsGridPro select:focus-visible,
+html[data-theme] .page .chapterList a:focus-visible,
+html[data-theme] .page #markRead:focus-visible{
+  outline:3px solid var(--in-focus-ring);
+  outline-offset:3px;
+}
+html[data-theme] .settingsGridPro .settingRow select,
+html[data-theme] .settingsGridPro .settingsActions > *,
+html[data-theme] .page #markRead{
+  min-height:var(--in-touch-target);
+}
+html[data-theme] .page .chapterList .chapter.unreadNotice{
+  background:color-mix(in srgb,var(--in-action-primary) 9%,var(--in-bg-surface));
+  border-color:var(--in-action-primary);
+}
+html[data-theme] .page .chapterList .chapter .chapterNo{
+  color:var(--in-action-primary);
+}
+html[data-theme] .settingsGridPro .settingsNotice{
+  background:var(--in-bg-elevated);
+  color:var(--in-text-primary);
+}
+@media(max-width:620px){
+  html[data-theme] .settingsGridPro .settingRow select{width:100%;max-width:none}
+  html[data-theme] .settingsGridPro .settingsActions > *{flex:1 1 100%}
+}
+@media(prefers-reduced-motion:reduce){
+  html[data-theme] .settingsGridPro *,
+  html[data-theme] .page .chapterList .chapter{transition:none}
+}
+
+
+/* Author Studio: private draft creation, work list and chapter composer. */
+html[data-theme] .page .authorStudioIntro,html[data-theme] .page .authorCreateForm,html[data-theme] .page .authorWorksPanel,html[data-theme] .page .authorWork{
+  min-width:0;background:var(--in-bg-surface);border:1px solid var(--in-border-default);border-radius:var(--in-radius-lg);color:var(--in-text-primary);box-shadow:var(--in-shadow-sm);
+}
+html[data-theme] .page .authorStudioLayout{display:grid;grid-template-columns:minmax(0,1fr);gap:16px}
+html[data-theme] .page .authorStudioIntro{padding:clamp(18px,3vw,28px);background:linear-gradient(135deg,color-mix(in srgb,var(--in-action-primary) 8%,var(--in-bg-surface)),var(--in-bg-surface) 68%)}
+html[data-theme] .page .authorStudioIntro h2,html[data-theme] .page .authorCreateForm h2,html[data-theme] .page .authorWorksPanel h2,html[data-theme] .page .authorWork h3{color:var(--in-text-primary);letter-spacing:-.035em}
+html[data-theme] .page .authorStudioIntro p,html[data-theme] .page .authorWorksPanel .muted,html[data-theme] .page .authorWork .muted,html[data-theme] .page .authorEditForm .muted,html[data-theme] .page .authorChapterForm .muted{color:var(--in-text-secondary)}
+html[data-theme] .page .authorCreateForm,html[data-theme] .page .authorWorksPanel{padding:clamp(16px,2.5vw,24px)}
+html[data-theme] .page .authorCreateForm .fieldLabel,html[data-theme] .page .authorEditForm .fieldLabel,html[data-theme] .page .authorChapterForm .fieldLabel,html[data-theme] .page .comicPageComposerGrid label{display:block;margin:14px 0 7px;color:var(--in-text-secondary);font-size:12px;font-weight:700}
+html[data-theme] .page .authorCreateForm input,html[data-theme] .page .authorCreateForm select,html[data-theme] .page .authorCreateForm textarea,html[data-theme] .page .authorEditForm input,html[data-theme] .page .authorEditForm select,html[data-theme] .page .authorEditForm textarea,html[data-theme] .page .authorChapterForm input,html[data-theme] .page .authorChapterForm textarea,html[data-theme] .page .comicPageComposerGrid input{box-sizing:border-box;width:100%;min-width:0;min-height:var(--in-touch-target);padding:11px 12px;border:1px solid var(--in-border-default);border-radius:11px;background:var(--in-bg-elevated);color:var(--in-text-primary);font:inherit}
+html[data-theme] .page .authorCreateForm textarea,html[data-theme] .page .authorEditForm textarea,html[data-theme] .page .authorChapterForm textarea{min-height:112px;resize:vertical}
+html[data-theme] .page .authorFormGrid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;margin-top:10px}
+html[data-theme] .page .authorWorksPanel .sectionHead,html[data-theme] .page .authorWorkTop,html[data-theme] .page .comicAuthorBuilderHead{display:flex;align-items:flex-start;justify-content:space-between;gap:14px}
+html[data-theme] .page .authorWorksList{display:grid;gap:12px;margin-top:16px}
+html[data-theme] .page .authorWork{padding:16px}
+html[data-theme] .page .authorWorkTop h3{margin:5px 0;font-size:18px}
+html[data-theme] .page .authorStatus{flex:none;padding:6px 10px;border:1px solid var(--in-border-default);border-radius:999px;background:var(--in-bg-elevated);color:var(--in-text-secondary);font-size:11px;font-weight:750}
+html[data-theme] .page .authorStatus.status-published{color:var(--in-status-success);border-color:var(--in-status-success);background:var(--in-status-success-bg)}
+html[data-theme] .page .authorStatus.status-review{color:var(--in-status-info);border-color:var(--in-status-info);background:var(--in-status-info-bg)}
+html[data-theme] .page .authorStatus.status-rejected{color:var(--in-status-danger);border-color:var(--in-status-danger);background:var(--in-status-danger-bg)}
+html[data-theme] .page .authorWorkActions{display:flex;flex-wrap:wrap;align-items:center;gap:9px;margin-top:14px}
+html[data-theme] .page .authorWorkActions > *{min-height:var(--in-touch-target)}
+html[data-theme] .page .authorWorkActions .primary,html[data-theme] .page .authorCreateForm > button.primary{background:var(--in-action-primary);border-color:var(--in-action-primary);color:var(--in-action-primary-text)}
+html[data-theme] .page .authorWorkActions .secondary,html[data-theme] .page #refreshAuthorWorks{background:var(--in-bg-elevated);border-color:var(--in-border-default);color:var(--in-text-primary)}
+html[data-theme] .page .authorEditForm,html[data-theme] .page .authorChapterForm{margin-top:14px;padding:16px;border:1px solid var(--in-border-default);border-radius:14px;background:var(--in-bg-subtle)}
+html[data-theme] .page .comicAuthorBuilder{margin:14px 0;padding:14px;border:1px solid var(--in-border-default);border-radius:14px;background:var(--in-bg-surface)}
+html[data-theme] .page .comicAuthorBuilderHead p,html[data-theme] .page [data-page-status]{color:var(--in-text-secondary);font-size:12px;line-height:1.6}
+html[data-theme] .page .comicPageComposerGrid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;align-items:end}
+html[data-theme] .page .authorStudioLayout button:focus-visible,html[data-theme] .page .authorStudioLayout a:focus-visible,html[data-theme] .page .authorStudioLayout input:focus-visible,html[data-theme] .page .authorStudioLayout select:focus-visible,html[data-theme] .page .authorStudioLayout textarea:focus-visible{outline:3px solid var(--in-focus-ring);outline-offset:3px}
+html[data-theme] .page .authorStudioLayout button:disabled{opacity:.55;cursor:not-allowed}
+@media(min-width:900px){html[data-theme] .page .authorStudioLayout{grid-template-columns:minmax(0,.9fr) minmax(0,1.1fr);align-items:start}html[data-theme] .page .authorStudioIntro{grid-column:1/-1}html[data-theme] .page .authorWorksPanel{grid-column:1/-1}}
+@media(max-width:620px){html[data-theme] .page .authorFormGrid,html[data-theme] .page .comicPageComposerGrid{grid-template-columns:minmax(0,1fr)}html[data-theme] .page .authorWorkTop,html[data-theme] .page .authorWorksPanel .sectionHead{flex-wrap:wrap}html[data-theme] .page .authorWorkActions > *{flex:1 1 100%;justify-content:center;text-align:center}html[data-theme] .page .authorEditForm,html[data-theme] .page .authorChapterForm{padding:12px}}
+@media(prefers-reduced-motion:reduce){html[data-theme] .page .authorStudioLayout *,html[data-theme] .page .authorWork{transition:none}}
+
+
+/* Community discovery and public discussion feed. */
+html[data-theme] .quickCard{
+  min-width:0;background:var(--in-bg-surface);border-color:var(--in-border-default);
+  color:var(--in-text-primary);box-shadow:var(--in-shadow-sm);
+}
+html[data-theme] .quickCard:hover{
+  border-color:var(--in-action-primary);background:var(--in-bg-elevated);
+}
+html[data-theme] .quickCard>span{
+  background:color-mix(in srgb,var(--in-action-primary) 12%,var(--in-bg-elevated));
+  color:var(--in-action-primary);
+}
+html[data-theme] .quickCard b,
+html[data-theme] .sectionHead h2,
+html[data-theme] .unlockBanner h2{
+  color:var(--in-text-primary);
+}
+html[data-theme] .quickCard small,
+html[data-theme] .sectionHead p,
+html[data-theme] .unlockBanner p{
+  color:var(--in-text-secondary);
+}
+html[data-theme] #communityDiscussions{
+  display:grid;gap:10px;padding:clamp(14px,2vw,20px);
+  background:var(--in-bg-surface);border:1px solid var(--in-border-default);
+  border-radius:var(--in-radius-lg);color:var(--in-text-primary);
+  box-shadow:var(--in-shadow-sm);
+}
+html[data-theme] #communityDiscussions .chapter{
+  display:block;min-width:0;padding:14px;
+  background:var(--in-bg-elevated);border:1px solid var(--in-border-default);
+  border-radius:12px;color:var(--in-text-primary);
+}
+html[data-theme] #communityDiscussions .chapter a{
+  color:var(--in-action-primary);text-decoration:none;
+}
+html[data-theme] #communityDiscussions .chapter a:hover{text-decoration:underline}
+html[data-theme] #communityDiscussions .chapter p{
+  color:var(--in-text-primary);line-height:1.65;
+}
+html[data-theme] #communityGrid .card{
+  background:var(--in-bg-surface);border-color:var(--in-border-default);
+  color:var(--in-text-primary);box-shadow:var(--in-shadow-sm);
+}
+html[data-theme] #communityGrid .cardTitle{color:var(--in-text-primary)}
+html[data-theme] #communityGrid .meta{color:var(--in-text-secondary)}
+html[data-theme] .unlockBanner{
+  background:linear-gradient(135deg,color-mix(in srgb,var(--in-action-primary) 10%,var(--in-bg-surface)),var(--in-bg-surface));
+  border-color:var(--in-border-default);box-shadow:var(--in-shadow-sm);
+}
+html[data-theme] .quickCard:focus-visible,
+html[data-theme] #communityDiscussions a:focus-visible,
+html[data-theme] #communityGrid a:focus-visible,
+html[data-theme] .unlockBanner a:focus-visible{
+  outline:3px solid var(--in-focus-ring);outline-offset:3px;
+}
+html[data-theme] .quickCard,
+html[data-theme] .unlockBanner a{min-height:var(--in-touch-target)}
+@media(max-width:760px){
+  html[data-theme] .quickGrid{grid-template-columns:repeat(2,minmax(0,1fr))}
+  html[data-theme] .sectionHead{align-items:flex-start;flex-wrap:wrap}
+  html[data-theme] .unlockBanner{align-items:flex-start;flex-direction:column}
+}
+@media(max-width:420px){
+  html[data-theme] .quickGrid{grid-template-columns:minmax(0,1fr)}
+  html[data-theme] #communityDiscussions{padding:10px}
+  html[data-theme] #communityDiscussions .chapter{padding:12px}
+}
+@media(prefers-reduced-motion:reduce){
+  html[data-theme] .quickCard,html[data-theme] .unlockBanner,
+  html[data-theme] #communityGrid .card{transition:none;transform:none}
+}
+
+
+/* Trend Factory: semantic six-theme adoption for the existing metadata-first workspace. */
+html[data-theme] .trendFactoryPage,
+html[data-theme] .trendFactoryPage .trendFactoryHero,
+html[data-theme] .trendFactoryPage .trendControls,
+html[data-theme] .trendFactoryPage .trendSafetyCard,
+html[data-theme] .trendFactoryPage .trendFactoryNote{color:var(--in-text-primary)}
+html[data-theme] .trendFactoryPage .trendFactoryHero{
+ background:linear-gradient(135deg,color-mix(in srgb,var(--in-action-primary) 13%,var(--in-bg-surface)),var(--in-bg-elevated));
+ border-color:var(--in-border-default);box-shadow:var(--in-shadow-sm)
+}
+html[data-theme] .trendFactoryPage .trendFactoryHero h2,
+html[data-theme] .trendFactoryPage .trendSafetyCard h3,
+html[data-theme] .trendFactoryPage .trendControls h2{color:var(--in-text-primary)}
+html[data-theme] .trendFactoryPage .trendFactoryHero p,
+html[data-theme] .trendFactoryPage .trendSafetyCard p,
+html[data-theme] .trendFactoryPage .trendFactoryNote,
+html[data-theme] .trendFactoryPage .trendStep small{color:var(--in-text-secondary)}
+html[data-theme] .trendFactoryPage .trendPipeline{
+ background:var(--in-bg-surface);border:1px solid var(--in-border-default);border-radius:16px;box-shadow:var(--in-shadow-sm)
+}
+html[data-theme] .trendFactoryPage .trendStep{background:var(--in-bg-elevated);border-color:var(--in-border-default);color:var(--in-text-primary)}
+html[data-theme] .trendFactoryPage .trendStep.active{background:color-mix(in srgb,var(--in-action-primary) 12%,var(--in-bg-surface));border-color:var(--in-action-primary)}
+html[data-theme] .trendFactoryPage .trendControls,
+html[data-theme] .trendFactoryPage .trendSafetyCard,
+html[data-theme] .trendFactoryPage .trendFactoryNote{
+ background:var(--in-bg-surface);border:1px solid var(--in-border-default);border-radius:16px;box-shadow:var(--in-shadow-sm)
+}
+html[data-theme] .trendFactoryPage .trendControlRow input,
+html[data-theme] .trendFactoryPage .trendControlRow select{
+ min-height:var(--in-touch-target);background:var(--in-bg-elevated);color:var(--in-text-primary);border:1px solid var(--in-border-strong)
+}
+html[data-theme] .trendFactoryPage .trendDataTag,
+html[data-theme] .trendFactoryPage .trendMeta{color:var(--in-text-secondary)}
+html[data-theme] .trendFactoryPage .trendResults .card{
+ background:var(--in-bg-elevated);border:1px solid var(--in-border-default);color:var(--in-text-primary);box-shadow:var(--in-shadow-sm)
+}
+html[data-theme] .trendFactoryPage .trendResults .card h3,
+html[data-theme] .trendFactoryPage .trendResults .card b{color:var(--in-text-primary)}
+html[data-theme] .trendFactoryPage .trendResults .card p,
+html[data-theme] .trendFactoryPage .trendResults .card small{color:var(--in-text-secondary)}
+html[data-theme] .trendFactoryPage .trendSafetyCard a{color:var(--in-action-primary)}
+html[data-theme] .trendFactoryPage .trendPending{display:block;margin-top:12px;color:var(--in-text-secondary);font-size:.9rem;line-height:1.5}
+html[data-theme] .trendFactoryPage a:focus-visible,
+html[data-theme] .trendFactoryPage button:focus-visible,
+html[data-theme] .trendFactoryPage input:focus-visible,
+html[data-theme] .trendFactoryPage select:focus-visible{outline:3px solid var(--in-focus-ring);outline-offset:3px}
+html[data-theme] .trendFactoryPage .trendControlRow button,
+html[data-theme] .trendFactoryPage .trendSafetyCard a{min-height:var(--in-touch-target)}
+@media(max-width:760px){
+ html[data-theme] .trendFactoryPage .trendControlRow{grid-template-columns:minmax(0,1fr)}
+ html[data-theme] .trendFactoryPage .trendSearch{grid-column:auto}
+ html[data-theme] .trendFactoryPage .trendPipeline{overflow-x:auto}
+ html[data-theme] .trendFactoryPage .trendSafetyGrid{grid-template-columns:minmax(0,1fr)}
+}
+@media(prefers-reduced-motion:reduce){
+ html[data-theme] .trendFactoryPage *,html[data-theme] .trendFactoryPage *::before,html[data-theme] .trendFactoryPage *::after{scroll-behavior:auto!important;transition:none!important;animation:none!important}
+}
+
+
+/* Dedicated Admin template: semantic theme adoption without changing its permissions or workflows. */
+html[data-theme] body.adminDashboardPage{background:var(--in-bg-canvas);color:var(--in-text-primary)}
+html[data-theme] body.adminDashboardPage .adminWrap{color:var(--in-text-primary)}
+html[data-theme] body.adminDashboardPage .adminHero,
+html[data-theme] body.adminDashboardPage .adminCard,
+html[data-theme] body.adminDashboardPage .adminWrap .panel{
+ background:var(--in-bg-surface);color:var(--in-text-primary);
+ border:1px solid var(--in-border-default);box-shadow:var(--in-shadow-sm);
+}
+html[data-theme] body.adminDashboardPage .adminHero{
+ background:linear-gradient(135deg,color-mix(in srgb,var(--in-action-primary) 12%,var(--in-bg-surface)),var(--in-bg-elevated));
+}
+html[data-theme] body.adminDashboardPage .adminHero h1,
+html[data-theme] body.adminDashboardPage .adminWrap h2,
+html[data-theme] body.adminDashboardPage .adminCard b.big{color:var(--in-text-primary)}
+html[data-theme] body.adminDashboardPage .adminHero p,
+html[data-theme] body.adminDashboardPage .adminCard small,
+html[data-theme] body.adminDashboardPage .muted2{color:var(--in-text-secondary)}
+html[data-theme] body.adminDashboardPage .adminNav{scrollbar-width:thin}
+html[data-theme] body.adminDashboardPage .adminNav button{
+ min-height:var(--in-touch-target);background:var(--in-bg-elevated);
+ color:var(--in-text-secondary);border:1px solid var(--in-border-default);
+}
+html[data-theme] body.adminDashboardPage .adminNav button.active{
+ background:color-mix(in srgb,var(--in-action-primary) 14%,var(--in-bg-surface));
+ border-color:var(--in-action-primary);color:var(--in-text-primary);
+}
+html[data-theme] body.adminDashboardPage .adminTable{background:var(--in-bg-surface);color:var(--in-text-primary)}
+html[data-theme] body.adminDashboardPage .adminTable th{
+ background:var(--in-bg-subtle);color:var(--in-text-secondary);
+ border-color:var(--in-border-default);
+}
+html[data-theme] body.adminDashboardPage .adminTable td{
+ color:var(--in-text-primary);border-color:var(--in-border-default);
+}
+html[data-theme] body.adminDashboardPage .adminForm input,
+html[data-theme] body.adminDashboardPage .adminForm select,
+html[data-theme] body.adminDashboardPage .adminForm textarea,
+html[data-theme] body.adminDashboardPage #chapterForm input,
+html[data-theme] body.adminDashboardPage #chapterForm textarea{
+ background:var(--in-bg-elevated);color:var(--in-text-primary);
+ border:1px solid var(--in-border-strong);
+}
+html[data-theme] body.adminDashboardPage .mini{
+ background:var(--in-bg-elevated);color:var(--in-text-primary)!important;
+ border-color:var(--in-border-strong);
+}
+html[data-theme] body.adminDashboardPage .status{
+ color:var(--in-text-primary);border-color:var(--in-border-default);
+}
+html[data-theme] body.adminDashboardPage .adminMsg,
+html[data-theme] body.adminDashboardPage .notice{
+ color:var(--in-text-primary);border-color:var(--in-border-default);
+}
+html[data-theme] body.adminDashboardPage a:focus-visible,
+html[data-theme] body.adminDashboardPage button:focus-visible,
+html[data-theme] body.adminDashboardPage input:focus-visible,
+html[data-theme] body.adminDashboardPage select:focus-visible,
+html[data-theme] body.adminDashboardPage textarea:focus-visible,
+html[data-theme] body.adminDashboardPage summary:focus-visible{
+ outline:3px solid var(--in-focus-ring);outline-offset:3px;
+}
+html[data-theme] body.adminDashboardPage .adminNav button,
+html[data-theme] body.adminDashboardPage .rowActions button,
+html[data-theme] body.adminDashboardPage .mobileAdmin a{min-height:var(--in-touch-target)}
+@media(max-width:760px){
+ html[data-theme] body.adminDashboardPage .adminWrap{padding-inline:12px}
+ html[data-theme] body.adminDashboardPage .adminNav{padding-bottom:8px}
+ html[data-theme] body.adminDashboardPage .adminTable{min-width:720px}
+}
+@media(prefers-reduced-motion:reduce){
+ html[data-theme] body.adminDashboardPage *,
+ html[data-theme] body.adminDashboardPage *::before,
+ html[data-theme] body.adminDashboardPage *::after{scroll-behavior:auto!important;transition:none!important;animation:none!important}
+}
+
+
+/* Community taxonomy: bring the standalone governance form into the six-theme system. */
+html[data-theme] body.taxonomyPage{
+ background:var(--in-bg-canvas);color:var(--in-text-primary);
+}
+html[data-theme] body.taxonomyPage::before{display:none}
+html[data-theme] body.taxonomyPage .tax-tagline,
+html[data-theme] body.taxonomyPage .tax-lede,
+html[data-theme] body.taxonomyPage .tax-card p,
+html[data-theme] body.taxonomyPage .tax-field small,
+html[data-theme] body.taxonomyPage .tax-note,
+html[data-theme] body.taxonomyPage .tax-rules li,
+html[data-theme] body.taxonomyPage .tax-footer{color:var(--in-text-secondary)}
+html[data-theme] body.taxonomyPage .tax-eyebrow{color:var(--in-action-primary)}
+html[data-theme] body.taxonomyPage .tax-title,
+html[data-theme] body.taxonomyPage .tax-brand,
+html[data-theme] body.taxonomyPage .tax-card h2,
+html[data-theme] body.taxonomyPage .tax-rules strong{color:var(--in-text-primary)}
+html[data-theme] body.taxonomyPage .tax-card{
+ background:var(--in-bg-surface);border:1px solid var(--in-border-default);
+ box-shadow:var(--in-shadow-md);backdrop-filter:blur(18px);
+}
+html[data-theme] body.taxonomyPage .tax-field input,
+html[data-theme] body.taxonomyPage .tax-field select,
+html[data-theme] body.taxonomyPage .tax-field textarea{
+ background:var(--in-bg-elevated);color:var(--in-text-primary);
+ border:1px solid var(--in-border-strong);
+}
+html[data-theme] body.taxonomyPage .tax-field input::placeholder,
+html[data-theme] body.taxonomyPage .tax-field textarea::placeholder{color:var(--in-text-muted)}
+html[data-theme] body.taxonomyPage .tax-field input:focus-visible,
+html[data-theme] body.taxonomyPage .tax-field select:focus-visible,
+html[data-theme] body.taxonomyPage .tax-field textarea:focus-visible,
+html[data-theme] body.taxonomyPage .tax-submit:focus-visible,
+html[data-theme] body.taxonomyPage .tax-links a:focus-visible{
+ outline:3px solid var(--in-focus-ring);outline-offset:3px;
+}
+html[data-theme] body.taxonomyPage .tax-submit{
+ min-height:var(--in-touch-target);background:var(--in-action-primary);
+ color:var(--in-action-primary-text);border:1px solid var(--in-action-primary);
+}
+html[data-theme] body.taxonomyPage .tax-submit:disabled{opacity:.65}
+html[data-theme] body.taxonomyPage .tax-status{
+ background:var(--in-bg-subtle);color:var(--in-text-primary);
+ border:1px solid var(--in-border-default);
+}
+html[data-theme] body.taxonomyPage .tax-status[data-kind="error"]{color:var(--in-status-danger)}
+html[data-theme] body.taxonomyPage .tax-status[data-kind="success"]{color:var(--in-status-success)}
+html[data-theme] body.taxonomyPage .tax-note,
+html[data-theme] body.taxonomyPage .tax-rules li{border-color:var(--in-border-default)}
+html[data-theme] body.taxonomyPage .tax-links a{
+ min-height:var(--in-touch-target);display:inline-flex;align-items:center;
+ color:var(--in-action-primary);border-color:var(--in-border-default);
+}
+html[data-theme] body.taxonomyPage .tax-links a:hover{border-color:var(--in-action-primary)}
+@media(prefers-reduced-motion:reduce){
+ html[data-theme] body.taxonomyPage *,html[data-theme] body.taxonomyPage *::before,
+ html[data-theme] body.taxonomyPage *::after{scroll-behavior:auto!important;transition:none!important;animation:none!important}
+}
+
+
+/* Standalone Author Studio document: bridge its legacy local class names to the shared six-theme roles. */
+html[data-theme] body.authorStudioPage{
+ background:var(--in-bg-canvas);color:var(--in-text-primary);
+}
+html[data-theme] body.authorStudioPage .wrap{color:var(--in-text-primary)}
+html[data-theme] body.authorStudioPage .card,
+html[data-theme] body.authorStudioPage .ai-bible,
+html[data-theme] body.authorStudioPage .ai-project{
+ background:var(--in-bg-surface);color:var(--in-text-primary);
+ border-color:var(--in-border-default);box-shadow:var(--in-shadow-sm);
+}
+html[data-theme] body.authorStudioPage .brand,
+html[data-theme] body.authorStudioPage h1,
+html[data-theme] body.authorStudioPage h2,
+html[data-theme] body.authorStudioPage h3,
+html[data-theme] body.authorStudioPage label{color:var(--in-text-primary)}
+html[data-theme] body.authorStudioPage .sub,
+html[data-theme] body.authorStudioPage .msg,
+html[data-theme] body.authorStudioPage .stats,
+html[data-theme] body.authorStudioPage .meta,
+html[data-theme] body.authorStudioPage .muted{color:var(--in-text-secondary)}
+html[data-theme] body.authorStudioPage input,
+html[data-theme] body.authorStudioPage textarea,
+html[data-theme] body.authorStudioPage select{
+ background:var(--in-bg-elevated);color:var(--in-text-primary);
+ border:1px solid var(--in-border-strong);
+}
+html[data-theme] body.authorStudioPage input::placeholder,
+html[data-theme] body.authorStudioPage textarea::placeholder{color:var(--in-text-muted)}
+html[data-theme] body.authorStudioPage .ghost,
+html[data-theme] body.authorStudioPage .check,
+html[data-theme] body.authorStudioPage .badge,
+html[data-theme] body.authorStudioPage .ai-badge{
+ background:color-mix(in srgb,var(--in-action-primary) 10%,var(--in-bg-surface));
+ color:var(--in-action-primary);border:1px solid var(--in-border-default);
+}
+html[data-theme] body.authorStudioPage .danger{
+ background:var(--in-status-danger-bg);color:var(--in-status-danger);
+ border:1px solid var(--in-status-danger);
+}
+html[data-theme] body.authorStudioPage .primary{
+ background:var(--in-action-primary);color:var(--in-action-primary-text);
+}
+html[data-theme] body.authorStudioPage .notice,
+html[data-theme] body.authorStudioPage .airow,
+html[data-theme] body.authorStudioPage .ai-actions,
+html[data-theme] body.authorStudioPage .ai-bible{
+ border-color:var(--in-border-default);
+}
+html[data-theme] body.authorStudioPage a{color:var(--in-link)}
+html[data-theme] body.authorStudioPage a:focus-visible,
+html[data-theme] body.authorStudioPage button:focus-visible,
+html[data-theme] body.authorStudioPage input:focus-visible,
+html[data-theme] body.authorStudioPage textarea:focus-visible,
+html[data-theme] body.authorStudioPage select:focus-visible{
+ outline:3px solid var(--in-focus-ring);outline-offset:3px;
+}
+html[data-theme] body.authorStudioPage button,
+html[data-theme] body.authorStudioPage .ghost,
+html[data-theme] body.authorStudioPage .primary{min-height:var(--in-touch-target)}
+@media(max-width:650px){
+ html[data-theme] body.authorStudioPage .wrap{padding:12px}
+ html[data-theme] body.authorStudioPage .grid{grid-template-columns:minmax(0,1fr)}
+ html[data-theme] body.authorStudioPage .field.full{grid-column:auto}
+}
+@media(prefers-reduced-motion:reduce){
+ html[data-theme] body.authorStudioPage *,
+ html[data-theme] body.authorStudioPage *::before,
+ html[data-theme] body.authorStudioPage *::after{scroll-behavior:auto!important;transition:none!important;animation:none!important}
+}
+
+
+/* Community activity and reader utility routes: ranking, tiers, random discovery, voting and requests. */
+html[data-theme] #app .rankBadge{
+ display:inline-grid;place-items:center;min-width:38px;min-height:38px;
+ border-radius:12px;background:color-mix(in srgb,var(--in-action-primary) 12%,var(--in-bg-surface));
+ border:1px solid var(--in-border-default);color:var(--in-action-primary);font-weight:800;
+}
+html[data-theme] #app .period{
+ display:inline-flex;align-items:center;justify-content:center;min-height:var(--in-touch-target);
+ padding:8px 14px;border:1px solid var(--in-border-default);border-radius:999px;
+ color:var(--in-text-secondary);background:var(--in-bg-surface);
+}
+html[data-theme] #app .period.active{
+ background:color-mix(in srgb,var(--in-action-primary) 13%,var(--in-bg-surface));
+ border-color:var(--in-action-primary);color:var(--in-text-primary);
+}
+html[data-theme] #app .tierPanel{
+ background:var(--in-bg-surface);border:1px solid var(--in-border-default);
+ border-radius:18px;padding:clamp(14px,2.5vw,22px);box-shadow:var(--in-shadow-sm);
+}
+html[data-theme] #app .tierPanel h2{color:var(--in-text-primary)}
+html[data-theme] #app .miniCard{
+ background:var(--in-bg-elevated);border:1px solid var(--in-border-default);
+ border-radius:14px;color:var(--in-text-primary);
+}
+html[data-theme] #app .miniCard b{color:var(--in-text-primary)}
+html[data-theme] #app .miniCard span{color:var(--in-text-secondary)}
+html[data-theme] #app .randomPanel{
+ display:grid;gap:18px;max-width:860px;margin-inline:auto;
+ background:var(--in-bg-surface);border:1px solid var(--in-border-default);
+ box-shadow:var(--in-shadow-sm);
+}
+html[data-theme] #app .randomCard{
+ display:grid;grid-template-columns:minmax(120px,190px) minmax(0,1fr);
+ gap:18px;align-items:center;background:var(--in-bg-elevated);
+ border:1px solid var(--in-border-default);border-radius:16px;padding:14px;
+}
+html[data-theme] #app .randomCard h2{color:var(--in-text-primary)}
+html[data-theme] #app .randomCard p{color:var(--in-text-secondary)}
+html[data-theme] #app .voteRow{
+ background:var(--in-bg-elevated);border:1px solid var(--in-border-default);
+ border-radius:12px;margin:8px 0;padding:12px;
+}
+html[data-theme] #app .voteRow .chapterNo{color:var(--in-action-primary)}
+html[data-theme] #app .voteRow .voteBtn{min-height:var(--in-touch-target)}
+html[data-theme] #app #req input,
+html[data-theme] #app #omni input{
+ min-height:var(--in-touch-target);background:var(--in-bg-elevated);
+ color:var(--in-text-primary);border:1px solid var(--in-border-strong);
+}
+html[data-theme] #app #reqMsg .notice{border-color:var(--in-border-default)}
+html[data-theme] #app .metricGrid .metric{
+ background:var(--in-bg-elevated);border:1px solid var(--in-border-default);
+ border-radius:14px;color:var(--in-text-primary);
+}
+html[data-theme] #app .metricGrid .metric b{color:var(--in-text-primary)}
+html[data-theme] #app .metricGrid .metric .muted{color:var(--in-text-secondary)}
+html[data-theme] #app .chapterList .chapter{
+ border-color:var(--in-border-default);color:var(--in-text-primary);
+}
+html[data-theme] #app .chapterList .chapter .muted{color:var(--in-text-secondary)}
+html[data-theme] #app .period:focus-visible,
+html[data-theme] #app .miniCard:focus-visible,
+html[data-theme] #app .randomPanel button:focus-visible,
+html[data-theme] #app .voteRow button:focus-visible,
+html[data-theme] #app #req input:focus-visible,
+html[data-theme] #app #omni input:focus-visible{
+ outline:3px solid var(--in-focus-ring);outline-offset:3px;
+}
+@media(max-width:640px){
+ html[data-theme] #app .randomCard{grid-template-columns:minmax(0,1fr)}
+ html[data-theme] #app .randomCard img{max-width:190px;width:100%;margin-inline:auto}
+ html[data-theme] #app .period{padding-inline:10px}
+}
+@media(prefers-reduced-motion:reduce){
+ html[data-theme] #app .tierPanel *,html[data-theme] #app .randomPanel *,
+ html[data-theme] #app .voteRow *{scroll-behavior:auto!important;transition:none!important;animation:none!important}
+}
+
+
+/* Standalone legal and trust documents share the same six-theme semantic foundation. */
+html[data-theme] body.legalPage{
+ background:var(--in-bg-canvas);color:var(--in-text-primary);
+}
+html[data-theme] body.legalPage .legalHero,
+html[data-theme] body.legalPage .legalSection{
+ background:var(--in-bg-surface);color:var(--in-text-primary);
+ border:1px solid var(--in-border-default);box-shadow:var(--in-shadow-sm);
+}
+html[data-theme] body.legalPage .legalHero h1,
+html[data-theme] body.legalPage .legalSection h2{color:var(--in-text-primary)}
+html[data-theme] body.legalPage .legalHero p,
+html[data-theme] body.legalPage .legalSection p,
+html[data-theme] body.legalPage .legalSection li{color:var(--in-text-secondary)}
+html[data-theme] body.legalPage .eyebrow{color:var(--in-action-primary)}
+html[data-theme] body.legalPage .legalNotice,
+html[data-theme] body.legalPage .notice{
+ background:var(--in-bg-elevated);color:var(--in-text-primary);
+ border:1px solid var(--in-border-default);
+}
+html[data-theme] body.legalPage a{color:var(--in-link)}
+html[data-theme] body.legalPage a:focus-visible,
+html[data-theme] body.legalPage button:focus-visible{
+ outline:3px solid var(--in-focus-ring);outline-offset:3px;
+}
+html[data-theme] body.legalPage .primary{
+ background:var(--in-action-primary);color:var(--in-action-primary-text);
+}
+html[data-theme] body.legalPage .secondary{
+ background:var(--in-bg-elevated);color:var(--in-text-primary);
+ border:1px solid var(--in-border-strong);
+}
+@media(max-width:700px){
+ html[data-theme] body.legalPage .legalWrap{padding:12px}
+ html[data-theme] body.legalPage .legalHero{padding:22px 18px}
+ html[data-theme] body.legalPage .legalSection{padding:16px}
+}
+@media(prefers-reduced-motion:reduce){
+ html[data-theme] body.legalPage *,
+ html[data-theme] body.legalPage *::before,
+ html[data-theme] body.legalPage *::after{scroll-behavior:auto!important;transition:none!important;animation:none!important}
+}
+
+
+/* High-contrast preference applies to semantic components in every global theme. */
+html[data-high-contrast="true"][data-theme="light"],
+html[data-high-contrast="true"][data-theme="sepia"]{
+ --in-text-secondary:var(--in-text-primary);
+ --in-text-muted:var(--in-text-primary);
+ --in-border-default:#68757D;
+ --in-border-strong:#46535B;
+ --in-focus-ring:#064A9E;
+}
+html[data-high-contrast="true"][data-theme="dark"],
+html[data-high-contrast="true"][data-theme="midnight"],
+html[data-high-contrast="true"][data-theme="imperial"],
+html[data-high-contrast="true"][data-theme="cosmic"]{
+ --in-text-secondary:var(--in-text-primary);
+ --in-text-muted:var(--in-text-primary);
+ --in-border-default:#8799A3;
+ --in-border-strong:#B1C0C7;
+ --in-focus-ring:#A9D0FF;
+}
+
+
+/* Legacy directional bridges use logical properties so RTL remains explicit and testable. */
+[dir="rtl"] .catalogMeta b{margin-inline-start:0;margin-inline-end:auto}
+[dir="rtl"] .statusBadge{inset-inline-start:9px}
+[dir="rtl"] .readerLock .secondary{margin-inline-start:7px}
+[dir="rtl"] .chapterDrawer{inset-inline-start:0;border-inline-start:1px solid var(--line)}
+[dir="rtl"] .side a:hover,[dir="rtl"] .side a.active{border-inline-start:2px solid var(--gold2)}
+[dir="rtl"] .menuDrawer .imperialIcon{margin-inline-end:10px}
+[dir="rtl"] .homePage .consoleStatus{margin-inline-start:auto}
+[dir="rtl"] .homePage .consoleStatus i{margin-inline-end:5px}
+[dir="rtl"] .homePage .featureIcon{inset-inline-end:20px}
+[dir="rtl"] .trendDataTag i{margin-inline-end:6px}
+[dir="rtl"] .trendFactoryNote{border-inline-start:2px solid var(--violet)}
+[dir="rtl"] .legalSection ul{padding-inline-start:22px}
+[dir="rtl"] .legalNotice{border-inline-start:3px solid var(--violet)}
+[dir="rtl"] .activeFiltersLabel{margin-inline-end:3px}
+[dir="rtl"] .homePage .heroCornerMark{inset-inline-end:24px}
+[dir="rtl"] .homePage .featureTile:after{inset-inline-end:-45px}
+[dir="rtl"] .navright{margin-inline-start:auto}
+[dir="rtl"] .nextReaderPromise>a{margin-inline-start:52px}
+[dir="rtl"] .formatExperience{text-align:start}
+[dir="rtl"] .heroSigil,[dir="rtl"] .heroOrbit,[dir="rtl"] .orbitTwo,[dir="rtl"] .heroCornerMark,[dir="rtl"] .heroOrbitLabel{inset-inline-start:auto}
+[dir="rtl"] .heroSigil{inset-inline-end:10%}
+[dir="rtl"] .heroOrbit{inset-inline-end:6%}
+[dir="rtl"] .orbitTwo{inset-inline-end:9%}
+[dir="rtl"] .heroCornerMark{inset-inline-end:24px}
+[dir="rtl"] .heroOrbitLabel{inset-inline-end:24px}
