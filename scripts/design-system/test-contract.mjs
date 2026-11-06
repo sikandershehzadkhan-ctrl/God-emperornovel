@@ -116,6 +116,7 @@ assert.ok(html.includes('href="/imperial-ui-primitives.css"'), "component primit
 assert.ok(worker.includes("'/imperial-design-tokens.css'") && worker.includes("'/imperial-ui-primitives.css'"), "Worker must register both stylesheets for every HTML template");
 assert.ok(app.includes("const IMPERIAL_THEMES=['light','dark','midnight','sepia','imperial','cosmic']"), "shared shell must expose all six supported themes");
 assert.ok(app.includes('document.documentElement.dir=(c==="ur"||c==="ar"||c==="fa")?"rtl":"ltr"'), "Urdu, Arabic and Persian interface locales must set RTL document direction");
+assert.ok(components.includes('[dir="rtl"] .in-switch:checked::after{transform:translateX(-1.25rem)}'), "shared switch thumb must mirror its checked position in RTL layouts");
 assert.ok(app.includes('id="imperialThemeSelect"') && app.includes("applyImperialTheme(event.target.value)"), "shared theme selector must be operable and update the root theme");
 assert.ok(worker.includes('["light","dark","midnight","sepia","imperial","cosmic"].includes(t)?t:"light"'), "Worker theme bootstrap must preserve all six themes before hydration");
 assert.ok(components.includes(".themePicker:focus-visible") && components.includes(".themePicker{"), "theme selector must have a visible keyboard focus state and shared styling");
