@@ -97,6 +97,18 @@ try{
   server.stderr.on("data",chunk=>{serverLogs+=chunk.toString()});
   await waitForWorker(origin);
 
+  const studioAnonymousRoutes=[
+    ["GET","/api/author/analytics"],["GET","/api/author/feedback"],["GET","/api/author/goals"],
+    ["PUT","/api/author/goals"],["GET","/api/author/notes"],["POST","/api/author/notes"],
+    ["PATCH","/api/author/notes/1"],["DELETE","/api/author/notes/1"],["GET","/api/author/readiness"],
+    ["GET","/api/author/planning"],["GET","/api/author/schedules"],["GET","/api/author/chapters/1/revisions"],
+    ["POST","/api/author/chapters/1/schedule"]
+  ];
+  for(const [method,route] of studioAnonymousRoutes){
+    const response=await request(origin,route,{method,origin,body:method==="GET"?undefined:{cancel:true}});
+    assert.equal(response.status,401,"anonymous access must be denied for "+method+" "+route);
+  }
+
   const suffix=Date.now().toString(36).slice(-6);
   const accountA=await createAccount(origin,origin,"ReaderA"+suffix,"reader-a-"+suffix+"@example.test");
   const accountB=await createAccount(origin,origin,"ReaderB"+suffix,"reader-b-"+suffix+"@example.test");
@@ -341,8 +353,10 @@ try{
   const feedbackA=await request(origin,"/api/author/feedback",{cookie:accountA.cookie});
   const feedbackB=await request(origin,"/api/author/feedback",{cookie:accountB.cookie});
   assert.ok(feedbackA.data.items.some(item=>item.body==="A story feedback comment"),"account A should see feedback on its own story");
+  assert.ok(feedbackA.data.items.some(item=>item.kind==="rating"&&item.novel_id===authorNovelId),"account A should see ratings for its own story");
   assert.equal(feedbackA.data.items.some(item=>item.body==="B story feedback comment"),false,"account A must not see feedback on account B stories");
   assert.ok(feedbackB.data.items.some(item=>item.body==="B story feedback comment"),"account B should see feedback on its own story");
+  assert.ok(feedbackB.data.items.some(item=>item.kind==="rating"&&item.novel_id===authorNovelBId),"account B should see ratings for its own story");
   assert.equal(feedbackB.data.items.some(item=>item.body==="A story feedback comment"),false,"account B must not see feedback on account A stories");
 
   const readinessA=await request(origin,"/api/author/readiness",{cookie:accountA.cookie});
