@@ -1,14 +1,16 @@
 /* Imperial Novel Design System 18.0.0 component primitives.
    Namespaced to avoid overriding legacy application selectors during rollout. */
 .in-button{display:inline-flex;align-items:center;justify-content:center;gap:var(--in-space-2);min-height:var(--in-control-height-md);padding:0 var(--in-space-4);border:1px solid transparent;border-radius:var(--in-radius-md);font:600 var(--in-text-sm)/1 var(--in-font-sans);text-decoration:none;cursor:pointer;transition:background var(--in-motion-fast) var(--in-ease-standard),border-color var(--in-motion-fast) var(--in-ease-standard),color var(--in-motion-fast) var(--in-ease-standard);touch-action:manipulation}
-.in-button:focus-visible,.in-field:focus-visible,.in-select:focus-visible,.in-checkbox:focus-visible,.in-link:focus-visible,.in-nav-link:focus-visible,.in-pagination a:focus-visible{outline:3px solid var(--in-focus-ring);outline-offset:3px}
+.in-button:focus-visible,.in-field:focus-visible,.in-select:focus-visible,.in-textarea:focus-visible,.in-checkbox:focus-visible,.in-radio:focus-visible,.in-switch:focus-visible,.in-link:focus-visible,.in-nav-link:focus-visible,.in-pagination a:focus-visible{outline:3px solid var(--in-focus-ring);outline-offset:3px}
 .in-button:disabled,.in-button[aria-disabled="true"]{opacity:.55;cursor:not-allowed}
 .in-button--primary{background:var(--in-action-primary);color:var(--in-action-primary-text);border-color:var(--in-action-primary)}
 .in-button--primary:hover:not(:disabled){background:var(--in-action-primary-hover);border-color:var(--in-action-primary-hover)}
 .in-button--secondary{background:var(--in-bg-surface);color:var(--in-text-primary);border-color:var(--in-border-default)}
 .in-button--secondary:hover:not(:disabled){background:var(--in-bg-subtle);border-color:var(--in-border-strong)}
 .in-button--quiet{background:transparent;color:var(--in-text-secondary);border-color:transparent}
-.in-button--danger{background:var(--in-status-danger);color:#fff}
+.in-button--danger{background:var(--in-status-danger-bg);color:var(--in-status-danger);border-color:var(--in-status-danger)}
+.in-button--danger:hover:not(:disabled){filter:brightness(.97)}
+.in-button--quiet:hover:not(:disabled){background:var(--in-bg-subtle);color:var(--in-text-primary)}
 .in-button--sm{min-height:var(--in-touch-target);padding-inline:var(--in-space-3)}
 .in-button--lg{min-height:var(--in-control-height-lg);padding-inline:var(--in-space-6)}
 .in-field,.in-select,.in-textarea{display:block;width:100%;min-height:var(--in-control-height-md);padding:var(--in-space-3);border:1px solid var(--in-border-default);border-radius:var(--in-radius-md);background:var(--in-bg-surface);color:var(--in-text-primary);font:400 var(--in-text-md)/var(--in-leading-normal) var(--in-font-sans)}
@@ -89,3 +91,8 @@
 .themePicker:focus-visible{outline:3px solid var(--in-focus-ring);outline-offset:3px}
 .sr-only{position:absolute!important;width:1px!important;height:1px!important;padding:0!important;margin:-1px!important;overflow:hidden!important;clip:rect(0,0,0,0)!important;white-space:nowrap!important;border:0!important}
 @media(max-width:30rem){.themePicker{max-width:7.25rem;padding-inline:var(--in-space-2)}}
+
+/* Complete keyboard and disabled states for every native form primitive. */
+.in-textarea:focus-visible,.in-radio:focus-visible,.in-switch:focus-visible{outline:3px solid var(--in-focus-ring);outline-offset:3px}
+.in-checkbox:disabled,.in-radio:disabled{opacity:.6;cursor:not-allowed}
+.in-check-row:has(input:disabled){opacity:.65;cursor:not-allowed}
