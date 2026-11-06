@@ -5,6 +5,7 @@ const tokens = fs.readFileSync("public/imperial-design-tokens.css", "utf8");
 const components = fs.readFileSync("public/imperial-ui-primitives.css", "utf8");
 const spec = fs.readFileSync("design-system/IMPERIAL-DESIGN-SYSTEM-18.0.0.md", "utf8");
 const html = fs.readFileSync("public/index.html", "utf8");
+const usage = fs.readFileSync("design-system/COMPONENT-USAGE-18.0.0.md", "utf8");
 
 function readHex(block, token, theme) {
   const match = block.match(new RegExp(token + ":\\s*(#[0-9A-Fa-f]{6})"));
@@ -77,6 +78,9 @@ for (const component of requiredComponents) {
   assert.ok(components.includes(component), "missing component primitive: " + component);
 }
 assert.match(components, /:focus-visible/, "visible keyboard focus is required");
+assert.match(components, /in-nav-link:focus-visible/, "navigation focus must be visible");
+assert.match(components, /aria-busy="true"/, "button loading state must be styled");
+assert.match(components, /in-dialog::backdrop/, "dialog backdrop primitive is required");
 assert.match(components, /prefers-reduced-motion:reduce/, "reduced-motion support is required");
 assert.match(components, /forced-colors:active/, "forced-colors support is required");
 assert.ok(components.includes(".in-button--sm{min-height:var(--in-touch-target)"), "small button variant must preserve the 44px target");
@@ -85,6 +89,7 @@ assert.ok(checkRow.includes("min-height:var(--in-touch-target)"), "checkbox/radi
 assert.match(tokens, /prefers-reduced-motion:reduce/, "token motion fallback is required");
 assert.ok(spec.includes("WCAG 2.2 AA"), "accessibility target missing from specification");
 assert.ok(spec.includes("RTL"), "RTL guidance missing from specification");
+assert.ok(usage.includes("Dialog behavior must be implemented") && usage.includes("server must enforce"), "component usage guide must document behavior and security boundaries");
 assert.ok(spec.includes("primitives are opt-in") || spec.includes("Do not bulk-replace legacy selectors"), "rollout boundary must be documented");
 assert.ok(html.includes('href="/imperial-design-tokens.css"'), "semantic tokens must be loaded by the application shell");
 assert.ok(html.includes('href="/imperial-ui-primitives.css"'), "component primitives must be loaded by the application shell");
