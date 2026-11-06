@@ -56,7 +56,7 @@ try{
   ["Eligible Author","original","published",120,9],
   ["Draft Only Author","original","draft",500,10],
   ["Pending Rights Author","pending","published",700,10],
-  ["Public Domain Author","public_domain","published",null,8],
+  ["Public Domain Author","public_domain","published",0,8],
   ["Licensed Author","licensed","published",20,7],
   ["Authorized Author","authorized","published",10,6],
   ["Wildcard%Author","original","published",1,5],
