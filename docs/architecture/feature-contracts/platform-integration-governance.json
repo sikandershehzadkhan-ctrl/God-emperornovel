@@ -30,7 +30,8 @@
     "src/sitemap.mjs",
     "scripts/test-public-author-discovery.mjs",
     "scripts/test-worker-public-author-discovery.mjs",
-    "scripts/test-worker-account-reader-isolation.mjs"
+    "scripts/test-worker-account-reader-isolation.mjs",
+    "docs/architecture/feature-contracts/community-discovery-localization.json"
   ],
   "dependencies": [
     "identity-security",
@@ -176,7 +177,8 @@
       "test-account-deletion-review-migration.mjs: reviewer scope, requester exclusion, CAS versioning and append-only audit.",
       "test-account-deletion-disposition-migration.mjs: immutable, versioned disposition plans and claim/subject binding.",
       "test-account-deletion-disposition-approval-migration.mjs: independent digest-bound approvals and stale/self-approval rejection.",
-      "test-account-deletion-specialist-findings-migration.mjs: specialist assignment, revocation audit and scoped findings."
+      "test-account-deletion-specialist-findings-migration.mjs: specialist assignment, revocation audit and scoped findings.",
+      "test-community-localization.mjs: fourteen-locale Community labels, post-render locale application, discussion empty states, creator-content preservation and bundle parity."
     ],
     "integration": [
       "test-platform-architecture-contract.mjs",
@@ -215,7 +217,8 @@
       "test-account-deletion-review-migration.mjs: reviewer scope, requester exclusion, CAS versioning and append-only audit.",
       "test-account-deletion-disposition-migration.mjs: immutable, versioned disposition plans and claim/subject binding.",
       "test-account-deletion-disposition-approval-migration.mjs: independent digest-bound approvals and stale/self-approval rejection.",
-      "test-account-deletion-specialist-findings-migration.mjs: specialist assignment, revocation audit and scoped findings."
+      "test-account-deletion-specialist-findings-migration.mjs: specialist assignment, revocation audit and scoped findings.",
+      "Community applies the active locale after initial rendering and after trending catalog responses without translating story titles, usernames or discussion bodies."
     ],
     "isolation": [
       "test-authorization-ownership-matrix.mjs",
@@ -380,7 +383,9 @@
     "/authors has a dedicated shell, canonical SEO, route registry and sitemap entry.",
     "The public author API rejects overlong queries before D1 and returns only bounded rights-eligible aggregates.",
     "Desktop and mobile author navigation is translated across all fourteen interface locales.",
-    "Editable and served app bundles remain byte-identical; author renderer loads before the app bundle."
+    "Editable and served app bundles remain byte-identical; author renderer loads before the app bundle.",
+    "Community landing-page static copy and discussion/catalog empty states are localized across fourteen interface locales.",
+    "Dynamic creator/community-authored content remains unchanged during Community localization."
   ],
   "sharedSurfaceSerialization": [
     ".github/workflows/",
