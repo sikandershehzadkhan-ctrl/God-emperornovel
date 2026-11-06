@@ -51,7 +51,7 @@ assert.match(components, /in-check-row\\{[^}]*min-height:var\\(--in-touch-target
 assert.match(tokens, /prefers-reduced-motion:reduce/, "token motion fallback is required");
 assert.match(spec, /WCAG 2\\.2 AA/, "accessibility target missing from specification");
 assert.match(spec, /RTL/, "RTL guidance missing from specification");
-assert.match(spec, /not linked into production|Do not load the new stylesheet on production routes until/i, "rollout boundary must be documented");
+assert.match(spec, /primitives are opt-in|Do not bulk-replace legacy selectors/i, "rollout boundary must be documented");
 assert.match(html, /href="\\/imperial-design-tokens\\.css"/, "semantic tokens must be loaded by the application shell");
 assert.match(html, /href="\\/imperial-ui-primitives\\.css"/, "component primitives must be loaded by the application shell");
 console.log("Imperial Novel design-system contract passed: six complete themes, semantic roles, component primitives, 44px targets, focus, reduced motion, forced colors, WCAG, RTL and runtime asset registration.");
