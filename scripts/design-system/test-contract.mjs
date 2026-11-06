@@ -100,6 +100,11 @@ assert.match(components, /forced-colors:active/, "forced-colors support is requi
 assert.ok(components.includes(".in-button--sm{min-height:var(--in-touch-target)"), "small button variant must preserve the 44px target");
 const checkRow = components.slice(components.indexOf(".in-check-row{"), components.indexOf(".in-check-row{") + 220);
 assert.ok(checkRow.includes("min-height:var(--in-touch-target)"), "checkbox/radio row must preserve the 44px target");
+const primitiveTokenReferences = [...components.matchAll(/var\\((--in-[a-z0-9-]+)/g)].map(match => match[1]);
+const definedTokenNames = new Set([...tokens.matchAll(/(--in-[a-z0-9-]+)\\s*:/g)].map(match => match[1]));
+for (const token of new Set(primitiveTokenReferences)) {
+  assert.ok(definedTokenNames.has(token), "component stylesheet references an undefined design token: " + token);
+}
 assert.match(tokens, /prefers-reduced-motion:reduce/, "token motion fallback is required");
 assert.ok(spec.includes("WCAG 2.2 AA"), "accessibility target missing from specification");
 assert.ok(spec.includes("RTL"), "RTL guidance missing from specification");
