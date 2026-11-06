@@ -6,6 +6,21 @@ const components = fs.readFileSync("public/imperial-ui-primitives.css", "utf8");
 const spec = fs.readFileSync("design-system/IMPERIAL-DESIGN-SYSTEM-18.0.0.md", "utf8");
 const html = fs.readFileSync("public/index.html", "utf8");
 
+function readHex(block, token, theme) {
+  const match = block.match(new RegExp(token + ":\\s*(#[0-9A-Fa-f]{6})"));
+  assert.ok(match, theme + " is missing a valid hex value for " + token);
+  return match[1];
+}
+function luminance(hex) {
+  const channels = [1, 3, 5].map(index => parseInt(hex.slice(index, index + 2), 16) / 255);
+  const linear = channels.map(value => value <= 0.04045 ? value / 12.92 : ((value + 0.055) / 1.055) ** 2.4);
+  return 0.2126 * linear[0] + 0.7152 * linear[1] + 0.0722 * linear[2];
+}
+function contrastRatio(first, second) {
+  const values = [luminance(first), luminance(second)].sort((a, b) => b - a);
+  return (values[0] + 0.05) / (values[1] + 0.05);
+}
+
 const themes = ["light", "dark", "midnight", "sepia", "imperial", "cosmic"];
 const themeRoles = [
   "--in-bg-canvas", "--in-bg-subtle", "--in-bg-surface", "--in-bg-elevated", "--in-bg-inverse",
@@ -18,8 +33,7 @@ const themeRoles = [
   "--in-reader-paper", "--in-reader-ink"
 ];
 for (const theme of themes) {
-  const escaped = theme.replace(/[.*+?^\\{}()|[\]\\]/g, "\\$&");
-  const match = tokens.match(new RegExp('(?:^|,)\\s*\\[data-theme="' + escaped + '"\\]\\s*\\{([^}]*)\\}', "m"));
+  const match = tokens.match(new RegExp('(?:^|,)\\s*\\[data-theme="' + theme + '"\\]\\s*\\{([^}]*)\\}', "m"));
   assert.ok(match, "missing theme: " + theme);
   for (const role of themeRoles) {
     assert.ok(match[1].includes(role + ":"), theme + " theme is missing semantic role: " + role);
@@ -43,20 +57,7 @@ for (const theme of themes) {
     assert.ok(contrastRatio(foreground, background) >= 4.5, theme + " " + status + " status fails WCAG AA contrast");
   }
 }
-function readHex(block, token, theme) {
-  const match = block.match(new RegExp(token + ":\\s*(#[0-9A-Fa-f]{6})"));
-  assert.ok(match, theme + " is missing a valid hex value for " + token);
-  return match[1];
-}
-function luminance(hex) {
-  const channels = [1, 3, 5].map(index => parseInt(hex.slice(index, index + 2), 16) / 255);
-  const linear = channels.map(value => value <= 0.04045 ? value / 12.92 : ((value + 0.055) / 1.055) ** 2.4);
-  return 0.2126 * linear[0] + 0.7152 * linear[1] + 0.0722 * linear[2];
-}
-function contrastRatio(first, second) {
-  const values = [luminance(first), luminance(second)].sort((a, b) => b - a);
-  return (values[0] + 0.05) / (values[1] + 0.05);
-}
+
 const requiredFoundationTokens = [
   "--in-brand-white", "--in-brand-obsidian", "--in-brand-purple", "--in-brand-sapphire",
   "--in-font-sans", "--in-font-serif", "--in-font-mono", "--in-space-4", "--in-radius-md",
@@ -78,12 +79,13 @@ for (const component of requiredComponents) {
 assert.match(components, /:focus-visible/, "visible keyboard focus is required");
 assert.match(components, /prefers-reduced-motion:reduce/, "reduced-motion support is required");
 assert.match(components, /forced-colors:active/, "forced-colors support is required");
-assert.match(components, /in-button--sm\\{min-height:var\\(--in-touch-target\\)/, "small button variant must preserve the 44px target");
-assert.match(components, /in-check-row\\{[^}]*min-height:var\\(--in-touch-target\\)/, "checkbox/radio row must preserve the 44px target");
+assert.ok(components.includes(".in-button--sm{min-height:var(--in-touch-target)"), "small button variant must preserve the 44px target");
+const checkRow = components.slice(components.indexOf(".in-check-row{"), components.indexOf(".in-check-row{") + 220);
+assert.ok(checkRow.includes("min-height:var(--in-touch-target)"), "checkbox/radio row must preserve the 44px target");
 assert.match(tokens, /prefers-reduced-motion:reduce/, "token motion fallback is required");
-assert.match(spec, /WCAG 2\\.2 AA/, "accessibility target missing from specification");
-assert.match(spec, /RTL/, "RTL guidance missing from specification");
-assert.match(spec, /primitives are opt-in|Do not bulk-replace legacy selectors/i, "rollout boundary must be documented");
-assert.match(html, /href="\\/imperial-design-tokens\\.css"/, "semantic tokens must be loaded by the application shell");
-assert.match(html, /href="\\/imperial-ui-primitives\\.css"/, "component primitives must be loaded by the application shell");
-console.log("Imperial Novel design-system contract passed: six complete themes, semantic roles, component primitives, 44px targets, focus, reduced motion, forced colors, WCAG, RTL and runtime asset registration.");
+assert.ok(spec.includes("WCAG 2.2 AA"), "accessibility target missing from specification");
+assert.ok(spec.includes("RTL"), "RTL guidance missing from specification");
+assert.ok(spec.includes("primitives are opt-in") || spec.includes("Do not bulk-replace legacy selectors"), "rollout boundary must be documented");
+assert.ok(html.includes('href="/imperial-design-tokens.css"'), "semantic tokens must be loaded by the application shell");
+assert.ok(html.includes('href="/imperial-ui-primitives.css"'), "component primitives must be loaded by the application shell");
+console.log("Imperial Novel design-system contract passed: six complete themes, semantic roles, contrast, component primitives, 44px targets, focus, reduced motion, forced colors, WCAG, RTL and runtime asset registration.");
