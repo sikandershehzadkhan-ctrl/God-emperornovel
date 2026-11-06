@@ -178,3 +178,12 @@ assert.ok(authorHtml.includes('class="wrap"') && authorHtml.includes('id="create
 assert.ok(worker.includes('if(file==="author.html")text=text.replace("<body>",\'<body class="authorStudioPage">\')'), "Worker must mark the standalone Author Studio document for shared theme adoption");
 assert.ok(components.includes("html[data-theme] body.authorStudioPage .card") && components.includes("html[data-theme] body.authorStudioPage input"), "Standalone Author Studio cards and form controls must consume semantic theme roles");
 assert.ok(components.includes("html[data-theme] body.authorStudioPage button:focus-visible") && components.includes("body.authorStudioPage .grid{grid-template-columns:minmax(0,1fr)}"), "Standalone Author Studio must preserve visible focus and narrow-screen layout");
+
+for (const token of ['if(kind===\'leaderboard\')','if(kind===\'tier-list\')','if(kind===\'random\')','if(kind===\'vote\')','async function tickets()','async function requests()','async function omni()']) {
+ assert.ok(app.includes(token), "Expected existing reader utility route renderer: "+token);
+}
+assert.ok(app.includes('class="rankBadge"') && app.includes('class="tierPanel"') && app.includes('class="randomCard"'), "Ranking, tier and random discovery must retain their actual route components");
+assert.ok(app.includes('class="voteRow"') && app.includes('id="req"') && app.includes('id="omni"'), "Voting, request and OmniPortal controls must retain their actual route components");
+assert.ok(components.includes("html[data-theme] #app .rankBadge") && components.includes("html[data-theme] #app .tierPanel") && components.includes("html[data-theme] #app .randomCard"), "Ranking, tier and random discovery must consume semantic theme roles");
+assert.ok(components.includes("html[data-theme] #app .voteRow") && components.includes("html[data-theme] #app #req input") && components.includes("html[data-theme] #app #omni input"), "Voting, request and OmniPortal controls must consume semantic theme roles");
+assert.ok(components.includes("html[data-theme] #app .period:focus-visible") && components.includes("html[data-theme] #app .randomCard{grid-template-columns:minmax(0,1fr)}"), "Utility routes must retain keyboard focus and small-screen layouts");
