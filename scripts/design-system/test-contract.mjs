@@ -8,6 +8,7 @@ const html = fs.readFileSync("public/index.html", "utf8");
 const worker = fs.readFileSync("src/index.js", "utf8");
 const packageJson = JSON.parse(fs.readFileSync("package.json", "utf8"));
 const usage = fs.readFileSync("design-system/COMPONENT-USAGE-18.0.0.md", "utf8");
+const routeMap = fs.readFileSync("design-system/ROUTE-TEMPLATE-MIGRATION-MAP-18.0.0.md", "utf8");
 
 function readHex(block, token, theme) {
   const match = block.match(new RegExp(token + ":\\s*(#[0-9A-Fa-f]{6})"));
@@ -92,6 +93,7 @@ assert.match(tokens, /prefers-reduced-motion:reduce/, "token motion fallback is 
 assert.ok(spec.includes("WCAG 2.2 AA"), "accessibility target missing from specification");
 assert.ok(spec.includes("RTL"), "RTL guidance missing from specification");
 assert.ok(usage.includes("Dialog behavior must be implemented") && usage.includes("server must enforce"), "component usage guide must document behavior and security boundaries");
+assert.ok(routeMap.includes("33 explicit static route entries") && routeMap.includes("/read/:id/:chapter") && routeMap.includes("No route family is declared migrated"), "route migration map must inventory templates and preserve honest migration status");
 assert.ok(spec.includes("primitives are opt-in") || spec.includes("Do not bulk-replace legacy selectors"), "rollout boundary must be documented");
 assert.ok(html.includes('href="/imperial-design-tokens.css"'), "semantic tokens must be loaded by the application shell");
 assert.ok(html.includes('href="/imperial-ui-primitives.css"'), "component primitives must be loaded by the application shell");
