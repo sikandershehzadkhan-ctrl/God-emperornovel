@@ -169,6 +169,9 @@ assert.ok(releaseStylesheets[2].includes("inset-inline-end:-7%;top:50%;transform
 assert.ok(releaseStylesheets[2].includes("inset-inline-end:calc(clamp(250px,38vw,500px)*.43);top:50%"), "dark archive hero inner ornament must mirror with writing direction");
 assert.ok(releaseStylesheets[2].includes("width:210px;inset-inline-end:-95px;top:20%") && releaseStylesheets[2].includes("width:74px;inset-inline-end:36px;top:25%"), "dark archive hero mobile ornaments must preserve responsive logical anchoring");
 
+assert.ok(releaseStylesheets[0].includes(".chapterDrawer{position:fixed;z-index:40;inset-inline-end:0;inset-block:0;"), "reader chapter drawer must anchor to the logical end edge");
+assert.ok(releaseStylesheets[0].includes("border-inline-start:1px solid var(--line);box-shadow:0 12px 40px"), "reader chapter drawer divider must follow writing direction");
+
 assert.ok(releaseStylesheets[0].includes(".side a:hover,.side a.active{background:linear-gradient(90deg,rgba(117,48,255,.18),rgba(242,216,137,.05));color:#fff;border-inline-start:2px solid"), "active side navigation indicator must use a logical border");
 assert.ok(releaseStylesheets[0].includes(".menuDrawer{position:fixed;z-index:9999;inset-block:0;inset-inline-start:0;inset-inline-end:auto;"), "menu drawer must anchor to the logical start edge");
 assert.ok(releaseStylesheets[0].includes('[dir="rtl"] .menuDrawer{transform:translateX(105%)}[dir="rtl"] .menuDrawer.is-open{transform:translateX(0)}'), "RTL menu drawer must enter from the right and retain its open state");
