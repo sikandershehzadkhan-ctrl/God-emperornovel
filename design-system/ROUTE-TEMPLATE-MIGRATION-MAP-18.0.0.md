@@ -233,3 +233,12 @@ Required checks before marking this slice complete:
 **Important boundaries:** ticket displays remain the existing account ledger, not a payment gateway; OmniPortal remains rights-first and does not gain new connectors or import permissions from this visual work.
 
 **Still required:** six-theme screenshots; 360px/390px/tablet/desktop; RTL; no-data, API-error, signed-out and populated states; keyboard/screen-reader QA. This adoption covers existing route components, not a feature-completeness or security sign-off.
+
+
+## 20. Standalone legal and trust document adoption
+
+**Implemented in source:** Privacy, Terms of Service, and Rights & Copyright pages now use the shared semantic six-theme canvas, surface, text, border, action and focus roles. Existing legal notice panels and links receive matching theme treatment. Mobile reading spacing and reduced-motion behavior are included.
+
+**Behavior preserved:** legal copy, route mapping, publication-rights rules, privacy disclosures, terms, and reporting instructions are unchanged. This is a presentation migration, not legal review or a claim that the policies satisfy every jurisdiction.
+
+**Still required:** legal copy review for current operating practices and applicable jurisdictions; six-theme screenshots; RTL and mobile review; keyboard/screen-reader checks; and confirmation that each disclosure accurately matches production data handling.
