@@ -106,7 +106,22 @@ Each family must pass:
 
 - Shared token/primitive assets are registered for all Worker-served HTML templates.
 - The design-system contract and platform source tests pass in GitHub Actions.
-- The current global theme preference UI still supports Light/Dark; six complete semantic palettes exist, but global six-theme selection is not yet implemented.
-- The reader has an independent six-theme preference and legacy theme styling; unification has not been performed.
-- Existing templates remain primarily on legacy classes. No route family is declared migrated by this inventory.
-- No production deployment or visual screenshot sign-off is claimed.
+- The shared public shell now renders a native six-theme selector (Light, Dark, Midnight, Sepia, Imperial and Cosmic). The selected theme is allowlisted, persisted as `imperial_theme`, and restored by the Worker bootstrap before frontend hydration.
+- The six-theme selector is shared across routes that use the public `shell()` renderer. Dedicated HTML templates that do not invoke this shell still need independent appearance controls or a deliberate decision to inherit the root preference.
+- The reader still has independent theme controls/preferences and legacy reader styling; global/reader preference unification has not been performed.
+- The shared header, drawer, mobile navigation and homepage still primarily use legacy component classes. Design tokens and primitives are available, but the shell and homepage have **not** passed the page-family migration gate.
+- No route family is declared fully migrated by this inventory. No production deployment or visual screenshot sign-off is claimed.
+
+
+## 7. Immediate next implementation slice: shared shell and homepage
+
+The six-theme selector is implemented in the public shell, but it is not a complete shell migration. The next slice must adapt the header, drawer, mobile navigation and homepage to semantic tokens without replacing route logic or changing authorization.
+
+Required checks before marking this slice complete:
+- Root theme changes update header, drawer, mobile navigation, footer and homepage surfaces without hard-coded light-only text/background colors.
+- Theme selection survives refresh and does not get reset by the Worker bootstrap.
+- Language selection remains independent; Urdu, Arabic and Persian retain RTL behavior.
+- Drawer open/close, Escape handling, active route, account/admin links and mobile navigation behavior remain unchanged.
+- Search and all navigation links retain their exact destinations.
+- No new fabricated catalog data or feature claims are introduced.
+- CI and responsive visual review pass at desktop, tablet, 390px and 360px widths.
