@@ -40,7 +40,8 @@
     "scripts/test-scheduled-publication-atomicity.mjs",
     "scripts/test-creator-publishing-domain-boundaries.mjs",
     "src/features/creator-studio/index.mjs",
-    "src/features/publishing-studio/index.mjs"
+    "src/features/publishing-studio/index.mjs",
+    "docs/architecture/decisions/ADR-0040-english-notification-empty-state-localization.md"
   ],
   "dependencies": [
     "identity-security",
