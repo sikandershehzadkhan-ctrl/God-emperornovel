@@ -127,3 +127,8 @@ assert.ok(components.includes("html[data-theme] .page .grid > .card") && compone
 assert.ok(components.includes("html[data-theme] .accountGrid a:focus-visible") && components.includes("html[data-theme] .accountGrid button:focus-visible"), "account and library actions must preserve visible keyboard focus");
 assert.ok(components.includes("html[data-theme] .accountGrid .accountMenu a{") && components.includes("min-height:var(--in-touch-target)"), "account navigation targets must meet the 44px touch target");
 assert.ok(components.includes("@media(max-width:760px)") && components.includes("html[data-theme] .accountGrid .metricGrid"), "account navigation and profile metrics must adapt to mobile widths");
+
+assert.ok(components.includes("html[data-theme] .settingsGridPro .settingsPanel") && components.includes("html[data-theme] .settingsGridPro .settingRow"), "settings panels and preference rows must consume semantic theme roles");
+assert.ok(components.includes("html[data-theme] .settingsGridPro select:focus-visible") || components.includes("html[data-theme] .settingsGridPro input:focus-visible"), "settings controls must preserve visible keyboard focus");
+assert.ok(components.includes("html[data-theme] .page .chapterList .chapter.unreadNotice"), "unread notification rows must use semantic theme roles");
+assert.ok(components.includes("html[data-theme] .page #markRead") && components.includes("min-height:var(--in-touch-target)"), "notification actions must preserve touch targets");
