@@ -1,9 +1,9 @@
 {
   "schemaVersion": 1,
   "name": "Imperial Novel route registry",
-  "sourceBranch": "integration/homepage-ssr-design-on-security-stack-17-65",
-  "sourceCommit": "61a40d9cd4d4bf52b5db2780b983441670d933f8",
-  "auditDate": "2026-11-04",
+  "sourceBranch": "security/omni-bounded-json-response-17-79",
+  "sourceCommit": "c9710a8c4dbf7a9bbca4ac1c448b7800f7d68947",
+  "auditDate": "2026-11-05",
   "scope": "Current-main static route reconciliation. Does not prove deployed behavior, runtime routing, or authorization correctness.",
   "routes": [
     {
@@ -358,5 +358,5 @@
     "HTTP method and object-level permissions are not certified by this UI route manifest.",
     "Production status, active assets, cache behavior and browser navigation remain unverified."
   ],
-  "sourceBlob": "a741914a81c7fb08f79ea16deb92376b220cfaa4"
+  "sourceBlob": "09d967a1204849653731a1b5a4dd98bba69d06fb"
 }
