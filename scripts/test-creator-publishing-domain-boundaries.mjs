@@ -59,4 +59,5 @@ assert.ok(publishing.includes("WHERE id=? AND changes()=1"),"chapter publication
 assert.ok(publishing.includes("c.id=scheduled_chapter_publications.chapter_id AND n.owner_user_id=?"),"schedule cancellation must recheck current chapter ownership in the DELETE predicate");
 assert.ok(publishing.includes("removed.meta?.changes||removed.changes||0"),"schedule cancellation must distinguish a successful delete from a stale or missing schedule");
 
+assert.ok(creator.includes("LEFT JOIN chapters c ON c.id=pn.chapter_id AND c.novel_id=pn.novel_id"),"private note reads must not project a chapter outside the note's parent novel");
 console.log("Creator/Publishing domain boundary and scheduler source checks passed.");
