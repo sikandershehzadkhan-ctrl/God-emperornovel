@@ -11,15 +11,17 @@
     "scripts/test-route-registry.mjs"
   ],
   "sharedSurfaces": [
-    "src/index.js",
-    "src/seo.mjs",
-    "public/app.js",
-    "public/app-17.23.0.js",
-    "package.json",
-    "docs/architecture/IMPERIAL-ROUTE-REGISTRY-01N.json",
     "docs/architecture/IMPERIAL-API-ROUTE-METHOD-MATRIX-01N-37.json",
     "docs/architecture/IMPERIAL-AUTHORIZATION-OWNERSHIP-MATRIX-01N-38.json",
-    "docs/architecture/feature-contracts/platform-integration-governance.json"
+    "docs/architecture/IMPERIAL-ROUTE-REGISTRY-01N.json",
+    "docs/architecture/feature-contracts/platform-integration-governance.json",
+    "package.json",
+    "public/app-17.23.0.js",
+    "public/app.js",
+    "public/sitemap.xml",
+    "src/index.js",
+    "src/seo.mjs",
+    "src/sitemap.mjs"
   ],
   "dependencies": [
     "catalog",
