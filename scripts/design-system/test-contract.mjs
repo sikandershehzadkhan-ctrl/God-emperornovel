@@ -12,7 +12,7 @@ const themeRoles = [
   "--in-text-primary", "--in-text-secondary", "--in-text-muted", "--in-text-inverse",
   "--in-border-default", "--in-border-strong",
   "--in-action-primary", "--in-action-primary-hover", "--in-action-primary-active", "--in-action-primary-text",
-  "--in-action-secondary", "--in-action-secondary-hover", "--in-focus-ring", "--in-link",
+  "--in-action-secondary", "--in-action-secondary-hover", "--in-action-secondary-text", "--in-focus-ring", "--in-link",
   "--in-status-success", "--in-status-success-bg", "--in-status-warning", "--in-status-warning-bg",
   "--in-status-danger", "--in-status-danger-bg", "--in-status-info", "--in-status-info-bg",
   "--in-reader-paper", "--in-reader-ink"
@@ -24,6 +24,38 @@ for (const theme of themes) {
   for (const role of themeRoles) {
     assert.ok(match[1].includes(role + ":"), theme + " theme is missing semantic role: " + role);
   }
+  const canvas = readHex(match[1], "--in-bg-canvas", theme);
+  const primaryText = readHex(match[1], "--in-text-primary", theme);
+  const primary = readHex(match[1], "--in-action-primary", theme);
+  const primaryActionText = readHex(match[1], "--in-action-primary-text", theme);
+  const secondary = readHex(match[1], "--in-action-secondary", theme);
+  const secondaryActionText = readHex(match[1], "--in-action-secondary-text", theme);
+  const link = readHex(match[1], "--in-link", theme);
+  const focus = readHex(match[1], "--in-focus-ring", theme);
+  assert.ok(contrastRatio(primaryText, canvas) >= 4.5, theme + " body text fails WCAG AA contrast");
+  assert.ok(contrastRatio(primaryActionText, primary) >= 4.5, theme + " primary action text fails WCAG AA contrast");
+  assert.ok(contrastRatio(secondaryActionText, secondary) >= 4.5, theme + " secondary action text fails WCAG AA contrast");
+  assert.ok(contrastRatio(link, canvas) >= 4.5, theme + " link color fails WCAG AA contrast");
+  assert.ok(contrastRatio(focus, canvas) >= 3, theme + " focus indicator fails non-text contrast");
+  for (const status of ["success", "warning", "danger", "info"]) {
+    const foreground = readHex(match[1], "--in-status-" + status, theme);
+    const background = readHex(match[1], "--in-status-" + status + "-bg", theme);
+    assert.ok(contrastRatio(foreground, background) >= 4.5, theme + " " + status + " status fails WCAG AA contrast");
+  }
+}
+function readHex(block, token, theme) {
+  const match = block.match(new RegExp(token + ":\\s*(#[0-9A-Fa-f]{6})"));
+  assert.ok(match, theme + " is missing a valid hex value for " + token);
+  return match[1];
+}
+function luminance(hex) {
+  const channels = [1, 3, 5].map(index => parseInt(hex.slice(index, index + 2), 16) / 255);
+  const linear = channels.map(value => value <= 0.04045 ? value / 12.92 : ((value + 0.055) / 1.055) ** 2.4);
+  return 0.2126 * linear[0] + 0.7152 * linear[1] + 0.0722 * linear[2];
+}
+function contrastRatio(first, second) {
+  const values = [luminance(first), luminance(second)].sort((a, b) => b - a);
+  return (values[0] + 0.05) / (values[1] + 0.05);
 }
 const requiredFoundationTokens = [
   "--in-brand-white", "--in-brand-obsidian", "--in-brand-purple", "--in-brand-sapphire",
