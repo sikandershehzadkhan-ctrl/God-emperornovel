@@ -9,6 +9,9 @@ const app = fs.readFileSync("public/app.js", "utf8");
 const versionedApp = fs.readFileSync("public/app-17.23.0.js", "utf8");
 const adminHtml = fs.readFileSync("public/admin.html", "utf8");
 const authorHtml = fs.readFileSync("public/author.html", "utf8");
+const privacyHtml = fs.readFileSync("public/privacy.html", "utf8");
+const termsHtml = fs.readFileSync("public/terms.html", "utf8");
+const copyrightHtml = fs.readFileSync("public/copyright.html", "utf8");
 const taxonomyHtml = fs.readFileSync("public/community-taxonomy.html", "utf8");
 const worker = fs.readFileSync("src/index.js", "utf8");
 const packageJson = JSON.parse(fs.readFileSync("package.json", "utf8"));
@@ -187,3 +190,10 @@ assert.ok(app.includes("voteRow") && app.includes('id="req"') && app.includes('i
 assert.ok(components.includes("html[data-theme] #app .rankBadge") && components.includes("html[data-theme] #app .tierPanel") && components.includes("html[data-theme] #app .randomCard"), "Ranking, tier and random discovery must consume semantic theme roles");
 assert.ok(components.includes("html[data-theme] #app .voteRow") && components.includes("html[data-theme] #app #req input") && components.includes("html[data-theme] #app #omni input"), "Voting, request and OmniPortal controls must consume semantic theme roles");
 assert.ok(components.includes("html[data-theme] #app .period:focus-visible") && components.includes("html[data-theme] #app .randomCard{grid-template-columns:minmax(0,1fr)}"), "Utility routes must retain keyboard focus and small-screen layouts");
+
+for (const [name, page] of [["privacy", privacyHtml], ["terms", termsHtml], ["copyright", copyrightHtml]]) {
+ assert.ok(page.includes('class="legalPage"') && page.includes('class="legalHero"') && page.includes('class="legalContent"'), name+" must retain its standalone legal document structure");
+}
+assert.ok(components.includes("html[data-theme] body.legalPage .legalHero") && components.includes("html[data-theme] body.legalPage .legalSection"), "Standalone legal documents must consume semantic theme surfaces");
+assert.ok(components.includes("html[data-theme] body.legalPage a:focus-visible") && components.includes("body.legalPage .legalSection{padding:16px}"), "Legal documents must preserve visible keyboard focus and mobile reading layout");
+assert.ok(worker.includes('"\/privacy":"privacy.html"') && worker.includes('"\/terms":"terms.html"') && worker.includes('"\/copyright":"copyright.html"'), "Worker must continue routing the three legal documents");
