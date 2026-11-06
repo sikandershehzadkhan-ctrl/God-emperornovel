@@ -53,7 +53,16 @@ if(/^\/api\/author\/chapters\/\d+\/publish$/.test(p)&&m==="POST"){
  
 if(/^\/api\/author\/chapters\/\d+\/schedule$/.test(p)&&m==="POST"){
   const e=author(u);if(e)return e;const id=Number(p.split('/')[4]),b=await body(req);const c=await env.DB.prepare(`SELECT c.id,c.publication_status,n.id novel_id,n.owner_user_id,n.publication_status novel_status,n.rights_status,n.rights_evidence FROM chapters c JOIN novels n ON n.id=c.novel_id WHERE c.id=?`).bind(id).first();if(!c)return json({error:'Chapter not found'},404);if(Number(c.owner_user_id)!==Number(u.id))return json({error:'You do not own this chapter'},403);
-  if(b.cancel===true){await env.DB.prepare('DELETE FROM scheduled_chapter_publications WHERE chapter_id=?').bind(id).run();await audit(env,u,'author_chapter_schedule_cancelled',`chapter=${id}`);return json({ok:true,message:'Scheduled publication cancelled.'})}
+  if(b.cancel===true){
+   const removed=await env.DB.prepare(`DELETE FROM scheduled_chapter_publications
+    WHERE chapter_id=? AND EXISTS(
+     SELECT 1 FROM chapters c JOIN novels n ON n.id=c.novel_id
+     WHERE c.id=scheduled_chapter_publications.chapter_id AND n.owner_user_id=?
+    )`).bind(id,u.id).run();
+   if(Number(removed.meta?.changes||removed.changes||0)!==1)return json({ok:true,cancelled:false,message:'No active schedule was found for this chapter.'});
+   await audit(env,u,'author_chapter_schedule_cancelled',`chapter=${id}`);
+   return json({ok:true,cancelled:true,message:'Scheduled publication cancelled.'})
+  }
   if(c.publication_status==='published')return json({error:'Move the chapter to draft before scheduling it again.'},409);if(c.novel_status!=='published')return json({error:'The novel must be approved and published before a chapter can be scheduled.'},409);if(!canPublishChapter({novelPublicationStatus:c.novel_status,rightsStatus:c.rights_status,rightsEvidence:c.rights_evidence}))return json({error:'Novel must be published and rights evidence must be eligible before scheduling a chapter.'},403);
   const timestamp=Date.parse(String(b.publish_at||''));const now=Date.now();if(!Number.isFinite(timestamp)||timestamp<now+5*60*1000||timestamp>now+365*24*60*60*1000)return json({error:'Choose a publication time at least 5 minutes from now and within the next 365 days.'},400);const publishAt=new Date(timestamp).toISOString();const saved=await env.DB.prepare(`INSERT INTO scheduled_chapter_publications(chapter_id,publish_at,created_by,updated_at) SELECT ?,?,?,CURRENT_TIMESTAMP WHERE EXISTS(SELECT 1 FROM chapters c JOIN novels n ON n.id=c.novel_id WHERE c.id=? AND c.publication_status='draft' AND n.owner_user_id=? AND n.publication_status='published' AND n.rights_status IN ('original','public_domain','licensed','authorized') AND (n.rights_status='original' OR TRIM(COALESCE(n.rights_evidence,''))<>'')) ON CONFLICT(chapter_id) DO UPDATE SET publish_at=excluded.publish_at,created_by=excluded.created_by,updated_at=CURRENT_TIMESTAMP`).bind(id,publishAt,u.id,id,u.id).run();if(!Number(saved.meta?.changes||0))return json({error:'Chapter or publication eligibility changed. Refresh and try again.'},409);await audit(env,u,'author_chapter_scheduled',`chapter=${id};publish_at=${publishAt}`);return json({ok:true,message:'Chapter publication scheduled.',publish_at:publishAt})
  }
