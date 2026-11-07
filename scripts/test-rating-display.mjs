@@ -23,7 +23,7 @@ for (const [value, expected] of cases) assert.equal(ratingText(value), expected,
 assert.equal((source.match(/ratingText\(n\.rating\)/g) || []).length, 6, 'All six public rating surfaces must use the shared formatter');
 assert.ok(!source.includes('Number(n.rating||0).toFixed(1)'), 'Missing ratings must never be rendered as fabricated 0.0 values');
 assert.match(worker, /CHECK\(rating BETWEEN 1 AND 10\)/, 'New ratings must be constrained to integers 1–10');
-assert.match(worker, /rating>10\)return json\(\{error:"Rating must be 1-10"\},400\)/, 'Rating API must reject values outside 1–10');
+assert.match(worker, /rating<1\|\|rating>10\)return json\(\{error:"Novel id and whole-number rating from 1-10 are required"/, 'Rating API must reject values outside 1–10 and require whole-number input');
 assert.ok(!worker.includes('Rating must be 1-5') && !worker.includes('rating>5'), 'No legacy 1–5 rating API guard may remain');
 assert.equal((worker.match(/if\(p==="\/api\/rating"&&m==="POST"\)/g) || []).length, 1, 'Exactly one canonical rating POST handler must exist');
 assert.match(worker, /typeof rating!=="number"\|\|!Number\.isSafeInteger\(rating\)/, 'Rating API must reject strings and fractional values rather than silently rounding');
