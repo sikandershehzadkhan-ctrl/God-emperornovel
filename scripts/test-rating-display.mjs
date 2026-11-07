@@ -24,6 +24,7 @@ assert.equal((source.match(/ratingText\(n\.rating\)/g) || []).length, 6, 'All si
 assert.ok(!source.includes('Number(n.rating||0).toFixed(1)'), 'Missing ratings must never be rendered as fabricated 0.0 values');
 assert.match(worker, /CHECK\(rating BETWEEN 1 AND 10\)/, 'New ratings must be constrained to integers 1–10');
 assert.match(worker, /rating>10\)return json\(\{error:"Rating must be 1-10"\},400\)/, 'Rating API must reject values outside 1–10');
+assert.ok(!worker.includes('Rating must be 1-5') && !worker.includes('rating>5'), 'No legacy 1–5 rating API guard may remain');
 assert.match(worker, /Math\.min\(10,minRating\)/, 'Catalog minimum-rating filter must support the 10-point scale');
 assert.match(ratingComponent, /\[1, 2, 3, 4, 5, 6, 7, 8, 9, 10\]/, 'Rating control must expose ten choices');
 assert.ok(ratingComponent.includes('Math.round(average)} / 10'), 'Rating average must display as a whole number out of 10');
