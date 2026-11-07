@@ -295,9 +295,15 @@ jobs:
           printf '%s' "$author" | grep -F "Author Studio" >/dev/null
           admin="$(curl --fail --silent --show-error --max-time 20 "$base/admin?verify=$stamp")"
           printf '%s' "$admin" | grep -F "Author Applications" >/dev/null
-          auth_status="$(curl --silent --show-error --max-time 20 -o /dev/null -w '%{http_code}' "$base/api/author/applications/me")"
+          auth_status=""
+          for attempt in 1 2 3 4 5; do
+            auth_status="$(curl --silent --show-error --connect-timeout 5 --max-time 20 -o /dev/null -w '%{http_code}' "$base/api/author/applications/me?verify=$stamp-$attempt" || true)"
+            echo "Unauthenticated author-application guard check: HTTP $auth_status (attempt $attempt/5)."
+            [ "$auth_status" = "401" ] && break
+            [ "$attempt" -eq 5 ] || sleep 2
+          done
           if [ "$auth_status" != "401" ]; then
-            echo "::error::Unauthenticated author application endpoint returned HTTP $auth_status, expected 401."
+            echo "::error::Unauthenticated author application endpoint returned HTTP $auth_status after 5 attempts; expected 401."
             exit 1
           fi
           echo "Verified direct /discover, /author and /admin shells plus the protected author application API route."
