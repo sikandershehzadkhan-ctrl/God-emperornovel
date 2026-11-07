@@ -20,7 +20,9 @@ const cases = [
 ];
 for (const [value, expected] of cases) assert.equal(ratingText(value), expected, 'Unexpected display for ' + String(value));
 
-assert.equal((source.match(/ratingText\(n\.rating\)/g) || []).length, 6, 'All six public rating surfaces must use the shared formatter');
+assert.equal((source.match(/ratingText\(n\.rating\)/g) || []).length, 6, 'All six novel rating surfaces must use the shared formatter');
+assert.ok(source.includes('★ ${ratingText(x.rating)}'), 'Author leaderboard ratings must use the shared whole-number formatter');
+assert.ok(!source.includes('Number(x.rating||0).toFixed(1)'), 'Author leaderboards must not fabricate 0.0 or fractional rating labels');
 assert.ok(!source.includes('Number(n.rating||0).toFixed(1)'), 'Missing ratings must never be rendered as fabricated 0.0 values');
 assert.match(worker, /CHECK\(rating BETWEEN 1 AND 10\)/, 'New ratings must be constrained to integers 1–10');
 assert.match(worker, /rating<1\|\|rating>10\)return json\(\{error:"Novel id and whole-number rating from 1-10 are required"/, 'Rating API must reject values outside 1–10 and require whole-number input');
