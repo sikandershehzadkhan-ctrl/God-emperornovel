@@ -81,6 +81,7 @@
 .in-card--interactive:focus-within{outline:3px solid var(--in-focus-ring);outline-offset:2px}
 .in-card[aria-selected="true"]{border-color:var(--in-action-primary);box-shadow:0 0 0 1px var(--in-action-primary)}
 .in-tabs [role="tab"]:disabled,.in-tabs [role="tab"][aria-disabled="true"]{opacity:.55;cursor:not-allowed}
+.in-tabs [role="tab"]:focus-visible{outline:3px solid var(--in-focus-ring);outline-offset:3px;border-radius:var(--in-radius-sm)}
 .in-avatar--fallback{font-family:var(--in-font-sans);font-size:var(--in-text-sm);font-weight:var(--in-weight-bold)}
 .in-dialog::backdrop{background:rgb(11 18 21 / .58)}
 @media(prefers-reduced-motion:reduce){.in-button[aria-busy="true"]::after{animation:none;border-inline-end-color:currentColor}}

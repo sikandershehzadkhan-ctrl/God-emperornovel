@@ -303,3 +303,8 @@ Required checks before marking this family complete:
 The design-system build contract now checks every theme's primary, secondary and muted text against all four standard content surfaces: canvas, subtle, surface and elevated. It also verifies inverse text/background pairs and the text contrast of primary-action hover/active and secondary-action hover states. These checks supplement the existing WCAG AA checks for reader ink/paper, links, action defaults, status foreground/background pairs, focus indicators and strong control boundaries.
 
 The matrix is source-derived and runs as part of the standard build. It does not replace rendered contrast inspection where translucency, imagery, gradients, overlays or user-generated content alter the effective background.
+
+
+## 24. Tab keyboard-focus visibility correction (2026-11-07)
+
+A component-level review found that `.in-tabs [role="tab"]` had selected and disabled styling but no dedicated `:focus-visible` rule. The shared focus selector covered buttons and links but did not include tab-role buttons. Added an explicit theme-token focus outline for tabs and a build-contract assertion so future edits cannot remove it silently. This is a visual keyboard-focus correction only; arrow-key navigation, focus management and selected-panel behavior remain owned by the consuming feature and still require interaction QA.

@@ -88,7 +88,7 @@ If a card is interactive, use one clear anchor or button as its action. Do not n
 <section role="tabpanel" id="panel-details" aria-labelledby="tab-details">...</section>
 ```
 
-CSS supplies appearance only. The owning feature must implement the WAI-ARIA tabs keyboard pattern: Left/Right Arrow (or Up/Down for vertical tabs), Home/End, focus management, and correct selected-panel visibility. Do not claim tabs are keyboard-complete by adding roles alone.
+CSS supplies appearance only, including a visible focus ring for keyboard-focused tabs. The owning feature must implement the WAI-ARIA tabs keyboard pattern: Left/Right Arrow (or Up/Down for vertical tabs), Home/End, focus management, and correct selected-panel visibility. Do not claim tabs are keyboard-complete by adding roles alone.
 
 ## Alerts, progress and feedback
 
