@@ -211,6 +211,10 @@ for (const [templateName, templateSource] of standaloneDirectionTemplates) {
   assert.ok(!physicalDirectionDeclaration.test(templateSource), templateName + " must use direction-aware logical CSS in standalone template styles");
 }
 
+for (const [stylesheetIndex, stylesheetSource] of [...releaseStylesheets, tokens, components].entries()) {
+  assert.ok(!physicalDirectionDeclaration.test(stylesheetSource), "registered stylesheet " + stylesheetIndex + " must not reintroduce physical direction declarations");
+}
+
 assert.ok(releaseStylesheets[0].includes(".randomCard{display:grid;grid-template-columns:180px 1fr;gap:24px;text-align:start;"), "random discovery card copy must follow writing direction");
 assert.ok(releaseStylesheets[0].includes(".settingRow output{min-width:48px;text-align:end;"), "settings value output must align to logical end");
 assert.ok(releaseStylesheets[0].includes(".readerBook{text-align:start}"), "mobile reader title alignment must follow writing direction");

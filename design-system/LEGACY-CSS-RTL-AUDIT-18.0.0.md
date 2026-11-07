@@ -1,6 +1,6 @@
 # Legacy CSS Directionality Audit 18.0.0
 
-**Audit target:** PR #295 candidate commit `739ca677a8fdeead08d4ea8119a2667fb826c8ee`  
+**Audit target:** PR #295 candidate commit `143b848a8f63c3a66fd09cc7ac6f37eb2487ba68`  
 **Runtime asset version observed:** `17.23.0` in `package.json` and `wrangler.toml`  
 **Scope:** source-level scan of Worker-served stylesheets registered by `src/index.js`. This is not browser visual QA.
 
@@ -62,3 +62,10 @@ The standalone `author.html` file is not the template selected by the `/author` 
 - 320px and multilingual browser visual QA remain outstanding.
 - Source scan also found no `text-align:left/right`, `float:left/right`, or `clear:left/right` declarations in the eight registered stylesheets.
 - No merge, production deployment, or runtime behavior change is claimed.
+
+
+## 8. Cross-stylesheet directionality regression guard (2026-11-07)
+
+The build contract now applies the same physical-direction declaration expression to all six registered runtime stylesheets plus the semantic token and component primitive stylesheets. This complements the existing standalone-template guard. It rejects physical left/right positioning, margin, padding, inset and border declarations, float/clear left/right, and text-align left/right. Direction-neutral values such as centered text and intentional icon glyphs remain allowed.
+
+This makes the zero-declaration source inventory a continuously enforced contract rather than a one-time manual scan. It still cannot prove computed layout, SVG artwork orientation, browser bidi behavior or interactive visual correctness; those remain browser QA gates.
