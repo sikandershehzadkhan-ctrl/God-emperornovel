@@ -47,11 +47,18 @@ The PR is titled for design system v18.0.0, while the inspected candidate's `pac
 
 For each slice: make only component-scoped logical-property changes; add a source regression check for the migrated selectors; preserve route/API/authorization behavior; then capture desktop, tablet, 390px, 360px and 320px screenshots in English and RTL locales.
 
-## 6. Current status
+## 6. Standalone Admin template follow-up
+
+The Worker serves `/admin` through `admin.html` and injects the saved root `lang` and `dir` before first paint. The standalone Admin template had two remaining physical-direction rules outside the eight registered shared stylesheets: its table cells used `text-align:left`, and its mobile action used `right:10px`. Both are now logical (`text-align:start` and `inset-inline-end:10px`) and guarded by the design-system contract test. This is a targeted source correction, not browser visual certification.
+
+The standalone `author.html` file is not the template selected by the `/author` route in the Worker route map, which currently resolves `/author` to `index.html`. Its `authorStudioPage` body marker in the shared HTML helper is therefore not reached by that route. Treat the standalone file as a separate legacy/static artifact until route ownership is intentionally reconciled; do not claim its dedicated page styling is active on `/author`.
+
+## 7. Current status
 
 - Source inventory completed for the eight registered stylesheets listed above.
 - New token and primitive stylesheets contain no physical left/right declarations in the scan.
 - The current scan finds zero physical-direction declarations across the eight registered stylesheets; no global rewrite was applied.
+- Standalone Admin table alignment and mobile action anchoring now use logical direction-aware properties with regression assertions.
 - 320px and multilingual browser visual QA remain outstanding.
 - Source scan also found no `text-align:left/right`, `float:left/right`, or `clear:left/right` declarations in the eight registered stylesheets.
 - No merge, production deployment, or runtime behavior change is claimed.
