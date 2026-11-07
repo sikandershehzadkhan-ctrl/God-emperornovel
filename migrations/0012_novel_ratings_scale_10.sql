@@ -1,8 +1,6 @@
 -- Imperial Novel: migrate individual novel ratings from 1–5 to 1–10.
 -- Existing votes map to even scores (1→2, 2→4, 3→6, 4→8, 5→10).
 -- Create the legacy shape only when absent so clean D1 installs can run this migration too.
-BEGIN TRANSACTION;
-
 CREATE TABLE IF NOT EXISTS ratings (
   user_id INTEGER NOT NULL,
   novel_id INTEGER NOT NULL,
@@ -30,5 +28,3 @@ ALTER TABLE ratings_1_to_10 RENAME TO ratings;
 
 UPDATE novels
 SET rating = COALESCE((SELECT AVG(r.rating) FROM ratings r WHERE r.novel_id=novels.id),0);
-
-COMMIT;
