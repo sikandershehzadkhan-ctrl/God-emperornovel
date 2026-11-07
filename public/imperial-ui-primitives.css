@@ -19,6 +19,7 @@
 .in-field-label{display:block;margin-block-end:var(--in-space-2);color:var(--in-text-primary);font-size:var(--in-text-sm);font-weight:var(--in-weight-semibold)}
 .in-field-help{display:block;margin-block-start:var(--in-space-1);color:var(--in-text-muted);font-size:var(--in-text-xs)}
 .in-checkbox{width:1.125rem;height:1.125rem;accent-color:var(--in-action-primary)}
+.in-checkbox:focus-visible{outline:3px solid var(--in-focus-ring);outline-offset:3px}
 .in-card{min-width:0;border:1px solid var(--in-border-default);border-radius:var(--in-radius-lg);background:var(--in-bg-surface);color:var(--in-text-primary)}
 .in-card__body{padding:var(--in-space-4)}
 .in-card__title{margin:0;color:var(--in-text-primary);font-size:var(--in-text-lg);font-weight:var(--in-weight-semibold);line-height:var(--in-leading-tight)}

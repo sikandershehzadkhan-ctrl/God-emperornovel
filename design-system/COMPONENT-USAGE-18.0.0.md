@@ -60,7 +60,7 @@ On error, set `aria-invalid="true"` and connect the error message using `aria-de
 </label>
 ```
 
-The row supplies the effective 44px target. Keep the visible label adjacent to the control. A switch is for an immediate binary preference, not for a form choice that needs a separate Save action. The switch's checked state must be saved and announced by application logic. Its checked thumb mirrors toward inline-end under `[dir="rtl"]`; keep the document direction attribute authoritative rather than hard-coding a language-specific transform.
+The row supplies the effective 44px target. A checkbox used outside a row still receives its own visible focus outline. Keep the visible label adjacent to the control. A switch is for an immediate binary preference, not for a form choice that needs a separate Save action. The switch's checked state must be saved and announced by application logic. Its checked thumb mirrors toward inline-end under `[dir="rtl"]`; keep the document direction attribute authoritative rather than hard-coding a language-specific transform.
 
 ## Cards, badges and avatars
 

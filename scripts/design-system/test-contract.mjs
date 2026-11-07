@@ -163,6 +163,7 @@ assert.match(components, /:focus-visible/, "visible keyboard focus is required")
 assert.ok(components.includes('.in-tabs [role="tab"]:focus-visible{outline:3px solid var(--in-focus-ring)'), "tab controls must expose a visible keyboard focus indicator");
 assert.match(components, /\.in-textarea:focus-visible/, "textarea keyboard focus must be visible");
 assert.match(components, /\.in-radio:focus-visible/, "radio keyboard focus must be visible");
+assert.match(components, /\.in-checkbox:focus-visible/, "standalone checkbox keyboard focus must be visible");
 assert.match(components, /\.in-button--danger\{background:var\(--in-status-danger-bg\);color:var\(--in-status-danger\)/, "danger button text must use the theme-verified status contrast pair");
 assert.match(components, /in-nav-link:focus-visible/, "navigation focus must be visible");
 assert.match(components, /aria-busy="true"/, "button loading state must be styled");
