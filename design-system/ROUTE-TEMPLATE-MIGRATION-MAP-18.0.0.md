@@ -265,3 +265,12 @@ Required checks before marking this slice complete:
 - `/novel/:id` and `/read/:id/:chapter` resolve to shell templates that load the versioned public app bundle. The bundle remains responsible for route content and reader behavior.
 - `/author` currently resolves to `index.html`, not `author.html`. The `authorStudioPage` body-marker branch in the Worker helper is not reached through `/author`; the standalone `author.html` artifact must not be treated as the active Author Studio route until routing is deliberately reconciled.
 - Browser verification of the actual rendered routes, including 320px reflow, RTL navigation order, forms, tables, dialogs and reader controls, remains outstanding.
+
+
+## Standalone-template directionality regression guard (2026-11-07)
+
+- Audited all 25 HTML templates represented by the Worker route map, including the dedicated Admin, Author Studio artifact, legal, taxonomy, reader, novel and not-found templates.
+- The source scan found no physical left/right positioning, spacing, border, float/clear or text alignment declarations in these templates at the audited revision.
+- Added a build-contract guard over the complete template set so future standalone-page CSS cannot quietly reintroduce physical direction assumptions.
+- This is a source-level regression check only. It does not prove that rendered route content, third-party assets, SVG artwork or interactive states are visually correct in Urdu, Arabic or Persian.
+- Browser screenshot and interaction QA remains a separate release gate.
