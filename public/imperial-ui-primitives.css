@@ -1106,3 +1106,10 @@ html[data-theme] #app .form.panel>p a{color:var(--in-link)!important;text-underl
  html[data-theme] #app .form.panel *,html[data-theme] #app .form.panel *::before,
  html[data-theme] #app .form.panel *::after{scroll-behavior:auto!important;transition:none!important;animation:none!important}
 }
+
+
+/* Shared primitives: reduced-motion users should not receive decorative control motion. */
+@media(prefers-reduced-motion:reduce){
+ .in-button,.in-switch,.in-switch::after,.in-card--interactive{transition:none!important}
+ .in-button[aria-busy="true"]::after{animation:none!important}
+}
