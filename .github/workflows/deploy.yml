@@ -213,6 +213,13 @@ jobs:
             echo "::error::Required catalog indexes or author application schema are missing after deployment."
             exit 1
           fi
+          rating_output="$(npx --yes wrangler@4 d1 execute god-emperornovel-db --remote --command "SELECT CASE WHEN EXISTS(SELECT 1 FROM sqlite_master WHERE type='table' AND name='ratings' AND sql LIKE '%BETWEEN 1 AND 10%') AND NOT EXISTS(SELECT 1 FROM ratings WHERE rating<1 OR rating>10) THEN 'ready' ELSE 'missing' END AS status;")"
+          printf '%s\n' "$rating_output"
+          rating_status="$(printf '%s' "$rating_output" | node -e 'let s="";process.stdin.on("data",d=>s+=d).on("end",()=>{const m=s.match(/"status"\s*:\s*"([^"]+)"/);console.log(m?m[1]:"unknown")})')"
+          if [ "$rating_status" != "ready" ]; then
+            echo "::error::The production ten-point rating constraint did not survive Worker deployment."
+            exit 1
+          fi
           echo "Verified catalog filter/sort indexes and author application schema in production D1."
 
       - name: Verify live Worker health after deployment
