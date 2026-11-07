@@ -1,0 +1,6 @@
+{
+  "version": 1,
+  "number": 12,
+  "migration": "migrations/0012_rating_scale_10.sql",
+  "pullRequest": 297
+}
