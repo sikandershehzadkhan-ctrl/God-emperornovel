@@ -17,3 +17,12 @@
 .comicReader.is-single .comicPage figcaption{text-align:center}
 @media(max-width:640px){.comicReaderControls{top:56px;padding:8px;border-radius:10px}.comicReaderControls>.secondary{font-size:12px;min-height:38px}.comicPage{border-radius:0}.comicPages{gap:4px}.comicReader.is-single .comicPages{min-height:45vh}.comicReader.is-single .comicPage img{max-height:calc(100dvh - 190px)}}
 @media(prefers-reduced-motion:reduce){.comicPages *{scroll-behavior:auto!important;transition:none!important}}
+
+
+/* Reader navigation controls meet the shared touch-target minimum. */
+.comicReaderControls .secondary,
+.comicPageNav .readerTool{min-width:44px;min-height:44px}
+@media(max-width:640px){
+  .comicReaderControls>.secondary{min-height:44px}
+  .comicPageNav .readerTool{min-width:44px;min-height:44px}
+}
