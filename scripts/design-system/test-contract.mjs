@@ -173,6 +173,7 @@ assert.match(components, /forced-colors:active/, "forced-colors support is requi
 for (const theme of ["light","dark","midnight","sepia","imperial","cosmic"]) {
   assert.ok(components.includes('html[data-high-contrast="true"][data-theme="'+theme+'"]') || (theme==="light" && components.includes('html[data-high-contrast="true"][data-theme="light"]')) || (theme==="sepia" && components.includes('html[data-high-contrast="true"][data-theme="sepia"]')), "high-contrast semantic overrides must cover theme: "+theme);
 }
+assert.ok(components.includes(".in-switch:checked::after{inset-inline-start:calc(100% - 1.25rem - 3px)") && !components.includes('[dir="rtl"] .in-switch:checked::after{transform:translateX'), "switch thumb must use logical positioning instead of direction-specific physical transforms");
 assert.ok(components.includes("--in-text-secondary:var(--in-text-primary)") && components.includes("--in-border-default:#8799A3") && components.includes("--in-border-default:#68757D"), "high-contrast mode must strengthen semantic text, borders and focus in light and dark theme families");
 assert.ok(components.includes(".in-button--sm{min-height:var(--in-touch-target)"), "small button variant must preserve the 44px target");
 const checkRow = components.slice(components.indexOf(".in-check-row{"), components.indexOf(".in-check-row{") + 220);
