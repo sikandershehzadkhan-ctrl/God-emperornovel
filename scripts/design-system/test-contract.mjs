@@ -50,6 +50,8 @@ for (const [locale, dictionary] of Object.entries(localeDictionaries)) {
 const packageJson = JSON.parse(fs.readFileSync("package.json", "utf8"));
 const usage = fs.readFileSync("design-system/COMPONENT-USAGE-18.0.0.md", "utf8");
 const routeMap = fs.readFileSync("design-system/ROUTE-TEMPLATE-MIGRATION-MAP-18.0.0.md", "utf8");
+assert.match(spec, /Design-system specification version `18\\.0\\.0` is independent from the application runtime release/);
+assert.match(spec, /runtime release in `package\\.json`/);
 
 function readHex(block, token, theme) {
   const match = block.match(new RegExp(token + ":[\\t\\r\\n ]*(#[0-9A-Fa-f]{6})"));

@@ -4,6 +4,9 @@
 **Motto:** Read • Create • Conquer  
 **Status:** Canonical specification, complete six-theme semantic token contract, opt-in component primitives, and application-shell asset registration. Existing page components have not yet been migrated to the new primitives.
 
+**Version lanes:** Design-system specification version `18.0.0` is independent from the application runtime release in `package.json`. The runtime release is mirrored by `package-lock.json`, Cloudflare `APP_VERSION`, versioned app assets, the PWA manifest and service-worker cache. The current runtime release remains `17.23.0`; it is not a mismatch and must not be bumped solely because this design-system specification is version `18.0.0`. A runtime release bump requires its own complete asset regeneration and release validation.
+
+
 ## 1. Product design principles
 
 1. **Editorial first:** reading and writing content outrank decoration.

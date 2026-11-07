@@ -227,15 +227,15 @@ Required checks before marking this slice complete:
 **Still required:** all six theme screenshots, RTL, 360px/390px mobile, desktop, form validation/error/success states, keyboard/screen-reader QA and the remaining standalone templates.
 
 
-## 18. Standalone Author Studio document adoption
+## 18. Standalone Author Studio artifact (not the active `/author` route)
 
-**Implemented in source:** the Worker already decorates the dedicated `public/author.html` response with `authorStudioPage` and injects the six-theme bootstrap and shared token styles. The standalone document's local legacy palette is now bridged to semantic canvas, surface, text, border, action, status and focus roles. This covers novel/chapter creation forms, work cards, status badges, notices and the AI project area.
+**Source status:** `public/author.html` is a separate legacy/static artifact with six-theme styling, semantic canvas/surface/text/border/action/status/focus roles, responsive form layout, 44px primary controls and reduced-motion handling. The Worker route map currently sends `/author` to `index.html`; therefore the standalone artifact is not the active Author Studio route and must not be counted as active-route adoption.
 
-**Behavior preserved:** existing author APIs, draft creation, chapter workflows, AI project creation and role checks are unchanged. This does not enable an AI provider or imply upload/media-hosting capabilities.
+**Active route ownership:** `/author` uses the shared application shell and `public/app.js` Author Studio renderer. Its creation, works-list, edit-story, chapter-composer and comic-page-composer classes receive the semantic theme layer described in section 16. The two surfaces require separate route and artifact checks.
 
-**Accessibility and responsive source work:** keyboard focus, 44px primary controls, single-column small-screen forms and reduced-motion handling are included.
+**Behavior preserved:** no author APIs, draft creation, chapter workflows, AI project creation, role checks, upload or media-hosting capabilities are enabled by this stylesheet work.
 
-**Still required:** all six theme screenshots; desktop/tablet/360px/390px layouts; RTL; long-form validation messages; loading, empty, permission-denied and API-error states; keyboard/screen-reader QA. The dedicated Author Studio page is separate from the shell's author dashboard, so both must remain in the route QA matrix.
+**Still required:** browser QA of the actual `/author` route for all six themes, desktop/tablet/320px/360px/390px layouts, RTL, long validation messages, loading/empty/permission-denied/API-error states, keyboard and screen-reader use. The standalone `author.html` artifact should be reconciled or retired in a separately reviewed routing change.
 
 
 ## 19. Reader utility and community activity route adoption

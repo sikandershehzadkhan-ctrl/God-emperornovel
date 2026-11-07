@@ -33,9 +33,9 @@ The existing route/template inventory contains 33 explicit static routes and dyn
 
 Do not globally replace physical properties with logical properties. Review declarations by component and state, preserving deliberate LTR iconography, artwork composition, and visual accents where appropriate. For each changed family, verify English LTR and Urdu, Arabic and Persian RTL, including open/closed drawers, active navigation, tooltips, chapter lists, and overlays.
 
-## 4. Release consistency finding
+## 4. Version-lane governance
 
-The PR is titled for design system v18.0.0, while the inspected candidate's `package.json` version and `wrangler.toml` `APP_VERSION` are both `17.23.0`. The Worker rewrites versioned asset URLs from `APP_VERSION`, so this is a release-governance mismatch that must be explicitly reconciled before any production release. Do not silently rename assets or bump the version as part of an RTL-only patch.
+The design-system specification is version `18.0.0`; the application runtime release remains `17.23.0`. These are separate version namespaces. `package.json` is the runtime release source of truth and is mirrored by `package-lock.json`, `wrangler.toml` `APP_VERSION`, versioned JavaScript/CSS assets, the PWA manifest and service-worker cache. The existing `scripts/check-release-version.mjs` enforces runtime asset consistency. Do not bump the runtime release merely to match the design-system specification number. A future runtime release requires regenerating all versioned assets and passing the full release checks.
 
 ## 5. Next bounded implementation order
 
