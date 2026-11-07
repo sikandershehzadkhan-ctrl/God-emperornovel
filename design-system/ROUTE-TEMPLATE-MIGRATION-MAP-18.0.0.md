@@ -296,3 +296,10 @@ Required checks before marking this family complete:
 **Behavior preserved:** login/register API paths, password confirmation validation, required fields, password minimum length, session handling and post-login navigation are unchanged. No authentication policy or server authorization behavior was changed.
 
 **Still required:** six-theme browser screenshots; 320px/360px/390px/tablet/desktop; Urdu/Arabic/Persian RTL; invalid credentials, password mismatch, server error and successful sign-in/registration states; keyboard and screen-reader review. Source contracts are not visual sign-off.
+
+
+## 23. Expanded semantic contrast matrix (2026-11-07)
+
+The design-system build contract now checks every theme's primary, secondary and muted text against all four standard content surfaces: canvas, subtle, surface and elevated. It also verifies inverse text/background pairs and the text contrast of primary-action hover/active and secondary-action hover states. These checks supplement the existing WCAG AA checks for reader ink/paper, links, action defaults, status foreground/background pairs, focus indicators and strong control boundaries.
+
+The matrix is source-derived and runs as part of the standard build. It does not replace rendered contrast inspection where translucency, imagery, gradients, overlays or user-generated content alter the effective background.

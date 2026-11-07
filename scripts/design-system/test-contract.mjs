@@ -120,6 +120,25 @@ for (const theme of themes) {
     const background = readHex(match[1], "--in-status-" + status + "-bg", theme);
     assert.ok(contrastRatio(foreground, background) >= 4.5, theme + " " + status + " status fails WCAG AA contrast");
   }
+
+  const textRoles = ["--in-text-primary", "--in-text-secondary", "--in-text-muted"];
+  const surfaceRoles = ["--in-bg-canvas", "--in-bg-subtle", "--in-bg-surface", "--in-bg-elevated"];
+  for (const textRole of textRoles) {
+    const foreground = readHex(match[1], textRole, theme);
+    for (const surfaceRole of surfaceRoles) {
+      const background = readHex(match[1], surfaceRole, theme);
+      assert.ok(contrastRatio(foreground, background) >= 4.5, theme + " " + textRole + " fails WCAG AA on " + surfaceRole);
+    }
+  }
+  assert.ok(contrastRatio(readHex(match[1], "--in-text-inverse", theme), readHex(match[1], "--in-bg-inverse", theme)) >= 4.5, theme + " inverse text/background pair fails WCAG AA");
+  for (const [foregroundRole, backgroundRole] of [
+    ["--in-action-primary-text", "--in-action-primary-hover"],
+    ["--in-action-primary-text", "--in-action-primary-active"],
+    ["--in-action-secondary-text", "--in-action-secondary-hover"]
+  ]) {
+    assert.ok(contrastRatio(readHex(match[1], foregroundRole, theme), readHex(match[1], backgroundRole, theme)) >= 4.5, theme + " " + foregroundRole + " fails WCAG AA on " + backgroundRole);
+  }
+
 }
 
 const requiredFoundationTokens = [
