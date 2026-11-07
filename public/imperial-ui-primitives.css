@@ -1024,3 +1024,43 @@ html[data-high-contrast="true"][data-theme="cosmic"]{
 [dir="rtl"] .orbitTwo{inset-inline-end:9%}
 [dir="rtl"] .heroCornerMark{inset-inline-end:24px}
 [dir="rtl"] .heroOrbitLabel{inset-inline-end:24px}
+
+
+
+/* Public author profile: theme-aware identity header and published-work context. */
+html[data-theme] #app #authorProfile{
+ background:var(--in-bg-surface);color:var(--in-text-primary);
+ border-color:var(--in-border-default);box-shadow:var(--in-shadow-sm);
+}
+html[data-theme] #app #authorProfile .authorHero{
+ display:flex;align-items:center;gap:18px;padding:clamp(14px,3vw,24px);
+ border:1px solid var(--in-border-default);border-radius:var(--in-radius-lg);
+ background:linear-gradient(135deg,color-mix(in srgb,var(--in-action-primary) 9%,var(--in-bg-surface)),var(--in-bg-elevated));
+}
+html[data-theme] #app #authorProfile .authorHero h2{color:var(--in-text-primary);margin-block:4px}
+html[data-theme] #app #authorProfile .authorHero p{color:var(--in-text-secondary);margin-block:4px}
+html[data-theme] #app #authorProfile .authorHero .eyebrow{color:var(--in-action-primary)}
+html[data-theme] #app #authorProfile .authorAvatar{
+ flex:none;width:64px;min-width:64px;height:64px;border:1px solid var(--in-border-strong);
+ background:var(--in-action-primary);color:var(--in-action-primary-text);
+ box-shadow:var(--in-shadow-sm);
+}
+html[data-theme] #app #authorProfile .section{margin-block-start:clamp(18px,3vw,28px)}
+html[data-theme] #app #authorProfile .sectionHead h2{color:var(--in-text-primary)}
+html[data-theme] #app #authorProfile .sectionHead p{color:var(--in-text-secondary)}
+html[data-theme] #app #authorProfile .empty,
+html[data-theme] #app #authorProfile .notice{
+ background:var(--in-bg-elevated);color:var(--in-text-primary);
+ border:1px solid var(--in-border-default);
+}
+html[data-theme] #app #authorProfile a:focus-visible{
+ outline:3px solid var(--in-focus-ring);outline-offset:3px;
+}
+@media(max-width:520px){
+ html[data-theme] #app #authorProfile .authorHero{align-items:flex-start;gap:12px;padding:14px}
+ html[data-theme] #app #authorProfile .authorAvatar{width:52px;min-width:52px;height:52px;font-size:23px}
+}
+@media(prefers-reduced-motion:reduce){
+ html[data-theme] #app #authorProfile *,html[data-theme] #app #authorProfile *::before,
+ html[data-theme] #app #authorProfile *::after{scroll-behavior:auto!important;transition:none!important;animation:none!important}
+}

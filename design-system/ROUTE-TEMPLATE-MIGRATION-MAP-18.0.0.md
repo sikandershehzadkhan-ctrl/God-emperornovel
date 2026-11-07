@@ -274,3 +274,15 @@ Required checks before marking this slice complete:
 - Added a build-contract guard over the complete template set so future standalone-page CSS cannot quietly reintroduce physical direction assumptions.
 - This is a source-level regression check only. It does not prove that rendered route content, third-party assets, SVG artwork or interactive states are visually correct in Urdu, Arabic or Persian.
 - Browser screenshot and interaction QA remains a separate release gate.
+
+
+
+## 21. Public author profile route adoption
+
+**Route ownership:** `/author/:username` is rendered by the shared `authorPublic()` frontend route using the existing public published-novel catalog API. It is distinct from the private `/author` Author Studio route and the legacy standalone `author.html` artifact.
+
+**Implemented in source:** the public identity header, author mark, published-work section, empty/error panels and focus treatment now consume the active six-theme semantic roles. The identity header reflows at narrow mobile widths and respects reduced-motion preferences.
+
+**Behavior preserved:** the existing public catalog query, author slug handling, published-work visibility and novel links are unchanged. No private profile fields, creator dashboard data, follower features or new APIs are introduced.
+
+**Still required:** all six theme screenshots; 320px/360px/390px/tablet/desktop; Urdu/Arabic/Persian RTL; no-published-work and API-error states; keyboard and screen-reader review. Source contracts are not visual sign-off.

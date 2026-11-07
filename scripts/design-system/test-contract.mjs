@@ -282,6 +282,12 @@ assert.ok(components.includes("html[data-theme] .page .comicAuthorBuilder") && c
 assert.ok(components.includes("html[data-theme] .page .authorWorkActions > *") && components.includes("min-height:var(--in-touch-target)"), "author actions must preserve touch targets");
 
 assert.ok(app.includes("communityDiscussions") && app.includes("communityGrid") && app.includes("quickGrid"), "Community renderer must retain its real discovery and discussion regions");
+
+assert.ok(app.includes("function authorPublic()") && app.includes('class="authorHero"') && app.includes('id="authorProfile"'), "public author profile must retain its real identity and published-work regions");
+assert.ok(components.includes("html[data-theme] #app #authorProfile") && components.includes("html[data-theme] #app #authorProfile .authorHero"), "public author profile surfaces and identity header must consume semantic theme roles");
+assert.ok(components.includes("html[data-theme] #app #authorProfile .authorAvatar") && components.includes("var(--in-action-primary-text)"), "public author identity mark must use the selected theme action palette");
+assert.ok(components.includes("html[data-theme] #app #authorProfile a:focus-visible") && components.includes("html[data-theme] #app #authorProfile .notice"), "public author profile links and error states must retain semantic focus and surfaces");
+assert.ok(components.includes("@media(max-width:520px)") && components.includes("html[data-theme] #app #authorProfile .authorHero"), "public author identity header must reflow on narrow mobile screens");
 assert.ok(components.includes("html[data-theme] .quickCard") && components.includes("html[data-theme] #communityDiscussions"), "Community discovery links and discussion feed must consume semantic theme roles");
 assert.ok(components.includes("html[data-theme] #communityGrid .card") && components.includes("html[data-theme] .unlockBanner"), "Community story cards and discovery banner must be theme-aware");
 assert.ok(components.includes("html[data-theme] #communityDiscussions a:focus-visible") && components.includes("min-height:var(--in-touch-target)"), "Community navigation must preserve visible focus and touch targets");
