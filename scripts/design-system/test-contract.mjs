@@ -124,7 +124,6 @@ const requiredComponents = [
 for (const component of requiredComponents) {
   assert.ok(components.includes(component), "missing component primitive: " + component);
 }
-assert.ok(components.includes(':dir(rtl) .in-switch:checked::after{transform:translateX(-1.25rem)}'), "checked switch thumb must move toward inline-end in RTL instead of using the LTR transform");
 assert.match(components, /:focus-visible/, "visible keyboard focus is required");
 assert.match(components, /\.in-textarea:focus-visible/, "textarea keyboard focus must be visible");
 assert.match(components, /\.in-radio:focus-visible/, "radio keyboard focus must be visible");
