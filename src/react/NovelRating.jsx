@@ -41,7 +41,7 @@ function RatingIsland({ novelId }) {
       });
       setRating(previous => ({ ...previous, ...result, user_rating: value }));
       const summary = document.querySelector("#novelRating");
-      if (summary) summary.textContent = String(Math.round(Number(result.average || 0)));
+      if (summary) summary.textContent = String(Math.round(Number(result.average || 0))) + '/10';
     } catch (cause) {
       setError(cause.message || "Your rating could not be saved.");
     } finally {
