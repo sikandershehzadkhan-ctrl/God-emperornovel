@@ -1,0 +1,27 @@
+{
+  "schemaVersion": 1,
+  "contractId": "PR-299-protected-route-verification-retry",
+  "pullRequest": 299,
+  "status": "proposed",
+  "owner": "github-automation",
+  "decision": "Make the manual production deployment's unauthenticated author-application route verification resilient to transient edge/network failures while retaining an exact HTTP 401 security requirement.",
+  "scope": [
+    ".github/workflows/deploy.yml",
+    "scripts/test-production-deploy-gates.mjs",
+    "docs/architecture/feature-contracts/pr-299-protected-route-verification-retry.json"
+  ],
+  "invariants": [
+    "Production deployment remains manual and requires confirm_production_deploy=true.",
+    "The protected author-application endpoint must return exactly HTTP 401 when no session is supplied.",
+    "Retries are bounded to five attempts and do not treat any non-401 response as success.",
+    "No Cloudflare credentials, secrets, D1 schema, migration, Worker runtime, user data or production state is changed.",
+    "This change does not dispatch or trigger a production deployment."
+  ],
+  "acceptance": [
+    "Production deploy gate test requires the five-attempt retry loop and exact 401 condition.",
+    "Cloudflare source validation and migration governance pass.",
+    "The deployment workflow continues to run only from workflow_dispatch with explicit true confirmation.",
+    "Per-attempt HTTP status is emitted for diagnosis and the check fails after the bounded retry window if 401 is not observed."
+  ],
+  "releaseBoundary": "CI reliability only; no production deployment or authorization-policy change."
+}

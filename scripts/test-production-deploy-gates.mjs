@@ -28,6 +28,7 @@ for (const index of [
 assert.ok(workflow.includes('"$base/discover?verify=$stamp"'), "Post-deploy checks must exercise the direct Discover route.");
 assert.ok(workflow.includes('"$base/author?verify=$stamp"'), "Post-deploy checks must exercise Author Studio.");
 assert.ok(workflow.includes('"$base/admin?verify=$stamp"'), "Post-deploy checks must exercise the admin shell.");
-assert.ok(workflow.includes('"$base/api/author/applications/me"') && workflow.includes('!= "401"'), "Creator application API must reject unauthenticated access.");
+assert.ok(workflow.includes('"$base/api/author/applications/me?verify=$stamp-$attempt"') && workflow.includes("for attempt in 1 2 3 4 5"), "Creator application API verification must retry transient edge failures before failing the release.");
+assert.ok(workflow.includes('echo "Unauthenticated author-application guard check: HTTP $auth_status (attempt $attempt/5)."') && workflow.includes('!= "401"'), "Creator application API must still fail closed unless the unauthenticated response is exactly HTTP 401.");
 
 console.log("Production deploy safety gate tests passed.");
