@@ -7,6 +7,7 @@ const served = fs.readFileSync('public/app-17.23.0.js', 'utf8');
 const worker = fs.readFileSync('src/index.js', 'utf8');
 const ratingComponent = fs.readFileSync('src/react/NovelRating.jsx', 'utf8');
 const migration = fs.readFileSync('migrations/0012_rating_scale_10.sql', 'utf8');
+const styles = fs.readFileSync('public/app-17.23.0.css', 'utf8');
 assert.equal(source, served, 'Editable app source and served runtime must remain identical');
 
 const match = source.match(/function ratingText\(value\)\s*\{[\s\S]*?\}/);
@@ -26,6 +27,8 @@ assert.match(worker, /rating>10\)return json\(\{error:"Rating must be 1-10"\},40
 assert.match(worker, /Math\.min\(10,minRating\)/, 'Catalog minimum-rating filter must support the 10-point scale');
 assert.match(ratingComponent, /\[1, 2, 3, 4, 5, 6, 7, 8, 9, 10\]/, 'Rating control must expose ten choices');
 assert.ok(ratingComponent.includes('Math.round(average)} / 10'), 'Rating average must display as a whole number out of 10');
+assert.match(styles, /\\.ratingStars\\{display:flex;flex-wrap:wrap/, 'Ten rating controls must wrap on narrow screens');
+assert.match(styles, /\\.ratingStar\\{[^}]*min-width:44px;min-height:44px/, 'Rating choices must meet the 44px touch target');
 assert.match(migration, /rating\*2/, 'Migration must preserve legacy relative rating positions');
 assert.match(migration, /CHECK\(rating BETWEEN 1 AND 10\)/, 'Migrated table must enforce the new scale');
 assert.match(migration, /UPDATE novels[\s\S]*AVG\(r\.rating\)/, 'Novel aggregate ratings must be recalculated from migrated votes');
