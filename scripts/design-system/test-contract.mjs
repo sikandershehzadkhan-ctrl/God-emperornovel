@@ -327,4 +327,9 @@ assert.ok(!/\\.commentReply\\{[^}]*margin-left\s*:/.test(releaseStylesheets[1]),
 assert.ok(releaseStylesheets[3].includes(".homeFormatArrow{margin-inline-start:auto;"), "Home format shelf arrow must follow the active writing direction");
 assert.ok(!/\\.homeFormatArrow\\{[^}]*margin-left\s*:/.test(releaseStylesheets[3]), "Home format shelf arrow must not regress to a physical left margin");
 
+assert.ok(app.includes('aria-label="Decrease reading text size"') && app.includes('aria-label="Increase reading text size"'), "Reader font controls must expose descriptive accessible names");
+assert.ok(app.includes('aria-controls="chapterDrawer"') && app.includes('aria-label="Open chapter list"') && app.includes('aria-label="Close chapter list"'), "Reader chapter drawer controls must expose their relationship and accessible names");
+assert.ok(releaseStylesheets[0].includes("@media(max-width:420px){") && releaseStylesheets[0].includes(".readerTools .readerTool{min-width:44px!important;min-height:44px!important;height:44px!important;"), "Reader toolbar controls must preserve 44px touch targets at narrow mobile widths");
+assert.ok(releaseStylesheets[0].includes(".readerBarInner{height:auto!important;min-height:60px;flex-wrap:wrap;") && releaseStylesheets[0].includes(".readerActions{flex-wrap:wrap}"), "Reader toolbar and chapter actions must reflow instead of compressing at narrow widths");
+assert.ok(releaseStylesheets[4].includes(".comicPageNav .readerTool{min-width:44px;min-height:44px}") && releaseStylesheets[4].includes(".comicReaderControls .secondary"), "Comic reader navigation must preserve 44px touch targets");
 console.log("Imperial Novel design-system contract passed: six themes, body/secondary/muted and reader contrast, action/status pairs, semantic tokens, component primitives, 44px targets, focus, reduced motion, forced colors, RTL, route adoption and runtime asset registration.");
