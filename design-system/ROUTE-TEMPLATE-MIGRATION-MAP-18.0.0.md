@@ -286,3 +286,14 @@ Required checks before marking this slice complete:
 **Behavior preserved:** the existing public catalog query, author slug handling, published-work visibility and novel links are unchanged. No private profile fields, creator dashboard data, follower features or new APIs are introduced.
 
 **Still required:** all six theme screenshots; 320px/360px/390px/tablet/desktop; Urdu/Arabic/Persian RTL; no-published-work and API-error states; keyboard and screen-reader review. Source contracts are not visual sign-off.
+
+
+## 22. Authentication route adoption
+
+**Route ownership:** `/login` and `/register` use the existing `authPage(mode)` renderer in the shared application bundle. Their separate HTML templates load the same Worker-registered semantic token and primitive stylesheets.
+
+**Implemented in source:** authentication panels, labels, input fields, submit controls, feedback notices and account-switch links now use the active six-theme semantic roles. Keyboard focus is visible, submit targets meet the 44px contract, and the form spacing adapts to narrow mobile screens. Reduced-motion behavior is respected.
+
+**Behavior preserved:** login/register API paths, password confirmation validation, required fields, password minimum length, session handling and post-login navigation are unchanged. No authentication policy or server authorization behavior was changed.
+
+**Still required:** six-theme browser screenshots; 320px/360px/390px/tablet/desktop; Urdu/Arabic/Persian RTL; invalid credentials, password mismatch, server error and successful sign-in/registration states; keyboard and screen-reader review. Source contracts are not visual sign-off.

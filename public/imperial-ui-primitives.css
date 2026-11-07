@@ -1064,3 +1064,44 @@ html[data-theme] #app #authorProfile a:focus-visible{
  html[data-theme] #app #authorProfile *,html[data-theme] #app #authorProfile *::before,
  html[data-theme] #app #authorProfile *::after{scroll-behavior:auto!important;transition:none!important;animation:none!important}
 }
+
+
+
+/* Authentication routes: sign-in and registration forms use the shared semantic theme contract. */
+html[data-theme] #app .form.panel{
+ padding:clamp(20px,4vw,32px);border:1px solid var(--in-border-default);
+ border-radius:var(--in-radius-xl);background:var(--in-bg-surface);
+ color:var(--in-text-primary);box-shadow:var(--in-shadow-md);
+}
+html[data-theme] #app .form.panel h2{color:var(--in-text-primary);font-family:var(--in-font-serif)}
+html[data-theme] #app .form.panel>p{color:var(--in-text-secondary)}
+html[data-theme] #app .form.panel .field label{color:var(--in-text-secondary);font-size:var(--in-text-sm);font-weight:var(--in-weight-semibold)}
+html[data-theme] #app .form.panel .field input,
+html[data-theme] #app .form.panel .field textarea,
+html[data-theme] #app .form.panel .field select{
+ min-height:var(--in-control-height-lg);padding:var(--in-space-3);
+ border:1px solid var(--in-border-strong);border-radius:var(--in-radius-md);
+ background:var(--in-bg-elevated);color:var(--in-text-primary);
+}
+html[data-theme] #app .form.panel .field input::placeholder{color:var(--in-text-muted)}
+html[data-theme] #app .form.panel .field input:focus-visible,
+html[data-theme] #app .form.panel .field textarea:focus-visible,
+html[data-theme] #app .form.panel .field select:focus-visible,
+html[data-theme] #app .form.panel button:focus-visible,
+html[data-theme] #app .form.panel a:focus-visible{
+ outline:3px solid var(--in-focus-ring);outline-offset:3px;
+}
+html[data-theme] #app .form.panel form button{min-height:var(--in-touch-target)}
+html[data-theme] #app .form.panel #authMsg .notice{
+ border:1px solid var(--in-border-default);background:var(--in-status-info-bg);
+ color:var(--in-text-primary);
+}
+html[data-theme] #app .form.panel>p a{color:var(--in-link)!important;text-underline-offset:.18em}
+@media(max-width:520px){
+ html[data-theme] #app .form.panel{margin:18px auto;padding:18px}
+ html[data-theme] #app .form.panel .field{margin-block:14px}
+}
+@media(prefers-reduced-motion:reduce){
+ html[data-theme] #app .form.panel *,html[data-theme] #app .form.panel *::before,
+ html[data-theme] #app .form.panel *::after{scroll-behavior:auto!important;transition:none!important;animation:none!important}
+}

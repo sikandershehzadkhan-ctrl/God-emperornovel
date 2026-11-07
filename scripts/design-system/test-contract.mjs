@@ -288,6 +288,11 @@ assert.ok(components.includes("html[data-theme] .page .authorWorkActions > *") &
 assert.ok(app.includes("communityDiscussions") && app.includes("communityGrid") && app.includes("quickGrid"), "Community renderer must retain its real discovery and discussion regions");
 
 assert.ok(app.includes("function authorPublic()") && app.includes('class="authorHero"') && app.includes('id="authorProfile"'), "public author profile must retain its real identity and published-work regions");
+
+assert.ok(app.includes("async function authPage(mode)") && app.includes('id="auth"') && app.includes('id="authMsg"'), "login and registration must retain their existing authentication form and feedback regions");
+assert.ok(components.includes("html[data-theme] #app .form.panel") && components.includes("html[data-theme] #app .form.panel .field input"), "authentication form surfaces and fields must consume semantic theme roles");
+assert.ok(components.includes("html[data-theme] #app .form.panel button:focus-visible") && components.includes("html[data-theme] #app .form.panel #authMsg .notice"), "authentication controls and feedback must preserve semantic focus and theme surfaces");
+assert.ok(components.includes("html[data-theme] #app .form.panel form button{min-height:var(--in-touch-target)}") && components.includes("@media(max-width:520px)"), "authentication submit controls and form layout must remain usable on narrow mobile screens");
 assert.ok(components.includes("html[data-theme] #app #authorProfile") && components.includes("html[data-theme] #app #authorProfile .authorHero"), "public author profile surfaces and identity header must consume semantic theme roles");
 assert.ok(components.includes("html[data-theme] #app #authorProfile .authorAvatar") && components.includes("var(--in-action-primary-text)"), "public author identity mark must use the selected theme action palette");
 assert.ok(components.includes("html[data-theme] #app #authorProfile a:focus-visible") && components.includes("html[data-theme] #app #authorProfile .notice"), "public author profile links and error states must retain semantic focus and surfaces");
