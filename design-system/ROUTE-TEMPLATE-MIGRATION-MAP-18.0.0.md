@@ -77,7 +77,7 @@ The Worker `html()` function maintains one `releaseStyles` list and appends miss
 - `/imperial-design-tokens.css`
 - `/imperial-ui-primitives.css`
 
-The list avoids duplicate stylesheet tags. The root `index.html` also declares both links directly. This guarantees asset availability across mapped HTML templates; it does **not** mean legacy pages have adopted the `in-` component classes.
+The list avoids duplicate stylesheet tags. The root `index.html` also declares all three shared foundation links directly: `imperial-glass.css`, `imperial-design-tokens.css` and `imperial-ui-primitives.css`. This guarantees asset availability across mapped HTML templates; it does **not** mean legacy pages have adopted the `in-` component classes.
 
 ## 5. Migration sequence and acceptance
 
@@ -108,7 +108,7 @@ The shared component-primitives stylesheet uses logical layout properties and in
 
 The latest source-level audit of all eight Worker-registered stylesheets found no physical left/right positioning, margin, padding, inset or border declarations, and no `text-align:left/right`, `float:left/right` or `clear:left/right` declarations. Component-scoped logical-property migrations now cover the high-impact shell, discovery, reader, format, legal and decorative hero selectors recorded in `LEGACY-CSS-RTL-AUDIT-18.0.0.md`. This is a source inventory, not proof that every legacy page, icon, alignment, overlay, or responsive state renders correctly in RTL. Full RTL sign-off remains blocked on route-level Urdu, Arabic and Persian browser checks at mobile and desktop widths.
 
-Regression coverage prevents new physical left/right positioning and left/right margin, padding, inset or border longhands from entering the shared component-primitives stylesheet, and targeted assertions protect the migrated legacy selectors. Component-level review remains mandatory: source cleanliness alone cannot certify route behavior.
+Regression coverage prevents new physical left/right positioning, spacing, inset, border, float/clear or text-align declarations from entering all eight registered stylesheets and the 25 standalone template styles. Targeted assertions also protect migrated legacy selectors. Component-level review remains mandatory: source cleanliness alone cannot certify route behavior.
 
 ## 5B. Legacy RTL bridge slice
 
@@ -123,22 +123,21 @@ These overrides are scoped to `[dir="rtl"]` and do not alter centered text or th
 - The shared public shell now renders a native six-theme selector (Light, Dark, Midnight, Sepia, Imperial and Cosmic). The selected theme is allowlisted, persisted as `imperial_theme`, and restored by the Worker bootstrap before frontend hydration.
 - The six-theme selector is shared across routes that use the public `shell()` renderer. Dedicated HTML templates that do not invoke this shell still need independent appearance controls or a deliberate decision to inherit the root preference.
 - The reader still has independent theme controls/preferences and legacy reader styling; global/reader preference unification has not been performed.
-- The shared header, drawer, mobile navigation and homepage still primarily use legacy component classes. Design tokens and primitives are available, but the shell and homepage have **not** passed the page-family migration gate.
+- The shared header, drawer, mobile navigation and homepage have a semantic six-theme source-adoption layer over the existing legacy classes. The shared shell/homepage have **not** passed the full page-family acceptance gate because six-theme, RTL, responsive and interaction browser QA remains outstanding.
 - No route family is declared fully migrated by this inventory. No production deployment or visual screenshot sign-off is claimed.
 
 
-## 7. Immediate next implementation slice: shared shell and homepage
+## 7. Current next implementation slice: visual certification of shell and homepage
 
-The six-theme selector is implemented in the public shell, but it is not a complete shell migration. The next slice must adapt the header, drawer, mobile navigation and homepage to semantic tokens without replacing route logic or changing authorization.
+The shell/homepage semantic source-adoption layer is implemented in section 8. The remaining work is not another broad CSS rewrite: it is rendered certification of the actual shared shell and homepage.
 
-Required checks before marking this slice complete:
-- Root theme changes update header, drawer, mobile navigation, footer and homepage surfaces without hard-coded light-only text/background colors.
-- Theme selection survives refresh and does not get reset by the Worker bootstrap.
-- Language selection remains independent; Urdu, Arabic and Persian retain RTL behavior.
-- Drawer open/close, Escape handling, active route, account/admin links and mobile navigation behavior remain unchanged.
-- Search and all navigation links retain their exact destinations.
-- No new fabricated catalog data or feature claims are introduced.
-- CI and responsive visual review pass at desktop, tablet, 390px and 360px widths.
+Required checks before marking this family complete:
+- Compare all six themes across header, drawer, mobile navigation, footer, hero, format shelf, story cards and feature tiles.
+- Verify theme persistence after refresh and confirm the Worker bootstrap does not reset the chosen theme.
+- Verify language selection remains independent; Urdu, Arabic and Persian retain correct RTL order, drawer direction, active indicators and icon spacing.
+- Exercise drawer open/close, Escape handling, focus order, active route, account/admin links, search and mobile navigation.
+- Review desktop, tablet, 390px, 360px and 320px widths, including 200% zoom and long localized labels.
+- Capture screenshots and test keyboard/screen-reader behavior. Source contracts and CI are necessary but not visual sign-off.
 
 
 ## 8. Shared shell and homepage adoption slice
@@ -204,7 +203,7 @@ Required checks before marking this slice complete:
 
 **Implemented in source:** the existing metadata-first Trend Factory hero, pipeline, search/sort/format controls, catalog result cards, safety guidance and integrity note consume semantic six-theme roles. Controls retain visible keyboard focus, 44px targets, narrow-screen stacking and reduced-motion behavior. Existing published-catalog API, filtering and rights-first boundaries are unchanged.
 
-**Integrity correction:** the rights-review card no longer links to `/admin` as though a working review center exists. It now states that the admin review workspace is not available yet. The frontend boot router currently has no dedicated `/admin` renderer; no admin dashboard or authorization capability is implied by this design migration.
+**Integrity correction:** the Trend Factory rights-review card no longer implies that a Trend Factory-specific review workspace or approval workflow exists. It now states that this workspace is not available yet. The dedicated `/admin` command center is a separate Worker-served template with its own server-side role guard; it is not a Trend Factory rights-review workflow, and this design migration adds no new Admin permissions or approval capability.
 
 **Still required:** browser QA for all six themes; live, empty, loading and API-error states; long titles; desktop/tablet/360px/390px layouts; RTL; keyboard and screen-reader checks. Admin remains a separate functional and server-authorization workstream.
 
