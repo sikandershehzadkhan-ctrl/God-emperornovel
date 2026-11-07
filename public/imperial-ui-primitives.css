@@ -51,7 +51,6 @@
 .in-switch{position:relative;display:inline-flex;align-items:center;width:2.75rem;height:1.5rem;padding:0;border:1px solid var(--in-border-strong);border-radius:var(--in-radius-pill);background:var(--in-bg-subtle);cursor:pointer;appearance:none;vertical-align:middle;transition:background var(--in-motion-fast) var(--in-ease-standard)}
 .in-switch::after{content:"";position:absolute;inset-block-start:3px;inset-inline-start:3px;width:1rem;height:1rem;border-radius:50%;background:var(--in-text-secondary);transition:transform var(--in-motion-fast) var(--in-ease-standard)}
 .in-switch:checked{background:var(--in-action-primary);border-color:var(--in-action-primary)}
-:dir(rtl) .in-switch:checked::after{transform:translateX(-1.25rem)}
 .in-switch:checked::after{background:var(--in-action-primary-text);transform:translateX(1.25rem)}
 [dir="rtl"] .in-switch:checked::after{transform:translateX(-1.25rem)}
 .in-switch:focus-visible,.in-radio:focus-visible,.in-check-row:focus-within{outline:3px solid var(--in-focus-ring);outline-offset:3px}
