@@ -256,3 +256,12 @@ Required checks before marking this slice complete:
 **Behavior preserved:** legal copy, route mapping, publication-rights rules, privacy disclosures, terms, and reporting instructions are unchanged. This is a presentation migration, not legal review or a claim that the policies satisfy every jurisdiction.
 
 **Still required:** legal copy review for current operating practices and applicable jurisdictions; six-theme screenshots; RTL and mobile review; keyboard/screen-reader checks; and confirmation that each disclosure accurately matches production data handling.
+
+
+## Standalone route audit follow-up (2026-11-07)
+
+- `/admin` resolves to `admin.html`; the shared Worker HTML response injects the saved interface `lang` and `dir` before first paint. The Admin template's table alignment and mobile action anchor now use logical properties and have contract assertions.
+- `/privacy`, `/terms`, and `/copyright` resolve to their standalone legal templates and receive the same shared Worker bootstrap. Their document structure is not independently translated by that bootstrap; it sets language metadata and writing direction only.
+- `/novel/:id` and `/read/:id/:chapter` resolve to shell templates that load the versioned public app bundle. The bundle remains responsible for route content and reader behavior.
+- `/author` currently resolves to `index.html`, not `author.html`. The `authorStudioPage` body-marker branch in the Worker helper is not reached through `/author`; the standalone `author.html` artifact must not be treated as the active Author Studio route until routing is deliberately reconciled.
+- Browser verification of the actual rendered routes, including 320px reflow, RTL navigation order, forms, tables, dialogs and reader controls, remains outstanding.
