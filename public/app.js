@@ -27,7 +27,7 @@ function img(url,title=''){
   for(const [pattern,path] of fallback){if(pattern.test(t))return path}
   return url?esc(url):'/story-cover-placeholder.svg'
 }
-function ratingText(value){const rating=Number(value);return Number.isFinite(rating)&&rating>=1&&rating<=5?Math.round(rating)+'/5':'Not rated'}
+function ratingText(value){const rating=Number(value);return Number.isFinite(rating)&&rating>=1&&rating<=10?Math.round(rating)+'/10':'Not rated'}
 function uniqueLatestStories(trendingRows,latestRows){const trendingIds=new Set((trendingRows||[]).map(row=>row?.id).filter(id=>id!==null&&id!==undefined).map(String));return (latestRows||[]).filter(row=>row?.id===null||row?.id===undefined||!trendingIds.has(String(row.id)))}
 function card(n){return `<a class="card" href="/novel/${n.id}"><div class="cover"><img src="${img(n.cover_url,n.title)}" alt="${esc(n.title)} cover" loading="lazy" decoding="async" fetchpriority="low" onerror="this.onerror=null;this.src='/story-cover-placeholder.svg'"></div><div class="cardBody"><div class="cardTitle">${esc(n.title)}</div><div class="muted">${esc(n.author||'Unknown author')}</div><div class="meta"><span>★ ${ratingText(n.rating)}</span><span>◷ ${Number(n.chapter_count||n.latest_chapter||0)} ch.</span></div></div></a>`}
 function chapterRow(ch,id){return `<a class="chapter" href="/read/${id}/${ch.chapter_number}"><span class="chapterNo">${ch.chapter_number}</span><span><b>${esc(ch.title)}</b><br><span class="muted">${ch.is_locked?'Locked · '+ch.ticket_cost+' Imperial Crowns':'Free to read'}</span></span><span class="lock">${ch.is_locked?'⌑':'›'}</span></a>`}
