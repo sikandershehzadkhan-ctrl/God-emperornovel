@@ -281,6 +281,8 @@ for (const endpoint of ['if(p==="/api/admin/stats")','if(p==="/api/admin/users"&
  const pos=worker.indexOf(endpoint);
  assert.ok(pos>=0 && worker.slice(pos,pos+180).includes("admin(u)"), "Admin endpoint must enforce the server-side role guard: "+endpoint);
 }
+assert.ok(adminHtml.includes(".adminTable th,.adminTable td{text-align:start;"), "Standalone Admin table content must align to the active writing direction");
+assert.ok(adminHtml.includes(".mobileAdmin{display:flex;position:fixed;top:8px;inset-inline-end:10px;"), "Standalone Admin mobile action must anchor to the logical inline end in RTL and LTR");
 assert.ok(components.includes("html[data-theme] body.adminDashboardPage .adminHero") && components.includes("html[data-theme] body.adminDashboardPage .adminTable"), "Dedicated Admin hero and tables must consume semantic theme roles");
 assert.ok(components.includes("html[data-theme] body.adminDashboardPage .adminNav button") && components.includes("html[data-theme] body.adminDashboardPage button:focus-visible"), "Admin navigation must preserve touch targets and visible keyboard focus");
 assert.ok(components.includes("html[data-theme] body.adminDashboardPage .adminForm input") && components.includes("prefers-reduced-motion:reduce"), "Admin forms and motion must follow the semantic theme and accessibility contract");
