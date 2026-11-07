@@ -21,6 +21,20 @@ const privacyHtml = fs.readFileSync("public/privacy.html", "utf8");
 const termsHtml = fs.readFileSync("public/terms.html", "utf8");
 const copyrightHtml = fs.readFileSync("public/copyright.html", "utf8");
 const taxonomyHtml = fs.readFileSync("public/community-taxonomy.html", "utf8");
+const standaloneDirectionTemplates = [
+  ["index.html", html], ["catalog.html", fs.readFileSync("public/catalog.html", "utf8")],
+  ["genres.html", fs.readFileSync("public/genres.html", "utf8")], ["tags.html", fs.readFileSync("public/tags.html", "utf8")],
+  ["search.html", fs.readFileSync("public/search.html", "utf8")], ["library.html", fs.readFileSync("public/library.html", "utf8")],
+  ["history.html", fs.readFileSync("public/history.html", "utf8")], ["following.html", fs.readFileSync("public/following.html", "utf8")],
+  ["tickets.html", fs.readFileSync("public/tickets.html", "utf8")], ["requests.html", fs.readFileSync("public/requests.html", "utf8")],
+  ["omniportal.html", fs.readFileSync("public/omniportal.html", "utf8")], ["privacy.html", privacyHtml],
+  ["terms.html", termsHtml], ["copyright.html", copyrightHtml], ["account.html", fs.readFileSync("public/account.html", "utf8")],
+  ["login.html", fs.readFileSync("public/login.html", "utf8")], ["register.html", fs.readFileSync("public/register.html", "utf8")],
+  ["admin.html", adminHtml], ["author.html", authorHtml], ["novel.html", fs.readFileSync("public/novel.html", "utf8")],
+  ["read.html", fs.readFileSync("public/read.html", "utf8")], ["fandom.html", fs.readFileSync("public/fandom.html", "utf8")],
+  ["author-public.html", fs.readFileSync("public/author-public.html", "utf8")], ["404.html", fs.readFileSync("public/404.html", "utf8")],
+  ["community-taxonomy.html", taxonomyHtml]
+];
 const worker = fs.readFileSync("src/index.js", "utf8");
 const localeStart = app.indexOf("const IN_LANG=") + "const IN_LANG=".length;
 const localeEnd = app.indexOf("};function setINLang", localeStart) + 1;
@@ -189,6 +203,11 @@ assert.ok(releaseStylesheets[0].includes(".trendDataTag i{display:inline-block;w
 assert.ok(releaseStylesheets[0].includes(".navright{margin-inline-start:auto;"), "mobile navigation action group must align to logical end");
 assert.ok(releaseStylesheets[0].includes(".nextReaderPromise>a{margin-inline-start:52px}"), "mobile reader promise link indentation must follow writing direction");
 assert.ok(!/(?:^|[;{])\s*(?:left|right|margin-left|margin-right|padding-left|padding-right|border-left|border-right)(?:-[a-z]+)?\s*:/im.test(releaseStylesheets[0]), "main stylesheet must not reintroduce physical horizontal positioning or spacing properties");
+
+const physicalDirectionDeclaration = /(?:^|[;{])\\s*(?:left|right|margin-left|margin-right|padding-left|padding-right|inset-left|inset-right|border-left(?:-[a-z]+)?|border-right(?:-[a-z]+)?|float\\s*:\\s*(?:left|right)|clear\\s*:\\s*(?:left|right))\\s*:|(?:^|[;{])\\s*text-align\\s*:\\s*(?:left|right)\\b/im;
+for (const [templateName, templateSource] of standaloneDirectionTemplates) {
+  assert.ok(!physicalDirectionDeclaration.test(templateSource), templateName + " must use direction-aware logical CSS in standalone template styles");
+}
 
 assert.ok(releaseStylesheets[0].includes(".randomCard{display:grid;grid-template-columns:180px 1fr;gap:24px;text-align:start;"), "random discovery card copy must follow writing direction");
 assert.ok(releaseStylesheets[0].includes(".settingRow output{min-width:48px;text-align:end;"), "settings value output must align to logical end");
