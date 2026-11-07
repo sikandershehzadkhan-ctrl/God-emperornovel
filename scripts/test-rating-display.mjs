@@ -31,6 +31,8 @@ assert.ok(!worker.includes('Math.round(Number(b.rating))'), 'Rating API must not
 assert.match(worker, /Math\.min\(10,minRating\)/, 'Catalog minimum-rating filter must support the 10-point scale');
 assert.match(ratingComponent, /\[1, 2, 3, 4, 5, 6, 7, 8, 9, 10\]/, 'Rating control must expose ten choices');
 assert.ok(ratingComponent.includes('Math.round(average)} / 10'), 'Rating average must display as a whole number out of 10');
+assert.match(ratingComponent, /count > 0 \? `\$\{Math\.round\(average\)\} \/ 10` : \"Not rated\"/, 'A novel with no ratings must display Not rated rather than 0/10');
+assert.ok(ratingComponent.includes('Be the first to rate'), 'An unrated novel should invite its first rating');
 assert.match(styles, /\.ratingStars\{display:flex;flex-wrap:wrap/, 'Ten rating controls must wrap on narrow screens');
 assert.match(styles, /\.ratingStar\{[^}]*min-width:44px;min-height:44px/, 'Rating choices must meet the 44px touch target');
 assert.match(migration, /rating\*2/, 'Migration must preserve legacy relative rating positions');
