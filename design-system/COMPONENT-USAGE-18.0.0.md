@@ -140,7 +140,7 @@ The CSS primitives provide visual surfaces only. Dialog behavior must be impleme
 
 - Prefer logical CSS properties such as `margin-inline`, `padding-inline`, `inset-inline`, and `border-inline-start`.
 - Set the document or scoped surface `dir="rtl"` for Urdu, Arabic and Persian UI. Do not reverse non-directional icons.
-- The switch indicator has an RTL transform rule; validate all other directional controls in the owning feature.
+- The switch thumb uses logical inline positioning, so checked placement follows LTR and RTL writing direction without physical transforms.
 - Honor `prefers-reduced-motion`; animation is never required to understand a state.
 - Forced-colors mode must retain visible boundaries and focus.
 - Test keyboard-only operation, 200% zoom, and 320 CSS-pixel reflow before a page is marked migrated.
