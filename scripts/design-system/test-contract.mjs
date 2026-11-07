@@ -204,7 +204,7 @@ assert.ok(html.includes('href="/imperial-glass.css"'), "glass foundation stylesh
 assert.ok(worker.includes("'/imperial-design-tokens.css'") && worker.includes("'/imperial-ui-primitives.css'") && worker.includes("'/imperial-glass.css'"), "Worker must register semantic tokens, component primitives and glass foundation for every HTML template");
 assert.ok(app.includes("const IMPERIAL_THEMES=['light','dark','midnight','sepia','imperial','cosmic']"), "shared shell must expose all six supported themes");
 assert.ok(app.includes('document.documentElement.dir=(c==="ur"||c==="ar"||c==="fa")?"rtl":"ltr"'), "Urdu, Arabic and Persian interface locales must set RTL document direction");
-assert.ok(components.includes('[dir="rtl"] .in-switch:checked::after{transform:translateX(-1.25rem)}'), "shared switch thumb must mirror its checked position in RTL layouts");
+assert.ok(components.includes(".in-switch:checked::after{inset-inline-start:calc(100% - 1.25rem - 3px)") && !components.includes('[dir="rtl"] .in-switch:checked::after{transform:translateX'), "shared switch thumb must use logical checked positioning in both LTR and RTL layouts");
 assert.doesNotMatch(components, /(?:^|[;{])\s*(?:margin|padding|inset|border)-(?:left|right)\s*:/m, "shared component primitives must use logical directional properties");
 assert.doesNotMatch(components, /(?:^|[;{])\s*(?:left|right)\s*:/m, "shared component primitives must not hard-code physical positioning");
 assert.ok(components.includes('[dir="rtl"] .chapterDrawer{inset-inline-start:0;border-inline-start:1px solid'), "chapter drawer must mirror to the inline-start edge using logical properties");
