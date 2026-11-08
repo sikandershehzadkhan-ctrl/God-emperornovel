@@ -1,0 +1,23 @@
+{
+  "id": "persian-rtl-locale-direction",
+  "title": "Persian interface direction",
+  "status": "accepted",
+  "scope": "Global interface locale direction only",
+  "decision": "Treat Persian (fa), Urdu (ur), and Arabic (ar) as right-to-left interface locales. All other currently supported interface locales retain the left-to-right fallback.",
+  "rationale": "Persian uses a right-to-left writing system. The locale registry already includes Persian, so leaving the document direction as LTR causes incorrect layout semantics and reading order.",
+  "implementation": {
+    "source": "public/app.js",
+    "generatedRuntime": "public/app-17.23.0.js",
+    "directionRule": "document.documentElement.dir=(c===\"ur\"||c===\"ar\"||c===\"fa\")?\"rtl\":\"ltr\";",
+    "regressionTest": "scripts/test-rtl-locale-direction.mjs"
+  },
+  "constraints": [
+    "Do not couple interface direction to the direction of individual chapter content.",
+    "Do not change translations or add locales in this change.",
+    "Preserve LTR behavior for all other supported locales."
+  ],
+  "validation": [
+    "RTL locale regression script",
+    "Full platform build and Cloudflare source validation"
+  ]
+}
