@@ -2,7 +2,7 @@
   "schemaVersion": 1,
   "name": "Imperial Novel API route method inventory",
   "sourceBranch": "feature/community-reader-collections-18-01",
-  "sourceBlob": "c8f5e87b7bdd30a933618c01452c76f7c28fd553",
+  "sourceBlob": "17dab11b0fa586bbcd34d120170759b125f12585",
   "auditDate": "2026-11-06",
   "scope": "Static dispatcher scan of the integrated Worker. Observed method guards only; this is not a complete permission or runtime contract. Bookmark and history POST writes now require positive safe-integer identifiers and an exact published chapter belonging to a published, rights-eligible novel; validation occurs before persistence. Community POST handlers now use strict positive safe-integer identifiers and published rights-eligible targets; comment/report quotas and duplicate report claims are database-trigger enforced. Worker source fingerprint refreshed to the exact source blob for the personalized-route noindex correction; this change does not expand route access or object ownership. Explicit bookmark removal is DELETE on the singular /api/bookmark resource; the plural /api/bookmarks resource is the authenticated GET list. OmniPortal connector registry seeding now uses a normalized NOT EXISTS guard; the public status projection deduplicates normalized base URLs and preserves the enabled/authorized representative. Administrator connector creation validates an allowlisted HTTPS origin, rejects duplicate URLs and creates new entries disabled/pending. No route signature was added or removed. The Worker source fingerprint is refreshed after the leaderboard chapter/time index addition; no route signature changed. Public author directory GET handler is moved before schema/session bootstrap and enforces bounded rights-filtered aggregate reads. Creator Studio and Publishing Studio routes are delegated by the Worker to separately owned modules; sourceFile/sourceLines identify the domain handler and workerDispatchLines identify the composition call. The release calendar is Publishing-owned.",
   "exactRouteCount": 89,
@@ -1576,6 +1576,6 @@
   "featureSourceBlobs": {
     "src/features/creator-studio/index.mjs": "f1a588f12602d3202efe74edb77bdfcce03dd8f9",
     "src/features/publishing-studio/index.mjs": "b86153b275051e7487108fe1ec1baafa8e791cbd",
-    "src/features/community-collections/index.mjs": "0400f1204ff75eeb4332eea36594f713453163a2"
+    "src/features/community-collections/index.mjs": "79928d8d984757dcc3c4544efca5c31e59eecbe5"
   }
 }
