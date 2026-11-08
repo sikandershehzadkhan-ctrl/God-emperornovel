@@ -1461,10 +1461,10 @@
         "DELETE"
       ],
       "sourceLines": [
-        89
+        93
       ],
       "sourceFile": "src/features/community-collections/index.mjs",
-      "routeMatchLine": 88,
+      "routeMatchLine": 92,
       "workerDispatchLines": [
         488
       ],
@@ -1495,12 +1495,12 @@
         "DELETE"
       ],
       "sourceLines": [
-        26,
-        50,
-        60
+        28,
+        52,
+        62
       ],
       "sourceFile": "src/features/community-collections/index.mjs",
-      "routeMatchLine": 25,
+      "routeMatchLine": 27,
       "workerDispatchLines": [
         488
       ],
