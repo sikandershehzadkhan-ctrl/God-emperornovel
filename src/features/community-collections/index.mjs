@@ -29,7 +29,7 @@ export async function handleCommunityCollectionsRequest({req,env,url,u,body,json
    COALESCE(u.username,'Reader') creator FROM community_collections c
    JOIN users u ON u.id=c.owner_user_id WHERE c.id=?`).bind(id).first();
   if(!collection||(collection.visibility!=='public'&&Number(collection.owner_user_id)!==Number(u?.id)))return json({error:'Collection not found.'},404);
-  const items=await env.DB.prepare(`SELECT n.id,n.title,n.author,n.cover,n.rating,n.views,i.position,i.added_at
+  const items=await env.DB.prepare(`SELECT n.id,n.title,n.author,n.cover_url cover,n.rating,n.views,i.position,i.added_at
    FROM community_collection_items i JOIN novels n ON n.id=i.novel_id
    WHERE i.collection_id=? AND n.publication_status='published'
    AND n.rights_status IN ('original','public_domain','licensed','authorized')
