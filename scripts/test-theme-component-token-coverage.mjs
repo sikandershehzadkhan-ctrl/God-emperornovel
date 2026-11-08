@@ -11,6 +11,8 @@ const themes = ["light", "dark", "midnight", "sepia", "imperial", "cosmic"];
 const required = ["--in-canvas:", "--in-panel:", "--in-panel-raised:", "--in-line:", "--in-text:", "--in-text-muted:", "--in-accent:", "--in-link:", "--in-focus:", "--in-action-bg:", "--in-action-hover:", "--in-control-bg:", "--in-surface-soft:", "--in-overlay:", "--in-good:", "--in-danger:", "--in-warning:", "--in-lime:", "--in-pink:"];
 for (const theme of themes) {
   const blocks = [...css.matchAll(new RegExp('html\\[data-theme="' + theme + '"\\]\\s*\\{([^}]+)\\}', "g"))].map(match => match[1]);
+  assert.ok(css.includes('html[data-theme="' + theme + '"][data-high-contrast="true"]'), "Missing global high-contrast overrides for " + theme);
+  assert.ok(css.includes('html[data-high-contrast="true"] .readerPage[data-reader-theme="' + theme + '"]'), "Missing reader high-contrast overrides for " + theme);
   const block = blocks.find(value => required.every(token => value.includes(token)));
   assert.ok(block, theme + " must define the complete semantic component token contract");
   assert.ok(block.includes("color-scheme:" + (theme === "light" || theme === "sepia" ? "light" : "dark")), theme + " must declare its native control color scheme");
