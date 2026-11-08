@@ -624,3 +624,12 @@ html[data-theme] .skipLink{background:var(--in-panel);color:var(--in-text);borde
 html[data-theme] .heroPromise,html[data-theme] .heroOrbitLabel{color:var(--in-text-muted)}
 html[data-theme] .heroSearch{background:var(--in-panel);border-color:var(--in-line);box-shadow:none}
 html[data-theme] .heroSearch input{background:var(--in-panel);color:var(--in-text)}
+
+html[data-theme] .mark{border-color:var(--in-accent);box-shadow:0 0 0 1px var(--in-line)}
+html[data-theme] .heroKicker,html[data-theme] .nextHero .eyebrow,html[data-theme] .heroOrbitLabel{color:var(--in-accent)}
+html[data-theme] .heroSideTop b,html[data-theme] .heroSideTop small{color:var(--in-text)}
+html[data-theme] .heroTags a{background:var(--in-surface-soft);border-color:var(--in-line);color:var(--in-text)}
+html[data-theme] .heroPromise,html[data-theme] .promiseText{color:var(--in-text-muted)}
+html[data-theme] .ghost,html[data-theme] .secondary{background:var(--in-surface-soft);color:var(--in-text);border-color:var(--in-line)}
+html[data-theme] .portalLink:hover{background:var(--in-surface-soft);border-color:var(--in-accent)}
+html[data-theme] .rankBadge{background:var(--in-surface-soft);border-color:var(--in-line);color:var(--in-text)}
