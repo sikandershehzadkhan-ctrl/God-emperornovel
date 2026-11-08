@@ -4,6 +4,7 @@ import fs from "node:fs";
 const creator=fs.readFileSync("src/features/creator-studio/index.mjs","utf8");
 const publishing=fs.readFileSync("src/features/publishing-studio/index.mjs","utf8");
 const worker=fs.readFileSync("src/index.js","utf8");
+const goalMigration=fs.readFileSync("migrations/0047_author_story_goals_owner_scope.sql","utf8");
 
 for(const route of [
   '"/api/author/analytics"',
@@ -62,5 +63,6 @@ assert.ok(publishing.includes("removed.meta?.changes||removed.changes||0"),"sche
 assert.ok(creator.includes("LEFT JOIN chapters c ON c.id=pn.chapter_id AND c.novel_id=pn.novel_id"),"private note reads must not project a chapter outside the note's parent novel");
 assert.ok(creator.includes("Number.isFinite(parsedDate.getTime())"),"invalid goal dates must return a validation response rather than throw");
 assert.ok(creator.includes("INSERT OR IGNORE INTO author_story_goals(owner_user_id,novel_id")&&creator.includes("UPDATE author_story_goals SET")&&creator.includes("WHERE owner_user_id=? AND novel_id=? AND EXISTS(SELECT 1 FROM novels WHERE id=? AND owner_user_id=?)"),"goal upsert must use transactional insert/update statements that recheck authenticated novel ownership");
-assert.ok(creator.includes("ON CONFLICT(owner_user_id,novel_id) DO UPDATE SET"),"story goals must be unique per owner and novel so ownership transfers preserve private prior goals");
+assert.ok(goalMigration.includes("PRIMARY KEY(owner_user_id,novel_id)"),"story goals must be unique per owner and novel so ownership transfers preserve private prior goals");
+assert.ok(creator.includes("INSERT OR IGNORE INTO author_story_goals(owner_user_id,novel_id")&&creator.includes("UPDATE author_story_goals SET")&&creator.includes("WHERE owner_user_id=? AND novel_id=? AND EXISTS(SELECT 1 FROM novels WHERE id=? AND owner_user_id=?)"),"story goal upsert must use the D1-compatible insert-then-owner-checked-update strategy");
 console.log("Creator/Publishing domain boundary and scheduler source checks passed.");
