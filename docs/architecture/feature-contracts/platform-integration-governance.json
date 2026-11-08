@@ -50,7 +50,7 @@
     "scripts/test-ownership-transfer-migration.mjs",
     "docs/architecture/IMPERIAL-MIGRATION-ALLOCATIONS.json",
     "docs/architecture/CANONICAL-MIGRATION-COLLISION-REGISTER.md",
-    "docs/architecture/feature-contracts/community-reader-collections.json",
+    "docs/architecture/feature-contracts/community-collections.json",
     "docs/architecture/decisions/ADR-0041-rights-aware-reader-collections.md",
     "docs/architecture/decisions/ADR-0042-inject-audit-service-into-creator-studio.md",
     "docs/architecture/IMPERIAL-FEATURE-OWNERSHIP.json",
