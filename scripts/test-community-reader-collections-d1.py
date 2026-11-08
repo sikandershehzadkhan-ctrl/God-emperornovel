@@ -105,12 +105,15 @@ private_owner = db.execute(
     "SELECT owner_user_id,visibility FROM community_collections WHERE id=?",
     (private_other,)
 ).fetchone()
-assert private_owner is not None and (
+assert private_owner is not None
+reader_one_can_read = (
     private_owner[1] == 'public' or int(private_owner[0]) == 1
-), "reader one must not see reader two's private collection"
-assert private_owner[1] == 'public' or int(private_owner[0]) == 2, (
-    "the owner must be allowed to read their private collection"
 )
+reader_two_can_read = (
+    private_owner[1] == 'public' or int(private_owner[0]) == 2
+)
+assert not reader_one_can_read, "reader one must not see reader two's private collection"
+assert reader_two_can_read, "the owner must be allowed to read their private collection"
 public_owner = db.execute(
     "SELECT owner_user_id,visibility FROM community_collections WHERE id=?",
     (public_other,)
