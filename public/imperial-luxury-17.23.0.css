@@ -608,7 +608,7 @@ html[data-theme] .brand b,html[data-theme] .footerBrand,html[data-theme] .page,h
 html[data-theme] .brand small,html[data-theme] .muted,html[data-theme] .footer,html[data-theme] .sectionHead p,html[data-theme] .nextHeroLead{color:var(--in-text-muted)}
 html[data-theme] .navlinks a,html[data-theme] .mobileNav a,html[data-theme] .menuDrawer a{color:var(--in-text-muted)}
 html[data-theme] .navlinks a:hover,html[data-theme] .navlinks a.active,html[data-theme] .mobileNav a.active{color:var(--in-accent);background:var(--in-surface-soft);border-color:var(--in-line)}
-html[data-theme] .card,html[data-theme] .catalogCard,html[data-theme] .panel,html[data-theme] .settingsPanel,html[data-theme] .novelHero,html[data-theme] .catalogTop,html[data-theme] .heroSideCard,html[data-theme] .menuDrawer,html[data-theme] .hero.nextHero,html[data-theme] .hero.imperialArchiveHero{background:var(--in-panel);color:var(--in-text);border-color:var(--in-line);box-shadow:none}
+html[data-theme] .card,html[data-theme] .catalogCard,html[data-theme] .panel,html[data-theme] .settingsPanel,html[data-theme] .novelHero,html[data-theme] .catalogTop,html[data-theme] .heroSideCard,html[data-theme] .menuDrawer,html[data-theme] .hero.nextHero,html[data-theme] .hero.imperialArchiveHero,html[data-theme] .side,html[data-theme] .tierPanel,html[data-theme] .chapter,html[data-theme] .quickCard,html[data-theme] .unlockBanner,html[data-theme] .notice,html[data-theme] .settingRow,html[data-theme] .accountMenu,html[data-theme] .catalogEmpty,html[data-theme] .ecosystemCard{background:var(--in-panel);color:var(--in-text);border-color:var(--in-line);box-shadow:none}
 html[data-theme] .cover,html[data-theme] .catalogCover,html[data-theme] .portalLink{background:var(--in-panel-raised);border-color:var(--in-line);color:var(--in-text)}
 html[data-theme] input,html[data-theme] select,html[data-theme] textarea{background:var(--in-control-bg);color:var(--in-text);border-color:var(--in-line);color-scheme:inherit}
 html[data-theme] input::placeholder,html[data-theme] textarea::placeholder{color:var(--in-text-muted);opacity:1}
@@ -685,3 +685,9 @@ html[data-theme]{
   --brand-cyan:var(--in-link);
   --tile-accent:var(--in-accent);
 }
+
+html[data-theme] .quickCard b,html[data-theme] .ecosystemCard>b,html[data-theme] .catalogMeta b{color:var(--in-text)}
+html[data-theme] .quickCard small,html[data-theme] .ecosystemCopy,html[data-theme] .catalogStats{color:var(--in-text-muted)}
+html[data-theme] .ecosystemLink{color:var(--in-link)}
+html[data-theme] .ecosystemKicker{color:var(--in-accent)}
+html[data-theme] .statusBadge{background:var(--in-surface-soft);color:var(--in-accent);border-color:var(--in-line)}
