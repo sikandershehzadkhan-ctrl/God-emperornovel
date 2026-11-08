@@ -38,6 +38,10 @@ assert.ok(legacyCss.includes("var(--panel)") && legacyCss.includes("var(--text)"
 assert.ok(glassCss.includes("html[data-theme] .top") && glassCss.includes("html[data-theme] .mobileNav"), "Glass shell styles must support every global theme");
 assert.ok(glassCss.includes("var(--in-overlay)") && glassCss.includes("var(--glass-surface-raised)") && glassCss.includes("var(--glass-border)"), "Glass surfaces must consume semantic theme tokens");
 assert.ok(!glassCss.includes('html:not([data-theme="dark"])'), "Glass styling must not treat every non-dark theme as Light");
+assert.ok(css.includes("@media(forced-colors:active)") && css.includes("@media(prefers-reduced-motion:reduce)"), "Theme layer must preserve forced-colors and reduced-motion fallbacks");
+assert.ok(glassCss.includes("@media(max-width:760px), (prefers-reduced-motion:reduce)") && glassCss.includes("backdrop-filter:none"), "Glass blur must degrade on mobile and reduced-motion layouts");
+assert.ok(formatsCss.includes("@media(forced-colors:active)") && formatsCss.includes("outline:2px solid Highlight"), "Format links must retain forced-colors keyboard focus");
+
 assert.ok(formatsCss.includes("var(--in-focus") && !formatsCss.includes("#83a9ff"), "Format keyboard focus must use the selected theme focus token");
 assert.ok(comicCss.includes("var(--in-obsidian,var(--bg,#0B1215))"), "Comic image placeholders must use semantic theme canvas tokens");
 for (const status of ["status-published", "status-review", "status-rejected"]) assert.ok(css.includes("html[data-theme] ." + status), "Creator status must use semantic status colors: " + status);
