@@ -659,7 +659,7 @@
       ],
       "sourceLines": [
         8,
-        40
+        42
       ],
       "sourceFile": "src/features/community-collections/index.mjs",
       "workerDispatchLines": [
@@ -1477,10 +1477,10 @@
         "POST"
       ],
       "sourceLines": [
-        67
+        69
       ],
       "sourceFile": "src/features/community-collections/index.mjs",
-      "routeMatchLine": 66,
+      "routeMatchLine": 68,
       "workerDispatchLines": [
         488
       ],
