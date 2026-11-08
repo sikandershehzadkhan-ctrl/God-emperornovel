@@ -633,3 +633,39 @@ html[data-theme] .heroPromise,html[data-theme] .promiseText{color:var(--in-text-
 html[data-theme] .ghost,html[data-theme] .secondary{background:var(--in-surface-soft);color:var(--in-text);border-color:var(--in-line)}
 html[data-theme] .portalLink:hover{background:var(--in-surface-soft);border-color:var(--in-accent)}
 html[data-theme] .rankBadge{background:var(--in-surface-soft);border-color:var(--in-line);color:var(--in-text)}
+
+
+/* Compatibility bridge: legacy application components consume these aliases.
+   Keeping the bridge here makes every existing route inherit the selected site theme. */
+html[data-theme]{
+  --bg:var(--in-canvas);
+  --bg2:var(--in-surface-soft);
+  --panel:var(--in-panel);
+  --panel2:var(--in-panel-raised);
+  --panel3:var(--in-surface-soft);
+  --text:var(--in-text);
+  --muted:var(--in-text-muted);
+  --line:var(--in-line);
+  --silver:var(--in-line);
+  --silver2:var(--in-panel-raised);
+  --violet:var(--in-accent);
+  --violet2:var(--in-accent);
+  --violet3:var(--in-surface-soft);
+  --violet4:var(--in-action-bg);
+  --indigo:var(--in-accent);
+  --gold:var(--in-accent);
+  --gold2:var(--in-accent);
+  --cyan:var(--in-link);
+  --imperial-cyan:var(--in-link);
+  --imperial-purple:var(--in-accent);
+  --ink:var(--in-text);
+  --ink-2:var(--in-text-muted);
+  --surface:var(--in-panel);
+  --surface-2:var(--in-panel-raised);
+  --surface-3:var(--in-surface-soft);
+  --line-strong:var(--in-focus);
+  --border:var(--in-line);
+  --brand-purple:var(--in-accent);
+  --brand-cyan:var(--in-link);
+  --tile-accent:var(--in-accent);
+}
