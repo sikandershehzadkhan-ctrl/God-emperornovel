@@ -36,7 +36,7 @@ assert.ok(publishing.includes("WHERE n.owner_user_id=?"),"release calendar must 
 assert.ok(publishing.includes("if(Number(c.owner_user_id)!==Number(u.id))"),"schedule route must enforce strict chapter owner");
 assert.ok(publishing.includes("if(Number(c.owner_user_id)!==Number(u.id))return json({error:'You do not own this chapter'},403)"),"revision route must enforce strict chapter owner");
 
-assert.ok(worker.includes("handleCreatorStudioRequest"),"Worker must compose Creator Studio");
+assert.ok(worker.includes("handleCreatorStudioRequest({req,env,url,u,body,json,author,audit,CONTENT_FORMAT_IDS})"),"Worker must compose Creator Studio with its audit service");
 assert.ok(worker.includes("handlePublishingStudioRequest"),"Worker must compose Publishing Studio");
 assert.ok(worker.includes("publishDueChapters"),"Worker must compose scheduled publication");
 assert.ok(worker.includes("await runAutomation(env,event.cron)"),"scheduled publishing must preserve the existing scheduled agent automation");
