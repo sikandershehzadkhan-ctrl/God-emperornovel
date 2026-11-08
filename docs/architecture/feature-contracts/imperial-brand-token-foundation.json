@@ -1,0 +1,32 @@
+{
+  "id": "imperial-brand-token-foundation",
+  "title": "Canonical Imperial Novel brand token anchors",
+  "status": "accepted",
+  "scope": "Global luxury stylesheet root token foundation",
+  "approvedPalette": {
+    "white": "#FFFFFF",
+    "obsidian": "#0B1215",
+    "imperialPurple": "#6A0DAD",
+    "sapphireBlue": "#0F52BA"
+  },
+  "source": "public/imperial-luxury-17.23.0.css",
+  "tokens": {
+    "--in-obsidian": "#0B1215",
+    "--in-purple": "#6A0DAD",
+    "--in-sapphire": "#0F52BA",
+    "--in-white": "#FFFFFF"
+  },
+  "aliases": {
+    "--imperial-color-obsidian": "--in-obsidian",
+    "--imperial-color-purple": "--in-purple",
+    "--imperial-color-sapphire": "--in-sapphire",
+    "--imperial-color-white": "--in-white"
+  },
+  "constraints": [
+    "The root token contract must not force dark-only native controls.",
+    "This foundation does not certify the six global themes or component-wide contrast.",
+    "Existing component overrides require separate migration and visual regression review.",
+    "Reader theme preference remains independent from global site theme."
+  ],
+  "validation": "scripts/test-imperial-brand-tokens.mjs"
+}

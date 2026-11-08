@@ -1,16 +1,27 @@
 /* Imperial Novel identity refresh: restrained purple, sapphire, white and obsidian.
    Kept separate from the legacy stylesheet so the release can be reviewed and rolled back cleanly. */
 :root{
-  color-scheme:dark;
-  --in-obsidian:#080a12;
-  --in-panel:#101421;
-  --in-panel-raised:#151b2b;
-  --in-line:rgba(174,185,221,.16);
-  --in-purple:#8b5cf6;
+  color-scheme:light dark;
+  /* Canonical Imperial Novel brand anchors. */
+  --in-obsidian:#0B1215;
+  --in-panel:#101a1e;
+  --in-panel-raised:#152329;
+  --in-line:rgba(190,205,210,.16);
+  --in-purple:#6A0DAD;
   --in-purple-bright:#a78bfa;
-  --in-sapphire:#4f8cff;
-  --in-white:#f5f7ff;
-  --in-muted:#a3abc2;
+  --in-sapphire:#0F52BA;
+  --in-white:#FFFFFF;
+  --in-muted:#a3b0b5;
+  /* Stable semantic aliases for shared components and future theme maps. */
+  --imperial-color-obsidian:var(--in-obsidian);
+  --imperial-color-purple:var(--in-purple);
+  --imperial-color-sapphire:var(--in-sapphire);
+  --imperial-color-white:var(--in-white);
+  --imperial-surface:var(--in-panel);
+  --imperial-surface-raised:var(--in-panel-raised);
+  --imperial-border:var(--in-line);
+  --imperial-text:var(--in-white);
+  --imperial-text-muted:var(--in-muted);
 }
 html[data-theme="dark"]{color-scheme:dark}
 html[data-theme="dark"] body{
