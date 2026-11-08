@@ -846,3 +846,6 @@ html[data-theme] .formatLink:focus-visible,html[data-theme] .homeFormatCard:focu
 .readerPage .readerDivider{background:var(--reader-accent)}
 .readerPage .readerBack,.readerPage .readerChapterJump a{color:var(--reader-link)}
 .readerPage .readerTool:focus-visible,.readerPage .readerPrefs select:focus-visible{outline:2px solid var(--reader-focus);outline-offset:2px}
+
+.readerPage[data-reader-theme="light"],.readerPage[data-reader-theme="sepia"]{color-scheme:light}
+.readerPage[data-reader-theme="dark"],.readerPage[data-reader-theme="midnight"],.readerPage[data-reader-theme="imperial"],.readerPage[data-reader-theme="cosmic"]{color-scheme:dark}
