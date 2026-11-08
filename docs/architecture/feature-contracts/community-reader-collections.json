@@ -12,7 +12,8 @@
     "docs/architecture/IMPERIAL-AUTHORIZATION-OWNERSHIP-MATRIX-01N-38.json",
     "docs/architecture/IMPERIAL-FEATURE-OWNERSHIP.json",
     "docs/architecture/IMPERIAL-MIGRATION-ALLOCATIONS.json",
-    "package.json"
+    "package.json",
+    "migrations/.reservations/0048.json"
   ],
   "sharedSurfaces": [
     "src/index.js",
