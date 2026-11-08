@@ -42,9 +42,9 @@
    styles previously reset the browser outline. Keep this visible in every theme. */
 .homeFormatCard:focus-visible,
 .formatLink:focus-visible{
-  outline:3px solid #83a9ff!important;
+  outline:3px solid var(--in-focus,#0F52BA)!important;
   outline-offset:3px;
-  border-color:#83a9ff;
+  border-color:var(--in-focus,#0F52BA);
   position:relative;
   z-index:1;
 }
