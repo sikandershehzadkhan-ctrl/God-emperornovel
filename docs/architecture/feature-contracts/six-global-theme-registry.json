@@ -79,7 +79,9 @@
     "legacy variable alias mapping",
     "semantic success/danger/warning/lime/pink token contrast against each theme canvas",
     "white foreground contrast on action and hover backgrounds",
-    "format keyboard focus uses theme focus token"
+    "format keyboard focus uses theme focus token",
+    "reader-specific text, muted text, accent, link and action contrast checks across all six reader themes",
+    "reader native form controls follow reader color-scheme independently from global site theme"
   ],
   "independentReaderTheme": {
     "preferenceKey": "imperial_reader_theme",
@@ -92,13 +94,26 @@
       "imperial",
       "cosmic"
     ],
-    "cssScope": ".readerPage[data-reader-theme]"
+    "cssScope": ".readerPage[data-reader-theme]",
+    "tokenScope": "--reader-* tokens plus complete legacy alias override inside .readerPage",
+    "isolatedAreas": [
+      "reader canvas",
+      "article text and surfaces",
+      "chapter drawer",
+      "chapter list",
+      "reader preferences and native controls",
+      "reader tools",
+      "reader footer and lock states"
+    ],
+    "nativeColorScheme": "light for Light/Sepia; dark for Dark/Midnight/Imperial/Cosmic",
+    "persistence": "separate local-device preference, independent of imperial_theme"
   },
   "remainingAcceptance": [
     "Browser-rendered computed-style verification across mobile and desktop",
     "Full WCAG 2.2 AA verification for every component state and interactive control",
     "Forced-colors and keyboard focus testing",
-    "Reduced-motion and RTL visual regression across all themes"
+    "Reduced-motion and RTL visual regression across all themes",
+    "Browser-rendered computed-style verification for all six global and reader theme combinations"
   ],
   "stylesheets": [
     "public/style-17.23.0.css",
