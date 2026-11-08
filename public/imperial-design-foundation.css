@@ -2244,3 +2244,32 @@ body.adminDashboardPage .ghost {
   .readerPage .readerFooterCard{align-items:flex-start;flex-wrap:wrap;gap:12px}
   .readerPage .readerFooterCard>a{width:100%;box-sizing:border-box}
 }
+
+
+/* Reader collections: responsive action layout and stable touch targets. */
+.readerCollectionCard{
+  display:grid;gap:10px;padding:14px 0;
+  border-bottom:1px solid var(--in-line);min-width:0;
+}
+.readerCollectionCardMain{
+  display:flex;justify-content:space-between;align-items:flex-start;
+  gap:12px;min-width:0;
+}
+.readerCollectionCardCopy{min-width:0;overflow-wrap:anywhere}
+.readerCollectionCardCopy>b{display:block;color:var(--in-ink);font-weight:750}
+.readerCollectionCardMain>.secondary{flex:0 0 auto;min-height:44px}
+.readerCollectionCardActions{display:flex;flex-wrap:wrap;gap:8px}
+.readerCollectionCardActions>.ghost{min-height:40px}
+.readerCollectionItem{
+  display:flex;align-items:center;gap:12px;flex-wrap:wrap;
+  min-width:0;padding:10px 0;border-bottom:1px solid var(--in-line);
+}
+.readerCollectionItem>a{flex:1 1 180px;min-width:0;overflow-wrap:anywhere}
+.readerCollectionItem>.muted{overflow-wrap:anywhere}
+.readerCollectionItem>button{min-height:40px}
+@media(max-width:520px){
+  .readerCollectionCardMain{flex-wrap:wrap}
+  .readerCollectionCardMain>.secondary{width:100%}
+  .readerCollectionItem>a{flex-basis:100%}
+  .readerCollectionItem>.muted{flex:1 1 auto}
+}
