@@ -21,5 +21,8 @@ assert.ok(source.includes("SELECT id FROM community_collections WHERE id=? AND o
 assert.ok(source.includes("SELECT id FROM novels WHERE id=? AND publication_status='published'"),'collection membership must reject unpublished stories');
 assert.ok(source.includes("WHERE collection_id=? AND novel_id=? AND EXISTS(")&&source.includes("SELECT 1 FROM community_collections c WHERE c.id=? AND c.owner_user_id=?"),'story removal must enforce collection ownership inside the delete statement');
 assert.ok(source.includes("if(p.startsWith('/api/community/collections'))return json({error:'Method not allowed.'},405)"),'unsupported collection methods must fail closed');
+assert.ok(source.includes("const readObjectBody=async(req,body)=>{const value=await body(req);return value&&typeof value==='object'&&!Array.isArray(value)?value:null;}"),'collection request bodies must reject null, arrays and primitive JSON values');
+assert.equal((source.match(/if\(!b\)return json\(\{error:'Request body must be a JSON object\.'\},400\)/g)||[]).length,3,'create, update and add-item routes must reject non-object request bodies');
+assert.ok(source.includes("typeof value==='string'?value.trim().slice(0,max):''"),'collection text fields must reject non-string values rather than coercing objects or arrays');
 
 console.log('Community reader collection contract checks passed.');

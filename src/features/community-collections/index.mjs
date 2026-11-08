@@ -1,6 +1,7 @@
 const MAX_COLLECTIONS_PER_OWNER=50;
 const MAX_ITEMS_PER_COLLECTION=100;
-const cleanText=(value,max)=>String(value??'').trim().slice(0,max);
+const cleanText=(value,max)=>typeof value==='string'?value.trim().slice(0,max):'';
+const readObjectBody=async(req,body)=>{const value=await body(req);return value&&typeof value==='object'&&!Array.isArray(value)?value:null;};
 const safeId=value=>{if(typeof value==='string'&&!/^[1-9][0-9]*$/.test(value))return null;if(typeof value!=='number'&&typeof value!=='string')return null;const id=Number(value);return Number.isSafeInteger(id)&&id>0?id:null};
 
 export async function handleCommunityCollectionsRequest({req,env,url,u,body,json,need}){
@@ -41,7 +42,8 @@ export async function handleCommunityCollectionsRequest({req,env,url,u,body,json
  }
  if(p==='/api/community/collections'&&m==='POST'){
   const e=need(u);if(e)return e;
-  const b=await body(req),title=cleanText(b.title,80),description=cleanText(b.description,500);
+  const b=await readObjectBody(req,body);if(!b)return json({error:'Request body must be a JSON object.'},400);
+  const title=cleanText(b.title,80),description=cleanText(b.description,500);
   const visibility=b.visibility==='public'?'public':'private';
   if(!title)return json({error:'A collection title is required.'},400);
   const count=await env.DB.prepare('SELECT COUNT(*) total FROM community_collections WHERE owner_user_id=?').bind(u.id).first();
@@ -52,7 +54,8 @@ export async function handleCommunityCollectionsRequest({req,env,url,u,body,json
  if(detail&&m==='PATCH'){
   const e=need(u);if(e)return e;
   const id=safeId(detail[1]);if(!id)return json({error:'Collection not found.'},404);
-  const b=await body(req),title=cleanText(b.title,80),description=cleanText(b.description,500);
+  const b=await readObjectBody(req,body);if(!b)return json({error:'Request body must be a JSON object.'},400);
+  const title=cleanText(b.title,80),description=cleanText(b.description,500);
   if(!title)return json({error:'A collection title is required.'},400);
   if(!['public','private'].includes(b.visibility))return json({error:'Visibility must be public or private.'},400);
   const result=await env.DB.prepare(`UPDATE community_collections SET title=?,description=?,visibility=?,updated_at=CURRENT_TIMESTAMP
@@ -69,7 +72,8 @@ export async function handleCommunityCollectionsRequest({req,env,url,u,body,json
  if(add&&m==='POST'){
   const e=need(u);if(e)return e;
   const id=safeId(add[1]);if(!id)return json({error:'Collection not found.'},404);
-  const b=await body(req),novelId=safeId(b.novel_id);
+  const b=await readObjectBody(req,body);if(!b)return json({error:'Request body must be a JSON object.'},400);
+  const novelId=safeId(b.novel_id);
   if(!novelId)return json({error:'A valid novel is required.'},400);
   const owned=await env.DB.prepare('SELECT id FROM community_collections WHERE id=? AND owner_user_id=?').bind(id,u.id).first();
   if(!owned)return json({error:'Collection not found.'},404);
