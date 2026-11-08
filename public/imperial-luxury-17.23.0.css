@@ -909,6 +909,22 @@ html[data-theme] .catalogCover{background:var(--in-surface-soft);color:var(--in-
 html[data-theme] .secondary,html[data-theme] .ghost{background:var(--in-surface-soft);color:var(--in-text);border-color:var(--in-line)}
 html[data-theme] textarea,html[data-theme] input,html[data-theme] select{background:var(--in-control-bg);color:var(--in-text);border-color:var(--in-line)}
 html[data-theme] .mark{border-color:var(--in-accent)}
+/* Cross-sheet component bridge: community, ratings and creator tools use the same tokens. */
+html[data-theme] .commentItem,html[data-theme] .comicComposerPage{background:var(--in-surface-soft);border-color:var(--in-line);color:var(--in-text)}
+html[data-theme] .commentItem p,html[data-theme] .commentHead,html[data-theme] .ratingIslandSummary,html[data-theme] .comicAuthorBuilderHead p,html[data-theme] .comicComposerPage small,html[data-theme] .comicAuthorBuilder [data-page-status]{color:var(--in-text-muted)}
+html[data-theme] .ratingStar{color:var(--in-text-muted)}
+html[data-theme] .ratingStar.selected,html[data-theme] .ratingStar:hover{color:var(--in-link)}
+html[data-theme] .ratingStar:focus-visible,html[data-theme] .commentActions button:focus-visible,html[data-theme] .comicPageComposerGrid input:focus-visible,html[data-theme] .comicPageComposerGrid button:focus-visible,html[data-theme] .comicComposerPageActions button:focus-visible{outline:2px solid var(--in-focus);outline-offset:3px}
+html[data-theme] .authorApplicationFormats{border-color:var(--in-line)}
+html[data-theme] .authorApplicationFormats legend{color:var(--in-text-muted)}
+html[data-theme] .comicAuthorBuilder{background:linear-gradient(145deg,var(--in-surface-soft),var(--in-panel));border-color:var(--in-line);color:var(--in-text)}
+html[data-theme] .comicAuthorBuilderHead>span{background:var(--in-surface-soft);color:var(--in-accent)}
+html[data-theme] .comicPageComposerGrid input{background:var(--in-control-bg);color:var(--in-text);border-color:var(--in-line)}
+html[data-theme] .comicComposerPage>img{background:var(--in-obsidian)}
+html[data-theme] .reactReactionList .novelReaction[aria-pressed=true]{background:var(--in-surface-soft);border-color:var(--in-accent);color:var(--in-text)}
+html[data-theme] .reactReactionError{color:var(--in-danger)}
+html[data-theme] .ratingIslandSummary strong{color:var(--in-text)}
+
 
 
 
