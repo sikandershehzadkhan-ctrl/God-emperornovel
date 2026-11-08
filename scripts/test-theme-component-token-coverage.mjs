@@ -78,6 +78,13 @@ for (const mapping of ["--panel:var(--reader-panel)", "--text:var(--reader-text)
 
 for (const readerTheme of ["light", "dark", "midnight", "sepia", "imperial", "cosmic"]) assert.ok(legacyCss.includes('.readerPage[data-reader-theme="' + readerTheme + '"]'), "Missing independently scoped reader theme: " + readerTheme);
 const touchRule = 'html[data-theme] :where(button,input:not([type="checkbox"]):not([type="range"]),select,textarea,[role="button"]){min-height:44px}';
+const parityLayer = css.lastIndexOf("/* Final semantic parity layer:");
+assert.ok(parityLayer > css.indexOf("/* Taste Skill direction"), "Semantic parity overrides must follow legacy archive art-direction rules");
+for (const selector of ["html[data-theme] body{background:var(--in-canvas)}","html[data-theme] .hero.imperialArchiveHero","html[data-theme] .heroSearch button,html[data-theme] .primary","html[data-theme] .hero.imperialArchiveHero h1 span","html[data-theme] .skipLink"]) {
+  assert.ok(css.slice(parityLayer).includes(selector), "Six-theme semantic parity layer is missing " + selector);
+}
+assert.ok(css.slice(parityLayer).includes("background:var(--in-panel)") && css.slice(parityLayer).includes("border-color:var(--in-line)") && css.slice(parityLayer).includes("color:var(--in-text-muted)"), "Late legacy hero and shell overrides must resolve through semantic tokens");
+
 assert.ok(css.includes(touchRule), "Interactive controls must meet the 44px minimum touch target baseline");
 assert.ok(css.includes('html[data-theme] :where(.primary,.secondary,.ghost,.iconbtn,.menuToggle,.menuClose,.readerBack,.navlinks a,.mobileNav a,.menuDrawer a,.readerChapterItem,.formatLink){min-height:44px}'), "Navigation, action and chapter links must meet the 44px minimum touch target baseline");
 assert.ok(css.includes('html[data-theme] .readerTool{min-width:44px;min-height:44px}'), "Reader tools must meet the 44px minimum touch target baseline");
