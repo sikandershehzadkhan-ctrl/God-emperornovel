@@ -1,7 +1,7 @@
 {
   "id": "six-global-theme-registry",
   "title": "Six global site themes",
-  "status": "implemented-pending-validation",
+  "status": "implemented-pending-browser-validation",
   "themes": [
     "light",
     "dark",
@@ -24,5 +24,64 @@
   ],
   "limitations": [
     "Theme token maps and core surface overrides are implemented; complete component-by-component visual and WCAG 2.2 AA verification remains a separate acceptance gate."
+  ],
+  "semanticTokens": [
+    "canvas",
+    "surface",
+    "raised surface",
+    "text",
+    "muted text",
+    "accent",
+    "link",
+    "focus",
+    "action background",
+    "action hover",
+    "control background",
+    "overlay",
+    "legacy compatibility aliases"
+  ],
+  "sharedComponents": [
+    "global shell",
+    "desktop navigation",
+    "mobile navigation",
+    "footer",
+    "cards",
+    "catalog cards",
+    "panels",
+    "settings panels",
+    "forms",
+    "buttons",
+    "links",
+    "menus",
+    "hero",
+    "catalog empty states",
+    "community cards",
+    "account surfaces",
+    "focus-visible"
+  ],
+  "accessibilityChecks": [
+    "six-theme token contrast against each theme canvas",
+    "white button text against normal and hover action colors",
+    "semantic token coverage for shared component selectors",
+    "legacy variable alias mapping"
+  ],
+  "independentReaderTheme": {
+    "preferenceKey": "imperial_reader_theme",
+    "attribute": "readerPage.dataset.readerTheme",
+    "supportedThemes": [
+      "light",
+      "dark",
+      "midnight",
+      "sepia",
+      "imperial",
+      "cosmic"
+    ],
+    "cssScope": ".readerPage[data-reader-theme]"
+  },
+  "remainingAcceptance": [
+    "Browser-rendered computed-style verification across mobile and desktop",
+    "Full WCAG 2.2 AA verification for every component state and interactive control",
+    "Forced-colors and keyboard focus testing",
+    "Reduced-motion and RTL visual regression across all themes"
   ]
 }
