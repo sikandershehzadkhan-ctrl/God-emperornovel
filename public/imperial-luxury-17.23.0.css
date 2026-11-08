@@ -715,6 +715,18 @@ html[data-theme] .novelReaction[aria-pressed=true]{border-color:var(--in-accent)
 html[data-theme] .reactReactionError{color:var(--in-danger)}
 html[data-theme] .ratingIslandSummary{color:var(--in-text-muted)}
 html[data-theme] .ratingIslandSummary strong{color:var(--in-text)}
+/* Legacy catalog, account and admin primitives now inherit the active theme too. */
+html[data-theme] .brand b,html[data-theme] .sectionHead h2,html[data-theme] .title h1,html[data-theme] .side h3,html[data-theme] .catalogMeta b,html[data-theme] .metric b,html[data-theme] .miniCard b{color:var(--in-text)}
+html[data-theme] .brand small,html[data-theme] .tabs a,html[data-theme] .meta,html[data-theme] .statline,html[data-theme] .filterLabel,html[data-theme] .catalogStats,html[data-theme] .miniCard span,html[data-theme] .lock{color:var(--in-text-muted)}
+html[data-theme] .side,html[data-theme] .accountMenu,html[data-theme] .tierPanel,html[data-theme] .metric,html[data-theme] .miniCard,html[data-theme] .notice,html[data-theme] .catalogEmpty,html[data-theme] .unlockBanner{background:var(--in-panel);border-color:var(--in-line);color:var(--in-text)}
+html[data-theme] .filterChip{background:var(--in-surface-soft);border-color:var(--in-line);color:var(--in-text-muted)}
+html[data-theme] .filterChip.active,html[data-theme] .filterChip:hover{background:var(--in-surface-soft);border-color:var(--in-accent);color:var(--in-accent)}
+html[data-theme] .chapter{background:var(--in-panel);border-color:var(--in-line);color:var(--in-text)}
+html[data-theme] .chapter:hover{background:var(--in-surface-soft);border-color:var(--in-accent)}
+html[data-theme] .accountMenu a,html[data-theme] .side a{color:var(--in-text-muted)}
+html[data-theme] .statusBadge,html[data-theme] .rankBadge{background:var(--in-surface-soft);border-color:var(--in-line);color:var(--in-accent)}
+html[data-theme] .empty{background:var(--in-panel);border-color:var(--in-line);color:var(--in-text-muted)}
+
 
 html[data-theme] .formatLink:hover,html[data-theme] .homeFormatCard:hover{background:var(--in-surface-soft);border-color:var(--in-accent)}
 html[data-theme] .formatLink:focus-visible,html[data-theme] .homeFormatCard:focus-visible{outline:3px solid var(--in-focus)!important;outline-offset:3px;border-color:var(--in-focus)}
