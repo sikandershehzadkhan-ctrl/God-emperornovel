@@ -84,6 +84,10 @@ for (const selector of ["html[data-theme] body{background:var(--in-canvas)}","ht
   assert.ok(css.slice(parityLayer).includes(selector), "Six-theme semantic parity layer is missing " + selector);
 }
 assert.ok(css.slice(parityLayer).includes("background:var(--in-panel)") && css.slice(parityLayer).includes("border-color:var(--in-line)") && css.slice(parityLayer).includes("color:var(--in-text-muted)"), "Late legacy hero and shell overrides must resolve through semantic tokens");
+for (const selector of ["html[data-theme] .footer{background:var(--in-panel)","html[data-theme] .navlinks a","html[data-theme] .menuToggle,html[data-theme] .menuDrawer","html[data-theme] textarea,html[data-theme] input,html[data-theme] select","html[data-theme] .catalogCover"]) {
+  assert.ok(css.slice(parityLayer).includes(selector), "Legacy shell component must be semantically themed: " + selector);
+}
+
 
 assert.ok(css.includes(touchRule), "Interactive controls must meet the 44px minimum touch target baseline");
 assert.ok(css.includes('html[data-theme] :where(.primary,.secondary,.ghost,.iconbtn,.menuToggle,.menuClose,.readerBack,.navlinks a,.mobileNav a,.menuDrawer a,.readerChapterItem,.formatLink){min-height:44px}'), "Navigation, action and chapter links must meet the 44px minimum touch target baseline");
