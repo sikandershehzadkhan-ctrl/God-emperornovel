@@ -52,7 +52,8 @@ assert.ok(typeof matrix.sourceBlob==="string"&&matrix.sourceBlob.length>=40,"sou
 
 const sourceFiles = {
   "src/features/creator-studio/index.mjs": fs.readFileSync(path.join(root,"src/features/creator-studio/index.mjs"),"utf8"),
-  "src/features/publishing-studio/index.mjs": fs.readFileSync(path.join(root,"src/features/publishing-studio/index.mjs"),"utf8")
+  "src/features/publishing-studio/index.mjs": fs.readFileSync(path.join(root,"src/features/publishing-studio/index.mjs"),"utf8"),
+  "src/features/community-collections/index.mjs": fs.readFileSync(path.join(root,"src/features/community-collections/index.mjs"),"utf8")
 };
 const gitBlob = source => crypto.createHash("sha1").update(`blob ${Buffer.byteLength(source)}\0`).update(source).digest("hex");
 assert.equal(matrix.sourceBlob,gitBlob(worker),"route inventory Worker source fingerprint is stale");
@@ -66,7 +67,7 @@ for(const route of [...matrix.exactRoutes,...matrix.dynamicRoutes]){
 
   if(route.routeMatchLine){
     const matchLine=source.split("\n")[route.routeMatchLine-1]||"";
-    assert.ok(matchLine.includes("p.match")&&matchLine.includes("author"),"dynamic route match evidence must identify its route in "+route.sourceFile);
+    assert.ok(matchLine.includes("p.match")&&(matchLine.includes("author")||matchLine.includes("community")),"dynamic route match evidence must identify its route in "+route.sourceFile);
   }
   for(const lineNumber of route.sourceLines){
     const line=source.split("\n")[lineNumber-1]||"";
