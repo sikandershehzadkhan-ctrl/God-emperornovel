@@ -16,7 +16,7 @@ const sharedSelectors = [
   "html[data-theme] .card", "html[data-theme] .catalogCard", "html[data-theme] .panel",
   "html[data-theme] .settingsPanel", "html[data-theme] .menuDrawer",
   "html[data-theme] input", "html[data-theme] select", "html[data-theme] textarea",
-  "html[data-theme] :focus-visible"
+  "html[data-theme] :focus-visible", "html[data-theme] .heroKicker", "html[data-theme] .heroTags a", "html[data-theme] .heroSideTop b", "html[data-theme] .ghost", "html[data-theme] .secondary", "html[data-theme] .portalLink:hover", "html[data-theme] .mark"
 ];
 for (const selector of sharedSelectors) assert.ok(css.includes(selector), "Missing semantic shared-component rule: " + selector);
 for (const token of ["var(--in-canvas)", "var(--in-text)", "var(--in-panel)", "var(--in-control-bg)", "var(--in-focus)"]) {
