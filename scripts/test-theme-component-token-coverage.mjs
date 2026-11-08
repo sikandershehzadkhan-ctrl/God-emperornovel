@@ -19,6 +19,10 @@ for (const theme of themes) {
   assert.ok(block.includes("color-scheme:" + (theme === "light" || theme === "sepia" ? "light" : "dark")), theme + " must declare its native control color scheme");
 }
 assert.ok(css.includes(":root{\n  color-scheme:light dark;"), "Root must not force dark native controls");
+for (const brandToken of ["--in-obsidian:#0B1215", "--in-purple:#6A0DAD", "--in-sapphire:#0F52BA", "--in-white:#FFFFFF"]) {
+  assert.ok(css.includes(brandToken), "Canonical Imperial Novel brand anchor is missing or drifted: " + brandToken);
+}
+
 const sharedSelectors = [
   "html[data-theme] .top", "html[data-theme] .footer", "html[data-theme] .mobileNav",
   "html[data-theme] .card", "html[data-theme] .catalogCard", "html[data-theme] .panel",
