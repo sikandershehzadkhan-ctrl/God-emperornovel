@@ -7,6 +7,7 @@ const runtime = readFileSync("public/app-17.23.0.js", "utf8");
 const glassCss = readFileSync("public/imperial-glass.css", "utf8");
 const formatsCss = readFileSync("public/imperial-formats-17.23.0.css", "utf8");
 const comicCss = readFileSync("public/imperial-comic-reader-17.23.0.css", "utf8");
+const appCss = readFileSync("public/app-17.23.0.css", "utf8");
 const themes = ["light", "dark", "midnight", "sepia", "imperial", "cosmic"];
 const required = ["--in-canvas:", "--in-panel:", "--in-panel-raised:", "--in-line:", "--in-text:", "--in-text-muted:", "--in-accent:", "--in-link:", "--in-focus:", "--in-action-bg:", "--in-action-hover:", "--in-control-bg:", "--in-surface-soft:", "--in-overlay:", "--in-good:", "--in-danger:", "--in-warning:", "--in-lime:", "--in-pink:"];
 for (const theme of themes) {
@@ -50,6 +51,9 @@ assert.ok(formatsCss.includes("@media(forced-colors:active)") && formatsCss.incl
 
 assert.ok(formatsCss.includes("var(--in-focus") && !formatsCss.includes("#83a9ff"), "Format keyboard focus must use the selected theme focus token");
 assert.ok(comicCss.includes("var(--in-obsidian,var(--bg,#0B1215))"), "Comic image placeholders must use semantic theme canvas tokens");
+assert.ok(appCss.includes("background:var(--in-obsidian,var(--bg,#0B1215))") && !appCss.includes("background:#080a12"), "Comic creator image placeholders must not force a dark-only background");
+assert.ok(formatsCss.includes("color:var(--in-good,#176B4D)") && formatsCss.includes("color:var(--in-link,#0F52BA)") && formatsCss.includes("color:var(--in-danger,#B4233C)"), "Creator publication, review and rejection states must use semantic status tokens");
+
 for (const status of ["status-published", "status-review", "status-rejected"]) assert.ok(css.includes("html[data-theme] ." + status), "Creator status must use semantic status colors: " + status);
 assert.ok(css.includes("html[data-theme] .novelReaction[aria-pressed=true]"), "Community reaction states must use semantic theme tokens");
 
