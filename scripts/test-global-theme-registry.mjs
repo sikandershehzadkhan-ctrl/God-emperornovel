@@ -5,6 +5,12 @@ const app = readFileSync("public/app.js", "utf8");
 const runtime = readFileSync("public/app-17.23.0.js", "utf8");
 const css = readFileSync("public/imperial-luxury-17.23.0.css", "utf8");
 const themes = ["light", "dark", "midnight", "sepia", "imperial", "cosmic"];
+assert.equal(runtime, app, "Source and versioned browser runtime must remain byte-identical");
+const html = readFileSync("public/index.html", "utf8");
+const baseCssIndex = html.indexOf('href="/style-17.23.0.css"');
+const luxuryCssIndex = html.indexOf('href="/imperial-luxury-17.23.0.css"');
+assert.ok(baseCssIndex >= 0 && luxuryCssIndex > baseCssIndex, "Canonical semantic theme layer must load after legacy base CSS");
+
 for (const [name, source] of [["source app", app], ["versioned runtime", runtime]]) {
   assert.ok(source.includes("const allowed=['light','dark','midnight','sepia','imperial','cosmic']"), name + " must preserve all six supported site themes");
   for (const theme of themes) assert.ok(source.includes('<option value="' + theme + '" data-in-lang='), name + " settings selector is missing " + theme);
