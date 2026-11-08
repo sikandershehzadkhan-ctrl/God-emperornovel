@@ -16,7 +16,7 @@ assert.ok(css.includes(":root{\n  color-scheme:light dark;"), "Root must not for
 const sharedSelectors = [
   "html[data-theme] .top", "html[data-theme] .footer", "html[data-theme] .mobileNav",
   "html[data-theme] .card", "html[data-theme] .catalogCard", "html[data-theme] .panel",
-  "html[data-theme] .settingsPanel", "html[data-theme] .menuDrawer", "html[data-theme] .side", "html[data-theme] .tierPanel", "html[data-theme] .chapter", "html[data-theme] .quickCard", "html[data-theme] .unlockBanner", "html[data-theme] .notice", "html[data-theme] .settingRow", "html[data-theme] .accountMenu", "html[data-theme] .catalogEmpty", "html[data-theme] .ecosystemCard",
+  "html[data-theme] .settingsPanel", "html[data-theme] .menuDrawer", "html[data-theme] .side", "html[data-theme] .tierPanel", "html[data-theme] .chapter", "html[data-theme] .quickCard", "html[data-theme] .unlockBanner", "html[data-theme] .notice", "html[data-theme] .settingRow", "html[data-theme] .accountMenu", "html[data-theme] .catalogEmpty", "html[data-theme] .ecosystemCard", "html[data-theme] .empty", "html[data-theme] .quickCard", "html[data-theme] .quickCard>span", "html[data-theme] .iconbtn:hover", "html[data-theme] .pill.gold", "html[data-theme] .bootFallback", "html[data-theme] .bootCrest", "html[data-theme] .bootSpinner",
   "html[data-theme] input", "html[data-theme] select", "html[data-theme] textarea",
   "html[data-theme] :focus-visible", "html[data-theme] .heroKicker", "html[data-theme] .heroTags a", "html[data-theme] .heroSideTop b", "html[data-theme] .ghost", "html[data-theme] .secondary", "html[data-theme] .portalLink:hover", "html[data-theme] .mark"
 ];
