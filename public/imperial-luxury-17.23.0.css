@@ -707,3 +707,11 @@ html[data-theme] .bootFallback{background:var(--in-canvas);color:var(--in-text)}
 html[data-theme] .bootFallback p{color:var(--in-text-muted)}
 html[data-theme] .bootCrest{border-color:var(--in-accent);color:var(--in-accent)}
 html[data-theme] .bootSpinner{border-color:var(--in-line);border-top-color:var(--in-accent)}
+
+html[data-theme] .status-published{color:var(--in-good)}
+html[data-theme] .status-review{color:var(--in-link)}
+html[data-theme] .status-rejected{color:var(--in-danger)}
+html[data-theme] .novelReaction[aria-pressed=true]{border-color:var(--in-accent);background:var(--in-surface-soft);color:var(--in-text)}
+html[data-theme] .reactReactionError{color:var(--in-danger)}
+html[data-theme] .ratingIslandSummary{color:var(--in-text-muted)}
+html[data-theme] .ratingIslandSummary strong{color:var(--in-text)}
