@@ -70,7 +70,8 @@
     "comic reader controls and placeholders",
     "community reactions and rating states",
     "creator publication/review/rejection status",
-    "glass surfaces with mobile blur fallback"
+    "glass surfaces with mobile blur fallback",
+    "high-contrast surfaces, text, borders, controls and focus states in global and reader contexts"
   ],
   "accessibilityChecks": [
     "six-theme token contrast against each theme canvas",
@@ -82,7 +83,10 @@
     "format keyboard focus uses theme focus token",
     "reader-specific text, muted text, accent, link and action contrast checks across all six reader themes",
     "reader native form controls follow reader color-scheme independently from global site theme",
-    "theme option labels translated in all 14 supported interface locales"
+    "theme option labels translated in all 14 supported interface locales",
+    "high-contrast token overrides for all six global themes",
+    "high-contrast token overrides for all six reader themes",
+    "normal-text contrast at 4.5:1 and focus/border UI contrast at 3:1 in high-contrast mode"
   ],
   "independentReaderTheme": {
     "preferenceKey": "imperial_reader_theme",
@@ -114,7 +118,9 @@
     "Full WCAG 2.2 AA verification for every component state and interactive control",
     "Forced-colors and keyboard focus testing",
     "Reduced-motion and RTL visual regression across all themes",
-    "Browser-rendered computed-style verification for all six global and reader theme combinations"
+    "Browser-rendered computed-style verification for all six global and reader theme combinations",
+    "Verify actual 44px touch target coverage across all primary interactive controls",
+    "Browser-rendered high-contrast computed styles and assistive-technology behavior"
   ],
   "stylesheets": [
     "public/style-17.23.0.css",
