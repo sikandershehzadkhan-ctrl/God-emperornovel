@@ -1,5 +1,5 @@
 // Creator-owned editorial workspace APIs. Chapter lifecycle is delegated to Publishing.
-export async function handleCreatorStudioRequest({req,env,url,u,body,json,author,CONTENT_FORMAT_IDS}){
+export async function handleCreatorStudioRequest({req,env,url,u,body,json,author,audit,CONTENT_FORMAT_IDS}){
  const p=url.pathname,m=req.method;
 if(p==="/api/author/analytics"&&m==="GET"){
   const e=author(u);if(e)return e;
