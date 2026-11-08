@@ -12,4 +12,17 @@ for (const [name, source] of [["source app", app], ["versioned runtime", runtime
 }
 for (const theme of themes) assert.ok(css.includes('html[data-theme="' + theme + '"]'), "Missing CSS token map for " + theme);
 assert.ok(css.includes('html:is([data-theme="dark"],[data-theme="midnight"],[data-theme="imperial"],[data-theme="cosmic"])'), "Dark-family component styles must cover all dark themes");
-console.log("PASS: six global theme identifiers, settings options, persistence validation, and CSS token maps.");
+const localeMatch = app.match(/const IN_LANG=(\\{[\\s\\S]*?\\});function setINLang/);
+assert.ok(localeMatch, "Locale dictionary must remain a parseable JSON-compatible map");
+const locales = JSON.parse(localeMatch[1]);
+const expectedLocales = ["en", "ur", "hi", "zh-CN", "zh-TW", "es", "fr", "id", "ja", "ko", "pt-BR", "ar", "vi", "fa"];
+for (const locale of expectedLocales) {
+  assert.ok(locales[locale], "Missing supported locale " + locale);
+  for (const label of ["Light", "Dark", "Midnight", "Sepia", "Imperial", "Cosmic"]) assert.ok(locales[locale][label], locale + " is missing the " + label + " theme translation");
+}
+assert.ok(app.includes('document.querySelectorAll("[data-in-lang]")'), "Runtime must translate explicitly marked theme option labels");
+for (const label of ["Light", "Dark", "Midnight", "Sepia", "Imperial", "Cosmic"]) {
+  assert.ok(app.includes('data-in-lang="' + label + '"'), "Source app is missing localized theme option " + label);
+  assert.ok(runtime.includes('data-in-lang="' + label + '"'), "Versioned runtime is missing localized theme option " + label);
+}
+console.log("PASS: six global theme identifiers, persistence, CSS maps, and six theme labels in all 14 locales.");
