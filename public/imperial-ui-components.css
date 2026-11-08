@@ -1,0 +1,607 @@
+/* Imperial Novel shared UI components
+ * Version: 17.24.0
+ * Loaded after the legacy/versioned styles and semantic design tokens.
+ * Keep selectors aligned to existing application class names.
+ */
+
+/* Buttons: clear hierarchy, consistent geometry, restrained brand color. */
+:where(button, .primary, .secondary, .ghost, .iconbtn) {
+  font: inherit;
+  border-radius: var(--radius-md);
+  -webkit-tap-highlight-color: transparent;
+}
+
+.primary,
+button.primary,
+.actions .primary {
+  min-height: var(--control-min-height);
+  padding: 10px 16px;
+  border: 1px solid var(--imperial-purple);
+  border-radius: var(--radius-md);
+  background: var(--imperial-purple);
+  color: #fff;
+  font-weight: 700;
+  line-height: 1.2;
+  box-shadow: none;
+  cursor: pointer;
+}
+
+.primary:hover,
+button.primary:hover,
+.actions .primary:hover {
+  background: var(--imperial-purple-hover);
+  border-color: var(--imperial-purple-hover);
+  color: #fff;
+}
+
+.secondary,
+button.secondary {
+  min-height: var(--control-min-height);
+  padding: 10px 16px;
+  border: 1px solid var(--ds-border-strong);
+  border-radius: var(--radius-md);
+  background: var(--ds-surface);
+  color: var(--ds-text);
+  font-weight: 650;
+  line-height: 1.2;
+  box-shadow: none;
+  cursor: pointer;
+}
+
+.secondary:hover,
+button.secondary:hover {
+  border-color: var(--imperial-purple);
+  background: var(--imperial-purple-soft);
+  color: var(--imperial-purple-hover);
+}
+
+.ghost,
+button.ghost {
+  min-height: var(--control-min-height);
+  padding: 9px 12px;
+  border: 1px solid transparent;
+  border-radius: var(--radius-md);
+  background: transparent;
+  color: var(--ds-text-muted);
+  font-weight: 600;
+  box-shadow: none;
+  cursor: pointer;
+}
+
+.ghost:hover,
+button.ghost:hover {
+  border-color: var(--ds-border);
+  background: var(--ds-surface-muted);
+  color: var(--ds-text);
+}
+
+.iconbtn,
+button.iconbtn {
+  display: inline-flex;
+  min-width: var(--control-min-height);
+  min-height: var(--control-min-height);
+  align-items: center;
+  justify-content: center;
+  padding: 8px;
+  border: 1px solid var(--ds-border);
+  border-radius: var(--radius-md);
+  background: var(--ds-surface);
+  color: var(--ds-text);
+  box-shadow: none;
+  cursor: pointer;
+}
+
+.iconbtn:hover,
+button.iconbtn:hover {
+  border-color: var(--imperial-purple);
+  background: var(--imperial-purple-soft);
+  color: var(--imperial-purple-hover);
+}
+
+:where(button, .primary, .secondary, .ghost, .iconbtn):disabled,
+:where(button, .primary, .secondary, .ghost, .iconbtn)[aria-disabled="true"] {
+  opacity: .55;
+  cursor: not-allowed;
+  box-shadow: none;
+  transform: none;
+}
+
+/* Form controls: consistent contrast in both supported global themes. */
+:where(input:not([type="checkbox"]):not([type="radio"]):not([type="range"]), select, textarea),
+.toolbar select,
+.field input,
+.field textarea,
+.field select {
+  min-height: var(--control-min-height);
+  max-width: 100%;
+  box-sizing: border-box;
+  border: 1px solid var(--ds-border-strong);
+  border-radius: var(--radius-md);
+  background: var(--ds-surface);
+  color: var(--ds-text);
+  font: inherit;
+  line-height: 1.45;
+}
+
+:where(input:not([type="checkbox"]):not([type="radio"]):not([type="range"]), select, textarea) {
+  padding: 10px 12px;
+}
+
+.field input,
+.field textarea,
+.field select {
+  width: 100%;
+}
+
+:where(input, textarea)::placeholder {
+  color: var(--ds-text-subtle);
+  opacity: 1;
+}
+
+:where(input, select, textarea):hover:not(:disabled) {
+  border-color: var(--ds-border-strong);
+}
+
+:where(input, select, textarea):disabled {
+  background: var(--ds-surface-muted);
+  color: var(--ds-text-subtle);
+  cursor: not-allowed;
+}
+
+:where(input[type="checkbox"], input[type="radio"], input[type="range"]) {
+  accent-color: var(--imperial-purple);
+}
+
+:where(textarea) {
+  min-height: 112px;
+  resize: vertical;
+}
+
+/* Search and filter controls share the same semantic surface. */
+.search,
+.filterChip,
+.readerTool {
+  border-color: var(--ds-border);
+  background: var(--ds-surface);
+  color: var(--ds-text);
+  box-shadow: none;
+}
+
+.search input {
+  min-height: 40px;
+  color: var(--ds-text);
+}
+
+.search input::placeholder {
+  color: var(--ds-text-subtle);
+}
+
+.filterChip[aria-pressed="true"],
+.filterChip.active,
+.readerTool[aria-pressed="true"],
+.readerTool.active {
+  border-color: var(--imperial-purple);
+  background: var(--imperial-purple-soft);
+  color: var(--imperial-purple-hover);
+}
+
+/* Dark theme uses the same hierarchy, not a second visual language. */
+html[data-theme="dark"] .primary,
+html[data-theme="dark"] button.primary,
+html[data-theme="dark"] .actions .primary {
+  border-color: #8b68ef;
+  background: #7547df;
+  color: #fff;
+}
+
+html[data-theme="dark"] .primary:hover,
+html[data-theme="dark"] button.primary:hover,
+html[data-theme="dark"] .actions .primary:hover {
+  border-color: #a78bfa;
+  background: #8559ed;
+}
+
+html[data-theme="dark"] .secondary,
+html[data-theme="dark"] button.secondary,
+html[data-theme="dark"] .iconbtn,
+html[data-theme="dark"] button.iconbtn {
+  border-color: var(--ds-border-strong);
+  background: var(--ds-surface-raised);
+  color: var(--ds-text);
+}
+
+html[data-theme="dark"] .secondary:hover,
+html[data-theme="dark"] button.secondary:hover,
+html[data-theme="dark"] .iconbtn:hover,
+html[data-theme="dark"] button.iconbtn:hover {
+  border-color: #8b68ef;
+  background: #211b38;
+  color: #e8ddff;
+}
+
+html[data-theme="dark"] .ghost,
+html[data-theme="dark"] button.ghost {
+  color: var(--ds-text-muted);
+}
+
+html[data-theme="dark"] .ghost:hover,
+html[data-theme="dark"] button.ghost:hover {
+  border-color: var(--ds-border);
+  background: var(--ds-surface-raised);
+  color: var(--ds-text);
+}
+
+html[data-theme="dark"] :where(input:not([type="checkbox"]):not([type="radio"]):not([type="range"]), select, textarea),
+html[data-theme="dark"] .toolbar select,
+html[data-theme="dark"] .field input,
+html[data-theme="dark"] .field textarea,
+html[data-theme="dark"] .field select {
+  border-color: var(--ds-border-strong);
+  background: var(--ds-surface-raised);
+  color: var(--ds-text);
+}
+
+html[data-theme="dark"] .search,
+html[data-theme="dark"] .filterChip,
+html[data-theme="dark"] .readerTool {
+  border-color: var(--ds-border);
+  background: var(--ds-surface-raised);
+  color: var(--ds-text);
+}
+
+html[data-theme="dark"] .filterChip[aria-pressed="true"],
+html[data-theme="dark"] .filterChip.active,
+html[data-theme="dark"] .readerTool[aria-pressed="true"],
+html[data-theme="dark"] .readerTool.active {
+  border-color: #8b68ef;
+  background: rgba(117, 71, 223, .2);
+  color: #d8c8ff;
+}
+
+/* Keep controls usable without causing layout overflow on narrow screens. */
+@media (max-width: 760px) {
+  :where(.primary, .secondary, .ghost, .iconbtn) {
+    max-width: 100%;
+  }
+
+  .field input,
+  .field textarea,
+  .field select,
+  .toolbar select {
+    min-width: 0;
+  }
+}
+
+@media (forced-colors: active) {
+  :where(.primary, .secondary, .ghost, .iconbtn, input, select, textarea) {
+    forced-color-adjust: auto;
+  }
+}
+
+/* Navigation finish: editorial hierarchy with stable hit areas. */
+.top {
+  border-bottom-color: var(--ds-border);
+  background: var(--ds-surface);
+  color: var(--ds-text);
+}
+
+.top .brandText b {
+  color: var(--ds-text);
+  font-family: var(--font-display);
+  font-weight: 800;
+  letter-spacing: .075em;
+}
+
+.top .brandText small {
+  color: var(--ds-text-muted);
+  letter-spacing: .025em;
+}
+
+.top .navlinks a {
+  min-height: 40px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid transparent;
+  border-radius: var(--radius-pill);
+  padding: 8px 12px;
+  color: var(--ds-text-muted);
+  font-weight: 600;
+  text-decoration: none;
+  transition: color var(--motion-fast) var(--ease-standard),
+    background-color var(--motion-fast) var(--ease-standard),
+    border-color var(--motion-fast) var(--ease-standard);
+}
+
+.top .navlinks a:hover {
+  color: var(--imperial-purple-hover);
+  background: var(--imperial-purple-soft);
+}
+
+.top .navlinks a.active,
+.top .navlinks a[aria-current="page"] {
+  color: var(--imperial-purple-hover);
+  background: var(--imperial-purple-soft);
+  border-color: rgba(109, 59, 232, .14);
+}
+
+.menuToggle {
+  min-width: 44px;
+  min-height: 44px;
+  border: 1px solid var(--ds-border);
+  border-radius: var(--radius-md);
+  background: var(--ds-surface);
+  color: var(--ds-text);
+}
+
+.menuToggle:hover,
+.menuToggle[aria-expanded="true"] {
+  border-color: var(--imperial-purple);
+  background: var(--imperial-purple-soft);
+}
+
+html[data-theme="dark"] .top {
+  background: var(--ds-surface);
+  border-bottom-color: var(--ds-border);
+}
+
+html[data-theme="dark"] .top .brandText b {
+  color: var(--ds-text);
+}
+
+html[data-theme="dark"] .top .brandText small {
+  color: var(--ds-text-muted);
+}
+
+html[data-theme="dark"] .top .navlinks a {
+  color: var(--ds-text-muted);
+}
+
+html[data-theme="dark"] .top .navlinks a:hover,
+html[data-theme="dark"] .top .navlinks a.active,
+html[data-theme="dark"] .top .navlinks a[aria-current="page"] {
+  color: #e7ddff;
+  background: rgba(117, 71, 223, .18);
+  border-color: rgba(167, 139, 250, .2);
+}
+
+html[data-theme="dark"] .menuToggle {
+  border-color: var(--ds-border);
+  background: var(--ds-surface-raised);
+  color: var(--ds-text);
+}
+
+html[data-theme="dark"] .menuToggle:hover,
+html[data-theme="dark"] .menuToggle[aria-expanded="true"] {
+  border-color: #8b68ef;
+  background: rgba(117, 71, 223, .18);
+}
+
+@media (max-width: 760px) {
+  .top .navlinks {
+    gap: 4px;
+  }
+
+  .top .navright {
+    min-width: 0;
+  }
+
+  .mobileNav {
+    padding-bottom: max(6px, env(safe-area-inset-bottom));
+    border-top-color: var(--ds-border);
+    background: var(--ds-surface);
+    color: var(--ds-text);
+  }
+
+  .mobileNav a {
+    min-width: 0;
+    min-height: 52px;
+    border-radius: var(--radius-md);
+    color: var(--ds-text-muted);
+    font-weight: 600;
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  .mobileNav a.active,
+  .mobileNav a[aria-current="page"] {
+    color: var(--imperial-purple-hover);
+    background: var(--imperial-purple-soft);
+  }
+
+  html[data-theme="dark"] .mobileNav {
+    border-top-color: var(--ds-border);
+    background: var(--ds-surface);
+  }
+
+  html[data-theme="dark"] .mobileNav a {
+    color: var(--ds-text-muted);
+  }
+
+  html[data-theme="dark"] .mobileNav a.active,
+  html[data-theme="dark"] .mobileNav a[aria-current="page"] {
+    color: #e7ddff;
+    background: rgba(117, 71, 223, .2);
+  }
+}
+
+
+/* Platform-wide mobile navigation and accessibility hardening. */
+:where(a, button, input, select, textarea, summary, [tabindex]):focus-visible {
+  outline: 3px solid var(--imperial-sapphire);
+  outline-offset: 3px;
+}
+
+:where(img, video, canvas, svg) {
+  max-width: 100%;
+}
+
+:where(.top, .navlinks, .navright, .mobileNav, .page, .wrap, .section) {
+  min-width: 0;
+}
+
+.top {
+  padding-top: env(safe-area-inset-top, 0px);
+}
+
+.mobileNav {
+  padding-left: max(8px, env(safe-area-inset-left));
+  padding-right: max(8px, env(safe-area-inset-right));
+  padding-bottom: max(6px, env(safe-area-inset-bottom));
+  box-sizing: border-box;
+}
+
+.mobileNav a {
+  display: flex;
+  flex: 1 1 0;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  overflow-wrap: anywhere;
+  user-select: none;
+}
+
+.top .navlinks a,
+.mobileNav a,
+.menuToggle {
+  touch-action: manipulation;
+}
+
+@media (max-width: 760px) {
+  .top {
+    max-width: 100%;
+  }
+
+  .top .navlinks {
+    max-width: 100%;
+    overscroll-behavior-x: contain;
+    scrollbar-width: none;
+  }
+
+  .top .navlinks::-webkit-scrollbar {
+    display: none;
+  }
+
+  .mobileNav {
+    display: flex;
+    gap: 2px;
+  }
+
+  .mobileNav a {
+    padding-inline: 3px;
+    font-size: clamp(.64rem, 2.7vw, .78rem);
+    line-height: 1.2;
+  }
+}
+
+@media (max-width: 360px) {
+  .mobileNav a {
+    letter-spacing: -.02em;
+    font-size: .64rem;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  :where(*, *::before, *::after) {
+    scroll-behavior: auto !important;
+    animation-duration: .01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: .01ms !important;
+  }
+}
+
+
+/* Mobile drawer: use the shared Imperial surface system and preserve a clear
+   keyboard focus indicator even where legacy hover styles are more specific. */
+.menuDrawer {
+  background: var(--ds-surface-raised);
+  color: var(--ds-text);
+  border-right: 1px solid var(--ds-border-strong);
+  box-shadow: 18px 0 56px rgba(5, 8, 20, .28);
+  padding-top: max(20px, env(safe-area-inset-top));
+  padding-bottom: max(18px, env(safe-area-inset-bottom));
+}
+
+.menuDrawer .menuDrawerHead {
+  border-bottom-color: var(--ds-border);
+}
+
+.menuDrawer .menuDrawerBrand span {
+  color: var(--ds-text);
+}
+
+.menuDrawer .menuDrawerBrand small,
+.menuDrawer .menuDrawerLabel {
+  color: var(--imperial-sapphire);
+}
+
+.menuDrawer .menuDrawerLabel {
+  font-weight: 750;
+}
+
+.menuDrawer > a:not(.menuDrawerBrand) {
+  color: var(--ds-text);
+  border-color: transparent;
+  border-radius: var(--radius-md);
+}
+
+.menuDrawer > a:not(.menuDrawerBrand):hover {
+  border-color: var(--ds-border);
+  background: var(--ds-surface-muted);
+  color: var(--imperial-purple-hover);
+}
+
+.menuDrawer > a:not(.menuDrawerBrand):focus-visible,
+.menuDrawer .menuDrawerBrand:focus-visible,
+.menuDrawer .menuClose:focus-visible {
+  outline: 3px solid var(--imperial-sapphire);
+  outline-offset: 3px;
+  border-color: var(--imperial-sapphire);
+}
+
+.menuDrawer .menuClose {
+  border-color: var(--ds-border-strong);
+  background: var(--ds-surface);
+  color: var(--ds-text);
+}
+
+.menuDrawer .menuDrawerFoot {
+  border-top-color: var(--ds-border);
+  color: var(--ds-text-muted);
+}
+
+html[data-theme="dark"] .menuDrawer {
+  background: var(--ds-surface-raised);
+  border-right-color: var(--ds-border-strong);
+  color: var(--ds-text);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .menuDrawer,
+  .menuDrawer * {
+    scroll-behavior: auto !important;
+  }
+}
+
+
+/* RTL language support: preserve logical reading and navigation flow. */
+html[dir="rtl"] .nav,
+html[dir="rtl"] .navlinks,
+html[dir="rtl"] .navright,
+html[dir="rtl"] .mobileNav,
+html[dir="rtl"] .menuDrawer {
+  direction: rtl;
+}
+html[dir="rtl"] .menuDrawer {
+  right: 0;
+  left: auto;
+  border-right: 0;
+  border-left: 1px solid var(--ds-border-strong);
+  box-shadow: -18px 0 56px rgba(5, 8, 20, .28);
+}
+html[dir="rtl"] .menuDrawer .menuDrawerHead,
+html[dir="rtl"] .menuDrawer .menuDrawerFoot {
+  direction: rtl;
+}
+html[dir="rtl"] .menuDrawer > a:not(.menuDrawerBrand) {
+  text-align: right;
+}
