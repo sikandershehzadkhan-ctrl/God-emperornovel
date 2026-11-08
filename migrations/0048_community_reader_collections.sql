@@ -21,3 +21,17 @@ CREATE TABLE IF NOT EXISTS community_collection_items (
 );
 CREATE INDEX IF NOT EXISTS idx_community_collection_items_order
   ON community_collection_items(collection_id, position, added_at);
+
+CREATE TRIGGER IF NOT EXISTS trg_community_collections_owner_limit
+BEFORE INSERT ON community_collections
+WHEN (SELECT COUNT(*) FROM community_collections WHERE owner_user_id=NEW.owner_user_id) >= 50
+BEGIN
+  SELECT RAISE(ABORT, 'community_collection_owner_limit');
+END;
+
+CREATE TRIGGER IF NOT EXISTS trg_community_collection_items_limit
+BEFORE INSERT ON community_collection_items
+WHEN (SELECT COUNT(*) FROM community_collection_items WHERE collection_id=NEW.collection_id) >= 100
+BEGIN
+  SELECT RAISE(ABORT, 'community_collection_item_limit');
+END;
