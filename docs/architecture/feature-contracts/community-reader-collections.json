@@ -13,7 +13,9 @@
     "docs/architecture/IMPERIAL-FEATURE-OWNERSHIP.json",
     "docs/architecture/IMPERIAL-MIGRATION-ALLOCATIONS.json",
     "package.json",
-    "migrations/.reservations/0048.json"
+    "migrations/.reservations/0048.json",
+    "scripts/test-worker-account-reader-isolation.mjs",
+    "scripts/test-community-reader-collections-d1.py"
   ],
   "sharedSurfaces": [
     "src/index.js",
@@ -85,12 +87,14 @@
       "test-api-route-method-matrix.mjs"
     ],
     "integration": [
-      "Pending local Wrangler/D1 two-account API integration."
+      "test-community-reader-collections-d1.py",
+      "test-worker-account-reader-isolation.mjs"
     ],
     "isolation": [
-      "Non-owner cannot read private collection details.",
-      "Non-owner cannot edit/delete a collection or mutate its items.",
-      "Unpublished and rights-ineligible novels cannot be added or publicly projected."
+      "Two-account Worker/D1 test proves private collection listing and detail isolation.",
+      "Non-owner cannot edit or delete a collection or mutate its items.",
+      "Only published rights-eligible novels may be added or publicly projected.",
+      "D1 triggers reject the 51st collection and 101st item under concurrent-safe database enforcement."
     ],
     "buildCommands": [
       "npm run build",
@@ -136,6 +140,8 @@
     "Collection mutation always binds to the authenticated owner.",
     "Only published rights-eligible novels may be added or projected.",
     "Duplicate membership and configured collection limits are enforced.",
-    "API route inventory and Worker source fingerprints match the exact PR source."
+    "API route inventory and Worker source fingerprints match the exact PR source.",
+    "Two-account local Worker/D1 integration proves private collection isolation and owner-only mutations.",
+    "D1-compatible SQLite integration proves owner and item quotas, duplicate membership and cascading deletion."
   ]
 }
