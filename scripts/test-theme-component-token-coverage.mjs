@@ -41,7 +41,7 @@ assert.ok(glassCss.includes("html[data-theme] .top") && glassCss.includes("html[
 assert.ok(glassCss.includes("var(--in-overlay)") && glassCss.includes("var(--glass-surface-raised)") && glassCss.includes("var(--glass-border)"), "Glass surfaces must consume semantic theme tokens");
 assert.ok(!glassCss.includes('html:not([data-theme="dark"])'), "Glass styling must not treat every non-dark theme as Light");
 assert.ok(css.includes("@media(forced-colors:active)") && css.includes("@media(prefers-reduced-motion:reduce)"), "Theme layer must preserve forced-colors and reduced-motion fallbacks");
-assert.ok(css.includes("html[data-theme] :where(button,input:not([type=\\"checkbox\\"]):not([type=\\"range\\"]),select,textarea,[role=\\"button\\"]){min-height:44px}"), "Primary form and button controls must meet the 44px touch-height baseline");
+assert.ok(css.includes('html[data-theme] :where(button,input:not([type="checkbox"]):not([type="range"]),select,textarea,[role="button"]){min-height:44px}'), "Primary form and button controls must meet the 44px touch-height baseline");
 assert.ok(css.includes("html[data-theme] .readerTool{min-width:44px;min-height:44px}"), "Reader toolbar buttons must meet 44px minimum targets");
 assert.ok(css.includes("html[data-theme] .readerTools{flex:1 0 100%;width:100%;justify-content:space-between;gap:5px}"), "Mobile reader toolbar must wrap to preserve 44px targets without horizontal overflow");
 
