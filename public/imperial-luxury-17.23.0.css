@@ -849,3 +849,20 @@ html[data-theme] .formatLink:focus-visible,html[data-theme] .homeFormatCard:focu
 
 .readerPage[data-reader-theme="light"],.readerPage[data-reader-theme="sepia"]{color-scheme:light}
 .readerPage[data-reader-theme="dark"],.readerPage[data-reader-theme="midnight"],.readerPage[data-reader-theme="imperial"],.readerPage[data-reader-theme="cosmic"]{color-scheme:dark}
+
+
+/* High-contrast preference overrides semantic tokens for every global theme. */
+html[data-theme="light"][data-high-contrast="true"]{--in-text:#080616;--in-text-muted:#39354B;--in-line:#777087;--in-panel:#FFFFFF;--in-panel-raised:#F0F0F5;--in-surface-soft:#F0F0F5;--in-control-bg:#FFFFFF;--in-focus:#0F52BA;--in-overlay:rgba(255,255,255,.99)}
+html[data-theme="dark"][data-high-contrast="true"]{--in-text:#FFFFFF;--in-text-muted:#E0D9EE;--in-line:#76658B;--in-panel:#101A1F;--in-panel-raised:#202A30;--in-surface-soft:#202A30;--in-control-bg:#202A30;--in-focus:#B78AE2;--in-overlay:rgba(8,13,18,.99)}
+html[data-theme="midnight"][data-high-contrast="true"]{--in-text:#FFFFFF;--in-text-muted:#E5EBFF;--in-line:#8395B8;--in-panel:#0B1220;--in-panel-raised:#1A2742;--in-surface-soft:#1A2742;--in-control-bg:#1A2742;--in-focus:#8DB8FF;--in-overlay:rgba(8,13,24,.99)}
+html[data-theme="sepia"][data-high-contrast="true"]{--in-text:#20170F;--in-text-muted:#46351F;--in-line:#7B6447;--in-panel:#FBF3E4;--in-panel-raised:#E6D7BF;--in-surface-soft:#E6D7BF;--in-control-bg:#FBF3E4;--in-focus:#315F83;--in-overlay:rgba(247,239,227,.99)}
+html[data-theme="imperial"][data-high-contrast="true"]{--in-text:#FFFFFF;--in-text-muted:#E9DDF7;--in-line:#9A7EB5;--in-panel:#17122F;--in-panel-raised:#2C1B40;--in-surface-soft:#2C1B40;--in-control-bg:#2C1B40;--in-focus:#D0A9F0;--in-overlay:rgba(16,11,24,.99)}
+html[data-theme="cosmic"][data-high-contrast="true"]{--in-text:#FFFFFF;--in-text-muted:#DCE5FF;--in-line:#8298C5;--in-panel:#111A32;--in-panel-raised:#1E2D50;--in-surface-soft:#1E2D50;--in-control-bg:#1E2D50;--in-focus:#8DB8FF;--in-overlay:rgba(8,13,27,.99)}
+
+/* The reader's accessibility preference is independent of the global site theme. */
+html[data-high-contrast="true"] .readerPage[data-reader-theme="light"]{--reader-text:#080616;--reader-muted:#39354B;--reader-line:#777087;--reader-panel:#FFFFFF;--reader-panel-raised:#F0F0F5;--reader-surface-soft:#F0F0F5;--reader-focus:#0F52BA}
+html[data-high-contrast="true"] .readerPage[data-reader-theme="dark"]{--reader-text:#FFFFFF;--reader-muted:#E0D9EE;--reader-line:#76658B;--reader-panel:#111426;--reader-panel-raised:#20243B;--reader-surface-soft:#20243B;--reader-focus:#B78AE2}
+html[data-high-contrast="true"] .readerPage[data-reader-theme="midnight"]{--reader-text:#FFFFFF;--reader-muted:#E5EBFF;--reader-line:#8395B8;--reader-panel:#0B1220;--reader-panel-raised:#1A2742;--reader-surface-soft:#1A2742;--reader-focus:#8DB8FF}
+html[data-high-contrast="true"] .readerPage[data-reader-theme="sepia"]{--reader-text:#20170F;--reader-muted:#46351F;--reader-line:#7B6447;--reader-panel:#FBF3E4;--reader-panel-raised:#E6D7BF;--reader-surface-soft:#E6D7BF;--reader-focus:#315F83}
+html[data-high-contrast="true"] .readerPage[data-reader-theme="imperial"]{--reader-text:#FFFFFF;--reader-muted:#E9DDF7;--reader-line:#9A7EB5;--reader-panel:#17122F;--reader-panel-raised:#2C1B40;--reader-surface-soft:#2C1B40;--reader-focus:#D0A9F0}
+html[data-high-contrast="true"] .readerPage[data-reader-theme="cosmic"]{--reader-text:#FFFFFF;--reader-muted:#DCE5FF;--reader-line:#8298C5;--reader-panel:#111A32;--reader-panel-raised:#1E2D50;--reader-surface-soft:#1E2D50;--reader-focus:#8DB8FF}
