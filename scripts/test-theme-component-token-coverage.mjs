@@ -40,7 +40,7 @@ for (const token of baseTokens) {
 assert.ok(legacyCss.includes("var(--panel)") && legacyCss.includes("var(--text)"), "Legacy application stylesheet must remain covered by the token bridge");
 const legacyThemeTokens = ["--bg:", "--bg2:", "--panel:", "--panel2:", "--panel3:", "--text:", "--muted:", "--line:", "--violet:", "--violet2:", "--violet3:", "--violet4:", "--cyan:", "--cyan2:", "--cyan3:", "--good:", "--danger:", "--shadow:", "--shadowSoft:", "--surface:", "--surface-2:", "--surface-3:", "--ink:", "--ink-2:", "--muted-2:", "--line-strong:"];
 for (const theme of themes) {
-  const legacyBlock = legacyCss.match(new RegExp('html\\[data-theme="' + theme + '"\\]\\s*\\{([^}]+)\\}'))?.[1] || "";
+  const legacyBlock = [...legacyCss.matchAll(new RegExp('html\\[data-theme="' + theme + '"\\]\\s*\\{([^}]+)\\}', "g"))].map(match => match[1]).find(block => legacyThemeTokens.every(token => block.includes(token))) || "";
   assert.ok(legacyBlock.includes("color-scheme:" + (theme === "light" || theme === "sepia" ? "light" : "dark")), "Legacy shell native controls must follow " + theme);
   for (const token of legacyThemeTokens) assert.ok(legacyBlock.includes(token), "Legacy shell token " + token + " missing for " + theme);
   assert.ok(legacyCss.includes('html[data-theme="' + theme + '"][data-high-contrast="true"]'), "Legacy shared components lack high-contrast token overrides for " + theme);
