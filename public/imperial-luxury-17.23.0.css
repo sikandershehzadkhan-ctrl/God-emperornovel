@@ -715,3 +715,6 @@ html[data-theme] .novelReaction[aria-pressed=true]{border-color:var(--in-accent)
 html[data-theme] .reactReactionError{color:var(--in-danger)}
 html[data-theme] .ratingIslandSummary{color:var(--in-text-muted)}
 html[data-theme] .ratingIslandSummary strong{color:var(--in-text)}
+
+html[data-theme] .formatLink:hover,html[data-theme] .homeFormatCard:hover{background:var(--in-surface-soft);border-color:var(--in-accent)}
+html[data-theme] .formatLink:focus-visible,html[data-theme] .homeFormatCard:focus-visible{outline:3px solid var(--in-focus)!important;outline-offset:3px;border-color:var(--in-focus)}
