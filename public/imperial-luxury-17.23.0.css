@@ -899,3 +899,14 @@ html[data-theme] .portalLink,html[data-theme] .pill,html[data-theme] .rankBadge{
 html[data-theme] .pill,html[data-theme] .rankBadge{background:var(--in-surface-soft)}
 html[data-theme] :where(a,button,input,select,textarea,[role="button"],[tabindex]):focus-visible{outline-color:var(--in-focus)}
 html[data-theme] .skipLink{border-color:var(--in-focus);background:var(--in-panel);color:var(--in-text)}
+html[data-theme] .brand small,html[data-theme] .navlinks a,html[data-theme] .mobileNav a,html[data-theme] .menuDrawer a{color:var(--in-text-muted)}
+html[data-theme] .navlinks a.active,html[data-theme] .mobileNav a.active{color:var(--in-accent);background:var(--in-surface-soft);border-color:var(--in-line)}
+html[data-theme] .menuToggle,html[data-theme] .menuDrawer{background:var(--in-panel);color:var(--in-text);border-color:var(--in-line)}
+html[data-theme] .footer{background:var(--in-panel);color:var(--in-text-muted);border-color:var(--in-line)}
+html[data-theme] .footer a,html[data-theme] .unlockBanner a{color:var(--in-link)}
+html[data-theme] .footer a:hover{color:var(--in-accent)}
+html[data-theme] .catalogCover{background:var(--in-surface-soft);color:var(--in-text)}
+html[data-theme] .secondary,html[data-theme] .ghost{background:var(--in-surface-soft);color:var(--in-text);border-color:var(--in-line)}
+html[data-theme] textarea,html[data-theme] input,html[data-theme] select{background:var(--in-control-bg);color:var(--in-text);border-color:var(--in-line)}
+html[data-theme] .mark{border-color:var(--in-accent)}
+
