@@ -9,6 +9,23 @@ const routes = [
 ];
 
 for (const route of routes) {
+  let bodyCalls = 0;
+  let databaseCalls = 0;
+  const response = await handleCommunityCollectionsRequest({
+    req: { method: route.method },
+    env: { DB: { prepare() { databaseCalls++; throw new Error('unauthenticated requests must not reach the database'); } } },
+    url: new URL(route.pathname, 'https://imperial.example'),
+    u: null,
+    body: async () => { bodyCalls++; return { title: 'Should not be read' }; },
+    json: (data, status = 200) => ({ data, status }),
+    need: () => ({ status: 401, data: { error: 'Authentication required' } })
+  });
+  assert.equal(response.status, 401, 'all collection writes must require authentication');
+  assert.equal(bodyCalls, 0, 'authentication must be checked before parsing request bodies');
+  assert.equal(databaseCalls, 0, 'unauthenticated collection writes must not access the database');
+}
+
+for (const route of routes) {
   for (const value of invalidBodies) {
     let databaseCalls = 0;
     const response = await handleCommunityCollectionsRequest({
