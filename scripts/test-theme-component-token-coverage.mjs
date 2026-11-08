@@ -25,6 +25,12 @@ const legacyAliases = ["--bg:", "--bg2:", "--panel:", "--panel2:", "--panel3:", 
 for (const alias of legacyAliases) assert.ok(css.includes(alias), "Missing legacy variable bridge: " + alias);
 const expectedMappings = ["--bg:var(--in-canvas)", "--bg2:var(--in-surface-soft)", "--panel:var(--in-panel)", "--panel2:var(--in-panel-raised)", "--text:var(--in-text)", "--muted:var(--in-text-muted)", "--line:var(--in-line)", "--violet:var(--in-accent)", "--violet4:var(--in-accent)", "--surface:var(--in-panel)", "--ink:var(--in-text)", "--line-strong:var(--in-focus)", "--brand-purple:var(--in-accent)", "--brand-cyan:var(--in-link)"];
 for (const mapping of expectedMappings) assert.ok(css.includes(mapping), "Legacy alias must point to its semantic token: " + mapping);
+const aliasBlock = css.match(/html\\[data-theme\\]\\s*\\{([^}]+)\\}/)?.[1] || "";
+const intentionallyUnmapped = new Set(["--good", "--danger", "--warning", "--lime", "--pink", "--max", "--radius", "--motion-fast", "--motion-med", "--motion-slow"]);
+const baseTokens = [...new Set([...legacyCss.matchAll(/(--[a-zA-Z0-9_-]+)\\s*:/g)].map(match => match[1]))];
+for (const token of baseTokens) {
+  if (!intentionallyUnmapped.has(token)) assert.ok(aliasBlock.includes(token + ":"), "Legacy theme token lacks a semantic bridge: " + token);
+}
 assert.ok(legacyCss.includes("var(--panel)") && legacyCss.includes("var(--text)"), "Legacy application stylesheet must remain covered by the token bridge");
 assert.ok(runtime.includes("readerPage.dataset.readerTheme=chosen") && runtime.includes("imperial_reader_theme"), "Reader theme must remain independently scoped and persisted");
 for (const readerTheme of ["light", "dark", "midnight", "sepia", "imperial", "cosmic"]) assert.ok(legacyCss.includes('.readerPage[data-reader-theme="' + readerTheme + '"]'), "Missing independently scoped reader theme: " + readerTheme);
