@@ -651,7 +651,7 @@ html[data-theme]{
   --violet:var(--in-accent);
   --violet2:var(--in-accent);
   --violet3:var(--in-surface-soft);
-  --violet4:var(--in-action-bg);
+  --violet4:var(--in-accent);
   --indigo:var(--in-accent);
   --gold:var(--in-accent);
   --gold2:var(--in-accent);
