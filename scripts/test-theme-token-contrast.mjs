@@ -82,4 +82,22 @@ for (const theme of themes) {
     assert.ok(value >= 3, "High-contrast reader " + theme + " " + name + " is " + value.toFixed(2) + ":1, below 3:1 UI contrast");
   }
 }
-console.log("PASS: normal and high-contrast global/reader palettes meet text and UI contrast thresholds.");
+const prefersBlock = css.slice(css.lastIndexOf("@media(prefers-contrast:more)"));
+assert.ok(prefersBlock.startsWith("@media(prefers-contrast:more)"), "Missing OS contrast preference media block");
+for (const theme of themes) {
+  const globalBase = [...css.matchAll(new RegExp('html\\\\[data-theme="' + theme + '"\\\\]\\\\s*\\\\{([^}]+)\\\\}', "g"))].map(match => match[1]).find(value => value.includes("--in-canvas:"));
+  const globalOS = prefersBlock.match(new RegExp('html\\\\[data-theme="' + theme + '"\\\\]\\\\s*\\\\{([^}]+)\\\\}'))?.[1];
+  const readerBase = css.match(new RegExp('\\\\.readerPage\\\\[data-reader-theme="' + theme + '"\\\\]\\\\s*\\\\{([^}]+)\\\\}'))?.[1];
+  const readerOS = prefersBlock.match(new RegExp('\\\\.readerPage\\\\[data-reader-theme="' + theme + '"\\\\]\\\\s*\\\\{([^}]+)\\\\}'))?.[1];
+  assert.ok(globalBase && globalOS && readerBase && readerOS, "Missing OS high-contrast map for " + theme);
+  const get = (block, name) => block.match(new RegExp(name + ":(#[0-9A-Fa-f]{6})"))?.[1];
+  for (const [scope, base, os, canvasToken, textToken, mutedToken, lineToken, focusToken] of [
+    ["global", globalBase, globalOS, "--in-canvas", "--in-text", "--in-text-muted", "--in-line", "--in-focus"],
+    ["reader", readerBase, readerOS, "--reader-canvas", "--reader-text", "--reader-muted", "--reader-line", "--reader-focus"]
+  ]) {
+    const canvas = get(base, canvasToken);
+    for (const token of [textToken, mutedToken]) assert.ok(contrast(canvas, get(os, token)) >= 4.5, "OS high-contrast " + scope + " " + theme + " " + token + " fails text contrast");
+    for (const token of [lineToken, focusToken]) assert.ok(contrast(canvas, get(os, token)) >= 3, "OS high-contrast " + scope + " " + theme + " " + token + " fails UI contrast");
+  }
+}
+console.log("PASS: manual and operating-system high-contrast global/reader palettes meet text and UI contrast thresholds.");
