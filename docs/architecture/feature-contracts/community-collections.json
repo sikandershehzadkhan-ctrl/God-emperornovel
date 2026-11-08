@@ -1,0 +1,147 @@
+{
+  "featureId": "community-collections",
+  "domainOwner": "community",
+  "technicalIntegrator": "platform-kernel",
+  "ownedPaths": [
+    "src/features/community-collections/",
+    "src/index.js",
+    "migrations/0048_community_reader_collections.sql",
+    "scripts/test-community-reader-collections.mjs",
+    "scripts/test-api-route-method-matrix.mjs",
+    "docs/architecture/IMPERIAL-API-ROUTE-METHOD-MATRIX-01N-37.json",
+    "docs/architecture/IMPERIAL-AUTHORIZATION-OWNERSHIP-MATRIX-01N-38.json",
+    "docs/architecture/IMPERIAL-FEATURE-OWNERSHIP.json",
+    "docs/architecture/IMPERIAL-MIGRATION-ALLOCATIONS.json",
+    "package.json",
+    "migrations/.reservations/0048.json",
+    "scripts/test-worker-account-reader-isolation.mjs",
+    "scripts/test-community-reader-collections-d1.py"
+  ],
+  "sharedSurfaces": [
+    "src/index.js",
+    "package.json",
+    "docs/architecture/IMPERIAL-API-ROUTE-METHOD-MATRIX-01N-37.json",
+    "docs/architecture/IMPERIAL-AUTHORIZATION-OWNERSHIP-MATRIX-01N-38.json"
+  ],
+  "dependencies": [
+    "community",
+    "identity",
+    "catalog",
+    "rights",
+    "platform-data",
+    "platform-quality",
+    "platform-kernel",
+    "platform-architecture",
+    "delivery-platform",
+    "repository-operations"
+  ],
+  "routes": [
+    "GET /api/community/collections",
+    "POST /api/community/collections",
+    "GET /api/community/collections/mine",
+    "GET /api/community/collections/:id",
+    "PATCH /api/community/collections/:id",
+    "DELETE /api/community/collections/:id",
+    "POST /api/community/collections/:id/items",
+    "DELETE /api/community/collections/:id/items/:novelId"
+  ],
+  "apiContracts": [
+    "Collections are private by default; public listing includes only public collections.",
+    "All collection mutations require an authenticated session and are scoped to session u.id.",
+    "Private collection detail is indistinguishable from not-found to non-owners.",
+    "Only published novels with original, public_domain, licensed or authorized rights status may be added or projected.",
+    "A reader may own at most 50 collections; each collection may contain at most 100 novels.",
+    "Database uniqueness prevents duplicate novel membership within a collection."
+  ],
+  "dataEntities": [
+    "community_collections",
+    "community_collection_items"
+  ],
+  "migrationPlan": {
+    "required": true,
+    "proposedNumbers": [
+      48
+    ],
+    "canonicalEntityReuse": "New normalized collection and collection-item entities; foreign keys cascade on owner, collection and novel deletion.",
+    "runtimeSchemaVersion": null,
+    "backwardCompatibility": "Additive numbered D1 migration; no existing reader, novel, or chapter records are rewritten.",
+    "rollbackOrForwardRepair": "Do not drop collection tables after deployment. Revert application routes if required and preserve reader-created collection data for a forward repair."
+  },
+  "uiLifecycle": {
+    "shellOwner": "experience-shell",
+    "ssrBehavior": "No SSR changes in this backend slice.",
+    "clientBootBehavior": "Reader-facing UI is a follow-up slice.",
+    "servedBundleParity": "No served browser bundle changes in this backend slice."
+  },
+  "privacySecurity": {
+    "authentication": "Collection creation, mutation and private listing require the existing authenticated session.",
+    "authorization": "Every write scopes collection owner_user_id to session u.id; delete-item SQL rechecks owner in the mutation predicate.",
+    "ownerScoping": "Client-supplied owner IDs are ignored. Private collection detail returns 404 to non-owners.",
+    "csrf": "Existing Worker write-route Origin/Sec-Fetch-Site policy remains in force.",
+    "rateAndSizeLimits": "Title 80 characters, description 500 characters, 50 collections per owner and 100 novels per collection.",
+    "rightsAndPrivacy": "Public collection contents are filtered to published and rights-eligible novels; no chapter bodies or private user details are exposed."
+  },
+  "tests": {
+    "unit": [
+      "test-community-reader-collections.mjs",
+      "test-api-route-method-matrix.mjs"
+    ],
+    "integration": [
+      "test-community-reader-collections-d1.py",
+      "test-worker-account-reader-isolation.mjs"
+    ],
+    "isolation": [
+      "Two-account Worker/D1 test proves private collection listing and detail isolation.",
+      "Non-owner cannot edit or delete a collection or mutate its items.",
+      "Only published rights-eligible novels may be added or publicly projected.",
+      "D1 triggers reject the 51st collection and 101st item under concurrent-safe database enforcement."
+    ],
+    "buildCommands": [
+      "npm run build",
+      "npm run check:cloudflare-readiness"
+    ]
+  },
+  "rollout": {
+    "flags": [],
+    "stagingSteps": [
+      "Run all repository CI checks on the exact PR head.",
+      "Apply migration 0048 to a fresh local D1 database.",
+      "Add two-account Worker/D1 integration tests before runtime certification.",
+      "Implement reader-facing community collection UI as a separate slice."
+    ]
+  },
+  "rollback": {
+    "codeRollback": "Revert collection route composition and module code if needed; do not delete user data tables.",
+    "dataRollbackOrForwardRepair": "Preserve additive collection rows; repair forward with a new migration if schema correction is needed.",
+    "monitoringSignals": [
+      "Collection creation failures",
+      "Owner-scope authorization denials",
+      "Duplicate collection-item conflicts",
+      "Rights-eligibility rejection responses"
+    ]
+  },
+  "affectedDomains": [
+    "community",
+    "platform-kernel",
+    "platform-data",
+    "platform-quality",
+    "platform-architecture",
+    "experience-shell",
+    "repository-operations",
+    "identity",
+    "catalog",
+    "rights",
+    "delivery-platform"
+  ],
+  "changeSummary": "Adds private-by-default reader collections with public discovery, owner-scoped CRUD, bounded novel membership and rights-aware projections.",
+  "acceptanceCriteria": [
+    "Migration 0048 applies cleanly to a fresh D1 database.",
+    "Private collections are never visible to non-owners.",
+    "Collection mutation always binds to the authenticated owner.",
+    "Only published rights-eligible novels may be added or projected.",
+    "Duplicate membership and configured collection limits are enforced.",
+    "API route inventory and Worker source fingerprints match the exact PR source.",
+    "Two-account local Worker/D1 integration proves private collection isolation and owner-only mutations.",
+    "D1-compatible SQLite integration proves owner and item quotas, duplicate membership and cascading deletion."
+  ]
+}
