@@ -4,7 +4,7 @@ const source=readFileSync('src/features/community-collections/index.mjs','utf8')
 const migration=readFileSync('migrations/0048_community_reader_collections.sql','utf8');
 const worker=readFileSync('src/index.js','utf8');
 for(const route of ["'/api/community/collections'","'/api/community/collections/mine'"])assert.ok(source.includes(route),`Missing collection route ${route}`);
-for(const invariant of ['owner_user_id=?','publication_status=\\'published\\'','rights_status IN (\\'original\\',\\'public_domain\\',\\'licensed\\',\\'authorized\\')','MAX_COLLECTIONS_PER_OWNER=50','MAX_ITEMS_PER_COLLECTION=100'])assert.ok(source.includes(invariant),`Missing collection invariant: ${invariant}`);
+for(const invariant of ['owner_user_id=?','publication_status='published'','rights_status IN ('original','public_domain','licensed','authorized')','MAX_COLLECTIONS_PER_OWNER=50','MAX_ITEMS_PER_COLLECTION=100'])assert.ok(source.includes(invariant),`Missing collection invariant: ${invariant}`);
 assert.ok(migration.includes('PRIMARY KEY(collection_id, novel_id)'),'collection items must not duplicate a novel');
 assert.ok(migration.includes("visibility IN ('private','public')"),'visibility must be constrained');
 assert.ok(worker.includes('handleCommunityCollectionsRequest'),'Worker must compose community collections');
