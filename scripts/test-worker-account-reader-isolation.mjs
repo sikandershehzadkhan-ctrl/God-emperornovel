@@ -279,6 +279,45 @@ try{
   const eligiblePublish=await request(origin,"/api/author/chapters/"+authorChapterId+"/publish",{method:"POST",cookie:accountA.cookie,origin,body:{publication_status:"published"}});
   assert.equal(eligiblePublish.status,200,"valid parent status and rights evidence should allow chapter publication");
 
+  // Reader collections must preserve private ownership, public visibility choice and rights eligibility.
+  const collectionA=await request(origin,"/api/community/collections",{method:"POST",cookie:accountA.cookie,origin,body:{title:"Account A Private Shelf",description:"A private reader collection.",visibility:"private"}});
+  assert.equal(collectionA.status,201,"authenticated readers can create a private collection");
+  const collectionAId=collectionA.data.id;
+  assert.equal(collectionA.data.visibility,"private","collections must default to private unless explicitly public");
+  const collectionMineB=await request(origin,"/api/community/collections/mine",{cookie:accountB.cookie});
+  assert.equal(collectionMineB.status,200);
+  assert.equal(collectionMineB.data.some(item=>item.id===collectionAId),false,"another reader cannot list a private collection");
+  const collectionPrivateB=await request(origin,"/api/community/collections/"+collectionAId,{cookie:accountB.cookie});
+  assert.equal(collectionPrivateB.status,404,"private collection details must be hidden from non-owners");
+  const collectionForeignPatch=await request(origin,"/api/community/collections/"+collectionAId,{method:"PATCH",cookie:accountB.cookie,origin,body:{title:"Stolen Shelf",description:"",visibility:"public"}});
+  assert.equal(collectionForeignPatch.status,404,"another reader cannot edit a collection");
+  const collectionForeignDelete=await request(origin,"/api/community/collections/"+collectionAId,{method:"DELETE",cookie:accountB.cookie,origin});
+  assert.equal(collectionForeignDelete.status,404,"another reader cannot delete a collection");
+  const collectionAdd=await request(origin,"/api/community/collections/"+collectionAId+"/items",{method:"POST",cookie:accountA.cookie,origin,body:{novel_id:authorNovelId}});
+  assert.equal(collectionAdd.status,201,"collection owner can add a published rights-eligible novel");
+  const collectionDuplicate=await request(origin,"/api/community/collections/"+collectionAId+"/items",{method:"POST",cookie:accountA.cookie,origin,body:{novel_id:authorNovelId}});
+  assert.equal(collectionDuplicate.status,409,"a novel cannot be duplicated within one collection");
+  const collectionForeignAdd=await request(origin,"/api/community/collections/"+collectionAId+"/items",{method:"POST",cookie:accountB.cookie,origin,body:{novel_id:authorNovelId}});
+  assert.equal(collectionForeignAdd.status,404,"another reader cannot add items to a foreign collection");
+  const collectionRightsDenied=await request(origin,"/api/community/collections/"+collectionAId+"/items",{method:"POST",cookie:accountA.cookie,origin,body:{novel_id:990002}});
+  assert.equal(collectionRightsDenied.status,404,"rights-ineligible novels cannot enter reader collections");
+  const collectionPrivateOwner=await request(origin,"/api/community/collections/"+collectionAId,{cookie:accountA.cookie});
+  assert.equal(collectionPrivateOwner.status,200);
+  assert.ok(collectionPrivateOwner.data.items.some(item=>item.id===authorNovelId),"owner can read collection membership");
+  const collectionPublicUpdate=await request(origin,"/api/community/collections/"+collectionAId,{method:"PATCH",cookie:accountA.cookie,origin,body:{title:"Account A Public Shelf",description:"A curated public shelf.",visibility:"public"}});
+  assert.equal(collectionPublicUpdate.status,200);
+  const collectionPublicList=await request(origin,"/api/community/collections");
+  assert.ok(collectionPublicList.data.some(item=>item.id===collectionAId),"public collection becomes discoverable only after owner opts in");
+  const collectionPublicB=await request(origin,"/api/community/collections/"+collectionAId,{cookie:accountB.cookie});
+  assert.equal(collectionPublicB.status,200,"public collection can be read by another account");
+  assert.ok(collectionPublicB.data.items.some(item=>item.id===authorNovelId),"public collection exposes only eligible story metadata");
+  const collectionForeignItemDelete=await request(origin,"/api/community/collections/"+collectionAId+"/items/"+authorNovelId,{method:"DELETE",cookie:accountB.cookie,origin});
+  assert.equal(collectionForeignItemDelete.status,404,"another reader cannot remove a foreign collection item");
+  const collectionOwnerItemDelete=await request(origin,"/api/community/collections/"+collectionAId+"/items/"+authorNovelId,{method:"DELETE",cookie:accountA.cookie,origin});
+  assert.equal(collectionOwnerItemDelete.status,200,"collection owner can remove a story from its shelf");
+  const collectionOwnerDelete=await request(origin,"/api/community/collections/"+collectionAId,{method:"DELETE",cookie:accountA.cookie,origin});
+  assert.equal(collectionOwnerDelete.status,200,"collection owner can delete its collection");
+
   // Creator Studio and Publishing Studio are tested through the real local Worker and fresh D1.
   const authorNovelB=await request(origin,"/api/author/novels",{method:"POST",cookie:accountB.cookie,origin,body:{title:"Account B Studio Novel",author:accountB.username,kind:"original",rights_status:"original",description:"Account B private work."}});
   assert.equal(authorNovelB.status,201,"account B should create its own author work");
