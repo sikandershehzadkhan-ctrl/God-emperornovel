@@ -73,8 +73,8 @@
   "uiLifecycle": {
     "shellOwner": "experience-shell",
     "ssrBehavior": "No SSR changes in this backend slice.",
-    "clientBootBehavior": "Community discovery renders public collections, owner-only private collection management, collection details and rights-cleared story membership; novel details provide an authenticated add-to-collection flow.",
-    "servedBundleParity": "public/app-17.23.0.js is kept byte-identical to public/app.js; browser UI changes are source/bundle synchronized."
+    "clientBootBehavior": "Community page renders authenticated owner management and public collection discovery; collection detail supports opening, item removal for owners, visibility changes, edits and deletion. Novel detail provides an authenticated add-to-collection flow.",
+    "servedBundleParity": "public/app.js and public/app-17.23.0.js are byte-identical; collection UI regression test enforces parity."
   },
   "privacySecurity": {
     "authentication": "Collection creation, mutation and private listing require the existing authenticated session.",
@@ -113,7 +113,7 @@
       "Run all repository CI checks on the exact PR head.",
       "Apply migration 0048 to a fresh local D1 database.",
       "Add two-account Worker/D1 integration tests before runtime certification.",
-      "Implement reader-facing community collection UI as a separate slice."
+      "Verify Community Collections UI on mobile and desktop with guest, owner and non-owner sessions; verify all 14 locale dictionaries and source/served bundle parity."
     ]
   },
   "rollback": {
@@ -139,7 +139,7 @@
     "rights",
     "delivery-platform"
   ],
-  "changeSummary": "Adds private-by-default reader collections with public discovery, owner-scoped CRUD, bounded novel membership and rights-aware projections.",
+  "changeSummary": "Adds D1-backed private-by-default reader collections with owner-scoped CRUD, rights-eligible novel membership, database-enforced quotas, a localized Community collection interface, novel-detail add flow, and integration regression coverage.",
   "acceptanceCriteria": [
     "Migration 0048 applies cleanly to a fresh D1 database.",
     "Private collections are never visible to non-owners.",
@@ -151,6 +151,9 @@
     "D1-compatible SQLite integration proves owner and item quotas, duplicate membership and cascading deletion.",
     "Community page exposes create, own collection management, public collection discovery and collection detail views.",
     "Novel detail page offers an authenticated add-to-collection action and handles empty collection state.",
-    "Versioned served browser bundle is byte-identical to public/app.js."
+    "Versioned served browser bundle is byte-identical to public/app.js.",
+    "Community page exposes create/manage own collections and browse public collections; private controls remain session-gated.",
+    "Collection detail supports public viewing and owner-only item removal; novel detail supports authenticated add-to-collection.",
+    "Collection interface localization covers all 14 supported locales and served browser bundle matches source."
   ]
 }
