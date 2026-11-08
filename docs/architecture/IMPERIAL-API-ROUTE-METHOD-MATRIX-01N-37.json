@@ -1400,8 +1400,8 @@
         "DELETE"
       ],
       "sourceLines": [
-        128,
-        138
+        129,
+        139
       ],
       "sourceFile": "src/features/creator-studio/index.mjs",
       "workerDispatchLines": [
@@ -1409,7 +1409,7 @@
       ],
       "methodGuardMissing": false,
       "authorization": "author(u); note mutation predicates require owner_user_id=u.id and confirm the parent novel remains owned by u.id.",
-      "routeMatchLine": 127
+      "routeMatchLine": 128
     },
     {
       "pathPattern": "/^\\/api\\/author\\/novels\\/\\d+\\/submit$/",
