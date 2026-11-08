@@ -49,6 +49,13 @@ assert.ok(css.includes("html[data-theme] .novelReaction[aria-pressed=true]"), "C
 
 
 assert.ok(runtime.includes("readerPage.dataset.readerTheme=chosen") && runtime.includes("imperial_reader_theme"), "Reader theme must remain independently scoped and persisted");
+for (const readerTheme of themes) {
+  const readerMap = css.includes('.readerPage[data-reader-theme="' + readerTheme + '"]{--reader-canvas:');
+  assert.ok(readerMap, "Reader theme must define an independent semantic canvas map: " + readerTheme);
+}
+assert.ok(css.includes(".readerPage .chapterDrawer{background:var(--reader-panel)") && css.includes(".readerPage .readerPrefs select,.readerPage .readerTool{background:var(--reader-surface-soft)"), "Reader drawer and controls must use reader-scoped tokens rather than the global site palette");
+assert.ok(css.includes(".readerPage .readerContent{color:var(--reader-text)}"), "Reader chapter text must use the independent reader text token");
+
 for (const readerTheme of ["light", "dark", "midnight", "sepia", "imperial", "cosmic"]) assert.ok(legacyCss.includes('.readerPage[data-reader-theme="' + readerTheme + '"]'), "Missing independently scoped reader theme: " + readerTheme);
 for (const token of ["var(--in-canvas)", "var(--in-text)", "var(--in-panel)", "var(--in-control-bg)", "var(--in-focus)"]) {
   assert.ok(css.includes(token), "Missing semantic token consumption: " + token);
