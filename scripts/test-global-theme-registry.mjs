@@ -7,7 +7,7 @@ const css = readFileSync("public/imperial-luxury-17.23.0.css", "utf8");
 const themes = ["light", "dark", "midnight", "sepia", "imperial", "cosmic"];
 for (const [name, source] of [["source app", app], ["versioned runtime", runtime]]) {
   assert.ok(source.includes("const allowed=['light','dark','midnight','sepia','imperial','cosmic']"), name + " must preserve all six supported site themes");
-  for (const theme of themes) assert.ok(source.includes('<option value="' + theme + '">'), name + " settings selector is missing " + theme);
+  for (const theme of themes) assert.ok(source.includes('<option value="' + theme + '" data-in-lang='), name + " settings selector is missing " + theme);
   assert.ok(source.includes("allowed.includes(chosen)?chosen:'light'"), name + " must safely fall back for invalid stored theme values");
 }
 for (const theme of themes) assert.ok(css.includes('html[data-theme="' + theme + '"]'), "Missing CSS token map for " + theme);
