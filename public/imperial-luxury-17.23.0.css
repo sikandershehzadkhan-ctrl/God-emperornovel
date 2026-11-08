@@ -691,3 +691,14 @@ html[data-theme] .quickCard small,html[data-theme] .ecosystemCopy,html[data-them
 html[data-theme] .ecosystemLink{color:var(--in-link)}
 html[data-theme] .ecosystemKicker{color:var(--in-accent)}
 html[data-theme] .statusBadge{background:var(--in-surface-soft);color:var(--in-accent);border-color:var(--in-line)}
+
+html[data-theme] .empty{background:var(--in-panel);color:var(--in-text);border-color:var(--in-line)}
+html[data-theme] .quickCard{background:var(--in-panel);color:var(--in-text);border-color:var(--in-line);box-shadow:none}
+html[data-theme] .quickCard>span{color:var(--in-accent)}
+html[data-theme] .quickCard:hover,html[data-theme] .chapter:hover,html[data-theme] .side a:hover{border-color:var(--in-accent)}
+html[data-theme] .iconbtn:hover,html[data-theme] .secondary:hover,html[data-theme] .ghost:hover{background:var(--in-surface-soft);border-color:var(--in-accent);color:var(--in-text)}
+html[data-theme] .pill.gold{background:var(--in-surface-soft);color:var(--in-accent);border-color:var(--in-line)}
+html[data-theme] .bootFallback{background:var(--in-canvas);color:var(--in-text)}
+html[data-theme] .bootFallback p{color:var(--in-text-muted)}
+html[data-theme] .bootCrest{border-color:var(--in-accent);color:var(--in-accent)}
+html[data-theme] .bootSpinner{border-color:var(--in-line);border-top-color:var(--in-accent)}
