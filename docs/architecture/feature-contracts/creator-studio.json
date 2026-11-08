@@ -122,7 +122,7 @@
     "platform-quality",
     "platform-architecture"
   ],
-  "changeSummary": "Defines the Creator-owned editorial workspace boundary for analytics, reader feedback, writing goals, private notes, editorial readiness and planning. Lifetime analytics totals are independent of the top-100 display list. Existing goals and notes migrations are reused.",
+  "changeSummary": "Defines the Creator-owned editorial workspace boundary for analytics, reader feedback, writing goals, private notes, editorial readiness and planning. Lifetime analytics totals are independent of the top-100 display list. Existing goals and notes migrations are reused. Correct the story-goal upsert target column order so authenticated owner IDs and novel IDs are persisted in their respective columns.",
   "acceptanceCriteria": [
     "All Creator routes are present in the API method inventory with module source evidence.",
     "All creator-facing reads and mutations are scoped to session u.id; admin role does not enable cross-owner access.",
