@@ -513,8 +513,8 @@
         "POST"
       ],
       "sourceLines": [
-        100,
-        111
+        101,
+        112
       ],
       "sourceFile": "src/features/creator-studio/index.mjs",
       "workerDispatchLines": [
@@ -544,7 +544,7 @@
         "GET"
       ],
       "sourceLines": [
-        174
+        175
       ],
       "sourceFile": "src/features/creator-studio/index.mjs",
       "workerDispatchLines": [
@@ -560,7 +560,7 @@
         "GET"
       ],
       "sourceLines": [
-        149
+        150
       ],
       "sourceFile": "src/features/creator-studio/index.mjs",
       "workerDispatchLines": [
