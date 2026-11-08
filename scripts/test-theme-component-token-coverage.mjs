@@ -77,6 +77,14 @@ const readerScope = css.match(/\.readerPage\[data-reader-theme\]\s*\{([^}]+)\}/)
 for (const mapping of ["--panel:var(--reader-panel)", "--text:var(--reader-text)", "--muted:var(--reader-muted)", "--gold2:var(--reader-accent)", "--cyan:var(--reader-link)", "--surface:var(--reader-panel)", "--good:var(--reader-good)", "--danger:var(--reader-danger)", "--warning:var(--reader-warning)", "--brand-purple:var(--reader-accent)", "--imperial-ink:var(--reader-text)"]) assert.ok(readerScope.includes(mapping), "Reader scope must override global legacy alias: " + mapping);
 
 for (const readerTheme of ["light", "dark", "midnight", "sepia", "imperial", "cosmic"]) assert.ok(legacyCss.includes('.readerPage[data-reader-theme="' + readerTheme + '"]'), "Missing independently scoped reader theme: " + readerTheme);
+const touchRule = 'html[data-theme] :where(button,input:not([type="checkbox"]):not([type="range"]),select,textarea,[role="button"]){min-height:44px}';
+assert.ok(css.includes(touchRule), "Interactive controls must meet the 44px minimum touch target baseline");
+assert.ok(css.includes('html[data-theme] :where(.primary,.secondary,.ghost,.iconbtn,.menuToggle,.menuClose,.readerBack,.navlinks a,.mobileNav a,.menuDrawer a,.readerChapterItem,.formatLink){min-height:44px}'), "Navigation, action and chapter links must meet the 44px minimum touch target baseline");
+assert.ok(css.includes('html[data-theme] .readerTool{min-width:44px;min-height:44px}'), "Reader tools must meet the 44px minimum touch target baseline");
+assert.ok(css.includes('@media(prefers-reduced-motion:reduce)'), "Theme layer must preserve reduced-motion preferences");
+assert.ok(css.includes('@media(forced-colors:active)'), "Theme layer must preserve operating-system forced-colors mode");
+assert.ok(css.includes('html[data-theme] :focus-visible{outline:2px solid var(--in-focus);outline-offset:3px}'), "Keyboard focus must use a visible semantic focus token");
+
 for (const token of ["var(--in-canvas)", "var(--in-text)", "var(--in-panel)", "var(--in-control-bg)", "var(--in-focus)"]) {
   assert.ok(css.includes(token), "Missing semantic token consumption: " + token);
 }
