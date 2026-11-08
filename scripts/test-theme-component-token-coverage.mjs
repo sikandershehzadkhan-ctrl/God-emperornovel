@@ -21,7 +21,7 @@ const sharedSelectors = [
   "html[data-theme] :focus-visible", "html[data-theme] .heroKicker", "html[data-theme] .heroTags a", "html[data-theme] .heroSideTop b", "html[data-theme] .ghost", "html[data-theme] .secondary", "html[data-theme] .portalLink:hover", "html[data-theme] .mark"
 ];
 for (const selector of sharedSelectors) assert.ok(css.includes(selector), "Missing semantic shared-component rule: " + selector);
-const legacyAliases = ["--bg:", "--bg2:", "--panel:", "--panel2:", "--panel3:", "--text:", "--muted:", "--line:", "--violet:", "--violet2:", "--violet3:", "--violet4:", "--surface:", "--surface-2:", "--surface-3:", "--ink:", "--ink-2:", "--line-strong:", "--brand-purple:", "--brand-cyan:"];
+const legacyAliases = ["--bg:", "--bg2:", "--panel:", "--panel2:", "--panel3:", "--text:", "--muted:", "--line:", "--violet:", "--violet2:", "--violet3:", "--violet4:", "--violet-strong:", "--cosmic:", "--electric:", "--cyan2:", "--cyan3:", "--gold3:", "--platinum:", "--imperial-black:", "--imperial-ink:", "--imperial-muted:", "--imperial-line:", "--imperial-violet:", "--imperial-navy:", "--surface:", "--surface-2:", "--surface-3:", "--ink:", "--ink-2:", "--line-strong:", "--brand-purple:", "--brand-cyan:", "--shadow:", "--shadowSoft:"];
 for (const alias of legacyAliases) assert.ok(css.includes(alias), "Missing legacy variable bridge: " + alias);
 assert.ok(legacyCss.includes("var(--panel)") && legacyCss.includes("var(--text)"), "Legacy application stylesheet must remain covered by the token bridge");
 assert.ok(runtime.includes("readerPage.dataset.readerTheme=chosen") && runtime.includes("imperial_reader_theme"), "Reader theme must remain independently scoped and persisted");
