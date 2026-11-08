@@ -580,7 +580,7 @@ html:is([data-theme="dark"],[data-theme="midnight"],[data-theme="imperial"],[dat
 
 /* Global theme registry: all six site themes share semantic tokens. */
 html[data-theme="light"]{color-scheme:light;--in-obsidian:#0B1215;--in-panel:#FFFFFF;--in-panel-raised:#F7F8FA;--in-line:rgba(11,18,21,.12);--in-purple:#6A0DAD;--in-sapphire:#0F52BA;--in-white:#0B1215;--in-muted:#536168}
-html[data-theme="dark"]{color-scheme:dark;--in-obsidian:#0B1215;--in-panel:#111A1F;--in-panel-raised:#162127;--in-line:rgba(255,255,255,.13);--in-purple:#6A0DAD;--in-sapphire:#0F52BA;--in-white:#FFFFFF;--in-muted:#C0C9CE}
+html[data-theme="dark"]{color-scheme:dark;--in-obsidian:#0B1215;--in-panel:#111A1F;--in-panel-raised:#162127;--in-line:rgba(255,255,255,.13);--in-purple:#B78AE2;--in-sapphire:#8DB8FF;--in-white:#FFFFFF;--in-muted:#C0C9CE}
 html[data-theme="midnight"]{color-scheme:dark;--in-obsidian:#080D18;--in-panel:#10182A;--in-panel-raised:#17223A;--in-line:rgba(156,177,220,.2);--in-purple:#8B5CF6;--in-sapphire:#4F8CFF;--in-white:#F4F7FF;--in-muted:#B0BDD8}
 html[data-theme="sepia"]{color-scheme:light;--in-obsidian:#332719;--in-panel:#F4EBDD;--in-panel-raised:#EDE0CC;--in-line:rgba(78,57,32,.2);--in-purple:#70418B;--in-sapphire:#315F83;--in-white:#332719;--in-muted:#66533D}
 html[data-theme="imperial"]{color-scheme:dark;--in-obsidian:#100B18;--in-panel:#1B1228;--in-panel-raised:#261837;--in-line:rgba(183,138,226,.22);--in-purple:#B78AE2;--in-sapphire:#5B8FE5;--in-white:#FBF7FF;--in-muted:#C8B9D8}
