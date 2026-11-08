@@ -54,4 +54,32 @@ for (const theme of themes) {
     assert.ok(value >= 4.5, "Reader " + theme + " white button text on " + name + " has " + value.toFixed(2) + ":1, below WCAG AA");
   }
 }
-console.log("PASS: global and independent reader theme text, status, link and action tokens meet 4.5:1 contrast.");
+for (const theme of themes) {
+  const base = [...css.matchAll(new RegExp('html\\[data-theme="' + theme + '"\\]\\s*\\{([^}]+)\\}', "g"))].map(match => match[1]).find(value => value.includes("--in-canvas:"));
+  const high = css.match(new RegExp('html\\[data-theme="' + theme + '"\\]\\[data-high-contrast="true"\\]\\s*\\{([^}]+)\\}'))?.[1];
+  assert.ok(base && high, "Missing global high-contrast palette for " + theme);
+  const read = name => high.match(new RegExp(name + ":(#[0-9A-Fa-f]{6})"))?.[1];
+  const canvas = base.match(/--in-canvas:(#[0-9A-Fa-f]{6})/)?.[1];
+  for (const name of ["--in-text", "--in-text-muted"]) {
+    const value = contrast(canvas, read(name));
+    assert.ok(value >= 4.5, "High-contrast global " + theme + " " + name + " is " + value.toFixed(2) + ":1");
+  }
+  for (const name of ["--in-line", "--in-focus"]) {
+    const value = contrast(canvas, read(name));
+    assert.ok(value >= 3, "High-contrast global " + theme + " " + name + " is " + value.toFixed(2) + ":1, below 3:1 UI contrast");
+  }
+  const readerBase = css.match(new RegExp('\\.readerPage\\[data-reader-theme="' + theme + '"\\]\\s*\\{([^}]+)\\}'))?.[1];
+  const readerHigh = css.match(new RegExp('html\\[data-high-contrast="true"\\]\\s*\\.readerPage\\[data-reader-theme="' + theme + '"\\]\\s*\\{([^}]+)\\}'))?.[1];
+  assert.ok(readerBase && readerHigh, "Missing high-contrast reader palette for " + theme);
+  const readerRead = name => readerHigh.match(new RegExp(name + ":(#[0-9A-Fa-f]{6})"))?.[1];
+  const readerCanvas = readerBase.match(/--reader-canvas:(#[0-9A-Fa-f]{6})/)?.[1];
+  for (const name of ["--reader-text", "--reader-muted"]) {
+    const value = contrast(readerCanvas, readerRead(name));
+    assert.ok(value >= 4.5, "High-contrast reader " + theme + " " + name + " is " + value.toFixed(2) + ":1");
+  }
+  for (const name of ["--reader-line", "--reader-focus"]) {
+    const value = contrast(readerCanvas, readerRead(name));
+    assert.ok(value >= 3, "High-contrast reader " + theme + " " + name + " is " + value.toFixed(2) + ":1, below 3:1 UI contrast");
+  }
+}
+console.log("PASS: normal and high-contrast global/reader palettes meet text and UI contrast thresholds.");
