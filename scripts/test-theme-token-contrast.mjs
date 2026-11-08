@@ -26,9 +26,13 @@ for (const theme of themes) {
     const value = contrast(background, token(name));
     assert.ok(value >= 4.5, theme + " " + name + " contrast is " + value.toFixed(2) + ":1, below WCAG AA normal-text threshold");
   }
-  for (const name of ["--in-action-bg", "--in-action-hover", "--in-good", "--in-danger", "--in-warning", "--in-lime", "--in-pink"]) {
+  for (const name of ["--in-action-bg", "--in-action-hover"]) {
     const value = contrast("#FFFFFF", token(name));
-    assert.ok(value >= 4.5, theme + " white foreground text on " + name + " has " + value.toFixed(2) + ":1 contrast, below WCAG AA");
+    assert.ok(value >= 4.5, theme + " white button text on " + name + " has " + value.toFixed(2) + ":1 contrast, below WCAG AA");
+  }
+  for (const name of ["--in-good", "--in-danger", "--in-warning", "--in-lime", "--in-pink"]) {
+    const value = contrast(background, token(name));
+    assert.ok(value >= 4.5, theme + " " + name + " status text has " + value.toFixed(2) + ":1 contrast against the theme canvas, below WCAG AA");
   }
 }
 console.log("PASS: all six theme text/accent tokens and white-on-action and semantic status text pairs meet 4.5:1 contrast.");
