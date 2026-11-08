@@ -5,6 +5,8 @@ const css = readFileSync("public/imperial-luxury-17.23.0.css", "utf8");
 const legacyCss = readFileSync("public/style-17.23.0.css", "utf8");
 const runtime = readFileSync("public/app-17.23.0.js", "utf8");
 const glassCss = readFileSync("public/imperial-glass.css", "utf8");
+const formatsCss = readFileSync("public/imperial-formats-17.23.0.css", "utf8");
+const comicCss = readFileSync("public/imperial-comic-reader-17.23.0.css", "utf8");
 const themes = ["light", "dark", "midnight", "sepia", "imperial", "cosmic"];
 const required = ["--in-canvas:", "--in-panel:", "--in-panel-raised:", "--in-line:", "--in-text:", "--in-text-muted:", "--in-accent:", "--in-link:", "--in-focus:", "--in-action-bg:", "--in-action-hover:", "--in-control-bg:", "--in-surface-soft:", "--in-overlay:", "--in-good:", "--in-danger:", "--in-warning:", "--in-lime:", "--in-pink:"];
 for (const theme of themes) {
@@ -36,6 +38,11 @@ assert.ok(legacyCss.includes("var(--panel)") && legacyCss.includes("var(--text)"
 assert.ok(glassCss.includes("html[data-theme] .top") && glassCss.includes("html[data-theme] .mobileNav"), "Glass shell styles must support every global theme");
 assert.ok(glassCss.includes("var(--in-overlay)") && glassCss.includes("var(--glass-surface-raised)") && glassCss.includes("var(--glass-border)"), "Glass surfaces must consume semantic theme tokens");
 assert.ok(!glassCss.includes('html:not([data-theme="dark"])'), "Glass styling must not treat every non-dark theme as Light");
+assert.ok(formatsCss.includes("var(--in-focus") && !formatsCss.includes("#83a9ff"), "Format keyboard focus must use the selected theme focus token");
+assert.ok(comicCss.includes("var(--in-obsidian,var(--bg,#0B1215))"), "Comic image placeholders must use semantic theme canvas tokens");
+for (const status of ["status-published", "status-review", "status-rejected"]) assert.ok(css.includes("html[data-theme] ." + status), "Creator status must use semantic status colors: " + status);
+assert.ok(css.includes("html[data-theme] .novelReaction[aria-pressed=true]"), "Community reaction states must use semantic theme tokens");
+
 
 assert.ok(runtime.includes("readerPage.dataset.readerTheme=chosen") && runtime.includes("imperial_reader_theme"), "Reader theme must remain independently scoped and persisted");
 for (const readerTheme of ["light", "dark", "midnight", "sepia", "imperial", "cosmic"]) assert.ok(legacyCss.includes('.readerPage[data-reader-theme="' + readerTheme + '"]'), "Missing independently scoped reader theme: " + readerTheme);
