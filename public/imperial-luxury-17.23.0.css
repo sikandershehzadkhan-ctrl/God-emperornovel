@@ -866,3 +866,17 @@ html[data-high-contrast="true"] .readerPage[data-reader-theme="midnight"]{--read
 html[data-high-contrast="true"] .readerPage[data-reader-theme="sepia"]{--reader-text:#20170F;--reader-muted:#46351F;--reader-line:#7B6447;--reader-panel:#FBF3E4;--reader-panel-raised:#E6D7BF;--reader-surface-soft:#E6D7BF;--reader-focus:#315F83}
 html[data-high-contrast="true"] .readerPage[data-reader-theme="imperial"]{--reader-text:#FFFFFF;--reader-muted:#E9DDF7;--reader-line:#9A7EB5;--reader-panel:#17122F;--reader-panel-raised:#2C1B40;--reader-surface-soft:#2C1B40;--reader-focus:#D0A9F0}
 html[data-high-contrast="true"] .readerPage[data-reader-theme="cosmic"]{--reader-text:#FFFFFF;--reader-muted:#DCE5FF;--reader-line:#8298C5;--reader-panel:#111A32;--reader-panel-raised:#1E2D50;--reader-surface-soft:#1E2D50;--reader-focus:#8DB8FF}
+
+
+/* 44px interaction baseline: preserve comfortable touch targets without resizing
+   checkboxes/range sliders or decorative text links. */
+html[data-theme] :where(button,input:not([type="checkbox"]):not([type="range"]),select,textarea,[role="button"]){min-height:44px}
+html[data-theme] :where(.primary,.secondary,.ghost,.iconbtn,.menuToggle,.menuClose,.readerBack,.navlinks a,.mobileNav a,.menuDrawer a,.readerChapterItem,.formatLink){min-height:44px}
+html[data-theme] .readerTool{min-width:44px;min-height:44px}
+@media(max-width:760px){
+  html[data-theme] .readerBarInner{display:flex;flex-wrap:wrap;row-gap:8px}
+  html[data-theme] .readerBack{flex:0 0 auto;min-height:44px;display:inline-flex;align-items:center}
+  html[data-theme] .readerBook{flex:1 1 120px;min-width:0}
+  html[data-theme] .readerTools{flex:1 0 100%;width:100%;justify-content:space-between;gap:5px}
+  html[data-theme] .readerTool{flex:1 1 44px;min-width:44px;min-height:44px}
+}
