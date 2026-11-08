@@ -337,7 +337,7 @@ try{
   ].join(";")+";"]);
 
   const goalA=await request(origin,"/api/author/goals",{method:"PUT",cookie:accountA.cookie,origin,body:{novel_id:authorNovelId,target_chapters:8,target_words:24000,target_date:"2027-01-31"}});
-  assert.equal(goalA.status,200,"account A should save a story goal");
+  assert.equal(goalA.status,200,"account A should save a story goal: "+JSON.stringify(goalA.data));
   const goalB=await request(origin,"/api/author/goals",{method:"PUT",cookie:accountB.cookie,origin,body:{novel_id:authorNovelBId,target_chapters:4,target_words:12000,target_date:"2027-02-28"}});
   assert.equal(goalB.status,200,"account B should save an independent story goal");
   const invalidGoalDate=await request(origin,"/api/author/goals",{method:"PUT",cookie:accountA.cookie,origin,body:{novel_id:authorNovelId,target_chapters:1,target_words:1,target_date:"2026-99-99"}});
