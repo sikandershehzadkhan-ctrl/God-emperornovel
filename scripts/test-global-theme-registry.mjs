@@ -21,6 +21,9 @@ for (const locale of expectedLocales) {
   for (const label of ["Light", "Dark", "Midnight", "Sepia", "Imperial", "Cosmic"]) assert.ok(locales[locale][label], locale + " is missing the " + label + " theme translation");
 }
 assert.ok(app.includes('document.querySelectorAll("[data-in-lang]")'), "Runtime must translate explicitly marked theme option labels");
+assert.ok(app.includes("setINLang(document.documentElement.lang||'en');\\n let size="), "Reader theme options must be translated after the reader is rendered");
+assert.ok(app.includes("setINLang(document.documentElement.lang||'en');$('#setSiteTheme')"), "Settings theme options must be translated after settings are rendered");
+
 for (const label of ["Light", "Dark", "Midnight", "Sepia", "Imperial", "Cosmic"]) {
   assert.ok(app.includes('data-in-lang="' + label + '"'), "Source app is missing localized theme option " + label);
   assert.ok(runtime.includes('data-in-lang="' + label + '"'), "Versioned runtime is missing localized theme option " + label);
