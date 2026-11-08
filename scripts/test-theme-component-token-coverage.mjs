@@ -55,7 +55,7 @@ for (const readerTheme of themes) {
 }
 assert.ok(css.includes(".readerPage .chapterDrawer{background:var(--reader-panel)") && css.includes(".readerPage .readerPrefs select,.readerPage .readerTool{background:var(--reader-surface-soft)"), "Reader drawer and controls must use reader-scoped tokens rather than the global site palette");
 assert.ok(css.includes(".readerPage .readerContent{color:var(--reader-text)}"), "Reader chapter text must use the independent reader text token");
-const readerScope = css.match(/\\.readerPage\\[data-reader-theme\\]\\s*\\{([^}]+)\\}/)?.[1] || "";
+const readerScope = css.match(/\.readerPage\[data-reader-theme\]\s*\{([^}]+)\}/)?.[1] || "";
 for (const mapping of ["--panel:var(--reader-panel)", "--text:var(--reader-text)", "--muted:var(--reader-muted)", "--gold2:var(--reader-accent)", "--cyan:var(--reader-link)", "--surface:var(--reader-panel)", "--good:var(--reader-good)", "--danger:var(--reader-danger)", "--warning:var(--reader-warning)", "--brand-purple:var(--reader-accent)", "--imperial-ink:var(--reader-text)"]) assert.ok(readerScope.includes(mapping), "Reader scope must override global legacy alias: " + mapping);
 
 for (const readerTheme of ["light", "dark", "midnight", "sepia", "imperial", "cosmic"]) assert.ok(legacyCss.includes('.readerPage[data-reader-theme="' + readerTheme + '"]'), "Missing independently scoped reader theme: " + readerTheme);
