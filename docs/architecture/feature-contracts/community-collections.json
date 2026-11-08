@@ -15,13 +15,16 @@
     "package.json",
     "migrations/.reservations/0048.json",
     "scripts/test-worker-account-reader-isolation.mjs",
-    "scripts/test-community-reader-collections-d1.py"
+    "scripts/test-community-reader-collections-d1.py",
+    "scripts/test-community-reader-collections-ui.mjs"
   ],
   "sharedSurfaces": [
     "src/index.js",
     "package.json",
     "docs/architecture/IMPERIAL-API-ROUTE-METHOD-MATRIX-01N-37.json",
-    "docs/architecture/IMPERIAL-AUTHORIZATION-OWNERSHIP-MATRIX-01N-38.json"
+    "docs/architecture/IMPERIAL-AUTHORIZATION-OWNERSHIP-MATRIX-01N-38.json",
+    "public/app.js",
+    "public/app-17.23.0.js"
   ],
   "dependencies": [
     "community",
@@ -85,6 +88,7 @@
     "unit": [
       "test-community-reader-collections.mjs",
       "test-api-route-method-matrix.mjs",
+      "test-community-reader-collections-ui.mjs",
       "test-community-reader-collections-ui.mjs"
     ],
     "integration": [
@@ -100,7 +104,8 @@
     ],
     "buildCommands": [
       "npm run build",
-      "npm run check:cloudflare-readiness"
+      "npm run check:cloudflare-readiness",
+      "node scripts/test-community-reader-collections-ui.mjs"
     ]
   },
   "rollout": {
