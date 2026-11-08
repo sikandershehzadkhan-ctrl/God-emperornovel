@@ -106,7 +106,8 @@
       "owns": [
         "src/domains/community/",
         "src/community/",
-        "src/published-engagement-policy.mjs"
+        "src/published-engagement-policy.mjs",
+        "src/features/community-collections/"
       ],
       "responsibilities": [
         "discussions",
