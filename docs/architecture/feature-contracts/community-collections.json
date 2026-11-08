@@ -70,8 +70,8 @@
   "uiLifecycle": {
     "shellOwner": "experience-shell",
     "ssrBehavior": "No SSR changes in this backend slice.",
-    "clientBootBehavior": "Reader-facing UI is a follow-up slice.",
-    "servedBundleParity": "No served browser bundle changes in this backend slice."
+    "clientBootBehavior": "Community discovery renders public collections, owner-only private collection management, collection details and rights-cleared story membership; novel details provide an authenticated add-to-collection flow.",
+    "servedBundleParity": "public/app-17.23.0.js is kept byte-identical to public/app.js; browser UI changes are source/bundle synchronized."
   },
   "privacySecurity": {
     "authentication": "Collection creation, mutation and private listing require the existing authenticated session.",
@@ -84,11 +84,13 @@
   "tests": {
     "unit": [
       "test-community-reader-collections.mjs",
-      "test-api-route-method-matrix.mjs"
+      "test-api-route-method-matrix.mjs",
+      "test-community-reader-collections-ui.mjs"
     ],
     "integration": [
       "test-community-reader-collections-d1.py",
-      "test-worker-account-reader-isolation.mjs"
+      "test-worker-account-reader-isolation.mjs",
+      "Community page and novel-detail UI contract verifies authenticated create/manage/add flows and public collection discovery."
     ],
     "isolation": [
       "Two-account Worker/D1 test proves private collection listing and detail isolation.",
@@ -142,6 +144,9 @@
     "Duplicate membership and configured collection limits are enforced.",
     "API route inventory and Worker source fingerprints match the exact PR source.",
     "Two-account local Worker/D1 integration proves private collection isolation and owner-only mutations.",
-    "D1-compatible SQLite integration proves owner and item quotas, duplicate membership and cascading deletion."
+    "D1-compatible SQLite integration proves owner and item quotas, duplicate membership and cascading deletion.",
+    "Community page exposes create, own collection management, public collection discovery and collection detail views.",
+    "Novel detail page offers an authenticated add-to-collection action and handles empty collection state.",
+    "Versioned served browser bundle is byte-identical to public/app.js."
   ]
 }
