@@ -49,10 +49,17 @@ try:
     raise AssertionError("database must reject a collection's 101st novel")
 except sqlite3.IntegrityError as error:
     assert "community_collection_item_limit" in str(error)
+duplicate_collection_id = db.execute(
+    "INSERT INTO community_collections(owner_user_id,title) VALUES(2,'Duplicate Fixture') RETURNING id"
+).fetchone()[0]
+db.execute(
+    "INSERT INTO community_collection_items(collection_id,novel_id,position) VALUES(?,?,?)",
+    (duplicate_collection_id, 1, 0)
+)
 try:
     db.execute(
         "INSERT INTO community_collection_items(collection_id,novel_id,position) VALUES(?,?,?)",
-        (collection_id, 1, 102)
+        (duplicate_collection_id, 1, 1)
     )
     raise AssertionError("database must reject duplicate novel membership")
 except sqlite3.IntegrityError as error:
