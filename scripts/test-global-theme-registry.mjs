@@ -12,7 +12,7 @@ for (const [name, source] of [["source app", app], ["versioned runtime", runtime
 }
 for (const theme of themes) assert.ok(css.includes('html[data-theme="' + theme + '"]'), "Missing CSS token map for " + theme);
 assert.ok(css.includes('html:is([data-theme="dark"],[data-theme="midnight"],[data-theme="imperial"],[data-theme="cosmic"])'), "Dark-family component styles must cover all dark themes");
-const localeMatch = app.match(/const IN_LANG=(\\{[\\s\\S]*?\\});function setINLang/);
+const localeMatch = app.match(/const IN_LANG=(\{[\s\S]*?\});function setINLang/);
 assert.ok(localeMatch, "Locale dictionary must remain a parseable JSON-compatible map");
 const locales = JSON.parse(localeMatch[1]);
 const expectedLocales = ["en", "ur", "hi", "zh-CN", "zh-TW", "es", "fr", "id", "ja", "ko", "pt-BR", "ar", "vi", "fa"];
