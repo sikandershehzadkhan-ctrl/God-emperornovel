@@ -177,6 +177,10 @@
     "creator application forms and format selection",
     "comic author page composer and image placeholders",
     "format directory, format shelves and author studio",
-    "comic reader controls, page surfaces and unavailable states"
+    "comic reader controls, page surfaces and unavailable states",
+    "catalog filters, metadata, empty states and rank badges",
+    "account menus, side navigation and settings panels",
+    "shared admin metric, tier, notice and status primitives",
+    "mobile navigation, menu drawer and footer"
   ]
 }
