@@ -2,6 +2,8 @@ import assert from "node:assert/strict";
 import { readFileSync } from "node:fs";
 
 const css = readFileSync("public/imperial-luxury-17.23.0.css", "utf8");
+const legacyCss = readFileSync("public/style-17.23.0.css", "utf8");
+const runtime = readFileSync("public/app-17.23.0.js", "utf8");
 const themes = ["light", "dark", "midnight", "sepia", "imperial", "cosmic"];
 const required = ["--in-canvas:", "--in-panel:", "--in-panel-raised:", "--in-line:", "--in-text:", "--in-text-muted:", "--in-accent:", "--in-link:", "--in-focus:", "--in-action-bg:", "--in-action-hover:", "--in-control-bg:", "--in-surface-soft:", "--in-overlay:"];
 for (const theme of themes) {
@@ -19,6 +21,10 @@ const sharedSelectors = [
   "html[data-theme] :focus-visible", "html[data-theme] .heroKicker", "html[data-theme] .heroTags a", "html[data-theme] .heroSideTop b", "html[data-theme] .ghost", "html[data-theme] .secondary", "html[data-theme] .portalLink:hover", "html[data-theme] .mark"
 ];
 for (const selector of sharedSelectors) assert.ok(css.includes(selector), "Missing semantic shared-component rule: " + selector);
+const legacyAliases = ["--bg:", "--bg2:", "--panel:", "--panel2:", "--panel3:", "--text:", "--muted:", "--line:", "--violet:", "--violet2:", "--violet3:", "--violet4:", "--surface:", "--surface-2:", "--surface-3:", "--ink:", "--ink-2:", "--line-strong:", "--brand-purple:", "--brand-cyan:"];
+for (const alias of legacyAliases) assert.ok(css.includes(alias), "Missing legacy variable bridge: " + alias);
+assert.ok(legacyCss.includes("var(--panel)") && legacyCss.includes("var(--text)"), "Legacy application stylesheet must remain covered by the token bridge");
+assert.ok(runtime.includes("readerPage.dataset.readerTheme=chosen") && runtime.includes("imperial_reader_theme"), "Reader theme must remain independently scoped and persisted");
 for (const token of ["var(--in-canvas)", "var(--in-text)", "var(--in-panel)", "var(--in-control-bg)", "var(--in-focus)"]) {
   assert.ok(css.includes(token), "Missing semantic token consumption: " + token);
 }
