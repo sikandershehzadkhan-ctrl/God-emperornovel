@@ -675,6 +675,7 @@ html[data-theme]{
   --imperial-purple:var(--in-accent);
   --ink:var(--in-text);
   --ink-2:var(--in-text-muted);
+  --muted-2:var(--in-text-muted);
   --surface:var(--in-panel);
   --surface-2:var(--in-panel-raised);
   --surface-3:var(--in-surface-soft);
