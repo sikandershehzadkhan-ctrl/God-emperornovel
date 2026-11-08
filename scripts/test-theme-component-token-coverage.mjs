@@ -4,6 +4,7 @@ import { readFileSync } from "node:fs";
 const css = readFileSync("public/imperial-luxury-17.23.0.css", "utf8");
 const legacyCss = readFileSync("public/style-17.23.0.css", "utf8");
 const runtime = readFileSync("public/app-17.23.0.js", "utf8");
+const glassCss = readFileSync("public/imperial-glass.css", "utf8");
 const themes = ["light", "dark", "midnight", "sepia", "imperial", "cosmic"];
 const required = ["--in-canvas:", "--in-panel:", "--in-panel-raised:", "--in-line:", "--in-text:", "--in-text-muted:", "--in-accent:", "--in-link:", "--in-focus:", "--in-action-bg:", "--in-action-hover:", "--in-control-bg:", "--in-surface-soft:", "--in-overlay:", "--in-good:", "--in-danger:", "--in-warning:", "--in-lime:", "--in-pink:"];
 for (const theme of themes) {
@@ -32,6 +33,10 @@ for (const token of baseTokens) {
   if (!intentionallyUnmapped.has(token)) assert.ok(aliasBlock.includes(token + ":"), "Legacy theme token lacks a semantic bridge: " + token);
 }
 assert.ok(legacyCss.includes("var(--panel)") && legacyCss.includes("var(--text)"), "Legacy application stylesheet must remain covered by the token bridge");
+assert.ok(glassCss.includes("html[data-theme] .top") && glassCss.includes("html[data-theme] .mobileNav"), "Glass shell styles must support every global theme");
+assert.ok(glassCss.includes("var(--in-overlay)") && glassCss.includes("var(--glass-surface-raised)") && glassCss.includes("var(--glass-border)"), "Glass surfaces must consume semantic theme tokens");
+assert.ok(!glassCss.includes('html:not([data-theme="dark"])'), "Glass styling must not treat every non-dark theme as Light");
+
 assert.ok(runtime.includes("readerPage.dataset.readerTheme=chosen") && runtime.includes("imperial_reader_theme"), "Reader theme must remain independently scoped and persisted");
 for (const readerTheme of ["light", "dark", "midnight", "sepia", "imperial", "cosmic"]) assert.ok(legacyCss.includes('.readerPage[data-reader-theme="' + readerTheme + '"]'), "Missing independently scoped reader theme: " + readerTheme);
 for (const token of ["var(--in-canvas)", "var(--in-text)", "var(--in-panel)", "var(--in-control-bg)", "var(--in-focus)"]) {
