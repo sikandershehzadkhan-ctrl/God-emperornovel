@@ -85,10 +85,10 @@ for (const theme of themes) {
 const prefersBlock = css.slice(css.lastIndexOf("@media(prefers-contrast:more)"));
 assert.ok(prefersBlock.startsWith("@media(prefers-contrast:more)"), "Missing OS contrast preference media block");
 for (const theme of themes) {
-  const globalBase = [...css.matchAll(new RegExp('html\\\\[data-theme="' + theme + '"\\\\]\\\\s*\\\\{([^}]+)\\\\}', "g"))].map(match => match[1]).find(value => value.includes("--in-canvas:"));
-  const globalOS = prefersBlock.match(new RegExp('html\\\\[data-theme="' + theme + '"\\\\]\\\\s*\\\\{([^}]+)\\\\}'))?.[1];
-  const readerBase = css.match(new RegExp('\\\\.readerPage\\\\[data-reader-theme="' + theme + '"\\\\]\\\\s*\\\\{([^}]+)\\\\}'))?.[1];
-  const readerOS = prefersBlock.match(new RegExp('\\\\.readerPage\\\\[data-reader-theme="' + theme + '"\\\\]\\\\s*\\\\{([^}]+)\\\\}'))?.[1];
+  const globalBase = [...css.matchAll(new RegExp('html\\[data-theme="' + theme + '"\\]\\s*\\{([^}]+)\\}', "g"))].map(match => match[1]).find(value => value.includes("--in-canvas:"));
+  const globalOS = prefersBlock.match(new RegExp('html\\[data-theme="' + theme + '"\\]\\s*\\{([^}]+)\\}'))?.[1];
+  const readerBase = css.match(new RegExp('\\.readerPage\\[data-reader-theme="' + theme + '"\\]\\s*\\{([^}]+)\\}'))?.[1];
+  const readerOS = prefersBlock.match(new RegExp('\\.readerPage\\[data-reader-theme="' + theme + '"\\]\\s*\\{([^}]+)\\}'))?.[1];
   assert.ok(globalBase && globalOS && readerBase && readerOS, "Missing OS high-contrast map for " + theme);
   const get = (block, name) => block.match(new RegExp(name + ":(#[0-9A-Fa-f]{6})"))?.[1];
   for (const [scope, base, os, canvasToken, textToken, mutedToken, lineToken, focusToken] of [
