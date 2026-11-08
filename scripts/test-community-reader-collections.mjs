@@ -12,4 +12,14 @@ assert.ok(migration.includes('trg_community_collection_items_limit'),'collection
 assert.ok(source.includes("/^[1-9][0-9]*$/"),'string identifiers must be strict positive digit strings');
 assert.ok(source.includes('CASE WHEN n.rating BETWEEN 1 AND 10'),'public collection ratings must exclude invalid legacy values');
 assert.ok(worker.includes('handleCommunityCollectionsRequest'),'Worker must compose community collections');
+assert.ok(source.includes("WHERE c.visibility='public'"),'public collection discovery must exclude private collections');
+assert.ok(source.includes("WHERE c.owner_user_id=? GROUP BY c.id"),'the private collection index must be scoped to the authenticated owner');
+assert.ok(source.includes("(collection.visibility!=='public'&&Number(collection.owner_user_id)!==Number(u?.id))"),'private collection detail must be hidden from non-owners');
+assert.ok(source.includes("WHERE id=? AND owner_user_id=? RETURNING id,title,description,visibility,updated_at"),'collection edits must enforce ownership in the write predicate');
+assert.ok(source.includes("DELETE FROM community_collections WHERE id=? AND owner_user_id=?"),'collection deletion must enforce ownership in the write predicate');
+assert.ok(source.includes("SELECT id FROM community_collections WHERE id=? AND owner_user_id=?"),'adding a story must first verify collection ownership');
+assert.ok(source.includes("SELECT id FROM novels WHERE id=? AND publication_status='published'"),'collection membership must reject unpublished stories');
+assert.ok(source.includes("WHERE collection_id=? AND novel_id=? AND EXISTS(")&&source.includes("SELECT 1 FROM community_collections c WHERE c.id=? AND c.owner_user_id=?"),'story removal must enforce collection ownership inside the delete statement');
+assert.ok(source.includes("if(p.startsWith('/api/community/collections'))return json({error:'Method not allowed.'},405)"),'unsupported collection methods must fail closed');
+
 console.log('Community reader collection contract checks passed.');
