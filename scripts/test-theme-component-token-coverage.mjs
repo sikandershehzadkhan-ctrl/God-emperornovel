@@ -38,6 +38,13 @@ for (const token of baseTokens) {
   if (!intentionallyUnmapped.has(token)) assert.ok(aliasBlock.includes(token + ":"), "Legacy theme token lacks a semantic bridge: " + token);
 }
 assert.ok(legacyCss.includes("var(--panel)") && legacyCss.includes("var(--text)"), "Legacy application stylesheet must remain covered by the token bridge");
+const legacyThemeTokens = ["--bg:", "--bg2:", "--panel:", "--panel2:", "--panel3:", "--text:", "--muted:", "--line:", "--violet:", "--violet2:", "--violet3:", "--violet4:", "--cyan:", "--cyan2:", "--cyan3:", "--good:", "--danger:", "--shadow:", "--shadowSoft:", "--surface:", "--surface-2:", "--surface-3:", "--ink:", "--ink-2:", "--muted-2:", "--line-strong:"];
+for (const theme of themes) {
+  const legacyBlock = legacyCss.match(new RegExp('html\\[data-theme="' + theme + '"\\]\\s*\\{([^}]+)\\}'))?.[1] || "";
+  assert.ok(legacyBlock.includes("color-scheme:" + (theme === "light" || theme === "sepia" ? "light" : "dark")), "Legacy shell native controls must follow " + theme);
+  for (const token of legacyThemeTokens) assert.ok(legacyBlock.includes(token), "Legacy shell token " + token + " missing for " + theme);
+  assert.ok(legacyCss.includes('html[data-theme="' + theme + '"][data-high-contrast="true"]'), "Legacy shared components lack high-contrast token overrides for " + theme);
+}
 assert.ok(glassCss.includes("html[data-theme] .top") && glassCss.includes("html[data-theme] .mobileNav"), "Glass shell styles must support every global theme");
 assert.ok(glassCss.includes("var(--in-overlay)") && glassCss.includes("var(--glass-surface-raised)") && glassCss.includes("var(--glass-border)"), "Glass surfaces must consume semantic theme tokens");
 assert.ok(!glassCss.includes('html:not([data-theme="dark"])'), "Glass styling must not treat every non-dark theme as Light");
