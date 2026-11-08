@@ -14,7 +14,7 @@ const contrast = (a, b) => {
 };
 for (const theme of themes) {
   const blocks = [...css.matchAll(new RegExp('html\\[data-theme="' + theme + '"\\]\\s*\\{([^}]+)\\}', "g"))];
-  const block = blocks.map(match => match[1]).find(value => value.includes("--in-canvas:") && value.includes("--in-white:") && value.includes("--in-muted:") && value.includes("--in-purple:") && value.includes("--in-sapphire:"));
+  const block = blocks.map(match => match[1]).filter(value => value.includes("--in-canvas:") && value.includes("--in-white:") && value.includes("--in-muted:") && value.includes("--in-purple:") && value.includes("--in-sapphire:")).at(-1);
   assert.ok(block, "Missing complete semantic token map for " + theme);
   const token = name => {
     const match = block.match(new RegExp(name + ":(#[0-9A-Fa-f]{6})"));
