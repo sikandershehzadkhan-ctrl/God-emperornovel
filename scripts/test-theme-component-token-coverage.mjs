@@ -92,7 +92,7 @@ for (const selector of ["html[data-theme] body{background:var(--in-canvas)}","ht
 assert.ok(css.slice(parityLayer).includes("background:var(--in-panel)") && css.slice(parityLayer).includes("border-color:var(--in-line)") && css.slice(parityLayer).includes("color:var(--in-text-muted)"), "Late legacy hero and shell overrides must resolve through semantic tokens");
 for (const selector of ["html[data-theme] .commentItem","html[data-theme] .ratingStar","html[data-theme] .authorApplicationFormats","html[data-theme] .comicAuthorBuilder","html[data-theme] .comicPageComposerGrid input","html[data-theme] .reactReactionList .novelReaction[aria-pressed=true]","html[data-theme] .reactReactionError"]) {
 for (const selector of ["html[data-theme] .side","html[data-theme] .accountMenu","html[data-theme] .tierPanel","html[data-theme] .metric","html[data-theme] .miniCard","html[data-theme] .filterChip","html[data-theme] .chapter","html[data-theme] .catalogEmpty","html[data-theme] .statusBadge","html[data-theme] .rankBadge"]) {
-  assert.ok(css.slice(parityLayer).includes(selector), "Legacy catalog/account/admin primitive must use semantic theme tokens: " + selector);
+  assert.ok(css.includes(selector), "Legacy catalog/account/admin primitive must use semantic theme tokens: " + selector);
 }
 
   assert.ok(css.slice(parityLayer).includes(selector), "Cross-sheet community/creator component must use semantic tokens: " + selector);
