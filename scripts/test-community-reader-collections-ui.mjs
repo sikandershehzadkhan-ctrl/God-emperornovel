@@ -1,0 +1,10 @@
+import assert from 'node:assert/strict';
+import fs from 'node:fs';
+const source=fs.readFileSync('public/app.js','utf8');
+const bundle=fs.readFileSync('public/app-17.23.0.js','utf8');
+assert.equal(bundle,source,'served application bundle must exactly match source');
+for(const token of ['readerCollectionsSection','collectionCreateForm','myCollections','publicCollections','collectionDetail','/api/community/collections/mine','/api/community/collections/','data-collection-open','data-collection-visibility','data-collection-delete','collectionAddBtn'])assert.ok(source.includes(token),'reader collection UI missing '+token);
+assert.ok(source.includes("api('/api/me')"),'collection management must verify the active session');
+assert.ok(source.includes("body:JSON.stringify({novel_id:Number(id)})"),'novel detail must add the current novel through the API');
+assert.ok(source.includes("if(!me.user){location.href='/login';return}"),'collection add flow must require sign-in');
+console.log('PASS: reader collections community UI, owner management hooks, public discovery, novel-detail add flow and served bundle parity.');
