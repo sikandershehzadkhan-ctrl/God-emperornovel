@@ -81,7 +81,8 @@
     "white foreground contrast on action and hover backgrounds",
     "format keyboard focus uses theme focus token",
     "reader-specific text, muted text, accent, link and action contrast checks across all six reader themes",
-    "reader native form controls follow reader color-scheme independently from global site theme"
+    "reader native form controls follow reader color-scheme independently from global site theme",
+    "theme option labels translated in all 14 supported interface locales"
   ],
   "independentReaderTheme": {
     "preferenceKey": "imperial_reader_theme",
@@ -127,5 +128,33 @@
     "source": "public/style-17.23.0.css",
     "bridge": "html[data-theme] in public/imperial-luxury-17.23.0.css",
     "mapped": "All color and surface tokens; only layout, radius, motion, and max-width tokens remain intentionally outside the theme map"
+  },
+  "localization": {
+    "locales": [
+      "en",
+      "ur",
+      "hi",
+      "zh-CN",
+      "zh-TW",
+      "es",
+      "fr",
+      "id",
+      "ja",
+      "ko",
+      "pt-BR",
+      "ar",
+      "vi",
+      "fa"
+    ],
+    "themeLabels": [
+      "Light",
+      "Dark",
+      "Midnight",
+      "Sepia",
+      "Imperial",
+      "Cosmic"
+    ],
+    "mechanism": "data-in-lang option labels resolved by setINLang after settings and reader markup is rendered",
+    "sourceRuntimeParity": "public/app.js and public/app-17.23.0.js are kept byte-identical"
   }
 }
