@@ -1,15 +1,16 @@
 const MAX_COLLECTIONS_PER_OWNER=50;
 const MAX_ITEMS_PER_COLLECTION=100;
 const cleanText=(value,max)=>String(value??'').trim().slice(0,max);
-const safeId=value=>{const id=Number(value);return Number.isSafeInteger(id)&&id>0?id:null};
+const safeId=value=>{if(typeof value==='string'&&!/^[1-9][0-9]*$/.test(value))return null;if(typeof value!=='number'&&typeof value!=='string')return null;const id=Number(value);return Number.isSafeInteger(id)&&id>0?id:null};
 
 export async function handleCommunityCollectionsRequest({req,env,url,u,body,json,need}){
  const p=url.pathname,m=req.method;
  if(p==='/api/community/collections'&&m==='GET'){
   const rows=await env.DB.prepare(`SELECT c.id,c.title,c.description,c.updated_at,
-   COALESCE(u.username,'Reader') creator,COUNT(i.novel_id) item_count
+   COALESCE(u.username,'Reader') creator,COUNT(n.id) item_count
    FROM community_collections c JOIN users u ON u.id=c.owner_user_id
    LEFT JOIN community_collection_items i ON i.collection_id=c.id
+   LEFT JOIN novels n ON n.id=i.novel_id AND n.publication_status='published' AND n.rights_status IN ('original','public_domain','licensed','authorized')
    WHERE c.visibility='public'
    GROUP BY c.id ORDER BY c.updated_at DESC,c.id DESC LIMIT 50`).all();
   return json(rows.results||[]);
@@ -17,8 +18,9 @@ export async function handleCommunityCollectionsRequest({req,env,url,u,body,json
  if(p==='/api/community/collections/mine'&&m==='GET'){
   const e=need(u);if(e)return e;
   const rows=await env.DB.prepare(`SELECT c.id,c.title,c.description,c.visibility,c.updated_at,
-   COUNT(i.novel_id) item_count FROM community_collections c
+   COUNT(n.id) item_count FROM community_collections c
    LEFT JOIN community_collection_items i ON i.collection_id=c.id
+   LEFT JOIN novels n ON n.id=i.novel_id AND n.publication_status='published' AND n.rights_status IN ('original','public_domain','licensed','authorized')
    WHERE c.owner_user_id=? GROUP BY c.id ORDER BY c.updated_at DESC,c.id DESC LIMIT ?`).bind(u.id,MAX_COLLECTIONS_PER_OWNER).all();
   return json(rows.results||[]);
  }
@@ -29,7 +31,7 @@ export async function handleCommunityCollectionsRequest({req,env,url,u,body,json
    COALESCE(u.username,'Reader') creator FROM community_collections c
    JOIN users u ON u.id=c.owner_user_id WHERE c.id=?`).bind(id).first();
   if(!collection||(collection.visibility!=='public'&&Number(collection.owner_user_id)!==Number(u?.id)))return json({error:'Collection not found.'},404);
-  const items=await env.DB.prepare(`SELECT n.id,n.title,n.author,n.cover_url cover,n.rating,n.views,i.position,i.added_at
+  const items=await env.DB.prepare(`SELECT n.id,n.title,n.author,n.cover_url cover,CASE WHEN n.rating BETWEEN 1 AND 10 THEN ROUND(n.rating) ELSE NULL END rating,n.views,i.position,i.added_at
    FROM community_collection_items i JOIN novels n ON n.id=i.novel_id
    WHERE i.collection_id=? AND n.publication_status='published'
    AND n.rights_status IN ('original','public_domain','licensed','authorized')
@@ -44,7 +46,7 @@ export async function handleCommunityCollectionsRequest({req,env,url,u,body,json
   if(!title)return json({error:'A collection title is required.'},400);
   const count=await env.DB.prepare('SELECT COUNT(*) total FROM community_collections WHERE owner_user_id=?').bind(u.id).first();
   if(Number(count?.total||0)>=MAX_COLLECTIONS_PER_OWNER)return json({error:'Collection limit reached.'},409);
-  const result=await env.DB.prepare('INSERT INTO community_collections(owner_user_id,title,description,visibility) VALUES(?,?,?,?) RETURNING id,title,description,visibility,created_at,updated_at').bind(u.id,title,description,visibility).first();
+  let result;try{result=await env.DB.prepare('INSERT INTO community_collections(owner_user_id,title,description,visibility) VALUES(?,?,?,?) RETURNING id,title,description,visibility,created_at,updated_at').bind(u.id,title,description,visibility).first()}catch(error){if(String(error?.message||'').includes('community_collection_owner_limit'))return json({error:'Collection limit reached.'},409);throw error}
   return json(result,201);
  }
  if(detail&&m==='PATCH'){
@@ -79,7 +81,9 @@ export async function handleCommunityCollectionsRequest({req,env,url,u,body,json
   try{
    await env.DB.prepare('INSERT INTO community_collection_items(collection_id,novel_id,position) VALUES(?,?,?)').bind(id,novelId,Number(count?.total||0)).run();
   }catch(error){
-   if(String(error?.message||'').includes('UNIQUE'))return json({error:'This story is already in the collection.'},409);
+   const message=String(error?.message||'');
+   if(message.includes('UNIQUE'))return json({error:'This story is already in the collection.'},409);
+   if(message.includes('community_collection_item_limit'))return json({error:'Collection item limit reached.'},409);
    throw error;
   }
   await env.DB.prepare('UPDATE community_collections SET updated_at=CURRENT_TIMESTAMP WHERE id=? AND owner_user_id=?').bind(id,u.id).run();
