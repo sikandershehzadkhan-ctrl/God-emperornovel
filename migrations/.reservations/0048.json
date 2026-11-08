@@ -1,0 +1,6 @@
+{
+  "version": 1,
+  "number": 48,
+  "migration": "migrations/0048_community_reader_collections.sql",
+  "pullRequest": 300
+}

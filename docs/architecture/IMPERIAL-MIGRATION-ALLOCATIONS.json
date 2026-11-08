@@ -2,7 +2,7 @@
   "schemaVersion": 1,
   "name": "Global D1 migration allocation register",
   "sequencePattern": "^([0-9]{4})_",
-  "lastObservedSequence": 47,
+  "lastObservedSequence": 48,
   "canonicalSource": "migrations/",
   "policy": {
     "reserveBeforeAuthoring": true,
@@ -97,6 +97,12 @@
       "to": 47,
       "owner": "creator",
       "status": "owner-scoped private story goals across novel ownership transfers"
+    },
+    {
+      "from": 48,
+      "to": 48,
+      "owner": "community",
+      "status": "reader-created collections and rights-eligible novel membership"
     }
   ],
   "allocations": []

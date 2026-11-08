@@ -48,7 +48,7 @@ assert.equal(count, 1, "one successful chapter transition is counted");
 assert.equal(notices, 1, "a successful chapter transition sends one notification");
 assert.match(successEnv.dueQuery, /n\.id AS novel_id/, "the due-row projection includes the parent novel identifier");
 assert.equal(successEnv.batchStatements.length, 4, "publication, schedule cleanup, parent update and audit are one ordered batch");
-assert.match(successEnv.batchStatements[0].sql, /UPDATE chapters[\s\S]*publication_status = 'published'/);
+assert.match(successEnv.batchStatements[0].sql, /UPDATE chapters[\s\S]*publication_status\s*=\s*'published'/);
 assert.match(successEnv.batchStatements[1].sql, /DELETE FROM scheduled_chapter_publications[\s\S]*changes\(\)\s*=\s*1/);
 assert.match(successEnv.batchStatements[2].sql, /UPDATE novels[\s\S]*changes\(\)\s*=\s*1/);
 assert.match(successEnv.batchStatements[3].sql, /INSERT INTO audit_logs[\s\S]*changes\(\)\s*=\s*1/);

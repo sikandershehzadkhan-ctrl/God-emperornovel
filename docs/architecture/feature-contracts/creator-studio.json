@@ -38,7 +38,8 @@
     "Private notes are limited to 4,000 characters, can optionally target a chapter belonging to the selected owned novel, and all reads/updates/deletes require owner_user_id=u.id plus current parent ownership.",
     "Readiness and planning projections are read-only and bounded to 100 owned novels/items. Planning excludes drafts that already have a scheduled publication.",
     "Private note chapter metadata is joined through both chapter ID and the note's parent novel ID so a malformed cross-novel reference cannot expose another story's chapter title.",
-    "Story goal date parsing rejects invalid calendar values with a 400 validation response and must not throw on out-of-range month/day inputs."
+    "Story goal date parsing rejects invalid calendar values with a 400 validation response and must not throw on out-of-range month/day inputs.",
+    "Creator Studio receives the platform audit callback through Worker dependency injection; it must not reference an undeclared global audit function."
   ],
   "dataEntities": [
     "Reuses novels, chapters, ratings, comments, chapter_views and unlocks.",
@@ -66,7 +67,8 @@
     "ownerScoping": "All creator-facing story queries and note mutations bind owner_user_id to u.id and recheck parent novel ownership.",
     "csrf": "Existing Worker origin and session protections remain in force.",
     "rateAndSizeLimits": "Private notes max 4,000 characters; analytics, feedback, readiness and planning reads are bounded.",
-    "rightsAndPrivacy": "Analytics and feedback are scoped to the creator's owned stories. No public endpoint or chapter-body ingestion is added."
+    "rightsAndPrivacy": "Analytics and feedback are scoped to the creator's owned stories. No public endpoint or chapter-body ingestion is added.",
+    "audit": "All creator-goal mutations invoke the injected platform audit callback; audit persistence remains centralized in the Worker."
   },
   "tests": {
     "unit": [
@@ -122,7 +124,7 @@
     "platform-quality",
     "platform-architecture"
   ],
-  "changeSummary": "Defines the Creator-owned editorial workspace boundary for analytics, reader feedback, writing goals, private notes, editorial readiness and planning. Lifetime analytics totals are independent of the top-100 display list. Existing goals and notes migrations are reused.",
+  "changeSummary": "Defines the Creator-owned editorial workspace boundary for analytics, reader feedback, writing goals, private notes, editorial readiness and planning. Lifetime analytics totals are independent of the top-100 display list. Existing goals and notes migrations are reused. Correct the story-goal upsert target column order so authenticated owner IDs and novel IDs are persisted in their respective columns. Creator Studio audit logging is explicitly injected by the Worker composition, preventing undefined audit callback failures after writes.",
   "acceptanceCriteria": [
     "All Creator routes are present in the API method inventory with module source evidence.",
     "All creator-facing reads and mutations are scoped to session u.id; admin role does not enable cross-owner access.",
