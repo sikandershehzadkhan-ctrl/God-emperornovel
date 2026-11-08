@@ -718,3 +718,100 @@ html[data-theme] .ratingIslandSummary strong{color:var(--in-text)}
 
 html[data-theme] .formatLink:hover,html[data-theme] .homeFormatCard:hover{background:var(--in-surface-soft);border-color:var(--in-accent)}
 html[data-theme] .formatLink:focus-visible,html[data-theme] .homeFormatCard:focus-visible{outline:3px solid var(--in-focus)!important;outline-offset:3px;border-color:var(--in-focus)}
+
+
+/* Reader theme isolation: the reading canvas owns its own semantic token scope.
+   These aliases intentionally override the global site palette only inside .readerPage. */
+.readerPage[data-reader-theme]{
+  --bg:var(--reader-canvas);
+  --bg2:var(--reader-surface-soft);
+  --panel:var(--reader-panel);
+  --panel2:var(--reader-panel-raised);
+  --panel3:var(--reader-surface-soft);
+  --text:var(--reader-text);
+  --muted:var(--reader-muted);
+  --line:var(--reader-line);
+  --violet:var(--reader-accent);
+  --violet2:var(--reader-link);
+  --violet3:var(--reader-surface-soft);
+  --violet4:var(--reader-accent);
+  --surface:var(--reader-panel);
+  --surface-2:var(--reader-panel-raised);
+  --surface-3:var(--reader-surface-soft);
+  --ink:var(--reader-text);
+  --ink-2:var(--reader-muted);
+  --brand-purple:var(--reader-accent);
+  --brand-cyan:var(--reader-link);
+  --in-canvas:var(--reader-canvas);
+  --in-obsidian:var(--reader-canvas);
+  --in-panel:var(--reader-panel);
+  --in-panel-raised:var(--reader-panel-raised);
+  --in-white:var(--reader-text);
+  --in-muted:var(--reader-muted);
+  --in-line:var(--reader-line);
+  --in-purple:var(--reader-accent);
+  --in-purple-bright:var(--reader-accent);
+  --in-sapphire:var(--reader-link);
+  --in-text:var(--reader-text);
+  --in-text-muted:var(--reader-muted);
+  --in-accent:var(--reader-accent);
+  --in-link:var(--reader-link);
+  --in-focus:var(--reader-focus);
+  --in-action-bg:var(--reader-action-bg);
+  --in-action-hover:var(--reader-action-hover);
+  --in-control-bg:var(--reader-surface-soft);
+  --in-surface-soft:var(--reader-surface-soft);
+  --in-overlay:var(--reader-overlay);
+  --in-good:var(--reader-good);
+  --in-danger:var(--reader-danger);
+  --in-warning:var(--reader-warning);
+  --in-lime:var(--reader-good);
+  --in-pink:var(--reader-danger);
+}
+.readerPage[data-reader-theme="light"]{
+  --reader-canvas:#FFFFFF;--reader-panel:#FFFFFF;--reader-panel-raised:#F7F8FA;--reader-surface-soft:#F7F8FA;
+  --reader-text:#20233A;--reader-muted:#667085;--reader-line:#E4E7EE;--reader-accent:#6A0DAD;--reader-link:#0F52BA;--reader-focus:#0F52BA;
+  --reader-action-bg:#6A0DAD;--reader-action-hover:#0F52BA;--reader-overlay:rgba(255,255,255,.96);
+  --reader-good:#176B4D;--reader-danger:#B4233C;--reader-warning:#7A4B00;
+}
+.readerPage[data-reader-theme="dark"]{
+  --reader-canvas:#080A14;--reader-panel:#111426;--reader-panel-raised:#15182C;--reader-surface-soft:#15182C;
+  --reader-text:#F1EFFB;--reader-muted:#AAA7C1;--reader-line:rgba(173,158,232,.2);--reader-accent:#B78AE2;--reader-link:#8DB8FF;--reader-focus:#8DB8FF;
+  --reader-action-bg:#6A0DAD;--reader-action-hover:#0F52BA;--reader-overlay:rgba(10,11,23,.97);
+  --reader-good:#66D7A7;--reader-danger:#FF8497;--reader-warning:#F4B85F;
+}
+.readerPage[data-reader-theme="midnight"]{
+  --reader-canvas:#080B18;--reader-panel:#0B1220;--reader-panel-raised:#101A2B;--reader-surface-soft:#101A2B;
+  --reader-text:#E9E7FF;--reader-muted:#B0BDD8;--reader-line:#20334E;--reader-accent:#AFA0FF;--reader-link:#8DB8FF;--reader-focus:#8DB8FF;
+  --reader-action-bg:#51409C;--reader-action-hover:#2D4F9E;--reader-overlay:#070D1A;
+  --reader-good:#68DDB2;--reader-danger:#FF8DA2;--reader-warning:#F4C16B;
+}
+.readerPage[data-reader-theme="sepia"]{
+  --reader-canvas:#F3E7D1;--reader-panel:#FBF3E4;--reader-panel-raised:#EFE3CC;--reader-surface-soft:#EFE3CC;
+  --reader-text:#493C2C;--reader-muted:#66533D;--reader-line:#E0CFAF;--reader-accent:#70418B;--reader-link:#315F83;--reader-focus:#315F83;
+  --reader-action-bg:#70418B;--reader-action-hover:#315F83;--reader-overlay:rgba(248,239,221,.97);
+  --reader-good:#176B4D;--reader-danger:#B4233C;--reader-warning:#7A4B00;
+}
+.readerPage[data-reader-theme="imperial"]{
+  --reader-canvas:#101128;--reader-panel:#17122F;--reader-panel-raised:#101D2D;--reader-surface-soft:#101D2D;
+  --reader-text:#F4F5FF;--reader-muted:#C8B9D8;--reader-line:rgba(183,138,226,.22);--reader-accent:#D0A9F0;--reader-link:#8DB8FF;--reader-focus:#8DB8FF;
+  --reader-action-bg:#70418B;--reader-action-hover:#315F83;--reader-overlay:rgba(16,17,40,.97);
+  --reader-good:#6AD9A8;--reader-danger:#FF8BA3;--reader-warning:#F4BE69;
+}
+.readerPage[data-reader-theme="cosmic"]{
+  --reader-canvas:#090A1D;--reader-panel:#17122F;--reader-panel-raised:#101A30;--reader-surface-soft:#101A30;
+  --reader-text:#E5E4FF;--reader-muted:#B1C0DD;--reader-line:rgba(91,211,220,.22);--reader-accent:#B6AAFF;--reader-link:#68A7FF;--reader-focus:#68A7FF;
+  --reader-action-bg:#5142B5;--reader-action-hover:#315F83;--reader-overlay:rgba(12,13,33,.97);
+  --reader-good:#6BE0C2;--reader-danger:#FF8BA3;--reader-warning:#F4C16B;
+}
+.readerPage .chapterDrawer{background:var(--reader-panel);color:var(--reader-text);border-color:var(--reader-line)}
+.readerPage .readerPrefs{border-color:var(--reader-line)}
+.readerPage .readerPrefs label,.readerPage .readerBook span,.readerPage .readerProgressText{color:var(--reader-muted)}
+.readerPage .readerPrefs select,.readerPage .readerTool{background:var(--reader-surface-soft);color:var(--reader-text);border-color:var(--reader-line)}
+.readerPage .readerChapterItem{background:var(--reader-surface-soft);color:var(--reader-text);border-color:var(--reader-line)}
+.readerPage .readerArticle,.readerPage .readerFooterCard,.readerPage .readerLock{background:var(--reader-panel);color:var(--reader-text);border-color:var(--reader-line)}
+.readerPage .readerArticle h1,.readerPage .readerFooterCard h3,.readerPage .readerLock h2,.readerPage .readerBook b{color:var(--reader-text)}
+.readerPage .readerContent{color:var(--reader-text)}
+.readerPage .readerDivider{background:var(--reader-accent)}
+.readerPage .readerBack,.readerPage .readerChapterJump a{color:var(--reader-link)}
+.readerPage .readerTool:focus-visible,.readerPage .readerPrefs select:focus-visible{outline:2px solid var(--reader-focus);outline-offset:2px}
