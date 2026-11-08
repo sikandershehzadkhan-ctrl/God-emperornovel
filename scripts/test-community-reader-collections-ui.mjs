@@ -19,4 +19,8 @@ const translationSource=source.slice(translationsStart,translationsEnd).replace(
 const translations=JSON.parse(translationSource);
 assert.equal(Object.keys(translations).length,14,'collection controls must cover all 14 supported locales');
 for(const [locale,values] of Object.entries(translations))assert.equal(values.length,keys.length,'collection translation count mismatch for '+locale);
-console.log('PASS: reader collections community UI, owner management hooks, public discovery, novel-detail add flow and served bundle parity.');
+
+const helperKeys=["Your collections are private by default. You can publish a collection whenever you choose.","Sign in to create and manage your own collections.","Sign in to view your private collections.","Your private collections could not be loaded right now.","Private collections are temporarily unavailable.","You have not created a collection yet.","No public collections yet. Create one and share your reading shelf.","Public collections are temporarily unavailable.","This collection has no eligible published stories yet.","This collection is unavailable.","Loading collection…","Loading your collections…","Loading public collections…","Collection title (up to 80 characters):","Collection description (up to 500 characters):","Delete this collection? Its saved list will also be deleted."];
+for(const key of helperKeys)assert.ok(keys.includes(key),'collection helper copy missing localization: '+key);
+for(const [locale,values] of Object.entries(translations))for(const key of helperKeys)assert.notEqual(values[keys.indexOf(key)],key,'untranslated collection helper copy for '+locale+': '+key);
+console.log('PASS: reader collections community UI, 14-locale controls and helper/error/empty-state localization, owner management and served bundle parity.');
