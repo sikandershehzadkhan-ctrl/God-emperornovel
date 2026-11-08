@@ -1,0 +1,28 @@
+{
+  "id": "six-global-theme-registry",
+  "title": "Six global site themes",
+  "status": "implemented-pending-validation",
+  "themes": [
+    "light",
+    "dark",
+    "midnight",
+    "sepia",
+    "imperial",
+    "cosmic"
+  ],
+  "persistence": "imperial_theme local preference",
+  "runtime": [
+    "public/app.js",
+    "public/app-17.23.0.js"
+  ],
+  "stylesheet": "public/imperial-luxury-17.23.0.css",
+  "settings": "Site theme selector",
+  "safeguards": [
+    "Unknown stored values fall back to light",
+    "Reader theme remains separately stored in imperial_reader_theme",
+    "Theme choice is local-device preference and is not presented as account-synced"
+  ],
+  "limitations": [
+    "Theme token maps and core surface overrides are implemented; complete component-by-component visual and WCAG 2.2 AA verification remains a separate acceptance gate."
+  ]
+}
