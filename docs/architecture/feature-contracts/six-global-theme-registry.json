@@ -38,7 +38,12 @@
     "action hover",
     "control background",
     "overlay",
-    "legacy compatibility aliases"
+    "legacy compatibility aliases",
+    "semantic success",
+    "semantic danger",
+    "semantic warning",
+    "semantic lime",
+    "semantic pink"
   ],
   "sharedComponents": [
     "global shell",
@@ -57,13 +62,24 @@
     "catalog empty states",
     "community cards",
     "account surfaces",
-    "focus-visible"
+    "focus-visible",
+    "empty states",
+    "quick cards",
+    "format directory and home format shelf",
+    "author studio forms and work cards",
+    "comic reader controls and placeholders",
+    "community reactions and rating states",
+    "creator publication/review/rejection status",
+    "glass surfaces with mobile blur fallback"
   ],
   "accessibilityChecks": [
     "six-theme token contrast against each theme canvas",
     "white button text against normal and hover action colors",
     "semantic token coverage for shared component selectors",
-    "legacy variable alias mapping"
+    "legacy variable alias mapping",
+    "semantic success/danger/warning/lime/pink token contrast against each theme canvas",
+    "white foreground contrast on action and hover backgrounds",
+    "format keyboard focus uses theme focus token"
   ],
   "independentReaderTheme": {
     "preferenceKey": "imperial_reader_theme",
@@ -83,5 +99,18 @@
     "Full WCAG 2.2 AA verification for every component state and interactive control",
     "Forced-colors and keyboard focus testing",
     "Reduced-motion and RTL visual regression across all themes"
-  ]
+  ],
+  "stylesheets": [
+    "public/style-17.23.0.css",
+    "public/imperial-luxury-17.23.0.css",
+    "public/imperial-glass.css",
+    "public/imperial-formats-17.23.0.css",
+    "public/imperial-comic-reader-17.23.0.css",
+    "public/app-17.23.0.css"
+  ],
+  "legacyTokenBridge": {
+    "source": "public/style-17.23.0.css",
+    "bridge": "html[data-theme] in public/imperial-luxury-17.23.0.css",
+    "mapped": "All color and surface tokens; only layout, radius, motion, and max-width tokens remain intentionally outside the theme map"
+  }
 }
