@@ -513,8 +513,8 @@
         "POST"
       ],
       "sourceLines": [
-        101,
-        112
+        103,
+        114
       ],
       "sourceFile": "src/features/creator-studio/index.mjs",
       "workerDispatchLines": [
@@ -544,7 +544,7 @@
         "GET"
       ],
       "sourceLines": [
-        175
+        177
       ],
       "sourceFile": "src/features/creator-studio/index.mjs",
       "workerDispatchLines": [
@@ -560,7 +560,7 @@
         "GET"
       ],
       "sourceLines": [
-        150
+        152
       ],
       "sourceFile": "src/features/creator-studio/index.mjs",
       "workerDispatchLines": [
@@ -1400,8 +1400,8 @@
         "DELETE"
       ],
       "sourceLines": [
-        129,
-        139
+        131,
+        141
       ],
       "sourceFile": "src/features/creator-studio/index.mjs",
       "workerDispatchLines": [
@@ -1409,7 +1409,7 @@
       ],
       "methodGuardMissing": false,
       "authorization": "author(u); note mutation predicates require owner_user_id=u.id and confirm the parent novel remains owned by u.id.",
-      "routeMatchLine": 128
+      "routeMatchLine": 130
     },
     {
       "pathPattern": "/^\\/api\\/author\\/novels\\/\\d+\\/submit$/",
@@ -1574,7 +1574,7 @@
   "sourceCommit": "35948f0ea0a7c86d1f7eaf87404a313ac43ea2a3",
   "refreshNote": "Refreshed after schedule cancellation gained an in-statement current-owner predicate and explicit changed-row handling.",
   "featureSourceBlobs": {
-    "src/features/creator-studio/index.mjs": "cdf184854207bf048703f7dd180ba21bdb48efa1",
+    "src/features/creator-studio/index.mjs": "83717607b4e4a028d59b8523cd9d0b7b683f955f",
     "src/features/publishing-studio/index.mjs": "b86153b275051e7487108fe1ec1baafa8e791cbd",
     "src/features/community-collections/index.mjs": "d6d4b09b4b4ae7449637789a251a84be0a9634b8"
   }
