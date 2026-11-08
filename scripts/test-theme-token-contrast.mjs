@@ -14,14 +14,14 @@ const contrast = (a, b) => {
 };
 for (const theme of themes) {
   const blocks = [...css.matchAll(new RegExp('html\\[data-theme="' + theme + '"\\]\\s*\\{([^}]+)\\}', "g"))];
-  const block = blocks.map(match => match[1]).find(value => value.includes("--in-obsidian:") && value.includes("--in-white:") && value.includes("--in-muted:") && value.includes("--in-purple:") && value.includes("--in-sapphire:"));
+  const block = blocks.map(match => match[1]).find(value => value.includes("--in-canvas:") && value.includes("--in-white:") && value.includes("--in-muted:") && value.includes("--in-purple:") && value.includes("--in-sapphire:"));
   assert.ok(block, "Missing complete semantic token map for " + theme);
   const token = name => {
     const match = block.match(new RegExp(name + ":(#[0-9A-Fa-f]{6})"));
     assert.ok(match, "Missing " + name + " in " + theme);
     return match[1];
   };
-  const background = token("--in-obsidian");
+  const background = token("--in-canvas");
   for (const name of ["--in-white", "--in-muted", "--in-purple", "--in-sapphire"]) {
     const value = contrast(background, token(name));
     assert.ok(value >= 4.5, theme + " " + name + " contrast is " + value.toFixed(2) + ":1, below WCAG AA normal-text threshold");
