@@ -122,8 +122,8 @@ assert.ok(runtime.includes("applyImperialTheme(['dark','midnight','imperial','co
 
 const formatCss = fs.readFileSync(`public/imperial-formats-${version}.css`,'utf8');
 assert.ok(formatCss.includes('.homeFormatCard:focus-visible') && formatCss.includes('.formatLink:focus-visible'), 'Homepage and directory format links retain a visible keyboard focus state');
-assert.ok(formatCss.includes('outline:3px solid #83a9ff!important') && formatCss.includes('outline:2px solid Highlight!important'), 'Format navigation focus remains visible in normal and forced-colors modes');
-assert.ok(formatCss.includes('border-color:#83a9ff'), 'Keyboard focus also reinforces the active format link border');
+assert.ok(formatCss.includes('outline:3px solid var(--in-focus,#0F52BA)!important') && formatCss.includes('outline:2px solid Highlight!important'), 'Format navigation focus remains visible in normal and forced-colors modes');
+assert.ok(formatCss.includes('border-color:var(--in-focus,#0F52BA)'), 'Keyboard focus also reinforces the active format link border');
 assert.ok(formatCss.includes('var(--in-sapphire,#4f8cff)') && !formatCss.includes('brand-cyan'), 'Format navigation uses the Imperial sapphire accent rather than legacy cyan');
 const appCss = fs.readFileSync(`public/app-${version}.css`,'utf8');
 assert.ok(appCss.includes('--brand-sapphire:var(--in-sapphire') && appCss.includes('var(--brand-sapphire,#4f8cff)'), 'Shared interaction controls use Imperial sapphire instead of legacy cyan/gold accents');
