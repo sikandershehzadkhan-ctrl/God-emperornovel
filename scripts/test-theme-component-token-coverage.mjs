@@ -50,7 +50,7 @@ assert.ok(css.includes("html[data-theme] .novelReaction[aria-pressed=true]"), "C
 
 assert.ok(runtime.includes("readerPage.dataset.readerTheme=chosen") && runtime.includes("imperial_reader_theme"), "Reader theme must remain independently scoped and persisted");
 for (const readerTheme of themes) {
-  const readerMap = css.includes('.readerPage[data-reader-theme="' + readerTheme + '"]{--reader-canvas:');
+  const readerMap = new RegExp('\\.readerPage\\[data-reader-theme="' + readerTheme + '"\\]\\s*\\{[^}]*--reader-canvas:').test(css);
   assert.ok(readerMap, "Reader theme must define an independent semantic canvas map: " + readerTheme);
 }
 assert.ok(css.includes(".readerPage .chapterDrawer{background:var(--reader-panel)") && css.includes(".readerPage .readerPrefs select,.readerPage .readerTool{background:var(--reader-surface-soft)"), "Reader drawer and controls must use reader-scoped tokens rather than the global site palette");
