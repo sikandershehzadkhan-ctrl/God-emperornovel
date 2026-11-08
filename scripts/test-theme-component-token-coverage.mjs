@@ -25,6 +25,7 @@ const legacyAliases = ["--bg:", "--bg2:", "--panel:", "--panel2:", "--panel3:", 
 for (const alias of legacyAliases) assert.ok(css.includes(alias), "Missing legacy variable bridge: " + alias);
 assert.ok(legacyCss.includes("var(--panel)") && legacyCss.includes("var(--text)"), "Legacy application stylesheet must remain covered by the token bridge");
 assert.ok(runtime.includes("readerPage.dataset.readerTheme=chosen") && runtime.includes("imperial_reader_theme"), "Reader theme must remain independently scoped and persisted");
+for (const readerTheme of ["light", "dark", "midnight", "sepia", "imperial", "cosmic"]) assert.ok(legacyCss.includes('.readerPage[data-reader-theme="' + readerTheme + '"]'), "Missing independently scoped reader theme: " + readerTheme);
 for (const token of ["var(--in-canvas)", "var(--in-text)", "var(--in-panel)", "var(--in-control-bg)", "var(--in-focus)"]) {
   assert.ok(css.includes(token), "Missing semantic token consumption: " + token);
 }
