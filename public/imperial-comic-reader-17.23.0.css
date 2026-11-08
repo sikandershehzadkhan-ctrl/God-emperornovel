@@ -5,7 +5,7 @@
 #comicPageStatus{font-size:12px;color:var(--muted,#a3abc2);min-width:100px;text-align:center}
 .comicPages{display:flex;flex-direction:column;align-items:center;gap:12px;width:100%;margin:0 auto}
 .comicPage{width:100%;max-width:900px;margin:0;padding:0;overflow:hidden;background:var(--panel,#101421);border-radius:4px}
-.comicPage img{display:block;width:100%;height:auto;max-height:none;object-fit:contain;background:#080a12}
+.comicPage img{display:block;width:100%;height:auto;max-height:none;object-fit:contain;background:var(--in-obsidian,var(--bg,#0B1215))}
 .comicPage figcaption{padding:8px 12px;color:var(--muted,#a3abc2);font-size:13px}
 .comicPageError img{display:none}
 .comicPageError::after{content:'Page image could not be loaded';display:block;padding:30px 16px;text-align:center;color:var(--muted,#a3abc2)}
