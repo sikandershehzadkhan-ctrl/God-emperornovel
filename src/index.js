@@ -484,7 +484,7 @@ async function api(req,env){
  await ensureCoreSchema(env);
  await ensureRuntimeFeatureSchema(env);
  const u=await getUser(req,env);
- const creatorStudioResponse=await handleCreatorStudioRequest({req,env,url,u,body,json,author,CONTENT_FORMAT_IDS});if(creatorStudioResponse)return creatorStudioResponse;
+ const creatorStudioResponse=await handleCreatorStudioRequest({req,env,url,u,body,json,author,audit,CONTENT_FORMAT_IDS});if(creatorStudioResponse)return creatorStudioResponse;
  const communityCollectionsResponse=await handleCommunityCollectionsRequest({req,env,url,u,body,json,need});if(communityCollectionsResponse)return communityCollectionsResponse;
  const publishingStudioResponse=await handlePublishingStudioRequest({req,env,url,u,body,json,author,audit,notifyUser,canPublishChapter,validateComicChapterContent});if(publishingStudioResponse)return publishingStudioResponse;
  if(p==="/api/agents"&&m==="GET"){return json((await env.DB.prepare(`SELECT slug,name,role,icon,mode,status,last_run_at FROM agents WHERE enabled=1 ORDER BY id`).all()).results)}
