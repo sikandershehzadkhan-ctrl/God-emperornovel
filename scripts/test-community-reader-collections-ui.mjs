@@ -28,8 +28,9 @@ assert.ok(source.includes('<div id="publicCollections" class="panel" aria-live="
 assert.ok(source.includes('${collectionUiText("Loading your collections…")}')&&source.includes('${collectionUiText("Loading public collections…")}'),'initial collection loading states must use real locale interpolation');
 assert.ok(!source.includes("'+collectionUiText('Loading your collections…')+'")&&!source.includes("'+collectionUiText('Loading public collections…')+'"),'loading placeholders must not leak JavaScript concatenation into visible markup');
 assert.ok(source.includes('class="readerCollectionCard"')&&source.includes('class="readerCollectionItem"'),'collection cards and story rows must use responsive layout hooks');
-assert.ok(source.includes('aria-label="'+collectionUiText("Open")+' '+esc(c.title)+'"'),'collection open controls must have collection-specific accessible names');
-assert.ok(source.includes('aria-label="'+collectionUiText("Edit")+' '+esc(c.title)+'"')&&source.includes('aria-label="'+collectionUiText("Delete")+' '+esc(c.title)+'"'),'collection management controls must have contextual accessible names');
-assert.ok(source.includes('aria-label="'+collectionUiText("Remove")+' '+esc(n.title)+'"'),'story removal controls must identify the story they affect');
+assert.match(source,/aria-label="'\+collectionUiText\("Open"\)\+' '\+esc\(c\.title\)\+'"/,'collection open controls must have collection-specific accessible names');
+assert.match(source,/aria-label="'\+collectionUiText\("Edit"\)\+' '\+esc\(c\.title\)\+'"/,'collection edit controls must have contextual accessible names');
+assert.match(source,/aria-label="'\+collectionUiText\("Delete"\)\+' '\+esc\(c\.title\)\+'"/,'collection delete controls must have contextual accessible names');
+assert.match(source,/aria-label="'\+collectionUiText\("Remove"\)\+' '\+esc\(n\.title\)\+'"/,'story removal controls must identify the story they affect');
 assert.ok(source.includes('id="collectionDetail" class="section" aria-live="polite" aria-atomic="false"'),'collection detail updates must be announced politely without treating interactive content as a status widget');
 console.log('PASS: reader collections community UI, 14-locale controls and helper/error/empty-state localization, owner management and served bundle parity.');
