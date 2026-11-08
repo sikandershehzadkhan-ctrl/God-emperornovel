@@ -3,7 +3,7 @@ import { readFileSync } from "node:fs";
 
 const css = readFileSync("public/imperial-luxury-17.23.0.css", "utf8");
 const themes = ["light", "dark", "midnight", "sepia", "imperial", "cosmic"];
-const required = ["--in-canvas:", "--in-panel:", "--in-panel-raised:", "--in-line:", "--in-text:", "--in-text-muted:", "--in-accent:", "--in-link:", "--in-focus:", "--in-control-bg:", "--in-surface-soft:", "--in-overlay:"];
+const required = ["--in-canvas:", "--in-panel:", "--in-panel-raised:", "--in-line:", "--in-text:", "--in-text-muted:", "--in-accent:", "--in-link:", "--in-focus:", "--in-action-bg:", "--in-action-hover:", "--in-control-bg:", "--in-surface-soft:", "--in-overlay:"];
 for (const theme of themes) {
   const blocks = [...css.matchAll(new RegExp('html\\[data-theme="' + theme + '"\\]\\s*\\{([^}]+)\\}', "g"))].map(match => match[1]);
   const block = blocks.find(value => required.every(token => value.includes(token)));
