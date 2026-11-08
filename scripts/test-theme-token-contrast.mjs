@@ -35,4 +35,23 @@ for (const theme of themes) {
     assert.ok(value >= 4.5, theme + " " + name + " status text has " + value.toFixed(2) + ":1 contrast against the theme canvas, below WCAG AA");
   }
 }
-console.log("PASS: all six theme text/accent tokens and white-on-action and semantic status text pairs meet 4.5:1 contrast.");
+for (const theme of themes) {
+  const readerMatch = css.match(new RegExp('\\.readerPage\\[data-reader-theme="' + theme + '"\\]\\s*\\{([^}]+)\\}'));
+  assert.ok(readerMatch, "Missing independent reader token map for " + theme);
+  const readerBlock = readerMatch[1];
+  const readerToken = name => {
+    const match = readerBlock.match(new RegExp(name + ":(#[0-9A-Fa-f]{6})"));
+    assert.ok(match, "Missing " + name + " in reader " + theme);
+    return match[1];
+  };
+  const readerCanvas = readerToken("--reader-canvas");
+  for (const name of ["--reader-text", "--reader-muted", "--reader-accent", "--reader-link"]) {
+    const value = contrast(readerCanvas, readerToken(name));
+    assert.ok(value >= 4.5, "Reader " + theme + " " + name + " contrast is " + value.toFixed(2) + ":1, below WCAG AA");
+  }
+  for (const name of ["--reader-action-bg", "--reader-action-hover"]) {
+    const value = contrast("#FFFFFF", readerToken(name));
+    assert.ok(value >= 4.5, "Reader " + theme + " white button text on " + name + " has " + value.toFixed(2) + ":1, below WCAG AA");
+  }
+}
+console.log("PASS: global and independent reader theme text, status, link and action tokens meet 4.5:1 contrast.");
