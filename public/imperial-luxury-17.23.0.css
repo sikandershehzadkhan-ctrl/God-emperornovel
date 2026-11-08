@@ -880,3 +880,22 @@ html[data-theme] .readerTool{min-width:44px;min-height:44px}
   html[data-theme] .readerTools{flex:1 0 100%;width:100%;justify-content:space-between;gap:5px}
   html[data-theme] .readerTool{flex:1 1 44px;min-width:44px;min-height:44px}
 }
+
+
+/* Final semantic parity layer: prevent legacy archive art-direction rules from
+   pinning the six theme families to one fixed dark palette. */
+html[data-theme] body{background:var(--in-canvas)}
+html[data-theme] .top,html[data-theme] .mobileNav{background:var(--in-panel);border-color:var(--in-line)}
+html[data-theme] .hero.imperialArchiveHero,html[data-theme] .hero.nextHero,html[data-theme] .heroSideCard,html[data-theme] .card,html[data-theme] .catalogCard,html[data-theme] .panel,html[data-theme] .settingsPanel,html[data-theme] .novelHero,html[data-theme] .catalogTop{
+  background:var(--in-panel);border-color:var(--in-line);box-shadow:none
+}
+html[data-theme] .hero.imperialArchiveHero h1 span,html[data-theme] .nextHero h1 span{color:var(--in-accent);-webkit-text-fill-color:var(--in-accent)}
+html[data-theme] .hero.imperialArchiveHero .nextHeroLead,html[data-theme] .nextHeroLead,html[data-theme] .heroPromise,html[data-theme] .promiseText{color:var(--in-text-muted)}
+html[data-theme] .heroSearch{background:var(--in-panel);border-color:var(--in-line)}
+html[data-theme] .heroSearch input{background:var(--in-panel);color:var(--in-text)}
+html[data-theme] .heroSearch button,html[data-theme] .primary{background:var(--in-action-bg);border-color:var(--in-action-bg)}
+html[data-theme] .heroSearch button:hover,html[data-theme] .primary:hover{background:var(--in-action-hover);border-color:var(--in-action-hover)}
+html[data-theme] .portalLink,html[data-theme] .pill,html[data-theme] .rankBadge{border-color:var(--in-line)}
+html[data-theme] .pill,html[data-theme] .rankBadge{background:var(--in-surface-soft)}
+html[data-theme] :where(a,button,input,select,textarea,[role="button"],[tabindex]):focus-visible{outline-color:var(--in-focus)}
+html[data-theme] .skipLink{border-color:var(--in-focus);background:var(--in-panel);color:var(--in-text)}
