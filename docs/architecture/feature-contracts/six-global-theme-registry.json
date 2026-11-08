@@ -86,7 +86,12 @@
     "theme option labels translated in all 14 supported interface locales",
     "high-contrast token overrides for all six global themes",
     "high-contrast token overrides for all six reader themes",
-    "normal-text contrast at 4.5:1 and focus/border UI contrast at 3:1 in high-contrast mode"
+    "normal-text contrast at 4.5:1 and focus/border UI contrast at 3:1 in high-contrast mode",
+    "manual high-contrast preference palettes across all six global and reader themes",
+    "operating-system prefers-contrast: more palettes across all six global and reader themes",
+    "44px minimum interaction target baseline for buttons, fields, navigation and reader tools",
+    "forced-colors and reduced-motion fallback regression checks",
+    "late archive art-direction overrides resolve through semantic theme tokens"
   ],
   "independentReaderTheme": {
     "preferenceKey": "imperial_reader_theme",
@@ -120,7 +125,9 @@
     "Reduced-motion and RTL visual regression across all themes",
     "Browser-rendered computed-style verification for all six global and reader theme combinations",
     "Verify actual 44px touch target coverage across all primary interactive controls",
-    "Browser-rendered high-contrast computed styles and assistive-technology behavior"
+    "Browser-rendered high-contrast computed styles and assistive-technology behavior",
+    "Browser-rendered computed-style verification of manual and operating-system high-contrast behavior",
+    "Keyboard and assistive-technology validation of touch targets, focus and forced-colors states"
   ],
   "stylesheets": [
     "public/style-17.23.0.css",
