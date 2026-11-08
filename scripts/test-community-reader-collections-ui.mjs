@@ -8,11 +8,11 @@ assert.ok(source.includes('id="collectionCreateForm" hidden'),'collection creati
 assert.ok(source.includes("api('/api/me')"),'collection management must verify the active session');
 assert.ok(source.includes("body:JSON.stringify({novel_id:Number(id)})"),'novel detail must add the current novel through the API');
 assert.ok(source.includes("if(!me.user){location.href='/login';return}"),'collection add flow must require sign-in');
-const keysMatch=source.match(/const COLLECTION_UI_KEYS=(\\[[^\\n]+\\]);/);
+const keysMatch=source.match(/const COLLECTION_UI_KEYS=(\[[^\n]+\]);/);
 assert.ok(keysMatch,'collection localization keys must be declared');
 const keys=JSON.parse(keysMatch[1]);
 const translationsStart=source.indexOf('const COLLECTION_UI_TRANSLATIONS=')+'const COLLECTION_UI_TRANSLATIONS='.length;
-const translationsEnd=source.indexOf(';\\nfunction collectionUiText',translationsStart);
+const translationsEnd=source.indexOf(';\nfunction collectionUiText',translationsStart);
 assert.ok(translationsEnd>translationsStart,'collection localization dictionary must be declared');
 const translations=JSON.parse(source.slice(translationsStart,translationsEnd));
 assert.equal(Object.keys(translations).length,14,'collection controls must cover all 14 supported locales');
