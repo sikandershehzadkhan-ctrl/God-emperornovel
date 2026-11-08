@@ -91,7 +91,8 @@
     "operating-system prefers-contrast: more palettes across all six global and reader themes",
     "44px minimum interaction target baseline for buttons, fields, navigation and reader tools",
     "forced-colors and reduced-motion fallback regression checks",
-    "late archive art-direction overrides resolve through semantic theme tokens"
+    "late archive art-direction overrides resolve through semantic theme tokens",
+    "cross-stylesheet semantic token overrides for community, rating, creator and comic-authoring components"
   ],
   "independentReaderTheme": {
     "preferenceKey": "imperial_reader_theme",
@@ -169,5 +170,13 @@
     ],
     "mechanism": "data-in-lang option labels resolved by setINLang after settings and reader markup is rendered",
     "sourceRuntimeParity": "public/app.js and public/app-17.23.0.js are kept byte-identical"
-  }
+  },
+  "componentCoverage": [
+    "community comment threads and reply surfaces",
+    "rating stars, rating summaries and pressed reaction states",
+    "creator application forms and format selection",
+    "comic author page composer and image placeholders",
+    "format directory, format shelves and author studio",
+    "comic reader controls, page surfaces and unavailable states"
+  ]
 }
