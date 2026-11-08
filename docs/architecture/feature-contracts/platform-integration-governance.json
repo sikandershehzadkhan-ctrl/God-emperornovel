@@ -49,7 +49,16 @@
     "migrations/.reservations/0047.json",
     "scripts/test-ownership-transfer-migration.mjs",
     "docs/architecture/IMPERIAL-MIGRATION-ALLOCATIONS.json",
-    "docs/architecture/CANONICAL-MIGRATION-COLLISION-REGISTER.md"
+    "docs/architecture/CANONICAL-MIGRATION-COLLISION-REGISTER.md",
+    "docs/architecture/feature-contracts/community-reader-collections.json",
+    "docs/architecture/decisions/ADR-0041-rights-aware-reader-collections.md",
+    "docs/architecture/decisions/ADR-0042-inject-audit-service-into-creator-studio.md",
+    "docs/architecture/IMPERIAL-FEATURE-OWNERSHIP.json",
+    "scripts/test-community-reader-collections.mjs",
+    "scripts/test-community-reader-collections-d1.py",
+    "src/features/community-collections/",
+    "migrations/0048_community_reader_collections.sql",
+    "migrations/.reservations/0048.json"
   ],
   "dependencies": [
     "identity-security",
@@ -85,7 +94,12 @@
     "POST /api/admin/connectors remains administrator-only, validates an allowlisted HTTPS origin, rejects normalized duplicates with HTTP 409 and creates new connectors disabled/pending.",
     "/leaderboard",
     "GET /api/leaderboard (existing)",
-    "GET /authors, public indexable author directory"
+    "GET /authors, public indexable author directory",
+    "GET /api/community/collections lists bounded public collections; private collections are visible only to their owner.",
+    "POST /api/community/collections creates a private-by-default collection owned by the authenticated session user.",
+    "GET /api/community/collections/:id exposes private details only to the collection owner.",
+    "PATCH /api/community/collections/:id and DELETE /api/community/collections/:id require owner-scoped authorization.",
+    "POST /api/community/collections/:id/items and DELETE /api/community/collections/:id/items/:novelId recheck ownership and published rights-eligible novel state."
   ],
   "apiContracts": [
     "Existing API contracts; update method and authorization inventories for behavior changes",
@@ -114,7 +128,10 @@
     "Homepage localization does not translate creator-authored novel titles, chapter text, author names or dynamic catalog metadata.",
     "The existing settings page can change the browser-local imperial_language preference; no account preference API or database field is introduced.",
     "Reader localization changes only interface labels; canonical session-owned progress, bookmark and chapter unlock API contracts remain unchanged.",
-    "GET /api/public-authors: aggregate-only projection; 80-character pre-D1 query guard with HTTP 400 for overlong input; escaped LIKE matching for shorter terms and literal substring matching for longer accepted terms; 50/100 result caps; published rights-eligible works only."
+    "GET /api/public-authors: aggregate-only projection; 80-character pre-D1 query guard with HTTP 400 for overlong input; escaped LIKE matching for shorter terms and literal substring matching for longer accepted terms; 50/100 result caps; published rights-eligible works only.",
+    "Reader collection APIs use authenticated session ownership; private collection metadata and membership are never projected to non-owners.",
+    "Collection membership accepts only published rights-eligible novels and rejects duplicate novel membership.",
+    "Collection limits are enforced atomically by SQLite triggers: 50 collections per user and 100 novels per collection."
   ],
   "dataEntities": [
     "Existing canonical D1 entities only; no duplicate ledgers or parallel account-deletion store",
@@ -123,15 +140,17 @@
     "Runtime bootstrap DDL for 17 canonical core tables; no new persistent entity or migration.",
     "OmniPortal connector registry reuses connectors, import_jobs and connector_events; no table or migration is added. Existing duplicate rows remain for explicit administrator cleanup.",
     "Existing connectors, import_jobs and connector_events tables are reused; no new table or migration is introduced by connector registry deduplication.",
-    "Existing novels, chapters and unlocks tables support period-correct public leaderboard aggregation; no new entity or migration."
+    "Existing novels, chapters and unlocks tables support period-correct public leaderboard aggregation; no new entity or migration.",
+    "community_collections and community_collection_items are introduced by migration 0048 with owner foreign keys, visibility, uniqueness and cascade rules."
   ],
   "migrationPlan": {
     "required": true,
     "proposedNumbers": [
       "0036-0045 already reconciled on this branch",
-      "0046 atomic AI generation claims"
+      "0046 atomic AI generation claims",
+      "0048 rights-aware reader collections"
     ],
-    "canonicalEntityReuse": "Reuse canonical account_closure_requests and current-main data model; migration 0046 extends the existing AI Author Studio project/job tables without creating parallel entities.",
+    "canonicalEntityReuse": "Reuse canonical account_closure_requests and current-main data model; migration 0046 extends the existing AI Author Studio project/job tables without creating parallel entities. Migration 0048 adds only the two canonical community collection entities; it does not duplicate novels, users or rights records.",
     "backwardCompatibility": "Preserve existing data and append only to globally sequenced migration history",
     "rollbackOrForwardRepair": "No production migration executed; use migration-specific forward repair for any future applied schema change"
   },
@@ -328,7 +347,7 @@
     "rights",
     "community"
   ],
-  "changeSummary": "Consolidates current-main platform/security foundations with homepage SSR and the six-theme experience, while introducing canonical ownership, dependency, migration and integration governance. Adds mandatory isolated identity and media policy validation gates without changing Worker routes, UI bundles or D1 schema. Adds owner-scoped reader progress API and ensures architecture/source CI runs on nested integration PRs. Adds the reader browser client integration to the existing owner-scoped reading-position API and mandatory regression coverage. Integrates owner-scoped profile and account-preference APIs and a visibility-filtered public profile projection into the same canonical Worker as reader progress. Adds the account profile editor and cross-device settings synchronization while preserving the reader-progress browser integration. Adds a PR-lineage gate that serializes overlapping Worker, browser bundle, identity, migration, route inventory, workflow and release-configuration changes. Extends serialized surface protection to every top-level served CSS, JavaScript and webmanifest asset so versioned style/service-worker files cannot diverge silently. Hardens Author Studio chapter editing and publication by enforcing parent publication state, rights evidence, comic page-sequence validation on edits, safe integer chapter costs and verified chapter-route identifier parsing. Adds atomic token-fenced AI Author Studio generation claims with concurrent-run exclusion, stale-claim recovery, late-result rejection, owner-only authorization, and migration 0046. Adds a fail-closed production release gate because the deploy workflow currently applies only migrations 0009-0011 while the canonical integration line contains later migrations. Aligns runtime first-install core DDL with immutable migration 0001, adds source and SQLite parity regression tests, and extends the read-only production schema preflight to report core foreign-key definitions and integrity violations. Enforces whole-number 1–10 rating input without rounding and adds mandatory malformed-input regression coverage. Adds strict reader progress target validation: bookmark/history writes require a positive safe-integer novel/chapter pair that resolves to the exact published chapter of a published, rights-eligible novel; invalid targets are rejected before mutation and ownership remains session-derived. Adds the same-origin novel cover destination policy, strict server-side validation on all author/admin publishing writes, route-scoped image CSP, bundled Author Studio cover choices, and regression coverage. Reconciles OmniPortal connector registry seeding and status projection: repeated public status reads no longer create sequential duplicate registry rows, duplicate normalized base URLs collapse to a stable representative, administrator connector creation rejects duplicates and leaves new entries pending until rights review. Adds fourteen-locale homepage editorial copy and skip-navigation labels, localizes the search placeholder and accessible name, and enables RTL for Persian while leaving creator-authored story content unchanged. Build-chain enforcement now includes the six existing account-closure and ownership-transfer migration regression scripts; this changes validation coverage only and adds no runtime feature, schema, API, or deployment behavior. Adds a bounded public author directory with a dedicated page, fourteen-locale navigation, a pre-D1 search boundary, rights-filtered aggregate API, and SEO/sitemap/route/auth inventory coverage. No migration or production deployment. Adds the Community discovery localization dictionary and fourteen-locale static labels on top of the integrated public-author navigation. Recent discussions, trending reads, rights filters and creator-authored text remain unchanged; no route, API, schema or migration changes. Updates the platform integration governance contract in the same change because canonical and versioned public browser bundles are serialized shared platform surfaces; ADR-0028 records the integration decision, and the fourteen-locale community UI remains static-interface-only.",
+  "changeSummary": "Consolidates current-main platform/security foundations with homepage SSR and the six-theme experience, while introducing canonical ownership, dependency, migration and integration governance. Adds mandatory isolated identity and media policy validation gates without changing Worker routes, UI bundles or D1 schema. Adds owner-scoped reader progress API and ensures architecture/source CI runs on nested integration PRs. Adds the reader browser client integration to the existing owner-scoped reading-position API and mandatory regression coverage. Integrates owner-scoped profile and account-preference APIs and a visibility-filtered public profile projection into the same canonical Worker as reader progress. Adds the account profile editor and cross-device settings synchronization while preserving the reader-progress browser integration. Adds a PR-lineage gate that serializes overlapping Worker, browser bundle, identity, migration, route inventory, workflow and release-configuration changes. Extends serialized surface protection to every top-level served CSS, JavaScript and webmanifest asset so versioned style/service-worker files cannot diverge silently. Hardens Author Studio chapter editing and publication by enforcing parent publication state, rights evidence, comic page-sequence validation on edits, safe integer chapter costs and verified chapter-route identifier parsing. Adds atomic token-fenced AI Author Studio generation claims with concurrent-run exclusion, stale-claim recovery, late-result rejection, owner-only authorization, and migration 0046. Adds a fail-closed production release gate because the deploy workflow currently applies only migrations 0009-0011 while the canonical integration line contains later migrations. Aligns runtime first-install core DDL with immutable migration 0001, adds source and SQLite parity regression tests, and extends the read-only production schema preflight to report core foreign-key definitions and integrity violations. Enforces whole-number 1–10 rating input without rounding and adds mandatory malformed-input regression coverage. Adds strict reader progress target validation: bookmark/history writes require a positive safe-integer novel/chapter pair that resolves to the exact published chapter of a published, rights-eligible novel; invalid targets are rejected before mutation and ownership remains session-derived. Adds the same-origin novel cover destination policy, strict server-side validation on all author/admin publishing writes, route-scoped image CSP, bundled Author Studio cover choices, and regression coverage. Reconciles OmniPortal connector registry seeding and status projection: repeated public status reads no longer create sequential duplicate registry rows, duplicate normalized base URLs collapse to a stable representative, administrator connector creation rejects duplicates and leaves new entries pending until rights review. Adds fourteen-locale homepage editorial copy and skip-navigation labels, localizes the search placeholder and accessible name, and enables RTL for Persian while leaving creator-authored story content unchanged. Build-chain enforcement now includes the six existing account-closure and ownership-transfer migration regression scripts; this changes validation coverage only and adds no runtime feature, schema, API, or deployment behavior. Adds a bounded public author directory with a dedicated page, fourteen-locale navigation, a pre-D1 search boundary, rights-filtered aggregate API, and SEO/sitemap/route/auth inventory coverage. No migration or production deployment. Adds the Community discovery localization dictionary and fourteen-locale static labels on top of the integrated public-author navigation. Recent discussions, trending reads, rights filters and creator-authored text remain unchanged; no route, API, schema or migration changes. Updates the platform integration governance contract in the same change because canonical and versioned public browser bundles are serialized shared platform surfaces; ADR-0028 records the integration decision, and the fourteen-locale community UI remains static-interface-only. Adds D1-backed private-by-default reader collections with owner-scoped CRUD, rights-eligible novel membership, database-enforced collection/item quotas, and two-account Worker plus SQLite migration regression coverage. Also repairs Creator Studio audit dependency injection and owner-checked story-goal writes discovered by integration testing. Reader-facing collection UI is intentionally not included; no production migration or deployment is executed.",
   "acceptanceCriteria": [
     "Every changed repository path resolves to one registered owner",
     "Dependency graph is acyclic and every edge points from consumer to lower-level dependency",
@@ -410,7 +429,12 @@
     "The active locale is reapplied after initial rendering and after the trending catalog response updates the empty state.",
     "Novel titles, usernames, discussion bodies and other creator/community-authored text remain unchanged.",
     "public/app.js and public/app-17.23.0.js remain byte-identical; existing author-discovery and lifecycle build checks remain enabled.",
-    "Community discovery localization is integrated only in the serialized canonical and served browser bundles; no Worker route, API contract, D1 entity, migration, creator-authored content, or production deployment is introduced."
+    "Community discovery localization is integrated only in the serialized canonical and served browser bundles; no Worker route, API contract, D1 entity, migration, creator-authored content, or production deployment is introduced.",
+    "Reader collection reads and mutations are scoped to the authenticated owner; private records remain hidden from other accounts.",
+    "Collection membership is limited to published rights-eligible novels, with duplicate membership rejected.",
+    "SQLite triggers enforce the 50-collection and 100-item limits under concurrent writes.",
+    "Fresh SQLite migration and two-account Worker integration tests cover collection ownership, privacy, rights gates and cascade behavior.",
+    "Creator Studio audit dependency is injected and story-goal writes retain owner predicates in D1-safe transactional operations."
   ],
   "sharedSurfaceSerialization": [
     ".github/workflows/",
