@@ -5031,3 +5031,5 @@ html[dir="rtl"] .commentReply { margin-inline-start: 28px; margin-inline-end: 0;
 .in-reaction-row { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 14px; }
 .in-discussion-row { display: block; padding: 14px 0; }
 .in-comment-copy { margin: 0; overflow-wrap: anywhere; }
+
+.admin-notice-danger { border-color: #c94f67; color: #c94f67; background: #180d12; }
