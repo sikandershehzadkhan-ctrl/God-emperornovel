@@ -1937,3 +1937,41 @@ body.menu-open{overflow:hidden}
 
 .in-system-actions{display:flex;flex-wrap:wrap;justify-content:center;gap:.6rem;margin-top:.8rem}
 .in-system-actions .in-button{min-width:9rem;min-height:44px}
+
+/* Community Taxonomy: moderated vocabulary contribution */
+.in-taxonomy-wrap{width:min(100% - 2.5rem,76rem);margin-inline:auto;padding:clamp(1.2rem,4vw,3.5rem) 0 4rem;color:var(--in-text-primary)}
+.in-taxonomy-top{display:flex;align-items:center;gap:.8rem;margin-bottom:2rem}
+.in-taxonomy-crest{width:2.8rem;height:2.8rem;object-fit:contain}
+.in-taxonomy-brand{color:var(--in-text-primary);font-size:.9rem;font-weight:900;letter-spacing:.06em}
+.in-taxonomy-tagline{display:block;color:var(--in-text-muted);font-size:.65rem;letter-spacing:.12em;text-transform:uppercase}
+.in-taxonomy-eyebrow{color:var(--in-action-primary);font-size:.68rem;font-weight:850;letter-spacing:.14em;text-transform:uppercase}
+.in-taxonomy-title{max-width:18ch;margin:.6rem 0 .8rem;color:var(--in-text-primary);font-family:var(--in-font-serif,Georgia,serif);font-size:clamp(2.1rem,6vw,3.6rem);line-height:1.04;letter-spacing:-.04em}
+.in-taxonomy-lede{max-width:66ch;margin:0 0 1.5rem;color:var(--in-text-secondary);font-size:.9rem;line-height:1.8}
+.in-taxonomy-grid{display:grid;grid-template-columns:minmax(0,1.15fr) minmax(16rem,.85fr);gap:1rem;align-items:start}
+.in-taxonomy-card{min-width:0;padding:clamp(1rem,3vw,1.6rem);border:1px solid var(--in-border-default);border-radius:var(--in-radius-xl);background:var(--in-bg-surface);box-shadow:var(--in-shadow-sm)}
+.in-taxonomy-card h2{margin:0 0 .35rem;color:var(--in-text-primary);font-family:var(--in-font-serif,Georgia,serif);font-size:1.3rem}
+.in-taxonomy-card>p{margin:.25rem 0 1.1rem;color:var(--in-text-secondary);font-size:.8rem;line-height:1.65}
+.in-taxonomy-field{display:grid;gap:.4rem;margin:1rem 0}
+.in-taxonomy-field label{color:var(--in-text-primary);font-size:.76rem;font-weight:800}
+.in-taxonomy-field small{color:var(--in-text-muted);font-size:.68rem;line-height:1.5}
+.in-taxonomy-field input,.in-taxonomy-field select,.in-taxonomy-field textarea{width:100%;min-width:0;min-height:44px;padding:.7rem .8rem;border:1px solid var(--in-border-default);border-radius:var(--in-radius-md);background:var(--in-bg-canvas);color:var(--in-text-primary);font:inherit;font-size:.8rem}
+.in-taxonomy-field textarea{min-height:7rem;resize:vertical;line-height:1.65}
+.in-taxonomy-field :focus-visible,.in-taxonomy-submit:focus-visible,.in-taxonomy-links a:focus-visible{outline:3px solid var(--in-focus-ring);outline-offset:2px}
+.in-taxonomy-submit{width:100%;min-height:46px;padding:.75rem 1rem;border:1px solid var(--in-action-primary);border-radius:var(--in-radius-md);background:var(--in-action-primary);color:var(--in-action-primary-text);font:800 .78rem var(--in-font-sans,system-ui,sans-serif);cursor:pointer}
+.in-taxonomy-submit:disabled{opacity:.55;cursor:wait}
+.in-taxonomy-status{min-height:1rem;margin-top:.75rem;padding:.7rem;border-radius:var(--in-radius-md);background:var(--in-bg-elevated);color:var(--in-text-secondary);font-size:.75rem;line-height:1.6;white-space:pre-wrap;overflow-wrap:anywhere}
+.in-taxonomy-status:empty{display:none}
+.in-taxonomy-status[data-kind="error"]{background:var(--in-status-danger-bg);color:var(--in-status-danger)}
+.in-taxonomy-status[data-kind="success"]{background:var(--in-status-success-bg);color:var(--in-status-success)}
+.in-taxonomy-note{margin-top:1rem;padding-top:.9rem;border-top:1px solid var(--in-border-default);color:var(--in-text-muted);font-size:.72rem;line-height:1.6}
+.in-taxonomy-rules{display:grid;gap:.65rem;list-style:none;margin:1rem 0 0;padding:0}
+.in-taxonomy-rules li{padding:.7rem 0;border-bottom:1px solid var(--in-border-default);color:var(--in-text-secondary);font-size:.78rem;line-height:1.6}
+.in-taxonomy-rules li:last-child{border:0}
+.in-taxonomy-rules strong{display:block;margin-bottom:.15rem;color:var(--in-text-primary);font-weight:800}
+.in-taxonomy-links{display:flex;flex-wrap:wrap;gap:.45rem;margin-top:1.2rem}
+.in-taxonomy-links a{display:inline-flex;align-items:center;min-height:40px;padding:.5rem .75rem;border:1px solid var(--in-border-default);border-radius:999px;color:var(--in-link);font-size:.72rem;font-weight:750;text-decoration:none}
+.in-taxonomy-links a:hover{border-color:var(--in-action-primary);background:var(--in-bg-elevated)}
+.in-taxonomy-footer{margin-top:1.6rem;color:var(--in-text-muted);font-size:.72rem}
+@media(max-width:52rem){.in-taxonomy-grid{grid-template-columns:1fr}}
+@media(max-width:40rem){.in-taxonomy-wrap{width:min(100% - 1.5rem,76rem);padding-top:1rem}.in-taxonomy-top{margin-bottom:1.4rem}}
+@media(prefers-reduced-motion:reduce){.in-taxonomy-wrap *{scroll-behavior:auto!important;transition:none!important}}
