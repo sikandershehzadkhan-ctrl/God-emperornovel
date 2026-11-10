@@ -221,3 +221,25 @@ A page family is design-complete only when all are true:
 - Screenshots or browser evidence exist for representative routes and states.
 
 Overall platform design is not complete until every page family above passes. Token documentation, CSS availability, or source-level static tests alone do not satisfy this gate. No production deployment is implied by this blueprint.
+
+
+## 11. Implementation checkpoint: page-family migration
+
+This checkpoint records source changes on the isolated design branch. It is not a production release or a declaration that the acceptance gates in section 10 have passed.
+
+### Implemented in PR #314
+- Global shell: responsive navigation, account/theme/language entry points, keyboard-operable secondary drawer, footer, safe-area and reduced-motion handling.
+- Home: editorial hero and search, six format entry points, live catalog shelves, creator/community/research pathways, and reading-comfort entry point.
+- Catalog: search, status/format/rating/genre/tag/language filters, removable filter chips, server-backed results, pagination and empty/error states.
+- Novel detail: canonical editorial hero, taxonomy links, rights/status information, story metrics, library/follow/share actions, latest chapters, rating/reaction/discussion areas.
+- Chapter directory: archive header, chapter list, start-reading action, batch-unlock entry point, and return navigation.
+- Reader: isolated canonical component class system, six independent reading palettes, adjustable text size/line spacing/measure, chapter drawer, bookmark, progress, keyboard navigation and existing unlock/history behavior.
+
+### Validation state
+- Source-level contract scripts exist for shell, homepage, catalog, and the novel/chapter/reader family. They are included in the package build chain.
+- The latest commit has a successful Graphify architecture-map workflow run. No build/test workflow result is currently reported for the new contract scripts.
+- Browser/device screenshots, assistive-technology review, RTL visual review, and cross-route regression testing remain outstanding.
+- The reader markup no longer uses its retired reader component class names; the canonical reader styling is scoped to the new `.in-reader-*` components. Other page families still require the same legacy-style dependency audit and migration.
+- No database, authorization, payment, or production deployment changes are included.
+
+Next migration family: Library, history, following, requests, Crown Vault, and notifications.
