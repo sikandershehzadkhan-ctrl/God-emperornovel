@@ -2463,12 +2463,9 @@ html[dir="rtl"] .heroCornerMark,
 html[dir="rtl"] .homePage .heroCornerMark { left: 24px; }
 html[dir="rtl"] .homePage .featureIcon { left: 20px; }
 html[dir="rtl"] .heroOrbitLabel { left: 24px; }
-html[dir="rtl"] .unlockBanner:after,
-html[dir="rtl"] .ecosystemCard:before,
-html[dir="rtl"] .homePage .featureTile:after {
-  right: auto;
-  left: -64px;
-}
+html[dir="rtl"] .unlockBanner:after { right: auto; left: -90px; }
+html[dir="rtl"] .ecosystemCard:before { right: auto; left: -64px; }
+html[dir="rtl"] .homePage .featureTile:after { right: auto; left: -45px; }
 html[dir="rtl"] .trendFactoryNote {
   border-left: 0;
   border-right: 2px solid var(--violet);
@@ -2484,4 +2481,9 @@ html[dir="rtl"] .in-field,
 html[dir="rtl"] .in-button { direction: rtl; }
 @media (max-width: 760px) {
   html[dir="rtl"] .menuDrawer { inset-inline-start: 0; inset-inline-end: auto; }
+  html[dir="rtl"] .heroSigil { left: -12%; }
+  html[dir="rtl"] .heroOrbit { left: -25%; }
+  html[dir="rtl"] .orbitTwo { left: -15%; }
+  html[dir="rtl"] .heroCornerMark,
+  html[dir="rtl"] .homePage .heroCornerMark { left: 13px; }
 }
