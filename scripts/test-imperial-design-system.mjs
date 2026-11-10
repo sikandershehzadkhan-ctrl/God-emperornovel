@@ -377,6 +377,12 @@ assert.ok(adminTablePass.includes('overflow-x: auto;') &&
   'Dense admin tables must scroll inside their own region rather than widening the page.');
 assert.ok(adminTablePass.includes('margin-inline: -2px;'),
   'Admin table scroll gutters must use logical inline margins for RTL parity.');
+assert.equal((adminMarkup.match(/<div class="scroll" tabindex="0" aria-label="Scrollable administrator table">/g) || []).length, 9,
+  'All nine administrator data-table scrollers must be keyboard reachable and accessibly named.');
+assert.ok(adminTablePass.includes('.adminWrap .scroll:focus-visible') &&
+  adminTablePass.includes('outline: 3px solid var(--in-color-focus-ring);'),
+  'Keyboard-focused administrator table scrollers must have a visible focus indicator.');
+
 
 // Admin chapter and dense-table actions follow the platform's 44px mobile
 // interaction baseline while keeping dense tables inside their own scroller.
