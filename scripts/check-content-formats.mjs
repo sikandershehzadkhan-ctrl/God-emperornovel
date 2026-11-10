@@ -45,10 +45,15 @@ for (const name of new Set(['app.js', scriptMatch[1]])) {
  assert.ok(app.includes('id="novelComments"') && app.includes('mountNovelComments(box,id)'), name + ' mounts the discussion composer and thread as a React island');
  assert.ok(!app.includes('id="postComment"') && !app.includes('id="commentsList"'), name + ' no longer contains the duplicate legacy comment controls');
 }
-for (const asset of [`style-${version}.css`,`app-${version}.css`,`imperial-luxury-${version}.css`,`imperial-formats-${version}.css`,`imperial-comic-reader-${version}.css`,`manifest-${version}.webmanifest`]) {
- assert.ok(index.includes('/'+asset), 'HTML references '+asset);
+const designSystem = fs.readFileSync('public/imperial-design-system.css', 'utf8');
+assert.ok(index.includes('/imperial-design-system.css'), 'HTML loads the canonical design-system entry point');
+for (const asset of [`style-${version}.css`,`app-${version}.css`,`imperial-luxury-${version}.css`,`imperial-formats-${version}.css`,`imperial-comic-reader-${version}.css`]) {
+ assert.ok(designSystem.includes('/'+asset), 'Unified design system imports '+asset);
  assert.ok(fs.existsSync('public/'+asset), asset+' exists');
 }
+const manifestAsset = `manifest-${version}.webmanifest`;
+assert.ok(index.includes('/'+manifestAsset), 'HTML references '+manifestAsset);
+assert.ok(fs.existsSync('public/'+manifestAsset), manifestAsset+' exists');
 
 for (const path of ['public/app.js', `public/app-${version}.js`]) {
  const app = fs.readFileSync(path, 'utf8');
