@@ -5920,3 +5920,45 @@ html[data-theme="cosmic"]{--in-text:#FFFFFF;--in-text-muted:#DCE5FF;--in-line:#8
     min-height: 44px !important;
   }
 }
+
+
+/* Script-load recovery state: keep even fatal-load UI inside the canonical theme. */
+.bootRecovery {
+  width: min(560px, calc(100% - 32px));
+  margin: 12vh auto;
+  padding: 28px 22px;
+  text-align: center;
+  color: var(--in-text, #172027);
+  background: var(--in-panel, #FFFFFF);
+  border: 1px solid var(--in-line, rgba(23,32,39,.12));
+  border-top: 4px solid var(--in-accent, #6A0DAD);
+  border-radius: 18px;
+  font: 16px/1.6 system-ui, sans-serif;
+}
+.bootRecoveryBrand {
+  margin: 0 0 8px;
+  color: var(--in-accent, #6A0DAD);
+  font-weight: 800;
+  letter-spacing: .12em;
+}
+.bootRecoveryTitle {
+  margin: 0 0 12px;
+  font-size: clamp(26px, 6vw, 38px);
+  line-height: 1.1;
+  color: var(--in-text, #172027);
+}
+.bootRecoveryMessage { color: var(--in-text-muted, #35434C); }
+.bootRecoveryRetry {
+  min-height: 44px;
+  margin-top: 12px;
+  padding: 12px 20px;
+  border: 0;
+  border-radius: 10px;
+  background: var(--in-action-bg, #6A0DAD);
+  color: var(--in-action-on-primary, #FFFFFF);
+  font: inherit;
+  font-weight: 700;
+  cursor: pointer;
+}
+.bootRecoveryRetry:hover { background: var(--in-action-hover, #0F52BA); }
+.bootRecoveryRetry:focus-visible { outline: 3px solid var(--in-focus, #0F52BA); outline-offset: 3px; }
