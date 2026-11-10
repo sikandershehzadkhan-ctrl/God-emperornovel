@@ -8,4 +8,6 @@ for(const token of ['.in-admin-shell','.in-admin-hero','.in-admin-nav','.in-admi
 assert.ok(!html.includes('<style>'),'Retired inline Admin stylesheet must be removed');
 assert.ok(!html.includes('class="admin'),'Retired Admin component classes must be removed');
 assert.ok(!html.includes('.adminSection'), 'Admin script selectors must use canonical component names');
+assert.ok(!html.includes('class=\"in-admin-panel\" class='), 'Admin markup must not contain duplicate class attributes');
+for(const color of ['#8f73d1','#b9abd9','#efc1cb','#c94f67','#180d12','#eee7ff','#4b2b9b','#0d1119']) assert.ok(!html.includes(color), 'Legacy hardcoded Admin color remains: '+color);
 console.log('Imperial Command Admin design and access-guard contracts passed.');
