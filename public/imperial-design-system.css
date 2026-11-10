@@ -59,6 +59,7 @@ html[data-theme="light"] {
 
 html[data-theme="dark"] {
   color-scheme: dark;
+  --in-action-on-primary: #0B1215;
   --in-paper: #0B1215;
   --in-paper-raised: #111B20;
   --in-paper-soft: #17242A;
@@ -2181,6 +2182,7 @@ html[data-theme="dark"] #omniRes .card { background: var(--panel); border-color:
   --in-color-text-muted: var(--muted);
   --in-color-border-subtle: var(--line);
   --in-color-action-primary: var(--in-purple);
+  --in-action-on-primary: #FFFFFF;
   --in-color-action-secondary: var(--in-sapphire);
   --in-color-focus-ring: var(--in-focus);
   --in-color-success: var(--in-success);
@@ -2254,7 +2256,7 @@ body { font-synthesis: none; }
   border: 1px solid transparent;
   border-radius: var(--in-radius-sm);
   background: var(--in-color-action-primary);
-  color: #FFFFFF;
+  color: var(--in-action-on-primary);
   font-size: var(--in-font-sm);
   font-weight: var(--in-weight-semibold);
   line-height: 1.2;
