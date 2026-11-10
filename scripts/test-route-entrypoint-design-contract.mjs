@@ -5,4 +5,7 @@ for(const name of pages){const html=fs.readFileSync('public/'+name,'utf8');for(c
 const app=fs.readFileSync('public/app.js','utf8');
 const simple=app.slice(app.indexOf('function simplePage('),app.indexOf('\nasync function authorApplicationPage'));
 for(const token of ['in-system-state','in-system-actions','in-button--primary','/catalog','/search'])assert.ok(simple.includes(token),'System recovery state missing '+token);
-console.log('19 route entrypoints and system recovery state use the Imperial design system.');
+const sw=fs.readFileSync('public/sw.js','utf8');
+for(const token of ['imperial-novel-v18.1.0','/app.js?v=18.1.0','/imperial-design-tokens.css','/imperial-ui-primitives.css'])assert.ok(sw.includes(token),'Service worker cache missing '+token);
+assert.ok(!sw.includes('/app-17.23.0.js'),'Service worker must not precache the retired app bundle');
+console.log('19 route entrypoints, service-worker cache and system recovery state use the Imperial design system.');
