@@ -42,7 +42,8 @@ for (const theme of ['light','dark','midnight','sepia','imperial','cosmic']) {
   assert.ok(appRuntime.includes("'" + theme + "'"), 'Reader theme remains available: ' + theme);
 }
 
-const hexTokens = name => [...css.matchAll(new RegExp(name + ':\\s*(#[0-9a-fA-F]{6})', 'g'))].map(match => match[1]).slice(-2);
+const tokenFoundationCss = css.split('/* Six-theme semantic layer integrated from the theme-foundation workstream. */')[0];
+const hexTokens = name => [...tokenFoundationCss.matchAll(new RegExp(name + ':\\s*(#[0-9a-fA-F]{6})', 'g'))].map(match => match[1]).slice(-2);
 const luminance = hex => {
   const channels = hex.slice(1).match(/../g).map(value => parseInt(value, 16) / 255)
     .map(value => value <= .04045 ? value / 12.92 : ((value + .055) / 1.055) ** 2.4);
