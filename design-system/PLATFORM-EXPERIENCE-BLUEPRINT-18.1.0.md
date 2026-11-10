@@ -327,3 +327,10 @@ The combined source-content audit now covers 170 assertions across the migrated 
 - Added responsive command-center styling for the overview, user and creator review tables, taxonomy/community moderation, legal publishing and chapter management, donation/request/report queues, automation agents, connectors and connector authorization review.
 - Preserved the server-side `/api/me` administrator-role gate and existing `/api/admin/*` workflows. This is a visual migration only; it does not broaden privileges or change server authorization.
 - Added a source-level Admin contract test to the build chain.
+
+
+### Remaining public discovery: leaderboard and tier list
+- Rebuilt weekly/monthly/all-time leaderboard tabs with accessible pressed states, live novel/author rankings, clear ranking metadata and empty/error states.
+- Rebuilt tier-list panels and story cards with responsive cover layouts and loading/empty/error states.
+- Both pages now use the shared whole-number rating formatter rather than decimal rating precision.
+- Added a discovery-page contract test and wired it into the build chain.
