@@ -293,3 +293,9 @@ The combined source-content audit now covers 170 assertions across the migrated 
 - Verified the account collection endpoints against their server response projections: library/history/bookmarks use `novel_id`, while followed novel projections expose `id`. The following renderer now normalizes both shapes before constructing story links or unfollow actions.
 - Corrected chapter-row styling selectors to target the actual `.chapter` markup emitted by the shared chapter-row renderer.
 - The combined connector-side source-content audit now covers 244 assertions across the migrated families and these contract refinements; all 244 passed. Repository Node scripts, npm build, browser QA, and visual/accessibility checks are still not claimed as run.
+
+### Creator workspace design migration
+- Added an isolated Author Studio page scope using the shared page wrapper, without rewriting the mature author workflow markup or changing its API behavior.
+- Added responsive creator workspace styling for story creation, rights evidence, draft/review status, edit forms, chapter composition and comic page sequencing.
+- Preserved author/admin role gates, private draft behavior, publication review submission, rights-evidence requirements, and the existing author novel/chapter endpoints.
+- Added a page-scope and workflow contract test to the build chain.
