@@ -319,3 +319,11 @@ The combined source-content audit now covers 170 assertions across the migrated 
 - The OmniPortal interface continues to state that only authorized connectors are queried, no paywall/DRM/login/access-control bypass is allowed, and source chapters are not copied.
 - Reviewed and added build-contract coverage for the existing Crown Vault ledger, weekly Story Request Desk and Notifications center. Their existing server endpoints, ledger-only display, request submission, unread states and mark-read action remain unchanged.
 - Explicitly kept unverified Crown purchase/payment flows out of the UI. No EasyPaisa integration or paid top-up flow is represented as active.
+
+
+### Imperial Command administrator workspace
+- Removed the legacy inline Admin stylesheet entirely and connected the shared semantic design tokens and component primitives.
+- Migrated Admin component names and script selectors into an isolated namespace, retaining stable IDs and tab state classes.
+- Added responsive command-center styling for the overview, user and creator review tables, taxonomy/community moderation, legal publishing and chapter management, donation/request/report queues, automation agents, connectors and connector authorization review.
+- Preserved the server-side `/api/me` administrator-role gate and existing `/api/admin/*` workflows. This is a visual migration only; it does not broaden privileges or change server authorization.
+- Added a source-level Admin contract test to the build chain.
