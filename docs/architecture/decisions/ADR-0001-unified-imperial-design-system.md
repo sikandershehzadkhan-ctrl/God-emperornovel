@@ -14,7 +14,7 @@ The product needs one coherent design language across reading, discovery, creato
 ## Decision
 
 1. Introduce `public/imperial-design-system.css` as the sole stylesheet entry point referenced by `public/index.html`.
-2. Preserve the existing six feature stylesheets behind that entry point, in their existing cascade order, until their page-family behavior has been migrated and verified.
+2. Consolidate the six existing feature stylesheets into the single design-system file in their established cascade order. The application must not load them through runtime `@import` requests or service-worker precache entries.
 3. Make semantic tokens in the unified stylesheet the final authority for shared colors, surfaces, typography defaults, borders, focus, motion, touch targets and elevation.
 4. Use comfortable warm-paper surfaces in light mode and obsidian surfaces in dark mode. Purple is the primary identity accent; sapphire is the secondary discovery/action accent. Teal, lime, pink and gold are not shared brand accents.
 5. Publish semantic color, typography, spacing, radius, elevation, reading-width and breakpoint tokens. Use a 4px spacing scale and semantic names instead of embedding raw palette values in new components.
@@ -26,7 +26,8 @@ The product needs one coherent design language across reading, discovery, creato
 ## First implementation
 
 - The application shell now references one stylesheet entry point.
-- The canonical stylesheet imports the existing feature styles in their original order and overrides them with semantic design tokens.
+- The six existing feature styles have been consolidated into the canonical stylesheet in their original cascade order; semantic tokens and page-family migrations follow them in the same file.
+- The main application and separate administrator shell each reference only the canonical stylesheet. The service worker precaches only that stylesheet, not the retired runtime CSS assets.
 - The homepage hero, format cards, feature tiles and supporting bands are the first migrated page family.
 - Semantic color, typography, spacing, elevation, breakpoint and reading-width tokens are available under the `--in-*` namespace.
 - Opt-in primitives cover buttons, fields, cards, badges, tabs, tables, empty states, toasts and reader prose with keyboard focus and touch sizing.
@@ -44,9 +45,9 @@ The product needs one coherent design language across reading, discovery, creato
 
 ### Trade-offs
 
-- The imported legacy stylesheets still contain duplicated and obsolete declarations.
+- Historical stylesheet files remain in the repository as rollback references while route-by-route parity is verified, but they are no longer loaded by the application.
 - The first phase does not claim that every route has been redesigned.
-- The stylesheet import chain must remain intact until each feature stylesheet is retired safely.
+- Historical source files can be deleted after route-by-route visual, responsive, RTL and functional parity is proven against the consolidated stylesheet.
 
 ## Required validation before removing legacy styles
 
