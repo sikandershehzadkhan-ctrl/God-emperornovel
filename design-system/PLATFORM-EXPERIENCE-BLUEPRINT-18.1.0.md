@@ -276,3 +276,9 @@ A connector-side audit evaluated 130 source assertions against the current branc
 
 ### Refreshed source-content audit
 The combined source-content audit now covers 170 assertions across the migrated page families, including notifications. All 170 passed. These checks were evaluated against fetched branch source in the connector runtime; they are not a substitute for running `npm run build`, the Node contract scripts, or browser/device QA.
+
+### Authentication and account center migration
+- Rebuilt sign-in and registration layouts with distinct entry-state messaging, semantic field labels, email/username/password autocomplete, minimum password length, confirm-password validation, pending feedback, and accessible status messaging.
+- Rebuilt the authenticated account center with profile identity, server-sourced Crown/history/following/unlock metrics, account navigation, sign-out action, and recommendation shelf.
+- Preserved the existing authentication, profile, logout, and recommendation API calls; no account or permission policy changes were made.
+- Added authentication/account design contract coverage and build-chain wiring.
