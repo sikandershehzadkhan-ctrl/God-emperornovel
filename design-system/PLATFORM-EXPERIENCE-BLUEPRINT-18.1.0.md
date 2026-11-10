@@ -262,3 +262,9 @@ Next migration family: Library, history, following, requests, Crown Vault, and n
 
 ### Source contract audit
 A connector-side audit evaluated 130 source assertions against the current branch for navigation, boot states, homepage, catalog, novel detail, chapter archive, reader, library, following, history, responsive selectors, preserved API hooks, and build-script wiring. All 130 passed. This was a source-content audit, not execution of the repository's Node test scripts or full `npm run build`; those remain pending in CI. No browser/device screenshots have been captured yet.
+
+### Account tools migration: Crown Vault and request desk
+- Rebuilt the Crown Vault as a balance-and-ledger view with server-provided balance, net flow, transaction reasons, timestamps, references, credit/debit direction, and truthful empty/error states. No purchase/top-up flow was invented.
+- Rebuilt the story request desk with the server-reported weekly allowance, URL validation, submission feedback, disabled pending state, and post-submit allowance refresh.
+- Request cost is shown only when the server returns it; missing cost is not silently represented as zero.
+- Added source contract coverage for both account tools and wired it into the build chain.
