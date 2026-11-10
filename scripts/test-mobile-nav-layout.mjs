@@ -47,4 +47,16 @@ for (const rule of [
 ]) {
   assert.ok(readerFit.includes(rule), 'Missing narrow reader containment contract: ' + rule);
 }
+const filterInputStart = css.lastIndexOf('.filterGroup select,');
+assert.ok(filterInputStart >= 0, 'Catalog filter input sizing rules must exist in the canonical stylesheet.');
+const filterInputRules = css.slice(filterInputStart, filterInputStart + 500);
+for (const rule of [
+  '.filterGroup select,',
+  '.filterGroup input {',
+  'width: 100%;',
+  'min-width: 0;',
+  'min-height: 44px;'
+]) {
+  assert.ok(filterInputRules.includes(rule), 'Missing responsive catalog filter sizing contract: ' + rule);
+}
 console.log('Mobile navigation narrow-viewport layout contracts passed.');
