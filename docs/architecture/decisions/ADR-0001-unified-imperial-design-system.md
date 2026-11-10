@@ -17,16 +17,21 @@ The product needs one coherent design language across reading, discovery, creato
 2. Preserve the existing six feature stylesheets behind that entry point, in their existing cascade order, until their page-family behavior has been migrated and verified.
 3. Make semantic tokens in the unified stylesheet the final authority for shared colors, surfaces, typography defaults, borders, focus, motion, touch targets and elevation.
 4. Use comfortable warm-paper surfaces in light mode and obsidian surfaces in dark mode. Purple is the primary identity accent; sapphire is the secondary discovery/action accent. Teal, lime, pink and gold are not shared brand accents.
-5. Keep decorative glass restrained. Content surfaces must remain readable and degrade gracefully on touch devices and reduced-motion settings.
-6. Migrate page families incrementally. Remove or delete legacy rules only after route-specific visual and functional parity checks prove they are no longer needed.
-7. Preserve application behavior, route semantics, localization, RTL behavior, permissions, user data, payment controls and backend contracts during visual migration.
+5. Publish semantic color, typography, spacing, radius, elevation, reading-width and breakpoint tokens. Use a 4px spacing scale and semantic names instead of embedding raw palette values in new components.
+6. Provide opt-in accessible primitives for buttons, fields, cards, badges, tabs, tables, empty states, toasts and reader prose. New page work should use these primitives; legacy page selectors remain until migration parity is demonstrated.
+7. Keep decorative glass restrained. Content surfaces must remain readable and degrade gracefully on touch devices and reduced-motion settings.
+8. Migrate page families incrementally. Remove or delete legacy rules only after route-specific visual and functional parity checks prove they are no longer needed.
+9. Preserve application behavior, route semantics, localization, RTL behavior, permissions, user data, payment controls and backend contracts during visual migration.
 
 ## First implementation
 
 - The application shell now references one stylesheet entry point.
 - The canonical stylesheet imports the existing feature styles in their original order and overrides them with semantic design tokens.
 - The homepage hero, format cards, feature tiles and supporting bands are the first migrated page family.
-- A build regression test verifies stylesheet consolidation, imported assets, theme tokens, accessibility safeguards and homepage rules.
+- Semantic color, typography, spacing, elevation, breakpoint and reading-width tokens are available under the `--in-*` namespace.
+- Opt-in primitives cover buttons, fields, cards, badges, tabs, tables, empty states, toasts and reader prose with keyboard focus and touch sizing.
+- The homepage, shell, discovery, reader, account, creator, community, OmniPortal and administrator surfaces have targeted migration rules.
+- A build regression test verifies stylesheet consolidation, imported assets, semantic tokens, component primitives, accessibility safeguards, reader themes and page-family selectors.
 
 ## Consequences
 
