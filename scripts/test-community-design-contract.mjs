@@ -1,0 +1,12 @@
+import fs from 'node:fs';
+import assert from 'node:assert/strict';
+const app=fs.readFileSync('public/app.js','utf8');
+const css=fs.readFileSync('public/imperial-ui-primitives.css','utf8');
+const discovery=app.slice(app.indexOf('async function discoveryPage('),app.indexOf('\nfunction simplePage'));
+const community=discovery.slice(discovery.indexOf("if(kind==='community'){"),discovery.indexOf("if(kind==='trending'){"));
+for(const token of ['in-community-hero','in-community-portals','in-community-discussions','in-community-grid','in-community-invite','/api/community/discussions','/api/novels?sort=trending&limit=12','aria-busy','communityRetry','/leaderboard','/tier-list','/vote','/random','/made-for-you']) assert.ok(community.includes(token),`Community experience missing ${token}`);
+for(const token of ['.in-community-hero','.in-community-portals','.in-community-discussion','.in-community-grid','.in-community-invite','@media(max-width:40rem)']) assert.ok(css.includes(token),`Community design missing ${token}`);
+assert.ok(!community.includes("pageStart('Community'"),'Community page must not fall back to the retired generic page shell');
+assert.ok(discovery.includes('ratingText(x.rating)'),'Leaderboard must use whole-number rating formatter');
+assert.ok(!discovery.includes('Number(x.rating||0).toFixed(1)'),'Leaderboard must not invent decimal rating precision');
+console.log('Imperial Commons community and discovery rating design contracts passed.');
