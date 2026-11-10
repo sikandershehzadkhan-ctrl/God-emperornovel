@@ -4546,6 +4546,7 @@ html[data-theme="dark"] {
   --gold3: var(--in-purple);
   --lime: var(--in-sapphire);
   --cyan: var(--in-sapphire);
+  --brand-cyan: var(--in-sapphire);
   --cyan2: var(--in-sapphire-strong);
   --cyan3: var(--in-sapphire-soft);
   --violet: var(--in-purple);
