@@ -106,6 +106,10 @@ assert.ok(sw.includes("key!==CACHE") && sw.includes("caches.delete(key)"), 'Acti
 const coreMatch = sw.match(/const CORE=\[([^\]]+)\]/);
 assert.ok(coreMatch, 'Service worker declares a core asset list');
 assert.ok(coreMatch[1].includes("'/imperial-design-system.css'"), 'Service worker precaches the unified design-system entry point');
+assert.ok(!designSystemCss.includes('@import'), 'The production stylesheet is self-contained and does not load legacy CSS at runtime.');
+for (const retiredCss of ['style-17.23.0.css','app-17.23.0.css','imperial-luxury-17.23.0.css','imperial-formats-17.23.0.css','imperial-comic-reader-17.23.0.css','imperial-glass.css']) {
+ assert.ok(!coreMatch[1].includes(retiredCss), 'Service worker no longer precaches separate legacy stylesheet: '+retiredCss);
+}
 const coreAssets = [...coreMatch[1].matchAll(/'([^']+)'/g)].map(([, asset]) => asset);
 for (const asset of coreAssets) {
   const pathname = asset.split(/[?#]/, 1)[0];
