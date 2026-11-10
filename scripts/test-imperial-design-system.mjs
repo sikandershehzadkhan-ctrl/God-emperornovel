@@ -33,4 +33,29 @@ assert.ok(appRuntime.includes('document.documentElement.dir=(c==="ur"||c==="ar"|
 for (const theme of ['light','dark','midnight','sepia','imperial','cosmic']) {
   assert.ok(appRuntime.includes("'" + theme + "'"), 'Reader theme remains available: ' + theme);
 }
+
+const hexTokens = name => [...css.matchAll(new RegExp(name + ':\\s*(#[0-9a-fA-F]{6})', 'g'))].map(match => match[1]);
+const luminance = hex => {
+  const channels = hex.slice(1).match(/../g).map(value => parseInt(value, 16) / 255)
+    .map(value => value <= .04045 ? value / 12.92 : ((value + .055) / 1.055) ** 2.4);
+  return .2126 * channels[0] + .7152 * channels[1] + .0722 * channels[2];
+};
+const contrast = (a,b) => {
+  const values = [luminance(a), luminance(b)].sort((x,y) => y-x);
+  return (values[0] + .05) / (values[1] + .05);
+};
+const purple = hexTokens('--in-purple');
+const purpleStrong = hexTokens('--in-purple-strong');
+const actionForeground = hexTokens('--in-action-on-primary');
+assert.equal(purple.length, 2, 'Light and dark primary action colors must both be defined.');
+assert.equal(purpleStrong.length, 2, 'Light and dark hover colors must both be defined.');
+assert.equal(actionForeground.length, 2, 'Light and dark action foreground colors must both be defined.');
+for (let theme = 0; theme < 2; theme++) {
+  assert.ok(contrast(purple[theme], actionForeground[theme]) >= 4.5,
+    'Primary action text must meet WCAG AA contrast in theme index ' + theme + '.');
+  assert.ok(contrast(purpleStrong[theme], actionForeground[theme]) >= 4.5,
+    'Primary action hover text must meet WCAG AA contrast in theme index ' + theme + '.');
+}
+assert.ok(css.includes('min-height: 44px;'), 'Shared interactive targets must meet the 44px touch target baseline.');
+assert.ok(css.includes('outline: 3px solid var(--in-color-focus-ring);'), 'Shared components must expose a visible keyboard focus ring.');
 console.log('Imperial unified design-system checks passed.');
