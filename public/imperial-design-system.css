@@ -5028,3 +5028,963 @@ html[dir="rtl"] .commentReply { margin-inline-start: 28px; margin-inline-end: 0;
 .in-comment-copy { margin: 0; overflow-wrap: anywhere; }
 
 .admin-notice-danger { border-color: #c94f67; color: #c94f67; background: #180d12; }
+
+
+/* Six-theme semantic layer integrated from the theme-foundation workstream. */
+/* Imperial Novel identity refresh: restrained purple, sapphire, white and obsidian.
+   Kept separate from the legacy stylesheet so the release can be reviewed and rolled back cleanly. */
+:root{
+  color-scheme:light dark;
+  --in-obsidian:#0B1215;
+  --in-panel:#101a1e;
+  --in-panel-raised:#152329;
+  --in-line:rgba(190,205,210,.16);
+  --in-purple:#6A0DAD;
+  --in-purple-bright:#B78AE2;
+  --in-sapphire:#0F52BA;
+  --in-white:#FFFFFF;
+  --in-muted:#a3b0b5;
+}
+html:is([data-theme="dark"],[data-theme="midnight"],[data-theme="imperial"],[data-theme="cosmic"]){color-scheme:dark}
+html:is([data-theme="dark"],[data-theme="midnight"],[data-theme="imperial"],[data-theme="cosmic"]) body{
+  color:var(--in-white);
+  background:radial-gradient(ellipse at 82% -12%,rgba(79,140,255,.12),transparent 36%),
+    radial-gradient(ellipse at 8% 4%,rgba(139,92,246,.12),transparent 32%),var(--in-obsidian);
+}
+html:is([data-theme="dark"],[data-theme="midnight"],[data-theme="imperial"],[data-theme="cosmic"]) body:before{
+  background-image:linear-gradient(rgba(167,139,250,.022) 1px,transparent 1px),linear-gradient(90deg,rgba(167,139,250,.022) 1px,transparent 1px);
+  background-size:64px 64px;opacity:.35;
+}
+html:is([data-theme="dark"],[data-theme="midnight"],[data-theme="imperial"],[data-theme="cosmic"]) .top{
+  background:rgba(8,10,18,.88);border-bottom-color:var(--in-line);
+  -webkit-backdrop-filter:blur(16px);backdrop-filter:blur(16px);
+}
+html:is([data-theme="dark"],[data-theme="midnight"],[data-theme="imperial"],[data-theme="cosmic"]) .brand b,
+html:is([data-theme="dark"],[data-theme="midnight"],[data-theme="imperial"],[data-theme="cosmic"]) .footerBrand{color:var(--in-white);text-shadow:none}
+html:is([data-theme="dark"],[data-theme="midnight"],[data-theme="imperial"],[data-theme="cosmic"]) .brand small{color:#a8b4d2}
+html:is([data-theme="dark"],[data-theme="midnight"],[data-theme="imperial"],[data-theme="cosmic"]) .mark{border-color:rgba(139,92,246,.5);box-shadow:0 0 0 1px rgba(139,92,246,.08)}
+html:is([data-theme="dark"],[data-theme="midnight"],[data-theme="imperial"],[data-theme="cosmic"]) .navlinks a{color:#b3bbd2}
+html:is([data-theme="dark"],[data-theme="midnight"],[data-theme="imperial"],[data-theme="cosmic"]) .navlinks a:hover,
+html:is([data-theme="dark"],[data-theme="midnight"],[data-theme="imperial"],[data-theme="cosmic"]) .navlinks a.active{color:#fff;background:rgba(139,92,246,.13);border-color:rgba(167,139,250,.2);box-shadow:none}
+html:is([data-theme="dark"],[data-theme="midnight"],[data-theme="imperial"],[data-theme="cosmic"]) .iconbtn,
+html:is([data-theme="dark"],[data-theme="midnight"],[data-theme="imperial"],[data-theme="cosmic"]) .menuToggle{color:#dfe5ff;border-color:var(--in-line);background:#101421}
+html:is([data-theme="dark"],[data-theme="midnight"],[data-theme="imperial"],[data-theme="cosmic"]) .page{color:var(--in-white)}
+html:is([data-theme="dark"],[data-theme="midnight"],[data-theme="imperial"],[data-theme="cosmic"]) .hero.nextHero{
+  isolation:isolate;min-height:470px;overflow:hidden;
+  border:1px solid rgba(139,92,246,.3);border-radius:26px;
+  background:radial-gradient(ellipse at 78% 40%,rgba(79,140,255,.2),transparent 29%),
+    radial-gradient(ellipse at 82% 65%,rgba(139,92,246,.18),transparent 37%),
+    linear-gradient(112deg,#0c0e19 0%,#111326 55%,#0b1020 100%);
+  box-shadow:0 24px 70px rgba(0,0,0,.22);
+}
+html:is([data-theme="dark"],[data-theme="midnight"],[data-theme="imperial"],[data-theme="cosmic"]) .hero.nextHero:before{
+  content:"";position:absolute;inset:0;z-index:-1;pointer-events:none;
+  background:linear-gradient(115deg,transparent 0 57%,rgba(167,139,250,.055) 57.2%,transparent 57.6%),
+    radial-gradient(circle at 78% 48%,transparent 0 105px,rgba(79,140,255,.12) 106px 107px,transparent 108px 142px,rgba(167,139,250,.1) 143px 144px,transparent 145px);
+}
+html:is([data-theme="dark"],[data-theme="midnight"],[data-theme="imperial"],[data-theme="cosmic"]) .hero.nextHero:after{background:linear-gradient(transparent,rgba(8,10,18,.38));}
+html:is([data-theme="dark"],[data-theme="midnight"],[data-theme="imperial"],[data-theme="cosmic"]) .nextHeroCopy{color:var(--in-white)}
+html:is([data-theme="dark"],[data-theme="midnight"],[data-theme="imperial"],[data-theme="cosmic"]) .heroKicker,
+html:is([data-theme="dark"],[data-theme="midnight"],[data-theme="imperial"],[data-theme="cosmic"]) .nextHero .eyebrow{color:#b9a8ff}
+html:is([data-theme="dark"],[data-theme="midnight"],[data-theme="imperial"],[data-theme="cosmic"]) .nextHero h1{color:#f8f8ff;text-shadow:none;letter-spacing:-.045em}
+html:is([data-theme="dark"],[data-theme="midnight"],[data-theme="imperial"],[data-theme="cosmic"]) .nextHeroLead{color:#b7c0d8}
+html:is([data-theme="dark"],[data-theme="midnight"],[data-theme="imperial"],[data-theme="cosmic"]) .heroSearch{background:#f7f8ff;border-color:rgba(167,139,250,.35);box-shadow:0 12px 38px rgba(0,0,0,.18)}
+html:is([data-theme="dark"],[data-theme="midnight"],[data-theme="imperial"],[data-theme="cosmic"]) .heroSearch input{color:#171a2a}
+html:is([data-theme="dark"],[data-theme="midnight"],[data-theme="imperial"],[data-theme="cosmic"]) .heroSearch button,
+html:is([data-theme="dark"],[data-theme="midnight"],[data-theme="imperial"],[data-theme="cosmic"]) .primary{background:linear-gradient(120deg,#7650dc,#4b75e8);color:white;border-color:transparent;box-shadow:0 7px 22px rgba(91,79,219,.22)}
+html:is([data-theme="dark"],[data-theme="midnight"],[data-theme="imperial"],[data-theme="cosmic"]) .heroTags a{border-color:var(--in-line);background:rgba(255,255,255,.035);color:#d9def2}
+html:is([data-theme="dark"],[data-theme="midnight"],[data-theme="imperial"],[data-theme="cosmic"]) .heroPromise{color:#dfe4f7}
+html:is([data-theme="dark"],[data-theme="midnight"],[data-theme="imperial"],[data-theme="cosmic"]) .heroSideCard{background:rgba(13,17,31,.82);border-color:rgba(167,139,250,.22);box-shadow:0 18px 55px rgba(0,0,0,.2)}
+html:is([data-theme="dark"],[data-theme="midnight"],[data-theme="imperial"],[data-theme="cosmic"]) .heroSideTop b,
+html:is([data-theme="dark"],[data-theme="midnight"],[data-theme="imperial"],[data-theme="cosmic"]) .heroSideTop small{color:#f0f2ff}
+html:is([data-theme="dark"],[data-theme="midnight"],[data-theme="imperial"],[data-theme="cosmic"]) .heroSideRule{background:var(--in-line)}
+html:is([data-theme="dark"],[data-theme="midnight"],[data-theme="imperial"],[data-theme="cosmic"]) .heroOrbitLabel{color:#b7c6f4}
+html:is([data-theme="dark"],[data-theme="midnight"],[data-theme="imperial"],[data-theme="cosmic"]) .sectionHead h2,
+html:is([data-theme="dark"],[data-theme="midnight"],[data-theme="imperial"],[data-theme="cosmic"]) .sectionHead h3,
+html:is([data-theme="dark"],[data-theme="midnight"],[data-theme="imperial"],[data-theme="cosmic"]) .page h1,
+html:is([data-theme="dark"],[data-theme="midnight"],[data-theme="imperial"],[data-theme="cosmic"]) .page h2,
+html:is([data-theme="dark"],[data-theme="midnight"],[data-theme="imperial"],[data-theme="cosmic"]) .page h3{color:var(--in-white)}
+html:is([data-theme="dark"],[data-theme="midnight"],[data-theme="imperial"],[data-theme="cosmic"]) .sectionHead p,
+html:is([data-theme="dark"],[data-theme="midnight"],[data-theme="imperial"],[data-theme="cosmic"]) .muted{color:var(--in-muted)}
+html:is([data-theme="dark"],[data-theme="midnight"],[data-theme="imperial"],[data-theme="cosmic"]) .card,
+html:is([data-theme="dark"],[data-theme="midnight"],[data-theme="imperial"],[data-theme="cosmic"]) .catalogCard,
+html:is([data-theme="dark"],[data-theme="midnight"],[data-theme="imperial"],[data-theme="cosmic"]) .panel,
+html:is([data-theme="dark"],[data-theme="midnight"],[data-theme="imperial"],[data-theme="cosmic"]) .settingsPanel,
+html:is([data-theme="dark"],[data-theme="midnight"],[data-theme="imperial"],[data-theme="cosmic"]) .novelHero,
+html:is([data-theme="dark"],[data-theme="midnight"],[data-theme="imperial"],[data-theme="cosmic"]) .catalogTop{
+  color:var(--in-white);background:linear-gradient(155deg,rgba(20,25,41,.96),rgba(13,17,29,.98));
+  border-color:var(--in-line);box-shadow:0 12px 34px rgba(0,0,0,.13);
+}
+html:is([data-theme="dark"],[data-theme="midnight"],[data-theme="imperial"],[data-theme="cosmic"]) .cardTitle,
+html:is([data-theme="dark"],[data-theme="midnight"],[data-theme="imperial"],[data-theme="cosmic"]) .catalogTitle{color:#f3f5ff}
+html:is([data-theme="dark"],[data-theme="midnight"],[data-theme="imperial"],[data-theme="cosmic"]) .cover,
+html:is([data-theme="dark"],[data-theme="midnight"],[data-theme="imperial"],[data-theme="cosmic"]) .catalogCover{background:#0c1020}
+html:is([data-theme="dark"],[data-theme="midnight"],[data-theme="imperial"],[data-theme="cosmic"]) .pill,
+html:is([data-theme="dark"],[data-theme="midnight"],[data-theme="imperial"],[data-theme="cosmic"]) .rankBadge{background:rgba(139,92,246,.12);border-color:rgba(167,139,250,.2);color:#d9ceff}
+html:is([data-theme="dark"],[data-theme="midnight"],[data-theme="imperial"],[data-theme="cosmic"]) .ghost,
+html:is([data-theme="dark"],[data-theme="midnight"],[data-theme="imperial"],[data-theme="cosmic"]) .secondary{background:#151b2b;color:#e2e7fb;border-color:var(--in-line)}
+html:is([data-theme="dark"],[data-theme="midnight"],[data-theme="imperial"],[data-theme="cosmic"]) input,
+html:is([data-theme="dark"],[data-theme="midnight"],[data-theme="imperial"],[data-theme="cosmic"]) select,
+html:is([data-theme="dark"],[data-theme="midnight"],[data-theme="imperial"],[data-theme="cosmic"]) textarea{color:var(--in-white);background:#0d1220;border-color:var(--in-line)}
+html:is([data-theme="dark"],[data-theme="midnight"],[data-theme="imperial"],[data-theme="cosmic"]) .mobileNav{
+  background:rgba(8,10,18,.94);border-top-color:var(--in-line);
+  -webkit-backdrop-filter:blur(18px);backdrop-filter:blur(18px);
+}
+html:is([data-theme="dark"],[data-theme="midnight"],[data-theme="imperial"],[data-theme="cosmic"]) .mobileNav a{color:#9fa9c4}
+html:is([data-theme="dark"],[data-theme="midnight"],[data-theme="imperial"],[data-theme="cosmic"]) .mobileNav a.active{color:#d6c7ff;background:rgba(139,92,246,.14)}
+html:is([data-theme="dark"],[data-theme="midnight"],[data-theme="imperial"],[data-theme="cosmic"]) .menuDrawer{background:#0e1220;border-color:var(--in-line)}
+html:is([data-theme="dark"],[data-theme="midnight"],[data-theme="imperial"],[data-theme="cosmic"]) .menuDrawer a{color:#e2e7fb}
+html:is([data-theme="dark"],[data-theme="midnight"],[data-theme="imperial"],[data-theme="cosmic"]) .footer{border-color:var(--in-line);background:#090b13;color:#a6afc8}
+html:is([data-theme="dark"],[data-theme="midnight"],[data-theme="imperial"],[data-theme="cosmic"]) .footer a{color:#c8d0e8}
+html:is([data-theme="dark"],[data-theme="midnight"],[data-theme="imperial"],[data-theme="cosmic"]) .bootFallback{background:var(--in-obsidian);color:var(--in-white)}
+html:is([data-theme="dark"],[data-theme="midnight"],[data-theme="imperial"],[data-theme="cosmic"]) .bootFallback p{color:var(--in-muted)}
+html[data-theme="light"]{color-scheme:light}
+html[data-theme="light"] body{background:#fbfcff;color:#171629}
+@media(max-width:760px){
+ html:is([data-theme="dark"],[data-theme="midnight"],[data-theme="imperial"],[data-theme="cosmic"]) .hero.nextHero{min-height:0;border-radius:20px;background:radial-gradient(ellipse at 80% 12%,rgba(79,140,255,.19),transparent 34%),linear-gradient(150deg,#101326,#090b14 75%)}
+ html:is([data-theme="dark"],[data-theme="midnight"],[data-theme="imperial"],[data-theme="cosmic"]) .hero.nextHero:before{background:radial-gradient(circle at 85% 18%,transparent 0 54px,rgba(79,140,255,.16) 55px 56px,transparent 57px 78px,rgba(167,139,250,.12) 79px 80px,transparent 81px)}
+ html:is([data-theme="dark"],[data-theme="midnight"],[data-theme="imperial"],[data-theme="cosmic"]) .heroInner,html:is([data-theme="dark"],[data-theme="midnight"],[data-theme="imperial"],[data-theme="cosmic"]) .nextHeroCopy{padding-top:36px}
+ html:is([data-theme="dark"],[data-theme="midnight"],[data-theme="imperial"],[data-theme="cosmic"]) .heroSideCard{margin-top:18px}
+ html:is([data-theme="dark"],[data-theme="midnight"],[data-theme="imperial"],[data-theme="cosmic"]) .wrap{width:calc(100% - 24px)}
+}
+@media(prefers-reduced-motion:reduce){
+ *,*::before,*::after{scroll-behavior:auto!important;animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important}
+}
+
+/* Low-end mobile performance: preserve the visual identity without costly blur layers. */
+@media (max-width:760px){
+  html:is([data-theme="dark"],[data-theme="midnight"],[data-theme="imperial"],[data-theme="cosmic"]) .top,
+  html:is([data-theme="dark"],[data-theme="midnight"],[data-theme="imperial"],[data-theme="cosmic"]) .mobileNav{
+    -webkit-backdrop-filter:none;
+    backdrop-filter:none;
+    background:#080a12;
+  }
+  html:is([data-theme="dark"],[data-theme="midnight"],[data-theme="imperial"],[data-theme="cosmic"]) body:before{
+    background-image:none;
+    opacity:0;
+  }
+  html:is([data-theme="dark"],[data-theme="midnight"],[data-theme="imperial"],[data-theme="cosmic"]) .hero.nextHero,
+  html:is([data-theme="dark"],[data-theme="midnight"],[data-theme="imperial"],[data-theme="cosmic"]) .heroSideCard,
+  html:is([data-theme="dark"],[data-theme="midnight"],[data-theme="imperial"],[data-theme="cosmic"]) .card,
+  html:is([data-theme="dark"],[data-theme="midnight"],[data-theme="imperial"],[data-theme="cosmic"]) .catalogCard,
+  html:is([data-theme="dark"],[data-theme="midnight"],[data-theme="imperial"],[data-theme="cosmic"]) .panel,
+  html:is([data-theme="dark"],[data-theme="midnight"],[data-theme="imperial"],[data-theme="cosmic"]) .settingsPanel,
+  html:is([data-theme="dark"],[data-theme="midnight"],[data-theme="imperial"],[data-theme="cosmic"]) .novelHero,
+  html:is([data-theme="dark"],[data-theme="midnight"],[data-theme="imperial"],[data-theme="cosmic"]) .catalogTop,
+  html:is([data-theme="dark"],[data-theme="midnight"],[data-theme="imperial"],[data-theme="cosmic"]) .heroSearch,
+  html:is([data-theme="dark"],[data-theme="midnight"],[data-theme="imperial"],[data-theme="cosmic"]) .primary{
+    box-shadow:none;
+  }
+}
+
+/* Taste Skill direction: the Imperial Archive.
+   One strong reading surface, a quiet frame, purple for authorship and sapphire for discovery.
+   No decorative orbit, gradient haze, glass blur or resting drop shadows. */
+html:is([data-theme="dark"],[data-theme="midnight"],[data-theme="imperial"],[data-theme="cosmic"]) body{
+  background:var(--in-obsidian);
+}
+html:is([data-theme="dark"],[data-theme="midnight"],[data-theme="imperial"],[data-theme="cosmic"]) body:before{
+  display:none;
+}
+html:is([data-theme="dark"],[data-theme="midnight"],[data-theme="imperial"],[data-theme="cosmic"]) .hero.nextHero{
+  min-height:0;
+  border:1px solid #292d40;
+  border-radius:20px;
+  background:#0e111c;
+  box-shadow:none;
+}
+html:is([data-theme="dark"],[data-theme="midnight"],[data-theme="imperial"],[data-theme="cosmic"]) .hero.nextHero:before,
+html:is([data-theme="dark"],[data-theme="midnight"],[data-theme="imperial"],[data-theme="cosmic"]) .hero.nextHero:after,
+html:is([data-theme="dark"],[data-theme="midnight"],[data-theme="imperial"],[data-theme="cosmic"]) .nextHeroGlow,
+html:is([data-theme="dark"],[data-theme="midnight"],[data-theme="imperial"],[data-theme="cosmic"]) .heroOrbitLabel{
+  display:none!important;
+}
+html:is([data-theme="dark"],[data-theme="midnight"],[data-theme="imperial"],[data-theme="cosmic"]) .nextHeroCopy{
+  max-width:720px;
+}
+html:is([data-theme="dark"],[data-theme="midnight"],[data-theme="imperial"],[data-theme="cosmic"]) .nextHero h1{
+  max-width:16ch;
+  margin-block:0 22px;
+  font-size:clamp(2.65rem,5.6vw,5.25rem);
+  line-height:.99;
+  letter-spacing:-.055em;
+  font-weight:760;
+}
+html:is([data-theme="dark"],[data-theme="midnight"],[data-theme="imperial"],[data-theme="cosmic"]) .nextHero h1 span{
+  color:var(--in-purple-bright);
+}
+html:is([data-theme="dark"],[data-theme="midnight"],[data-theme="imperial"],[data-theme="cosmic"]) .nextHeroLead{
+  max-width:52ch;
+  color:#c0c6d8;
+  line-height:1.65;
+}
+html:is([data-theme="dark"],[data-theme="midnight"],[data-theme="imperial"],[data-theme="cosmic"]) .heroSearch{
+  border:1px solid #343950;
+  border-radius:12px;
+  box-shadow:none;
+}
+html:is([data-theme="dark"],[data-theme="midnight"],[data-theme="imperial"],[data-theme="cosmic"]) .heroSearch button,
+html:is([data-theme="dark"],[data-theme="midnight"],[data-theme="imperial"],[data-theme="cosmic"]) .primary{
+  background:#7552d8;
+  border:1px solid #8c6ce9;
+  box-shadow:none;
+}
+html:is([data-theme="dark"],[data-theme="midnight"],[data-theme="imperial"],[data-theme="cosmic"]) .heroSearch button:hover,
+html:is([data-theme="dark"],[data-theme="midnight"],[data-theme="imperial"],[data-theme="cosmic"]) .primary:hover{
+  background:#8665e8;
+}
+html:is([data-theme="dark"],[data-theme="midnight"],[data-theme="imperial"],[data-theme="cosmic"]) .heroSideCard{
+  background:#111522;
+  border:1px solid #292e42;
+  border-radius:16px;
+  box-shadow:none;
+}
+html:is([data-theme="dark"],[data-theme="midnight"],[data-theme="imperial"],[data-theme="cosmic"]) .portalLink{
+  border-color:#292e42;
+}
+html:is([data-theme="dark"],[data-theme="midnight"],[data-theme="imperial"],[data-theme="cosmic"]) .portalLink:hover{
+  background:#171c2b;
+}
+html:is([data-theme="dark"],[data-theme="midnight"],[data-theme="imperial"],[data-theme="cosmic"]) .card,
+html:is([data-theme="dark"],[data-theme="midnight"],[data-theme="imperial"],[data-theme="cosmic"]) .catalogCard,
+html:is([data-theme="dark"],[data-theme="midnight"],[data-theme="imperial"],[data-theme="cosmic"]) .panel,
+html:is([data-theme="dark"],[data-theme="midnight"],[data-theme="imperial"],[data-theme="cosmic"]) .settingsPanel,
+html:is([data-theme="dark"],[data-theme="midnight"],[data-theme="imperial"],[data-theme="cosmic"]) .novelHero,
+html:is([data-theme="dark"],[data-theme="midnight"],[data-theme="imperial"],[data-theme="cosmic"]) .catalogTop{
+  background:#101421;
+  border:1px solid #282d40;
+  box-shadow:none;
+}
+html:is([data-theme="dark"],[data-theme="midnight"],[data-theme="imperial"],[data-theme="cosmic"]) .pill,
+html:is([data-theme="dark"],[data-theme="midnight"],[data-theme="imperial"],[data-theme="cosmic"]) .rankBadge{
+  background:#1a1830;
+  border-color:#3a315d;
+}
+html:is([data-theme="dark"],[data-theme="midnight"],[data-theme="imperial"],[data-theme="cosmic"]) a:focus-visible,
+html:is([data-theme="dark"],[data-theme="midnight"],[data-theme="imperial"],[data-theme="cosmic"]) button:focus-visible,
+html:is([data-theme="dark"],[data-theme="midnight"],[data-theme="imperial"],[data-theme="cosmic"]) input:focus-visible,
+html:is([data-theme="dark"],[data-theme="midnight"],[data-theme="imperial"],[data-theme="cosmic"]) select:focus-visible,
+html:is([data-theme="dark"],[data-theme="midnight"],[data-theme="imperial"],[data-theme="cosmic"]) textarea:focus-visible{
+  outline:2px solid #a78bfa;
+  outline-offset:3px;
+}
+@media(max-width:760px){
+  html:is([data-theme="dark"],[data-theme="midnight"],[data-theme="imperial"],[data-theme="cosmic"]) .hero.nextHero{
+    border-radius:16px;
+    background:#0e111c;
+  }
+  html:is([data-theme="dark"],[data-theme="midnight"],[data-theme="imperial"],[data-theme="cosmic"]) .nextHero h1{
+    max-width:16ch;
+    font-size:clamp(2.25rem,9.2vw,3.2rem);
+    line-height:1.03;
+    letter-spacing:-.045em;
+  }
+  html:is([data-theme="dark"],[data-theme="midnight"],[data-theme="imperial"],[data-theme="cosmic"]) .nextHeroCopy{
+    padding:28px 20px 22px;
+  }
+  html:is([data-theme="dark"],[data-theme="midnight"],[data-theme="imperial"],[data-theme="cosmic"]) .heroSideCard{
+    margin-top:14px;
+  }
+}
+
+
+/* Imperial Archive 17.13.0: a decisive, single-column editorial homepage.
+   No portal-card hero, no quick-link tile row, no decorative image dependency. */
+html:is([data-theme="dark"],[data-theme="midnight"],[data-theme="imperial"],[data-theme="cosmic"]) body{
+  background:radial-gradient(ellipse at 82% 8%,rgba(79,140,255,.10),transparent 32%),#080a12;
+}
+html:is([data-theme="dark"],[data-theme="midnight"],[data-theme="imperial"],[data-theme="cosmic"]) body:before{display:none}
+html:is([data-theme="dark"],[data-theme="midnight"],[data-theme="imperial"],[data-theme="cosmic"]) .hero.imperialArchiveHero{
+  display:grid;grid-template-columns:minmax(0,1fr);align-items:center;
+  min-height:clamp(430px,66vh,650px);padding:clamp(30px,6vw,78px);
+  position:relative;isolation:isolate;overflow:hidden;
+  border:1px solid rgba(167,139,250,.24);border-radius:28px;
+  background:linear-gradient(112deg,#090b14 0%,#101426 58%,#0a1020 100%);
+  box-shadow:none;
+}
+html:is([data-theme="dark"],[data-theme="midnight"],[data-theme="imperial"],[data-theme="cosmic"]) .hero.imperialArchiveHero:before{
+  content:"";position:absolute;z-index:-1;pointer-events:none;
+  width:clamp(250px,38vw,500px);aspect-ratio:1;border-radius:50%;
+  right:-7%;top:50%;transform:translateY(-50%);
+  border:1px solid rgba(139,92,246,.25);
+  background:radial-gradient(circle,rgba(79,140,255,.10) 0 15%,transparent 15.5% 31%,rgba(139,92,246,.12) 31.5% 32%,transparent 32.5% 49%,rgba(167,139,250,.12) 49.5% 50%,transparent 50.5%);
+  box-shadow:inset 0 0 0 22px rgba(139,92,246,.025),0 0 100px rgba(79,140,255,.07);
+}
+html:is([data-theme="dark"],[data-theme="midnight"],[data-theme="imperial"],[data-theme="cosmic"]) .hero.imperialArchiveHero:after{
+  content:"";position:absolute;z-index:-1;pointer-events:none;
+  width:clamp(90px,14vw,170px);aspect-ratio:1;right:calc(clamp(250px,38vw,500px)*.43);top:50%;
+  transform:translateY(-50%) rotate(45deg);
+  border:1px solid rgba(245,247,255,.22);
+  background:linear-gradient(135deg,rgba(139,92,246,.22),rgba(79,140,255,.08));
+}
+html:is([data-theme="dark"],[data-theme="midnight"],[data-theme="imperial"],[data-theme="cosmic"]) .hero.imperialArchiveHero .nextHeroCopy{max-width:900px;padding:0;position:relative;z-index:1}
+html:is([data-theme="dark"],[data-theme="midnight"],[data-theme="imperial"],[data-theme="cosmic"]) .hero.imperialArchiveHero h1{
+  max-width:10ch;font-size:clamp(3.1rem,7.8vw,7.4rem);line-height:.94;
+  letter-spacing:-.065em;font-weight:760;margin:22px 0 24px;
+}
+html:is([data-theme="dark"],[data-theme="midnight"],[data-theme="imperial"],[data-theme="cosmic"]) .hero.imperialArchiveHero h1 span{
+  color:#b9a4ff;background:none;-webkit-text-fill-color:#b9a4ff;
+}
+html:is([data-theme="dark"],[data-theme="midnight"],[data-theme="imperial"],[data-theme="cosmic"]) .hero.imperialArchiveHero .nextHeroLead{max-width:540px;font-size:clamp(1rem,1.5vw,1.2rem);line-height:1.7;color:#b9c2d9}
+html:is([data-theme="dark"],[data-theme="midnight"],[data-theme="imperial"],[data-theme="cosmic"]) .hero.imperialArchiveHero .heroSearch{max-width:620px;box-shadow:none;border:1px solid rgba(167,139,250,.3)}
+html:is([data-theme="dark"],[data-theme="midnight"],[data-theme="imperial"],[data-theme="cosmic"]) .hero.imperialArchiveHero .heroTags{gap:8px;margin-top:20px}
+html:is([data-theme="dark"],[data-theme="midnight"],[data-theme="imperial"],[data-theme="cosmic"]) .hero.imperialArchiveHero .heroTags a{border-radius:999px;padding:8px 13px}
+html:is([data-theme="dark"],[data-theme="midnight"],[data-theme="imperial"],[data-theme="cosmic"]) .hero.imperialArchiveHero .heroPromise{margin-top:24px;color:#f5f7ff;letter-spacing:.03em}
+html:is([data-theme="dark"],[data-theme="midnight"],[data-theme="imperial"],[data-theme="cosmic"]) .hero.imperialArchiveHero .promiseText{display:block;margin-top:8px;color:#929bb5;font-size:.84rem;letter-spacing:0}
+html:is([data-theme="dark"],[data-theme="midnight"],[data-theme="imperial"],[data-theme="cosmic"]) .nextQuickGrid{display:none!important}
+@media(max-width:760px){
+ html:is([data-theme="dark"],[data-theme="midnight"],[data-theme="imperial"],[data-theme="cosmic"]) .hero.imperialArchiveHero{min-height:0;padding:26px 20px 30px;border-radius:20px}
+ html:is([data-theme="dark"],[data-theme="midnight"],[data-theme="imperial"],[data-theme="cosmic"]) .hero.imperialArchiveHero:before{width:210px;right:-95px;top:20%;transform:none;opacity:.8}
+ html:is([data-theme="dark"],[data-theme="midnight"],[data-theme="imperial"],[data-theme="cosmic"]) .hero.imperialArchiveHero:after{width:74px;right:36px;top:25%;transform:rotate(45deg);opacity:.6}
+ html:is([data-theme="dark"],[data-theme="midnight"],[data-theme="imperial"],[data-theme="cosmic"]) .hero.imperialArchiveHero .nextHeroCopy{padding-top:20px}
+ html:is([data-theme="dark"],[data-theme="midnight"],[data-theme="imperial"],[data-theme="cosmic"]) .hero.imperialArchiveHero h1{max-width:9ch;font-size:clamp(3rem,14vw,4.6rem);margin:22px 0 18px}
+ html:is([data-theme="dark"],[data-theme="midnight"],[data-theme="imperial"],[data-theme="cosmic"]) .hero.imperialArchiveHero .nextHeroLead{max-width:34ch;font-size:1rem}
+ html:is([data-theme="dark"],[data-theme="midnight"],[data-theme="imperial"],[data-theme="cosmic"]) .hero.imperialArchiveHero .heroSearch{display:grid;grid-template-columns:auto minmax(0,1fr);gap:8px;padding:8px}
+ html:is([data-theme="dark"],[data-theme="midnight"],[data-theme="imperial"],[data-theme="cosmic"]) .hero.imperialArchiveHero .heroSearch button{grid-column:1/-1;width:100%;min-height:44px}
+}
+@media(prefers-reduced-motion:reduce){html:is([data-theme="dark"],[data-theme="midnight"],[data-theme="imperial"],[data-theme="cosmic"]) .hero.imperialArchiveHero:before{animation:none}}
+
+/* International accessibility baseline: visible keyboard focus, motion sensitivity, and readable controls. */
+:where(a,button,input,select,textarea,[role="button"],[tabindex]):focus-visible{
+  outline:3px solid #83a9ff;
+  outline-offset:3px;
+  scroll-margin-block:6rem;
+}
+:where(button,input,select,textarea,[role="button"]){touch-action:manipulation}
+:where(button,a,[role="button"]){-webkit-tap-highlight-color:rgba(131,169,255,.22)}
+@media(prefers-reduced-motion:reduce){
+  html:focus-within{scroll-behavior:auto!important}
+  *,*::before,*::after{
+    animation-duration:.01ms!important;
+    animation-iteration-count:1!important;
+    background-attachment:initial!important;
+    scroll-behavior:auto!important;
+    transition-duration:.01ms!important;
+  }
+}
+@media(forced-colors:active){
+  :where(a,button,input,select,textarea,[role="button"],[tabindex]):focus-visible{outline:2px solid Highlight}
+  :where(button,a,[role="button"]){forced-color-adjust:auto}
+}
+
+/* Skip navigation stays invisible until keyboard users need it. */
+.skipLink{
+  position:fixed;
+  z-index:10000;
+  inset-block-start:8px;
+  inset-inline-start:8px;
+  transform:translateY(calc(-100% - 12px));
+  padding:12px 16px;
+  border:2px solid #83a9ff;
+  border-radius:10px;
+  background:#080a12;
+  color:#fff;
+  font-weight:700;
+  text-decoration:none;
+}
+.skipLink:focus,
+.skipLink:focus-visible{
+  transform:translateY(0);
+}
+#app:focus{outline:none}
+
+
+/* Final art direction: editorial authority, not decorative dashboard chrome.
+   The crest carries the emblem; the hero stays quiet, fast, and readable. */
+html:is([data-theme="dark"],[data-theme="midnight"],[data-theme="imperial"],[data-theme="cosmic"]) body{
+  background:#080a12;
+}
+html:is([data-theme="dark"],[data-theme="midnight"],[data-theme="imperial"],[data-theme="cosmic"]) .hero.imperialArchiveHero{
+  background:#0e111c;
+  border:1px solid #292d40;
+  border-top:2px solid #8b5cf6;
+  border-radius:20px;
+  box-shadow:none;
+}
+html:is([data-theme="dark"],[data-theme="midnight"],[data-theme="imperial"],[data-theme="cosmic"]) .hero.imperialArchiveHero:before,
+html:is([data-theme="dark"],[data-theme="midnight"],[data-theme="imperial"],[data-theme="cosmic"]) .hero.imperialArchiveHero:after{
+  display:none!important;
+  content:none!important;
+}
+html:is([data-theme="dark"],[data-theme="midnight"],[data-theme="imperial"],[data-theme="cosmic"]) .hero.imperialArchiveHero h1 span{
+  color:#a78bfa;
+  -webkit-text-fill-color:#a78bfa;
+}
+html:is([data-theme="dark"],[data-theme="midnight"],[data-theme="imperial"],[data-theme="cosmic"]) .hero.imperialArchiveHero .nextHeroLead{
+  color:#c0c6d8;
+}
+@media(max-width:760px){
+  html:is([data-theme="dark"],[data-theme="midnight"],[data-theme="imperial"],[data-theme="cosmic"]) .hero.imperialArchiveHero{
+    border-radius:16px;
+    padding:24px 18px 26px;
+  }
+}
+
+
+/* Mobile resilience: prevent the global shell from creating a clipped, sideways canvas. */
+html,body{max-width:100%;overflow-x:clip}
+@supports not (overflow:clip){html,body{overflow-x:hidden}}
+#app,.top,.top>.wrap,.page,.footer{min-width:0;max-width:100%}
+@media(max-width:760px){
+  .top{width:100%;overflow:visible}
+  .top .nav{width:100%;max-width:100%;box-sizing:border-box;padding-inline:10px;gap:7px;min-width:0}
+  .top .brand{flex:0 1 auto;min-width:0;max-width:42%;gap:7px}
+  .top .brand .mark{flex:0 0 36px;width:36px;height:36px}
+  .top .brandText{min-width:0;overflow:hidden}
+  .top .brandText b{font-size:12px;letter-spacing:.055em;overflow-wrap:anywhere}
+  .top .brandText small{display:none}
+  .top .navright{flex:0 0 auto;min-width:0;gap:5px}
+  .top .navright .iconbtn,.top .navright .menuToggle{width:38px;min-width:38px;height:40px;padding:0;display:inline-flex;align-items:center;justify-content:center}
+  .top .navright .languageControl select{width:54px;max-width:54px!important;height:40px;min-height:40px;padding:0 3px!important}
+  .top .navright .iconbtn[aria-label="Notifications"],.top .navright .iconbtn[aria-label="Account"]{display:none}
+  .hero.nextHero{min-height:0!important}
+  .hero.nextHero .nextHeroInner,.hero.nextHero .heroInner{padding:38px 20px 26px!important}
+  .hero.nextHero h1,.hero.imperialArchiveHero h1{font-size:clamp(38px,10.2vw,58px)!important;line-height:.98!important;letter-spacing:-.045em;overflow-wrap:normal}
+  .hero.nextHero p,.hero.nextHero .nextHeroLead{font-size:15px;line-height:1.65}
+  .footer{padding:24px 0 34px!important}
+  .footerInner{gap:14px!important}
+  .footerLinks{gap:10px 16px!important}
+}
+@media(max-width:390px){
+  .top .brand{max-width:35%}
+  .top .brandText b{font-size:11px}
+  .top .navright{gap:4px}
+  .top .navright .iconbtn,.top .navright .menuToggle{width:34px;min-width:34px}
+  .top .navright .languageControl select{width:48px;max-width:48px!important}
+}
+
+
+/* Clean core palette pass: purple + sapphire accents, white surfaces, obsidian foundation.
+   Avoid legacy cyan/teal accents and excessive decorative glow. */
+:root{
+  --in-obsidian:#0B1215;
+  --in-panel:#101a1e;
+  --in-panel-raised:#152329;
+  --in-line:rgba(190,205,210,.16);
+  --in-purple:#6A0DAD;
+  --in-purple-bright:#B78AE2;
+  --in-sapphire:#0F52BA;
+  --in-white:#FFFFFF;
+  --in-muted:#a3b0b5;
+}
+html:is([data-theme="dark"],[data-theme="midnight"],[data-theme="imperial"],[data-theme="cosmic"]) a:not(.primary):not(.secondary):not(.pill):not(.brand),
+html:is([data-theme="dark"],[data-theme="midnight"],[data-theme="imperial"],[data-theme="cosmic"]) .footer a,
+html:is([data-theme="dark"],[data-theme="midnight"],[data-theme="imperial"],[data-theme="cosmic"]) .unlockBanner a{color:#a78bfa}
+html:is([data-theme="dark"],[data-theme="midnight"],[data-theme="imperial"],[data-theme="cosmic"]) a:not(.primary):not(.secondary):not(.pill):not(.brand):hover,
+html:is([data-theme="dark"],[data-theme="midnight"],[data-theme="imperial"],[data-theme="cosmic"]) .footer a:hover{color:#8fb5ff}
+html:is([data-theme="dark"],[data-theme="midnight"],[data-theme="imperial"],[data-theme="cosmic"]) .primary,
+html:is([data-theme="dark"],[data-theme="midnight"],[data-theme="imperial"],[data-theme="cosmic"]) button.primary,
+html:is([data-theme="dark"],[data-theme="midnight"],[data-theme="imperial"],[data-theme="cosmic"]) .actions .primary{
+  color:#fff;background:linear-gradient(135deg,#7045d8,#8b5cf6);
+  border:1px solid rgba(196,181,253,.42);box-shadow:none
+}
+html:is([data-theme="dark"],[data-theme="midnight"],[data-theme="imperial"],[data-theme="cosmic"]) .primary:hover,
+html:is([data-theme="dark"],[data-theme="midnight"],[data-theme="imperial"],[data-theme="cosmic"]) button.primary:hover{background:linear-gradient(135deg,#7950e6,#966df8);box-shadow:0 8px 24px rgba(79,140,255,.12)}
+html:is([data-theme="dark"],[data-theme="midnight"],[data-theme="imperial"],[data-theme="cosmic"]) .pill,
+html:is([data-theme="dark"],[data-theme="midnight"],[data-theme="imperial"],[data-theme="cosmic"]) .tag,
+html:is([data-theme="dark"],[data-theme="midnight"],[data-theme="imperial"],[data-theme="cosmic"]) .chip{border-color:var(--in-line);box-shadow:none}
+html:is([data-theme="dark"],[data-theme="midnight"],[data-theme="imperial"],[data-theme="cosmic"]) .hero.nextHero,
+html:is([data-theme="dark"],[data-theme="midnight"],[data-theme="imperial"],[data-theme="cosmic"]) .hero.imperialArchiveHero{box-shadow:none}
+html:is([data-theme="dark"],[data-theme="midnight"],[data-theme="imperial"],[data-theme="cosmic"]) .hero.nextHero:before{opacity:.55}
+html:is([data-theme="dark"],[data-theme="midnight"],[data-theme="imperial"],[data-theme="cosmic"]) .top,
+html:is([data-theme="dark"],[data-theme="midnight"],[data-theme="imperial"],[data-theme="cosmic"]) .footer,
+html:is([data-theme="dark"],[data-theme="midnight"],[data-theme="imperial"],[data-theme="cosmic"]) .mobileNav{box-shadow:none}
+html:is([data-theme="dark"],[data-theme="midnight"],[data-theme="imperial"],[data-theme="cosmic"]) :focus-visible{outline:2px solid #4f8cff;outline-offset:3px}
+@media(prefers-reduced-motion:reduce){
+  html:focus-within{scroll-behavior:auto!important}
+  *,*::before,*::after{animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important;scroll-behavior:auto!important}
+}
+
+
+/* Approved Imperial Novel palette v2: 60% white, 20% obsidian, 12% purple, 8% sapphire.
+   Light mode is the primary reading experience; dark mode retains the same brand roles. */
+:root{
+  --white:#FFFFFF;
+  --black:#0B1215;
+  --purple:#6A0DAD;
+  --blue:#0F52BA;
+  --purple-light:#F3E9FF;
+  --blue-light:#E6EFFF;
+  --in-obsidian:#0B1215;
+  --in-panel:#FFFFFF;
+  --in-panel-raised:#FFFFFF;
+  --in-line:rgba(11,18,21,.10);
+  --in-purple:#6A0DAD;
+  --in-purple-bright:#6A0DAD;
+  --in-sapphire:#0F52BA;
+  --in-white:#0B1215;
+  --in-muted:#4C5960;
+}
+html[data-theme="light"]{color-scheme:light}
+html[data-theme="light"] body{background:#FFFFFF;color:#0B1215}
+html[data-theme="light"] body:before{display:none!important}
+html[data-theme="light"] .top{background:rgba(255,255,255,.96);border-bottom:1px solid rgba(11,18,21,.10);box-shadow:none}
+html[data-theme="light"] .brand b,
+html[data-theme="light"] .footerBrand{color:#0B1215;text-shadow:none}
+html[data-theme="light"] .brand small,
+html[data-theme="light"] .muted,
+html[data-theme="light"] .footer{color:#4C5960}
+html[data-theme="light"] .navlinks a{color:#26343A}
+html[data-theme="light"] .navlinks a:hover,
+html[data-theme="light"] .navlinks a.active{color:#6A0DAD;background:#F3E9FF;border-color:rgba(106,13,173,.16);box-shadow:none}
+html[data-theme="light"] .iconbtn,
+html[data-theme="light"] .menuToggle{color:#0B1215;background:#FFFFFF;border-color:rgba(11,18,21,.12);box-shadow:none}
+html[data-theme="light"] .page{color:#0B1215}
+html[data-theme="light"] .card,
+html[data-theme="light"] .catalogCard,
+html[data-theme="light"] .panel,
+html[data-theme="light"] .settingsPanel,
+html[data-theme="light"] .novelHero,
+html[data-theme="light"] .catalogTop,
+html[data-theme="light"] .heroSideCard{
+  color:#0B1215;background:#FFFFFF;border:1px solid rgba(11,18,21,.10);box-shadow:0 4px 18px rgba(11,18,21,.035)
+}
+html[data-theme="light"] .cardTitle,
+html[data-theme="light"] .catalogTitle,
+html[data-theme="light"] h1,
+html[data-theme="light"] h2,
+html[data-theme="light"] h3{color:#0B1215}
+html[data-theme="light"] .hero.nextHero,
+html[data-theme="light"] .hero.imperialArchiveHero{
+  color:#0B1215;background:#FFFFFF;border:1px solid rgba(11,18,21,.10);border-top:3px solid #6A0DAD;border-radius:24px;box-shadow:none
+}
+html[data-theme="light"] .hero.nextHero:before,
+html[data-theme="light"] .hero.nextHero:after,
+html[data-theme="light"] .hero.imperialArchiveHero:before,
+html[data-theme="light"] .hero.imperialArchiveHero:after{display:none!important;content:none!important}
+html[data-theme="light"] .hero.nextHero h1 span,
+html[data-theme="light"] .hero.imperialArchiveHero h1 span{color:#6A0DAD;-webkit-text-fill-color:#6A0DAD}
+html[data-theme="light"] .hero.nextHero p,
+html[data-theme="light"] .hero.imperialArchiveHero p,
+html[data-theme="light"] .heroPromise{color:#34434A}
+html[data-theme="light"] .primary,
+html[data-theme="light"] button.primary,
+html[data-theme="light"] .actions .primary{
+  background:#6A0DAD;color:#FFFFFF;border:1px solid #6A0DAD;box-shadow:none
+}
+html[data-theme="light"] .primary:hover,
+html[data-theme="light"] button.primary:hover,
+html[data-theme="light"] .actions .primary:hover{background:#0F52BA;border-color:#0F52BA;color:#FFFFFF}
+html[data-theme="light"] a:not(.primary):not(.secondary):not(.pill):not(.brand),
+html[data-theme="light"] .footer a,
+html[data-theme="light"] .unlockBanner a{color:#0F52BA}
+html[data-theme="light"] a:not(.primary):not(.secondary):not(.pill):not(.brand):hover,
+html[data-theme="light"] .footer a:hover{color:#6A0DAD}
+html[data-theme="light"] .pill,
+html[data-theme="light"] .tag,
+html[data-theme="light"] .chip{background:#FFFFFF;border-color:rgba(11,18,21,.12);color:#0B1215;box-shadow:none}
+html[data-theme="light"] .footer{background:#FFFFFF;border-top:1px solid rgba(11,18,21,.10);box-shadow:none}
+html[data-theme="light"] .mobileNav{background:rgba(255,255,255,.97);border-top:1px solid rgba(11,18,21,.10);box-shadow:none}
+html[data-theme="light"] .mobileNav a{color:#4C5960}
+html[data-theme="light"] .mobileNav a.active{color:#6A0DAD;background:#F3E9FF}
+html[data-theme="light"] .menuDrawer{background:#FFFFFF;border-color:rgba(11,18,21,.12);box-shadow:0 18px 50px rgba(11,18,21,.12)}
+html[data-theme="light"] .menuDrawer a{color:#0B1215}
+html[data-theme="light"] :focus-visible{outline:2px solid #0F52BA;outline-offset:3px}
+html[data-theme="light"] input,
+html[data-theme="light"] select,
+html[data-theme="light"] textarea{background:#FFFFFF;color:#0B1215;border-color:rgba(11,18,21,.18)}
+html:is([data-theme="dark"],[data-theme="midnight"],[data-theme="imperial"],[data-theme="cosmic"]){
+  --in-obsidian:#0B1215;--in-canvas:#0B1215;--in-panel:#111A1F;--in-panel-raised:#162127;
+  --in-line:rgba(255,255,255,.13);--in-purple:#6A0DAD;
+  --in-purple-bright:#B78AE2;--in-sapphire:#0F52BA;
+  --in-white:#FFFFFF;--in-muted:#C0C9CE;
+}
+html:is([data-theme="dark"],[data-theme="midnight"],[data-theme="imperial"],[data-theme="cosmic"]) body{background:#0B1215;color:#FFFFFF}
+html:is([data-theme="dark"],[data-theme="midnight"],[data-theme="imperial"],[data-theme="cosmic"]) body:before{display:none!important}
+html:is([data-theme="dark"],[data-theme="midnight"],[data-theme="imperial"],[data-theme="cosmic"]) .primary,
+html:is([data-theme="dark"],[data-theme="midnight"],[data-theme="imperial"],[data-theme="cosmic"]) button.primary,
+html:is([data-theme="dark"],[data-theme="midnight"],[data-theme="imperial"],[data-theme="cosmic"]) .actions .primary{background:#6A0DAD;color:#FFFFFF;border-color:#6A0DAD;box-shadow:none}
+html:is([data-theme="dark"],[data-theme="midnight"],[data-theme="imperial"],[data-theme="cosmic"]) .primary:hover,
+html:is([data-theme="dark"],[data-theme="midnight"],[data-theme="imperial"],[data-theme="cosmic"]) button.primary:hover,
+html:is([data-theme="dark"],[data-theme="midnight"],[data-theme="imperial"],[data-theme="cosmic"]) .actions .primary:hover{background:#0F52BA;border-color:#0F52BA}
+html:is([data-theme="dark"],[data-theme="midnight"],[data-theme="imperial"],[data-theme="cosmic"]) .hero.nextHero,
+html:is([data-theme="dark"],[data-theme="midnight"],[data-theme="imperial"],[data-theme="cosmic"]) .hero.imperialArchiveHero{background:#111A1F;border-color:rgba(106,13,173,.35);box-shadow:none}
+html:is([data-theme="dark"],[data-theme="midnight"],[data-theme="imperial"],[data-theme="cosmic"]) .hero.nextHero:before,
+html:is([data-theme="dark"],[data-theme="midnight"],[data-theme="imperial"],[data-theme="cosmic"]) .hero.nextHero:after,
+html:is([data-theme="dark"],[data-theme="midnight"],[data-theme="imperial"],[data-theme="cosmic"]) .hero.imperialArchiveHero:before,
+html:is([data-theme="dark"],[data-theme="midnight"],[data-theme="imperial"],[data-theme="cosmic"]) .hero.imperialArchiveHero:after{display:none!important;content:none!important}
+html:is([data-theme="dark"],[data-theme="midnight"],[data-theme="imperial"],[data-theme="cosmic"]) .hero.nextHero h1 span,
+html:is([data-theme="dark"],[data-theme="midnight"],[data-theme="imperial"],[data-theme="cosmic"]) .hero.imperialArchiveHero h1 span{color:#B78AE2;-webkit-text-fill-color:#B78AE2}
+html:is([data-theme="dark"],[data-theme="midnight"],[data-theme="imperial"],[data-theme="cosmic"]) .navlinks a.active,
+html:is([data-theme="dark"],[data-theme="midnight"],[data-theme="imperial"],[data-theme="cosmic"]) .mobileNav a.active{color:#FFFFFF;background:rgba(106,13,173,.22)}
+html:is([data-theme="dark"],[data-theme="midnight"],[data-theme="imperial"],[data-theme="cosmic"]) a:not(.primary):not(.secondary):not(.pill):not(.brand){color:#8DB8FF}
+html:is([data-theme="dark"],[data-theme="midnight"],[data-theme="imperial"],[data-theme="cosmic"]) a:not(.primary):not(.secondary):not(.pill):not(.brand):hover{color:#B78AE2}
+
+
+/* Global theme registry: all six site themes share semantic tokens. */
+html[data-theme="light"]{color-scheme:light;--in-obsidian:#0B1215;--in-canvas:#FFFFFF;--in-panel:#FFFFFF;--in-panel-raised:#F7F8FA;--in-line:rgba(11,18,21,.12);--in-purple:#6A0DAD;--in-purple-bright:#6A0DAD;--in-sapphire:#0F52BA;--in-white:#0B1215;--in-muted:#536168;--in-text:#0B1215;--in-text-muted:#536168;--in-accent:#6A0DAD;--in-link:#0F52BA;--in-focus:#0F52BA;--in-action-bg:#6A0DAD;--in-action-hover:#0F52BA;--in-control-bg:#FFFFFF;--in-surface-soft:#F7F8FA;--in-overlay:rgba(255,255,255,.96);--in-good:#176B4D;--in-danger:#B4233C;--in-warning:#7A4B00;--in-lime:#176B4D;--in-pink:#B4233C}
+html[data-theme="dark"]{color-scheme:dark;--in-obsidian:#0B1215;--in-canvas:#0B1215;--in-panel:#111A1F;--in-panel-raised:#162127;--in-line:rgba(255,255,255,.13);--in-purple:#B78AE2;--in-purple-bright:#B78AE2;--in-sapphire:#8DB8FF;--in-white:#FFFFFF;--in-muted:#C0C9CE;--in-text:#FFFFFF;--in-text-muted:#C0C9CE;--in-accent:#B78AE2;--in-link:#8DB8FF;--in-focus:#8DB8FF;--in-action-bg:#6A0DAD;--in-action-hover:#0F52BA;--in-control-bg:#162127;--in-surface-soft:#162127;--in-overlay:rgba(8,13,18,.96);--in-good:#66D7A7;--in-danger:#FF8497;--in-warning:#F4B85F;--in-lime:#C7F36B;--in-pink:#FF9BC7}
+html[data-theme="midnight"]{color-scheme:dark;--in-obsidian:#080D18;--in-canvas:#080D18;--in-panel:#10182A;--in-panel-raised:#17223A;--in-line:rgba(156,177,220,.2);--in-purple:#8B5CF6;--in-purple-bright:#AFA0FF;--in-sapphire:#4F8CFF;--in-white:#F4F7FF;--in-muted:#B0BDD8;--in-text:#F4F7FF;--in-text-muted:#B0BDD8;--in-accent:#AFA0FF;--in-link:#8DB8FF;--in-focus:#8DB8FF;--in-action-bg:#51409C;--in-action-hover:#2D4F9E;--in-control-bg:#17223A;--in-surface-soft:#17223A;--in-overlay:rgba(8,13,24,.96);--in-good:#68DDB2;--in-danger:#FF8DA2;--in-warning:#F4C16B;--in-lime:#C7F36B;--in-pink:#FF9BC7}
+html[data-theme="sepia"]{color-scheme:light;--in-obsidian:#332719;--in-canvas:#F1E5D2;--in-panel:#F4EBDD;--in-panel-raised:#EDE0CC;--in-line:rgba(78,57,32,.2);--in-purple:#70418B;--in-purple-bright:#70418B;--in-sapphire:#315F83;--in-white:#332719;--in-muted:#66533D;--in-text:#332719;--in-text-muted:#66533D;--in-accent:#70418B;--in-link:#315F83;--in-focus:#315F83;--in-action-bg:#70418B;--in-action-hover:#315F83;--in-control-bg:#FFF8ED;--in-surface-soft:#EDE0CC;--in-overlay:rgba(247,239,227,.97);--in-good:#176B4D;--in-danger:#B4233C;--in-warning:#7A4B00;--in-lime:#176B4D;--in-pink:#B4233C}
+html[data-theme="imperial"]{color-scheme:dark;--in-obsidian:#100B18;--in-canvas:#100B18;--in-panel:#1B1228;--in-panel-raised:#261837;--in-line:rgba(183,138,226,.22);--in-purple:#B78AE2;--in-purple-bright:#D0A9F0;--in-sapphire:#5B8FE5;--in-white:#FBF7FF;--in-muted:#C8B9D8;--in-text:#FBF7FF;--in-text-muted:#C8B9D8;--in-accent:#D0A9F0;--in-link:#8DB8FF;--in-focus:#8DB8FF;--in-action-bg:#70418B;--in-action-hover:#315F83;--in-control-bg:#261837;--in-surface-soft:#261837;--in-overlay:rgba(16,11,24,.96);--in-good:#6AD9A8;--in-danger:#FF8BA3;--in-warning:#F4BE69;--in-lime:#C7F36B;--in-pink:#FF9BC7}
+html[data-theme="cosmic"]{color-scheme:dark;--in-obsidian:#080D1B;--in-canvas:#080D1B;--in-panel:#111A32;--in-panel-raised:#192544;--in-line:rgba(141,184,255,.2);--in-purple:#9B8CFF;--in-purple-bright:#B6AAFF;--in-sapphire:#68A7FF;--in-white:#F2F6FF;--in-muted:#B1C0DD;--in-text:#F2F6FF;--in-text-muted:#B1C0DD;--in-accent:#B6AAFF;--in-link:#8DB8FF;--in-focus:#8DB8FF;--in-action-bg:#5142B5;--in-action-hover:#315F83;--in-control-bg:#192544;--in-surface-soft:#192544;--in-overlay:rgba(8,13,27,.96);--in-good:#6BE0C2;--in-danger:#FF8BA3;--in-warning:#F4C16B;--in-lime:#C7F36B;--in-pink:#FF9BC7}
+
+/* Theme surfaces and text use semantic tokens, not browser defaults. */
+html[data-theme="sepia"] body{background:#F1E5D2;color:#332719}
+html[data-theme="sepia"] .top,html[data-theme="sepia"] .mobileNav,html[data-theme="sepia"] .footer{background:#F7EFE3;color:#332719;border-color:rgba(78,57,32,.18)}
+html[data-theme="sepia"] .panel,html[data-theme="sepia"] .card,html[data-theme="sepia"] .catalogCard,html[data-theme="sepia"] .settingsPanel,html[data-theme="sepia"] .menuDrawer{background:#F8F0E4;color:#332719;border-color:rgba(78,57,32,.2)}
+html[data-theme="sepia"] .page h1,html[data-theme="sepia"] .page h2,html[data-theme="sepia"] .page h3,html[data-theme="sepia"] .cardTitle,html[data-theme="sepia"] .catalogTitle{color:#332719}
+html[data-theme="sepia"] .muted{color:#66533D}
+html[data-theme="sepia"] input,html[data-theme="sepia"] select,html[data-theme="sepia"] textarea{background:#FFF8ED;color:#332719;border-color:rgba(78,57,32,.25)}
+html[data-theme="imperial"] body,html[data-theme="cosmic"] body,html[data-theme="midnight"] body{background:var(--in-obsidian);color:var(--in-white)}
+html[data-theme="imperial"] .panel,html[data-theme="imperial"] .card,html[data-theme="imperial"] .catalogCard,html[data-theme="imperial"] .settingsPanel,html[data-theme="imperial"] .menuDrawer,
+html[data-theme="cosmic"] .panel,html[data-theme="cosmic"] .card,html[data-theme="cosmic"] .catalogCard,html[data-theme="cosmic"] .settingsPanel,html[data-theme="cosmic"] .menuDrawer,
+html[data-theme="midnight"] .panel,html[data-theme="midnight"] .card,html[data-theme="midnight"] .catalogCard,html[data-theme="midnight"] .settingsPanel,html[data-theme="midnight"] .menuDrawer{background:var(--in-panel);color:var(--in-white);border-color:var(--in-line)}
+html[data-theme="imperial"] .muted,html[data-theme="cosmic"] .muted,html[data-theme="midnight"] .muted{color:var(--in-muted)}
+html[data-theme="imperial"] input,html[data-theme="imperial"] select,html[data-theme="imperial"] textarea,html[data-theme="cosmic"] input,html[data-theme="cosmic"] select,html[data-theme="cosmic"] textarea,html[data-theme="midnight"] input,html[data-theme="midnight"] select,html[data-theme="midnight"] textarea{background:var(--in-panel-raised);color:var(--in-white);border-color:var(--in-line)}
+
+
+/* Semantic component layer: shared shell and controls resolve through the selected theme. */
+html[data-theme] body{background:var(--in-canvas);color:var(--in-text);color-scheme:inherit}
+html[data-theme] .top,html[data-theme] .footer,html[data-theme] .mobileNav{background:var(--in-overlay);color:var(--in-text);border-color:var(--in-line);box-shadow:none}
+html[data-theme] .brand b,html[data-theme] .footerBrand,html[data-theme] .page,html[data-theme] .page h1,html[data-theme] .page h2,html[data-theme] .page h3,html[data-theme] .sectionHead h2,html[data-theme] .sectionHead h3,html[data-theme] .cardTitle,html[data-theme] .catalogTitle{color:var(--in-text)}
+html[data-theme] .brand small,html[data-theme] .muted,html[data-theme] .footer,html[data-theme] .sectionHead p,html[data-theme] .nextHeroLead{color:var(--in-text-muted)}
+html[data-theme] .navlinks a,html[data-theme] .mobileNav a,html[data-theme] .menuDrawer a{color:var(--in-text-muted)}
+html[data-theme] .navlinks a:hover,html[data-theme] .navlinks a.active,html[data-theme] .mobileNav a.active{color:var(--in-accent);background:var(--in-surface-soft);border-color:var(--in-line)}
+html[data-theme] .card,html[data-theme] .catalogCard,html[data-theme] .panel,html[data-theme] .settingsPanel,html[data-theme] .novelHero,html[data-theme] .catalogTop,html[data-theme] .heroSideCard,html[data-theme] .menuDrawer,html[data-theme] .hero.nextHero,html[data-theme] .hero.imperialArchiveHero,html[data-theme] .side,html[data-theme] .tierPanel,html[data-theme] .chapter,html[data-theme] .quickCard,html[data-theme] .unlockBanner,html[data-theme] .notice,html[data-theme] .settingRow,html[data-theme] .accountMenu,html[data-theme] .catalogEmpty,html[data-theme] .ecosystemCard{background:var(--in-panel);color:var(--in-text);border-color:var(--in-line);box-shadow:none}
+html[data-theme] .cover,html[data-theme] .catalogCover,html[data-theme] .portalLink{background:var(--in-panel-raised);border-color:var(--in-line);color:var(--in-text)}
+html[data-theme] input,html[data-theme] select,html[data-theme] textarea{background:var(--in-control-bg);color:var(--in-text);border-color:var(--in-line);color-scheme:inherit}
+html[data-theme] input::placeholder,html[data-theme] textarea::placeholder{color:var(--in-text-muted);opacity:1}
+html[data-theme] a:not(.primary):not(.secondary):not(.pill):not(.brand),html[data-theme] .footer a,html[data-theme] .unlockBanner a{color:var(--in-link)}
+html[data-theme] a:not(.primary):not(.secondary):not(.pill):not(.brand):hover,html[data-theme] .footer a:hover{color:var(--in-accent)}
+html[data-theme] .hero.nextHero h1 span,html[data-theme] .hero.imperialArchiveHero h1 span{color:var(--in-accent);-webkit-text-fill-color:var(--in-accent)}
+html[data-theme] .pill,html[data-theme] .tag,html[data-theme] .chip,html[data-theme] .rankBadge{background:var(--in-surface-soft);border-color:var(--in-line);color:var(--in-text)}
+html[data-theme] .primary,html[data-theme] button.primary,html[data-theme] .actions .primary,html[data-theme] .heroSearch button{background:var(--in-action-bg);color:#FFFFFF;border:1px solid var(--in-action-bg);box-shadow:none}
+html[data-theme] .primary:hover,html[data-theme] button.primary:hover,html[data-theme] .actions .primary:hover,html[data-theme] .heroSearch button:hover{background:var(--in-action-hover);border-color:var(--in-action-hover);color:#FFFFFF}
+html[data-theme] .iconbtn,html[data-theme] .menuToggle{background:var(--in-panel);color:var(--in-text);border-color:var(--in-line);box-shadow:none}
+html[data-theme] :focus-visible{outline:2px solid var(--in-focus);outline-offset:3px}
+html[data-theme] .skipLink{background:var(--in-panel);color:var(--in-text);border-color:var(--in-focus)}
+html[data-theme] .heroPromise,html[data-theme] .heroOrbitLabel{color:var(--in-text-muted)}
+html[data-theme] .heroSearch{background:var(--in-panel);border-color:var(--in-line);box-shadow:none}
+html[data-theme] .heroSearch input{background:var(--in-panel);color:var(--in-text)}
+
+html[data-theme] .mark{border-color:var(--in-accent);box-shadow:0 0 0 1px var(--in-line)}
+html[data-theme] .heroKicker,html[data-theme] .nextHero .eyebrow,html[data-theme] .heroOrbitLabel{color:var(--in-accent)}
+html[data-theme] .heroSideTop b,html[data-theme] .heroSideTop small{color:var(--in-text)}
+html[data-theme] .heroTags a{background:var(--in-surface-soft);border-color:var(--in-line);color:var(--in-text)}
+html[data-theme] .heroPromise,html[data-theme] .promiseText{color:var(--in-text-muted)}
+html[data-theme] .ghost,html[data-theme] .secondary{background:var(--in-surface-soft);color:var(--in-text);border-color:var(--in-line)}
+html[data-theme] .portalLink:hover{background:var(--in-surface-soft);border-color:var(--in-accent)}
+html[data-theme] .rankBadge{background:var(--in-surface-soft);border-color:var(--in-line);color:var(--in-text)}
+
+
+/* Compatibility bridge: legacy application components consume these aliases.
+   Keeping the bridge here makes every existing route inherit the selected site theme. */
+html[data-theme]{
+  --bg:var(--in-canvas);
+  --bg2:var(--in-surface-soft);
+  --panel:var(--in-panel);
+  --panel2:var(--in-panel-raised);
+  --panel3:var(--in-surface-soft);
+  --text:var(--in-text);
+  --muted:var(--in-text-muted);
+  --line:var(--in-line);
+  --silver:var(--in-line);
+  --silver2:var(--in-panel-raised);
+  --violet:var(--in-accent);
+  --violet2:var(--in-accent);
+  --violet3:var(--in-surface-soft);
+  --violet4:var(--in-accent);
+  --violet-strong:var(--in-accent);
+  --cosmic:var(--in-accent);
+  --electric:var(--in-link);
+  --cyan2:var(--in-link);
+  --cyan3:var(--in-link);
+  --gold3:var(--in-accent);
+  --platinum:var(--in-text-muted);
+  --imperial-black:var(--in-obsidian);
+  --imperial-ink:var(--in-text);
+  --imperial-muted:var(--in-text-muted);
+  --imperial-line:var(--in-line);
+  --imperial-violet:var(--in-accent);
+  --imperial-navy:var(--in-panel);
+  --shadow:0 12px 34px rgba(0,0,0,.12);
+  --shadowSoft:0 6px 20px rgba(0,0,0,.06);
+  --good:var(--in-good);
+  --danger:var(--in-danger);
+  --warning:var(--in-warning);
+  --lime:var(--in-lime);
+  --pink:var(--in-pink);
+  --indigo:var(--in-accent);
+  --gold:var(--in-accent);
+  --gold2:var(--in-accent);
+  --cyan:var(--in-link);
+  --imperial-cyan:var(--in-link);
+  --imperial-purple:var(--in-accent);
+  --ink:var(--in-text);
+  --ink-2:var(--in-text-muted);
+  --muted-2:var(--in-text-muted);
+  --surface:var(--in-panel);
+  --surface-2:var(--in-panel-raised);
+  --surface-3:var(--in-surface-soft);
+  --line-strong:var(--in-focus);
+  --border:var(--in-line);
+  --brand-purple:var(--in-accent);
+  --brand-cyan:var(--in-link);
+  --tile-accent:var(--in-accent);
+}
+
+html[data-theme] .quickCard b,html[data-theme] .ecosystemCard>b,html[data-theme] .catalogMeta b{color:var(--in-text)}
+html[data-theme] .quickCard small,html[data-theme] .ecosystemCopy,html[data-theme] .catalogStats{color:var(--in-text-muted)}
+html[data-theme] .ecosystemLink{color:var(--in-link)}
+html[data-theme] .ecosystemKicker{color:var(--in-accent)}
+html[data-theme] .statusBadge{background:var(--in-surface-soft);color:var(--in-accent);border-color:var(--in-line)}
+
+html[data-theme] .empty{background:var(--in-panel);color:var(--in-text);border-color:var(--in-line)}
+html[data-theme] .quickCard{background:var(--in-panel);color:var(--in-text);border-color:var(--in-line);box-shadow:none}
+html[data-theme] .quickCard>span{color:var(--in-accent)}
+html[data-theme] .quickCard:hover,html[data-theme] .chapter:hover,html[data-theme] .side a:hover{border-color:var(--in-accent)}
+html[data-theme] .iconbtn:hover,html[data-theme] .secondary:hover,html[data-theme] .ghost:hover{background:var(--in-surface-soft);border-color:var(--in-accent);color:var(--in-text)}
+html[data-theme] .pill.gold{background:var(--in-surface-soft);color:var(--in-accent);border-color:var(--in-line)}
+html[data-theme] .bootFallback{background:var(--in-canvas);color:var(--in-text)}
+html[data-theme] .bootFallback p{color:var(--in-text-muted)}
+html[data-theme] .bootCrest{border-color:var(--in-accent);color:var(--in-accent)}
+html[data-theme] .bootSpinner{border-color:var(--in-line);border-top-color:var(--in-accent)}
+
+html[data-theme] .status-published{color:var(--in-good)}
+html[data-theme] .status-review{color:var(--in-link)}
+html[data-theme] .status-rejected{color:var(--in-danger)}
+html[data-theme] .novelReaction[aria-pressed=true]{border-color:var(--in-accent);background:var(--in-surface-soft);color:var(--in-text)}
+html[data-theme] .reactReactionError{color:var(--in-danger)}
+html[data-theme] .ratingIslandSummary{color:var(--in-text-muted)}
+html[data-theme] .ratingIslandSummary strong{color:var(--in-text)}
+/* Legacy catalog, account and admin primitives now inherit the active theme too. */
+html[data-theme] .brand b,html[data-theme] .sectionHead h2,html[data-theme] .title h1,html[data-theme] .side h3,html[data-theme] .catalogMeta b,html[data-theme] .metric b,html[data-theme] .miniCard b{color:var(--in-text)}
+html[data-theme] .brand small,html[data-theme] .tabs a,html[data-theme] .meta,html[data-theme] .statline,html[data-theme] .filterLabel,html[data-theme] .catalogStats,html[data-theme] .miniCard span,html[data-theme] .lock{color:var(--in-text-muted)}
+html[data-theme] .side,html[data-theme] .accountMenu,html[data-theme] .tierPanel,html[data-theme] .metric,html[data-theme] .miniCard,html[data-theme] .notice,html[data-theme] .catalogEmpty,html[data-theme] .unlockBanner{background:var(--in-panel);border-color:var(--in-line);color:var(--in-text)}
+html[data-theme] .filterChip{background:var(--in-surface-soft);border-color:var(--in-line);color:var(--in-text-muted)}
+html[data-theme] .filterChip.active,html[data-theme] .filterChip:hover{background:var(--in-surface-soft);border-color:var(--in-accent);color:var(--in-accent)}
+html[data-theme] .chapter{background:var(--in-panel);border-color:var(--in-line);color:var(--in-text)}
+html[data-theme] .chapter:hover{background:var(--in-surface-soft);border-color:var(--in-accent)}
+html[data-theme] .accountMenu a,html[data-theme] .side a{color:var(--in-text-muted)}
+html[data-theme] .statusBadge,html[data-theme] .rankBadge{background:var(--in-surface-soft);border-color:var(--in-line);color:var(--in-accent)}
+html[data-theme] .empty{background:var(--in-panel);border-color:var(--in-line);color:var(--in-text-muted)}
+
+
+html[data-theme] .formatLink:hover,html[data-theme] .homeFormatCard:hover{background:var(--in-surface-soft);border-color:var(--in-accent)}
+html[data-theme] .formatLink:focus-visible,html[data-theme] .homeFormatCard:focus-visible{outline:3px solid var(--in-focus)!important;outline-offset:3px;border-color:var(--in-focus)}
+
+
+/* Reader theme isolation: the reading canvas owns its own semantic token scope.
+   These aliases intentionally override the global site palette only inside .readerPage. */
+.readerPage[data-reader-theme]{
+  --bg:var(--reader-canvas);
+  --bg2:var(--reader-surface-soft);
+  --panel:var(--reader-panel);
+  --panel2:var(--reader-panel-raised);
+  --panel3:var(--reader-surface-soft);
+  --text:var(--reader-text);
+  --muted:var(--reader-muted);
+  --line:var(--reader-line);
+  --violet:var(--reader-accent);
+  --violet2:var(--reader-link);
+  --violet3:var(--reader-surface-soft);
+  --violet4:var(--reader-accent);
+  --surface:var(--reader-panel);
+  --surface-2:var(--reader-panel-raised);
+  --surface-3:var(--reader-surface-soft);
+  --ink:var(--reader-text);
+  --ink-2:var(--reader-muted);
+  --brand-purple:var(--reader-accent);
+  --brand-cyan:var(--reader-link);
+  --silver:var(--reader-line);
+  --silver2:var(--reader-panel-raised);
+  --indigo:var(--reader-accent);
+  --cosmic:var(--reader-accent);
+  --electric:var(--reader-link);
+  --gold:var(--reader-accent);
+  --gold2:var(--reader-accent);
+  --gold3:var(--reader-accent);
+  --platinum:var(--reader-muted);
+  --cyan:var(--reader-link);
+  --cyan2:var(--reader-link);
+  --cyan3:var(--reader-link);
+  --imperial-purple:var(--reader-accent);
+  --imperial-cyan:var(--reader-link);
+  --imperial-black:var(--reader-canvas);
+  --imperial-ink:var(--reader-text);
+  --imperial-muted:var(--reader-muted);
+  --imperial-line:var(--reader-line);
+  --imperial-violet:var(--reader-accent);
+  --imperial-navy:var(--reader-panel);
+  --muted-2:var(--reader-muted);
+  --violet-strong:var(--reader-accent);
+  --tile-accent:var(--reader-accent);
+  --border:var(--reader-line);
+  --good:var(--reader-good);
+  --danger:var(--reader-danger);
+  --warning:var(--reader-warning);
+  --lime:var(--reader-good);
+  --pink:var(--reader-danger);
+  --shadow:0 12px 34px rgba(0,0,0,.12);
+  --shadowSoft:0 6px 20px rgba(0,0,0,.06);
+  --in-canvas:var(--reader-canvas);
+  --in-obsidian:var(--reader-canvas);
+  --in-panel:var(--reader-panel);
+  --in-panel-raised:var(--reader-panel-raised);
+  --in-white:var(--reader-text);
+  --in-muted:var(--reader-muted);
+  --in-line:var(--reader-line);
+  --in-purple:var(--reader-accent);
+  --in-purple-bright:var(--reader-accent);
+  --in-sapphire:var(--reader-link);
+  --in-text:var(--reader-text);
+  --in-text-muted:var(--reader-muted);
+  --in-accent:var(--reader-accent);
+  --in-link:var(--reader-link);
+  --in-focus:var(--reader-focus);
+  --in-action-bg:var(--reader-action-bg);
+  --in-action-hover:var(--reader-action-hover);
+  --in-control-bg:var(--reader-surface-soft);
+  --in-surface-soft:var(--reader-surface-soft);
+  --in-overlay:var(--reader-overlay);
+  --in-good:var(--reader-good);
+  --in-danger:var(--reader-danger);
+  --in-warning:var(--reader-warning);
+  --in-lime:var(--reader-good);
+  --in-pink:var(--reader-danger);
+}
+.readerPage[data-reader-theme="light"]{
+  --reader-canvas:#FFFFFF;--reader-panel:#FFFFFF;--reader-panel-raised:#F7F8FA;--reader-surface-soft:#F7F8FA;
+  --reader-text:#20233A;--reader-muted:#667085;--reader-line:#E4E7EE;--reader-accent:#6A0DAD;--reader-link:#0F52BA;--reader-focus:#0F52BA;
+  --reader-action-bg:#6A0DAD;--reader-action-hover:#0F52BA;--reader-overlay:rgba(255,255,255,.96);
+  --reader-good:#176B4D;--reader-danger:#B4233C;--reader-warning:#7A4B00;
+}
+.readerPage[data-reader-theme="dark"]{
+  --reader-canvas:#080A14;--reader-panel:#111426;--reader-panel-raised:#15182C;--reader-surface-soft:#15182C;
+  --reader-text:#F1EFFB;--reader-muted:#AAA7C1;--reader-line:rgba(173,158,232,.2);--reader-accent:#B78AE2;--reader-link:#8DB8FF;--reader-focus:#8DB8FF;
+  --reader-action-bg:#6A0DAD;--reader-action-hover:#0F52BA;--reader-overlay:rgba(10,11,23,.97);
+  --reader-good:#66D7A7;--reader-danger:#FF8497;--reader-warning:#F4B85F;
+}
+.readerPage[data-reader-theme="midnight"]{
+  --reader-canvas:#080B18;--reader-panel:#0B1220;--reader-panel-raised:#101A2B;--reader-surface-soft:#101A2B;
+  --reader-text:#E9E7FF;--reader-muted:#B0BDD8;--reader-line:#20334E;--reader-accent:#AFA0FF;--reader-link:#8DB8FF;--reader-focus:#8DB8FF;
+  --reader-action-bg:#51409C;--reader-action-hover:#2D4F9E;--reader-overlay:#070D1A;
+  --reader-good:#68DDB2;--reader-danger:#FF8DA2;--reader-warning:#F4C16B;
+}
+.readerPage[data-reader-theme="sepia"]{
+  --reader-canvas:#F3E7D1;--reader-panel:#FBF3E4;--reader-panel-raised:#EFE3CC;--reader-surface-soft:#EFE3CC;
+  --reader-text:#493C2C;--reader-muted:#66533D;--reader-line:#E0CFAF;--reader-accent:#70418B;--reader-link:#315F83;--reader-focus:#315F83;
+  --reader-action-bg:#70418B;--reader-action-hover:#315F83;--reader-overlay:rgba(248,239,221,.97);
+  --reader-good:#176B4D;--reader-danger:#B4233C;--reader-warning:#7A4B00;
+}
+.readerPage[data-reader-theme="imperial"]{
+  --reader-canvas:#101128;--reader-panel:#17122F;--reader-panel-raised:#101D2D;--reader-surface-soft:#101D2D;
+  --reader-text:#F4F5FF;--reader-muted:#C8B9D8;--reader-line:rgba(183,138,226,.22);--reader-accent:#D0A9F0;--reader-link:#8DB8FF;--reader-focus:#8DB8FF;
+  --reader-action-bg:#70418B;--reader-action-hover:#315F83;--reader-overlay:rgba(16,17,40,.97);
+  --reader-good:#6AD9A8;--reader-danger:#FF8BA3;--reader-warning:#F4BE69;
+}
+.readerPage[data-reader-theme="cosmic"]{
+  --reader-canvas:#090A1D;--reader-panel:#17122F;--reader-panel-raised:#101A30;--reader-surface-soft:#101A30;
+  --reader-text:#E5E4FF;--reader-muted:#B1C0DD;--reader-line:rgba(91,211,220,.22);--reader-accent:#B6AAFF;--reader-link:#68A7FF;--reader-focus:#68A7FF;
+  --reader-action-bg:#5142B5;--reader-action-hover:#315F83;--reader-overlay:rgba(12,13,33,.97);
+  --reader-good:#6BE0C2;--reader-danger:#FF8BA3;--reader-warning:#F4C16B;
+}
+.readerPage .chapterDrawer{background:var(--reader-panel);color:var(--reader-text);border-color:var(--reader-line)}
+.readerPage .readerPrefs{border-color:var(--reader-line)}
+.readerPage .readerPrefs label,.readerPage .readerBook span,.readerPage .readerProgressText{color:var(--reader-muted)}
+.readerPage .readerPrefs select,.readerPage .readerTool{background:var(--reader-surface-soft);color:var(--reader-text);border-color:var(--reader-line)}
+.readerPage .readerChapterItem{background:var(--reader-surface-soft);color:var(--reader-text);border-color:var(--reader-line)}
+.readerPage .readerArticle,.readerPage .readerFooterCard,.readerPage .readerLock{background:var(--reader-panel);color:var(--reader-text);border-color:var(--reader-line)}
+.readerPage .readerArticle h1,.readerPage .readerFooterCard h3,.readerPage .readerLock h2,.readerPage .readerBook b{color:var(--reader-text)}
+.readerPage .readerContent{color:var(--reader-text)}
+.readerPage .readerDivider{background:var(--reader-accent)}
+.readerPage .readerBack,.readerPage .readerChapterJump a{color:var(--reader-link)}
+.readerPage .readerTool:focus-visible,.readerPage .readerPrefs select:focus-visible{outline:2px solid var(--reader-focus);outline-offset:2px}
+
+.readerPage[data-reader-theme="light"],.readerPage[data-reader-theme="sepia"]{color-scheme:light}
+.readerPage[data-reader-theme="dark"],.readerPage[data-reader-theme="midnight"],.readerPage[data-reader-theme="imperial"],.readerPage[data-reader-theme="cosmic"]{color-scheme:dark}
+
+
+/* High-contrast preference overrides semantic tokens for every global theme. */
+html[data-theme="light"][data-high-contrast="true"]{--in-text:#080616;--in-text-muted:#39354B;--in-line:#777087;--in-panel:#FFFFFF;--in-panel-raised:#F0F0F5;--in-surface-soft:#F0F0F5;--in-control-bg:#FFFFFF;--in-focus:#0F52BA;--in-overlay:rgba(255,255,255,.99)}
+html[data-theme="dark"][data-high-contrast="true"]{--in-text:#FFFFFF;--in-text-muted:#E0D9EE;--in-line:#76658B;--in-panel:#101A1F;--in-panel-raised:#202A30;--in-surface-soft:#202A30;--in-control-bg:#202A30;--in-focus:#B78AE2;--in-overlay:rgba(8,13,18,.99)}
+html[data-theme="midnight"][data-high-contrast="true"]{--in-text:#FFFFFF;--in-text-muted:#E5EBFF;--in-line:#8395B8;--in-panel:#0B1220;--in-panel-raised:#1A2742;--in-surface-soft:#1A2742;--in-control-bg:#1A2742;--in-focus:#8DB8FF;--in-overlay:rgba(8,13,24,.99)}
+html[data-theme="sepia"][data-high-contrast="true"]{--in-text:#20170F;--in-text-muted:#46351F;--in-line:#7B6447;--in-panel:#FBF3E4;--in-panel-raised:#E6D7BF;--in-surface-soft:#E6D7BF;--in-control-bg:#FBF3E4;--in-focus:#315F83;--in-overlay:rgba(247,239,227,.99)}
+html[data-theme="imperial"][data-high-contrast="true"]{--in-text:#FFFFFF;--in-text-muted:#E9DDF7;--in-line:#9A7EB5;--in-panel:#17122F;--in-panel-raised:#2C1B40;--in-surface-soft:#2C1B40;--in-control-bg:#2C1B40;--in-focus:#D0A9F0;--in-overlay:rgba(16,11,24,.99)}
+html[data-theme="cosmic"][data-high-contrast="true"]{--in-text:#FFFFFF;--in-text-muted:#DCE5FF;--in-line:#8298C5;--in-panel:#111A32;--in-panel-raised:#1E2D50;--in-surface-soft:#1E2D50;--in-control-bg:#1E2D50;--in-focus:#8DB8FF;--in-overlay:rgba(8,13,27,.99)}
+
+/* The reader's accessibility preference is independent of the global site theme. */
+html[data-high-contrast="true"] .readerPage[data-reader-theme="light"]{--reader-text:#080616;--reader-muted:#39354B;--reader-line:#777087;--reader-panel:#FFFFFF;--reader-panel-raised:#F0F0F5;--reader-surface-soft:#F0F0F5;--reader-focus:#0F52BA}
+html[data-high-contrast="true"] .readerPage[data-reader-theme="dark"]{--reader-text:#FFFFFF;--reader-muted:#E0D9EE;--reader-line:#76658B;--reader-panel:#111426;--reader-panel-raised:#20243B;--reader-surface-soft:#20243B;--reader-focus:#B78AE2}
+html[data-high-contrast="true"] .readerPage[data-reader-theme="midnight"]{--reader-text:#FFFFFF;--reader-muted:#E5EBFF;--reader-line:#8395B8;--reader-panel:#0B1220;--reader-panel-raised:#1A2742;--reader-surface-soft:#1A2742;--reader-focus:#8DB8FF}
+html[data-high-contrast="true"] .readerPage[data-reader-theme="sepia"]{--reader-text:#20170F;--reader-muted:#46351F;--reader-line:#7B6447;--reader-panel:#FBF3E4;--reader-panel-raised:#E6D7BF;--reader-surface-soft:#E6D7BF;--reader-focus:#315F83}
+html[data-high-contrast="true"] .readerPage[data-reader-theme="imperial"]{--reader-text:#FFFFFF;--reader-muted:#E9DDF7;--reader-line:#9A7EB5;--reader-panel:#17122F;--reader-panel-raised:#2C1B40;--reader-surface-soft:#2C1B40;--reader-focus:#D0A9F0}
+html[data-high-contrast="true"] .readerPage[data-reader-theme="cosmic"]{--reader-text:#FFFFFF;--reader-muted:#DCE5FF;--reader-line:#8298C5;--reader-panel:#111A32;--reader-panel-raised:#1E2D50;--reader-surface-soft:#1E2D50;--reader-focus:#8DB8FF}
+
+
+/* 44px interaction baseline: preserve comfortable touch targets without resizing
+   checkboxes/range sliders or decorative text links. */
+html[data-theme] :where(button,input:not([type="checkbox"]):not([type="range"]),select,textarea,[role="button"]){min-height:44px}
+html[data-theme] :where(.primary,.secondary,.ghost,.iconbtn,.menuToggle,.menuClose,.readerBack,.navlinks a,.mobileNav a,.menuDrawer a,.readerChapterItem,.formatLink){min-height:44px}
+html[data-theme] .readerTool{min-width:44px;min-height:44px}
+@media(max-width:760px){
+  html[data-theme] .readerBarInner{display:flex;flex-wrap:wrap;row-gap:8px}
+  html[data-theme] .readerBack{flex:0 0 auto;min-height:44px;display:inline-flex;align-items:center}
+  html[data-theme] .readerBook{flex:1 1 120px;min-width:0}
+  html[data-theme] .readerTools{flex:1 0 100%;width:100%;justify-content:space-between;gap:5px}
+  html[data-theme] .readerTool{flex:1 1 44px;min-width:44px;min-height:44px}
+}
+
+
+/* Final semantic parity layer: prevent legacy archive art-direction rules from
+   pinning the six theme families to one fixed dark palette. */
+html[data-theme] body{background:var(--in-canvas)}
+html[data-theme] .top,html[data-theme] .mobileNav{background:var(--in-panel);border-color:var(--in-line)}
+html[data-theme] .hero.imperialArchiveHero,html[data-theme] .hero.nextHero,html[data-theme] .heroSideCard,html[data-theme] .card,html[data-theme] .catalogCard,html[data-theme] .panel,html[data-theme] .settingsPanel,html[data-theme] .novelHero,html[data-theme] .catalogTop{
+  background:var(--in-panel);border-color:var(--in-line);box-shadow:none
+}
+html[data-theme] .hero.imperialArchiveHero h1 span,html[data-theme] .nextHero h1 span{color:var(--in-accent);-webkit-text-fill-color:var(--in-accent)}
+html[data-theme] .hero.imperialArchiveHero .nextHeroLead,html[data-theme] .nextHeroLead,html[data-theme] .heroPromise,html[data-theme] .promiseText{color:var(--in-text-muted)}
+html[data-theme] .heroSearch{background:var(--in-panel);border-color:var(--in-line)}
+html[data-theme] .heroSearch input{background:var(--in-panel);color:var(--in-text)}
+html[data-theme] .heroSearch button,html[data-theme] .primary{background:var(--in-action-bg);border-color:var(--in-action-bg)}
+html[data-theme] .heroSearch button:hover,html[data-theme] .primary:hover{background:var(--in-action-hover);border-color:var(--in-action-hover)}
+html[data-theme] .portalLink,html[data-theme] .pill,html[data-theme] .rankBadge{border-color:var(--in-line)}
+html[data-theme] .pill,html[data-theme] .rankBadge{background:var(--in-surface-soft)}
+html[data-theme] :where(a,button,input,select,textarea,[role="button"],[tabindex]):focus-visible{outline-color:var(--in-focus)}
+html[data-theme] .skipLink{border-color:var(--in-focus);background:var(--in-panel);color:var(--in-text)}
+html[data-theme] .brand small,html[data-theme] .navlinks a,html[data-theme] .mobileNav a,html[data-theme] .menuDrawer a{color:var(--in-text-muted)}
+html[data-theme] .navlinks a.active,html[data-theme] .mobileNav a.active{color:var(--in-accent);background:var(--in-surface-soft);border-color:var(--in-line)}
+html[data-theme] .menuToggle,html[data-theme] .menuDrawer{background:var(--in-panel);color:var(--in-text);border-color:var(--in-line)}
+html[data-theme] .footer{background:var(--in-panel);color:var(--in-text-muted);border-color:var(--in-line)}
+html[data-theme] .footer a,html[data-theme] .unlockBanner a{color:var(--in-link)}
+html[data-theme] .footer a:hover{color:var(--in-accent)}
+html[data-theme] .catalogCover{background:var(--in-surface-soft);color:var(--in-text)}
+html[data-theme] .secondary,html[data-theme] .ghost{background:var(--in-surface-soft);color:var(--in-text);border-color:var(--in-line)}
+html[data-theme] textarea,html[data-theme] input,html[data-theme] select{background:var(--in-control-bg);color:var(--in-text);border-color:var(--in-line)}
+html[data-theme] .mark{border-color:var(--in-accent)}
+/* Cross-sheet component bridge: community, ratings and creator tools use the same tokens. */
+html[data-theme] .commentItem,html[data-theme] .comicComposerPage{background:var(--in-surface-soft);border-color:var(--in-line);color:var(--in-text)}
+html[data-theme] .commentItem p,html[data-theme] .commentHead,html[data-theme] .ratingIslandSummary,html[data-theme] .comicAuthorBuilderHead p,html[data-theme] .comicComposerPage small,html[data-theme] .comicAuthorBuilder [data-page-status]{color:var(--in-text-muted)}
+html[data-theme] .ratingStar{color:var(--in-text-muted)}
+html[data-theme] .ratingStar.selected,html[data-theme] .ratingStar:hover{color:var(--in-link)}
+html[data-theme] .ratingStar:focus-visible,html[data-theme] .commentActions button:focus-visible,html[data-theme] .comicPageComposerGrid input:focus-visible,html[data-theme] .comicPageComposerGrid button:focus-visible,html[data-theme] .comicComposerPageActions button:focus-visible{outline:2px solid var(--in-focus);outline-offset:3px}
+html[data-theme] .authorApplicationFormats{border-color:var(--in-line)}
+html[data-theme] .authorApplicationFormats legend{color:var(--in-text-muted)}
+html[data-theme] .comicAuthorBuilder{background:linear-gradient(145deg,var(--in-surface-soft),var(--in-panel));border-color:var(--in-line);color:var(--in-text)}
+html[data-theme] .comicAuthorBuilderHead>span{background:var(--in-surface-soft);color:var(--in-accent)}
+html[data-theme] .comicPageComposerGrid input{background:var(--in-control-bg);color:var(--in-text);border-color:var(--in-line)}
+html[data-theme] .comicComposerPage>img{background:var(--in-obsidian)}
+html[data-theme] .reactReactionList .novelReaction[aria-pressed=true]{background:var(--in-surface-soft);border-color:var(--in-accent);color:var(--in-text)}
+html[data-theme] .reactReactionError{color:var(--in-danger)}
+html[data-theme] .ratingIslandSummary strong{color:var(--in-text)}
+
+
+
+
+/* Respect the operating-system contrast preference without requiring a settings visit. */
+@media(prefers-contrast:more){
+html[data-theme="light"]{--in-text:#080616;--in-text-muted:#39354B;--in-line:#777087;--in-panel:#FFFFFF;--in-panel-raised:#F0F0F5;--in-surface-soft:#F0F0F5;--in-control-bg:#FFFFFF;--in-focus:#0F52BA;--in-overlay:rgba(255,255,255,.99)}
+html[data-theme="dark"]{--in-text:#FFFFFF;--in-text-muted:#E0D9EE;--in-line:#76658B;--in-panel:#101A1F;--in-panel-raised:#202A30;--in-surface-soft:#202A30;--in-control-bg:#202A30;--in-focus:#B78AE2;--in-overlay:rgba(8,13,18,.99)}
+html[data-theme="midnight"]{--in-text:#FFFFFF;--in-text-muted:#E5EBFF;--in-line:#8395B8;--in-panel:#0B1220;--in-panel-raised:#1A2742;--in-surface-soft:#1A2742;--in-control-bg:#1A2742;--in-focus:#8DB8FF;--in-overlay:rgba(8,13,24,.99)}
+html[data-theme="sepia"]{--in-text:#20170F;--in-text-muted:#46351F;--in-line:#7B6447;--in-panel:#FBF3E4;--in-panel-raised:#E6D7BF;--in-surface-soft:#E6D7BF;--in-control-bg:#FBF3E4;--in-focus:#315F83;--in-overlay:rgba(247,239,227,.99)}
+html[data-theme="imperial"]{--in-text:#FFFFFF;--in-text-muted:#E9DDF7;--in-line:#9A7EB5;--in-panel:#17122F;--in-panel-raised:#2C1B40;--in-surface-soft:#2C1B40;--in-control-bg:#2C1B40;--in-focus:#D0A9F0;--in-overlay:rgba(16,11,24,.99)}
+html[data-theme="cosmic"]{--in-text:#FFFFFF;--in-text-muted:#DCE5FF;--in-line:#8298C5;--in-panel:#111A32;--in-panel-raised:#1E2D50;--in-surface-soft:#1E2D50;--in-control-bg:#1E2D50;--in-focus:#8DB8FF;--in-overlay:rgba(8,13,27,.99)}
+.readerPage[data-reader-theme="light"]{--reader-text:#080616;--reader-muted:#39354B;--reader-line:#777087;--reader-panel:#FFFFFF;--reader-panel-raised:#F0F0F5;--reader-surface-soft:#F0F0F5;--reader-focus:#0F52BA}
+.readerPage[data-reader-theme="dark"]{--reader-text:#FFFFFF;--reader-muted:#E0D9EE;--reader-line:#76658B;--reader-panel:#111426;--reader-panel-raised:#20243B;--reader-surface-soft:#20243B;--reader-focus:#B78AE2}
+.readerPage[data-reader-theme="midnight"]{--reader-text:#FFFFFF;--reader-muted:#E5EBFF;--reader-line:#8395B8;--reader-panel:#0B1220;--reader-panel-raised:#1A2742;--reader-surface-soft:#1A2742;--reader-focus:#8DB8FF}
+.readerPage[data-reader-theme="sepia"]{--reader-text:#20170F;--reader-muted:#46351F;--reader-line:#7B6447;--reader-panel:#FBF3E4;--reader-panel-raised:#E6D7BF;--reader-surface-soft:#E6D7BF;--reader-focus:#315F83}
+.readerPage[data-reader-theme="imperial"]{--reader-text:#FFFFFF;--reader-muted:#E9DDF7;--reader-line:#9A7EB5;--reader-panel:#17122F;--reader-panel-raised:#2C1B40;--reader-surface-soft:#2C1B40;--reader-focus:#D0A9F0}
+.readerPage[data-reader-theme="cosmic"]{--reader-text:#FFFFFF;--reader-muted:#DCE5FF;--reader-line:#8298C5;--reader-panel:#111A32;--reader-panel-raised:#1E2D50;--reader-surface-soft:#1E2D50;--reader-focus:#8DB8FF}
+}
