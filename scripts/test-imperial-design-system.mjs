@@ -94,6 +94,24 @@ assert.ok(css.includes('@media (max-width: 360px)') && css.includes('.authorWork
 assert.ok(css.includes('.chapterList > .chapter {') && css.includes('grid-template-columns: minmax(0,1fr);'),
   'Chapter archive entries must become single-column on mobile.');
 
+
+const creatorWorkflowSelectors = [
+  '.authorEditForm', '.authorEditForm[hidden]', '.authorChapterForm',
+  '.comicAuthorBuilder', '.comicAuthorBuilder[hidden]', '.comicPageComposerGrid',
+  '.comicPageComposerGrid input', '[data-page-list]'
+];
+for (const selector of creatorWorkflowSelectors) {
+  assert.ok(css.includes(selector), 'Creator workflow must have canonical styling for ' + selector + '.');
+}
+assert.ok(css.includes('.comicPageComposerGrid {') && css.includes('grid-template-columns: minmax(0,1fr);'),
+  'Comic page composer must collapse to one column on phones.');
+assert.ok(css.includes('.authorEditForm :where(input,select,textarea):focus-visible'),
+  'Creator story editing controls must have a visible keyboard focus treatment.');
+assert.ok(css.includes('.authorEditForm[hidden], .authorChapterForm[hidden] { display: none !important; }'),
+  'Creator edit and chapter forms must preserve their hidden state.');
+assert.ok(appJs.includes('data-comic-builder') && appJs.includes('data-page-add') && appJs.includes('data-page-list'),
+  'Creator comic authoring UI must be covered by the real route runtime.');
+
 console.log('Imperial unified design-system checks passed.');
 
 
