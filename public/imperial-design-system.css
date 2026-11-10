@@ -4665,6 +4665,10 @@ html[data-theme="dark"] .adminWrap .adminHero {
 
 
 /* Administrator RTL parity for table reading order and floating navigation. */
+.adminWrap .adminForm :where(input,select,textarea,button),
+.adminWrap #chapterForm :where(input,textarea,button) {
+  min-height: 44px;
+}
 html[dir="rtl"] .adminWrap .adminTable th,
 html[dir="rtl"] .adminWrap .adminTable td { text-align: right; }
 html[dir="rtl"] .adminWrap .mobileAdmin {
