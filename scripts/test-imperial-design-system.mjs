@@ -270,3 +270,18 @@ assert.ok(adminTouchPass.includes('.adminWrap .adminTable :where(button,select,a
 assert.ok(read('public/imperial-design-system.css').includes('.chapterRow .actions > :where(button,a) { min-width: 44px; min-height: 44px; }'),
   'Admin chapter-management actions must meet the 44px touch target baseline.');
 
+// Admin form controls use the same 44px touch baseline as reader and creator
+// controls. RTL drawer and navigation overrides use logical edge properties.
+const adminFormTouchRule = '.adminWrap .adminForm :where(input,select,textarea,button),\\n.adminWrap #chapterForm :where(input,textarea,button) {\\n  min-height: 44px;\\n}';
+assert.ok(read('public/imperial-design-system.css').includes(adminFormTouchRule),
+  'Administrator form controls must meet the 44px touch target baseline.');
+assert.ok(adminMarkup.includes('class="adminForm"') && adminMarkup.includes('id="chapterForm"'),
+  'The admin touch-target rule must correspond to real administrator form markup.');
+const rtlLogicalBlock = read('public/imperial-design-system.css').split('/* Logical-direction cleanup: RTL surfaces use writing-mode-aware edges. */').pop().split('/* Runtime layout utilities:')[0];
+assert.ok(rtlLogicalBlock.includes('inset-inline-start') &&
+  rtlLogicalBlock.includes('border-inline-start') &&
+  rtlLogicalBlock.includes('margin-inline-start'),
+  'The canonical RTL override layer must use logical positioning and spacing properties.');
+assert.ok(!/(^|[;{]\\s*)(left|right|margin-left|margin-right|padding-left|padding-right|border-left|border-right)\\s*:/m.test(rtlLogicalBlock),
+  'The canonical RTL override layer must not reintroduce physical left/right declarations.');
+
