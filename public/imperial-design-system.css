@@ -4694,3 +4694,51 @@ html[dir="rtl"] .adminWrap .mobileAdmin {
     justify-content: center;
   }
 }
+
+
+/* Reader accessibility pass: keep every frequently used reading control
+   tappable without forcing the five-button toolbar onto a single narrow row. */
+@media (max-width: 760px) {
+  .readerBarInner {
+    display: flex;
+    flex-wrap: wrap;
+    padding-block: 8px;
+  }
+  .readerBook {
+    min-width: 0;
+    flex: 1 1 90px;
+  }
+  .readerTools {
+    flex: 1 1 100%;
+    justify-content: flex-end;
+    flex-wrap: wrap;
+    gap: 6px;
+  }
+  .readerTools .readerTool,
+  .readerToolbar .readerTool,
+  .readerToolbar button,
+  .readerActions > button,
+  .readerActions > a,
+  .readerPrefs select,
+  .chapterDrawerHead button,
+  .comicReaderControls button,
+  .comicPageNav .readerTool {
+    min-width: 44px;
+    min-height: 44px;
+    height: 44px;
+  }
+  .comicReaderControls {
+    align-items: stretch;
+  }
+  .comicReaderControls > .secondary {
+    min-height: 44px;
+  }
+  .comicPageNav {
+    flex-wrap: wrap;
+  }
+}
+@media (max-width: 390px) {
+  .readerBarInner { width: calc(100% - 16px); }
+  .readerTools { justify-content: space-between; }
+  .readerTools .readerTool { flex: 1 1 44px; }
+}
