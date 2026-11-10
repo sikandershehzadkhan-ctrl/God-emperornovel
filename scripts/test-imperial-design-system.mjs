@@ -66,6 +66,13 @@ for (let theme = 0; theme < 2; theme++) {
     'Primary action hover text must meet WCAG AA contrast in theme index ' + theme + '.');
 }
 assert.ok(css.includes('min-height: 44px;'), 'Shared interactive targets must meet the 44px touch target baseline.');
+const globalThemes = ['light','dark','midnight','sepia','imperial','cosmic'];
+for (const theme of globalThemes) {
+  assert.ok(css.includes('html[data-theme="' + theme + '"]'), 'Unified stylesheet must include the global ' + theme + ' theme map.');
+  assert.ok(css.includes('html[data-theme="' + theme + '"][data-high-contrast="true"]'), 'Unified stylesheet must include high-contrast tokens for ' + theme + '.');
+  assert.ok(css.includes('html[data-high-contrast="true"] .readerPage[data-reader-theme="' + theme + '"]'), 'Unified stylesheet must include reader high-contrast tokens for ' + theme + '.');
+}
+assert.ok(css.includes('html:is([data-theme="dark"],[data-theme="midnight"],[data-theme="imperial"],[data-theme="cosmic"])'), 'Dark-family theme component rules must cover every dark theme.');
 assert.ok(css.includes('outline: 3px solid var(--in-color-focus-ring);'), 'Shared components must expose a visible keyboard focus ring.');
 assert.ok(css.includes('@media (prefers-contrast: more)') && css.includes('@media (forced-colors: active)'), 'High-contrast and forced-color modes must be supported.');
 assert.ok(css.includes('@media (prefers-reduced-transparency: reduce)'), 'Reduced-transparency mode must provide calmer reading surfaces.');
