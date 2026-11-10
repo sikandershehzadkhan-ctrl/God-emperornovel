@@ -74,6 +74,8 @@ for (let theme = 0; theme < 2; theme++) {
     'Primary action hover text must meet WCAG AA contrast in theme index ' + theme + '.');
 }
 assert.ok(css.includes('min-height: 44px;'), 'Shared interactive targets must meet the 44px touch target baseline.');
+assert.match(css, /@media \(max-width: 760px\)[\s\S]*?html\[data-theme\] \.top \.navright :is\(\.iconbtn, \.themeToggle, \.menuToggle\) \{\s*width: 44px;\s*min-width: 44px;\s*height: 44px;\s*min-height: 44px;/,
+  'Mobile header icon and menu controls must retain 44px touch targets after legacy shell sizing.');
 const globalThemes = ['light','dark','midnight','sepia','imperial','cosmic'];
 for (const theme of globalThemes) {
   assert.ok(css.includes('html[data-theme="' + theme + '"]'), 'Unified stylesheet must include the global ' + theme + ' theme map.');
