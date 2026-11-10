@@ -4831,3 +4831,28 @@ html[data-theme="dark"] .chapterList > .chapter {
   .authorWorkActions > :where(button,a) { flex-basis: 100%; }
   .chapterList > .chapter { padding: 10px; }
 }
+
+
+/* Admin application review and report controls: no inline presentation. */
+.admin-prewrap { white-space: pre-wrap; overflow-wrap: anywhere; }
+.admin-bio-preview { max-width: 280px; }
+.admin-sample-preview { max-width: 360px; max-height: 260px; overflow: auto; }
+.admin-report-status-select {
+  box-sizing: border-box;
+  min-height: 40px;
+  max-width: 100%;
+  padding: 7px;
+  border: 1px solid var(--in-color-border-subtle);
+  border-radius: 8px;
+  background: var(--in-color-bg-surface);
+  color: var(--in-color-text-primary);
+}
+.admin-report-status-select:focus-visible {
+  outline: 3px solid var(--in-color-focus-ring);
+  outline-offset: 2px;
+}
+.mini.edit { cursor: pointer; font-weight: 700; opacity: 1; }
+@media (max-width: 760px) {
+  .admin-sample-preview { max-width: min(360px, 68vw); }
+  .admin-bio-preview { max-width: min(280px, 62vw); }
+}
