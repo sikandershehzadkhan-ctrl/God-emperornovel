@@ -148,6 +148,7 @@ const readerEnd = runtime.indexOf("\nasync function ", readerStart + 1);
 assert.ok(readerStart >= 0 && readerEnd > readerStart, 'Reader route must remain available for theme localization checks.');
 const readerSource = runtime.slice(readerStart, readerEnd);
 assert.ok(readerSource.includes("setINLang(document.documentElement.lang||'en');"), 'Reader theme options must be localized after reader markup is rendered.');
+assert.ok(runtime.includes('document.querySelectorAll("option[data-in-lang]").forEach'), 'Language changes must translate reader theme option labels, not only the global navigation.');
 for (const theme of globalThemes) {
   assert.ok(readerSource.includes('<option value="' + theme + '" data-in-lang='), 'Reader theme selector must expose localized ' + theme + ' option.');
 }
