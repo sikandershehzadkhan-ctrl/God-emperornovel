@@ -36,7 +36,8 @@ for (const token of [
 const novelDetailMobile = css.split('/* Story detail and reading migration 05: metadata hierarchy and calm reading surfaces. */')[1].split('/* Account and personal library migration 06. */')[0];
 assert.match(novelDetailMobile, /@media \(max-width: 760px\)[\s\S]*?\.novelHero \{ grid-template-columns: minmax\(0,1fr\) !important; gap: 18px !important; padding: 16px !important; \}/,
   'The final novel-detail mobile layout must beat earlier legacy !important declarations.');
-assert.match(novelDetailMobile, /@media \(max-width: 360px\)[\s\S]*?\.catalogGrid \{ gap: 8px !important; \}/,
+const catalogResponsive = css.split('/* Discovery migration 03: calmer filters, readable metadata and consistent story cards. */')[1].split('/* Discovery taxonomy and rankings migration 04. */')[0];
+assert.match(catalogResponsive, /@media \(max-width: 360px\)[\s\S]*?\.catalogGrid \{ gap: 8px !important; \}/,
   'The narrow-phone catalog gutter must beat earlier legacy !important declarations.');
 
 assert.ok(css.indexOf('.mobileNav') < css.indexOf('--in-color-bg-canvas:'),
