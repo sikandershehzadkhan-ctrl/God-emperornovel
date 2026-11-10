@@ -5972,3 +5972,31 @@ html[data-theme="cosmic"]{--in-text:#FFFFFF;--in-text-muted:#DCE5FF;--in-line:#8
     min-height: 44px;
   }
 }
+
+
+/* Narrow-device navigation fit and footer clearance.
+   Six equal navigation slots prevent intrinsic label widths from pushing
+   the final Profile action outside 320px screens. */
+@media (max-width: 760px) {
+  html[data-theme] .mobileNav {
+    display: flex;
+    justify-content: stretch;
+    gap: 0;
+    padding-inline: 4px;
+  }
+  html[data-theme] .mobileNav > a {
+    flex: 1 1 0;
+    min-width: 0;
+    max-width: none;
+    padding-inline: 0;
+    font-size: 9px;
+    letter-spacing: -0.02em;
+    white-space: nowrap;
+  }
+  html[data-theme] .mobileNav > a > span {
+    flex: 0 0 auto;
+  }
+  html[data-theme] .footer {
+    padding-bottom: calc(92px + env(safe-area-inset-bottom));
+  }
+}
