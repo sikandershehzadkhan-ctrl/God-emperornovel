@@ -299,3 +299,11 @@ The combined source-content audit now covers 170 assertions across the migrated 
 - Added responsive creator workspace styling for story creation, rights evidence, draft/review status, edit forms, chapter composition and comic page sequencing.
 - Preserved author/admin role gates, private draft behavior, publication review submission, rights-evidence requirements, and the existing author novel/chapter endpoints.
 - Added a page-scope and workflow contract test to the build chain.
+
+### Account, preferences and community design migration
+- Connected Account Center navigation to Preferences & Accessibility and added direct account shortcuts to Crown Vault, Story Requests and rights-gated OmniPortal.
+- Added source-level account/settings contract coverage for profile loading, recommendations, sign-out, six site/reader themes, typography, reading measure, motion, contrast, compact cards, preference export/reset and local-only reading helper clearing.
+- Rebuilt the Community landing as the Imperial Commons: editorial hero, dedicated community destination links, recent discussion stream, trending story shelf, and Made For You entry point.
+- Community data panels now expose loading states, empty states and retry/error feedback while preserving the existing discussion and published-catalog APIs.
+- Replaced the leaderboard author's decimal rating display with the shared whole-number rating formatter.
+- Added and wired account/settings and community contract tests into the build chain.
