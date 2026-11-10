@@ -185,3 +185,19 @@ for (const property of ['inset-inline-start:', 'inset-inline-end:', 'border-inli
   assert.ok(rtlLogicalPass.includes(property), 'RTL logical-direction pass must use ' + property + '.');
 }
 assert.ok(rtlLogicalPass.includes('@media (max-width: 700px)') && rtlLogicalPass.includes('margin-inline-start: 12px;'), 'Community reply indentation must remain compact on RTL phones.');
+
+
+// Runtime markup must use canonical classes for static presentation. The sole
+// allowed inline style is the reader progress width, which is data-driven.
+const runtimeStyleAttributes = [...appJs.matchAll(/\\sstyle="([^"]*)"/g)].map(match => match[1]);
+assert.equal(runtimeStyleAttributes.length, 1, 'Static runtime presentation must be migrated out of inline style attributes.');
+assert.match(runtimeStyleAttributes[0], /^width:\$\\{chapterPct\\|\\|initialNovelProgress\\}%$/,
+  'The only runtime inline style must be the data-driven reader progress width.');
+for (const utility of [
+  'in-grid-span-all','in-language-select','in-mt-12','in-mt-18','in-flex-fill',
+  'in-reaction-row','in-width-full','in-link-accent','in-card-actions-pad',
+  'in-ledger-heading','in-discussion-row','in-comment-copy'
+]) {
+  assert.ok(appJs.includes(utility), 'Real runtime markup must use the ' + utility + ' utility.');
+  assert.ok(css.includes('.' + utility), 'Canonical CSS must define runtime utility ' + utility + '.');
+}
