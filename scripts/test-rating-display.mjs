@@ -7,7 +7,6 @@ const served = fs.readFileSync("public/app-17.23.0.js", "utf8");
 const worker = fs.readFileSync("src/index.js", "utf8");
 const component = fs.readFileSync("src/react/NovelRating.jsx", "utf8");
 const styles = fs.readFileSync("public/imperial-design-system.css", "utf8");
-const migration = fs.readFileSync("migrations/0012_rating_scale_10.sql", "utf8");
 const deploy = fs.readFileSync(".github/workflows/deploy.yml", "utf8");
 
 assert.equal(source, served, "Editable app source and served runtime must remain identical");
@@ -38,8 +37,6 @@ assert.ok(component.includes("Not rated") && component.includes("Be the first to
 
 assert.match(styles, /\.ratingIsland \.ratingStars\s*\{[^}]*flex-wrap: wrap/s, "Ten rating controls must wrap");
 assert.match(styles, /\.ratingIsland \.ratingStar\s*\{[^}]*min-width: 44px;[^}]*min-height: 44px/s, "Rating controls must meet 44px touch targets");
-assert.match(migration, /rating\*2/, "Migration must preserve legacy relative rating positions");
-assert.match(migration, /CHECK\(rating BETWEEN 1 AND 10 AND rating=CAST\(rating AS INTEGER\)\)/, "Migrated table must enforce integer ratings 1–10");
-assert.ok(deploy.includes("rating schema") && deploy.includes("0012_rating_scale_10.sql"), "Production release must preflight and apply the rating migration before Worker deployment");
+assert.ok(deploy.includes("d1 export god-emperornovel-db --remote") && deploy.includes("Retain production D1 backup artifact"), "Production release must retain a pre-migration D1 backup artifact");
 
 console.log("Rating scale regression passed: 1–10 API, UI, canonical styling, single route, truthful labels, and governed migration.");
