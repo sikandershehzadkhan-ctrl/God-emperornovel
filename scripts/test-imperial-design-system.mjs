@@ -284,6 +284,13 @@ assert.ok(rtlLogicalBlock.includes('inset-inline-start') &&
 assert.ok(!/(^|[;{]\s*)(left|right|margin-left|margin-right|padding-left|padding-right|border-left|border-right)\s*:/m.test(rtlLogicalBlock),
   'The canonical RTL override layer must not reintroduce physical left/right declarations.');
 
-assert.match(read('public/imperial-design-system.css'), /.adminWrap .adminForm :where(input,select,textarea,button,a):focus-visible,s*.adminWrap #chapterForm :where(input,textarea,button):focus-visible,s*.adminWrap .adminTable :where(button,a,select):focus-visibles*{s*outline:s*3px solid var(--in-color-focus-ring);s*outline-offset:s*2px;s*}/,
-  'Admin forms, chapter controls and table actions must have visible keyboard focus rings.');
+const adminFocusCss = read('public/imperial-design-system.css');
+assert.ok(
+  adminFocusCss.includes('.adminWrap .adminForm :where(input,select,textarea,button,a):focus-visible') &&
+  adminFocusCss.includes('.adminWrap #chapterForm :where(input,textarea,button):focus-visible') &&
+  adminFocusCss.includes('.adminWrap .adminTable :where(button,a,select):focus-visible') &&
+  adminFocusCss.includes('outline: 3px solid var(--in-color-focus-ring);') &&
+  adminFocusCss.includes('outline-offset: 2px;'),
+  'Admin forms, chapter controls and table actions must have visible keyboard focus rings.'
+);
 
