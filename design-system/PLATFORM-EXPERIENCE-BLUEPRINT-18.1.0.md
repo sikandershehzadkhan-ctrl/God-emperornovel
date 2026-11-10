@@ -355,3 +355,9 @@ The combined source-content audit now covers 170 assertions across the migrated 
 - Updated those entrypoints to reference the current app asset cache key, preventing stale page shells from silently loading the older application bundle.
 - Rebuilt the generic not-found/recovery state using the shared system-state component and accessible recovery links.
 - Added a route-entrypoint contract test to guard against reintroducing the retired stylesheet or stale app asset reference.
+
+
+### Additional creator and taxonomy entrypoints
+- Migrated the standalone AI Author Studio page off its hardcoded inline palette and into the shared semantic token system while preserving AI provider status, project creation/loading, manual novel/chapter workflows, edit forms and the existing author AI endpoints.
+- Migrated Community Taxonomy off its standalone dark palette into the shared theme system, preserving proposal validation, secure API submission, moderation status feedback and its governance principles.
+- Added page-family contract tests for both standalone entrypoints and their preserved workflows.
