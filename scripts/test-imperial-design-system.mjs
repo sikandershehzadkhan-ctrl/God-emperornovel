@@ -5,11 +5,11 @@ const root = process.cwd();
 const read = path => fs.readFileSync(new URL(path, `file://${root}/`), 'utf8');
 const html = read('public/index.html');
 const css = read('public/imperial-design-system.css');
-const imports = [...css.matchAll(/@import\\s+url\\(["']?([^"')]+)["']?\\)\\s*;/g)].map(match => match[1]);
+const imports = [...css.matchAll(/@import\s+url\\(["']?([^"')]+)["']?\\)\s*;/g)].map(match => match[1]);
 
 assert.equal((html.match(/rel="stylesheet"/g) || []).length, 1,
   'The app shell must expose one canonical stylesheet entry point.');
-assert.match(html, /href="\\/imperial-design-system\\.css"/,
+assert.match(html, /href="\/imperial-design-system\.css"/,
   'The app shell must load the unified design system.');
 assert.equal(imports.length, 6, 'All six existing feature stylesheets must remain in the unified cascade.');
 for (const url of imports) {
