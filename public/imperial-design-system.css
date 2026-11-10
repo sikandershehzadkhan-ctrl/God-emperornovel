@@ -4671,3 +4671,26 @@ html[dir="rtl"] .adminWrap .mobileAdmin {
   right: auto;
   left: 10px;
 }
+
+
+/* Touch-target correction: mobile shell controls and admin quick links remain
+   comfortably tappable instead of inheriting the old 36px icon-button sizing. */
+@media (max-width: 760px) {
+  .navright .iconbtn,
+  .navright .themeToggle,
+  .menuToggle {
+    width: 44px;
+    min-width: 44px;
+    height: 44px;
+    min-height: 44px;
+  }
+  .languageControl select {
+    min-height: 44px !important;
+  }
+  .mobileAdmin a {
+    min-height: 44px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+  }
+}
