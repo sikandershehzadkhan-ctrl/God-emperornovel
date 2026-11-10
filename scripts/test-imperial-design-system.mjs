@@ -107,3 +107,7 @@ assert.ok(css.includes('scrollbar-width') || css.includes('overflow-x: auto'), '
 assert.ok(css.includes('min-width:0'), 'Grid and flex content must be allowed to shrink without forcing page-wide overflow.');
 assert.ok(css.includes('min-height: 44px;'), 'Interactive targets must retain the shared touch-size baseline.');
 console.log('Imperial route-family and responsive design contracts passed.');
+
+const mobileTouchFix = css.slice(css.lastIndexOf('/* Touch-target correction:'));
+assert.ok(mobileTouchFix.includes('width: 44px;') && mobileTouchFix.includes('min-width: 44px;') && mobileTouchFix.includes('min-height: 44px;'), 'Mobile navigation controls must override legacy 36px sizing with 44px touch targets.');
+assert.ok(mobileTouchFix.includes('.mobileAdmin a') && mobileTouchFix.includes('min-height: 44px;'), 'Administrator mobile quick links must meet the 44px touch-target baseline.');
