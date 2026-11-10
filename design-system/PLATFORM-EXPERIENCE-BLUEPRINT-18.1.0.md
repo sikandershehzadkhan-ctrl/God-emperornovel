@@ -348,3 +348,10 @@ The combined source-content audit now covers 170 assertions across the migrated 
 - Migrated Terms of Service, Privacy and Rights & Copyright pages off the legacy stylesheet and onto the shared semantic design tokens and component primitives.
 - Preserved the existing policy copy while creating a consistent editorial hero, readable content sections, notice treatment, responsive typography and reduced-motion support.
 - Added a contract test covering all three legal pages and wired it into the package build.
+
+
+### Shared route-entrypoint and system-state consistency
+- Aligned 18 static route entrypoints (including account, catalog, reader, novel, library, history, requests, tickets, search and 404) to the same versioned base stylesheet stack, semantic design tokens and canonical component primitives.
+- Updated those entrypoints to reference the current app asset cache key, preventing stale page shells from silently loading the older application bundle.
+- Rebuilt the generic not-found/recovery state using the shared system-state component and accessible recovery links.
+- Added a route-entrypoint contract test to guard against reintroducing the retired stylesheet or stale app asset reference.
