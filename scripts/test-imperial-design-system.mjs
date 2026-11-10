@@ -153,7 +153,7 @@ const languageDictionaryStart = runtime.indexOf('const IN_LANG=');
 const languageDictionaryEnd = runtime.indexOf(';function setINLang', languageDictionaryStart);
 assert.ok(languageDictionaryStart >= 0 && languageDictionaryEnd > languageDictionaryStart, 'The 14-language interface dictionary must remain available.');
 const languageDictionary = runtime.slice(languageDictionaryStart, languageDictionaryEnd);
-const languageKeys = [...languageDictionary.matchAll(/"([a-z]{2}(?:-[A-Z]{2})?)":\\{/g)];
+const languageKeys = [...languageDictionary.matchAll(/"([a-z]{2}(?:-[A-Z]{2})?)":/g)];
 assert.equal(languageKeys.length, 14, 'All 14 supported interface languages must remain registered.');
 for (let index = 0; index < languageKeys.length; index++) {
   const languageCode = languageKeys[index][1];
