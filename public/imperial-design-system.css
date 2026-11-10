@@ -5008,3 +5008,26 @@ html[dir="rtl"] .commentReply { margin-inline-start: 28px; margin-inline-end: 0;
 @media (max-width: 700px) {
   html[dir="rtl"] .commentReply { margin-inline-start: 12px; }
 }
+
+/* Runtime layout utilities: generated application markup has no static inline styles. */
+.in-grid-span-all { grid-column: 1 / -1; }
+.in-language-select { max-width: 86px; min-height: 36px; padding: 0 5px; border: 1px solid var(--line); border-radius: 10px; background: var(--panel); color: var(--text); font-size: 12px; }
+.in-mt-8 { margin-top: 8px; }
+.in-mt-10 { margin-top: 10px; }
+.in-mt-12 { margin-top: 12px; }
+.in-mt-15 { margin-top: 15px; }
+.in-mt-18 { margin-top: 18px; }
+.in-mt-22 { margin-top: 22px; }
+.in-flex { display: flex; }
+.in-flex-fill { display: flex; flex: 1; min-width: 0; }
+.in-width-full { width: 100%; }
+.in-link-accent { color: var(--in-color-text-link, var(--in-purple-strong)); }
+.in-margin-0 { margin: 0; }
+.in-my-5 { margin-block: 5px; }
+.in-weight-700 { font-weight: 700; }
+.in-max-width-720 { max-width: 720px; }
+.in-card-actions-pad { padding: 0 13px 13px; }
+.in-ledger-heading { font: 600 25px Georgia, serif; }
+.in-reaction-row { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 14px; }
+.in-discussion-row { display: block; padding: 14px 0; }
+.in-comment-copy { margin: 0; overflow-wrap: anywhere; }
