@@ -361,3 +361,7 @@ The combined source-content audit now covers 170 assertions across the migrated 
 - Migrated the standalone AI Author Studio page off its hardcoded inline palette and into the shared semantic token system while preserving AI provider status, project creation/loading, manual novel/chapter workflows, edit forms and the existing author AI endpoints.
 - Migrated Community Taxonomy off its standalone dark palette into the shared theme system, preserving proposal validation, secure API submission, moderation status feedback and its governance principles.
 - Added page-family contract tests for both standalone entrypoints and their preserved workflows.
+
+
+### Standalone page normalization
+- Added shared document-level canvas, typography and box-sizing behavior for standalone Admin, AI Author Studio, Community Taxonomy and legal pages, removing browser-default body margins and mismatched backgrounds.
