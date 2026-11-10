@@ -2183,7 +2183,7 @@ html[data-theme="dark"] #omniRes .card { background: var(--panel); border-color:
   --in-color-text-muted: var(--muted);
   --in-color-border-subtle: var(--line);
   --in-color-action-primary: var(--in-purple);
-  --in-action-on-primary: #FFFFFF;
+
   --in-color-action-secondary: var(--in-sapphire);
   --in-color-focus-ring: var(--in-focus);
   --in-color-success: var(--in-success);
