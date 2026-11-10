@@ -173,3 +173,15 @@ assert.ok(readerTouchFix.includes('flex-wrap: wrap;') && readerTouchFix.includes
 assert.ok(readerTouchFix.includes('@media (max-width: 390px)'), 'Compact-phone reader layout must receive a dedicated toolbar pass.');
 
 assert.ok(readerTouchFix.includes('min-width: 44px !important;'), 'Reader controls must override earlier legacy min-width !important declarations.');
+
+
+// RTL logical-property contract for persistent drawers, badges, navigation,
+// community replies and directional callouts.
+const rtlLogicalPass = read('public/imperial-design-system.css').slice(read('public/imperial-design-system.css').lastIndexOf('/* Logical-direction cleanup:'));
+for (const selector of ['html[dir="rtl"] .menuDrawer','html[dir="rtl"] .chapterDrawer','html[dir="rtl"] .statusBadge','html[dir="rtl"] .catalogMeta b','html[dir="rtl"] .menuDrawer .imperialIcon','html[dir="rtl"] .trendFactoryNote','html[dir="rtl"] .legalNotice','html[dir="rtl"] .commentReply']) {
+  assert.ok(rtlLogicalPass.includes(selector), 'RTL logical edge mapping must cover ' + selector + '.');
+}
+for (const property of ['inset-inline-start:', 'inset-inline-end:', 'border-inline-start:', 'border-inline-end:', 'margin-inline-start:', 'margin-inline-end:']) {
+  assert.ok(rtlLogicalPass.includes(property), 'RTL logical-direction pass must use ' + property + '.');
+}
+assert.ok(rtlLogicalPass.includes('@media (max-width: 700px)') && rtlLogicalPass.includes('margin-inline-start: 12px;'), 'Community reply indentation must remain compact on RTL phones.');
