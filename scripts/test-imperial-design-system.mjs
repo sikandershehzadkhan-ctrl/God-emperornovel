@@ -329,6 +329,10 @@ for (const token of ['admin-notice-danger','admin-prewrap','admin-bio-preview','
   assert.ok(adminMarkup.includes(token), 'Administrator runtime markup must use canonical class ' + token + '.');
 }
 
+assert.ok(appJs.includes('role="progressbar"') &&
+  appJs.includes('aria-label="Chapter reading progress"') &&
+  appJs.includes("$('.readerProgress').setAttribute('aria-valuenow',String(pct))"),
+  'Reader progress must expose and update accessible progressbar semantics. ');
 assert.ok(appJs.includes('aria-label="Decrease text size"') &&
   appJs.includes('aria-label="Increase text size"') &&
   appJs.includes('aria-label="Open chapter list"'),
