@@ -2748,7 +2748,7 @@ html[data-theme="dark"] .catalogTags .pill { background: var(--bg2); color: var(
 }
 @media (max-width: 360px) {
   .filterRow { grid-template-columns: minmax(0,1fr); }
-  .catalogGrid { gap: 8px; }
+  .catalogGrid { gap: 8px !important; }
   .catalogBody { padding: 8px; }
 }
 
@@ -3239,7 +3239,7 @@ html[data-theme="dark"] .novelInfo h1,
 html[data-theme="dark"] .stat b { color: var(--text); }
 html[data-theme="dark"] .stat { background: var(--bg2); border-color: var(--line); }
 @media (max-width: 760px) {
-  .novelHero { grid-template-columns: minmax(0,1fr); gap: 18px; padding: 16px; }
+  .novelHero { grid-template-columns: minmax(0,1fr) !important; gap: 18px !important; padding: 16px !important; }
   .novelCover { width: min(190px, 52vw); margin-inline: auto; }
   .novelInfo h1 { font-size: clamp(28px, 8vw, 38px); }
   .stats { grid-template-columns: repeat(2,minmax(0,1fr)); gap: 8px; }
