@@ -33,6 +33,12 @@ for (const token of [
   'html[data-theme="dark"]', 'prefers-reduced-motion: reduce',
   'pointer: coarse', ':focus-visible', '.homePage .hero.imperialArchiveHero', 'grid-template-columns: minmax(0, 1fr)', 'html[data-theme="dark"] .homePage .hero.imperialArchiveHero', '.homePage .nextFeatureTile', '.brandText b', '.mobileNav', '.menuDrawer', '.footerLinks a', 'env(safe-area-inset-bottom)', '@media (max-width: 1080px)', '.adminHero', '.adminNav', '.adminCard', '.adminTable', '.adminForm', '.chapterTools', '#omniRes', '#omni .notice', '.omniImport', '.catalogTop.panel', '.catalogSearch', '.catalogGrid', '.catalogCard:hover', '@media (max-width: 900px)', '@media (max-width: 640px)', '.genreGrid', '.tagGrid', '.tagTile', '#lbNovels', '.rankBadge', '.tierPanel', '.miniGrid', '.novelHero', '.novelCover', '.chapterList', '.readerBar', '.readerArticle', '.readerContent', '.chapterDrawer', '.readerFooterCard', '.accountGrid', '.accountMenu', '.metricGrid', '.settingsGridPro', '.settingsPanel', '.settingRow', '.checkRow', '.authorStudioLayout', '.authorCreateForm', '.authorWorksPanel', '.authorWorkActions', '.authorApplicationPanel', '.comicAuthorBuilder', '.communityGrid', '.commentItem', '.commentReply', '.ratingStars', '.reactReactionList', '#communityDiscussions'
 ]) assert.ok(css.includes(token), 'Missing required design-system contract: ' + token);
+const novelDetailMobile = css.split('/* Story detail and reading migration 05: metadata hierarchy and calm reading surfaces. */')[1].split('/* Account and personal library migration 06. */')[0];
+assert.match(novelDetailMobile, /@media \\(max-width: 760px\\)[\\s\\S]*?\\.novelHero \\{ grid-template-columns: minmax\\(0,1fr\\) !important; gap: 18px !important; padding: 16px !important; \\}/,
+  'The final novel-detail mobile layout must beat earlier legacy !important declarations.');
+assert.match(novelDetailMobile, /@media \\(max-width: 360px\\)[\\s\\S]*?\\.catalogGrid \\{ gap: 8px !important; \\}/,
+  'The narrow-phone catalog gutter must beat earlier legacy !important declarations.');
+
 assert.ok(css.indexOf('.mobileNav') < css.indexOf('--in-color-bg-canvas:'),
   'Consolidated feature rules must precede the semantic design-system layer.');
 const appRuntime = read('public/app-17.23.0.js');
