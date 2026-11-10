@@ -149,6 +149,19 @@ assert.ok(readerStart >= 0 && readerEnd > readerStart, 'Reader route must remain
 const readerSource = runtime.slice(readerStart, readerEnd);
 assert.ok(readerSource.includes("setINLang(document.documentElement.lang||'en');"), 'Reader theme options must be localized after reader markup is rendered.');
 assert.ok(runtime.includes('document.querySelectorAll("option[data-in-lang]").forEach'), 'Language changes must translate reader theme option labels, not only the global navigation.');
+assert.ok(runtime.includes('document.querySelectorAll("[data-in-lang]:not(option)").forEach'), 'Language changes must translate reader labels and navigation text nodes.');
+const readerLabels = ["Theme","Line spacing","Text width","Chapter List","Close","Back to chapters","Bookmark chapter","Cycle reader theme","Compact","Comfort","Relaxed","Focused","Standard","Wide","Previous","Next"];
+const localeDictionary = runtime.slice(runtime.indexOf('const IN_LANG='), runtime.indexOf(';function setINLang'));
+for (const code of ['en','ur','hi','zh-CN','zh-TW','es','fr','id','ja','ko','pt-BR','ar','vi','fa']) {
+  const localeStart = localeDictionary.indexOf('"' + code + '":{');
+  const localeNext = localeDictionary.indexOf(',"', localeStart + code.length + 4);
+  const localeSource = localeDictionary.slice(localeStart, localeNext < 0 ? localeDictionary.length : localeNext);
+  for (const label of readerLabels) assert.ok(localeSource.includes(JSON.stringify(label) + ':'), 'Reader control label ' + label + ' must exist in ' + code + '.');
+}
+for (const label of ['Theme','Line spacing','Text width','Chapter List','Close','Back to chapters','Compact','Comfort','Relaxed','Focused','Standard','Wide']) {
+  assert.ok(readerSource.includes('data-in-lang="' + label + '"'), 'Reader markup must expose translatable ' + label + ' text.');
+}
+
 const languageDictionaryStart = runtime.indexOf('const IN_LANG=');
 const languageDictionaryEnd = runtime.indexOf(';function setINLang', languageDictionaryStart);
 assert.ok(languageDictionaryStart >= 0 && languageDictionaryEnd > languageDictionaryStart, 'The 14-language interface dictionary must remain available.');
