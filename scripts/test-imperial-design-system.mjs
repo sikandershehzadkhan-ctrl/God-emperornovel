@@ -21,7 +21,7 @@ for (const token of [
   '--in-paper:', '--in-obsidian:', '--in-purple:', '--in-sapphire:',
   '--in-purple-soft:', '--in-sapphire-soft:', '--in-focus:',
   'html[data-theme="dark"]', 'prefers-reduced-motion: reduce',
-  'pointer: coarse', ':focus-visible', '.homePage .hero.imperialArchiveHero', 'grid-template-columns: minmax(0, 1fr)', 'html[data-theme="dark"] .homePage .hero.imperialArchiveHero', '.homePage .nextFeatureTile'
+  'pointer: coarse', ':focus-visible', '.homePage .hero.imperialArchiveHero', 'grid-template-columns: minmax(0, 1fr)', 'html[data-theme="dark"] .homePage .hero.imperialArchiveHero', '.homePage .nextFeatureTile', '.brandText b', '.mobileNav', '.menuDrawer', '.footerLinks a', 'env(safe-area-inset-bottom)', '@media (max-width: 1080px)'
 ]) assert.ok(css.includes(token), 'Missing required design-system contract: ' + token);
 assert.ok(css.indexOf('@import') < css.indexOf(':root'),
   'Feature styles must load before the canonical token overrides.');
