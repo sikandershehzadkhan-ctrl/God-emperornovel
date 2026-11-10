@@ -111,3 +111,10 @@ console.log('Imperial route-family and responsive design contracts passed.');
 const mobileTouchFix = css.slice(css.lastIndexOf('/* Touch-target correction:'));
 assert.ok(mobileTouchFix.includes('width: 44px;') && mobileTouchFix.includes('min-width: 44px;') && mobileTouchFix.includes('min-height: 44px;'), 'Mobile navigation controls must override legacy 36px sizing with 44px touch targets.');
 assert.ok(mobileTouchFix.includes('.mobileAdmin a') && mobileTouchFix.includes('min-height: 44px;'), 'Administrator mobile quick links must meet the 44px touch-target baseline.');
+
+const readerTouchFix = css.slice(css.lastIndexOf('/* Reader accessibility pass:'));
+for (const selector of ['.readerTools .readerTool', '.readerActions > button', '.readerPrefs select', '.comicReaderControls button', '.comicPageNav .readerTool']) {
+  assert.ok(readerTouchFix.includes(selector), 'Mobile reader accessibility must cover ' + selector + '.');
+}
+assert.ok(readerTouchFix.includes('flex-wrap: wrap;') && readerTouchFix.includes('.readerBarInner'), 'Reader toolbar must wrap instead of overflowing when its controls reach 44px.');
+assert.ok(readerTouchFix.includes('@media (max-width: 390px)'), 'Compact-phone reader layout must receive a dedicated toolbar pass.');
