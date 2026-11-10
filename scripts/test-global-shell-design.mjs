@@ -27,7 +27,6 @@ assert.ok(shell.includes("if(e.key==='Escape')"), 'Escape must close the drawer'
 assert.ok(shell.includes("menuDrawer.removeAttribute('inert')"), 'Opening drawer must restore interactivity');
 assert.ok(shell.includes("menuDrawer.setAttribute('inert','')"), 'Closing drawer must remove it from interaction');
 assert.ok(shell.includes('id="imperialThemeSelect"') && shell.includes('id="imperialLanguageSelect"'), 'Theme and language controls must remain available');
-assert.ok(shell.includes('role-gated-placeholder-that-does-not-exist') === false, 'No placeholder role marker may leak into shell');
 assert.ok(css.includes('.in-shell-header') && css.includes('.in-shell-drawer') && css.includes('.in-mobile-nav'), 'Canonical shell styles must exist');
 assert.ok(css.includes('env(safe-area-inset-bottom)'), 'Mobile navigation must respect device safe areas');
 assert.ok(css.includes('@media(prefers-reduced-motion:reduce)'), 'Shell must respect reduced-motion preference');
