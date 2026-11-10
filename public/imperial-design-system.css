@@ -4952,3 +4952,30 @@ html[data-theme="dark"] .chapterList > .chapter {
 @media (max-width: 360px) {
   .authorChapterForm .authorFormGrid { grid-template-columns: minmax(0,1fr); }
 }
+
+
+/* Dense admin datasets remain readable on touch screens without page overflow. */
+.adminWrap .scroll {
+  max-width: 100%;
+  overflow-x: auto;
+  overflow-y: hidden;
+  overscroll-behavior-inline: contain;
+  -webkit-overflow-scrolling: touch;
+}
+.adminWrap .scroll:focus-visible {
+  outline: 3px solid var(--in-color-focus-ring);
+  outline-offset: 2px;
+}
+.adminWrap .adminTable {
+  width: 100%;
+  min-width: 620px;
+  border-collapse: collapse;
+}
+.adminWrap .adminTable :where(th,td) {
+  overflow-wrap: anywhere;
+}
+.adminWrap .adminTable :where(button,select,a) { min-height: 40px; }
+@media (max-width: 760px) {
+  .adminWrap .scroll { margin-inline: -2px; }
+  .adminWrap .adminTable :where(th,td) { padding: 9px 8px; }
+}
