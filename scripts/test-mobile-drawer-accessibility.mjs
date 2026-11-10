@@ -36,6 +36,6 @@ assert.match(app, /menuScrim\?\.addEventListener\('click',closeMenu\)/,
   'The visible scrim must continue to close the drawer.');
 assert.match(css, /@media \(max-width: 760px\)[\s\S]*?html\[data-theme\] \.menuDrawer \.menuClose \{\s*width: 44px;\s*min-width: 44px;\s*height: 44px;\s*min-height: 44px;/,
   'The mobile drawer close control must retain a 44px square touch target.');
-assert.match(css, /:focus-visible,a:focus-visible,input:focus-visible,select:focus-visible,textarea:focus-visible\s*\{\s*outline: 2px solid var\(--gold2\);/,
+assert.match(css, /:focus-visible,a:focus-visible,input:focus-visible,select:focus-visible,textarea:focus-visible\s*\{\s*outline:\s*2px solid var\(--gold2\);/,
   'Drawer keyboard controls must inherit the shared visible focus indicator.');
 console.log('Mobile navigation keyboard accessibility contracts passed.');
