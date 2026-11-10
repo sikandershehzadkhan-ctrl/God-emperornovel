@@ -2406,3 +2406,82 @@ body { font-synthesis: none; }
   .in-button { transition: none; }
   .in-button:active { transform: none; }
 }
+
+
+/* RTL parity pass 12: mirror directional chrome and editorial artwork.
+   These overrides apply only when the document root is explicitly RTL. */
+html[dir="rtl"] { direction: rtl; }
+html[dir="rtl"] body { direction: rtl; }
+html[dir="rtl"] .menuDrawer {
+  inset-inline-start: 0;
+  inset-inline-end: auto;
+  left: auto;
+  right: 0;
+  border-inline-start: 1px solid rgba(168,85,247,.65);
+  border-inline-end: 0;
+  border-left: 0;
+  border-right: 1px solid rgba(168,85,247,.65);
+  box-shadow: -18px 0 60px rgba(0,0,0,.55);
+  transform: translateX(105%);
+}
+html[dir="rtl"] .menuDrawer.is-open { transform: translateX(0); }
+html[dir="rtl"] .chapterDrawer {
+  left: 0;
+  right: auto;
+  border-left: 0;
+  border-right: 1px solid var(--line);
+  box-shadow: 12px 0 40px rgba(0,0,0,.18);
+}
+html[dir="rtl"] .statusBadge {
+  left: auto;
+  right: 9px;
+}
+html[dir="rtl"] .catalogMeta b,
+html[dir="rtl"] .navright,
+html[dir="rtl"] .homePage .consoleStatus,
+html[dir="rtl"] .liveBadge {
+  margin-left: 0;
+  margin-right: auto;
+}
+html[dir="rtl"] .menuDrawer .imperialIcon {
+  margin-right: 0;
+  margin-left: 10px;
+}
+html[dir="rtl"] .heroSigil,
+html[dir="rtl"] .heroOrbit,
+html[dir="rtl"] .orbitTwo,
+html[dir="rtl"] .heroCornerMark,
+html[dir="rtl"] .homePage .heroCornerMark,
+html[dir="rtl"] .homePage .featureIcon,
+html[dir="rtl"] .heroOrbitLabel {
+  right: auto;
+  left: 6%;
+}
+html[dir="rtl"] .heroSigil { left: 10%; }
+html[dir="rtl"] .orbitTwo { left: 9%; }
+html[dir="rtl"] .heroCornerMark,
+html[dir="rtl"] .homePage .heroCornerMark { left: 24px; }
+html[dir="rtl"] .homePage .featureIcon { left: 20px; }
+html[dir="rtl"] .heroOrbitLabel { left: 24px; }
+html[dir="rtl"] .unlockBanner:after,
+html[dir="rtl"] .ecosystemCard:before,
+html[dir="rtl"] .homePage .featureTile:after {
+  right: auto;
+  left: -64px;
+}
+html[dir="rtl"] .trendFactoryNote {
+  border-left: 0;
+  border-right: 2px solid var(--violet);
+}
+html[dir="rtl"] .legalNotice {
+  border-left: 0;
+  border-right: 3px solid var(--violet);
+  border-radius: 10px 0 0 10px;
+}
+html[dir="rtl"] .in-reader-prose,
+html[dir="rtl"] .in-table,
+html[dir="rtl"] .in-field,
+html[dir="rtl"] .in-button { direction: rtl; }
+@media (max-width: 760px) {
+  html[dir="rtl"] .menuDrawer { inset-inline-start: 0; inset-inline-end: auto; }
+}
