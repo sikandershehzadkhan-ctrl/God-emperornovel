@@ -351,7 +351,7 @@ The combined source-content audit now covers 170 assertions across the migrated 
 
 
 ### Shared route-entrypoint and system-state consistency
-- Aligned 18 static route entrypoints (including account, catalog, reader, novel, library, history, requests, tickets, search and 404) to the same versioned base stylesheet stack, semantic design tokens and canonical component primitives.
+- Aligned 19 static route entrypoints, including the homepage (including account, catalog, reader, novel, library, history, requests, tickets, search and 404) to the same versioned base stylesheet stack, semantic design tokens and canonical component primitives.
 - Updated those entrypoints to reference the current app asset cache key, preventing stale page shells from silently loading the older application bundle.
 - Rebuilt the generic not-found/recovery state using the shared system-state component and accessible recovery links.
 - Added a route-entrypoint contract test to guard against reintroducing the retired stylesheet or stale app asset reference.
