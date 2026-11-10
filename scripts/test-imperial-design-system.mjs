@@ -54,6 +54,7 @@ const actionForeground = hexTokens('--in-action-on-primary');
 assert.equal(purple.length, 2, 'Light and dark primary action colors must both be defined.');
 assert.equal(purpleStrong.length, 2, 'Light and dark hover colors must both be defined.');
 assert.equal(actionForeground.length, 2, 'Light and dark action foreground colors must both be defined.');
+assert.ok(css.includes('.primary, .heroSearch button {\\n  background: var(--in-purple);\\n  border-color: var(--in-purple);\\n  color: var(--in-action-on-primary);'), 'Real application primary actions must use the theme-aware accessible foreground token.');
 for (let theme = 0; theme < 2; theme++) {
   assert.ok(contrast(purple[theme], actionForeground[theme]) >= 4.5,
     'Primary action text must meet WCAG AA contrast in theme index ' + theme + '.');
