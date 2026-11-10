@@ -71,6 +71,15 @@ assert.ok(css.includes('@media (prefers-contrast: more)') && css.includes('@medi
 assert.ok(css.includes('@media (prefers-reduced-transparency: reduce)'), 'Reduced-transparency mode must provide calmer reading surfaces.');
 
 const adminMarkup = adminHtml;
+const adminStaticMarkup = adminMarkup.split('<script>')[0];
+for (const tag of adminStaticMarkup.match(/<[^>]+>/g) || []) {
+  const classAttributes = [...tag.matchAll(/\bclass="/g)];
+  assert.ok(classAttributes.length <= 1, 'Administrator HTML elements must not contain duplicate class attributes: ' + tag.slice(0, 180));
+}
+for (const utility of ['admin-mt-10','admin-mt-14','admin-mt-18','admin-chapter-preview','admin-chapter-edit']) {
+  assert.match(adminStaticMarkup, new RegExp('class="[^"]*(?:^|\\\\s)' + utility + '(?:\\\\s|$)[^"]*"'),
+    'Administrator markup must actually apply the canonical ' + utility + ' class.');
+}
 for (const utility of ['admin-mt-10','admin-mt-14','admin-mt-18','admin-chapter-preview','admin-chapter-preview-content','admin-chapter-edit','admin-section-divider']) {
   assert.ok(adminMarkup.includes(utility), 'Administrator markup must use the canonical ' + utility + ' utility.');
   assert.ok(css.includes('.' + utility), 'Canonical CSS must define the ' + utility + ' utility.');
