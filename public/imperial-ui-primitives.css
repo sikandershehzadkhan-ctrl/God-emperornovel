@@ -1934,3 +1934,6 @@ body.menu-open{overflow:hidden}
 .in-legal-section :focus-visible{outline:3px solid var(--in-focus-ring);outline-offset:3px}
 @media(max-width:42rem){.in-legal-wrap{width:min(100% - 1.5rem,68rem)}.in-legal-main{padding-top:.8rem}.in-legal-hero{padding:1.25rem}.in-legal-section{padding:1rem}}
 @media(prefers-reduced-motion:reduce){.in-legal-page *{scroll-behavior:auto!important;transition:none!important}}
+
+.in-system-actions{display:flex;flex-wrap:wrap;justify-content:center;gap:.6rem;margin-top:.8rem}
+.in-system-actions .in-button{min-width:9rem;min-height:44px}
