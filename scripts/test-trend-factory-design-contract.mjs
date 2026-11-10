@@ -4,7 +4,7 @@ const app=fs.readFileSync('public/app.js','utf8');
 const css=fs.readFileSync('public/imperial-ui-primitives.css','utf8');
 const start=app.indexOf('async function trendFactory()'),end=app.indexOf('\nasync function catalog()',start);
 const trend=app.slice(start,end);
-for(const token of ["'in-trend-factory'",'in-trend-hero','in-trend-pipeline','in-trend-controls','in-trend-control-row','in-trend-results','in-trend-safety-grid','in-trend-factory-note','/api/novels?sort=trending&limit=50','publication_status','chapter text ingestion','tfSearch','tfSort','tfType','tfReset']) assert.ok(trend.includes(token),`Trend Factory behavior missing ${token}`);
+for(const token of ["'in-trend-factory'",'in-trend-hero','in-trend-pipeline','in-trend-controls','in-trend-control-row','in-trend-results','in-trend-safety-grid','in-trend-factory-note','/api/novels?sort=trending&limit=50','publication_status','does not ingest chapter text','tfSearch','tfSort','tfType','tfReset']) assert.ok(trend.includes(token),`Trend Factory behavior missing ${token}`);
 for(const token of ['.page.in-trend-factory','.page.in-trend-hero','.page.in-trend-pipeline','.page.in-trend-controls','.page.in-trend-safety-grid','@media(max-width:40rem)','prefers-reduced-motion']) assert.ok(css.includes(token),`Trend Factory design missing ${token}`);
 assert.ok(!trend.includes('pageStart(\'Trend Factory\',\'A rights-first intelligence desk for spotting momentum in the live Imperial catalog.\')'),'Trend Factory must use its isolated page scope');
 assert.ok(!trend.includes('chapter_body')&&!trend.includes('chapter_text'),'Trend Factory must not ingest chapter bodies');
