@@ -29,6 +29,7 @@ for (const token of [
 assert.ok(css.indexOf('@import') < css.indexOf(':root'),
   'Feature styles must load before the canonical token overrides.');
 const appRuntime = read('public/app-17.23.0.js');
+assert.equal(appRuntime, read('public/app.js'), 'The served runtime and canonical runtime source must remain synchronized.');
 assert.ok(appRuntime.includes('document.documentElement.dir=(c==="ur"||c==="ar"||c==="fa")?"rtl":"ltr";'), 'Urdu, Arabic and Persian must set RTL document direction.');
 for (const theme of ['light','dark','midnight','sepia','imperial','cosmic']) {
   assert.ok(appRuntime.includes("'" + theme + "'"), 'Reader theme remains available: ' + theme);
