@@ -69,3 +69,41 @@ assert.ok(css.includes('outline: 3px solid var(--in-color-focus-ring);'), 'Share
 assert.ok(css.includes('@media (prefers-contrast: more)') && css.includes('@media (forced-colors: active)'), 'High-contrast and forced-color modes must be supported.');
 assert.ok(css.includes('@media (prefers-reduced-transparency: reduce)'), 'Reduced-transparency mode must provide calmer reading surfaces.');
 console.log('Imperial unified design-system checks passed.');
+
+
+// Route-to-design-system regression contract. These checks tie real boot routes and
+// rendered page-family components to the canonical stylesheet, rather than merely
+// checking that a selector happens to exist.
+const routeRuntime = read('public/app.js');
+const routePairs = [
+  ["home", "if(p==='/')await home()", ".homePage .hero.imperialArchiveHero"],
+  ["catalog and discovery", "else if(p==='/discover'||p==='/catalog')await catalog()", ".catalogTop.panel"],
+  ["format directory", "else if(p==='/formats')await formatDirectory()", ".formatDirectoryGrid"],
+  ["format landing", "else if(/^\\/format\\/[^/]+\\/?$/.test(p))await formatLanding", ".formatProfile"],
+  ["genres", "else if(p==='/genres')await genres()", ".genreGrid"],
+  ["tags", "else if(p==='/tags')await tags()", ".tagGrid"],
+  ["search", "else if(p==='/search')await search()", ".catalogSearch"],
+  ["novel detail", "else if(/^\\/novel\\/\\d+\\/?$/.test(p))await novel()", ".novelHero"],
+  ["chapter list", "else if(/^\\/novel\\/\\d+\\/chapters\\/?$/.test(p))await chapters()", ".chapterList"],
+  ["reader", "else if(/^\\/read\\/\\d+\\/\\d+\\/?$/.test(p))await reader()", ".readerPage"],
+  ["author studio", "else if(p==='/author')await authorStudio()", ".authorStudioLayout"],
+  ["community", "else if(p==='/community')await discoveryPage('community')", ".communityGrid"],
+  ["account", "else if(p==='/account')await account()", ".accountGrid"],
+  ["settings", "else if(p==='/settings')settings()", ".settingsGridPro"],
+  ["trend factory", "else if(p==='/trend-factory')await trendFactory()", ".trendFactoryNote"],
+  ["omniportal", "else if(p==='/omniportal')await omni()", ".omniImport"]
+];
+for (const [name, dispatch, selector] of routePairs) {
+  assert.ok(routeRuntime.includes(dispatch), 'Boot router must dispatch the ' + name + ' route.');
+  assert.ok(css.includes(selector), 'Canonical design system must style the real ' + name + ' page family (' + selector + ').');
+}
+assert.ok(routeRuntime.includes("else if(p==='/community')await discoveryPage('community')"), 'Community is an explicit routed destination.');
+assert.ok(routeRuntime.includes("else if(/^\\/author\\/[^/]+$/.test(p))await authorPublic()"), 'Public creator profiles have a distinct route from the private Author Studio.');
+assert.ok(css.includes('@media (max-width: 1080px)') && css.includes('@media (max-width: 900px)') && css.includes('@media (max-width: 640px)'), 'The unified stylesheet must retain desktop, tablet and narrow-mobile responsive breakpoints.');
+assert.ok(css.includes('@media (max-width: 420px)') || css.includes('@media (max-width: 430px)') || css.includes('@media (max-width: 480px)'), 'The unified stylesheet must include a compact-phone layout pass.');
+assert.ok(css.includes('html[dir="rtl"]') && css.includes('[dir="rtl"]'), 'Route families must inherit direction-aware layout rules.');
+assert.ok(routeRuntime.includes('document.documentElement.dir=(c==="ur"||c==="ar"||c==="fa")?"rtl":"ltr";'), 'Language selection must update document direction before route rendering.');
+assert.ok(css.includes('scrollbar-width') || css.includes('overflow-x: auto'), 'Narrow screens must retain a usable horizontal-overflow strategy for dense controls.');
+assert.ok(css.includes('min-width:0'), 'Grid and flex content must be allowed to shrink without forcing page-wide overflow.');
+assert.ok(css.includes('min-height: 44px;'), 'Interactive targets must retain the shared touch-size baseline.');
+console.log('Imperial route-family and responsive design contracts passed.');
