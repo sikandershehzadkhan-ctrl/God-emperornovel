@@ -59,4 +59,5 @@ for (let theme = 0; theme < 2; theme++) {
 }
 assert.ok(css.includes('min-height: 44px;'), 'Shared interactive targets must meet the 44px touch target baseline.');
 assert.ok(css.includes('outline: 3px solid var(--in-color-focus-ring);'), 'Shared components must expose a visible keyboard focus ring.');
+assert.ok(css.includes('@media (prefers-contrast: more)') && css.includes('@media (forced-colors: active)'), 'High-contrast and forced-color modes must be supported.');
 console.log('Imperial unified design-system checks passed.');
