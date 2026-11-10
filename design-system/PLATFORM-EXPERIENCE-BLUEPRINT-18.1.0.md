@@ -342,3 +342,9 @@ The combined source-content audit now covers 170 assertions across the migrated 
 - Rebuilt Made For You with clear personalized-versus-popular fallback messaging and resilient recommendation loading.
 - Rebuilt Vote Novels with a clear explanation that votes prioritize review but do not guarantee acquisition or rights, plus accessible voting rows and preserved vote endpoint behavior.
 - Added responsive design contracts for all four routes and included them in the package build chain.
+
+
+### Legal and trust-document pages
+- Migrated Terms of Service, Privacy and Rights & Copyright pages off the legacy stylesheet and onto the shared semantic design tokens and component primitives.
+- Preserved the existing policy copy while creating a consistent editorial hero, readable content sections, notice treatment, responsive typography and reduced-motion support.
+- Added a contract test covering all three legal pages and wired it into the package build.
