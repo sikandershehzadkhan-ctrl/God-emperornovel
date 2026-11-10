@@ -74,14 +74,14 @@ function shell(){
   <div class="in-shell-nav">
    <a class="in-shell-brand" href="/" aria-label="Imperial Novel home"><img src="/imperial-novel-app-icon.svg" alt="" width="40" height="40"><span><b>IMPERIAL NOVEL</b><small>READ · CREATE · CONQUER</small></span></a>
    <nav class="in-shell-links" aria-label="Primary navigation">
-    <a class="\${active('/')}" href="/">Home</a><a class="\${active('/catalog')}" href="/catalog">Discover</a><a class="\${active('/library')}" href="/library">Library</a><a class="\${active('/author')}" href="/author">Create</a><a class="\${active('/community')}" href="/community">Community</a>
+    <a class="${active('/')}" href="/">Home</a><a class="${active('/catalog')}" href="/catalog">Discover</a><a class="${active('/library')}" href="/library">Library</a><a class="${active('/author')}" href="/author">Create</a><a class="${active('/community')}" href="/community">Community</a>
    </nav>
    <div class="in-shell-actions">
-    <a class="in-shell-action in-search-action" href="/search" aria-label="Search" title="Search">\${iconSvg("search")}<span>Search</span></a>
-    <label class="in-shell-select"><span class="sr-only">Language</span><select id="imperialLanguageSelect" aria-label="Language">\${languageOptions}</select></label>
-    <label class="in-shell-select in-theme-select"><span class="sr-only">Appearance theme</span><select id="imperialThemeSelect" aria-label="Appearance theme">\${themeOptions}</select></label>
-    <a class="in-shell-icon" href="/notifications" aria-label="Notifications" title="Notifications">\${iconSvg("bell")}</a>
-    <a class="in-shell-icon" href="/account" aria-label="Account" title="Account">\${iconSvg("user")}</a>
+    <a class="in-shell-action in-search-action" href="/search" aria-label="Search" title="Search">${iconSvg("search")}<span>Search</span></a>
+    <label class="in-shell-select"><span class="sr-only">Language</span><select id="imperialLanguageSelect" aria-label="Language">${languageOptions}</select></label>
+    <label class="in-shell-select in-theme-select"><span class="sr-only">Appearance theme</span><select id="imperialThemeSelect" aria-label="Appearance theme">${themeOptions}</select></label>
+    <a class="in-shell-icon" href="/notifications" aria-label="Notifications" title="Notifications">${iconSvg("bell")}</a>
+    <a class="in-shell-icon" href="/account" aria-label="Account" title="Account">${iconSvg("user")}</a>
     <button class="in-shell-menu-toggle" id="imperialMenuToggle" type="button" aria-label="Open navigation menu" aria-controls="imperialMenuDrawer" aria-expanded="false"><span></span><span></span><span></span></button>
    </div>
   </div>
@@ -90,11 +90,11 @@ function shell(){
  <aside class="in-shell-drawer" id="imperialMenuDrawer" aria-label="More navigation" aria-hidden="true" inert>
   <div class="in-shell-drawer-head"><a class="in-shell-brand" href="/"><img src="/imperial-novel-app-icon.svg" alt="" width="36" height="36"><span><b>IMPERIAL NOVEL</b><small>READ · CREATE · CONQUER</small></span></a><button type="button" class="in-shell-close" id="imperialMenuClose" aria-label="Close navigation menu">×</button></div>
   <p class="in-shell-drawer-label">EXPLORE</p>
-  <a href="/catalog?sort=trending">\${iconSvg("trending")}<span>Trending stories</span></a><a href="/genres">\${iconSvg("genres")}<span>Genres & tags</span></a><a href="/formats">\${iconSvg("library")}<span>Story formats</span></a><a href="/leaderboard">\${iconSvg("rank")}<span>Rankings</span></a><a href="/trend-factory">\${iconSvg("sparkles")}<span>Trend Factory</span></a>
+  <a href="/catalog?sort=trending">${iconSvg("trending")}<span>Trending stories</span></a><a href="/genres">${iconSvg("genres")}<span>Genres & tags</span></a><a href="/formats">${iconSvg("library")}<span>Story formats</span></a><a href="/leaderboard">${iconSvg("rank")}<span>Rankings</span></a><a href="/trend-factory">${iconSvg("sparkles")}<span>Trend Factory</span></a>
   <p class="in-shell-drawer-label">YOUR SPACE</p>
-  <a href="/history">\${iconSvg("library")}<span>Reading history</span></a><a href="/following">\${iconSvg("users")}<span>Following</span></a><a href="/tickets">\${iconSvg("crown")}<span>Tickets & wallet</span></a><a href="/requests">\${iconSvg("sparkles")}<span>Requests</span></a><a href="/settings">\${iconSvg("user")}<span>Settings</span></a>
+  <a href="/history">${iconSvg("library")}<span>Reading history</span></a><a href="/following">${iconSvg("users")}<span>Following</span></a><a href="/tickets">${iconSvg("crown")}<span>Tickets & wallet</span></a><a href="/requests">${iconSvg("sparkles")}<span>Requests</span></a><a href="/settings">${iconSvg("user")}<span>Settings</span></a>
   <p class="in-shell-drawer-label">PLATFORM</p>
-  <a href="/omniportal">\${iconSvg("sparkles")}<span>OmniPortal · rights-gated</span></a><a href="/privacy"><span>Privacy</span></a><a href="/terms"><span>Terms</span></a><a href="/copyright"><span>Rights & copyright</span></a>
+  <a href="/omniportal">${iconSvg("sparkles")}<span>OmniPortal · rights-gated</span></a><a href="/privacy"><span>Privacy</span></a><a href="/terms"><span>Terms</span></a><a href="/copyright"><span>Rights & copyright</span></a>
   <div class="in-shell-drawer-foot">Read · Create · Conquer</div>
  </aside>\`);
  const menuButton=document.querySelector('#imperialMenuToggle'),menuDrawer=document.querySelector('#imperialMenuDrawer'),menuScrim=document.querySelector('#imperialMenuScrim');
@@ -108,7 +108,7 @@ function shell(){
  initImperialTheme();initINLang();
  api('/api/me').then(d=>{if(d.user?.role==='admin'){const nav=document.querySelector('.in-shell-links');nav?.insertAdjacentHTML('beforeend','<a href="/admin" class="in-shell-admin">Command</a>');menuDrawer?.insertAdjacentHTML('beforeend','<a href="/admin">'+iconSvg("rank")+'<span>Admin command</span></a>')}if(d.user){document.querySelector('.in-shell-actions')?.insertAdjacentHTML('afterbegin','<a class="in-shell-wallet" href="/tickets">♛ '+Number(d.user.tickets||0)+' Crowns</a>')}}).catch(()=>{});
  document.body.insertAdjacentHTML('beforeend',\`<nav class="in-mobile-nav" aria-label="Primary mobile navigation">
-  <a class="\${active('/')}" href="/"><span>\${iconSvg("home")}</span>Home</a><a class="\${active('/catalog')}" href="/catalog"><span>\${iconSvg("compass")}</span>Discover</a><a class="\${active('/library')}" href="/library"><span>\${iconSvg("library")}</span>Library</a><a class="\${active('/author')}" href="/author"><span>\${iconSvg("pen")}</span>Create</a><a class="\${active('/community')}" href="/community"><span>\${iconSvg("users")}</span>Community</a>
+  <a class="${active('/')}" href="/"><span>${iconSvg("home")}</span>Home</a><a class="${active('/catalog')}" href="/catalog"><span>${iconSvg("compass")}</span>Discover</a><a class="${active('/library')}" href="/library"><span>${iconSvg("library")}</span>Library</a><a class="${active('/author')}" href="/author"><span>${iconSvg("pen")}</span>Create</a><a class="${active('/community')}" href="/community"><span>${iconSvg("users")}</span>Community</a>
  </nav><footer class="in-shell-footer"><div class="in-shell-footer-inner"><div class="in-shell-footer-brand"><b><img src="/imperial-novel-app-icon.svg" alt="" width="30" height="30"> IMPERIAL NOVEL</b><span>Original, licensed and authorized stories.</span><small>Read · Create · Conquer</small></div><nav aria-label="Footer navigation"><a href="/catalog">Discover</a><a href="/formats">Formats</a><a href="/author">Create</a><a href="/community">Community</a><a href="/trend-factory">Trend Factory</a><a href="/privacy">Privacy</a><a href="/terms">Terms</a><a href="/copyright">Rights & copyright</a></nav><small>© 2026 Imperial Novel</small></div></footer>\`);
  applyImperialTheme(document.documentElement.dataset.theme);
 }
