@@ -47,7 +47,7 @@ for (const rule of [
 ]) {
   assert.ok(readerFit.includes(rule), 'Missing narrow reader containment contract: ' + rule);
 }
-const filterInputStart = css.lastIndexOf('.filterGroup select,');
+const filterInputStart = css.indexOf('.filterGroup select,');
 assert.ok(filterInputStart >= 0, 'Catalog filter input sizing rules must exist in the canonical stylesheet.');
 const filterInputRules = css.slice(filterInputStart, filterInputStart + 500);
 for (const rule of [
