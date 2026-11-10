@@ -288,3 +288,8 @@ The combined source-content audit now covers 170 assertions across the migrated 
 - Preserved all existing control IDs, six theme choices, font-size/line-height/column-width preferences, reduced-motion/high-contrast/compact-card toggles, preference export/reset, and device-local reading-helper clearing.
 - Kept the boundary explicit: clearing local reading helpers does not delete server account data.
 - Added a settings design contract test and build-chain entry.
+
+### Data-contract refinement and refreshed audit
+- Verified the account collection endpoints against their server response projections: library/history/bookmarks use `novel_id`, while followed novel projections expose `id`. The following renderer now normalizes both shapes before constructing story links or unfollow actions.
+- Corrected chapter-row styling selectors to target the actual `.chapter` markup emitted by the shared chapter-row renderer.
+- The combined connector-side source-content audit now covers 244 assertions across the migrated families and these contract refinements; all 244 passed. Repository Node scripts, npm build, browser QA, and visual/accessibility checks are still not claimed as run.
