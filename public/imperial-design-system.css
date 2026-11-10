@@ -4662,3 +4662,12 @@ html[data-theme="dark"] {
 html[data-theme="dark"] .adminWrap .adminHero {
   background: linear-gradient(135deg, rgba(185,149,242,.13), var(--in-paper-raised) 58%, rgba(141,184,255,.11));
 }
+
+
+/* Administrator RTL parity for table reading order and floating navigation. */
+html[dir="rtl"] .adminWrap .adminTable th,
+html[dir="rtl"] .adminWrap .adminTable td { text-align: right; }
+html[dir="rtl"] .adminWrap .mobileAdmin {
+  right: auto;
+  left: 10px;
+}
