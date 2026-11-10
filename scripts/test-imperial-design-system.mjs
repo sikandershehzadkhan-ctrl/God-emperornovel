@@ -151,6 +151,14 @@ assert.ok(routeRuntime.includes('document.documentElement.dir=(c==="ur"||c==="ar
 assert.ok(css.includes('scrollbar-width') || css.includes('overflow-x: auto'), 'Narrow screens must retain a usable horizontal-overflow strategy for dense controls.');
 assert.ok(css.includes('min-width:0'), 'Grid and flex content must be allowed to shrink without forcing page-wide overflow.');
 assert.ok(css.includes('min-height: 44px;'), 'Interactive targets must retain the shared touch-size baseline.');
+
+assert.ok(css.includes('.adminWrap .scroll {') && css.includes('overscroll-behavior-inline: contain;'),
+  'Administrator data tables must scroll inside their own container on narrow screens.');
+assert.ok(css.includes('.adminWrap .scroll:focus-visible'),
+  'Scrollable administrator tables must expose a keyboard focus indicator.');
+assert.ok(css.includes('.adminWrap .adminTable {') && css.includes('min-width: 620px;'),
+  'Dense administrator tables must preserve column readability without widening the whole page.');
+
 console.log('Imperial route-family and responsive design contracts passed.');
 
 const mobileTouchFix = css.slice(css.lastIndexOf('/* Touch-target correction:'));
