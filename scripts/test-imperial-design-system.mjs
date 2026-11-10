@@ -237,3 +237,30 @@ assert.ok(css.includes('.comicPageComposerGrid {') && css.includes('grid-templat
 assert.ok(css.includes('.chapterRow .actions{display:flex;') && css.includes('.chapterList{display:grid;'),
   'Admin chapter rows and public chapter archive must retain structured layouts.');
 
+// Compact viewport contract: 320/360px devices inherit the 360px rules,
+// 375/390px devices inherit the 390px reader rules, and all phones inherit
+// the 760px touch-target and wrapping rules. These are source contracts,
+// not a substitute for screenshot-based browser QA.
+const compactPhonePass = read('public/imperial-design-system.css').slice(read('public/imperial-design-system.css').lastIndexOf('/* Touch-target correction:'));
+assert.ok(compactPhonePass.includes('@media (max-width: 360px)'),
+  '320px and 360px phones must receive the narrow creator-form layout.');
+assert.ok(compactPhonePass.includes('@media (max-width: 390px)'),
+  '375px and 390px phones must receive the compact reader toolbar layout.');
+assert.ok(compactPhonePass.includes('@media (max-width: 760px)') &&
+  compactPhonePass.includes('flex-wrap: wrap;') &&
+  compactPhonePass.includes('min-height: 44px;'),
+  'Phone layouts must wrap reader controls and preserve 44px touch targets.');
+assert.ok(compactPhonePass.includes('.readerTools .readerTool { flex: 1 1 44px; }'),
+  'Reader toolbar controls must be allowed to share narrow rows without shrinking below the touch baseline.');
+assert.ok(compactPhonePass.includes('.authorChapterForm .authorFormGrid { grid-template-columns: minmax(0,1fr); }'),
+  'Creator chapter forms must collapse to one column on 320px-class screens.');
+assert.ok(compactPhonePass.includes('.adminWrap .scroll') === false,
+  'The compact reader/creator pass must remain separate from the admin table scrolling contract.');
+const adminTablePass = read('public/imperial-design-system.css').slice(read('public/imperial-design-system.css').lastIndexOf('/* Dense admin datasets'));
+assert.ok(adminTablePass.includes('overflow-x: auto;') &&
+  adminTablePass.includes('overscroll-behavior-inline: contain;') &&
+  adminTablePass.includes('min-width: 620px;'),
+  'Dense admin tables must scroll inside their own region rather than widening the page.');
+assert.ok(adminTablePass.includes('margin-inline: -2px;'),
+  'Admin table scroll gutters must use logical inline margins for RTL parity.');
+
