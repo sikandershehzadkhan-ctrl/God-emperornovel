@@ -273,3 +273,6 @@ A connector-side audit evaluated 130 source assertions against the current branc
 - Replaced the generic discovery-page wrapper with a dedicated notification inbox.
 - Displays server-provided title, body, timestamp, read/unread state, and unread count; includes a mark-all-read action with pending/disabled handling and explicit empty/error states.
 - Added a responsive notification design contract test and build-chain entry.
+
+### Refreshed source-content audit
+The combined source-content audit now covers 170 assertions across the migrated page families, including notifications. All 170 passed. These checks were evaluated against fetched branch source in the connector runtime; they are not a substitute for running `npm run build`, the Node contract scripts, or browser/device QA.
