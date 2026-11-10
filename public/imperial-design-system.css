@@ -4856,3 +4856,99 @@ html[data-theme="dark"] .chapterList > .chapter {
   .admin-sample-preview { max-width: min(360px, 68vw); }
   .admin-bio-preview { max-width: min(280px, 62vw); }
 }
+
+
+/* Creator workflow completeness: edit forms and comic authoring controls. */
+.authorEditForm {
+  display: grid;
+  gap: 9px;
+  margin-top: 14px;
+  padding: 16px;
+  border: 1px solid var(--in-color-border-subtle);
+  border-radius: var(--in-radius-md);
+  background: var(--in-color-bg-subtle);
+}
+.authorEditForm[hidden], .authorChapterForm[hidden] { display: none !important; }
+.authorEditForm :where(input,select,textarea) {
+  box-sizing: border-box;
+  width: 100%;
+  min-width: 0;
+  min-height: 44px;
+  padding: 11px 12px;
+  border: 1px solid var(--in-color-border-subtle);
+  border-radius: 10px;
+  background: var(--in-color-bg-surface);
+  color: var(--in-color-text-primary);
+  font: inherit;
+}
+.authorEditForm textarea { min-height: 104px; resize: vertical; }
+.authorEditForm :where(input,select,textarea):focus-visible,
+.authorChapterForm :where(input,textarea):focus-visible {
+  outline: 3px solid var(--in-color-focus-ring);
+  outline-offset: 2px;
+}
+.authorChapterForm {
+  display: grid;
+  gap: 12px;
+  min-width: 0;
+}
+.authorChapterForm .authorFormGrid { min-width: 0; }
+.authorChapterForm .checkRow {
+  min-height: 44px;
+  padding: 8px 10px;
+  border: 1px solid var(--in-color-border-subtle);
+  border-radius: 10px;
+  background: var(--in-color-bg-subtle);
+}
+.comicAuthorBuilder {
+  min-width: 0;
+  padding: 14px;
+  border: 1px solid var(--in-color-border-subtle);
+  border-radius: var(--in-radius-md);
+  background: var(--in-color-bg-subtle);
+}
+.comicAuthorBuilder[hidden] { display: none !important; }
+.comicAuthorBuilderHead {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+.comicPageComposerGrid {
+  display: grid;
+  grid-template-columns: repeat(2,minmax(0,1fr));
+  gap: 10px;
+  align-items: end;
+  margin-block: 12px;
+}
+.comicPageComposerGrid > * { min-width: 0; }
+.comicPageComposerGrid label {
+  display: grid;
+  gap: 6px;
+  color: var(--in-color-text-secondary);
+  font-size: .88rem;
+  font-weight: 600;
+}
+.comicPageComposerGrid input {
+  box-sizing: border-box;
+  width: 100%;
+  min-width: 0;
+  min-height: 44px;
+  padding: 10px;
+  border: 1px solid var(--in-color-border-subtle);
+  border-radius: 10px;
+  background: var(--in-color-bg-surface);
+  color: var(--in-color-text-primary);
+}
+.comicPageComposerGrid button { min-height: 44px; }
+[data-page-list] { min-width: 0; overflow-wrap: anywhere; }
+[data-page-list] button { min-height: 44px; }
+@media (max-width: 760px) {
+  .authorEditForm { padding: 12px; }
+  .comicPageComposerGrid { grid-template-columns: minmax(0,1fr); }
+  .comicAuthorBuilder { padding: 11px; }
+}
+@media (max-width: 360px) {
+  .authorChapterForm .authorFormGrid { grid-template-columns: minmax(0,1fr); }
+}
