@@ -2123,7 +2123,7 @@ body:before { opacity: .18; }
 .primary, .heroSearch button {
   background: var(--in-purple);
   border-color: var(--in-purple);
-  color: #fff;
+  color: var(--in-action-on-primary);
   box-shadow: 0 8px 22px rgba(106,13,173,.16);
 }
 .primary:hover { background: var(--in-purple-strong); }
