@@ -2010,3 +2010,9 @@ body.menu-open{overflow:hidden}
 .in-author-ai-wrap .aiUnavailable{border-color:var(--in-status-warning);background:var(--in-status-warning-bg);color:var(--in-status-warning)}
 @media(max-width:48rem){.in-author-ai-wrap{width:min(100% - 1.5rem,78rem);padding-top:.8rem}.in-author-ai-grid{grid-template-columns:1fr}.in-author-ai-field.in-author-ai-full{grid-column:auto}.in-author-ai-novel-head{align-items:start;flex-direction:column}}
 @media(prefers-reduced-motion:reduce){.in-author-ai-wrap *{scroll-behavior:auto!important;transition:none!important;animation:none!important}}
+
+.in-admin-body,.in-author-ai-body,.in-taxonomy-body,.in-legal-page{margin:0;min-height:100vh;background:var(--in-bg-canvas);font-family:var(--in-font-sans,system-ui,-apple-system,"Segoe UI",sans-serif)}
+.in-admin-body *,.in-author-ai-body *,.in-taxonomy-body *,.in-legal-page *{box-sizing:border-box}
+.in-author-ai-body{color:var(--in-text-primary)}
+.in-taxonomy-body{color:var(--in-text-primary)}
+.in-legal-page{box-sizing:border-box}
