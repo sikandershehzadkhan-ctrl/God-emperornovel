@@ -400,3 +400,66 @@ assert.ok(rtlArchiveHeroLayer.includes('inset-inline-end: -7%;') &&
 assert.ok(!/(^|[;{]\s*)(left|right)\s*:/m.test(rtlArchiveHeroLayer),
   'RTL archive hero overrides must not use physical left/right offsets.');
 
+
+
+// Exact duplicate rules in the same conditional context add bytes and obscure
+// cascade ownership. Different declarations and intentional later overrides
+// remain untouched; only identical selector/body/context triples are rejected.
+function collectCssRules(source, context = '', output = []) {
+  let cursor = 0;
+  while (cursor < source.length) {
+    while (cursor < source.length && /\s/.test(source[cursor])) cursor++;
+    if (cursor >= source.length) break;
+    if (source.startsWith('/*', cursor)) {
+      const close = source.indexOf('*/', cursor + 2);
+      cursor = close < 0 ? source.length : close + 2;
+      continue;
+    }
+    const start = cursor;
+    let open = cursor, nesting = 0, quote = '';
+    for (; open < source.length; open++) {
+      const char = source[open];
+      if (quote) {
+        if (char === '\\') open++;
+        else if (char === quote) quote = '';
+        continue;
+      }
+      if (char === '"' || char === "'") quote = char;
+      else if (char === '(' || char === '[') nesting++;
+      else if (char === ')' || char === ']') nesting--;
+      else if (char === '{' && nesting === 0) break;
+      else if (char === ';' && nesting === 0) break;
+    }
+    if (open >= source.length) break;
+    if (source[open] === ';') {
+      cursor = open + 1;
+      continue;
+    }
+    let depth = 1, close = open + 1, stringQuote = '';
+    for (; close < source.length && depth; close++) {
+      const char = source[close];
+      if (stringQuote) {
+        if (char === '\\') close++;
+        else if (char === stringQuote) stringQuote = '';
+        continue;
+      }
+      if (char === '"' || char === "'") stringQuote = char;
+      else if (char === '{') depth++;
+      else if (char === '}') depth--;
+    }
+    const selector = source.slice(start, open).trim();
+    const body = source.slice(open + 1, close - 1).trim().replace(/\s+/g, ' ');
+    if (selector.startsWith('@')) {
+      if (/^@(media|supports|container|layer|scope)\b/.test(selector)) {
+        collectCssRules(body, context + ' ' + selector, output);
+      }
+    } else {
+      output.push(context.trim() + '|' + selector + '|' + body);
+    }
+    cursor = close;
+  }
+  return output;
+}
+const canonicalRules = collectCssRules(css);
+assert.equal(new Set(canonicalRules).size, canonicalRules.length,
+  'The canonical design system must not contain byte-identical CSS rules repeated in the same conditional context.');
