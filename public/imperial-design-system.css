@@ -4757,3 +4757,77 @@ html[dir="rtl"] .adminWrap .mobileAdmin {
   .admin-mt-18 { margin-top: 14px; }
   .admin-chapter-preview-content { overflow-wrap: anywhere; }
 }
+
+
+/* Route audit: chapter archive and creator workspace inherit the same
+   theme surfaces and focus language as the rest of the canonical system. */
+.chapterList > .chapter {
+  min-width: 0;
+  background: var(--in-color-bg-surface);
+  color: var(--in-color-text-primary);
+  border-color: var(--in-color-border-subtle);
+  overflow-wrap: anywhere;
+}
+.chapterList > .chapter:hover {
+  background: var(--in-color-bg-subtle);
+  border-color: var(--in-purple);
+}
+.chapterList > .chapter:focus-within {
+  outline: 2px solid var(--in-color-focus-ring);
+  outline-offset: 2px;
+}
+.chapterList > .chapter .chapterNo { color: var(--in-purple-strong); }
+.chapterList > .chapter .lock { color: var(--in-color-text-muted); }
+.chapterRow { min-width: 0; }
+.chapterRow > * { min-width: 0; overflow-wrap: anywhere; }
+.chapterRow .actions > :where(button,a) { min-height: 40px; }
+html[data-theme="dark"] .chapterList > .chapter {
+  background: var(--in-color-bg-surface);
+  color: var(--in-color-text-primary);
+}
+.authorStudioIntro {
+  background: linear-gradient(135deg, var(--in-purple-soft), var(--in-paper-raised) 62%, var(--in-sapphire-soft));
+  border-color: var(--in-line);
+}
+.authorWork {
+  background: var(--in-color-bg-surface);
+  border-color: var(--in-color-border-subtle);
+  color: var(--in-color-text-primary);
+}
+.authorWork h3 { color: var(--in-color-text-primary); }
+.authorWork .muted { color: var(--in-color-text-muted); }
+.authorStatus { border-color: currentColor; }
+.authorStatus.status-draft { color: var(--in-color-text-muted); }
+.authorStatus.status-review { color: var(--in-purple-strong); }
+.authorStatus.status-published { color: var(--in-success); }
+.authorStatus.status-rejected { color: var(--in-danger); }
+.authorCreateForm :where(input,select,textarea),
+.authorChapterForm :where(input,textarea) {
+  background: var(--in-color-bg-surface);
+  border-color: var(--in-color-border-subtle);
+  color: var(--in-color-text-primary);
+}
+.authorCreateForm :where(input,select,textarea):focus-visible,
+.authorChapterForm :where(input,textarea):focus-visible {
+  outline: 3px solid var(--in-color-focus-ring);
+  outline-offset: 2px;
+}
+.authorWorkActions > :where(button,a),
+.authorChapterForm button { min-height: 44px; }
+@media (max-width: 760px) {
+  .chapterList > .chapter {
+    grid-template-columns: minmax(0,1fr);
+    gap: 7px;
+    padding: 12px;
+  }
+  .chapterList > .chapter > :last-child { justify-self: start; }
+  .authorStudioLayout { grid-template-columns: minmax(0,1fr); }
+  .authorFormGrid { grid-template-columns: minmax(0,1fr); }
+  .authorWorkTop { flex-wrap: wrap; }
+  .authorWorkActions > :where(button,a) { flex: 1 1 140px; }
+}
+@media (max-width: 360px) {
+  .authorWork { padding: 12px; }
+  .authorWorkActions > :where(button,a) { flex-basis: 100%; }
+  .chapterList > .chapter { padding: 10px; }
+}
