@@ -7,4 +7,10 @@ for(const token of ['in-library-header','in-library-tabs','in-library-continue',
 for(const token of ['.in-library-header','.in-library-tabs','.in-library-story','.in-library-bookmark','@media(max-width:48rem)']) assert.ok(css.includes(token),`Library styling missing ${token}`);
 assert.ok(!library.includes('pageStart('),'Legacy page wrapper must not remain in library views');
 assert.ok(!library.includes('toFixed(1)'),'Do not render invented decimal rating precision');
-console.log('Library, reading history shelf, bookmarks and following design contracts passed.');
+
+const history=app.slice(app.indexOf('async function history()'),app.indexOf('async function following()'));
+for(const token of ['in-history-header','in-history-list','/api/history','novelId=Number(n.novel_id||n.id)','/read/']) assert.ok(history.includes(token),`History behavior missing ${token}`);
+for(const token of ['.in-history-header','.in-history-row','@media(max-width:40rem)']) assert.ok(css.includes(token),`History styling missing ${token}`);
+assert.ok(!history.includes('pageStart('),'Legacy page wrapper must not remain in history');
+console.log('Library, following and reading history design contracts passed.');
+
