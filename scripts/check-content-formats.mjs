@@ -47,10 +47,18 @@ for (const name of new Set(['app.js', scriptMatch[1]])) {
 }
 const designSystem = fs.readFileSync('public/imperial-design-system.css', 'utf8');
 assert.ok(index.includes('/imperial-design-system.css'), 'HTML loads the canonical design-system entry point');
-for (const asset of [`style-${version}.css`,`app-${version}.css`,`imperial-luxury-${version}.css`,`imperial-formats-${version}.css`,`imperial-comic-reader-${version}.css`]) {
- assert.ok(designSystem.includes('/'+asset), 'Unified design system imports '+asset);
- assert.ok(fs.existsSync('public/'+asset), asset+' exists');
+const consolidatedSources = [
+ 'Consolidated stylesheet source 1: public/style-' + version + '.css',
+ 'Consolidated stylesheet source 2: public/app-' + version + '.css',
+ 'Consolidated stylesheet source 3: public/imperial-luxury-' + version + '.css',
+ 'Consolidated stylesheet source 4: public/imperial-formats-' + version + '.css',
+ 'Consolidated stylesheet source 5: public/imperial-comic-reader-' + version + '.css',
+ 'Consolidated stylesheet source 6: public/imperial-glass.css'
+];
+for (const sourceMarker of consolidatedSources) {
+ assert.ok(designSystem.includes(sourceMarker), 'Canonical stylesheet retains the migrated feature rules: ' + sourceMarker);
 }
+assert.ok(!designSystem.includes('@import'), 'Canonical stylesheet does not depend on external legacy stylesheet requests.');
 const manifestAsset = `manifest-${version}.webmanifest`;
 assert.ok(index.includes('/'+manifestAsset), 'HTML references '+manifestAsset);
 assert.ok(fs.existsSync('public/'+manifestAsset), manifestAsset+' exists');
