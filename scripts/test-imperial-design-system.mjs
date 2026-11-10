@@ -136,6 +136,22 @@ assert.ok(css.includes('.authorEditForm[hidden], .authorChapterForm[hidden] { di
 assert.ok(appJs.includes('data-comic-builder') && appJs.includes('data-page-add') && appJs.includes('data-page-list'),
   'Creator comic authoring UI must be covered by the real route runtime.');
 
+
+const runtime = read('public/app.js');
+const versionedRuntime = read('public/app-17.23.0.js');
+assert.equal(runtime, versionedRuntime, 'The unified runtime source and served asset must remain byte-identical.');
+assert.ok(runtime.includes("const allowed=['light','dark','midnight','sepia','imperial','cosmic']"), 'Global theme runtime must accept all six site themes.');
+assert.ok(runtime.includes("applyImperialTheme($('#setSiteTheme').value)"), 'Settings must apply the selected global theme without collapsing it to light/dark.');
+for (const theme of globalThemes) {
+  assert.ok(runtime.includes('<option value="' + theme + '" data-in-lang='), 'Site and reader theme selectors must expose ' + theme + '.');
+}
+const localeMatch = runtime.match(/const IN_LANG=(\{[\s\S]*?\});function setINLang/);
+assert.ok(localeMatch, 'Global theme locale dictionary must remain parseable.');
+const locales = JSON.parse(localeMatch[1]);
+for (const locale of ['en','ur','hi','zh-CN','zh-TW','es','fr','id','ja','ko','pt-BR','ar','vi','fa']) {
+  assert.ok(locales[locale], 'Missing interface locale ' + locale + '.');
+  for (const label of ['Light','Dark','Midnight','Sepia','Imperial','Cosmic']) assert.ok(locales[locale][label], locale + ' is missing theme label ' + label + '.');
+}
 console.log('Imperial unified design-system checks passed.');
 
 
