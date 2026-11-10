@@ -425,7 +425,7 @@ async function omni(){
   const q=String(new FormData(e.target).get('q')||'');
   if(q.length<2)return;
   try{
-   const d=await api('/api/omni/in-omni-search?q='+encodeURIComponent(q));
+   const d=await api('/api/omni/search?q='+encodeURIComponent(q));
    if(!d.results.length){$('#omniRes').innerHTML='<div class="in-omni-empty" style="grid-column:1/-1">No authorized results found.</div>';return;}
    $('#omniRes').innerHTML=d.results.map(x=>{
     const ext=String(x.url||'').startsWith('http');
