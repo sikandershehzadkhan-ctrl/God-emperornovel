@@ -115,50 +115,46 @@ function shell(){
 function pageStart(title,sub=''){return `<div class="page"><div class="wrap"><div class="title"><div class="eyebrow">Imperial Library</div><h1>${esc(title)}</h1>${sub?`<p class="sub">${esc(sub)}</p>`:''}</div>`}
 async function home(){
  const root=$('#app');
- root.innerHTML=`<div class="page homePage"><div class="wrap">
-  <section class="hero nextHero imperialArchiveHero">
-   <div class="nextHeroGlow" aria-hidden="true"></div>
-   <div class="nextHeroCopy">
-    
-    <h1>Open a world.<br><span>Shape an empire.</span></h1>
-    <p class="nextHeroLead">Discover stories worth staying up for, then create the worlds only you can imagine.</p>
-    <form class="heroSearch" action="/search" method="get" role="search"><span aria-hidden="true">${iconSvg("search")}</span><input name="q" type="search" placeholder="Search titles, tropes, worlds..." aria-label="Search novels, genres and authors"><button type="submit">Find your story <span aria-hidden="true">↗</span></button></form>
-    <div class="heroTags"><a href="/genres?genre=Fantasy">Fantasy</a><a href="/genres?genre=Progression">Progression</a><a href="/genres?genre=Romance">Romance</a><a href="/genres?genre=Isekai">Isekai</a></div>
-    <div class="heroPromise">Read • Create • Conquer <span class="promiseText">Original. Authorized. Reader-first.</span></div>
+ root.innerHTML=\`<div class="page in-home"><div class="in-home-wrap">
+  <section class="in-home-hero" aria-labelledby="inHomeTitle">
+   <div class="in-home-hero-copy">
+    <div class="in-home-eyebrow"><span></span> A WORLD OF STORIES, OPEN TO YOU</div>
+    <h1 id="inHomeTitle">The next world<br><em>is yours to enter.</em></h1>
+    <p class="in-home-lead">Find your next unforgettable read. Or create a universe that could only come from you.</p>
+    <form class="in-home-search" action="/search" method="get" role="search"><label class="sr-only" for="inHomeSearch">Search stories, authors and worlds</label><span aria-hidden="true">${iconSvg("search")}</span><input id="inHomeSearch" name="q" type="search" placeholder="Search stories, authors, worlds..." autocomplete="off"><button type="submit">Explore <span aria-hidden="true">↗</span></button></form>
+    <div class="in-home-actions"><a class="in-home-primary" href="/catalog">Discover stories <span aria-hidden="true">↗</span></a><a class="in-home-secondary" href="/author">Start creating <span aria-hidden="true">↗</span></a></div>
+    <p class="in-home-trust">Original stories · Authorized works · Creator-first publishing</p>
    </div>
-   
-   
+   <div class="in-home-hero-art" aria-hidden="true"><div class="in-home-orbit in-home-orbit-one"></div><div class="in-home-orbit in-home-orbit-two"></div><div class="in-home-sigil"><img src="/imperial-novel-app-icon.svg" alt="" width="124" height="124"></div><div class="in-home-art-caption"><span>IMPERIAL NOVEL</span><b>READ · CREATE · CONQUER</b></div><i class="in-home-star in-home-star-one"></i><i class="in-home-star in-home-star-two"></i><i class="in-home-star in-home-star-three"></i></div>
   </section>
-  
-  <section class="homeFormatShelf" aria-labelledby="homeFormatTitle">
-   <div class="homeFormatHeading"><div><div class="eyebrow"><span class="eyebrowDot"></span> ONE LIBRARY · MANY WAYS TO TELL A STORY</div><h2 id="homeFormatTitle">Start with the kind of story <span>you love.</span></h2><p>Novels and fanfiction are at the heart of Imperial Novel. Explore other formats whenever you're ready.</p></div><a class="ghost" href="/formats">All formats <span>↗</span></a></div>
-   <div class="homeFormatGrid">
-    <a class="homeFormatCard homeFormatPrimary" href="/format/original"><span class="homeFormatGlyph" aria-hidden="true">▤</span><span class="homeFormatCopy"><b>Original novels</b><small>Build a world from page one.</small></span><span class="homeFormatArrow" aria-hidden="true">↗</span></a>
-    <a class="homeFormatCard homeFormatPrimary" href="/format/fanfiction"><span class="homeFormatGlyph" aria-hidden="true">✧</span><span class="homeFormatCopy"><b>Fanfiction</b><small>Return to worlds you love.</small></span><span class="homeFormatArrow" aria-hidden="true">↗</span></a>
-    <a class="homeFormatCard" href="/format/light_novel"><span class="homeFormatGlyph" aria-hidden="true">文</span><span class="homeFormatCopy"><b>Light novels</b><small>Illustrated, serialized adventures.</small></span><span class="homeFormatArrow" aria-hidden="true">↗</span></a>
-    <a class="homeFormatCard" href="/format/web_novel"><span class="homeFormatGlyph" aria-hidden="true">⌘</span><span class="homeFormatCopy"><b>Web novels</b><small>Follow the next chapter.</small></span><span class="homeFormatArrow" aria-hidden="true">↗</span></a>
-    <a class="homeFormatCard" href="/format/manga"><span class="homeFormatGlyph" aria-hidden="true">▧</span><span class="homeFormatCopy"><b>Manga & comics</b><small>Stories told in panels.</small></span><span class="homeFormatArrow" aria-hidden="true">↗</span></a>
-    <a class="homeFormatCard" href="/format/manhwa"><span class="homeFormatGlyph" aria-hidden="true">▥</span><span class="homeFormatCopy"><b>Manhwa & webtoons</b><small>Scroll into another world.</small></span><span class="homeFormatArrow" aria-hidden="true">↗</span></a>
+  <section class="in-home-section in-home-formats" aria-labelledby="inHomeFormatsTitle">
+   <div class="in-home-section-head"><div><div class="in-home-kicker">ONE LIBRARY · MANY STORY FORMS</div><h2 id="inHomeFormatsTitle">Choose your kind of <em>escape.</em></h2><p>Start with novels and fanfiction, then explore illustrated worlds and more.</p></div><a href="/formats" class="in-home-text-link">Browse all formats ↗</a></div>
+   <div class="in-home-format-grid">
+    <a href="/format/original"><span>01</span><b>Original novels</b><small>Worlds built from page one</small><i>↗</i></a>
+    <a href="/format/fanfiction"><span>02</span><b>Fanfiction</b><small>Stories within beloved worlds</small><i>↗</i></a>
+    <a href="/format/light_novel"><span>03</span><b>Light novels</b><small>Illustrated serial adventures</small><i>↗</i></a>
+    <a href="/format/web_novel"><span>04</span><b>Web novels</b><small>Follow the next chapter</small><i>↗</i></a>
+    <a href="/format/manga"><span>05</span><b>Manga & comics</b><small>Stories told in panels</small><i>↗</i></a>
+    <a href="/format/manhwa"><span>06</span><b>Manhwa & webtoons</b><small>Scroll into another world</small><i>↗</i></a>
    </div>
   </section>
-  <section class="section nextShelf">
-   <div class="sectionHead"><div><div class="eyebrow"><span class="eyebrowDot"></span> THE CURRENT ROTATION</div><h2>Stories with momentum.</h2><p>Real published stories from the Imperial catalog. No made-up counters, no filler.</p></div><a class="ghost" href="/catalog?sort=trending">Explore all <span>↗</span></a></div>
-   <div id="trend" class="grid homeStoryGrid"><div class="skeletonCard"></div><div class="skeletonCard"></div><div class="skeletonCard"></div></div>
+  <section class="in-home-section" aria-labelledby="inHomeTrendingTitle">
+   <div class="in-home-section-head"><div><div class="in-home-kicker">THE IMPERIAL CATALOG</div><h2 id="inHomeTrendingTitle">Stories with <em>momentum.</em></h2><p>Published stories, surfaced from available catalog activity.</p></div><a href="/catalog?sort=trending" class="in-home-text-link">Explore catalog ↗</a></div>
+   <div id="trend" class="grid in-home-story-grid"><div class="skeletonCard"></div><div class="skeletonCard"></div><div class="skeletonCard"></div></div>
   </section>
-  <section class="nextFeatureDeck">
-   <div class="nextFeatureIntro"><div class="eyebrow"><span class="eyebrowDot"></span> NOT JUST ANOTHER READER</div><h2>Read the lore.<br><span>Build the universe.</span></h2><p>A whole creative ecosystem built around the stories you love and the worlds you want to make.</p><a class="featureInlineLink" href="/author">Meet your Creator Studio <span>↗</span></a></div>
-   <a class="nextFeatureTile featureTrend" href="/trend-factory"><span class="featureMeta">01 / DISCOVER</span><span class="featureGlyph">⌁</span><b>Trend Factory</b><p>Spot story signals, explore metadata and find creators worth inviting. Rights review stays in control.</p><span class="featureInlineLink">Read the signals ↗</span></a>
-   <a class="nextFeatureTile featureForge" href="/author"><span class="featureMeta">02 / CREATE</span><span class="featureGlyph">✳</span><b>World Forge</b><p>Shape your premise, build a story bible and draft chapters in a focused studio.</p><span class="featureInlineLink">Build your world ↗</span></a>
-   <a class="nextFeatureTile featureCommunity" href="/community"><span class="featureMeta">03 / BELONG</span><span class="featureGlyph">⌘</span><b>Reader Constellation</b><p>Find your people, trade theories and make a fandom feel alive.</p><span class="featureInlineLink">Join the conversation ↗</span></a>
-   <a class="nextFeatureTile featurePortal" href="/omniportal"><span class="featureMeta">04 / CONNECT</span><span class="featureGlyph">◉</span><b>OmniPortal</b><p>A rights-first gateway for approved sources, creator attribution and future partnerships.</p><span class="featureInlineLink">Explore the portal ↗</span></a>
+  <section class="in-home-ecosystem" aria-label="Explore the Imperial Novel platform">
+   <div class="in-home-ecosystem-intro"><div class="in-home-kicker">MORE THAN A READING APP</div><h2>Read deeply.<br><em>Create boldly.</em></h2><p>A connected home for readers, authors and the communities that grow around stories.</p></div>
+   <a class="in-home-feature in-home-feature-create" href="/author"><span>01 / CREATE</span><b>Author Studio</b><p>Build your story, shape chapters and manage your publishing journey.</p><i>Enter the studio ↗</i></a>
+   <a class="in-home-feature in-home-feature-community" href="/community"><span>02 / CONNECT</span><b>Reader community</b><p>Share thoughtful discussion, theories and recommendations.</p><i>Find your people ↗</i></a>
+   <a class="in-home-feature in-home-feature-discover" href="/trend-factory"><span>03 / RESEARCH</span><b>Trend Factory</b><p>Explore catalog signals and authorized metadata with rights safeguards.</p><i>Explore signals ↗</i></a>
   </section>
-  <section class="nextCreatorBand"><div class="creatorOrb" aria-hidden="true"><img src="/imperial-novel-app-icon.svg" alt="" width="88" height="88" loading="lazy"></div><div><div class="eyebrow">YOUR IDEAS DESERVE A WORLD</div><h2>You're not just a reader.</h2><p>Start with a spark. Build characters, systems, kingdoms, timelines and stories that are yours to tell.</p></div><a class="primary" href="/author">Enter Creator Studio <span>↗</span></a></section>
-  <section class="section nextShelf">
-   <div class="sectionHead"><div><div class="eyebrow"><span class="eyebrowDot"></span> FRESH FROM THE REALM</div><h2>New chapters. New reasons to stay.</h2><p>Recently updated stories from the live catalog.</p></div><a class="ghost" href="/catalog?sort=updated">Latest updates <span>↗</span></a></div>
-   <div id="latest" class="grid homeStoryGrid"><div class="skeletonCard"></div><div class="skeletonCard"></div><div class="skeletonCard"></div></div>
+  <section class="in-home-section" aria-labelledby="inHomeLatestTitle">
+   <div class="in-home-section-head"><div><div class="in-home-kicker">FRESH FROM THE REALM</div><h2 id="inHomeLatestTitle">New chapters. <em>New horizons.</em></h2><p>Recently updated stories from the published catalog.</p></div><a href="/catalog?sort=updated" class="in-home-text-link">Latest updates ↗</a></div>
+   <div id="latest" class="grid in-home-story-grid"><div class="skeletonCard"></div><div class="skeletonCard"></div><div class="skeletonCard"></div></div>
   </section>
-  <section class="nextReaderPromise"><span class="promiseIcon">◈</span><div><b>Clear rules. Your reading, your call.</b><p>Imperial Crowns and chapter unlocks show their real status. Payments remain pending until manually reviewed.</p></div><a href="/tickets">Imperial Crown Vault ↗</a></section>
- </div></div>`;
+  <section class="in-home-reader-note"><span aria-hidden="true">◈</span><div><b>Your reading, your rhythm.</b><p>Choose from six themes and adjust typography and reading comfort in your settings.</p></div><a href="/settings">Personalize reading ↗</a></section>
+ </div></div>\`;
+
  try{
   const [t,l]=await Promise.all([apiWithTimeout('/api/novels?sort=trending&limit=10'),apiWithTimeout('/api/novels?sort=updated&limit=10')]);
   const trendRows=t.results||[],latestRows=l.results||[];
