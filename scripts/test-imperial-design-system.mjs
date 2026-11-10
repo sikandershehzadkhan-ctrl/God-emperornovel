@@ -83,6 +83,17 @@ assert.ok(css.includes('.admin-chapter-preview[hidden], .admin-chapter-edit[hidd
 assert.ok(css.includes('.admin-chapter-preview-content { margin-top: 14px; line-height: 1.8; overflow-wrap: anywhere; }'),
   'Chapter preview content must wrap long text without creating horizontal overflow.');
 
+
+for (const selector of ['.chapterList > .chapter','.chapterList > .chapter:focus-within','.chapterRow > *','.authorWork','.authorStatus.status-draft','.authorCreateForm :where(input,select,textarea):focus-visible','.authorWorkActions > :where(button,a)']) {
+  assert.ok(css.includes(selector), 'Real chapter archive and creator workspace styling must cover ' + selector + '.');
+}
+assert.ok(css.includes('background: var(--in-color-bg-surface);') && css.includes('border-color: var(--in-color-border-subtle);'),
+  'Chapter archive rows must use theme-aware surfaces instead of fixed white backgrounds.');
+assert.ok(css.includes('@media (max-width: 360px)') && css.includes('.authorWorkActions > :where(button,a) { flex-basis: 100%; }'),
+  'Creator actions must stack cleanly on the narrowest supported phone width.');
+assert.ok(css.includes('.chapterList > .chapter {') && css.includes('grid-template-columns: minmax(0,1fr);'),
+  'Chapter archive entries must become single-column on mobile.');
+
 console.log('Imperial unified design-system checks passed.');
 
 
