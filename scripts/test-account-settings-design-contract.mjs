@@ -1,0 +1,11 @@
+import fs from 'node:fs';
+import assert from 'node:assert/strict';
+const app=fs.readFileSync('public/app.js','utf8');
+const css=fs.readFileSync('public/imperial-ui-primitives.css','utf8');
+const account=app.slice(app.indexOf('async function account()'),app.indexOf('async function library('));
+const settings=app.slice(app.indexOf('function settings()'),app.indexOf('\nasync function boot()'));
+for(const token of ['in-account-header','in-account-layout','in-account-profile','in-account-metrics','in-account-recommendations','/api/profile','/api/recommendations','/api/auth/logout','href="/settings"','href="/tickets"','href="/requests"']) assert.ok(account.includes(token),`Account behavior/navigation missing ${token}`);
+for(const token of ['in-settings-header','in-settings-grid','in-settings-checks','in-settings-links','setSiteTheme','setReaderTheme','setReduced','setHigh','setCompact','exportPrefs','resetPrefs','clearLocalReading','imperial_reader_line_height','imperial_reader_width','imperial_high_contrast','imperial_compact_cards','URL.createObjectURL','imperial-novel-preferences.json']) assert.ok(settings.includes(token),`Settings capability missing ${token}`);
+for(const token of ['.in-account-header','.in-account-layout','.in-account-metrics','.in-settings-header','.in-settings-grid','.in-settings-card','@media']) assert.ok(css.includes(token),`Account/settings styling missing ${token}`);
+assert.ok(!settings.includes('api('/),'Settings must not make unverified server mutations');
+console.log('Account center and local preferences/accessibility design contracts passed.');
