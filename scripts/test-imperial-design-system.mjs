@@ -21,6 +21,15 @@ assert.equal((html.match(/rel="stylesheet"/g) || []).length, 1,
   'The app shell must expose one canonical stylesheet entry point.');
 assert.match(html, /href="\/imperial-design-system\.css"/,
   'The app shell must load the unified design system.');
+assert.ok(!/\.style(?:\.cssText)?\s*=/.test(html),
+  'The application shell recovery state must not use inline style declarations.');
+for (const recoveryClass of ['bootRecovery','bootRecoveryBrand','bootRecoveryTitle','bootRecoveryMessage','bootRecoveryRetry']) {
+  assert.ok(html.includes(recoveryClass) && css.includes('.' + recoveryClass),
+    'Script-load recovery UI must use canonical design-system class ' + recoveryClass + '.');
+}
+assert.ok(css.includes('.bootRecoveryRetry') && css.includes('min-height: 44px;'),
+  'The recovery retry action must use the shared touch-target baseline.');
+
 assert.ok(adminHtml.includes('href="/imperial-design-system.css"'), 'The separate administrator application must load the same design system.');
 assert.equal((adminHtml.match(/rel="stylesheet"/g) || []).length, 1, 'The administrator shell must expose one canonical stylesheet entry point.');
 assert.ok(!/<style\b/i.test(adminHtml), 'Administrator page styles must live in the canonical stylesheet, not inline style blocks.');
