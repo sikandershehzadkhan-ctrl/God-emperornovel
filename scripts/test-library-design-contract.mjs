@@ -1,0 +1,10 @@
+import fs from 'node:fs';
+import assert from 'node:assert/strict';
+const app=fs.readFileSync('public/app.js','utf8');
+const css=fs.readFileSync('public/imperial-ui-primitives.css','utf8');
+const library=app.slice(app.indexOf("async function library("),app.indexOf("async function history()"));
+for(const token of ['in-library-header','in-library-tabs','in-library-continue','in-library-stories','in-library-bookmarks','/api/library','/api/history','/api/bookmarks','/api/follows','visibleItems=active===\'following\'?following:items','removeLibrary','removeFollowing','/api/follow','ratingText(x.rating)']) assert.ok(library.includes(token),`Library behavior missing ${token}`);
+for(const token of ['.in-library-header','.in-library-tabs','.in-library-story','.in-library-bookmark','@media(max-width:48rem)']) assert.ok(css.includes(token),`Library styling missing ${token}`);
+assert.ok(!library.includes('pageStart('),'Legacy page wrapper must not remain in library views');
+assert.ok(!library.includes('toFixed(1)'),'Do not render invented decimal rating precision');
+console.log('Library, reading history shelf, bookmarks and following design contracts passed.');
