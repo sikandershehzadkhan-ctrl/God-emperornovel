@@ -27,7 +27,7 @@ The product needs one coherent design language across reading, discovery, creato
 
 - The public and administrator application shells each reference exactly one stylesheet entry point, the same canonical file.
 - The six existing feature styles have been consolidated into the canonical stylesheet in their original cascade order; semantic tokens and page-family migrations follow them in the same file.
-- The main application and separate administrator shell each reference only the canonical stylesheet. Administrator-only inline CSS has been moved into the canonical file. The service worker precaches only that stylesheet, not the retired runtime CSS assets.
+- The main application and separate administrator shell each reference only the canonical stylesheet. Administrator-only inline CSS has been moved into the canonical file, and dashboard cards, navigation, forms, status states and hero surfaces now use the shared light/dark semantic tokens. The service worker precaches only that stylesheet, not the retired runtime CSS assets.
 - Real primary buttons use the theme-aware foreground token; the current light and dark primary/hover combinations pass the automated 4.5:1 contrast threshold.
 - The homepage hero, format cards, feature tiles and supporting bands are the first migrated page family.
 - Semantic color, typography, spacing, elevation, breakpoint and reading-width tokens are available under the `--in-*` namespace.
