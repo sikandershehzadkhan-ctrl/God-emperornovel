@@ -1348,3 +1348,182 @@ html[data-theme="dark"] .stat { background: var(--bg2); border-color: var(--line
 @media (prefers-reduced-motion: reduce) {
   .catalogCard, .genreCard, .readerTool { transition: none; }
 }
+
+
+/* Account and personal library migration 06. */
+.accountGrid {
+  display: grid;
+  grid-template-columns: minmax(210px, 250px) minmax(0,1fr);
+  gap: 18px;
+  align-items: start;
+  margin-top: 20px;
+}
+.accountMenu {
+  position: sticky;
+  top: 94px;
+  display: grid;
+  gap: 4px;
+  padding: 10px;
+  border: 1px solid var(--line);
+  border-radius: 16px;
+  background: var(--panel);
+  box-shadow: var(--shadowSoft);
+}
+.accountMenu a {
+  display: flex;
+  min-height: 43px;
+  align-items: center;
+  padding: 10px 12px;
+  border: 1px solid transparent;
+  border-radius: 10px;
+  color: var(--in-ink-soft);
+  font-size: 12px;
+  font-weight: 650;
+}
+.accountMenu a.active,
+.accountMenu a:hover {
+  border-color: rgba(106,13,173,.15);
+  background: var(--in-purple-soft);
+  color: var(--in-purple);
+}
+.accountMenu button { margin-top: 6px; }
+.accountGrid > main { display: grid; gap: 14px; min-width: 0; }
+.accountGrid .panel,
+.settingsPanel,
+.settingsGrid .panel {
+  border: 1px solid var(--line);
+  border-radius: 17px;
+  background: var(--panel);
+  box-shadow: var(--shadowSoft);
+}
+.profileTop { display: flex; align-items: center; gap: 15px; }
+.profileTop h2 { color: var(--text); font-size: 22px; letter-spacing: -.03em; }
+.avatar {
+  width: 64px;
+  height: 64px;
+  border: 2px solid var(--in-purple-soft);
+  border-radius: 18px;
+  background: var(--bg2);
+}
+.metricGrid {
+  display: grid;
+  grid-template-columns: repeat(4,minmax(0,1fr));
+  gap: 10px;
+  margin-top: 18px;
+}
+.metric {
+  min-width: 0;
+  padding: 13px;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  background: var(--bg2);
+}
+.metric > b {
+  display: block;
+  margin-bottom: 4px;
+  color: var(--text);
+  font-size: 20px;
+  font-weight: 800;
+  font-variant-numeric: tabular-nums;
+}
+.metric .muted { font-size: 10px; }
+.accountGrid .section { margin-top: 4px; }
+.accountGrid .sectionHead h2 { color: var(--text); }
+.accountGrid .card { border: 1px solid var(--line); background: var(--panel); }
+.accountGrid .statline {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 12px 0;
+  border-bottom: 1px solid var(--line);
+  color: var(--in-ink-soft);
+  font-size: 12px;
+}
+.accountGrid .statline:last-child { border-bottom: 0; }
+.settingsGridPro {
+  display: grid;
+  grid-template-columns: repeat(2,minmax(0,1fr));
+  gap: 14px;
+  margin-top: 20px;
+}
+.settingsPanel { min-width: 0; padding: 20px; }
+.settingsPanel h2 {
+  margin: 7px 0 16px;
+  color: var(--text);
+  font-size: 20px;
+  letter-spacing: -.035em;
+}
+.settingsPanel .eyebrow { color: var(--in-purple); }
+.settingRow {
+  display: grid;
+  grid-template-columns: minmax(0,1fr) minmax(120px,.8fr);
+  align-items: center;
+  gap: 12px;
+  padding: 13px 0;
+  border-bottom: 1px solid var(--line);
+}
+.settingRow:last-child { border-bottom: 0; }
+.settingRow b,
+.checkRow b { display: block; color: var(--text); font-size: 12px; }
+.settingRow small,
+.checkRow small { display: block; margin-top: 3px; color: var(--muted); font-size: 10px; line-height: 1.5; }
+.settingRow select,
+.settingRow input:not([type="range"]) {
+  width: 100%;
+  min-height: 40px;
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  background: var(--bg2);
+  color: var(--text);
+}
+.settingRow input[type="range"] { width: 100%; accent-color: var(--in-purple); }
+.settingRow output { color: var(--in-purple); font-size: 11px; font-weight: 750; }
+.checkRow {
+  display: flex;
+  align-items: flex-start;
+  gap: 11px;
+  padding: 13px 0;
+  border-bottom: 1px solid var(--line);
+}
+.checkRow:last-of-type { border-bottom: 0; }
+.checkRow input {
+  width: 18px;
+  height: 18px;
+  flex: 0 0 18px;
+  margin: 2px 0 0;
+  accent-color: var(--in-purple);
+}
+.settingsNotice { margin-top: 14px; }
+.settingsActions { gap: 8px; }
+.settingsActions > * { min-height: 42px; }
+html[data-theme="dark"] .accountMenu,
+html[data-theme="dark"] .accountGrid .panel,
+html[data-theme="dark"] .settingsPanel { background: var(--panel); border-color: var(--line); }
+html[data-theme="dark"] .metric,
+html[data-theme="dark"] .settingRow select { background: var(--bg2); border-color: var(--line); }
+html[data-theme="dark"] .profileTop h2,
+html[data-theme="dark"] .metric > b,
+html[data-theme="dark"] .settingRow b,
+html[data-theme="dark"] .checkRow b { color: var(--text); }
+@media (max-width: 820px) {
+  .accountGrid { grid-template-columns: minmax(0,1fr); }
+  .accountMenu {
+    position: static;
+    display: flex;
+    overflow-x: auto;
+    gap: 5px;
+    padding: 7px;
+    scrollbar-width: thin;
+  }
+  .accountMenu a { flex: 0 0 auto; white-space: nowrap; }
+  .accountMenu button { flex: 0 0 auto; width: auto !important; margin: 0; }
+  .settingsGridPro { grid-template-columns: minmax(0,1fr); }
+}
+@media (max-width: 560px) {
+  .metricGrid { grid-template-columns: repeat(2,minmax(0,1fr)); }
+  .accountGrid .panel, .settingsPanel { padding: 15px; }
+  .settingRow { grid-template-columns: minmax(0,1fr); gap: 8px; }
+  .settingsActions { display: grid; grid-template-columns: minmax(0,1fr); }
+  .settingsActions > * { width: 100%; justify-content: center; }
+}
