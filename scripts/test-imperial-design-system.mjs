@@ -28,7 +28,8 @@ for (const token of [
 ]) assert.ok(css.includes(token), 'Missing required design-system contract: ' + token);
 assert.ok(css.indexOf('@import') < css.indexOf(':root'),
   'Feature styles must load before the canonical token overrides.');
-const appRuntime = read('public/app.js');
+const appRuntime = read('public/app-17.23.0.js');
+assert.match(appRuntime, /c===\\"ur\\"\\|\\|c===\\"ar\\"\\|\\|c===\\"fa\\"/, 'Urdu, Arabic and Persian must set RTL document direction.');
 for (const theme of ['light','dark','midnight','sepia','imperial','cosmic']) {
   assert.ok(appRuntime.includes("'" + theme + "'"), 'Reader theme remains available: ' + theme);
 }
