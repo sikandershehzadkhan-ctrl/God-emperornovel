@@ -6012,3 +6012,43 @@ html[data-theme="cosmic"]{--in-text:#FFFFFF;--in-text-muted:#DCE5FF;--in-line:#8
     box-sizing: border-box;
   }
 }
+
+
+/* Rating scale 10: canonical design-system controls and phone-safe targets. */
+.ratingIsland .ratingStars {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  max-width: 100%;
+}
+.ratingIsland .ratingStar {
+  box-sizing: border-box;
+  flex: 0 0 44px;
+  width: 44px;
+  min-width: 44px;
+  min-height: 44px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 4px;
+  border: 1px solid var(--in-line, var(--line));
+  border-radius: 11px;
+  background: var(--in-surface, var(--panel));
+  color: var(--in-text-muted, var(--muted));
+  font-size: 20px;
+  line-height: 1;
+}
+.ratingIsland .ratingStar.selected,
+.ratingIsland .ratingStar:hover {
+  border-color: var(--in-accent, var(--brand-sapphire));
+  background: var(--in-surface-soft, var(--bg2));
+  color: var(--in-accent, var(--brand-sapphire));
+}
+.ratingIsland .ratingStar:focus-visible {
+  outline: 3px solid var(--in-focus, var(--brand-sapphire));
+  outline-offset: 2px;
+}
+.ratingIsland .ratingStar:disabled {
+  cursor: wait;
+  opacity: .65;
+}
