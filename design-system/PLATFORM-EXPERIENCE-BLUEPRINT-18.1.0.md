@@ -307,3 +307,9 @@ The combined source-content audit now covers 170 assertions across the migrated 
 - Community data panels now expose loading states, empty states and retry/error feedback while preserving the existing discussion and published-catalog APIs.
 - Replaced the leaderboard author's decimal rating display with the shared whole-number rating formatter.
 - Added and wired account/settings and community contract tests into the build chain.
+
+### Trend Factory design migration
+- Isolated the Trend Factory page and its component namespace from retired generic styles.
+- Added an editorial research hero, five-stage signal-to-review pipeline, searchable/filterable live catalog signal workspace, responsive result grid, and rights/sourcing safety panels.
+- Kept the existing published-catalog metadata endpoint and filter behavior. The workspace continues to prohibit chapter-body ingestion and explicitly states that trend signals are not evidence of republication rights.
+- Added responsive, reduced-motion-aware styling and a source-level contract test wired into the build chain.
