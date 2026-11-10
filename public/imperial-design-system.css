@@ -1,0 +1,206 @@
+/* Imperial Novel unified design system
+ * Single entry point. Feature styles remain in their existing files while the
+ * shared token layer below is the final authority for color, type, surfaces,
+ * focus, motion and responsive interaction.
+ */
+@import url("/style-17.23.0.css");
+@import url("/app-17.23.0.css");
+@import url("/imperial-luxury-17.23.0.css");
+@import url("/imperial-formats-17.23.0.css");
+@import url("/imperial-comic-reader-17.23.0.css");
+@import url("/imperial-glass.css");
+
+:root,
+html[data-theme="light"] {
+  color-scheme: light;
+  --in-paper: #F6F5F2;
+  --in-paper-raised: #FFFFFF;
+  --in-paper-soft: #EEEDE9;
+  --in-ink: #172027;
+  --in-ink-soft: #35434C;
+  --in-muted: #65727A;
+  --in-line: #DCE1E3;
+  --in-obsidian: #0B1215;
+  --in-purple: #6A0DAD;
+  --in-purple-strong: #570B91;
+  --in-purple-soft: #F0E7F8;
+  --in-sapphire: #0F52BA;
+  --in-sapphire-strong: #0B4298;
+  --in-sapphire-soft: #E7EFFB;
+  --in-focus: #245FC2;
+  --in-success: #187653;
+  --in-danger: #B4233B;
+  --in-radius-sm: 10px;
+  --in-radius-md: 16px;
+  --in-radius-lg: 24px;
+  --in-content-width: 1380px;
+  --bg: var(--in-paper);
+  --bg2: #F0F0ED;
+  --panel: var(--in-paper-raised);
+  --panel2: #FAFAF8;
+  --panel3: var(--in-paper-soft);
+  --text: var(--in-ink);
+  --muted: var(--in-muted);
+  --line: var(--in-line);
+  --violet: var(--in-purple);
+  --violet2: #8D4CC0;
+  --violet3: var(--in-purple-soft);
+  --violet4: var(--in-purple-strong);
+  --brand-purple: var(--in-purple);
+  --brand-sapphire: var(--in-sapphire);
+  --brand-black: var(--in-obsidian);
+  --shadow: 0 18px 52px rgba(23,32,39,.08);
+  --shadowSoft: 0 7px 24px rgba(23,32,39,.055);
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+  -webkit-text-size-adjust: 100%;
+  text-size-adjust: 100%;
+}
+
+html[data-theme="dark"] {
+  color-scheme: dark;
+  --in-paper: #0B1215;
+  --in-paper-raised: #111B20;
+  --in-paper-soft: #17242A;
+  --in-ink: #F1F4F5;
+  --in-ink-soft: #D4DDE1;
+  --in-muted: #A5B2B9;
+  --in-line: rgba(190,207,216,.17);
+  --in-purple: #B995F2;
+  --in-purple-strong: #D0B6FA;
+  --in-purple-soft: rgba(185,149,242,.13);
+  --in-sapphire: #8DB8FF;
+  --in-sapphire-strong: #B2D0FF;
+  --in-sapphire-soft: rgba(141,184,255,.13);
+  --in-focus: #A9C9FF;
+  --in-success: #69D6A9;
+  --in-danger: #FF899A;
+  --bg: var(--in-paper);
+  --bg2: #101A1F;
+  --panel: var(--in-paper-raised);
+  --panel2: #142128;
+  --panel3: var(--in-paper-soft);
+  --text: var(--in-ink);
+  --muted: var(--in-muted);
+  --line: var(--in-line);
+  --violet: var(--in-purple);
+  --violet2: #C5A8F4;
+  --violet3: var(--in-purple-soft);
+  --violet4: var(--in-purple-strong);
+  --brand-purple: var(--in-purple);
+  --brand-sapphire: var(--in-sapphire);
+  --brand-black: var(--in-obsidian);
+  --shadow: 0 18px 52px rgba(0,0,0,.22);
+  --shadowSoft: 0 7px 24px rgba(0,0,0,.16);
+}
+
+html { scroll-behavior: smooth; background: var(--bg); }
+body {
+  color: var(--text);
+  background: var(--bg);
+  font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  line-height: 1.65;
+  letter-spacing: .002em;
+}
+body:before { opacity: .18; }
+.wrap { width: min(var(--in-content-width), calc(100% - 40px)); }
+.top {
+  background: color-mix(in srgb, var(--panel) 90%, transparent);
+  border-bottom: 1px solid var(--line);
+}
+.brand b, .footerBrand { color: var(--text); }
+.brand small, .muted { color: var(--muted); }
+.mark {
+  color: var(--in-purple);
+  border-color: var(--line);
+  background: var(--panel);
+  box-shadow: 0 5px 18px rgba(23,32,39,.07);
+}
+.navlinks a { color: var(--muted); }
+.navlinks a:hover, .navlinks a.active {
+  color: var(--in-purple-strong);
+  background: var(--in-purple-soft);
+}
+.card, .panel, .settingsPanel, .catalogCard, .catalogTop, .readerBox,
+.novelHero, .side, .chapter, .heroSideCard, .homeFormatShelf,
+.authorStudioIntro, .authorCreateForm, .authorWorksPanel {
+  border-color: var(--line);
+}
+.primary, .heroSearch button {
+  background: var(--in-purple);
+  border-color: var(--in-purple);
+  color: #fff;
+  box-shadow: 0 8px 22px rgba(106,13,173,.16);
+}
+.primary:hover { background: var(--in-purple-strong); }
+.secondary, .ghost, .iconbtn, .search {
+  color: var(--text);
+  border-color: var(--line);
+  background: var(--panel);
+}
+a:focus-visible, button:focus-visible, input:focus-visible,
+select:focus-visible, textarea:focus-visible, [tabindex]:focus-visible {
+  outline: 3px solid var(--in-focus);
+  outline-offset: 3px;
+}
+input, select, textarea {
+  color: var(--text);
+  background-color: var(--panel);
+  border-color: var(--line);
+}
+::placeholder { color: var(--muted); opacity: .86; }
+.ratingStar.selected, .ratingStar:hover { color: var(--in-sapphire); }
+html[data-theme="dark"] body {
+  color: var(--text);
+  background:
+    radial-gradient(ellipse at 86% -12%, rgba(15,82,186,.12), transparent 34%),
+    radial-gradient(ellipse at 8% 4%, rgba(106,13,173,.13), transparent 32%),
+    var(--bg);
+}
+html[data-theme="dark"] .top {
+  background: rgba(11,18,21,.91);
+  border-color: var(--line);
+}
+html[data-theme="dark"] .brand b,
+html[data-theme="dark"] .footerBrand,
+html[data-theme="dark"] .page h1,
+html[data-theme="dark"] .page h2,
+html[data-theme="dark"] .page h3 { color: var(--text); }
+html[data-theme="dark"] .mark,
+html[data-theme="dark"] .iconbtn,
+html[data-theme="dark"] .ghost,
+html[data-theme="dark"] .secondary,
+html[data-theme="dark"] .search {
+  color: var(--text);
+  background: var(--panel);
+  border-color: var(--line);
+}
+html[data-theme="dark"] .card,
+html[data-theme="dark"] .panel,
+html[data-theme="dark"] .settingsPanel,
+html[data-theme="dark"] .catalogCard,
+html[data-theme="dark"] .catalogTop,
+html[data-theme="dark"] .readerBox,
+html[data-theme="dark"] .novelHero,
+html[data-theme="dark"] .side,
+html[data-theme="dark"] .chapter,
+html[data-theme="dark"] .heroSideCard {
+  color: var(--text);
+  border-color: var(--line);
+}
+@media (max-width: 760px) {
+  .wrap { width: min(100% - 28px, var(--in-content-width)); }
+  .page { padding-top: 22px; }
+}
+@media (hover: none), (pointer: coarse) {
+  button, .iconbtn, .ghost, .secondary, .primary, a { -webkit-tap-highlight-color: transparent; }
+  button, .iconbtn, .ghost, .secondary, .primary { min-height: 44px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    scroll-behavior: auto !important;
+    animation-duration: .01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: .01ms !important;
+  }
+}
