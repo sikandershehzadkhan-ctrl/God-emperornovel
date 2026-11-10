@@ -33,4 +33,11 @@ assert.ok(css.includes('@media(prefers-reduced-motion:reduce)'), 'Shell must res
 assert.ok(css.includes('@media(max-width:54rem)'), 'Mobile layout breakpoint must exist');
 assert.ok(html.includes('/imperial-ui-primitives.css'), 'Canonical component stylesheet must be loaded');
 assert.ok(!shell.includes('class="mobileNav"'), 'Legacy mobile navigation must not be rendered');
-console.log('Global shell design contract passed.');
+
+const boot=app.slice(app.indexOf('async function boot(){'));
+assert.ok(boot.includes('class="in-boot-status"'),'Boot must use the canonical quiet status surface');
+assert.ok(boot.includes('class="in-system-state"'),'Failure must use the canonical recovery surface');
+assert.ok(!boot.includes('Your next world is loading.'),'Retired placeholder shell copy must be removed');
+assert.ok(css.includes('.in-boot-status') && css.includes('.in-system-state'),'Boot and recovery states must have canonical styles');
+console.log('Global shell and system-state design contracts passed.');
+
