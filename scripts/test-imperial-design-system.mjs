@@ -189,7 +189,7 @@ assert.ok(rtlLogicalPass.includes('@media (max-width: 700px)') && rtlLogicalPass
 
 // Runtime markup must use canonical classes for static presentation. The sole
 // allowed inline style is the reader progress width, which is data-driven.
-const runtimeStyleAttributes = [...appJs.matchAll(/\\sstyle="([^"]*)"/g)].map(match => match[1]);
+const runtimeStyleAttributes = [...appJs.matchAll(/\sstyle="([^"]*)"/g)].map(match => match[1]);
 assert.equal(runtimeStyleAttributes.length, 1, 'Static runtime presentation must be migrated out of inline style attributes.');
 assert.match(runtimeStyleAttributes[0], /^width:\$\{chapterPct\|\|initialNovelProgress\}%$/,
   'The only runtime inline style must be the data-driven reader progress width.');
@@ -204,7 +204,7 @@ for (const utility of [
 
 
 // Admin page runtime templates must also stay inside the shared design system.
-assert.equal((adminMarkup.match(/\\sstyle\\s*=/gi) || []).length, 0,
+assert.equal((adminMarkup.match(/\sstyle\s*=/gi) || []).length, 0,
   'Administrator runtime templates must not emit inline style attributes.');
 for (const selector of ['.admin-notice-danger','.admin-prewrap','.admin-bio-preview','.admin-sample-preview','.admin-report-status-select','.mini.edit']) {
   assert.ok(css.includes(selector), 'Administrator runtime presentation must be defined in canonical CSS: ' + selector + '.');
