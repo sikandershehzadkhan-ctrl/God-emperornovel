@@ -1748,3 +1748,26 @@ body.menu-open{overflow:hidden}
 @media(max-width:58rem){.page.in-trend-control-row{grid-template-columns:1fr 1fr}.page.in-trend-search{grid-column:1/-1}.page.in-trend-results{grid-template-columns:repeat(2,minmax(0,1fr))}.page.in-trend-safety-grid{grid-template-columns:1fr}}
 @media(max-width:40rem){.page.in-trend-factory>.wrap{width:min(100% - 1.5rem,78rem)}.page.in-trend-hero{grid-template-columns:1fr}.page.in-trend-seal{display:none}.page.in-trend-pipeline{grid-template-columns:repeat(2,minmax(0,1fr))}.page.in-trend-control-row{grid-template-columns:1fr}.page.in-trend-search{grid-column:auto}.page.in-trend-results{grid-template-columns:1fr}.page.in-trend-control-title{align-items:start;flex-direction:column}.page.in-trend-factory-note{flex-direction:column;gap:.25rem}}
 @media(prefers-reduced-motion:reduce){.page.in-trend-factory *{animation:none!important;transition:none!important}}
+
+/* OmniPortal: isolated, rights-first external metadata discovery */
+.page.in-omniportal{min-height:70vh;padding-bottom:4rem;background:var(--in-bg-canvas);color:var(--in-text-primary)}
+.page.in-omniportal>.wrap{width:min(100% - 2.5rem,76rem);margin-inline:auto}
+.page.in-omniportal>.wrap>.title{padding:clamp(1.3rem,3vw,2.4rem);margin:1.3rem 0;border:1px solid var(--in-border-default);border-radius:var(--in-radius-2xl);background:linear-gradient(120deg,var(--in-bg-surface),var(--in-bg-elevated))}
+.page.in-omniportal .title h1{font-family:var(--in-font-serif,Georgia,serif);font-size:clamp(2rem,5vw,3.1rem);line-height:1.08;color:var(--in-text-primary)}
+.page.in-omniportal .title .sub{max-width:65ch;color:var(--in-text-secondary);line-height:1.7}
+.page.in-omni-panel{padding:clamp(1rem,3vw,1.6rem);border:1px solid var(--in-border-default);border-radius:var(--in-radius-xl);background:var(--in-bg-surface)}
+.page.in-omni-search-form{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:.65rem}
+.page.in-omni-search-field{display:flex;align-items:center;gap:.6rem;min-height:48px;padding-inline:.9rem;border:1px solid var(--in-border-default);border-radius:var(--in-radius-md);background:var(--in-bg-canvas);color:var(--in-action-primary)}
+.page.in-omni-search-field input{width:100%;min-width:0;border:0;outline:0;background:transparent;color:var(--in-text-primary);font:inherit}
+.page.in-omni-primary,.page.in-omni-secondary,.page.in-omni-ghost{display:inline-flex;align-items:center;justify-content:center;min-height:44px;padding:.65rem .9rem;border:1px solid var(--in-border-default);border-radius:var(--in-radius-md);background:var(--in-bg-elevated);color:var(--in-text-primary);font:inherit;font-size:.76rem;font-weight:800;text-decoration:none;cursor:pointer}
+.page.in-omni-primary{border-color:var(--in-action-primary);background:var(--in-action-primary);color:#fff}
+.page.in-omni-notice{margin-top:1rem;padding:1rem;border-inline-start:3px solid var(--in-action-primary);border-radius:var(--in-radius-md);background:var(--in-bg-elevated);color:var(--in-text-secondary);font-size:.78rem;line-height:1.7}
+.page.in-omni-results{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:.8rem;margin-top:1rem}
+.page.in-omni-card{min-width:0;padding:1rem;border:1px solid var(--in-border-default);border-radius:var(--in-radius-lg);background:var(--in-bg-canvas)}
+.page.in-omni-card-body{display:flex;flex-direction:column;align-items:flex-start}
+.page.in-omni-pill{display:inline-flex;padding:.3rem .55rem;border:1px solid var(--in-border-default);border-radius:999px;color:var(--in-action-primary);font-size:.65rem;font-weight:850}
+.page.in-omni-card-title{color:var(--in-text-primary);font-size:1rem;font-weight:800;line-height:1.4}
+.page.in-omni-muted{color:var(--in-text-secondary);font-size:.76rem;line-height:1.65;overflow-wrap:anywhere}
+.page.in-omni-actions{display:flex;flex-wrap:wrap;gap:.5rem;margin-top:auto;padding-top:.8rem}
+.page.in-omni-empty{grid-column:1/-1;padding:1.3rem;border:1px dashed var(--in-border-default);border-radius:var(--in-radius-lg);color:var(--in-text-muted);text-align:center}
+@media(max-width:44rem){.page.in-omniportal>.wrap{width:min(100% - 1.5rem,76rem)}.page.in-omni-search-form,.page.in-omni-results{grid-template-columns:1fr}.page.in-omni-search-form>button{width:100%}}
