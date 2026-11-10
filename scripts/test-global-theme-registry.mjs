@@ -19,7 +19,7 @@ for (const [name, source] of [["source app", app], ["versioned runtime", runtime
 for (const theme of themes) assert.ok(css.includes('html[data-theme="' + theme + '"]'), "Missing CSS token map for " + theme);
 assert.ok(css.includes('html:is([data-theme="dark"],[data-theme="midnight"],[data-theme="imperial"],[data-theme="cosmic"])'), "Dark-family component styles must cover all dark themes");
 const settingsStart = app.indexOf("function settings()");
-const settingsEnd = app.indexOf("\\nasync function boot()", settingsStart);
+const settingsEnd = app.indexOf("\nasync function boot()", settingsStart);
 assert.ok(settingsStart >= 0 && settingsEnd > settingsStart, "Settings route must remain discoverable for preference isolation checks");
 const settingsSource = app.slice(settingsStart, settingsEnd);
 assert.ok(settingsSource.includes("['imperial_theme',$('#setSiteTheme').value]"), "Site theme must persist only to its global preference key");
@@ -27,7 +27,7 @@ assert.ok(settingsSource.includes("['imperial_reader_theme',$('#setReaderTheme')
 assert.ok(settingsSource.includes("applyImperialTheme($('#setSiteTheme').value)"), "Settings must apply the global theme from the site selector");
 assert.ok(!settingsSource.includes("applyImperialTheme($('#setReaderTheme').value)"), "Reader palette selection must never overwrite the global site theme");
 const readerStart = app.indexOf("async function reader()");
-const readerEnd = app.indexOf("\\nasync function ", readerStart + 1);
+const readerEnd = app.indexOf("\nasync function ", readerStart + 1);
 assert.ok(readerStart >= 0 && readerEnd > readerStart, "Reader route must remain discoverable for preference isolation checks");
 const readerSource = app.slice(readerStart, readerEnd);
 assert.ok(readerSource.includes("readerPage.dataset.readerTheme=chosen"), "Reader theme must apply to the reader surface, not the document root");
