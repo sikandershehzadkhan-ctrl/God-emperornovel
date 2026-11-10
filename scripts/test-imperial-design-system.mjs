@@ -13,12 +13,12 @@ assert.equal((html.match(/rel="stylesheet"/g) || []).length, 1,
 assert.match(html, /href="\/imperial-design-system\.css"/,
   'The app shell must load the unified design system.');
 assert.ok(adminHtml.includes('href="/imperial-design-system.css"'), 'The separate administrator application must load the same design system.');
-assert.equal(imports.length, 6, 'All six existing feature stylesheets must remain in the unified cascade.');
-for (const url of imports) {
-  assert.ok(url.startsWith('/'), 'Stylesheet import must be root-relative: ' + url);
-  assert.ok(fs.existsSync(new URL('file://' + root + '/public' + url)),
-    'Unified stylesheet references a missing asset: ' + url);
+assert.equal(imports.length, 0, 'The unified design system must not load legacy stylesheets through runtime imports.');
+for (const legacyAsset of ['/style-17.23.0.css','/app-17.23.0.css','/imperial-luxury-17.23.0.css','/imperial-formats-17.23.0.css','/imperial-comic-reader-17.23.0.css','/imperial-glass.css']) {
+  assert.ok(!html.includes(legacyAsset), 'The app shell must not load a legacy stylesheet directly: ' + legacyAsset);
+  assert.ok(!read('public/sw.js').includes("'" + legacyAsset + "'"), 'The service worker must not precache a retired runtime stylesheet: ' + legacyAsset);
 }
+
 for (const token of [
   '--in-paper:', '--in-obsidian:', '--in-purple:', '--in-sapphire:',
   '--in-purple-soft:', '--in-sapphire-soft:', '--in-focus:',
@@ -26,8 +26,8 @@ for (const token of [
   'html[data-theme="dark"]', 'prefers-reduced-motion: reduce',
   'pointer: coarse', ':focus-visible', '.homePage .hero.imperialArchiveHero', 'grid-template-columns: minmax(0, 1fr)', 'html[data-theme="dark"] .homePage .hero.imperialArchiveHero', '.homePage .nextFeatureTile', '.brandText b', '.mobileNav', '.menuDrawer', '.footerLinks a', 'env(safe-area-inset-bottom)', '@media (max-width: 1080px)', '.adminHero', '.adminNav', '.adminCard', '.adminTable', '.adminForm', '.chapterTools', '#omniRes', '#omni .notice', '.omniImport', '.catalogTop.panel', '.catalogSearch', '.catalogGrid', '.catalogCard:hover', '@media (max-width: 900px)', '@media (max-width: 640px)', '.genreGrid', '.tagGrid', '.tagTile', '#lbNovels', '.rankBadge', '.tierPanel', '.miniGrid', '.novelHero', '.novelCover', '.chapterList', '.readerBar', '.readerArticle', '.readerContent', '.chapterDrawer', '.readerFooterCard', '.accountGrid', '.accountMenu', '.metricGrid', '.settingsGridPro', '.settingsPanel', '.settingRow', '.checkRow', '.authorStudioLayout', '.authorCreateForm', '.authorWorksPanel', '.authorWorkActions', '.authorApplicationPanel', '.comicAuthorBuilder', '.communityGrid', '.commentItem', '.commentReply', '.ratingStars', '.reactReactionList', '#communityDiscussions'
 ]) assert.ok(css.includes(token), 'Missing required design-system contract: ' + token);
-assert.ok(css.indexOf('@import') < css.indexOf(':root'),
-  'Feature styles must load before the canonical token overrides.');
+assert.ok(css.indexOf('.mobileNav') < css.indexOf('--in-color-bg-canvas:'),
+  'Consolidated feature rules must precede the semantic design-system layer.');
 const appRuntime = read('public/app-17.23.0.js');
 assert.equal(appRuntime, read('public/app.js'), 'The served runtime and canonical runtime source must remain synchronized.');
 assert.ok(appRuntime.includes('document.documentElement.dir=(c==="ur"||c==="ar"||c==="fa")?"rtl":"ltr";'), 'Urdu, Arabic and Persian must set RTL document direction.');
