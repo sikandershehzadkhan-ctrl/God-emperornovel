@@ -252,3 +252,6 @@ Next migration family: Library, history, following, requests, Crown Vault, and n
 - Preserved the existing library, history, bookmarks, follows, and follow-toggle API interactions.
 - Replaced decimal rating formatting in this view with the platform's shared rating formatter.
 - Added and wired a library/following design contract test.
+
+- Rebuilt the standalone reading-history page with chronological return-to-chapter rows, author/title context, cover art, responsive layout, and an explicit empty/error state.
+- Added reading-history design contract coverage to the existing library page-family test.
