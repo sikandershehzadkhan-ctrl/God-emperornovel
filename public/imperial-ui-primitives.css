@@ -1302,3 +1302,59 @@ body.menu-open{overflow:hidden}
 @media(max-width:38rem){.in-catalog>.wrap{width:min(100% - 1.5rem,var(--in-content-max))}.in-catalog-controls{padding:.85rem}.in-catalog-filter-grid{grid-template-columns:1fr 1fr;gap:.65rem}.in-catalog-search{gap:.45rem;padding-inline-start:.65rem}.in-catalog-search button{padding-inline:.65rem;font-size:.72rem}.in-catalog-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:.65rem}.in-catalog .catalogBody{padding:.65rem}.in-catalog .catalogTitle{font-size:.82rem}.in-catalog .catalogStats{font-size:.64rem}}
 @media(max-width:22rem){.in-catalog-filter-grid{grid-template-columns:1fr}}
 @media(prefers-reduced-motion:reduce){.in-catalog .catalogCard{transition:none}}
+
+/* Novel detail and chapter directory: canonical 18.1 page-family components */
+.in-novel,.in-chapters{background:var(--in-bg-canvas);color:var(--in-text-primary);min-height:60vh;padding:clamp(1.1rem,3vw,2.6rem) 0 4rem}
+.in-novel-wrap,.in-chapters-wrap{width:min(100% - 2.5rem,76rem);margin-inline:auto}
+.in-novel-breadcrumb,.in-chapters-breadcrumb{display:flex;flex-wrap:wrap;gap:.55rem;align-items:center;color:var(--in-text-muted);font-size:.76rem;margin-block:0 1.4rem}
+.in-novel-breadcrumb a,.in-chapters-breadcrumb a{color:var(--in-text-secondary);text-decoration:none}
+.in-novel-breadcrumb a:hover,.in-chapters-breadcrumb a:hover{color:var(--in-action-primary)}
+.in-novel-hero{display:grid;grid-template-columns:minmax(12rem,17rem) minmax(0,1fr);gap:clamp(1.5rem,4vw,3.8rem);align-items:center;padding:clamp(1.2rem,3vw,2.5rem);border:1px solid var(--in-border-default);border-radius:var(--in-radius-2xl);background:linear-gradient(135deg,var(--in-bg-surface),var(--in-bg-elevated));box-shadow:var(--in-shadow-soft)}
+.in-novel-cover{width:100%;aspect-ratio:2/3;overflow:hidden;border-radius:var(--in-radius-xl);background:var(--in-bg-subtle);box-shadow:0 1.2rem 3rem #07101b24}
+.in-novel-cover img{display:block;width:100%;height:100%;object-fit:cover}
+.in-novel-kicker,.in-novel-overline{display:flex;gap:.5rem;align-items:center;color:var(--in-action-primary);font-size:.69rem;font-weight:800;letter-spacing:.13em;text-transform:uppercase}
+.in-novel-summary h1,.in-chapters-header h1{margin:.65rem 0 .35rem;color:var(--in-text-primary);font-family:var(--in-font-serif,Georgia,serif);font-size:clamp(2rem,5vw,3.65rem);line-height:1.08;letter-spacing:-.035em}
+.in-novel-author{margin:0;color:var(--in-text-secondary);font-size:.9rem}
+.in-novel-taxonomy{display:flex;flex-wrap:wrap;gap:.45rem;margin:1rem 0}
+.in-novel-taxonomy a{padding:.38rem .68rem;border:1px solid var(--in-border-default);border-radius:999px;background:var(--in-bg-surface);color:var(--in-text-secondary);font-size:.72rem;text-decoration:none}
+.in-novel-taxonomy a:hover{border-color:var(--in-action-primary);color:var(--in-action-primary)}
+.in-novel-description,.in-novel-about{max-width:70ch;color:var(--in-text-secondary);font-size:.94rem;line-height:1.8}
+.in-novel-stats{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:.55rem;margin:1.3rem 0}
+.in-novel-stats>div{display:grid;gap:.2rem;padding:.75rem;border:1px solid var(--in-border-subtle);border-radius:var(--in-radius-md);background:var(--in-bg-surface)}
+.in-novel-stats b{font-size:1.05rem;font-variant-numeric:tabular-nums;color:var(--in-text-primary)}
+.in-novel-stats span{font-size:.67rem;color:var(--in-text-muted)}
+.in-novel-actions{display:flex;flex-wrap:wrap;gap:.55rem;align-items:center}
+.in-button{display:inline-flex;min-height:2.75rem;align-items:center;justify-content:center;gap:.45rem;padding:.65rem .95rem;border:1px solid var(--in-border-default);border-radius:var(--in-radius-md);font:inherit;font-size:.78rem;font-weight:750;text-decoration:none;cursor:pointer;transition:background .18s,border-color .18s,color .18s}
+.in-button--primary{border-color:var(--in-action-primary);background:var(--in-action-primary);color:var(--in-action-primary-text)}
+.in-button--secondary{background:var(--in-bg-surface);color:var(--in-text-primary)}
+.in-button--quiet{border-color:transparent;background:transparent;color:var(--in-text-secondary)}
+.in-button:hover{border-color:var(--in-action-primary);filter:brightness(1.04)}
+.in-novel-notice{color:var(--in-text-muted);font-size:.78rem}
+.in-novel-tabs{display:flex;gap:1.3rem;align-items:center;margin:1.6rem 0 0;border-bottom:1px solid var(--in-border-default)}
+.in-novel-tabs a{display:flex;gap:.4rem;align-items:center;padding:.8rem .2rem;color:var(--in-text-secondary);font-size:.82rem;font-weight:700;text-decoration:none;border-bottom:2px solid transparent}
+.in-novel-tabs a.is-active,.in-novel-tabs a:hover{color:var(--in-action-primary);border-color:var(--in-action-primary)}
+.in-novel-tabs a span{font-size:.68rem;color:var(--in-text-muted)}
+.in-novel-section{padding-block:2rem;border-bottom:1px solid var(--in-border-subtle)}
+.in-novel-section-head,.in-chapters-toolbar{display:flex;justify-content:space-between;gap:1rem;align-items:end;margin-bottom:1rem}
+.in-novel-section-head h2{margin:.35rem 0;color:var(--in-text-primary);font-family:var(--in-font-serif,Georgia,serif);font-size:clamp(1.4rem,3vw,2rem)}
+.in-novel-section-head p{margin:.25rem 0;color:var(--in-text-muted);font-size:.8rem}
+.in-novel-viewall{color:var(--in-action-primary);font-size:.78rem;font-weight:750;text-decoration:none}
+.in-novel-chapter-list{display:grid;gap:.45rem}
+.in-novel-chapter-list .chapterRow,.in-chapters-list .chapterRow{border:1px solid var(--in-border-subtle);border-radius:var(--in-radius-md);background:var(--in-bg-surface)}
+.in-novel-community-grid{display:grid;grid-template-columns:minmax(0,.85fr) minmax(0,1.15fr);gap:1rem}
+.in-novel-community-card{min-width:0;padding:1.1rem;border:1px solid var(--in-border-default);border-radius:var(--in-radius-lg);background:var(--in-bg-surface)}
+.in-novel-community-card h3{margin:0 0 .8rem;font-size:.95rem}
+.in-novel-community-card .novelReactions{display:flex;flex-wrap:wrap;gap:.5rem;margin-top:.8rem}
+.in-novel-empty,.in-chapters-empty{padding:1.5rem;border:1px dashed var(--in-border-default);border-radius:var(--in-radius-lg);color:var(--in-text-muted);text-align:center}
+.in-chapters-header{display:flex;justify-content:space-between;gap:1rem;align-items:end;padding:clamp(1.2rem,3vw,2.2rem);border:1px solid var(--in-border-default);border-radius:var(--in-radius-2xl);background:var(--in-bg-surface)}
+.in-chapters-header p{margin:.5rem 0 0;color:var(--in-text-muted);font-size:.82rem}
+.in-chapters-toolbar{align-items:center;margin:1.7rem 0 .8rem;padding:.95rem 1rem;border:1px solid var(--in-border-default);border-radius:var(--in-radius-lg);background:var(--in-bg-surface)}
+.in-chapters-toolbar>div{display:grid;gap:.2rem}
+.in-chapters-toolbar b{font-size:.88rem}
+.in-chapters-toolbar span{color:var(--in-text-muted);font-size:.75rem}
+.in-chapters-list{display:grid;gap:.5rem}
+.in-chapters-footer{display:flex;justify-content:space-between;gap:1rem;margin-top:1.3rem;color:var(--in-text-muted);font-size:.75rem}
+.in-chapters-footer a{color:var(--in-action-primary);font-weight:700;text-decoration:none}
+@media(max-width:48rem){.in-novel-wrap,.in-chapters-wrap{width:min(100% - 1.5rem,76rem)}.in-novel-hero{grid-template-columns:minmax(6.5rem,9rem) minmax(0,1fr);gap:1rem;padding:1rem}.in-novel-summary h1,.in-chapters-header h1{font-size:clamp(1.55rem,6vw,2.35rem)}.in-novel-stats{grid-template-columns:repeat(2,minmax(0,1fr));gap:.4rem}.in-novel-stats>div{padding:.55rem}.in-novel-actions{gap:.4rem}.in-button{min-height:2.65rem;padding:.55rem .7rem;font-size:.72rem}.in-novel-community-grid{grid-template-columns:1fr}.in-chapters-header{align-items:start;flex-direction:column}.in-novel-section-head{align-items:start;flex-direction:column}}
+@media(max-width:25rem){.in-novel-hero{grid-template-columns:1fr}.in-novel-cover{width:min(48%,10rem);margin-inline:auto}.in-novel-summary h1{text-align:center}.in-novel-kicker,.in-novel-author{justify-content:center;text-align:center}.in-novel-actions .in-button{flex:1}.in-chapters-toolbar{align-items:start;flex-direction:column}.in-chapters-footer{flex-direction:column}}
+@media(prefers-reduced-motion:reduce){.in-button{transition:none}}
