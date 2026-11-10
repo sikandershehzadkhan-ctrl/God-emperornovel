@@ -152,7 +152,7 @@ assert.ok(runtime.includes('document.querySelectorAll("option[data-in-lang]").fo
 assert.ok(runtime.includes('document.querySelectorAll("[data-in-lang]:not(option)").forEach'), 'Language changes must translate reader labels and navigation text nodes.');
 const readerLabels = ["Theme","Line spacing","Text width","Chapter List","Close","Back to chapters","Bookmark chapter","Cycle reader theme","Compact","Comfort","Relaxed","Focused","Standard","Wide","Previous","Next"];
 const localeDictionary = runtime.slice(runtime.indexOf('const IN_LANG='), runtime.indexOf(';function setINLang'));
-const localeMatches = [...localeDictionary.matchAll(/"([a-z]{2}(?:-[A-Z]{2})?)":\\{/g)];
+const localeMatches = [...localeDictionary.matchAll(/"([a-z]{2}(?:-[A-Z]{2})?)":\{/g)];
 assert.equal(localeMatches.length, 14, 'All 14 locale dictionaries must be checked for reader controls.');
 for (let index = 0; index < localeMatches.length; index++) {
   const code = localeMatches[index][1];
