@@ -2122,3 +2122,47 @@ html[data-theme="dark"] .reactReactionList .novelReaction { background: var(--bg
   .chapterTools, .chapterRow { grid-template-columns: minmax(0,1fr); }
   .chapterRow .actions { width: 100%; }
 }
+
+
+/* Authorized source discovery and rights review migration 10. */
+#omniRes {
+  display: grid;
+  grid-template-columns: repeat(2,minmax(0,1fr));
+  gap: 12px;
+}
+#omniRes .card {
+  min-width: 0;
+  padding: 16px;
+  border: 1px solid var(--line);
+  border-radius: 15px;
+  background: var(--panel);
+  box-shadow: var(--shadowSoft);
+}
+#omniRes .cardTitle { color: var(--text); font-size: 15px; line-height: 1.4; }
+#omniRes .cardBody > p { color: var(--muted); font-size: 12px; line-height: 1.7; }
+#omniRes .pill {
+  border-color: rgba(15,82,186,.18);
+  background: var(--in-sapphire-soft);
+  color: var(--in-sapphire);
+}
+#omniRes .actions { gap: 7px; }
+#omniRes .actions > * { min-height: 40px; }
+#omniRes .omniImport {
+  border: 1px solid rgba(106,13,173,.2);
+  background: var(--in-purple-soft);
+  color: var(--in-purple);
+}
+#omni .notice {
+  padding: 13px 14px;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  background: var(--bg2);
+  color: var(--in-ink-soft);
+  font-size: 12px;
+  line-height: 1.7;
+}
+html[data-theme="dark"] #omniRes .card { background: var(--panel); border-color: var(--line); }
+@media (max-width: 640px) {
+  #omniRes { grid-template-columns: minmax(0,1fr); }
+  #omniRes .card { padding: 13px; }
+}
