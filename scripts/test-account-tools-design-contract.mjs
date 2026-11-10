@@ -1,0 +1,12 @@
+import fs from 'node:fs';
+import assert from 'node:assert/strict';
+const app=fs.readFileSync('public/app.js','utf8');
+const css=fs.readFileSync('public/imperial-ui-primitives.css','utf8');
+const tickets=app.slice(app.indexOf('async function tickets(){'),app.indexOf('async function requests()'));
+const requests=app.slice(app.indexOf('async function requests(){'),app.indexOf('async function omni()'));
+for(const token of ['in-vault-header','in-vault-balance','in-vault-ledger','/api/profile','/api/tickets/ledger','p.user.tickets','p.stats.ticketFlow','x.delta','No Crown transactions']) assert.ok(tickets.includes(token),`Vault missing ${token}`);
+for(const token of ['in-requests-header','in-requests-quota','in-requests-form','id="req"','id="reqMsg"','name="url"','/api/requests','button.disabled=true','d.cost===undefined']) assert.ok(requests.includes(token),`Request desk missing ${token}`);
+assert.ok(!tickets.includes('pageStart(')&&!requests.includes('pageStart('),'Legacy page wrapper must not remain');
+assert.ok(!requests.includes('Number(d.cost||0)'),'Missing request cost must not be fabricated as zero');
+for(const token of ['.in-vault-balance','.in-vault-entry','.in-requests-card','.in-requests-form','@media(max-width:42rem)']) assert.ok(css.includes(token),`Account tool styles missing ${token}`);
+console.log('Crown Vault and request desk design contracts passed.');
