@@ -308,3 +308,13 @@ assert.ok(rtlComponentLayer.includes('inset-inline-start') &&
 assert.ok(!/(^|[;{]\s*)(left|right|margin-left|margin-right|padding-left|padding-right|border-left|border-right)\s*:/m.test(rtlComponentLayer),
   'The active RTL component override layer must contain no physical left/right declarations.');
 
+const rtlArchiveHeroLayer = read('public/imperial-design-system.css')
+  .split('/* RTL parity for the current archive hero artwork')[1]
+  .split('/* High-contrast and operating-system forced-color support. */')[0];
+assert.ok(rtlArchiveHeroLayer.includes('inset-inline-end: -7%;') &&
+  rtlArchiveHeroLayer.includes('inset-inline-end: calc(clamp(250px,38vw,500px)*.43);') &&
+  rtlArchiveHeroLayer.includes('inset-inline-end: -95px;'),
+  'RTL archive hero artwork must use logical inline-end offsets at desktop and mobile sizes.');
+assert.ok(!/(^|[;{]\s*)(left|right)\s*:/m.test(rtlArchiveHeroLayer),
+  'RTL archive hero overrides must not use physical left/right offsets.');
+
