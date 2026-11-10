@@ -91,6 +91,10 @@ assert.ok(!/style="(?:margin-top:|margin:18px|display:none;margin-top:)/.test(ad
   'Static administrator layout styles must not remain inline.');
 assert.ok(adminMarkup.includes('class="panel admin-chapter-preview" hidden') && adminMarkup.includes('class="panel admin-chapter-edit" hidden'),
   'Chapter preview and edit panels must start hidden semantically and remain styleable.');
+assert.ok(adminMarkup.includes("const panel=document.getElementById('chapterPreviewPanel');panel.hidden=false;panel.style.display='block';"), 'Opening chapter preview must clear the native hidden state.');
+assert.ok(adminMarkup.includes("function closeChapterPreview(){const panel=document.getElementById('chapterPreviewPanel');panel.hidden=true;panel.style.display='none'}"), 'Closing chapter preview must restore the native hidden state.');
+assert.ok(adminMarkup.includes("const panel=document.getElementById('chapterEditPanel');panel.hidden=false;panel.style.display='block';"), 'Opening chapter edit must clear the native hidden state.');
+assert.ok(adminMarkup.includes("function cancelChapterEdit(){const panel=document.getElementById('chapterEditPanel');panel.hidden=true;panel.style.display='none';document.getElementById('chapterEditMsg').textContent=''}"), 'Canceling chapter edit must restore the native hidden state.');
 assert.ok(css.includes('.admin-chapter-preview[hidden], .admin-chapter-edit[hidden] { display: none !important; }'),
   'The canonical stylesheet must preserve hidden chapter-panel behavior.');
 assert.ok(css.includes('.admin-chapter-preview-content { margin-top: 14px; line-height: 1.8; overflow-wrap: anywhere; }'),
