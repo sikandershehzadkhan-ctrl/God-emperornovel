@@ -118,3 +118,5 @@ for (const selector of ['.readerTools .readerTool', '.readerActions > button', '
 }
 assert.ok(readerTouchFix.includes('flex-wrap: wrap;') && readerTouchFix.includes('.readerBarInner'), 'Reader toolbar must wrap instead of overflowing when its controls reach 44px.');
 assert.ok(readerTouchFix.includes('@media (max-width: 390px)'), 'Compact-phone reader layout must receive a dedicated toolbar pass.');
+
+assert.ok(readerTouchFix.includes('min-width: 44px !important;'), 'Reader controls must override earlier legacy min-width !important declarations.');
