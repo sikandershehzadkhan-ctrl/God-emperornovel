@@ -10,4 +10,9 @@ for(const token of ['in-chapters-header','in-chapters-toolbar','in-chapters-list
 for(const token of ['.in-novel-hero','.in-novel-community-grid','.in-chapters-header','.in-chapters-list','@media(max-width:48rem)','prefers-reduced-motion']) assert.ok(css.includes(token),`Page-family styling missing ${token}`);
 assert.ok(!novel.includes('class="novelHero"'),'Legacy novel hero markup must not remain in the rebuilt page');
 assert.ok(!chapters.includes('pageStart(n.title'),'Legacy chapter directory wrapper must not remain');
-console.log('Novel detail and chapter directory design contracts passed.');
+
+const reader=app.slice(app.indexOf('async function reader(){'),app.indexOf('async function authPage(mode)'));
+for(const token of ['in-reader readerPage','readerThemeSelect','readerLineSelect','readerWidthSelect','fontDown','fontUp','bookmarkBtn','chapterDrawer','readerProgressBar','/api/history','/api/bookmark','/api/chapters/']) assert.ok(reader.includes(token),`Reader behavior missing ${token}`);
+for(const token of ['.in-reader.readerPage[data-reader-theme="light"]','.in-reader.readerPage[data-reader-theme="dark"]','.in-reader.readerPage[data-reader-theme="midnight"]','.in-reader.readerPage[data-reader-theme="sepia"]','.in-reader.readerPage[data-reader-theme="imperial"]','.in-reader.readerPage[data-reader-theme="cosmic"]','.in-reader.readerPage .readerContent','min-height:44px']) assert.ok(css.includes(token),`Reader design missing ${token}`);
+console.log('Novel detail, chapter directory and six-theme reader design contracts passed.');
+
