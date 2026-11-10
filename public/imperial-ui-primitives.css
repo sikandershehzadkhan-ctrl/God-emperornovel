@@ -1340,7 +1340,7 @@ body.menu-open{overflow:hidden}
 .in-novel-section-head p{margin:.25rem 0;color:var(--in-text-muted);font-size:.8rem}
 .in-novel-viewall{color:var(--in-action-primary);font-size:.78rem;font-weight:750;text-decoration:none}
 .in-novel-chapter-list{display:grid;gap:.45rem}
-.in-novel-chapter-list .chapterRow,.in-chapters-list .chapterRow{border:1px solid var(--in-border-subtle);border-radius:var(--in-radius-md);background:var(--in-bg-surface)}
+.in-novel-chapter-list .chapter,.in-chapters-list .chapter{border:1px solid var(--in-border-subtle);border-radius:var(--in-radius-md);background:var(--in-bg-surface)}
 .in-novel-community-grid{display:grid;grid-template-columns:minmax(0,.85fr) minmax(0,1.15fr);gap:1rem}
 .in-novel-community-card{min-width:0;padding:1.1rem;border:1px solid var(--in-border-default);border-radius:var(--in-radius-lg);background:var(--in-bg-surface)}
 .in-novel-community-card h3{margin:0 0 .8rem;font-size:.95rem}
