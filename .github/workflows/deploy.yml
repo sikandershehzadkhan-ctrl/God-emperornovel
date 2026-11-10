@@ -164,7 +164,7 @@ jobs:
           echo "Preflight: classify the existing novel rating schema before migration 0012."
           rating_output="$(d1_command "SELECT CASE WHEN NOT EXISTS(SELECT 1 FROM sqlite_master WHERE type='table' AND name='ratings') THEN 'absent' WHEN EXISTS(SELECT 1 FROM sqlite_master WHERE type='table' AND name='ratings' AND sql LIKE '%rating BETWEEN 1 AND 5%') THEN 'legacy' WHEN EXISTS(SELECT 1 FROM sqlite_master WHERE type='table' AND name='ratings' AND sql LIKE '%rating BETWEEN 1 AND 10%' AND sql LIKE '%CAST(rating AS INTEGER)%') THEN 'current' ELSE 'unknown' END AS status;")"
           rating_status="$(printf '%s' "$rating_output" | read_status)"
-          printf '%s\\n' "$rating_output"
+          printf '%s\n' "$rating_output"
           if [ "$rating_status" = "legacy" ] || [ "$rating_status" = "absent" ]; then
             echo "Applying migration 0012: preserve each 1–5 vote as its equivalent even value on 1–10."
             npx --yes wrangler@4 d1 execute "$db" --remote --file=migrations/0012_rating_scale_10.sql
@@ -177,7 +177,7 @@ jobs:
 
           rating_ready_output="$(d1_command "SELECT CASE WHEN EXISTS(SELECT 1 FROM sqlite_master WHERE type='table' AND name='ratings' AND sql LIKE '%rating BETWEEN 1 AND 10%' AND sql LIKE '%CAST(rating AS INTEGER)%') AND NOT EXISTS(SELECT 1 FROM ratings WHERE rating<1 OR rating>10 OR rating<>CAST(rating AS INTEGER)) THEN 'ready' ELSE 'missing' END AS status;")"
           rating_ready_status="$(printf '%s' "$rating_ready_output" | read_status)"
-          printf '%s\\n' "$rating_ready_output"
+          printf '%s\n' "$rating_ready_output"
           if [ "$rating_ready_status" != "ready" ]; then
             echo "::error::The 1–10 rating schema or its stored values failed post-migration verification. Worker deployment is blocked."
             exit 1
