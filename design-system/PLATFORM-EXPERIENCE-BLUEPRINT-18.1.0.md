@@ -365,3 +365,5 @@ The combined source-content audit now covers 170 assertions across the migrated 
 
 ### Standalone page normalization
 - Added shared document-level canvas, typography and box-sizing behavior for standalone Admin, AI Author Studio, Community Taxonomy and legal pages, removing browser-default body margins and mismatched backgrounds.
+
+- Corrected the homepage's stale versioned JavaScript reference so it now loads the updated application bundle; refreshed the service-worker cache namespace and precache list to include the current app, design tokens and component primitives instead of the retired app bundle.
