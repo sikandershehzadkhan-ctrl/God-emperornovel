@@ -2512,3 +2512,31 @@ html[dir="rtl"] .heroOrbitLabel { writing-mode: vertical-lr; }
   html[dir="rtl"] .heroOrbit,
   html[dir="rtl"] .orbitTwo { transform: none; }
 }
+
+
+/* High-contrast and operating-system forced-color support. */
+@media (prefers-contrast: more) {
+  :root, html[data-theme="light"] { --line: #69777E; }
+  html[data-theme="dark"] { --line: #A5B2B9; }
+  .in-card, .in-field, .in-badge, .in-tabs, .in-table-wrap { border-width: 2px; }
+  :where(button,a,input,select,textarea,[role="button"],[tabindex]):focus-visible {
+    outline-width: 4px;
+    outline-offset: 4px;
+  }
+}
+@media (forced-colors: active) {
+  .in-button, .in-field, .in-card, .in-badge, .in-tabs, .in-table-wrap {
+    forced-color-adjust: auto;
+    border: 1px solid CanvasText;
+  }
+  .in-button { background: ButtonFace; color: ButtonText; }
+  .in-button--secondary, .in-button--quiet { background: Canvas; color: LinkText; }
+  :where(button,a,input,select,textarea,[role="button"],[tabindex]):focus-visible {
+    outline: 3px solid Highlight;
+    outline-offset: 3px;
+  }
+  .in-badge--info, .in-badge--success, .in-badge--danger {
+    background: Canvas;
+    color: CanvasText;
+  }
+}
