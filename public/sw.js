@@ -1,4 +1,4 @@
-const CACHE='imperial-novel-v17.23.0-design-system-2';
+const CACHE='imperial-novel-v17.23.0-design-system-3';
 const CORE=['/','/imperial-design-system.css','/manifest-17.23.0.webmanifest','/app-17.23.0.js','/imperial-novel-app-icon.svg'];
 self.addEventListener('install',event=>event.waitUntil(caches.open(CACHE).then(cache=>cache.addAll(CORE)).then(()=>self.skipWaiting())));
 self.addEventListener('activate',event=>event.waitUntil(caches.keys().then(keys=>Promise.all(keys.filter(key=>key.startsWith('imperial-novel-')&&key!==CACHE).map(key=>caches.delete(key)))).then(()=>self.clients.claim())));
