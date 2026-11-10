@@ -6000,3 +6000,15 @@ html[data-theme="cosmic"]{--in-text:#FFFFFF;--in-text-muted:#DCE5FF;--in-line:#8
     padding-bottom: calc(92px + env(safe-area-inset-bottom));
   }
 }
+
+
+/* Reader viewport containment: prevent intrinsic sticky-toolbar width from
+   expanding the reader beyond the padded application grid on narrow screens. */
+@media (max-width: 760px) {
+  #app > .readerPage {
+    width: 100%;
+    min-width: 0;
+    max-width: 100%;
+    box-sizing: border-box;
+  }
+}
