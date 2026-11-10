@@ -5988,3 +5988,8 @@ html[data-theme="cosmic"]{--in-text:#FFFFFF;--in-text-muted:#DCE5FF;--in-line:#8
 .readerPage[data-reader-theme="imperial"]{--reader-text:#FFFFFF;--reader-muted:#E9DDF7;--reader-line:#9A7EB5;--reader-panel:#17122F;--reader-panel-raised:#2C1B40;--reader-surface-soft:#2C1B40;--reader-focus:#D0A9F0}
 .readerPage[data-reader-theme="cosmic"]{--reader-text:#FFFFFF;--reader-muted:#DCE5FF;--reader-line:#8298C5;--reader-panel:#111A32;--reader-panel-raised:#1E2D50;--reader-surface-soft:#1E2D50;--reader-focus:#8DB8FF}
 }
+
+/* Chapter text follows its own first-strong direction, independent of UI locale. */
+.readerPage .readerContent,
+.readerPage .readerArticle h1,
+.readerPage .comicPage figcaption { text-align: start; unicode-bidi: plaintext; }
