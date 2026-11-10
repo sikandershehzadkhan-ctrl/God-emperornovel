@@ -1,0 +1,14 @@
+import fs from 'node:fs';
+import assert from 'node:assert/strict';
+const app=fs.readFileSync('public/app.js','utf8');
+const css=fs.readFileSync('public/imperial-ui-primitives.css','utf8');
+const start=app.indexOf('function settings(){');
+const end=app.indexOf('\n\nasync function boot()',start);
+assert.ok(start>=0&&end>start,'Settings renderer must exist');
+const page=app.slice(start,end);
+for(const id of ['setSiteTheme','setReaderTheme','setFont','fontOut','setLine','setWidth','setReduced','setHigh','setCompact','settingsSaved','exportPrefs','resetPrefs','clearLocalReading']) assert.ok(page.includes('id="'+id+'"'),'Settings control must remain: '+id);
+for(const key of ['imperial_theme','imperial_reader_theme','readerSize','imperial_reader_line_height','imperial_reader_width','imperial_reduced_motion','imperial_high_contrast','imperial_compact_cards','readerProgress:','readerProgressChapter:','readerBookmark:']) assert.ok(page.includes(key),'Preference or reading state must be preserved: '+key);
+for(const action of ['applyImperialTheme','exportedAt','imperial-novel-preferences.json','Reset appearance and reader preferences','Clear local reading progress']) assert.ok(page.includes(action),'Settings action missing: '+action);
+assert.ok(!page.includes('pageStart('),'Legacy settings page wrapper must not remain');
+for(const token of ['.in-settings-header','.in-settings-grid','.in-settings-checks','.in-settings-actions','@media(max-width:48rem)']) assert.ok(css.includes(token),'Settings styling missing: '+token);
+console.log('Settings and reading preference design contract passed.');

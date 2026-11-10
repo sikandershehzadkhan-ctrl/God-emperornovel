@@ -1,0 +1,12 @@
+import fs from 'node:fs';
+import assert from 'node:assert/strict';
+const app=fs.readFileSync('public/app.js','utf8');
+const css=fs.readFileSync('public/imperial-ui-primitives.css','utf8');
+const start=app.indexOf("if(kind==='notifications')");
+const end=app.indexOf("\n }\n}",start);
+assert.ok(start>=0&&end>start,'Notifications route branch must exist');
+const page=app.slice(start,end);
+for(const token of ['in-notifications-header','in-notifications-toolbar','in-notifications-list','/api/notifications','/api/notifications/read','notificationSummary','read_at','is-unread','markRead','unread===0']) assert.ok(page.includes(token),`Notifications behavior missing ${token}`);
+assert.ok(!page.includes('pageStart('),'Legacy generic page wrapper must not remain');
+for(const token of ['.in-notifications-header','.in-notifications-toolbar','.in-notification','.is-unread','@media(max-width:42rem)']) assert.ok(css.includes(token),`Notifications styles missing ${token}`);
+console.log('Notifications inbox design contract passed.');

@@ -1,0 +1,10 @@
+import fs from 'node:fs';
+import assert from 'node:assert/strict';
+const app=fs.readFileSync('public/app.js','utf8');
+const css=fs.readFileSync('public/imperial-ui-primitives.css','utf8');
+const author=app.slice(app.indexOf('async function authorStudio()'),app.indexOf('async function authorPublic('));
+for(const token of ["pageStart('Author Studio'","'in-author-studio'","/api/me","/api/formats","/api/author/novels","/api/author/chapters","/submit","initComicPageComposer","rights_evidence","authorWorksList","authorEditForm","authorChapterForm"]) assert.ok(author.includes(token),`Author Studio behavior missing ${token}`);
+for(const token of ['.page.in-author-studio','.page.in-author-studio .authorCreateForm','.page.in-author-studio .authorWorksPanel','.page.in-author-studio .authorChapterForm','@media(max-width:52rem)','min-height:44px']) assert.ok(css.includes(token),`Author Studio styling missing ${token}`);
+assert.ok(app.includes("function pageStart(title,sub='',pageClass='')"),'Page wrapper must support safe page-level design scoping');
+assert.ok(!author.includes('in-author-panel'),'Legacy Author Studio markup should remain intact until a behavior-safe migration');
+console.log('Author Studio page-scope and creator-workflow design contracts passed.');

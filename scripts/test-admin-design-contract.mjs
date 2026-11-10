@@ -1,0 +1,13 @@
+import fs from 'node:fs';
+import assert from 'node:assert/strict';
+const html=fs.readFileSync('public/admin.html','utf8');
+const css=fs.readFileSync('public/imperial-ui-primitives.css','utf8');
+for(const token of ['/imperial-design-tokens.css','/imperial-ui-primitives.css','in-admin-shell','in-admin-hero','in-admin-nav','in-admin-section','in-admin-grid','in-admin-panel','in-admin-table','in-admin-form','in-admin-mobile','data-tab="overview"','id="usersBody"','id="authorApplicationsBody"','id="taxonomyBody"','id="communityBody"','id="publishingBody"','id="donationsBody"','id="requestsBody"','id="reportsBody"','id="agentsBody"','id="connectorsBody"','id="connectorRequestsBody"']) assert.ok(html.includes(token),`Admin structure missing ${token}`);
+for(const token of ["me.user?.role!=='admin'","/api/admin/stats","/api/admin/users","/api/admin/author-applications","/api/admin/taxonomy","/api/admin/community","/api/admin/publishing","/api/admin/donations","/api/admin/requests","/api/admin/reports","/api/admin/connectors","/api/connector-authorization-requests"]) assert.ok(html.includes(token),`Admin authorization/data workflow missing ${token}`);
+for(const token of ['.in-admin-shell','.in-admin-hero','.in-admin-nav','.in-admin-section','.in-admin-grid','.in-admin-table-wrap','.in-admin-table','.in-admin-agent-grid','@media(max-width:46rem)','prefers-reduced-motion','.in-admin-shell .status']) assert.ok(css.includes(token),`Admin design token styling missing ${token}`);
+assert.ok(!html.includes('<style>'),'Retired inline Admin stylesheet must be removed');
+assert.ok(!html.includes('class="admin'),'Retired Admin component classes must be removed');
+assert.ok(!html.includes('.adminSection'), 'Admin script selectors must use canonical component names');
+assert.ok(!html.includes('class=\"in-admin-panel\" class='), 'Admin markup must not contain duplicate class attributes');
+for(const color of ['#8f73d1','#b9abd9','#efc1cb','#c94f67','#180d12','#eee7ff','#4b2b9b','#0d1119']) assert.ok(!html.includes(color), 'Legacy hardcoded Admin color remains: '+color);
+console.log('Imperial Command Admin design and access-guard contracts passed.');

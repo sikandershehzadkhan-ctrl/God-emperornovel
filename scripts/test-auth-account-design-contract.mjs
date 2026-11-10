@@ -1,0 +1,11 @@
+import fs from 'node:fs';
+import assert from 'node:assert/strict';
+const app=fs.readFileSync('public/app.js','utf8');
+const css=fs.readFileSync('public/imperial-ui-primitives.css','utf8');
+const auth=app.slice(app.indexOf('async function authPage(mode)'),app.indexOf('async function account()'));
+const account=app.slice(app.indexOf('async function account()'),app.indexOf('async function library('));
+for(const token of ['in-auth-brand','in-auth-card','id="auth"','name="email"','name="password"','name="username"','name="confirm"','autocomplete="email"','current-password','new-password','/api/auth/','Passwords do not match','authMsg']) assert.ok(auth.includes(token),`Authentication missing ${token}`);
+for(const token of ['in-account-header','in-account-nav','in-account-profile','in-account-metrics','in-account-recommendations','/api/profile','/api/auth/logout','/api/recommendations','p.user.username','p.user.email','p.user.tickets','p.stats.history','p.stats.following','p.stats.unlocks','id="logout"']) assert.ok(account.includes(token),`Account center missing ${token}`);
+assert.ok(!auth.includes('pageStart(')&&!account.includes('pageStart('),'Legacy page wrapper must not remain');
+for(const token of ['.in-auth-wrap','.in-auth-card','.in-auth-form','.in-account-layout','.in-account-nav','.in-account-metrics','@media(max-width:54rem)']) assert.ok(css.includes(token),`Auth/account styles missing ${token}`);
+console.log('Authentication and account center design contracts passed.');

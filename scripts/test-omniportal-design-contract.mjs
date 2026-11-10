@@ -1,0 +1,10 @@
+import fs from 'node:fs';
+import assert from 'node:assert/strict';
+const app=fs.readFileSync('public/app.js','utf8');
+const css=fs.readFileSync('public/imperial-ui-primitives.css','utf8');
+const start=app.indexOf('async function omni()'),end=app.indexOf('\nasync function discoveryPage',start);
+const omni=app.slice(start,end);
+for(const token of ["'in-omniportal'",'in-omni-search-form','in-omni-search-field','in-omni-notice','in-omni-results','/api/omni/search?q=','/api/omni/import','metadata-only','does not copy source chapters','rel="noopener"','omniImport']) assert.ok(omni.includes(token),`OmniPortal behavior missing ${token}`);
+for(const token of ['.page.in-omniportal','.page.in-omni-search-form','.page.in-omni-notice','.page.in-omni-results','.page.in-omni-card','@media(max-width:44rem)']) assert.ok(css.includes(token),`OmniPortal design missing ${token}`);
+assert.ok(!omni.includes('/api/omni/in-omni-search'),'Search endpoint must remain unchanged');
+console.log('OmniPortal authorized metadata discovery and rights gate design contracts passed.');

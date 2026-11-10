@@ -1,0 +1,12 @@
+import fs from 'node:fs';
+import assert from 'node:assert/strict';
+const app=fs.readFileSync('public/app.js','utf8');
+const css=fs.readFileSync('public/imperial-ui-primitives.css','utf8');
+const d=app.slice(app.indexOf('async function discoveryPage('),app.indexOf('\nfunction simplePage'));
+const branch=(key,next)=>d.slice(d.indexOf("if(kind==='"+key+"')"),d.indexOf("if(kind==='"+next+"')"));
+const trending=branch('trending','random'),random=branch('random','made-for-you'),made=branch('made-for-you','vote'),vote=branch('vote','notifications');
+for(const [name,src,tokens] of [['trending',trending,["'in-discovery-trending'",'in-trending-heading','in-trending-grid','/api/novels?sort=trending&limit=24','aria-busy']],['random',random,["'in-discovery-random'",'in-random-panel','in-random-card','/api/random','button.disabled','ratingText(n.rating)']],['recommendations',made,["'in-discovery-made-for-you'",'in-for-you-intro','in-for-you-grid','/api/made-for-you','d.personalized']],['voting',vote,["'in-discovery-vote'",'in-vote-intro','in-vote-row','/api/vote-novels',"method:'POST'",'request_id','Votes help prioritize review']]])for(const token of tokens)assert.ok(src.includes(token),name+' page missing '+token);
+for(const token of ['.in-trending-grid','.in-random-card','.in-for-you-grid','.in-vote-row','@media(max-width:42rem)'])assert.ok(css.includes(token),'Discovery styling missing '+token);
+assert.ok(!d.includes("pageStart('Trending Now','Popular stories and fresh activity across the Imperial catalog.')"),'Trending must use its isolated page scope');
+assert.ok(!d.includes('toFixed(1)'),'Discovery pages must not invent decimal rating precision');
+console.log('Trending, random discovery, recommendations and voting design contracts passed.');

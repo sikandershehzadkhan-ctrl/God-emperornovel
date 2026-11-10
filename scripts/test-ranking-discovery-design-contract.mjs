@@ -1,0 +1,13 @@
+import fs from 'node:fs';
+import assert from 'node:assert/strict';
+const app=fs.readFileSync('public/app.js','utf8');
+const css=fs.readFileSync('public/imperial-ui-primitives.css','utf8');
+const discovery=app.slice(app.indexOf('async function discoveryPage('),app.indexOf('\nfunction simplePage'));
+const rank=discovery.slice(discovery.indexOf("if(kind==='leaderboard'){"),discovery.indexOf("if(kind==='tier-list'){"));
+const tier=discovery.slice(discovery.indexOf("if(kind==='tier-list'){"),discovery.indexOf("if(kind==='random'){"));
+for(const token of ["'in-discovery-leaderboard'",'in-rank-tabs','in-rank-period','/api/leaderboard?period=','ratingText(n.rating)','ratingText(x.rating)','aria-pressed','lbNovels','lbAuthors']) assert.ok(rank.includes(token),`Leaderboard behavior missing ${token}`);
+for(const token of ["'in-discovery-tier-list'",'in-tier-panel','in-tier-stories','/api/tier-list','ratingText(n.rating)','loading="lazy"','decoding="async"']) assert.ok(tier.includes(token),`Tier list behavior missing ${token}`);
+for(const token of ['.in-rank-tabs','.in-rank-card','.in-rank-grid','.in-tier-panel','.in-tier-card','@media(max-width:42rem)']) assert.ok(css.includes(token),`Ranking design missing ${token}`);
+assert.ok(!rank.includes('toFixed(1)'),'Leaderboard must not show decimal ratings');
+assert.ok(!tier.includes('toFixed(1)'),'Tier list must not show decimal ratings');
+console.log('Leaderboard and tier list design contracts passed.');
