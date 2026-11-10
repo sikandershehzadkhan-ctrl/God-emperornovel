@@ -68,6 +68,21 @@ assert.ok(css.includes('min-height: 44px;'), 'Shared interactive targets must me
 assert.ok(css.includes('outline: 3px solid var(--in-color-focus-ring);'), 'Shared components must expose a visible keyboard focus ring.');
 assert.ok(css.includes('@media (prefers-contrast: more)') && css.includes('@media (forced-colors: active)'), 'High-contrast and forced-color modes must be supported.');
 assert.ok(css.includes('@media (prefers-reduced-transparency: reduce)'), 'Reduced-transparency mode must provide calmer reading surfaces.');
+
+const adminMarkup = adminHtml;
+for (const utility of ['admin-mt-10','admin-mt-14','admin-mt-18','admin-chapter-preview','admin-chapter-preview-content','admin-chapter-edit','admin-section-divider']) {
+  assert.ok(adminMarkup.includes(utility), 'Administrator markup must use the canonical ' + utility + ' utility.');
+  assert.ok(css.includes('.' + utility), 'Canonical CSS must define the ' + utility + ' utility.');
+}
+assert.ok(!/style="(?:margin-top:|margin:18px|display:none;margin-top:)/.test(adminMarkup),
+  'Static administrator layout styles must not remain inline.');
+assert.ok(adminMarkup.includes('class="panel admin-chapter-preview" hidden') && adminMarkup.includes('class="panel admin-chapter-edit" hidden'),
+  'Chapter preview and edit panels must start hidden semantically and remain styleable.');
+assert.ok(css.includes('.admin-chapter-preview[hidden], .admin-chapter-edit[hidden] { display: none !important; }'),
+  'The canonical stylesheet must preserve hidden chapter-panel behavior.');
+assert.ok(css.includes('.admin-chapter-preview-content { margin-top: 14px; line-height: 1.8; overflow-wrap: anywhere; }'),
+  'Chapter preview content must wrap long text without creating horizontal overflow.');
+
 console.log('Imperial unified design-system checks passed.');
 
 
