@@ -2,8 +2,6 @@
 -- The release workflow preflights the live table definition and runs this file only
 -- when ratings is absent or still has the legacy 1–5 constraint. It skips a verified
 -- 1–10 table on subsequent release attempts.
-BEGIN IMMEDIATE;
-
 CREATE TABLE IF NOT EXISTS ratings (
   user_id INTEGER NOT NULL,
   novel_id INTEGER NOT NULL,
@@ -31,5 +29,3 @@ ALTER TABLE ratings_scale_10 RENAME TO ratings;
 
 UPDATE novels
 SET rating=COALESCE((SELECT AVG(r.rating) FROM ratings r WHERE r.novel_id=novels.id),0);
-
-COMMIT;
