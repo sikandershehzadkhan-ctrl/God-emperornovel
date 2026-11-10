@@ -9,6 +9,20 @@ const formatsCss = readFileSync("public/imperial-formats-17.23.0.css", "utf8");
 const comicCss = readFileSync("public/imperial-comic-reader-17.23.0.css", "utf8");
 const appCss = readFileSync("public/app-17.23.0.css", "utf8");
 const themes = ["light", "dark", "midnight", "sepia", "imperial", "cosmic"];
+const html = readFileSync("public/index.html", "utf8");
+const stylesheetOrder = [
+  "/style-17.23.0.css",
+  "/app-17.23.0.css",
+  "/imperial-luxury-17.23.0.css",
+  "/imperial-formats-17.23.0.css",
+  "/imperial-comic-reader-17.23.0.css",
+  "/imperial-glass.css"
+];
+const stylesheetPositions = stylesheetOrder.map(asset => html.indexOf('href="' + asset + '"'));
+assert.ok(stylesheetPositions.every(position => position >= 0), "Every theme-aware stylesheet must be linked from the production document");
+assert.ok(stylesheetPositions.every((position, index) => index === 0 || position > stylesheetPositions[index - 1]), "Theme-aware stylesheets must load in the audited cascade order, with semantic theme overrides after the legacy base");
+assert.ok(html.includes('<script src="/app-17.23.0.js" defer></script>'), "Production document must load the matching application runtime after its stylesheet declarations");
+
 const required = ["--in-canvas:", "--in-panel:", "--in-panel-raised:", "--in-line:", "--in-text:", "--in-text-muted:", "--in-accent:", "--in-link:", "--in-focus:", "--in-action-bg:", "--in-action-hover:", "--in-control-bg:", "--in-surface-soft:", "--in-overlay:", "--in-good:", "--in-danger:", "--in-warning:", "--in-lime:", "--in-pink:"];
 for (const theme of themes) {
   const blocks = [...css.matchAll(new RegExp('html\\[data-theme="' + theme + '"\\]\\s*\\{([^}]+)\\}', "g"))].map(match => match[1]);
