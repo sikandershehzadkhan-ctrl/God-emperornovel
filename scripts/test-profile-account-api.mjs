@@ -1,0 +1,25 @@
+import assert from "node:assert/strict";
+import fs from "node:fs";
+import { validateUserProfile } from "../src/identity/user-profile-policy.mjs";
+import { defaultAccountPreferences, validateAccountPreferences } from "../src/identity/account-preferences-policy.mjs";
+const worker=fs.readFileSync("src/index.js","utf8");
+const app=fs.readFileSync("public/app.js","utf8");
+const versioned=fs.readFileSync("public/app-17.23.0.js","utf8");
+const validProfile={display_name:"Sikander",bio:"Writer",avatar_url:"/uploads/avatar.webp",website_url:"https://example.com",location:"Pakistan",profile_visibility:"public",show_reading_stats:false};
+assert.equal(validateUserProfile(validProfile).ok,true);
+for(const value of [null,{...validProfile,role:"admin"},{...validProfile,avatar_url:"javascript:alert(1)"},{...validProfile,website_url:"http://example.com"},{...validProfile,profile_visibility:"everyone"},{...validProfile,show_reading_stats:"true"},{...validProfile,bio:"x".repeat(501)}]) assert.equal(validateUserProfile(value).ok,false);
+const defaults=defaultAccountPreferences();
+assert.equal(validateAccountPreferences(defaults).ok,true);
+assert.equal(validateAccountPreferences({...defaults,site_theme:"neon"}).ok,false);
+for(const route of ['if(p==="/api/profile"&&m==="GET")','if(p==="/api/profile"&&m==="PUT")','if(p==="/api/account/preferences"&&m==="GET")','if(p==="/api/account/preferences"&&m==="PUT")','if(p.startsWith("/api/public-profile/")&&m==="GET")']) assert.ok(worker.includes(route),"Missing route: "+route);
+for(const guard of ['need(u)','profile-update','account-preferences','Sec-Fetch-Site','validateUserProfile','validateAccountPreferences','profile_visibility=\'public\'','banned=0']) assert.ok(worker.includes(guard),"Missing security/privacy guard: "+guard);
+assert.ok(worker.includes('SELECT preferences_json FROM users WHERE id=?'));
+assert.ok(worker.includes('UPDATE users SET preferences_json=? WHERE id=?'));
+assert.ok(worker.includes('await audit(env,u,"account.profile_updated"'));
+assert.ok(worker.includes('await audit(env,u,"account.preferences_updated"'));
+assert.equal(app,versioned,"Canonical and served bundles must remain byte-identical.");
+
+for(const marker of ["id='profileForm'","api('/api/profile',{method:'PUT'","api('/api/account/preferences',{method:'PUT'","syncAccountPreferences","restoreAccountPreferences","Preferences synced to your account.","show_reading_stats"]) assert.ok(app.includes(marker),"Missing account UI integration marker: "+marker);
+assert.ok(app.includes("const savedSiteTheme=get('imperial_theme'"),"Settings must restore the saved site theme for anonymous users.");
+assert.ok(app.includes("document.documentElement.dataset.theme=$('#setSiteTheme').value"),"Initial site theme must be applied consistently.");
+console.log("PASS: profile and account-preference policies, owner-scoped API route and public visibility guards.");

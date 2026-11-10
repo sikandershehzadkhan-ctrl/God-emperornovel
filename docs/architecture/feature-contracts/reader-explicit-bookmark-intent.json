@@ -1,0 +1,115 @@
+{
+  "featureId": "reader-explicit-bookmark-intent",
+  "domainOwner": "reader",
+  "technicalIntegrator": "platform-integrator",
+  "ownedPaths": [
+    "scripts/test-reader-bookmark-intent.mjs"
+  ],
+  "sharedSurfaces": [
+    "src/index.js",
+    "public/app.js",
+    "public/app-17.23.0.js",
+    "package.json",
+    "docs/architecture/IMPERIAL-API-ROUTE-METHOD-MATRIX-01N-37.json",
+    "docs/architecture/IMPERIAL-AUTHORIZATION-OWNERSHIP-MATRIX-01N-38.json",
+    "docs/architecture/feature-contracts/platform-integration-governance.json"
+  ],
+  "dependencies": [
+    "reader",
+    "platform-kernel",
+    "platform-quality",
+    "experience-shell",
+    "platform-architecture"
+  ],
+  "routes": [
+    "POST /api/bookmark",
+    "DELETE /api/bookmark",
+    "GET /api/bookmarks"
+  ],
+  "apiContracts": [
+    "Opening an unlocked chapter records reading history but never creates or changes a bookmark.",
+    "POST /api/bookmark saves only the exact chapter explicitly selected by the authenticated reader.",
+    "DELETE /api/bookmark removes only the selected (user_id, novel_id, chapter_number) row where user_id is derived from the authenticated session.",
+    "Both write methods use parseReaderProgressTarget and reject malformed, fractional, zero, negative or unsafe identifiers.",
+    "Guest bookmarks remain local to the browser and can be explicitly toggled off."
+  ],
+  "dataEntities": [
+    "bookmarks",
+    "history"
+  ],
+  "migrationPlan": {
+    "required": false,
+    "proposedNumbers": [],
+    "canonicalEntityReuse": "Reuses the existing bookmarks table and owner-scoped uniqueness; no new persistent entity.",
+    "backwardCompatibility": "Existing bookmarks remain intact. Removing a bookmark is an explicit DELETE and opening chapters no longer overwrites the user's saved bookmark.",
+    "rollbackOrForwardRepair": "Code-only rollback; no database migration or data rewrite is needed."
+  },
+  "uiLifecycle": {
+    "shellOwner": "experience-shell",
+    "ssrBehavior": "No SSR changes.",
+    "clientBootBehavior": "The reader bookmark control reflects saved state, exposes aria-pressed, and toggles only from an explicit click.",
+    "servedBundleParity": "public/app.js and public/app-17.23.0.js are byte-identical."
+  },
+  "privacySecurity": {
+    "authentication": "Bookmark writes require the existing authenticated session; guests use browser-local state only.",
+    "authorization": "The Worker derives the bookmark owner from session u.id.",
+    "ownerScoping": "DELETE predicates include user_id=u.id, novel_id and chapter_number. No client-supplied owner ID is accepted.",
+    "csrf": "Existing same-origin write-route policy remains in force.",
+    "rateAndSizeLimits": "Two positive safe-integer identifiers; bounded JSON payload.",
+    "rightsAndPrivacy": "Bookmark removal remains available for a user's own saved row even if the underlying story later becomes unpublished."
+  },
+  "tests": {
+    "unit": [
+      "test-reader-bookmark-intent.mjs",
+      "test-reader-progress-policy.mjs"
+    ],
+    "integration": [
+      "Worker DELETE handler and browser source/served bundle parity assertions"
+    ],
+    "isolation": [
+      "Account A cannot remove account B's bookmark; DELETE is constrained to the exact chapter tuple."
+    ],
+    "buildCommands": [
+      "npm run build"
+    ]
+  },
+  "rollout": {
+    "flags": [],
+    "stagingSteps": [
+      "Run all exact-head architecture, source, route, schema, migration and Graphify workflows.",
+      "Verify chapter visits do not mutate bookmarks.",
+      "Verify explicit save/remove behavior for authenticated and guest readers."
+    ]
+  },
+  "rollback": {
+    "codeRollback": "Revert the reader handler and DELETE endpoint together; existing bookmark rows remain unchanged.",
+    "dataRollbackOrForwardRepair": "No migration or data rewrite.",
+    "monitoringSignals": [
+      "bookmark POST/DELETE response failures",
+      "bookmark list and reader button state parity"
+    ]
+  },
+  "collisionReview": {
+    "duplicateRoutes": "No new resource path; adds DELETE to the existing singular /api/bookmark resource.",
+    "duplicateEntities": "Reuses the canonical bookmarks table.",
+    "migrationAllocation": "No migration required.",
+    "sharedSurfaceOwners": "Reader owns bookmark behavior; platform kernel owns Worker routing; experience shell owns the browser bundle; architecture inventories and tests are updated."
+  },
+  "affectedDomains": [
+    "reader",
+    "platform-kernel",
+    "platform-quality",
+    "experience-shell",
+    "platform-architecture"
+  ],
+  "changeSummary": "Stops silently bookmarking every opened chapter and makes bookmark creation/removal an explicit, accessible, owner-scoped reader action.",
+  "acceptanceCriteria": [
+    "Opening a chapter never writes to bookmarks.",
+    "The explicit reader control toggles authenticated bookmarks through POST/DELETE.",
+    "Guest bookmarks can be saved and removed locally.",
+    "DELETE cannot affect another user's bookmark.",
+    "Invalid IDs are rejected before deletion.",
+    "The versioned browser bundle exactly matches public/app.js.",
+    "No migration or production data mutation is required."
+  ]
+}
