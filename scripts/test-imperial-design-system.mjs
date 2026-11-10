@@ -153,11 +153,11 @@ const languageDictionaryStart = runtime.indexOf('const IN_LANG=');
 const languageDictionaryEnd = runtime.indexOf(';function setINLang', languageDictionaryStart);
 assert.ok(languageDictionaryStart >= 0 && languageDictionaryEnd > languageDictionaryStart, 'The 14-language interface dictionary must remain available.');
 const languageDictionary = runtime.slice(languageDictionaryStart, languageDictionaryEnd);
-const languageEntries = [...languageDictionary.matchAll(/"([a-z]{2}(?:-[A-Z]{2})?)":\\{([^{}]*)\\}/g)];
+const languageEntries = [...languageDictionary.matchAll(/"([a-z]{2}(?:-[A-Z]{2})?)":\{([^{}]*)\}/g)];
 assert.equal(languageEntries.length, 14, 'All 14 supported interface languages must remain registered.');
 for (const [languageCode, languageMap] of languageEntries) {
   for (const label of ['Light','Dark','Midnight','Sepia','Imperial','Cosmic']) {
-    assert.ok(new RegExp('"' + label + '"\\\\s*:').test(languageMap), 'Reader theme label ' + label + ' must be translated for ' + languageCode + '.');
+    assert.ok(languageMap.includes('"' + label + '":'), 'Reader theme label ' + label + ' must be translated for ' + languageCode + '.');
   }
 }
 
