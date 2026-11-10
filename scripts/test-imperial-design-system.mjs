@@ -8,6 +8,14 @@ const adminHtml = read('public/admin.html');
 const css = read('public/imperial-design-system.css');
 const appJs = read('public/app.js');
 const imports = [...css.matchAll(/@import\s+url\(["']?([^"')]+)["']?\)\s*;/g)].map(match => match[1]);
+const serviceWorker = read('public/sw.js');
+assert.match(serviceWorker, /const CORE=\[[^\]]*['"]\/imperial-design-system\.css['"][^\]]*\]/,
+  'The offline shell must precache the unified design-system stylesheet.');
+assert.ok(!/CORE\s*=\s*\[[^\]]*\/(?:style(?:-17\.23\.0)?|app-17\.23\.0|imperial-glass|imperial-luxury-17\.23\.0|imperial-formats-17\.23\.0|imperial-comic-reader-17\.23\.0)\.css/.test(serviceWorker),
+  'The offline shell must not precache retired legacy stylesheet assets.');
+assert.match(serviceWorker, /key!==CACHE/,
+  'A new design-system shell cache must invalidate prior Imperial Novel shell caches.');
+
 
 assert.equal((html.match(/rel="stylesheet"/g) || []).length, 1,
   'The app shell must expose one canonical stylesheet entry point.');
