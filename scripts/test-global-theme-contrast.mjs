@@ -36,9 +36,8 @@ for (const theme of themes) {
   }
 }
 for (const theme of themes) {
-  const readerMatch = css.match(new RegExp('\\.readerPage\\[data-reader-theme="' + theme + '"\\]\\s*\\{([^}]+)\\}'));
-  assert.ok(readerMatch, "Missing independent reader token map for " + theme);
-  const readerBlock = readerMatch[1];
+  const readerBlock = [...css.matchAll(new RegExp('\\.readerPage\\[data-reader-theme="' + theme + '"\\]\\s*\\{([^}]+)\\}', "g"))].map(match => match[1]).find(value => value.includes("--reader-canvas:"));
+  assert.ok(readerBlock, "Missing independent reader token map for " + theme);
   const readerToken = name => {
     const match = readerBlock.match(new RegExp(name + ":(#[0-9A-Fa-f]{6})"));
     assert.ok(match, "Missing " + name + " in reader " + theme);
@@ -56,7 +55,7 @@ for (const theme of themes) {
 }
 for (const theme of themes) {
   const base = [...css.matchAll(new RegExp('html\\[data-theme="' + theme + '"\\]\\s*\\{([^}]+)\\}', "g"))].map(match => match[1]).find(value => value.includes("--in-canvas:"));
-  const high = css.match(new RegExp('html\\[data-theme="' + theme + '"\\]\\[data-high-contrast="true"\\]\\s*\\{([^}]+)\\}'))?.[1];
+  const high = [...css.matchAll(new RegExp('html\\[data-theme="' + theme + '"\\]\\[data-high-contrast="true"\\]\\s*\\{([^}]+)\\}', "g"))].map(match => match[1]).find(value => value.includes("--in-text:"));
   assert.ok(base && high, "Missing global high-contrast palette for " + theme);
   const read = name => high.match(new RegExp(name + ":(#[0-9A-Fa-f]{6})"))?.[1];
   const canvas = base.match(/--in-canvas:(#[0-9A-Fa-f]{6})/)?.[1];
@@ -68,8 +67,8 @@ for (const theme of themes) {
     const value = contrast(canvas, read(name));
     assert.ok(value >= 3, "High-contrast global " + theme + " " + name + " is " + value.toFixed(2) + ":1, below 3:1 UI contrast");
   }
-  const readerBase = css.match(new RegExp('\\.readerPage\\[data-reader-theme="' + theme + '"\\]\\s*\\{([^}]+)\\}'))?.[1];
-  const readerHigh = css.match(new RegExp('html\\[data-high-contrast="true"\\]\\s*\\.readerPage\\[data-reader-theme="' + theme + '"\\]\\s*\\{([^}]+)\\}'))?.[1];
+  const readerBase = [...css.matchAll(new RegExp('\\.readerPage\\[data-reader-theme="' + theme + '"\\]\\s*\\{([^}]+)\\}', "g"))].map(match => match[1]).find(value => value.includes("--reader-canvas:"));
+  const readerHigh = [...css.matchAll(new RegExp('html\\[data-high-contrast="true"\\]\\s*\\.readerPage\\[data-reader-theme="' + theme + '"\\]\\s*\\{([^}]+)\\}', "g"))].map(match => match[1]).find(value => value.includes("--reader-text:"));
   assert.ok(readerBase && readerHigh, "Missing high-contrast reader palette for " + theme);
   const readerRead = name => readerHigh.match(new RegExp(name + ":(#[0-9A-Fa-f]{6})"))?.[1];
   const readerCanvas = readerBase.match(/--reader-canvas:(#[0-9A-Fa-f]{6})/)?.[1];
@@ -87,8 +86,8 @@ assert.ok(prefersBlock.startsWith("@media(prefers-contrast:more)"), "Missing OS 
 for (const theme of themes) {
   const globalBase = [...css.matchAll(new RegExp('html\\[data-theme="' + theme + '"\\]\\s*\\{([^}]+)\\}', "g"))].map(match => match[1]).find(value => value.includes("--in-canvas:"));
   const globalOS = prefersBlock.match(new RegExp('html\\[data-theme="' + theme + '"\\]\\s*\\{([^}]+)\\}'))?.[1];
-  const readerBase = css.match(new RegExp('\\.readerPage\\[data-reader-theme="' + theme + '"\\]\\s*\\{([^}]+)\\}'))?.[1];
-  const readerOS = prefersBlock.match(new RegExp('\\.readerPage\\[data-reader-theme="' + theme + '"\\]\\s*\\{([^}]+)\\}'))?.[1];
+  const readerBase = [...css.matchAll(new RegExp('\\.readerPage\\[data-reader-theme="' + theme + '"\\]\\s*\\{([^}]+)\\}', "g"))].map(match => match[1]).find(value => value.includes("--reader-canvas:"));
+  const readerOS = [...prefersBlock.matchAll(new RegExp('\\.readerPage\\[data-reader-theme="' + theme + '"\\]\\s*\\{([^}]+)\\}', "g"))].map(match => match[1]).find(value => value.includes("--reader-text:"));
   assert.ok(globalBase && globalOS && readerBase && readerOS, "Missing OS high-contrast map for " + theme);
   const get = (block, name) => block.match(new RegExp(name + ":(#[0-9A-Fa-f]{6})"))?.[1];
   for (const [scope, base, os, canvasToken, textToken, mutedToken, lineToken, focusToken] of [
