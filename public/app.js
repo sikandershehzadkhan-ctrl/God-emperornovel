@@ -291,7 +291,17 @@ async function loadComments(id){
  try{await ensureImperialReactIslands();window.ImperialReactIslands.mountNovelComments(box,id)}
  catch(error){box.innerHTML='<div class="empty" role="status">Community comments are temporarily unavailable.</div>'}
 }
-async function chapters(){const id=location.pathname.split('/')[2];const n=await api('/api/novels/'+id);const root=$('#app');root.innerHTML=pageStart(n.title,'Complete chapter archive')+`<div class="toolbar"><a class="primary" href="/read/${id}/1">Start at Chapter 1</a><button id="batch" class="secondary">Batch Unlock</button></div><div class="chapterList">${n.chapters.map(ch=>chapterRow(ch,id)).join('')}</div></div></div>`;$('#batch').onclick=async()=>{try{const count=Number(prompt('Batch size: 10, 25, 50 or 100','10'));if(![10,25,50,100].includes(count))return;const d=await api('/api/novels/'+id+'/batch-unlock',{method:'POST',body:JSON.stringify({count,start_chapter:1})});alert(`Unlocked ${d.unlocked} chapters for ${d.cost} Imperial Crowns. Balance: ${d.tickets} Imperial Crowns`);location.reload()}catch(e){alert(e.message)}}}
+async function chapters(){
+ const id=location.pathname.split('/')[2],n=await api('/api/novels/'+id),root=$('#app'),rows=Array.isArray(n.chapters)?n.chapters:[];
+ root.innerHTML=`<main class="in-chapters"><div class="in-chapters-wrap">
+  <nav class="in-chapters-breadcrumb" aria-label="Breadcrumb"><a href="/catalog">Discover</a><span aria-hidden="true">/</span><a href="/novel/${id}">${esc(n.title)}</a><span aria-hidden="true">/</span><span aria-current="page">Chapters</span></nav>
+  <header class="in-chapters-header"><div><span class="in-novel-overline">THE COMPLETE ARCHIVE</span><h1>${esc(n.title)}</h1><p>${rows.length.toLocaleString()} chapters · ${esc(n.status||'ongoing')}</p></div><a class="in-button in-button--primary" href="/read/${id}/1">Start at chapter one <span aria-hidden="true">↗</span></a></header>
+  <section class="in-chapters-toolbar" aria-label="Chapter archive tools"><div><b>Chapter directory</b><span>Choose a chapter to continue reading.</span></div><button id="batch" class="in-button in-button--secondary" type="button">Batch unlock</button></section>
+  <div class="in-chapters-list" aria-label="Published chapters">${rows.map(ch=>chapterRow(ch,id)).join('')||'<div class="in-chapters-empty">No chapters have been published yet.</div>'}</div>
+  <footer class="in-chapters-footer"><a href="/novel/${id}">← Back to story overview</a><span>${rows.length.toLocaleString()} chapters in this archive</span></footer>
+ </div></main>`;
+ $('#batch').onclick=async()=>{try{const count=Number(prompt('Choose a batch size: 10, 25, 50 or 100','10'));if(![10,25,50,100].includes(count))return;const d=await api('/api/novels/'+id+'/batch-unlock',{method:'POST',body:JSON.stringify({count,start_chapter:1})});alert(`Unlocked ${d.unlocked} chapters for ${d.cost} Imperial Crowns. Balance: ${d.tickets} Imperial Crowns`);location.reload()}catch(e){alert(e.message)}}
+}
 async function reader(){
  const parts=location.pathname.split('/');const id=parts[2],num=Math.max(1,Number(parts[3]||1));
  const n=await api('/api/novels/'+id);const ch=n.chapters.find(x=>Number(x.chapter_number)===num);if(!ch){location.href='/novel/'+id+'/chapters';return}
