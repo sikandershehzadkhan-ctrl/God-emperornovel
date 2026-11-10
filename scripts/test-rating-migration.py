@@ -26,8 +26,10 @@ fresh.executescript(baseline)
 fresh.executescript(upgrade)
 schema = fresh.execute("SELECT sql FROM sqlite_master WHERE type='table' AND name='ratings'").fetchone()[0]
 assert "BETWEEN 1 AND 10" in schema
+assert "CAST(rating AS INTEGER)" in schema
 fresh.execute("INSERT INTO ratings(user_id,novel_id,rating) VALUES(1,10,10)")
 assert_rejects(fresh, "INSERT INTO ratings(user_id,novel_id,rating) VALUES(2,10,11)", ())
+assert_rejects(fresh, "INSERT INTO ratings(user_id,novel_id,rating) VALUES(3,10,4.5)", ())
 fresh.close()
 
 # Existing installation: preserve all existing ratings and timestamps, scale 1–5 to even 1–10 values.
@@ -57,4 +59,5 @@ legacy.execute("INSERT INTO ratings(user_id,novel_id,rating) VALUES(6,10,1)")
 legacy.execute("INSERT INTO ratings(user_id,novel_id,rating) VALUES(7,10,10)")
 assert_rejects(legacy, "INSERT INTO ratings(user_id,novel_id,rating) VALUES(8,10,0)", ())
 assert_rejects(legacy, "INSERT INTO ratings(user_id,novel_id,rating) VALUES(9,10,11)", ())
+assert_rejects(legacy, "INSERT INTO ratings(user_id,novel_id,rating) VALUES(10,10,7.5)", ())
 print("Ten-point rating migration passed: fresh install, legacy conversion, timestamps, averages and 1–10 constraints.")
