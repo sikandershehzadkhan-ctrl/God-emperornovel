@@ -131,4 +131,21 @@ assert.ok(css.includes('html[data-theme] :focus-visible{outline:2px solid var(--
 for (const token of ["var(--in-canvas)", "var(--in-text)", "var(--in-panel)", "var(--in-control-bg)", "var(--in-focus)"]) {
   assert.ok(css.includes(token), "Missing semantic token consumption: " + token);
 }
+// Supplemental stylesheets must not retain legacy fixed-palette fallbacks on shared interactive surfaces.
+for (const [label, source, checks] of [
+  ["application", appCss, [
+    ["rating stars", ".ratingStar{border:0;background:transparent;font-size:32px;line-height:1;cursor:pointer;color:var(--in-muted"],
+    ["selected rating stars", ".ratingStar.selected,.ratingStar:hover{color:var(--in-sapphire"],
+    ["community comment border", ".commentItem{padding:14px;border:1px solid var(--in-line"],
+    ["reaction errors", ".reactReactionError{flex-basis:100%;font-size:.85rem;color:var(--in-danger"],
+    ["comic composer input surface", "background:var(--in-control-bg"],
+    ["comic composer input text", "color:var(--in-text"]
+  ]],
+  ["format directory", formatsCss, [
+    ["format link border", ".formatLink{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:12px 13px;border:1px solid var(--in-line"],
+    ["format link text", "color:var(--in-text"],
+    ["format badge border", ".formatBadge{display:inline-flex;align-items:center;max-width:100%;margin:6px 0 2px;padding:3px 7px;border:1px solid var(--in-line"],
+    ["format description text", "color:var(--in-muted"]
+  ]]
+]) for (const [component, token] of checks) assert.ok(source.includes(token), label + " stylesheet " + component + " must consume semantic theme tokens");
 console.log("PASS: six themes provide complete semantic tokens and shared shell, surface, form, and focus selectors consume them.");
