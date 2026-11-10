@@ -262,3 +262,11 @@ assert.ok(adminTablePass.includes('overflow-x: auto;') &&
 assert.ok(adminTablePass.includes('margin-inline: -2px;'),
   'Admin table scroll gutters must use logical inline margins for RTL parity.');
 
+// Admin chapter and dense-table actions follow the platform's 44px mobile
+// interaction baseline while keeping dense tables inside their own scroller.
+const adminTouchPass = read('public/imperial-design-system.css').slice(read('public/imperial-design-system.css').lastIndexOf('/* Dense admin datasets'));
+assert.ok(adminTouchPass.includes('.adminWrap .adminTable :where(button,select,a) { min-height: 44px; }'),
+  'Admin table actions and selectors must meet the 44px touch target baseline.');
+assert.ok(adminTouchPass.includes('.chapterRow .actions > :where(button,a) { min-width: 44px; min-height: 44px; }'),
+  'Admin chapter-management actions must meet the 44px touch target baseline.');
+
