@@ -191,7 +191,7 @@ assert.ok(rtlLogicalPass.includes('@media (max-width: 700px)') && rtlLogicalPass
 // allowed inline style is the reader progress width, which is data-driven.
 const runtimeStyleAttributes = [...appJs.matchAll(/\\sstyle="([^"]*)"/g)].map(match => match[1]);
 assert.equal(runtimeStyleAttributes.length, 1, 'Static runtime presentation must be migrated out of inline style attributes.');
-assert.match(runtimeStyleAttributes[0], /^width:\$\\{chapterPct\\|\\|initialNovelProgress\\}%$/,
+assert.match(runtimeStyleAttributes[0], /^width:\$\{chapterPct\|\|initialNovelProgress\}%$/,
   'The only runtime inline style must be the data-driven reader progress width.');
 for (const utility of [
   'in-grid-span-all','in-language-select','in-mt-12','in-mt-18','in-flex-fill',
