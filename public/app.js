@@ -419,17 +419,17 @@ async function requests(){
 }
 async function omni(){
  const root=$('#app');
- root.innerHTML=pageStart('OmniPortal','Rights-first discovery across Imperial Novel and authorized provider connectors.')+`<div class="panel"><form id="omni" class="toolbar"><div class="search" style="display:flex"><span>✦</span><input name="q" placeholder="Search titles, authors and worlds..."></div><button class="primary">Search</button></form><div class="notice"><b>Legal mode:</b> only authorized connectors are queried. Imports are metadata-only by default. Imperial Novel does not bypass paywalls, DRM, logins or access controls, and does not copy source chapters.</div><div id="omniRes" class="grid" style="margin-top:18px"></div></div></div></div>`;
+ root.innerHTML=pageStart('OmniPortal','Rights-first discovery across Imperial Novel and authorized provider connectors.','in-omniportal')+`<div class="in-omni-panel"><form id="omni" class="in-omni-search-form"><div class="in-omni-search-field" style="display:flex"><span>✦</span><input name="q" placeholder="Search titles, authors and worlds..."></div><button class="in-omni-primary">Search</button></form><div class="in-omni-notice"><b>Legal mode:</b> only authorized connectors are queried. Imports are metadata-only by default. Imperial Novel does not bypass paywalls, DRM, logins or access controls, and does not copy source chapters.</div><div id="omniRes" class="in-omni-results" style="margin-top:18px"></div></div></div></div>`;
  $('#omni').onsubmit=async e=>{
   e.preventDefault();
   const q=String(new FormData(e.target).get('q')||'');
   if(q.length<2)return;
   try{
-   const d=await api('/api/omni/search?q='+encodeURIComponent(q));
-   if(!d.results.length){$('#omniRes').innerHTML='<div class="empty" style="grid-column:1/-1">No authorized results found.</div>';return;}
+   const d=await api('/api/omni/in-omni-search?q='+encodeURIComponent(q));
+   if(!d.results.length){$('#omniRes').innerHTML='<div class="in-omni-empty" style="grid-column:1/-1">No authorized results found.</div>';return;}
    $('#omniRes').innerHTML=d.results.map(x=>{
     const ext=String(x.url||'').startsWith('http');
-    return `<div class="card"><div class="cardBody"><span class="pill purple">${esc(x.provider)}</span><div class="cardTitle" style="margin-top:10px">${esc(x.title)}</div><div class="muted">${esc(x.author)}</div><p class="muted">${esc(x.description||'')}</p><div class="actions" style="margin-top:12px">${ext?`<a class="ghost" href="${esc(x.url)}" target="_blank" rel="noopener">Open Source</a><button class="secondary omniImport" data-url="${esc(x.url)}">Request Metadata Import</button>`:`<a class="primary" href="${esc(x.url)}">Read on Imperial Novel</a>`}</div></div></div>`;
+    return `<div class="in-omni-card"><div class="in-omni-card-body"><span class="in-omni-pill in-omni-purple">${esc(x.provider)}</span><div class="in-omni-card-title" style="margin-top:10px">${esc(x.title)}</div><div class="in-omni-muted">${esc(x.author)}</div><p class="in-omni-muted">${esc(x.description||'')}</p><div class="in-omni-actions" style="margin-top:12px">${ext?`<a class="in-omni-ghost" href="${esc(x.url)}" target="_blank" rel="noopener">Open Source</a><button class="in-omni-secondary omniImport" data-url="${esc(x.url)}">Request Metadata Import</button>`:`<a class="in-omni-primary" href="${esc(x.url)}">Read on Imperial Novel</a>`}</div></div></div>`;
    }).join('');
    document.querySelectorAll('.omniImport').forEach(btn=>{
     btn.onclick=async()=>{
