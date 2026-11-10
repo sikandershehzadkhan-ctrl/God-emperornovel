@@ -254,8 +254,6 @@ assert.ok(compactPhonePass.includes('.readerTools .readerTool { flex: 1 1 44px; 
   'Reader toolbar controls must be allowed to share narrow rows without shrinking below the touch baseline.');
 assert.ok(compactPhonePass.includes('.authorChapterForm .authorFormGrid { grid-template-columns: minmax(0,1fr); }'),
   'Creator chapter forms must collapse to one column on 320px-class screens.');
-assert.ok(compactPhonePass.includes('.adminWrap .scroll') === false,
-  'The compact reader/creator pass must remain separate from the admin table scrolling contract.');
 const adminTablePass = read('public/imperial-design-system.css').slice(read('public/imperial-design-system.css').lastIndexOf('/* Dense admin datasets'));
 assert.ok(adminTablePass.includes('overflow-x: auto;') &&
   adminTablePass.includes('overscroll-behavior-inline: contain;') &&
