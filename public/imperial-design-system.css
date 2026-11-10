@@ -4590,3 +4590,74 @@ html[data-theme="dark"] {
     background: var(--panel) !important;
   }
 }
+
+
+/* Administrator visual parity: dashboard surfaces and status colors follow the
+   same semantic light/dark tokens as the public application. */
+.adminWrap .adminHero {
+  color: var(--in-color-text-primary);
+  background: linear-gradient(135deg, var(--in-purple-soft), var(--in-paper-raised) 58%, var(--in-sapphire-soft));
+  border-color: var(--in-line);
+}
+.adminWrap .adminHero h1 { color: var(--in-ink); }
+.adminWrap .adminHero p,
+.adminWrap .muted2 { color: var(--in-muted); }
+.adminWrap .adminNav button {
+  background: var(--in-paper-raised);
+  border-color: var(--in-line);
+  color: var(--in-ink-soft);
+}
+.adminWrap .adminNav button:hover,
+.adminWrap .adminNav button.active {
+  background: var(--in-purple-soft);
+  border-color: var(--in-purple);
+  color: var(--in-purple-strong);
+}
+.adminWrap .adminCard {
+  background: var(--in-paper-raised);
+  border-color: var(--in-line);
+  color: var(--in-color-text-primary);
+}
+.adminWrap .adminCard b.big { color: var(--in-ink); }
+.adminWrap .adminCard small { color: var(--in-muted); }
+.adminWrap .adminTable th { color: var(--in-muted); }
+.adminWrap .adminTable td { color: var(--in-ink-soft); }
+.adminWrap .mini {
+  background: var(--in-purple-soft);
+  border-color: var(--in-line);
+  color: var(--in-purple-strong) !important;
+}
+.adminWrap .mini.edit {
+  background: var(--in-sapphire-soft);
+  border-color: var(--in-sapphire);
+  color: var(--in-sapphire-strong) !important;
+}
+.adminWrap .mini.good { border-color: var(--in-success); color: var(--in-success) !important; }
+.adminWrap .mini.bad { border-color: var(--in-danger); color: var(--in-danger) !important; }
+.adminWrap .mini.gold { border-color: var(--in-purple); color: var(--in-purple-strong) !important; }
+.adminWrap .status.pending,
+.adminWrap .status.open { color: var(--in-purple-strong); border-color: var(--in-purple); }
+.adminWrap .status.approved,
+.adminWrap .status.resolved,
+.adminWrap .status.online { color: var(--in-success); border-color: var(--in-success); }
+.adminWrap .status.rejected,
+.adminWrap .status.dismissed,
+.adminWrap .status.error { color: var(--in-danger); border-color: var(--in-danger); }
+.adminWrap .linkBtn { color: var(--in-sapphire); }
+.adminWrap .adminForm textarea,
+.adminWrap .adminForm input,
+.adminWrap .adminForm select,
+.adminWrap #chapterForm textarea,
+.adminWrap #chapterForm input {
+  background: var(--in-paper-raised);
+  border-color: var(--in-line);
+  color: var(--in-ink);
+}
+.adminWrap .mobileAdmin a {
+  background: var(--in-paper-raised);
+  border-color: var(--in-line);
+  color: var(--in-ink);
+}
+html[data-theme="dark"] .adminWrap .adminHero {
+  background: linear-gradient(135deg, rgba(185,149,242,.13), var(--in-paper-raised) 58%, rgba(141,184,255,.11));
+}
