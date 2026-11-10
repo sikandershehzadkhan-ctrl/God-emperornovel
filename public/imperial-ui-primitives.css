@@ -2001,7 +2001,7 @@ body.menu-open{overflow:hidden}
 .in-author-ai-message,.in-author-ai-notice{margin-top:.7rem;padding:.75rem;border:1px solid var(--in-border-default);border-radius:var(--in-radius-md);background:var(--in-bg-elevated);color:var(--in-text-secondary);font-size:.75rem;line-height:1.6;overflow-wrap:anywhere}
 .in-author-ai-danger{color:var(--in-status-danger)}
 .in-author-ai-novel{margin-top:.65rem;padding:1rem;border:1px solid var(--in-border-default);border-radius:var(--in-radius-lg);background:var(--in-bg-canvas)}
-.in-author-ai-novelHead{display:flex;justify-content:space-between;align-items:start;gap:1rem}
+.in-author-ai-novel-head{display:flex;justify-content:space-between;align-items:start;gap:1rem}
 .in-author-ai-stats,.in-author-ai-meta{color:var(--in-text-muted);font-size:.7rem;line-height:1.6}
 .in-author-ai-row{margin-top:.65rem;padding:.85rem;border:1px solid var(--in-border-default);border-radius:var(--in-radius-lg);background:var(--in-bg-canvas)}
 .in-author-ai-row h3{margin:.2rem 0;color:var(--in-text-primary);font-size:.9rem}
