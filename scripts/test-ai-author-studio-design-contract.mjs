@@ -1,0 +1,11 @@
+import fs from 'node:fs';
+import assert from 'node:assert/strict';
+const html=fs.readFileSync('public/author.html','utf8');
+const css=fs.readFileSync('public/imperial-ui-primitives.css','utf8');
+const head=html.slice(0,html.indexOf('</head>'));
+for(const token of ['/imperial-design-tokens.css','/imperial-ui-primitives.css','in-author-ai-wrap','in-author-ai-card','in-author-ai-grid','in-author-ai-field','in-author-ai-primary','aiAuthorStudio','aiCreateForm','createForm','chapterForm','editForm','/api/author/ai/status','/api/author/ai/projects','/api/author/novels','/api/author/chapters','auto_publish','rights_evidence'])assert.ok(html.includes(token),'AI Author Studio missing '+token);
+for(const token of ['.in-author-ai-wrap','.in-author-ai-card','.in-author-ai-grid','.in-author-ai-field','.in-author-ai-row','prefers-reduced-motion'])assert.ok(css.includes(token),'AI Author Studio styling missing '+token);
+assert.ok(!head.includes('<style>'),'Legacy inline AI Author Studio stylesheet must be removed');
+assert.ok(!html.includes('class="card'),'Legacy Author Studio classes remain');
+assert.ok(!html.includes('class="field'),'Legacy Author Studio form classes remain');
+console.log('AI Author Studio page and preserved workflow design contracts passed.');
