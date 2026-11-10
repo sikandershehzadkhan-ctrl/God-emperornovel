@@ -313,3 +313,9 @@ The combined source-content audit now covers 170 assertions across the migrated 
 - Added an editorial research hero, five-stage signal-to-review pipeline, searchable/filterable live catalog signal workspace, responsive result grid, and rights/sourcing safety panels.
 - Kept the existing published-catalog metadata endpoint and filter behavior. The workspace continues to prohibit chapter-body ingestion and explicitly states that trend signals are not evidence of republication rights.
 - Added responsive, reduced-motion-aware styling and a source-level contract test wired into the build chain.
+
+### Rights-gated and account-service page-family migration
+- Rebuilt OmniPortal's visual structure as a separately scoped metadata-discovery workspace, preserving its existing authorized-provider search and metadata-import request endpoints.
+- The OmniPortal interface continues to state that only authorized connectors are queried, no paywall/DRM/login/access-control bypass is allowed, and source chapters are not copied.
+- Reviewed and added build-contract coverage for the existing Crown Vault ledger, weekly Story Request Desk and Notifications center. Their existing server endpoints, ledger-only display, request submission, unread states and mark-read action remain unchanged.
+- Explicitly kept unverified Crown purchase/payment flows out of the UI. No EasyPaisa integration or paid top-up flow is represented as active.
