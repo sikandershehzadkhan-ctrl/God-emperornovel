@@ -101,10 +101,11 @@ assert.ok(!/imperial-novel-app-icon\.svg\?v=17\.(?:13|15|16|17)\.0/.test(runtime
 assert.ok(fs.existsSync('public/imperial-novel-app-icon.svg'), 'Imperial Novel app icon asset exists');
 assert.ok(sw.includes("'/imperial-novel-app-icon.svg'"), 'Service worker precaches the new app icon asset');
 assert.ok(JSON.parse(fs.readFileSync(`public/manifest-${version}.webmanifest`,'utf8')).icons[0].src==='/imperial-novel-app-icon.svg', 'Installed app manifest uses the new app icon');
-assert.ok(sw.includes(`const CACHE='imperial-novel-v${version}'`), 'Service worker cache key matches the release');
+assert.ok(sw.includes(`const CACHE='imperial-novel-v${version}-design-system-1'`), 'Service worker cache key invalidates the prior app shell after design-system migration');
 assert.ok(sw.includes("key!==CACHE") && sw.includes("caches.delete(key)"), 'Activation clears obsolete Imperial Novel caches');
 const coreMatch = sw.match(/const CORE=\[([^\]]+)\]/);
 assert.ok(coreMatch, 'Service worker declares a core asset list');
+assert.ok(coreMatch[1].includes("'/imperial-design-system.css'"), 'Service worker precaches the unified design-system entry point');
 const coreAssets = [...coreMatch[1].matchAll(/'([^']+)'/g)].map(([, asset]) => asset);
 for (const asset of coreAssets) {
   const pathname = asset.split(/[?#]/, 1)[0];
