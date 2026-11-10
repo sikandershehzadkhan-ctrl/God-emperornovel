@@ -4979,3 +4979,32 @@ html[data-theme="dark"] .chapterList > .chapter {
   .adminWrap .scroll { margin-inline: -2px; }
   .adminWrap .adminTable :where(th,td) { padding: 9px 8px; }
 }
+
+
+/* Logical-direction cleanup: RTL surfaces use writing-mode-aware edges. */
+html[dir="rtl"] .menuDrawer {
+  inset-inline-start: 0;
+  inset-inline-end: auto;
+  border-inline-start: 1px solid rgba(168,85,247,.65);
+  border-inline-end: 0;
+  box-shadow: -18px 0 60px rgba(0,0,0,.55);
+}
+html[dir="rtl"] .chapterDrawer {
+  inset-inline-start: 0;
+  inset-inline-end: auto;
+  border-inline-start: 1px solid var(--line);
+  border-inline-end: 0;
+  box-shadow: 12px 0 40px rgba(0,0,0,.18);
+}
+html[dir="rtl"] .statusBadge { inset-inline-start: auto; inset-inline-end: 9px; }
+html[dir="rtl"] .catalogMeta b,
+html[dir="rtl"] .navright,
+html[dir="rtl"] .homePage .consoleStatus,
+html[dir="rtl"] .liveBadge { margin-inline-start: auto; margin-inline-end: 0; }
+html[dir="rtl"] .menuDrawer .imperialIcon { margin-inline-start: 10px; margin-inline-end: 0; }
+html[dir="rtl"] .trendFactoryNote { border-inline-start: 0; border-inline-end: 2px solid var(--violet); }
+html[dir="rtl"] .legalNotice { border-inline-start: 0; border-inline-end: 3px solid var(--violet); }
+html[dir="rtl"] .commentReply { margin-inline-start: 28px; margin-inline-end: 0; }
+@media (max-width: 700px) {
+  html[dir="rtl"] .commentReply { margin-inline-start: 12px; }
+}
