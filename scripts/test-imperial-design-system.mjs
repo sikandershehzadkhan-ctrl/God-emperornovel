@@ -78,8 +78,8 @@ for (const tag of adminStaticMarkup.match(/<[^>]+>/g) || []) {
 }
 for (const utility of ['admin-mt-10','admin-mt-14','admin-mt-18','admin-chapter-preview','admin-chapter-edit']) {
   const applied = (adminStaticMarkup.match(/<[^>]+>/g) || []).some(tag => {
-    const match = tag.match(/\\bclass="([^"]*)"/);
-    return match && match[1].split(/\\s+/).includes(utility);
+    const match = tag.match(/class="([^"]*)"/);
+    return match && match[1].split(" ").includes(utility);
   });
   assert.ok(applied, 'Administrator markup must actually apply the canonical ' + utility + ' class.');
 }
