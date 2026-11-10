@@ -81,9 +81,9 @@ assert.ok(glassCss.includes("@media(max-width:760px), (prefers-reduced-motion:re
 assert.ok(formatsCss.includes("@media(forced-colors:active)") && formatsCss.includes("outline:2px solid Highlight"), "Format links must retain forced-colors keyboard focus");
 
 assert.ok(formatsCss.includes("var(--in-focus") && !formatsCss.includes("#83a9ff"), "Format keyboard focus must use the selected theme focus token");
-assert.ok(comicCss.includes("var(--in-obsidian,var(--bg,#0B1215))"), "Comic image placeholders must use semantic theme canvas tokens");
-assert.ok(appCss.includes("background:var(--in-obsidian,var(--bg,#0B1215))") && !appCss.includes("background:#080a12"), "Comic creator image placeholders must not force a dark-only background");
-assert.ok(formatsCss.includes("color:var(--in-good,#176B4D)") && formatsCss.includes("color:var(--in-link,#0F52BA)") && formatsCss.includes("color:var(--in-danger,#B4233C)"), "Creator publication, review and rejection states must use semantic status tokens");
+assert.ok(comicCss.includes("var(--in-obsidian)"), "Comic image placeholders must use semantic theme canvas tokens");
+assert.ok(appCss.includes("background:var(--in-obsidian)") && !appCss.includes("background:#080a12"), "Comic creator image placeholders must not force a dark-only background");
+assert.ok(formatsCss.includes("color:var(--in-good)") && formatsCss.includes("color:var(--in-link)") && formatsCss.includes("color:var(--in-danger)"), "Creator publication, review and rejection states must use semantic status tokens");
 
 for (const status of ["status-published", "status-review", "status-rejected"]) assert.ok(css.includes("html[data-theme] ." + status), "Creator status must use semantic status colors: " + status);
 assert.ok(css.includes("html[data-theme] .novelReaction[aria-pressed=true]"), "Community reaction states must use semantic theme tokens");
