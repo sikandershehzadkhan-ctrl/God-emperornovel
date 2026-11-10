@@ -46,9 +46,9 @@ The product needs one coherent design language across reading, discovery, creato
 
 ### Trade-offs
 
-- Historical stylesheet files remain in the repository as rollback references while route-by-route parity is verified, but they are no longer loaded by the application.
+- The seven retired stylesheet files have been removed from active repository paths after their rules were consolidated and the build validators were migrated. Git history remains the rollback source.
 - The first phase does not claim that every route has been redesigned.
-- Historical source files can be deleted after route-by-route visual, responsive, RTL and functional parity is proven against the consolidated stylesheet.
+- The consolidated stylesheet is now the only maintained CSS source. Any rollback should use version control history rather than reintroducing parallel stylesheets.
 
 ## Required validation before removing legacy styles
 
