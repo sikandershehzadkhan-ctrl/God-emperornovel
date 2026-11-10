@@ -152,10 +152,11 @@ assert.ok(runtime.includes('document.querySelectorAll("option[data-in-lang]").fo
 assert.ok(runtime.includes('document.querySelectorAll("[data-in-lang]:not(option)").forEach'), 'Language changes must translate reader labels and navigation text nodes.');
 const readerLabels = ["Theme","Line spacing","Text width","Chapter List","Close","Back to chapters","Bookmark chapter","Cycle reader theme","Compact","Comfort","Relaxed","Focused","Standard","Wide","Previous","Next"];
 const localeDictionary = runtime.slice(runtime.indexOf('const IN_LANG='), runtime.indexOf(';function setINLang'));
-for (const code of ['en','ur','hi','zh-CN','zh-TW','es','fr','id','ja','ko','pt-BR','ar','vi','fa']) {
-  const localeStart = localeDictionary.indexOf('"' + code + '":{');
-  const localeNext = localeDictionary.indexOf(',"', localeStart + code.length + 4);
-  const localeSource = localeDictionary.slice(localeStart, localeNext < 0 ? localeDictionary.length : localeNext);
+const localeMatches = [...localeDictionary.matchAll(/"([a-z]{2}(?:-[A-Z]{2})?)":\\{/g)];
+assert.equal(localeMatches.length, 14, 'All 14 locale dictionaries must be checked for reader controls.');
+for (let index = 0; index < localeMatches.length; index++) {
+  const code = localeMatches[index][1];
+  const localeSource = localeDictionary.slice(localeMatches[index].index, localeMatches[index + 1]?.index ?? localeDictionary.length);
   for (const label of readerLabels) assert.ok(localeSource.includes(JSON.stringify(label) + ':'), 'Reader control label ' + label + ' must exist in ' + code + '.');
 }
 for (const label of ['Theme','Line spacing','Text width','Chapter List','Close','Back to chapters','Compact','Comfort','Relaxed','Focused','Standard','Wide']) {
