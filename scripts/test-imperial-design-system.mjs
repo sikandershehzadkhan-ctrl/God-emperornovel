@@ -212,3 +212,28 @@ for (const selector of ['.admin-notice-danger','.admin-prewrap','.admin-bio-prev
 for (const token of ['admin-notice-danger','admin-prewrap','admin-bio-preview','admin-sample-preview','admin-report-status-select']) {
   assert.ok(adminMarkup.includes(token), 'Administrator runtime markup must use canonical class ' + token + '.');
 }
+
+// Route-family implementation audit: confirm creator and reader selectors
+// are emitted by real app templates, and admin chapter rows by admin templates.
+for (const [label, markup] of [
+  ['author work status row', 'class="authorWorkTop"'],
+  ['author publication status', 'class="authorStatus status-'],
+  ['author work actions', 'class="authorWorkActions"'],
+  ['author story edit form', 'class="authorEditForm"'],
+  ['comic page composer', 'class="comicPageComposerGrid"'],
+  ['comic page list', 'data-page-list'],
+  ['chapter archive list', 'class="chapterList"'],
+  ['reader toolbar', 'class="readerTools"'],
+  ['reader chapter drawer', 'class="chapterDrawer"']
+]) {
+  assert.ok(appJs.includes(markup), 'Actual application templates must emit ' + label + '.');
+}
+assert.ok(adminMarkup.includes('<div class="chapterRow">'),
+  'Administrator chapter-management rows must be emitted by the actual admin template.');
+assert.ok(css.includes('.authorWorkTop{display:flex;') && css.includes('.authorWorkActions{display:flex;'),
+  'Author Studio work cards must have explicit layout primitives.');
+assert.ok(css.includes('.comicPageComposerGrid {') && css.includes('grid-template-columns: minmax(0,1fr);'),
+  'Comic page composer must remain a single-column form on compact screens.');
+assert.ok(css.includes('.chapterRow .actions{display:flex;') && css.includes('.chapterList{display:grid;'),
+  'Admin chapter rows and public chapter archive must retain structured layouts.');
+
