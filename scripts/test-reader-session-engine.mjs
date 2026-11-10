@@ -1,4 +1,5 @@
 import assert from "node:assert/strict";
+import { readFileSync } from "node:fs";
 import {
   READER_SESSION_VERSION,
   createReaderSessionStore,
@@ -57,4 +58,10 @@ assert.equal(navigation.isCurrent(second), true);
 navigation.invalidate();
 assert.equal(navigation.isCurrent(second), false);
 
-console.log("Reader session engine checks passed.");
+const readerSource = readFileSync(new URL("../public/app.js", import.meta.url), "utf8");
+assert.match(readerSource, /import\(['"]\/reader-session\.mjs['"]\)/, "reader route must load the session engine");
+assert.match(readerSource, /readerSessions\.write\(id,num,pct\)/, "scroll progress must persist through the session engine");
+assert.match(readerSource, /navigation\.isCurrent\(navigationToken\)/, "stale chapter responses must be rejected");
+assert.doesNotMatch(readerSource, /if\(d\.unlocked\)api\(['"]\/api\/bookmark['"]/, "opening a chapter must not silently bookmark it");
+
+console.log("Reader session engine and route integration checks passed.");
