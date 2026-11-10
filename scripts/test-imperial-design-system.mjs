@@ -77,8 +77,11 @@ for (const tag of adminStaticMarkup.match(/<[^>]+>/g) || []) {
   assert.ok(classAttributes.length <= 1, 'Administrator HTML elements must not contain duplicate class attributes: ' + tag.slice(0, 180));
 }
 for (const utility of ['admin-mt-10','admin-mt-14','admin-mt-18','admin-chapter-preview','admin-chapter-edit']) {
-  assert.match(adminStaticMarkup, new RegExp('class="[^"]*(?:^|\\\\s)' + utility + '(?:\\\\s|$)[^"]*"'),
-    'Administrator markup must actually apply the canonical ' + utility + ' class.');
+  const applied = (adminStaticMarkup.match(/<[^>]+>/g) || []).some(tag => {
+    const match = tag.match(/\\bclass="([^"]*)"/);
+    return match && match[1].split(/\\s+/).includes(utility);
+  });
+  assert.ok(applied, 'Administrator markup must actually apply the canonical ' + utility + ' class.');
 }
 for (const utility of ['admin-mt-10','admin-mt-14','admin-mt-18','admin-chapter-preview','admin-chapter-preview-content','admin-chapter-edit','admin-section-divider']) {
   assert.ok(adminMarkup.includes(utility), 'Administrator markup must use the canonical ' + utility + ' utility.');
