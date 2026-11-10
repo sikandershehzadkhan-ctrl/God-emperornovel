@@ -1,0 +1,15 @@
+import fs from 'node:fs';
+import assert from 'node:assert/strict';
+const app=fs.readFileSync('public/app.js','utf8');
+const css=fs.readFileSync('public/imperial-ui-primitives.css','utf8');
+const tickets=app.slice(app.indexOf('async function tickets()'),app.indexOf('async function requests()'));
+const requests=app.slice(app.indexOf('async function requests()'),app.indexOf('async function omni()'));
+const discovery=app.slice(app.indexOf('async function discoveryPage('),app.indexOf('\nfunction simplePage'));
+const notifications=discovery.slice(discovery.indexOf("if(kind==='notifications'){"));
+for(const token of ['in-vault-header','in-vault-balance','in-vault-ledger','/api/profile','/api/tickets/ledger','ticketFlow','in-vault-empty']) assert.ok(tickets.includes(token),`Crown Vault ledger missing ${token}`);
+for(const token of ['in-requests-header','in-requests-quota','in-requests-form','/api/requests','method:\'POST\'','requestUrl','weekly request allowance','in-requests-message']) assert.ok(requests.includes(token),`Story Request Desk missing ${token}`);
+for(const token of ['in-notifications-header','in-notifications-toolbar','in-notifications-list','/api/notifications','/api/notifications/read','aria-busy','markRead']) assert.ok(notifications.includes(token),`Notifications missing ${token}`);
+for(const token of ['.in-vault-header','.in-vault-balance','.in-requests-header','.in-requests-card','.in-notifications-header','.in-notification']) assert.ok(css.includes(token),`Account service styling missing ${token}`);
+assert.ok(!tickets.includes('/api/tickets/purchase'),'Do not introduce unverified Crown purchases');
+assert.ok(!tickets.includes('EasyPaisa'),'Do not imply payment integration is active');
+console.log('Crown Vault, Story Request Desk and Notifications design contracts passed.');
