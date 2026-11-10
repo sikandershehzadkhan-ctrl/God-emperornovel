@@ -37,6 +37,12 @@ assert.ok(css.includes('.adminWrap') && css.includes('.adminHero') && css.includ
 assert.ok(css.includes('.adminWrap .adminCard b.big { color: var(--in-ink); }') && css.includes('.adminWrap .adminNav button.active'), 'Administrator cards and navigation must use readable semantic theme colors.');
 assert.ok(css.includes('html[data-theme="dark"] .adminWrap .adminHero'), 'Administrator hero surfaces must adapt to dark theme tokens.');
 assert.ok(css.includes('html[dir="rtl"] .adminWrap .adminTable th') && css.includes('html[dir="rtl"] .adminWrap .mobileAdmin'), 'Administrator tables and floating navigation must mirror in RTL.');
+const adminRtlNavigation = css.split('html[dir="rtl"] .adminWrap .mobileAdmin {')[1]?.split('}')[0] || '';
+assert.ok(adminRtlNavigation.includes('inset-inline-start: auto;') && adminRtlNavigation.includes('inset-inline-end: 10px;'),
+  'Administrator floating navigation must use logical inline edges in RTL.');
+assert.ok(!/(^|[;{]\\s*)(left|right)\\s*:/m.test(adminRtlNavigation),
+  'Administrator RTL navigation must not reintroduce physical left/right positioning.');
+
 assert.equal(imports.length, 0, 'The unified design system must not load legacy stylesheets through runtime imports.');
 for (const legacyAsset of ['/style-17.23.0.css','/app-17.23.0.css','/imperial-luxury-17.23.0.css','/imperial-formats-17.23.0.css','/imperial-comic-reader-17.23.0.css','/imperial-glass.css']) {
   assert.ok(!html.includes(legacyAsset), 'The app shell must not load a legacy stylesheet directly: ' + legacyAsset);
