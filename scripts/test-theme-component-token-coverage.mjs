@@ -130,6 +130,10 @@ assert.ok(css.includes('html[data-theme] :focus-visible{outline:2px solid var(--
 for (const token of ["var(--in-canvas)", "var(--in-text)", "var(--in-panel)", "var(--in-control-bg)", "var(--in-focus)"]) {
   assert.ok(css.includes(token), "Missing semantic token consumption: " + token);
 }
+// Later legacy declarations must not override the semantic rating and keyboard-focus tokens.
+assert.ok(appCss.includes(".ratingStar.selected,.ratingStar:hover{color:var(--in-sapphire"), "Selected rating stars must retain the semantic sapphire token in the final cascade");
+assert.ok(!appCss.includes(".ratingStar.selected,.ratingStar:hover{color:var(--brand-sapphire"), "Legacy rating color must not override the semantic theme token");
+assert.ok(appCss.includes(".ratingStar:focus-visible,.commentActions button:focus-visible{outline:3px solid var(--in-focus"), "Community keyboard focus must use the semantic focus token");
 // Supplemental stylesheets must not retain legacy fixed-palette fallbacks on shared interactive surfaces.
 for (const [label, source, checks] of [
   ["application", appCss, [
