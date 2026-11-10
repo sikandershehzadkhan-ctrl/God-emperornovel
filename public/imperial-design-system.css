@@ -4723,7 +4723,7 @@ html[dir="rtl"] .adminWrap .mobileAdmin {
   .chapterDrawerHead button,
   .comicReaderControls button,
   .comicPageNav .readerTool {
-    min-width: 44px;
+    min-width: 44px !important;
     min-height: 44px;
     height: 44px;
   }
