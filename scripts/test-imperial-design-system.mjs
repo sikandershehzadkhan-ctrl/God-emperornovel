@@ -144,7 +144,7 @@ assert.equal(runtime, versionedRuntime, 'The unified runtime source and served a
 assert.ok(runtime.includes("const allowed=['light','dark','midnight','sepia','imperial','cosmic']"), 'Global theme runtime must accept all six site themes.');
 assert.ok(runtime.includes("applyImperialTheme($('#setSiteTheme').value)"), 'Settings must apply the selected global theme without collapsing it to light/dark.');
 const readerStart = runtime.indexOf("async function reader()");
-const readerEnd = runtime.indexOf("\\nasync function ", readerStart + 1);
+const readerEnd = runtime.indexOf("\nasync function ", readerStart + 1);
 assert.ok(readerStart >= 0 && readerEnd > readerStart, 'Reader route must remain available for theme localization checks.');
 const readerSource = runtime.slice(readerStart, readerEnd);
 assert.ok(readerSource.includes("setINLang(document.documentElement.lang||'en');"), 'Reader theme options must be localized after reader markup is rendered.');
