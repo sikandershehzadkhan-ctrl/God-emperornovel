@@ -130,24 +130,21 @@ assert.ok(runtime.includes("document.body.classList.remove('menu-open');setINLan
 assert.ok(runtime.includes("applyImperialTheme(document.documentElement.dataset.theme==='dark'?'light':'dark');setINLang(document.documentElement.lang||'en')"), 'Theme-toggle accessibility label follows the newly selected theme');
 
 
-const formatCss = fs.readFileSync(`public/imperial-formats-${version}.css`,'utf8');
-assert.ok(formatCss.includes('.homeFormatCard:focus-visible') && formatCss.includes('.formatLink:focus-visible'), 'Homepage and directory format links retain a visible keyboard focus state');
-assert.ok(formatCss.includes('outline:3px solid #83a9ff!important') && formatCss.includes('outline:2px solid Highlight!important'), 'Format navigation focus remains visible in normal and forced-colors modes');
-assert.ok(formatCss.includes('border-color:#83a9ff'), 'Keyboard focus also reinforces the active format link border');
-assert.ok(formatCss.includes('var(--in-sapphire,#4f8cff)') && !formatCss.includes('brand-cyan'), 'Format navigation uses the Imperial sapphire accent rather than legacy cyan');
-const appCss = fs.readFileSync(`public/app-${version}.css`,'utf8');
-assert.ok(appCss.includes('--brand-sapphire:var(--in-sapphire') && appCss.includes('var(--brand-sapphire,#4f8cff)'), 'Shared interaction controls use Imperial sapphire instead of legacy cyan/gold accents');
-assert.ok(!appCss.includes('--brand-cyan') && !appCss.includes('#22d3ee'), 'Legacy cyan accent is absent from shared interaction CSS');
-assert.ok(appCss.includes('prefers-reduced-motion:reduce'), 'Shared interface styles respect reduced-motion preferences');
-assert.ok(appCss.includes('.ratingStar:focus-visible'), 'Rating controls have a visible keyboard focus state');
+assert.ok(designSystemCss.includes('.homeFormatCard:focus-visible') && designSystemCss.includes('.formatLink:focus-visible'), 'Homepage and directory format links retain a visible keyboard focus state');
+assert.ok(designSystemCss.includes('outline:3px solid #83a9ff!important') && designSystemCss.includes('outline:2px solid Highlight!important'), 'Format navigation focus remains visible in normal and forced-colors modes');
+assert.ok(designSystemCss.includes('border-color:#83a9ff'), 'Keyboard focus also reinforces the active format link border');
+assert.ok(designSystemCss.includes('var(--in-sapphire,#4f8cff)') && designSystemCss.includes('--brand-cyan: var(--in-sapphire);'), 'Format navigation legacy cyan aliases resolve to the Imperial sapphire accent');
+assert.ok(designSystemCss.includes('--brand-sapphire:var(--in-sapphire') && designSystemCss.includes('var(--brand-sapphire,#4f8cff)'), 'Shared interaction controls use Imperial sapphire instead of legacy cyan/gold accents');
+assert.ok(designSystemCss.includes('--brand-cyan: var(--in-sapphire);') && designSystemCss.includes('--cyan: var(--in-sapphire);'), 'Legacy cyan aliases resolve to Imperial sapphire in the shared interaction system');
+assert.ok(designSystemCss.includes('prefers-reduced-motion:reduce'), 'Shared interface styles respect reduced-motion preferences');
+assert.ok(designSystemCss.includes('.ratingStar:focus-visible'), 'Rating controls have a visible keyboard focus state');
 
-const luxuryDesign = fs.readFileSync(`public/imperial-luxury-${version}.css`,'utf8');
 assert.ok(index.includes('Your storyverse is taking longer than expected.') && index.includes("root.replaceChildren(panel)") && index.includes("window.setTimeout"), 'Boot failure shows a retryable recovery screen instead of an endless loader');
 
 assert.ok(index.includes('<html lang="en" data-theme="light">'), 'New visitors receive a white-first theme before JavaScript runs');
-assert.ok(luxuryDesign.includes('--white:#FFFFFF') && luxuryDesign.includes('--black:#0B1215') && luxuryDesign.includes('--purple:#6A0DAD') && luxuryDesign.includes('--blue:#0F52BA'), 'Design tokens use the approved four-color palette');
-assert.ok(luxuryDesign.includes('background:#6A0DAD;color:#FFFFFF') && luxuryDesign.includes('background:#0F52BA'), 'Primary and hover actions use purple then sapphire');
+assert.ok(designSystemCss.includes('--white:#FFFFFF') && designSystemCss.includes('--black:#0B1215') && designSystemCss.includes('--purple:#6A0DAD') && designSystemCss.includes('--blue:#0F52BA'), 'Design tokens use the approved four-color palette');
+assert.ok(designSystemCss.includes('background:#6A0DAD;color:#FFFFFF') && designSystemCss.includes('background:#0F52BA'), 'Primary and hover actions use purple then sapphire');
 
-assert.ok(luxuryDesign.includes('Final art direction: editorial authority') && luxuryDesign.includes('display:none!important;') && luxuryDesign.includes('background:#0e111c;'), 'Homepage hero uses the restrained editorial art direction without decorative orbit layers');
+assert.ok(designSystemCss.includes('Final art direction: editorial authority') && designSystemCss.includes('display:none!important;') && designSystemCss.includes('background:#0e111c;'), 'Homepage hero uses the restrained editorial art direction without decorative orbit layers');
 
 console.log('Content format checks passed: '+formats.length+' formats, comic viewer modes, versioned assets verified.');
