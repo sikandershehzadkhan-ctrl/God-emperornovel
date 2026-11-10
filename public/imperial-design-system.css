@@ -6012,3 +6012,16 @@ html[data-theme="cosmic"]{--in-text:#FFFFFF;--in-text-muted:#DCE5FF;--in-line:#8
     box-sizing: border-box;
   }
 }
+
+
+/* Keep the editorial homepage hero inside its grid track on 320px devices. */
+@media (max-width: 760px) {
+  .homePage .hero {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .homePage .hero .nextHeroCopy {
+    width: 100%;
+    min-width: 0;
+    max-width: 100%;
+  }
+}
