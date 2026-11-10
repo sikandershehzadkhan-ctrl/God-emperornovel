@@ -329,6 +329,11 @@ for (const token of ['admin-notice-danger','admin-prewrap','admin-bio-preview','
   assert.ok(adminMarkup.includes(token), 'Administrator runtime markup must use canonical class ' + token + '.');
 }
 
+assert.ok(appJs.includes('aria-label="Decrease text size"') &&
+  appJs.includes('aria-label="Increase text size"') &&
+  appJs.includes('aria-label="Open chapter list"'),
+  'Reader symbol controls must expose meaningful accessible names.');
+
 // Route-family implementation audit: confirm creator and reader selectors
 // are emitted by real app templates, and admin chapter rows by admin templates.
 for (const [label, markup] of [
