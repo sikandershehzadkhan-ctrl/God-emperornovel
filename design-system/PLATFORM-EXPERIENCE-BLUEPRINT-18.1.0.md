@@ -268,3 +268,8 @@ A connector-side audit evaluated 130 source assertions against the current branc
 - Rebuilt the story request desk with the server-reported weekly allowance, URL validation, submission feedback, disabled pending state, and post-submit allowance refresh.
 - Request cost is shown only when the server returns it; missing cost is not silently represented as zero.
 - Added source contract coverage for both account tools and wired it into the build chain.
+
+### Notifications inbox migration
+- Replaced the generic discovery-page wrapper with a dedicated notification inbox.
+- Displays server-provided title, body, timestamp, read/unread state, and unread count; includes a mark-all-read action with pending/disabled handling and explicit empty/error states.
+- Added a responsive notification design contract test and build-chain entry.
