@@ -5903,3 +5903,13 @@ html[data-theme="cosmic"]{--in-text:#FFFFFF;--in-text-muted:#DCE5FF;--in-line:#8
 .readerPage .readerContent,
 .readerPage .readerArticle h1,
 .readerPage .comicPage figcaption { text-align: start; unicode-bidi: plaintext; }
+
+/* Final mobile touch-target guard: supersede older 38px shell icon sizing. */
+@media (max-width: 760px) {
+  html[data-theme] .top .navright :is(.iconbtn, .themeToggle, .menuToggle) {
+    width: 44px;
+    min-width: 44px;
+    height: 44px;
+    min-height: 44px;
+  }
+}
