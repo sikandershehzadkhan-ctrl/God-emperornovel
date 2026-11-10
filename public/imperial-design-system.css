@@ -662,3 +662,179 @@ html[data-theme="dark"] .menuDrawer > a:hover {
   background: var(--in-purple-soft);
   color: var(--in-purple);
 }
+
+
+/* Discovery migration 03: calmer filters, readable metadata and consistent story cards. */
+.catalogTop.panel {
+  margin-top: 22px;
+  padding: clamp(16px, 2.6vw, 26px);
+  border: 1px solid var(--line);
+  border-radius: 20px;
+  background: var(--panel);
+  box-shadow: var(--shadowSoft);
+}
+.catalogSearch { max-width: none; }
+.catalogSearch .search {
+  min-height: 50px;
+  padding-inline: 14px;
+  border: 1px solid var(--line);
+  border-radius: 13px;
+  background: var(--bg2);
+  box-shadow: none;
+}
+.catalogSearch .search input {
+  min-height: 46px;
+  color: var(--text);
+  font-size: 14px;
+}
+.filterRow {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0,1fr));
+  gap: 12px;
+  margin-top: 14px;
+}
+.filterGroup {
+  display: flex;
+  min-width: 0;
+  flex-direction: column;
+  align-items: stretch;
+  gap: 6px;
+}
+.filterLabel {
+  color: var(--muted);
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: .11em;
+}
+.filterGroup select,
+.filterGroup input {
+  width: 100%;
+  min-width: 0;
+  min-height: 44px;
+  padding: 9px 11px;
+  border: 1px solid var(--line);
+  border-radius: 11px;
+  background: var(--bg);
+  color: var(--text);
+  font-size: 12px;
+}
+.catalogTop .actions { gap: 8px; }
+.catalogTop .actions > * { min-height: 42px; }
+.catalogMeta {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin: 22px 0 10px;
+  color: var(--muted);
+  font-size: 12px;
+}
+.catalogMeta b { color: var(--text); font-weight: 700; }
+.activeFilters { gap: 7px; margin: 10px 0 18px; }
+.activeFilter {
+  border-color: var(--line);
+  background: var(--panel);
+  color: var(--in-ink-soft);
+}
+.activeFilter b {
+  background: var(--in-purple-soft);
+  color: var(--in-purple);
+}
+.clearFilters { color: var(--in-purple); }
+.catalogGrid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0,1fr));
+  gap: clamp(12px, 1.6vw, 18px);
+}
+.catalogCard {
+  min-width: 0;
+  overflow: hidden;
+  border: 1px solid var(--line);
+  border-radius: 16px;
+  background: var(--panel);
+  box-shadow: 0 5px 20px rgba(23,32,39,.045);
+  transition: transform .18s ease, border-color .18s ease, box-shadow .18s ease;
+}
+.catalogCard:hover {
+  transform: translateY(-3px);
+  border-color: rgba(106,13,173,.32);
+  box-shadow: 0 13px 30px rgba(23,32,39,.09);
+}
+.catalogCover { background: var(--bg2); }
+.catalogCover img { transition: transform .25s ease; }
+.catalogCard:hover .catalogCover img { transform: scale(1.025); }
+.statusBadge,
+.formatBadge {
+  max-width: calc(100% - 16px);
+  border: 1px solid rgba(255,255,255,.72);
+  background: rgba(246,245,242,.94);
+  color: #35434C;
+  box-shadow: 0 2px 9px rgba(0,0,0,.08);
+  font-size: 9px;
+  font-weight: 750;
+  letter-spacing: .02em;
+}
+.catalogBody { padding: 13px; }
+.catalogTitle {
+  color: var(--text);
+  font-size: 14px;
+  font-weight: 750;
+  letter-spacing: -.015em;
+}
+.catalogBody > .muted { margin-top: 4px; font-size: 11px; }
+.catalogStats {
+  gap: 7px 10px;
+  color: var(--muted);
+  font-size: 10px;
+  font-variant-numeric: tabular-nums;
+}
+.catalogTags { gap: 5px; }
+.catalogTags .pill {
+  border-color: var(--line);
+  background: var(--bg2);
+  color: var(--in-ink-soft);
+  font-size: 9px;
+}
+.catalogTags .pill.purple {
+  border-color: rgba(106,13,173,.16);
+  background: var(--in-purple-soft);
+  color: var(--in-purple-strong);
+}
+.readMini {
+  min-height: 34px;
+  align-items: center;
+  padding: 7px 10px;
+  border: 1px solid rgba(106,13,173,.16);
+  border-radius: 9px;
+  background: var(--in-purple-soft);
+  color: var(--in-purple-strong);
+}
+html[data-theme="dark"] .catalogTop.panel,
+html[data-theme="dark"] .catalogCard { background: var(--panel); border-color: var(--line); }
+html[data-theme="dark"] .catalogSearch .search,
+html[data-theme="dark"] .filterGroup select,
+html[data-theme="dark"] .filterGroup input { background: var(--bg2); color: var(--text); }
+html[data-theme="dark"] .catalogTitle { color: var(--text); }
+html[data-theme="dark"] .statusBadge,
+html[data-theme="dark"] .formatBadge {
+  border-color: rgba(11,18,21,.28);
+  background: rgba(11,18,21,.88);
+  color: #F1F4F5;
+}
+html[data-theme="dark"] .catalogTags .pill { background: var(--bg2); color: var(--in-ink-soft); }
+@media (max-width: 900px) {
+  .filterRow { grid-template-columns: repeat(2, minmax(0,1fr)); }
+  .catalogGrid { grid-template-columns: repeat(3, minmax(0,1fr)); }
+}
+@media (max-width: 640px) {
+  .catalogTop.panel { padding: 14px; border-radius: 16px; }
+  .catalogGrid { grid-template-columns: repeat(2, minmax(0,1fr)); gap: 11px; }
+  .catalogBody { padding: 10px; }
+  .catalogTitle { font-size: 12px; }
+  .catalogStats { gap: 5px 7px; font-size: 9px; }
+  .catalogTags .pill { font-size: 8px; }
+}
+@media (max-width: 360px) {
+  .filterRow { grid-template-columns: minmax(0,1fr); }
+  .catalogGrid { gap: 8px; }
+  .catalogBody { padding: 8px; }
+}
