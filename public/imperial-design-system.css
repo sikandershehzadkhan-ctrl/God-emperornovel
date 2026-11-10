@@ -4780,7 +4780,7 @@ html[dir="rtl"] .adminWrap .mobileAdmin {
 .chapterList > .chapter .lock { color: var(--in-color-text-muted); }
 .chapterRow { min-width: 0; }
 .chapterRow > * { min-width: 0; overflow-wrap: anywhere; }
-.chapterRow .actions > :where(button,a) { min-height: 40px; }
+.chapterRow .actions > :where(button,a) { min-width: 44px; min-height: 44px; }
 html[data-theme="dark"] .chapterList > .chapter {
   background: var(--in-color-bg-surface);
   color: var(--in-color-text-primary);
@@ -4974,7 +4974,7 @@ html[data-theme="dark"] .chapterList > .chapter {
 .adminWrap .adminTable :where(th,td) {
   overflow-wrap: anywhere;
 }
-.adminWrap .adminTable :where(button,select,a) { min-height: 40px; }
+.adminWrap .adminTable :where(button,select,a) { min-height: 44px; }
 @media (max-width: 760px) {
   .adminWrap .scroll { margin-inline: -2px; }
   .adminWrap .adminTable :where(th,td) { padding: 9px 8px; }
