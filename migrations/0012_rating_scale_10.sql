@@ -1,7 +1,8 @@
 -- Convert legacy integer ratings from 1–5 to the equivalent even values on 1–10.
 -- The release workflow preflights the live table definition and runs this file only
 -- when ratings is absent or still has the legacy 1–5 constraint. It skips a verified
--- 1–10 table on subsequent release attempts.
+-- 1–10 table on subsequent release attempts. This SQL is intentionally one-way;
+-- the release workflow must classify the live schema before deciding to execute it.
 CREATE TABLE IF NOT EXISTS ratings (
   user_id INTEGER NOT NULL,
   novel_id INTEGER NOT NULL,
