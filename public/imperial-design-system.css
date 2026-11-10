@@ -4524,3 +4524,36 @@ html[dir="rtl"] .heroOrbitLabel { writing-mode: vertical-lr; }
     color: CanvasText;
   }
 }
+
+
+/* Legacy semantic aliases now resolve to the current Imperial palette.
+   This prevents un-migrated feature selectors from reintroducing cyan/lime/gold. */
+:root,
+html[data-theme="light"],
+html[data-theme="dark"] {
+  --imperial-purple: var(--in-purple);
+  --imperial-cyan: var(--in-sapphire);
+  --gold: var(--in-purple);
+  --gold2: var(--in-purple-strong);
+  --gold3: var(--in-purple);
+  --lime: var(--in-sapphire);
+  --cyan: var(--in-sapphire);
+  --cyan2: var(--in-sapphire-strong);
+  --cyan3: var(--in-sapphire-soft);
+  --violet: var(--in-purple);
+  --violet2: var(--in-purple-strong);
+  --violet3: var(--in-purple-soft);
+  --violet4: var(--in-purple-strong);
+}
+.cyanAccent { color: var(--in-sapphire) !important; }
+.menuToggle {
+  border-color: color-mix(in srgb, var(--in-purple) 48%, transparent);
+  background: linear-gradient(145deg, color-mix(in srgb, var(--in-purple) 10%, transparent), var(--panel));
+}
+.menuDrawer {
+  border-color: color-mix(in srgb, var(--in-purple) 65%, transparent);
+}
+.menuDrawerHead { border-bottom-color: color-mix(in srgb, var(--in-sapphire) 22%, transparent); }
+.menuDrawerBrand small,
+.heroCornerMark span,
+.liveBadge { color: var(--in-sapphire); }
