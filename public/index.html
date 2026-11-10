@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<meta name="theme-color" content="#FFFFFF">
+<meta name="theme-color" content="#F6F5F2">
 <meta name="description" content="Discover original, licensed and authorized novels, fanfiction and connected worlds.">
 <meta name="application-name" content="Imperial Novel">
 <meta name="color-scheme" content="light dark">
@@ -21,12 +21,7 @@
 <link rel="icon" type="image/svg+xml" href="/imperial-novel-app-icon.svg">
 <link rel="apple-touch-icon" href="/imperial-novel-app-icon.svg">
 <link rel="manifest" href="/manifest-17.23.0.webmanifest">
-<link rel="stylesheet" href="/style-17.23.0.css">
-<link rel="stylesheet" href="/app-17.23.0.css">
-<link rel="stylesheet" href="/imperial-luxury-17.23.0.css">
-<link rel="stylesheet" href="/imperial-formats-17.23.0.css">
-<link rel="stylesheet" href="/imperial-comic-reader-17.23.0.css">
-<link rel="stylesheet" href="/imperial-glass.css">
+<link rel="stylesheet" href="/imperial-design-system.css">
 </head>
 <body>
 <main id="app" class="appBootRoot" tabindex="-1">
@@ -48,11 +43,11 @@
     if(!root)return;
     var panel=document.createElement('section');
     panel.setAttribute('role','alert');
-    panel.style.cssText='max-width:560px;margin:12vh auto;padding:28px 22px;text-align:center;font:16px/1.6 system-ui,sans-serif;color:#0B1215;background:#FFFFFF;border:1px solid rgba(11,18,21,.12);border-top:4px solid #6A0DAD;border-radius:18px';
-    var brand=document.createElement('p');brand.textContent='IMPERIAL NOVEL';brand.style.cssText='color:#6A0DAD;font-weight:800;letter-spacing:.12em;margin:0 0 8px';
-    var title=document.createElement('h1');title.textContent='Your storyverse is taking longer than expected.';title.style.cssText='font-size:clamp(26px,6vw,38px);line-height:1.1;margin:0 0 12px';
-    var message=document.createElement('p');message.textContent='The page could not finish loading. Please retry. Your account and reading data have not been changed.';message.style.color='#39464C';
-    var retry=document.createElement('button');retry.type='button';retry.textContent='Try again';retry.style.cssText='margin-top:12px;padding:12px 20px;border:0;border-radius:10px;background:#6A0DAD;color:#FFFFFF;font-weight:700;font-size:15px';retry.addEventListener('click',function(){window.location.reload()});
+    panel.className='bootRecovery';
+    var brand=document.createElement('p');brand.className='bootRecoveryBrand';brand.textContent='IMPERIAL NOVEL';
+    var title=document.createElement('h1');title.className='bootRecoveryTitle';title.textContent='Your storyverse is taking longer than expected.';
+    var message=document.createElement('p');message.className='bootRecoveryMessage';message.textContent='The page could not finish loading. Please retry. Your account and reading data have not been changed.';
+    var retry=document.createElement('button');retry.type='button';retry.className='bootRecoveryRetry';retry.textContent='Try again';retry.addEventListener('click',function(){window.location.reload()});
     panel.append(brand,title,message,retry);root.replaceChildren(panel);
   }
   window.addEventListener('error',function(e){if(e.target&&e.target.tagName==='SCRIPT')recover()},true);

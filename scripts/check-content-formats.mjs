@@ -45,10 +45,23 @@ for (const name of new Set(['app.js', scriptMatch[1]])) {
  assert.ok(app.includes('id="novelComments"') && app.includes('mountNovelComments(box,id)'), name + ' mounts the discussion composer and thread as a React island');
  assert.ok(!app.includes('id="postComment"') && !app.includes('id="commentsList"'), name + ' no longer contains the duplicate legacy comment controls');
 }
-for (const asset of [`style-${version}.css`,`app-${version}.css`,`imperial-luxury-${version}.css`,`imperial-formats-${version}.css`,`imperial-comic-reader-${version}.css`,`manifest-${version}.webmanifest`]) {
- assert.ok(index.includes('/'+asset), 'HTML references '+asset);
- assert.ok(fs.existsSync('public/'+asset), asset+' exists');
+const designSystem = fs.readFileSync('public/imperial-design-system.css', 'utf8');
+assert.ok(index.includes('/imperial-design-system.css'), 'HTML loads the canonical design-system entry point');
+const consolidatedSources = [
+ 'Consolidated stylesheet source 1: public/style-' + version + '.css',
+ 'Consolidated stylesheet source 2: public/app-' + version + '.css',
+ 'Consolidated stylesheet source 3: public/imperial-luxury-' + version + '.css',
+ 'Consolidated stylesheet source 4: public/imperial-formats-' + version + '.css',
+ 'Consolidated stylesheet source 5: public/imperial-comic-reader-' + version + '.css',
+ 'Consolidated stylesheet source 6: public/imperial-glass.css'
+];
+for (const sourceMarker of consolidatedSources) {
+ assert.ok(designSystem.includes(sourceMarker), 'Canonical stylesheet retains the migrated feature rules: ' + sourceMarker);
 }
+assert.ok(!designSystem.includes('@import'), 'Canonical stylesheet does not depend on external legacy stylesheet requests.');
+const manifestAsset = `manifest-${version}.webmanifest`;
+assert.ok(index.includes('/'+manifestAsset), 'HTML references '+manifestAsset);
+assert.ok(fs.existsSync('public/'+manifestAsset), manifestAsset+' exists');
 
 for (const path of ['public/app.js', `public/app-${version}.js`]) {
  const app = fs.readFileSync(path, 'utf8');
@@ -87,7 +100,7 @@ const runtime = fs.readFileSync(`public/app-${version}.js`,'utf8');
 const editableRuntime = fs.readFileSync('public/app.js','utf8');
 assert.equal(editableRuntime, runtime, 'Editable application source must match the active versioned runtime to prevent feature and localization drift');
 const sw = fs.readFileSync('public/sw.js','utf8');
-const luxuryCss = fs.readFileSync(`public/imperial-luxury-${version}.css`,'utf8');
+const designSystemCss = fs.readFileSync('public/imperial-design-system.css','utf8');
 assert.ok(entry.includes(`/app-${version}.js`), 'Entry point loads the cache-busted application runtime');
 assert.ok(entry.includes('property="og:title"') && entry.includes('property="og:description"') && entry.includes('name="twitter:card"'), 'Entry point provides international social-sharing metadata');
 assert.ok(entry.includes('https://god-emperornovel.sikandershehzadkhan.workers.dev/imperial-novel-app-icon.svg'), 'Social preview uses the new absolute crest URL');
@@ -96,10 +109,15 @@ assert.ok(!/imperial-novel-app-icon\.svg\?v=17\.(?:13|15|16|17)\.0/.test(runtime
 assert.ok(fs.existsSync('public/imperial-novel-app-icon.svg'), 'Imperial Novel app icon asset exists');
 assert.ok(sw.includes("'/imperial-novel-app-icon.svg'"), 'Service worker precaches the new app icon asset');
 assert.ok(JSON.parse(fs.readFileSync(`public/manifest-${version}.webmanifest`,'utf8')).icons[0].src==='/imperial-novel-app-icon.svg', 'Installed app manifest uses the new app icon');
-assert.ok(sw.includes(`const CACHE='imperial-novel-v${version}'`), 'Service worker cache key matches the release');
+assert.ok(sw.includes(`const CACHE='imperial-novel-v${version}-design-system-3'`), 'Service worker cache key invalidates the prior app shell after design-system migration');
 assert.ok(sw.includes("key!==CACHE") && sw.includes("caches.delete(key)"), 'Activation clears obsolete Imperial Novel caches');
 const coreMatch = sw.match(/const CORE=\[([^\]]+)\]/);
 assert.ok(coreMatch, 'Service worker declares a core asset list');
+assert.ok(coreMatch[1].includes("'/imperial-design-system.css'"), 'Service worker precaches the unified design-system entry point');
+assert.ok(!designSystemCss.includes('@import'), 'The production stylesheet is self-contained and does not load legacy CSS at runtime.');
+for (const retiredCss of ['style-17.23.0.css','app-17.23.0.css','imperial-luxury-17.23.0.css','imperial-formats-17.23.0.css','imperial-comic-reader-17.23.0.css','imperial-glass.css']) {
+ assert.ok(!coreMatch[1].includes(retiredCss), 'Service worker no longer precaches separate legacy stylesheet: '+retiredCss);
+}
 const coreAssets = [...coreMatch[1].matchAll(/'([^']+)'/g)].map(([, asset]) => asset);
 for (const asset of coreAssets) {
   const pathname = asset.split(/[?#]/, 1)[0];
@@ -108,36 +126,33 @@ for (const asset of coreAssets) {
 }
 
 assert.ok(runtime.includes("navigator.serviceWorker.register('/sw.js',{updateViaCache:'none'})"), 'Application registers the cache worker without stale update checks');
-assert.ok(luxuryCss.includes(':focus-visible') && luxuryCss.includes('prefers-reduced-motion:reduce') && luxuryCss.includes('forced-colors:active'), 'Design system includes keyboard, reduced-motion, and forced-color accessibility safeguards');
-assert.ok(runtime.includes('class="skipLink" href="#app">Skip to main content</a>') && entry.includes('id="app" class="appBootRoot" tabindex="-1"') && luxuryCss.includes('.skipLink:focus-visible'), 'Keyboard users can skip navigation and focus the main content landmark');
+assert.ok(designSystemCss.includes(':focus-visible') && designSystemCss.includes('prefers-reduced-motion: reduce') && designSystemCss.includes('forced-colors: active'), 'Design system includes keyboard, reduced-motion, and forced-color accessibility safeguards');
+assert.ok(runtime.includes('class="skipLink" href="#app">Skip to main content</a>') && entry.includes('id="app" class="appBootRoot" tabindex="-1"') && designSystemCss.includes('.skipLink:focus-visible'), 'Keyboard users can skip navigation and focus the main content landmark');
 assert.ok(runtime.includes('".navlinks a,.menuDrawer a span,.footerLinks a,.mobileNav a"'), 'Shared localization includes the mobile navigation and footer');
 assert.ok(runtime.includes('n.nodeType===3&&n.textContent.trim()') && runtime.includes('e.dataset.inLangKey'), 'Language switching preserves mobile navigation icons and original translation keys');
-assert.ok(runtime.includes('document.documentElement.dir=(c==="ur"||c==="ar")?"rtl":"ltr"'), 'Arabic and Urdu languages switch the document to right-to-left layout');
+assert.ok(runtime.includes('document.documentElement.dir=(c==="ur"||c==="ar"||c==="fa")?"rtl":"ltr"'), 'Arabic, Urdu and Persian languages switch the document to right-to-left layout');
 assert.ok(runtime.includes('"Switch to light mode"') && runtime.includes('"Switch to dark mode"') && runtime.includes('"Open navigation menu"'), 'Shared accessibility labels are localized');
 assert.ok(runtime.includes('"vi"') && runtime.includes('"fa"') && runtime.includes('value="vi">Tiếng Việt') && runtime.includes('value="fa">فارسی'), 'Vietnamese and Persian are selectable interface languages');
 assert.ok(runtime.includes('const t={...IN_LANG.en,...(IN_LANG[c]||{})}') && runtime.includes('e.textContent=key;return'), 'Missing translations safely fall back to English instead of retaining a previous language');
 assert.ok(runtime.includes("document.body.classList.remove('menu-open');setINLang(document.documentElement.lang||'en')") && runtime.includes("document.body.classList.add('menu-open');setINLang(document.documentElement.lang||'en')"), 'Opening and closing the menu refreshes its localized accessibility label');
-assert.ok(runtime.includes("applyImperialTheme(document.documentElement.dataset.theme==='dark'?'light':'dark');setINLang(document.documentElement.lang||'en')"), 'Theme-toggle accessibility label follows the newly selected theme');
+assert.ok(runtime.includes("applyImperialTheme(['dark','midnight','imperial','cosmic'].includes(document.documentElement.dataset.theme)?'light':'dark');setINLang(document.documentElement.lang||'en')"), 'Theme-toggle accessibility label follows the newly selected theme');
 
 
-const formatCss = fs.readFileSync(`public/imperial-formats-${version}.css`,'utf8');
-assert.ok(formatCss.includes('.homeFormatCard:focus-visible') && formatCss.includes('.formatLink:focus-visible'), 'Homepage and directory format links retain a visible keyboard focus state');
-assert.ok(formatCss.includes('outline:3px solid #83a9ff!important') && formatCss.includes('outline:2px solid Highlight!important'), 'Format navigation focus remains visible in normal and forced-colors modes');
-assert.ok(formatCss.includes('border-color:#83a9ff'), 'Keyboard focus also reinforces the active format link border');
-assert.ok(formatCss.includes('var(--in-sapphire,#4f8cff)') && !formatCss.includes('brand-cyan'), 'Format navigation uses the Imperial sapphire accent rather than legacy cyan');
-const appCss = fs.readFileSync(`public/app-${version}.css`,'utf8');
-assert.ok(appCss.includes('--brand-sapphire:var(--in-sapphire') && appCss.includes('var(--brand-sapphire,#4f8cff)'), 'Shared interaction controls use Imperial sapphire instead of legacy cyan/gold accents');
-assert.ok(!appCss.includes('--brand-cyan') && !appCss.includes('#22d3ee'), 'Legacy cyan accent is absent from shared interaction CSS');
-assert.ok(appCss.includes('prefers-reduced-motion:reduce'), 'Shared interface styles respect reduced-motion preferences');
-assert.ok(appCss.includes('.ratingStar:focus-visible'), 'Rating controls have a visible keyboard focus state');
+assert.ok(designSystemCss.includes('.homeFormatCard:focus-visible') && designSystemCss.includes('.formatLink:focus-visible'), 'Homepage and directory format links retain a visible keyboard focus state');
+assert.ok(designSystemCss.includes('outline:3px solid #83a9ff!important') && designSystemCss.includes('outline:2px solid Highlight!important'), 'Format navigation focus remains visible in normal and forced-colors modes');
+assert.ok(designSystemCss.includes('border-color:#83a9ff'), 'Keyboard focus also reinforces the active format link border');
+assert.ok(designSystemCss.includes('var(--in-sapphire,#4f8cff)') && designSystemCss.includes('--brand-cyan: var(--in-sapphire);'), 'Format navigation legacy cyan aliases resolve to the Imperial sapphire accent');
+assert.ok(designSystemCss.includes('--brand-sapphire:var(--in-sapphire') && designSystemCss.includes('var(--brand-sapphire,#4f8cff)'), 'Shared interaction controls use Imperial sapphire instead of legacy cyan/gold accents');
+assert.ok(designSystemCss.includes('--brand-cyan: var(--in-sapphire);') && designSystemCss.includes('--cyan: var(--in-sapphire);'), 'Legacy cyan aliases resolve to Imperial sapphire in the shared interaction system');
+assert.ok(designSystemCss.includes('prefers-reduced-motion:reduce'), 'Shared interface styles respect reduced-motion preferences');
+assert.ok(designSystemCss.includes('.ratingStar:focus-visible'), 'Rating controls have a visible keyboard focus state');
 
-const luxuryDesign = fs.readFileSync(`public/imperial-luxury-${version}.css`,'utf8');
 assert.ok(index.includes('Your storyverse is taking longer than expected.') && index.includes("root.replaceChildren(panel)") && index.includes("window.setTimeout"), 'Boot failure shows a retryable recovery screen instead of an endless loader');
 
 assert.ok(index.includes('<html lang="en" data-theme="light">'), 'New visitors receive a white-first theme before JavaScript runs');
-assert.ok(luxuryDesign.includes('--white:#FFFFFF') && luxuryDesign.includes('--black:#0B1215') && luxuryDesign.includes('--purple:#6A0DAD') && luxuryDesign.includes('--blue:#0F52BA'), 'Design tokens use the approved four-color palette');
-assert.ok(luxuryDesign.includes('background:#6A0DAD;color:#FFFFFF') && luxuryDesign.includes('background:#0F52BA'), 'Primary and hover actions use purple then sapphire');
+assert.ok(designSystemCss.includes('--white:#FFFFFF') && designSystemCss.includes('--black:#0B1215') && designSystemCss.includes('--purple:#6A0DAD') && designSystemCss.includes('--blue:#0F52BA'), 'Design tokens use the approved four-color palette');
+assert.ok(designSystemCss.includes('background:#6A0DAD;color:#FFFFFF') && designSystemCss.includes('background:#0F52BA'), 'Primary and hover actions use purple then sapphire');
 
-assert.ok(luxuryDesign.includes('Final art direction: editorial authority') && luxuryDesign.includes('display:none!important;') && luxuryDesign.includes('background:#0e111c;'), 'Homepage hero uses the restrained editorial art direction without decorative orbit layers');
+assert.ok(designSystemCss.includes('Final art direction: editorial authority') && designSystemCss.includes('display:none!important;') && designSystemCss.includes('background:#0e111c;'), 'Homepage hero uses the restrained editorial art direction without decorative orbit layers');
 
 console.log('Content format checks passed: '+formats.length+' formats, comic viewer modes, versioned assets verified.');
