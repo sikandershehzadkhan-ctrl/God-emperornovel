@@ -294,3 +294,17 @@ assert.ok(
   'Admin forms, chapter controls and table actions must have visible keyboard focus rings.'
 );
 
+// Legacy RTL component overrides must be logical too, not merely shadowed by
+// a later cleanup layer. Keep drawers, badges, hero artwork and notices mirrored
+// with inline-start/end semantics in the source of truth.
+const rtlComponentLayer = read('public/imperial-design-system.css')
+  .split('/* RTL component overrides use logical edges; physical coordinates are avoided. */')[1]
+  .split('/* RTL parity for the current archive hero artwork')[0];
+assert.ok(rtlComponentLayer.includes('inset-inline-start') &&
+  rtlComponentLayer.includes('inset-inline-end') &&
+  rtlComponentLayer.includes('border-inline-start') &&
+  rtlComponentLayer.includes('margin-inline-start'),
+  'RTL drawers, artwork, notices and component spacing must use logical properties.');
+assert.ok(!/(^|[;{]\s*)(left|right|margin-left|margin-right|padding-left|padding-right|border-left|border-right)\s*:/m.test(rtlComponentLayer),
+  'The active RTL component override layer must contain no physical left/right declarations.');
+
