@@ -135,7 +135,7 @@ assert.ok(runtime.includes('"Switch to light mode"') && runtime.includes('"Switc
 assert.ok(runtime.includes('"vi"') && runtime.includes('"fa"') && runtime.includes('value="vi">Tiếng Việt') && runtime.includes('value="fa">فارسی'), 'Vietnamese and Persian are selectable interface languages');
 assert.ok(runtime.includes('const t={...IN_LANG.en,...(IN_LANG[c]||{})}') && runtime.includes('e.textContent=key;return'), 'Missing translations safely fall back to English instead of retaining a previous language');
 assert.ok(runtime.includes("document.body.classList.remove('menu-open');setINLang(document.documentElement.lang||'en')") && runtime.includes("document.body.classList.add('menu-open');setINLang(document.documentElement.lang||'en')"), 'Opening and closing the menu refreshes its localized accessibility label');
-assert.ok(runtime.includes("applyImperialTheme(document.documentElement.dataset.theme==='dark'?'light':'dark');setINLang(document.documentElement.lang||'en')"), 'Theme-toggle accessibility label follows the newly selected theme');
+assert.ok(runtime.includes("applyImperialTheme(['dark','midnight','imperial','cosmic'].includes(document.documentElement.dataset.theme)?'light':'dark');setINLang(document.documentElement.lang||'en')"), 'Theme-toggle accessibility label follows the newly selected theme');
 
 
 assert.ok(designSystemCss.includes('.homeFormatCard:focus-visible') && designSystemCss.includes('.formatLink:focus-visible'), 'Homepage and directory format links retain a visible keyboard focus state');
