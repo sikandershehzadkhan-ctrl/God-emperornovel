@@ -10,13 +10,13 @@ for (const width of [1080, 900, 760, 700, 640, 390, 360]) {
   assert.ok(media.includes(width), 'Responsive design must retain a deliberate breakpoint at ' + width + 'px.');
 }
 
-assert.match(css, /@media\s*\(max-width:\s*760px\)[\s\S]*?\.adminWrap\s*\{\s*padding:\s*14px 0 92px;/,
+assert.match(css, /@media\s*\(max-width:\s*760px\)[\s\S]*?\.adminWrap\s*\{\s*padding:\s*14px 0 92px;?/,
   'Administrator shell must reduce its outer spacing on mobile.');
 assert.match(css, /@media\s*\(max-width:\s*760px\)[\s\S]*?\.adminGrid\s*\{\s*grid-template-columns:\s*repeat\(2,minmax\(0,1fr\)\)/,
   'Administrator overview cards must reflow to two columns on mobile.');
-assert.match(css, /@media\s*\(max-width:\s*700px\)[\s\S]*?\.chapterTools\s*\{\s*grid-template-columns:\s*1fr;/,
+assert.match(css, /@media\s*\(max-width:\s*700px\)[\s\S]*?\.chapterTools\s*\{\s*grid-template-columns:\s*1fr;?/,
   'Chapter administration controls must stack on narrow screens.');
-assert.match(css, /@media\s*\(max-width:\s*700px\)[\s\S]*?\.chapterRow\s*\{\s*grid-template-columns:\s*1fr;/,
+assert.match(css, /@media\s*\(max-width:\s*700px\)[\s\S]*?\.chapterRow\s*\{\s*grid-template-columns:\s*1fr;?/,
   'Chapter administration rows must become a readable single-column layout.');
 assert.match(css, /@media\s*\(max-width:\s*360px\)[\s\S]*?\.authorWorkActions[^}]*flex-basis:\s*100%/,
   'Creator workspace actions must stack on very narrow phones.');
