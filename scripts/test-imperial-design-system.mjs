@@ -13,6 +13,9 @@ assert.equal((html.match(/rel="stylesheet"/g) || []).length, 1,
 assert.match(html, /href="\/imperial-design-system\.css"/,
   'The app shell must load the unified design system.');
 assert.ok(adminHtml.includes('href="/imperial-design-system.css"'), 'The separate administrator application must load the same design system.');
+assert.equal((adminHtml.match(/rel="stylesheet"/g) || []).length, 1, 'The administrator shell must expose one canonical stylesheet entry point.');
+assert.ok(!/<style\\b/i.test(adminHtml), 'Administrator page styles must live in the canonical stylesheet, not inline style blocks.');
+assert.ok(css.includes('.adminWrap') && css.includes('.adminHero') && css.includes('.adminNav'), 'Administrator dashboard components must be included in the canonical stylesheet.');
 assert.equal(imports.length, 0, 'The unified design system must not load legacy stylesheets through runtime imports.');
 for (const legacyAsset of ['/style-17.23.0.css','/app-17.23.0.css','/imperial-luxury-17.23.0.css','/imperial-formats-17.23.0.css','/imperial-comic-reader-17.23.0.css','/imperial-glass.css']) {
   assert.ok(!html.includes(legacyAsset), 'The app shell must not load a legacy stylesheet directly: ' + legacyAsset);
