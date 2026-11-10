@@ -838,3 +838,190 @@ html[data-theme="dark"] .catalogTags .pill { background: var(--bg2); color: var(
   .catalogGrid { gap: 8px; }
   .catalogBody { padding: 8px; }
 }
+
+
+/* Discovery taxonomy and rankings migration 04. */
+.genreGrid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0,1fr));
+  gap: 13px;
+  margin-top: 22px;
+}
+.genreCard {
+  display: flex;
+  min-height: 150px;
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: flex-start;
+  gap: 8px;
+  padding: 20px;
+  border: 1px solid var(--line);
+  border-radius: 17px;
+  background: var(--panel);
+  box-shadow: var(--shadowSoft);
+  transition: transform .16s ease, border-color .16s ease, background .16s ease;
+}
+.genreCard:hover {
+  transform: translateY(-2px);
+  border-color: rgba(106,13,173,.34);
+  background: var(--in-purple-soft);
+}
+.genreGlyph {
+  display: grid;
+  width: 38px;
+  height: 38px;
+  place-items: center;
+  border: 1px solid rgba(106,13,173,.15);
+  border-radius: 12px;
+  background: var(--in-purple-soft);
+  color: var(--in-purple);
+  font-size: 17px;
+}
+.genreCard h3 { margin: 5px 0 0; color: var(--text); font-size: 15px; }
+.genreCard .muted { color: var(--muted); font-size: 11px; }
+.tagGrid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 9px;
+  margin-top: 22px;
+}
+.tagTile {
+  display: inline-flex;
+  min-height: 42px;
+  align-items: center;
+  gap: 10px;
+  padding: 9px 13px;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  background: var(--panel);
+  color: var(--in-ink-soft);
+  font-size: 12px;
+  font-weight: 650;
+  box-shadow: 0 3px 12px rgba(23,32,39,.035);
+  transition: border-color .16s ease, background .16s ease, color .16s ease;
+}
+.tagTile span { color: var(--in-sapphire); }
+.tagTile:hover {
+  border-color: rgba(106,13,173,.3);
+  background: var(--in-purple-soft);
+  color: var(--in-purple-strong);
+}
+.toolbar {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 16px;
+}
+.toolbar .search { min-height: 48px; }
+.toolbar .search input { min-height: 44px; }
+.tabs {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  margin: 22px 0;
+  padding: 5px;
+  border: 1px solid var(--line);
+  border-radius: 13px;
+  background: var(--bg2);
+}
+.tabs a {
+  display: inline-flex;
+  min-height: 40px;
+  align-items: center;
+  justify-content: center;
+  padding: 8px 14px;
+  border: 1px solid transparent;
+  border-radius: 9px;
+  color: var(--muted);
+  font-size: 12px;
+  font-weight: 700;
+}
+.tabs a.active,
+.tabs a.period.active {
+  border-color: var(--line);
+  background: var(--panel);
+  color: var(--in-purple);
+  box-shadow: 0 2px 8px rgba(23,32,39,.045);
+}
+#lbNovels, #lbAuthors { align-items: stretch; }
+#lbNovels > .panel, #lbAuthors > .panel {
+  position: relative;
+  min-width: 0;
+  padding: 18px;
+  border: 1px solid var(--line);
+  border-radius: 16px;
+  background: var(--panel);
+  box-shadow: var(--shadowSoft);
+}
+.rankBadge {
+  display: inline-grid;
+  min-width: 34px;
+  height: 34px;
+  place-items: center;
+  margin-bottom: 12px;
+  padding: 0 8px;
+  border: 1px solid rgba(106,13,173,.18);
+  border-radius: 10px;
+  background: var(--in-purple-soft);
+  color: var(--in-purple);
+  font-size: 12px;
+  font-weight: 850;
+  font-variant-numeric: tabular-nums;
+}
+#lbNovels .cardTitle, #lbAuthors h3 { color: var(--text); font-size: 15px; }
+#lbNovels .meta, #lbAuthors .meta { color: var(--muted); font-size: 11px; }
+#lbNovels .ghost, #lbAuthors .ghost { margin-top: 14px; }
+.tierGrid { display: grid; gap: 16px; margin-top: 22px; }
+.tierPanel {
+  padding: 18px;
+  border: 1px solid var(--line);
+  border-radius: 18px;
+  background: var(--panel);
+}
+.tierPanel h2 { margin: 0 0 14px; color: var(--in-purple); font-size: 20px; }
+.miniGrid { display: grid; grid-template-columns: repeat(4,minmax(0,1fr)); gap: 12px; }
+.miniCard {
+  display: grid;
+  min-width: 0;
+  gap: 7px;
+  padding: 10px;
+  border: 1px solid var(--line);
+  border-radius: 13px;
+  background: var(--bg2);
+  color: var(--text);
+}
+.miniCard img {
+  width: 100%;
+  aspect-ratio: 3/4;
+  border-radius: 8px;
+  object-fit: cover;
+}
+.miniCard b { overflow: hidden; color: var(--text); font-size: 12px; text-overflow: ellipsis; white-space: nowrap; }
+.miniCard span { color: var(--muted); font-size: 10px; }
+html[data-theme="dark"] .genreCard,
+html[data-theme="dark"] .tagTile,
+html[data-theme="dark"] #lbNovels > .panel,
+html[data-theme="dark"] #lbAuthors > .panel,
+html[data-theme="dark"] .tierPanel { background: var(--panel); border-color: var(--line); }
+html[data-theme="dark"] .genreCard h3,
+html[data-theme="dark"] #lbNovels .cardTitle,
+html[data-theme="dark"] #lbAuthors h3 { color: var(--text); }
+html[data-theme="dark"] .tabs { background: var(--bg2); border-color: var(--line); }
+html[data-theme="dark"] .tabs a.active,
+html[data-theme="dark"] .tabs a.period.active { background: var(--panel); }
+html[data-theme="dark"] .miniCard { background: var(--bg2); border-color: var(--line); }
+@media (max-width: 900px) {
+  .genreGrid { grid-template-columns: repeat(3,minmax(0,1fr)); }
+  .miniGrid { grid-template-columns: repeat(3,minmax(0,1fr)); }
+}
+@media (max-width: 640px) {
+  .genreGrid { grid-template-columns: repeat(2,minmax(0,1fr)); gap: 10px; }
+  .genreCard { min-height: 132px; padding: 14px; }
+  .tagGrid { gap: 7px; }
+  .tagTile { min-height: 40px; padding: 8px 11px; font-size: 11px; }
+  .toolbar { align-items: stretch; flex-direction: column; padding: 12px; }
+  .toolbar .primary { width: 100%; }
+  .tabs { width: 100%; overflow-x: auto; }
+  .tabs a { flex: 1 0 auto; padding-inline: 11px; }
+  .miniGrid { grid-template-columns: repeat(2,minmax(0,1fr)); gap: 9px; }
+}
