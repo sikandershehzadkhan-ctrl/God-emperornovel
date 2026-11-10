@@ -5962,3 +5962,13 @@ html[data-theme="cosmic"]{--in-text:#FFFFFF;--in-text-muted:#DCE5FF;--in-line:#8
 }
 .bootRecoveryRetry:hover { background: var(--in-action-hover, #0F52BA); }
 .bootRecoveryRetry:focus-visible { outline: 3px solid var(--in-focus, #0F52BA); outline-offset: 3px; }
+
+/* Drawer close control: supersede the legacy 38px square with a full touch target. */
+@media (max-width: 760px) {
+  html[data-theme] .menuDrawer .menuClose {
+    width: 44px;
+    min-width: 44px;
+    height: 44px;
+    min-height: 44px;
+  }
+}
