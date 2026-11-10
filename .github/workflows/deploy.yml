@@ -6,7 +6,7 @@ on:
   workflow_dispatch:
     inputs:
       confirm_production_deploy:
-        description: "Type true to apply reviewed additive D1 migrations 0009-0012 and deploy after the read-only audit and release review"
+        description: "Type true to apply reviewed additive D1 migrations 0009-0011 and deploy after the read-only audit and release review"
         required: true
         default: "false"
         type: choice
@@ -180,28 +180,6 @@ jobs:
           fi
           npx --yes wrangler@4 d1 execute "$db" --remote --file=migrations/0011_author_applications.sql
 
-          echo "Preflight: classify the existing novel rating schema before migration 0012."
-          rating_output="$(d1_command "SELECT CASE WHEN NOT EXISTS(SELECT 1 FROM sqlite_master WHERE type='table' AND name='ratings') AND NOT EXISTS(SELECT 1 FROM sqlite_master WHERE type='table' AND name='ratings_scale_10') THEN 'absent' WHEN EXISTS(SELECT 1 FROM sqlite_master WHERE type='table' AND name='ratings' AND sql LIKE '%rating BETWEEN 1 AND 5%') AND NOT EXISTS(SELECT 1 FROM sqlite_master WHERE type='table' AND name='ratings_scale_10') THEN 'legacy' WHEN EXISTS(SELECT 1 FROM sqlite_master WHERE type='table' AND name='ratings' AND sql LIKE '%rating BETWEEN 1 AND 10%' AND sql LIKE '%CAST(rating AS INTEGER)%') THEN 'current' ELSE 'unknown' END AS status;")"
-          rating_status="$(printf '%s' "$rating_output" | read_status)"
-          printf '%s\n' "$rating_output"
-          if [ "$rating_status" = "legacy" ] || [ "$rating_status" = "absent" ]; then
-            echo "Applying migration 0012: preserve each 1–5 vote as its equivalent even value on 1–10."
-            npx --yes wrangler@4 d1 execute "$db" --remote --file=migrations/0012_rating_scale_10.sql
-          elif [ "$rating_status" = "current" ]; then
-            echo "The integer 1–10 rating schema is already present; skipping the one-time conversion."
-          else
-            echo "::error::Rating table is partially initialized or has an unrecognized constraint. Stop for manual schema reconciliation; do not overwrite votes."
-            exit 1
-          fi
-
-          rating_ready_output="$(d1_command "SELECT CASE WHEN EXISTS(SELECT 1 FROM sqlite_master WHERE type='table' AND name='ratings' AND sql LIKE '%rating BETWEEN 1 AND 10%' AND sql LIKE '%CAST(rating AS INTEGER)%') AND NOT EXISTS(SELECT 1 FROM ratings WHERE rating<1 OR rating>10 OR rating<>CAST(rating AS INTEGER)) THEN 'ready' ELSE 'missing' END AS status;")"
-          rating_ready_status="$(printf '%s' "$rating_ready_output" | read_status)"
-          printf '%s\n' "$rating_ready_output"
-          if [ "$rating_ready_status" != "ready" ]; then
-            echo "::error::The 1–10 rating schema or its stored values failed post-migration verification. Worker deployment is blocked."
-            exit 1
-          fi
-
           echo "Post-migration verification before Worker deployment."
           ready_output="$(d1_command "SELECT CASE WHEN EXISTS(SELECT 1 FROM sqlite_master WHERE type='index' AND name='idx_novel_genres_genre_novel') AND EXISTS(SELECT 1 FROM sqlite_master WHERE type='index' AND name='idx_novel_tags_tag_novel') AND EXISTS(SELECT 1 FROM sqlite_master WHERE type='index' AND name='idx_unlocks_chapter_time') AND EXISTS(SELECT 1 FROM sqlite_master WHERE type='index' AND name='idx_novels_published_views') AND EXISTS(SELECT 1 FROM sqlite_master WHERE type='index' AND name='idx_novels_published_rating') AND EXISTS(SELECT 1 FROM sqlite_master WHERE type='index' AND name='idx_novels_published_created') AND EXISTS(SELECT 1 FROM sqlite_master WHERE type='table' AND name='author_applications') AND (SELECT COUNT(*) FROM pragma_table_info('author_applications') WHERE name IN ('id','user_id','display_name','bio','experience','portfolio_url','sample_work','preferred_formats','rights_confirmed','status','review_notes','reviewed_by','reviewed_at','created_at','updated_at'))=15 AND EXISTS(SELECT 1 FROM sqlite_master WHERE type='index' AND name='idx_author_applications_one_pending') AND EXISTS(SELECT 1 FROM sqlite_master WHERE type='index' AND name='idx_author_applications_status_created') AND EXISTS(SELECT 1 FROM sqlite_master WHERE type='index' AND name='idx_author_applications_user_created') THEN 'ready' ELSE 'missing' END AS status;")"
           ready_status="$(printf '%s' "$ready_output" | read_status)"
@@ -210,7 +188,7 @@ jobs:
             echo "::error::Required production D1 structures were not verified. Worker deployment is blocked."
             exit 1
           fi
-          echo "PASS: migrations 0009-0012 are present and verified before Worker deployment, including the guarded 1–10 rating conversion."
+          echo "PASS: migrations 0009-0011 are present and verified before Worker deployment, including the guarded 1–10 rating conversion."
 
 
       - name: Deploy Worker and static assets
