@@ -188,10 +188,16 @@ async function loadComments(id){
 }
 async function chapters(){const id=location.pathname.split('/')[2];const n=await api('/api/novels/'+id);const root=$('#app');root.innerHTML=pageStart(n.title,'Complete chapter archive')+`<div class="toolbar"><a class="primary" href="/read/${id}/1">Start at Chapter 1</a><button id="batch" class="secondary">Batch Unlock</button></div><div class="chapterList">${n.chapters.map(ch=>chapterRow(ch,id)).join('')}</div></div></div>`;$('#batch').onclick=async()=>{try{const count=Number(prompt('Batch size: 10, 25, 50 or 100','10'));if(![10,25,50,100].includes(count))return;const d=await api('/api/novels/'+id+'/batch-unlock',{method:'POST',body:JSON.stringify({count,start_chapter:1})});alert(`Unlocked ${d.unlocked} chapters for ${d.cost} Imperial Crowns. Balance: ${d.tickets} Imperial Crowns`);location.reload()}catch(e){alert(e.message)}}}
 async function reader(){
+ const readerSessionModule=await import('/reader-session.mjs');
+ const readerSessions=readerSessionModule.createReaderSessionStore(localStorage);
+ const navigation=window.__imperialReaderNavigation||(window.__imperialReaderNavigation=readerSessionModule.createNavigationEpoch());
+ const navigationToken=navigation.begin();
  const parts=location.pathname.split('/');const id=parts[2],num=Math.max(1,Number(parts[3]||1));
- const n=await api('/api/novels/'+id);const ch=n.chapters.find(x=>Number(x.chapter_number)===num);if(!ch){location.href='/novel/'+id+'/chapters';return}
- const d=await api('/api/chapters/'+ch.id);const total=n.chapters.length;
- const stored=Number(localStorage.getItem('readerProgress:'+id)||0);const chapterPct=Math.min(100,Math.max(0,Number.isFinite(stored)&&num===Number(localStorage.getItem('readerProgressChapter:'+id))?stored:0));
+ const n=await api('/api/novels/'+id);if(!navigation.isCurrent(navigationToken))return;
+ const ch=n.chapters.find(x=>Number(x.chapter_number)===num);if(!ch){location.href='/novel/'+id+'/chapters';return}
+ const d=await api('/api/chapters/'+ch.id);if(!navigation.isCurrent(navigationToken))return;const total=n.chapters.length;
+ const savedSession=readerSessions.read(id,num);const legacyStored=Number(localStorage.getItem('readerProgress:'+id)||0);const legacyChapter=Number(localStorage.getItem('readerProgressChapter:'+id));const chapterPct=savedSession?savedSession.progress:Math.min(100,Math.max(0,Number.isFinite(legacyStored)&&num===legacyChapter?legacyStored:0));
+ if(!savedSession&&chapterPct>0)readerSessions.write(id,num,chapterPct);
  const root=$('#app');
  const chapterList=n.chapters.map(x=>`<a class="readerChapterItem ${Number(x.chapter_number)===num?'current':''}" href="/read/${id}/${Number(x.chapter_number)}"><span>Chapter ${Number(x.chapter_number)}</span><span>${esc(x.title)} ${x.is_locked?'🔒':''}</span></a>`).join('');
  const bookmarked=Number(n.bookmark||0)===num;
@@ -212,8 +218,7 @@ async function reader(){
  $('#bookmarkBtn').onclick=async()=>{try{const me=await api('/api/me');if(me.user){await api('/api/bookmark',{method:'POST',body:JSON.stringify({novel_id:Number(id),chapter_number:num})});const now=!$('#bookmarkBtn').classList.contains('saved');$('#bookmarkBtn').classList.toggle('saved',now);$('#bookmarkBtn').textContent=now?'★':'☆';}else{localStorage.setItem('readerBookmark:'+id,String(num));$('#bookmarkBtn').classList.add('saved');$('#bookmarkBtn').textContent='★'}}catch(e){alert(e.message)}};
  if($('#unlock'))$('#unlock').onclick=async()=>{try{await api('/api/chapters/'+ch.id+'/unlock',{method:'POST'});location.reload()}catch(e){alert(e.message)}};
  if(d.unlocked)api('/api/history',{method:'POST',body:JSON.stringify({novel_id:Number(id),chapter_number:num})}).catch(()=>{});
- if(d.unlocked)api('/api/bookmark',{method:'POST',body:JSON.stringify({novel_id:Number(id),chapter_number:num})}).catch(()=>{});
- const updateProgress=()=>{if(!d.unlocked)return;const doc=document.documentElement,max=Math.max(1,doc.scrollHeight-window.innerHeight),pct=Math.min(100,Math.max(0,Math.round((window.scrollY/max)*100)));localStorage.setItem('readerProgress:'+id,String(pct));localStorage.setItem('readerProgressChapter:'+id,String(num));$('#readerProgressBar').style.width=pct+'%';$('#progressText').textContent=`${pct}% through chapter · ${initialNovelProgress}% through novel`};window.addEventListener('scroll',updateProgress,{passive:true});updateProgress();
+ const updateProgress=()=>{if(!d.unlocked)return;const pct=readerSessionModule.getScrollProgress({scrollTop:window.scrollY,scrollHeight:document.documentElement.scrollHeight,viewportHeight:window.innerHeight});readerSessions.write(id,num,pct);$('#readerProgressBar').style.width=pct+'%';$('#progressText').textContent=`${pct}% through chapter · ${initialNovelProgress}% through novel`};window.addEventListener('scroll',updateProgress,{passive:true});updateProgress();
  if(d.unlocked&&chapterPct>0)setTimeout(()=>{const max=Math.max(0,document.documentElement.scrollHeight-window.innerHeight);window.scrollTo({top:max*chapterPct/100,behavior:'auto'});updateProgress()},80);
  document.addEventListener('keydown',e=>{const target=e.target;const typing=target&&(/INPUT|TEXTAREA|SELECT/.test(target.tagName)||target.isContentEditable);if(typing)return;if(e.altKey&&e.key==='ArrowRight'&&d.next){e.preventDefault();location.href='/read/'+id+'/'+Number(d.next.chapter_number)}else if(e.altKey&&e.key==='ArrowLeft'&&d.previous){e.preventDefault();location.href='/read/'+id+'/'+Number(d.previous.chapter_number)}else if(e.key==='+'||e.key==='='){e.preventDefault();$('#fontUp').click()}else if(e.key==='-'){e.preventDefault();$('#fontDown').click()}else if(e.key.toLowerCase()==='t'){const i=themeNames.indexOf(readerPage.dataset.readerTheme);setReaderTheme(themeNames[(i+1)%themeNames.length])}});
 
