@@ -5913,3 +5913,10 @@ html[data-theme="cosmic"]{--in-text:#FFFFFF;--in-text-muted:#DCE5FF;--in-line:#8
     min-height: 44px;
   }
 }
+
+/* The compact language picker remains a full-size touch target on narrow headers. */
+@media (max-width: 760px) {
+  html[data-theme] .top .navright .languageControl select {
+    min-height: 44px !important;
+  }
+}
