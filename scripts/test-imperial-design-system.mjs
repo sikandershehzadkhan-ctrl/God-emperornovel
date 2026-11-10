@@ -149,6 +149,18 @@ assert.ok(readerStart >= 0 && readerEnd > readerStart, 'Reader route must remain
 const readerSource = runtime.slice(readerStart, readerEnd);
 assert.ok(readerSource.includes("setINLang(document.documentElement.lang||'en');"), 'Reader theme options must be localized after reader markup is rendered.');
 assert.ok(runtime.includes('document.querySelectorAll("option[data-in-lang]").forEach'), 'Language changes must translate reader theme option labels, not only the global navigation.');
+const languageDictionaryStart = runtime.indexOf('const IN_LANG=');
+const languageDictionaryEnd = runtime.indexOf(';function setINLang', languageDictionaryStart);
+assert.ok(languageDictionaryStart >= 0 && languageDictionaryEnd > languageDictionaryStart, 'The 14-language interface dictionary must remain available.');
+const languageDictionary = runtime.slice(languageDictionaryStart, languageDictionaryEnd);
+const languageEntries = [...languageDictionary.matchAll(/"([a-z]{2}(?:-[A-Z]{2})?)":\\{([^{}]*)\\}/g)];
+assert.equal(languageEntries.length, 14, 'All 14 supported interface languages must remain registered.');
+for (const [languageCode, languageMap] of languageEntries) {
+  for (const label of ['Light','Dark','Midnight','Sepia','Imperial','Cosmic']) {
+    assert.ok(new RegExp('"' + label + '"\\\\s*:').test(languageMap), 'Reader theme label ' + label + ' must be translated for ' + languageCode + '.');
+  }
+}
+
 for (const theme of globalThemes) {
   assert.ok(readerSource.includes('<option value="' + theme + '" data-in-lang='), 'Reader theme selector must expose localized ' + theme + ' option.');
 }
