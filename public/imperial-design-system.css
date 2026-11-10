@@ -2487,3 +2487,27 @@ html[dir="rtl"] .in-button { direction: rtl; }
   html[dir="rtl"] .heroCornerMark,
   html[dir="rtl"] .homePage .heroCornerMark { left: 13px; }
 }
+
+
+/* RTL parity for the current archive hero artwork and mirrored orbit geometry. */
+html[dir="rtl"] .hero.imperialArchiveHero:before {
+  right: auto;
+  left: -7%;
+}
+html[dir="rtl"] .hero.imperialArchiveHero:after {
+  right: auto;
+  left: calc(clamp(250px,38vw,500px)*.43);
+  transform: translateY(-50%) rotate(-45deg);
+}
+html[dir="rtl"] .heroOrbit { transform: translateY(-50%) rotate(22deg); }
+html[dir="rtl"] .orbitTwo { transform: translateY(-50%) rotate(-32deg); }
+html[dir="rtl"] .heroOrbitLabel { writing-mode: vertical-lr; }
+@media (max-width: 760px) {
+  html[dir="rtl"] .hero.imperialArchiveHero:before { left: -95px; }
+  html[dir="rtl"] .hero.imperialArchiveHero:after {
+    left: 36px;
+    transform: rotate(-45deg);
+  }
+  html[dir="rtl"] .heroOrbit,
+  html[dir="rtl"] .orbitTwo { transform: none; }
+}
