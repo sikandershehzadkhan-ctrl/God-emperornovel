@@ -243,3 +243,12 @@ This checkpoint records source changes on the isolated design branch. It is not 
 - No database, authorization, payment, or production deployment changes are included.
 
 Next migration family: Library, history, following, requests, Crown Vault, and notifications.
+
+
+### Additional page-family migration: personal library
+- Rebuilt the signed-in library and following views with a distinct account collection layout.
+- Added continue-reading cards, saved-story cards, chapter bookmarks, collection counts, empty states, and responsive shelves.
+- Following mode now renders the fetched follows collection rather than repeating the saved-library collection.
+- Preserved the existing library, history, bookmarks, follows, and follow-toggle API interactions.
+- Replaced decimal rating formatting in this view with the platform's shared rating formatter.
+- Added and wired a library/following design contract test.
