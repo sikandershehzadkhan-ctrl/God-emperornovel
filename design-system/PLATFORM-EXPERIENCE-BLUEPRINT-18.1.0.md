@@ -282,3 +282,9 @@ The combined source-content audit now covers 170 assertions across the migrated 
 - Rebuilt the authenticated account center with profile identity, server-sourced Crown/history/following/unlock metrics, account navigation, sign-out action, and recommendation shelf.
 - Preserved the existing authentication, profile, logout, and recommendation API calls; no account or permission policy changes were made.
 - Added authentication/account design contract coverage and build-chain wiring.
+
+### Settings and reading preferences migration
+- Rebuilt the settings experience into distinct appearance/reader, accessibility/comfort, data portability, and account-shortcut sections.
+- Preserved all existing control IDs, six theme choices, font-size/line-height/column-width preferences, reduced-motion/high-contrast/compact-card toggles, preference export/reset, and device-local reading-helper clearing.
+- Kept the boundary explicit: clearing local reading helpers does not delete server account data.
+- Added a settings design contract test and build-chain entry.
