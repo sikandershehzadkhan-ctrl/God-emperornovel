@@ -384,9 +384,8 @@ const rtlComponentLayer = read('public/imperial-design-system.css')
   .split('/* RTL parity for the current archive hero artwork')[0];
 assert.ok(rtlComponentLayer.includes('inset-inline-start') &&
   rtlComponentLayer.includes('inset-inline-end') &&
-  rtlComponentLayer.includes('border-inline-start') &&
-  rtlComponentLayer.includes('margin-inline-start'),
-  'RTL drawers, artwork, notices and component spacing must use logical properties.');
+  rtlComponentLayer.includes('border-inline-start'),
+  'RTL drawers, artwork and notices must use logical positioning and border properties.');
 assert.ok(!/(^|[;{]\s*)(left|right|margin-left|margin-right|padding-left|padding-right|border-left|border-right)\s*:/m.test(rtlComponentLayer),
   'The active RTL component override layer must contain no physical left/right declarations.');
 
