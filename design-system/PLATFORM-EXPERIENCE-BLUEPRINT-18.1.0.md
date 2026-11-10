@@ -334,3 +334,11 @@ The combined source-content audit now covers 170 assertions across the migrated 
 - Rebuilt tier-list panels and story cards with responsive cover layouts and loading/empty/error states.
 - Both pages now use the shared whole-number rating formatter rather than decimal rating precision.
 - Added a discovery-page contract test and wired it into the build chain.
+
+
+### Remaining public discovery routes
+- Rebuilt Trending as a published-catalog activity shelf with live loading, empty and error states.
+- Rebuilt Random Novel as a deliberate one-action discovery interaction with busy state, story details, cover art and retry-by-another-story behavior.
+- Rebuilt Made For You with clear personalized-versus-popular fallback messaging and resilient recommendation loading.
+- Rebuilt Vote Novels with a clear explanation that votes prioritize review but do not guarantee acquisition or rights, plus accessible voting rows and preserved vote endpoint behavior.
+- Added responsive design contracts for all four routes and included them in the package build chain.
