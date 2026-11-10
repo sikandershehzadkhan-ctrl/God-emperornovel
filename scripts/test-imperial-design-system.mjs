@@ -201,3 +201,14 @@ for (const utility of [
   assert.ok(appJs.includes(utility), 'Real runtime markup must use the ' + utility + ' utility.');
   assert.ok(css.includes('.' + utility), 'Canonical CSS must define runtime utility ' + utility + '.');
 }
+
+
+// Admin page runtime templates must also stay inside the shared design system.
+assert.equal((adminMarkup.match(/\\sstyle\\s*=/gi) || []).length, 0,
+  'Administrator runtime templates must not emit inline style attributes.');
+for (const selector of ['.admin-notice-danger','.admin-prewrap','.admin-bio-preview','.admin-sample-preview','.admin-report-status-select','.mini.edit']) {
+  assert.ok(css.includes(selector), 'Administrator runtime presentation must be defined in canonical CSS: ' + selector + '.');
+}
+for (const token of ['admin-notice-danger','admin-prewrap','admin-bio-preview','admin-sample-preview','admin-report-status-select']) {
+  assert.ok(adminMarkup.includes(token), 'Administrator runtime markup must use canonical class ' + token + '.');
+}
