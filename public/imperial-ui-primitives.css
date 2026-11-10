@@ -1618,3 +1618,47 @@ body.menu-open{overflow:hidden}
 .in-settings-links a{display:inline-flex;min-height:2.75rem;align-items:center;padding:.65rem .9rem;border:1px solid var(--in-border-default);border-radius:var(--in-radius-md);background:var(--in-bg-surface);color:var(--in-text-primary);font-size:.76rem;font-weight:750;text-decoration:none}
 .in-settings-links a:hover{border-color:var(--in-action-primary);color:var(--in-action-primary)}
 @media(max-width:48rem){.in-settings-wrap{width:min(100% - 1.5rem,76rem)}.in-settings-grid{grid-template-columns:1fr}}
+
+/* Author Studio: page-scoped creator workspace, preserving existing author workflows */
+.page.in-author-studio{--ias-panel:var(--in-bg-surface);--ias-border:var(--in-border-default);--ias-text:var(--in-text-primary);--ias-muted:var(--in-text-secondary);--ias-accent:var(--in-action-primary);background:var(--in-bg-canvas);color:var(--ias-text);min-height:70vh;padding-bottom:3rem}
+.page.in-author-studio>.wrap{width:min(100% - 2.5rem,78rem);margin-inline:auto}
+.page.in-author-studio .title{padding:clamp(1.4rem,3vw,2.6rem);margin:1.4rem 0;border:1px solid var(--ias-border);border-radius:var(--in-radius-2xl);background:linear-gradient(135deg,var(--in-bg-surface),var(--in-bg-elevated))}
+.page.in-author-studio .title .eyebrow{color:var(--ias-accent);font-weight:800;letter-spacing:.12em}
+.page.in-author-studio .title h1{font-family:var(--in-font-serif,Georgia,serif);font-size:clamp(2rem,5vw,3.1rem);line-height:1.08;letter-spacing:-.035em;color:var(--ias-text)}
+.page.in-author-studio .title .sub{max-width:64ch;color:var(--ias-muted);line-height:1.7}
+.page.in-author-studio .authorStudioLayout{display:grid;grid-template-columns:minmax(0,.82fr) minmax(0,1.18fr);gap:1rem;align-items:start}
+.page.in-author-studio .authorStudioIntro,.page.in-author-studio .authorCreateForm,.page.in-author-studio .authorWorksPanel,.page.in-author-studio .panel{padding:clamp(1rem,2vw,1.5rem);border:1px solid var(--ias-border);border-radius:var(--in-radius-xl);background:var(--ias-panel);color:var(--ias-text);box-shadow:0 12px 34px #00000008}
+.page.in-author-studio .authorStudioIntro{grid-column:1/-1;background:linear-gradient(115deg,var(--in-bg-surface),var(--in-bg-elevated))}
+.page.in-author-studio .authorStudioIntro h2,.page.in-author-studio .authorCreateForm h2,.page.in-author-studio .authorWorksPanel h2{margin:.35rem 0 .8rem;color:var(--ias-text);font-family:var(--in-font-serif,Georgia,serif);font-size:1.45rem}
+.page.in-author-studio .eyebrow{color:var(--ias-accent);font-size:.68rem;font-weight:800;letter-spacing:.1em}
+.page.in-author-studio .muted{color:var(--ias-muted);line-height:1.65}
+.page.in-author-studio .authorCreateForm,.page.in-author-studio .authorWorksPanel{min-width:0}
+.page.in-author-studio .fieldLabel{display:block;margin:.9rem 0 .35rem;color:var(--ias-text);font-size:.78rem;font-weight:750}
+.page.in-author-studio input:not([type=checkbox]),.page.in-author-studio select,.page.in-author-studio textarea{width:100%;min-height:44px;padding:.7rem .8rem;border:1px solid var(--ias-border);border-radius:var(--in-radius-md);background:var(--in-bg-canvas);color:var(--ias-text);font:inherit}
+.page.in-author-studio textarea{min-height:7rem;resize:vertical;line-height:1.65}
+.page.in-author-studio input:focus-visible,.page.in-author-studio select:focus-visible,.page.in-author-studio textarea:focus-visible,.page.in-author-studio button:focus-visible,.page.in-author-studio a:focus-visible{outline:3px solid var(--ias-accent);outline-offset:2px}
+.page.in-author-studio .authorFormGrid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:.75rem}
+.page.in-author-studio .authorFormGrid>div{min-width:0}
+.page.in-author-studio .notice{padding:.8rem 1rem;border:1px solid var(--ias-border);border-radius:var(--in-radius-md);background:var(--in-bg-elevated);color:var(--ias-muted);font-size:.78rem;line-height:1.6}
+.page.in-author-studio .noticeError{border-color:#B45353;color:#A33}
+.page.in-author-studio .primary,.page.in-author-studio .secondary,.page.in-author-studio .ghost,.page.in-author-studio button{display:inline-flex;align-items:center;justify-content:center;gap:.35rem;min-height:44px;padding:.65rem .9rem;border:1px solid var(--ias-border);border-radius:var(--in-radius-md);font:inherit;font-size:.76rem;font-weight:750;text-decoration:none;cursor:pointer}
+.page.in-author-studio .primary{background:var(--ias-accent);border-color:var(--ias-accent);color:#fff}
+.page.in-author-studio .secondary,.page.in-author-studio .ghost{background:var(--in-bg-elevated);color:var(--ias-text)}
+.page.in-author-studio button:disabled{opacity:.55;cursor:wait}
+.page.in-author-studio .authorWorksPanel{grid-column:1/-1}
+.page.in-author-studio .sectionHead{display:flex;justify-content:space-between;align-items:center;gap:1rem}
+.page.in-author-studio .authorWorksList{display:grid;gap:.7rem;margin-top:1rem}
+.page.in-author-studio .authorWork{padding:1rem;border:1px solid var(--ias-border);border-radius:var(--in-radius-lg);background:var(--in-bg-canvas)}
+.page.in-author-studio .authorWorkTop{display:flex;justify-content:space-between;align-items:start;gap:.8rem}
+.page.in-author-studio .authorWork h3{margin:.3rem 0;color:var(--ias-text);font-size:1rem}
+.page.in-author-studio .authorStatus{display:inline-flex;align-items:center;padding:.3rem .55rem;border:1px solid var(--ias-border);border-radius:999px;color:var(--ias-muted);font-size:.67rem;font-weight:800;white-space:nowrap}
+.page.in-author-studio .status-published{color:#16734B}.page.in-author-studio .status-review{color:#94651B}.page.in-author-studio .status-rejected{color:#A33}
+.page.in-author-studio .authorWorkActions{display:flex;flex-wrap:wrap;gap:.45rem;margin:.8rem 0}
+.page.in-author-studio .authorEditForm,.page.in-author-studio .authorChapterForm{display:grid;gap:.5rem;margin-top:.8rem;padding:1rem;border:1px solid var(--ias-border);border-radius:var(--in-radius-lg);background:var(--in-bg-elevated)}
+.page.in-author-studio .comicAuthorBuilder{padding:1rem;border:1px solid var(--ias-border);border-radius:var(--in-radius-lg)}
+.page.in-author-studio .comicAuthorBuilderHead{display:flex;justify-content:space-between;gap:1rem}
+.page.in-author-studio .comicPageComposerGrid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:.7rem}
+.page.in-author-studio .checkRow{display:flex;align-items:center;gap:.6rem;min-height:44px;color:var(--ias-text)}
+@media(max-width:52rem){.page.in-author-studio>.wrap{width:min(100% - 1.5rem,78rem)}.page.in-author-studio .authorStudioLayout{grid-template-columns:1fr}.page.in-author-studio .authorStudioIntro,.page.in-author-studio .authorWorksPanel{grid-column:auto}.page.in-author-studio .comicPageComposerGrid{grid-template-columns:1fr}}
+@media(max-width:30rem){.page.in-author-studio .authorFormGrid{grid-template-columns:1fr}.page.in-author-studio .authorWorkTop{flex-direction:column}.page.in-author-studio .sectionHead{align-items:start;flex-direction:column}}
+@media(prefers-reduced-motion:reduce){.page.in-author-studio *{scroll-behavior:auto!important;transition:none!important}}
