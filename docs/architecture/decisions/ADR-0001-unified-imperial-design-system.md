@@ -1,9 +1,9 @@
 # ADR-0001: Unified Imperial Novel design system
 
-- Status: Proposed
+- Status: Accepted
 - Date: 2026-11-10
 - Decision owners: Imperial Novel product and engineering
-- Scope: public application shell and shared visual foundation
+- Scope: public and administrator application shells and shared visual foundation
 
 ## Context
 
@@ -13,8 +13,8 @@ The product needs one coherent design language across reading, discovery, creato
 
 ## Decision
 
-1. Introduce `public/imperial-design-system.css` as the sole stylesheet entry point referenced by `public/index.html`.
-2. Consolidate the six existing feature stylesheets into the single design-system file in their established cascade order. The application must not load them through runtime `@import` requests or service-worker precache entries.
+1. Introduce `public/imperial-design-system.css` as the sole stylesheet entry point referenced by both `public/index.html` and `public/admin.html`.
+2. Consolidate the six existing feature stylesheets into the single design-system file in their established cascade order. Migrate administrator-only inline styles into the same file. Neither application shell may load legacy CSS files through separate link tags, runtime `@import` requests or service-worker precache entries.
 3. Make semantic tokens in the unified stylesheet the final authority for shared colors, surfaces, typography defaults, borders, focus, motion, touch targets and elevation.
 4. Use comfortable warm-paper surfaces in light mode and obsidian surfaces in dark mode. Purple is the primary identity accent; sapphire is the secondary discovery/action accent. Teal, lime, pink and gold are not shared brand accents.
 5. Publish semantic color, typography, spacing, radius, elevation, reading-width and breakpoint tokens. Use a 4px spacing scale and semantic names instead of embedding raw palette values in new components.
@@ -25,14 +25,15 @@ The product needs one coherent design language across reading, discovery, creato
 
 ## First implementation
 
-- The application shell now references one stylesheet entry point.
+- The public and administrator application shells each reference exactly one stylesheet entry point, the same canonical file.
 - The six existing feature styles have been consolidated into the canonical stylesheet in their original cascade order; semantic tokens and page-family migrations follow them in the same file.
-- The main application and separate administrator shell each reference only the canonical stylesheet. The service worker precaches only that stylesheet, not the retired runtime CSS assets.
+- The main application and separate administrator shell each reference only the canonical stylesheet. Administrator-only inline CSS has been moved into the canonical file. The service worker precaches only that stylesheet, not the retired runtime CSS assets.
+- Real primary buttons use the theme-aware foreground token; the current light and dark primary/hover combinations pass the automated 4.5:1 contrast threshold.
 - The homepage hero, format cards, feature tiles and supporting bands are the first migrated page family.
 - Semantic color, typography, spacing, elevation, breakpoint and reading-width tokens are available under the `--in-*` namespace.
 - Opt-in primitives cover buttons, fields, cards, badges, tabs, tables, empty states, toasts and reader prose with keyboard focus and touch sizing.
 - The homepage, shell, discovery, reader, account, creator, community, OmniPortal and administrator surfaces have targeted migration rules.
-- A build regression test verifies stylesheet consolidation, imported assets, semantic tokens, component primitives, accessibility safeguards, reader themes and page-family selectors.
+- A build regression test verifies both shells use one stylesheet, administrator inline CSS is absent, legacy runtime assets are not imported or precached, semantic tokens, component primitives, primary-action contrast, accessibility safeguards, reader themes and page-family selectors.
 
 ## Consequences
 
