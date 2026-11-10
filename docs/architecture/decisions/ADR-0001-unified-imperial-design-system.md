@@ -1,0 +1,57 @@
+# ADR-0001: Unified Imperial Novel design system
+
+- Status: Proposed
+- Date: 2026-11-10
+- Decision owners: Imperial Novel product and engineering
+- Scope: public application shell and shared visual foundation
+
+## Context
+
+The application shell loaded several independent stylesheets directly. Shared design decisions were repeated across the base stylesheet, luxury theme, format styles, comic reader styles and glass surfaces. This made visual precedence difficult to reason about and allowed old colors, surface treatments and page-specific overrides to compete with the current Imperial Novel identity.
+
+The product needs one coherent design language across reading, discovery, creator, community and administration experiences, while retaining existing behavior during migration.
+
+## Decision
+
+1. Introduce `public/imperial-design-system.css` as the sole stylesheet entry point referenced by `public/index.html`.
+2. Preserve the existing six feature stylesheets behind that entry point, in their existing cascade order, until their page-family behavior has been migrated and verified.
+3. Make semantic tokens in the unified stylesheet the final authority for shared colors, surfaces, typography defaults, borders, focus, motion, touch targets and elevation.
+4. Use comfortable warm-paper surfaces in light mode and obsidian surfaces in dark mode. Purple is the primary identity accent; sapphire is the secondary discovery/action accent. Teal, lime, pink and gold are not shared brand accents.
+5. Keep decorative glass restrained. Content surfaces must remain readable and degrade gracefully on touch devices and reduced-motion settings.
+6. Migrate page families incrementally. Remove or delete legacy rules only after route-specific visual and functional parity checks prove they are no longer needed.
+7. Preserve application behavior, route semantics, localization, RTL behavior, permissions, user data, payment controls and backend contracts during visual migration.
+
+## First implementation
+
+- The application shell now references one stylesheet entry point.
+- The canonical stylesheet imports the existing feature styles in their original order and overrides them with semantic design tokens.
+- The homepage hero, format cards, feature tiles and supporting bands are the first migrated page family.
+- A build regression test verifies stylesheet consolidation, imported assets, theme tokens, accessibility safeguards and homepage rules.
+
+## Consequences
+
+### Positive
+
+- There is one predictable place to define shared visual tokens.
+- Future page migrations can reuse the same color, surface, focus and responsive contracts.
+- The shell no longer needs to enumerate every feature stylesheet.
+- Existing feature styling remains available during safe migration.
+
+### Trade-offs
+
+- The imported legacy stylesheets still contain duplicated and obsolete declarations.
+- The first phase does not claim that every route has been redesigned.
+- The stylesheet import chain must remain intact until each feature stylesheet is retired safely.
+
+## Required validation before removing legacy styles
+
+- Route inventory coverage for public, authenticated, creator and admin routes.
+- Light/dark parity and RTL layout checks.
+- Mobile viewport and touch-target checks.
+- Keyboard focus, reduced-motion and contrast checks.
+- Functional regression checks for forms, reading controls, navigation and permissions.
+- Cloudflare build and deployment validation.
+
+## Rollback
+
+Revert the application shell stylesheet reference and the unified stylesheet changes together. No database or user-data rollback is required because this decision does not change persistence or backend contracts.
