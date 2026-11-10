@@ -1,0 +1,13 @@
+import fs from 'node:fs';
+import assert from 'node:assert/strict';
+const app=fs.readFileSync('public/app.js','utf8');
+const css=fs.readFileSync('public/imperial-ui-primitives.css','utf8');
+const novel=app.slice(app.indexOf('async function novel(){'),app.indexOf('async function loadCommunity(id)'));
+const chapters=app.slice(app.indexOf('async function chapters(){'),app.indexOf('async function reader(){'));
+for(const token of ['in-novel-hero','in-novel-breadcrumb','in-novel-stats','in-novel-taxonomy','in-novel-community-grid','novelRatingIsland','novelReactions','novelComments','libraryBtn','follow','share']) assert.ok(novel.includes(token),`Novel detail missing ${token}`);
+for(const token of ['loadCommunity(id)','/api/library','/api/follow','/api/me','/read/']) assert.ok(novel.includes(token),`Novel behavior missing ${token}`);
+for(const token of ['in-chapters-header','in-chapters-toolbar','in-chapters-list','chapterRow(ch,id)','batch-unlock','start_chapter:1']) assert.ok(chapters.includes(token),`Chapter directory missing ${token}`);
+for(const token of ['.in-novel-hero','.in-novel-community-grid','.in-chapters-header','.in-chapters-list','@media(max-width:48rem)','prefers-reduced-motion']) assert.ok(css.includes(token),`Page-family styling missing ${token}`);
+assert.ok(!novel.includes('class="novelHero"'),'Legacy novel hero markup must not remain in the rebuilt page');
+assert.ok(!chapters.includes('pageStart(n.title'),'Legacy chapter directory wrapper must not remain');
+console.log('Novel detail and chapter directory design contracts passed.');
