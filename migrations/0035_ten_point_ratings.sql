@@ -3,7 +3,7 @@
 CREATE TABLE ratings_ten_point (
   user_id INTEGER NOT NULL,
   novel_id INTEGER NOT NULL,
-  rating INTEGER NOT NULL CHECK(rating BETWEEN 1 AND 10),
+  rating INTEGER NOT NULL CHECK(rating BETWEEN 1 AND 10 AND rating=CAST(rating AS INTEGER)),
   created_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,
   updated_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,
   PRIMARY KEY(user_id,novel_id)
