@@ -1,0 +1,186 @@
+{
+  "id": "six-global-theme-registry",
+  "title": "Six global site themes",
+  "status": "implemented-pending-browser-validation",
+  "themes": [
+    "light",
+    "dark",
+    "midnight",
+    "sepia",
+    "imperial",
+    "cosmic"
+  ],
+  "persistence": "imperial_theme local preference",
+  "runtime": [
+    "public/app.js",
+    "public/app-17.23.0.js"
+  ],
+  "stylesheet": "public/imperial-luxury-17.23.0.css",
+  "settings": "Site theme selector",
+  "safeguards": [
+    "Unknown stored values fall back to light",
+    "Reader theme remains separately stored in imperial_reader_theme",
+    "Theme choice is local-device preference and is not presented as account-synced"
+  ],
+  "limitations": [
+    "Theme token maps and core surface overrides are implemented; complete component-by-component visual and WCAG 2.2 AA verification remains a separate acceptance gate."
+  ],
+  "semanticTokens": [
+    "canvas",
+    "surface",
+    "raised surface",
+    "text",
+    "muted text",
+    "accent",
+    "link",
+    "focus",
+    "action background",
+    "action hover",
+    "control background",
+    "overlay",
+    "legacy compatibility aliases",
+    "semantic success",
+    "semantic danger",
+    "semantic warning",
+    "semantic lime",
+    "semantic pink"
+  ],
+  "sharedComponents": [
+    "global shell",
+    "desktop navigation",
+    "mobile navigation",
+    "footer",
+    "cards",
+    "catalog cards",
+    "panels",
+    "settings panels",
+    "forms",
+    "buttons",
+    "links",
+    "menus",
+    "hero",
+    "catalog empty states",
+    "community cards",
+    "account surfaces",
+    "focus-visible",
+    "empty states",
+    "quick cards",
+    "format directory and home format shelf",
+    "author studio forms and work cards",
+    "comic reader controls and placeholders",
+    "community reactions and rating states",
+    "creator publication/review/rejection status",
+    "glass surfaces with mobile blur fallback",
+    "high-contrast surfaces, text, borders, controls and focus states in global and reader contexts"
+  ],
+  "accessibilityChecks": [
+    "six-theme token contrast against each theme canvas",
+    "white button text against normal and hover action colors",
+    "semantic token coverage for shared component selectors",
+    "legacy variable alias mapping",
+    "semantic success/danger/warning/lime/pink token contrast against each theme canvas",
+    "white foreground contrast on action and hover backgrounds",
+    "format keyboard focus uses theme focus token",
+    "reader-specific text, muted text, accent, link and action contrast checks across all six reader themes",
+    "reader native form controls follow reader color-scheme independently from global site theme",
+    "theme option labels translated in all 14 supported interface locales",
+    "high-contrast token overrides for all six global themes",
+    "high-contrast token overrides for all six reader themes",
+    "normal-text contrast at 4.5:1 and focus/border UI contrast at 3:1 in high-contrast mode",
+    "manual high-contrast preference palettes across all six global and reader themes",
+    "operating-system prefers-contrast: more palettes across all six global and reader themes",
+    "44px minimum interaction target baseline for buttons, fields, navigation and reader tools",
+    "forced-colors and reduced-motion fallback regression checks",
+    "late archive art-direction overrides resolve through semantic theme tokens",
+    "cross-stylesheet semantic token overrides for community, rating, creator and comic-authoring components"
+  ],
+  "independentReaderTheme": {
+    "preferenceKey": "imperial_reader_theme",
+    "attribute": "readerPage.dataset.readerTheme",
+    "supportedThemes": [
+      "light",
+      "dark",
+      "midnight",
+      "sepia",
+      "imperial",
+      "cosmic"
+    ],
+    "cssScope": ".readerPage[data-reader-theme]",
+    "tokenScope": "--reader-* tokens plus complete legacy alias override inside .readerPage",
+    "isolatedAreas": [
+      "reader canvas",
+      "article text and surfaces",
+      "chapter drawer",
+      "chapter list",
+      "reader preferences and native controls",
+      "reader tools",
+      "reader footer and lock states"
+    ],
+    "nativeColorScheme": "light for Light/Sepia; dark for Dark/Midnight/Imperial/Cosmic",
+    "persistence": "separate local-device preference, independent of imperial_theme"
+  },
+  "remainingAcceptance": [
+    "Browser-rendered computed-style verification across mobile and desktop",
+    "Full WCAG 2.2 AA verification for every component state and interactive control",
+    "Forced-colors and keyboard focus testing",
+    "Reduced-motion and RTL visual regression across all themes",
+    "Browser-rendered computed-style verification for all six global and reader theme combinations",
+    "Verify actual 44px touch target coverage across all primary interactive controls",
+    "Browser-rendered high-contrast computed styles and assistive-technology behavior",
+    "Browser-rendered computed-style verification of manual and operating-system high-contrast behavior",
+    "Keyboard and assistive-technology validation of touch targets, focus and forced-colors states"
+  ],
+  "stylesheets": [
+    "public/style-17.23.0.css",
+    "public/imperial-luxury-17.23.0.css",
+    "public/imperial-glass.css",
+    "public/imperial-formats-17.23.0.css",
+    "public/imperial-comic-reader-17.23.0.css",
+    "public/app-17.23.0.css"
+  ],
+  "legacyTokenBridge": {
+    "source": "public/style-17.23.0.css",
+    "bridge": "html[data-theme] in public/imperial-luxury-17.23.0.css",
+    "mapped": "All color and surface tokens; only layout, radius, motion, and max-width tokens remain intentionally outside the theme map"
+  },
+  "localization": {
+    "locales": [
+      "en",
+      "ur",
+      "hi",
+      "zh-CN",
+      "zh-TW",
+      "es",
+      "fr",
+      "id",
+      "ja",
+      "ko",
+      "pt-BR",
+      "ar",
+      "vi",
+      "fa"
+    ],
+    "themeLabels": [
+      "Light",
+      "Dark",
+      "Midnight",
+      "Sepia",
+      "Imperial",
+      "Cosmic"
+    ],
+    "mechanism": "data-in-lang option labels resolved by setINLang after settings and reader markup is rendered",
+    "sourceRuntimeParity": "public/app.js and public/app-17.23.0.js are kept byte-identical"
+  },
+  "componentCoverage": [
+    "community comment threads and reply surfaces",
+    "rating stars, rating summaries and pressed reaction states",
+    "creator application forms and format selection",
+    "comic author page composer and image placeholders",
+    "format directory, format shelves and author studio",
+    "comic reader controls, page surfaces and unavailable states",
+    "catalog filters, metadata, empty states and rank badges",
+    "account menus, side navigation and settings panels",
+    "shared admin metric, tier, notice and status primitives",
+    "mobile navigation, menu drawer and footer"
+  ]
+}
