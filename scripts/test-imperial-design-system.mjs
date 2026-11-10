@@ -272,8 +272,7 @@ assert.ok(read('public/imperial-design-system.css').includes('.chapterRow .actio
 
 // Admin form controls use the same 44px touch baseline as reader and creator
 // controls. RTL drawer and navigation overrides use logical edge properties.
-const adminFormTouchRule = '.adminWrap .adminForm :where(input,select,textarea,button),\n.adminWrap #chapterForm :where(input,textarea,button) {\n  min-height: 44px;\n}';
-assert.ok(read('public/imperial-design-system.css').includes(adminFormTouchRule),
+assert.match(read('public/imperial-design-system.css'), /\.adminWrap \.adminForm :where\(input,select,textarea,button\),\s*\.adminWrap #chapterForm :where\(input,textarea,button\)\s*\{\s*min-height:\s*44px;\s*\}/,
   'Administrator form controls must meet the 44px touch target baseline.');
 assert.ok(adminMarkup.includes('class="adminForm"') && adminMarkup.includes('id="chapterForm"'),
   'The admin touch-target rule must correspond to real administrator form markup.');
