@@ -82,6 +82,8 @@ for (let theme = 0; theme < 2; theme++) {
     'Primary action hover text must meet WCAG AA contrast in theme index ' + theme + '.');
 }
 assert.ok(css.includes('min-height: 44px;'), 'Shared interactive targets must meet the 44px touch target baseline.');
+assert.match(css, /@media \(max-width: 760px\)[\s\S]*?html\[data-theme\] \.top \.navright \.languageControl select \{\s*min-height: 44px !important;/,
+  'The mobile language picker must retain a 44px touch target despite compact legacy header rules.');
 assert.match(css, /@media \(max-width: 760px\)[\s\S]*?html\[data-theme\] \.top \.navright :is\(\.iconbtn, \.themeToggle, \.menuToggle\) \{\s*width: 44px;\s*min-width: 44px;\s*height: 44px;\s*min-height: 44px;/,
   'Mobile header icon and menu controls must retain 44px touch targets after legacy shell sizing.');
 const globalThemes = ['light','dark','midnight','sepia','imperial','cosmic'];
