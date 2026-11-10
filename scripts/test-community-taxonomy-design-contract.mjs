@@ -1,0 +1,10 @@
+import fs from 'node:fs';
+import assert from 'node:assert/strict';
+const html=fs.readFileSync('public/community-taxonomy.html','utf8');
+const css=fs.readFileSync('public/imperial-ui-primitives.css','utf8');
+for(const token of ['/imperial-design-tokens.css','/imperial-ui-primitives.css','in-taxonomy-wrap','in-taxonomy-hero','in-taxonomy-grid','in-taxonomy-card','in-taxonomy-field','in-taxonomy-submit','in-taxonomy-status','taxonomy-form','taxonomy-status','/api/taxonomy','metadata','rights-safe'])assert.ok(html.includes(token),`Taxonomy experience missing ${token}`);
+for(const token of ['.in-taxonomy-wrap','.in-taxonomy-grid','.in-taxonomy-card','.in-taxonomy-field','.in-taxonomy-status','@media(max-width:40rem)'])assert.ok(css.includes(token),`Taxonomy styling missing ${token}`);
+assert.ok(!html.includes('<style>'),'Legacy inline taxonomy stylesheet must be removed');
+assert.ok(!html.includes('/style.css'),'Legacy global stylesheet must be removed');
+assert.ok(!html.includes('tax-'),'Legacy taxonomy classes must be removed');
+console.log('Community Taxonomy governance page design contracts passed.');
