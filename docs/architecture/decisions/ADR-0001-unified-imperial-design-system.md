@@ -27,13 +27,15 @@ The product needs one coherent design language across reading, discovery, creato
 
 - The public and administrator application shells each reference exactly one stylesheet entry point, the same canonical file.
 - The six existing feature styles have been consolidated into the canonical stylesheet in their original cascade order; semantic tokens and page-family migrations follow them in the same file.
-- The main application and separate administrator shell each reference only the canonical stylesheet. Administrator-only inline CSS has been moved into the canonical file, and dashboard cards, navigation, forms, status states and hero surfaces now use the shared light/dark semantic tokens. The service worker precaches only that stylesheet, not the retired runtime CSS assets.
+- The main application and separate administrator shell each reference only the canonical stylesheet. Static inline presentation in both application shells and their runtime-generated page templates has been moved into canonical CSS utility/component classes. The only remaining application runtime inline style is the data-driven reader progress width. The service worker precaches only the canonical stylesheet, not retired runtime CSS assets.
+- Runtime-generated administrator notices, author-review previews, edit controls and report-status selectors use named canonical classes; the administrator shell and generated admin templates contain no inline style attributes.
+- RTL parity rules use logical inset, border and margin properties for drawers, badges, navigation spacing, callouts and community reply indentation, while retaining narrowly scoped artwork mirroring where physical geometry is intentional.
 - Real primary buttons use the theme-aware foreground token; the current light and dark primary/hover combinations pass the automated 4.5:1 contrast threshold.
 - The homepage hero, format cards, feature tiles and supporting bands are the first migrated page family.
 - Semantic color, typography, spacing, elevation, breakpoint and reading-width tokens are available under the `--in-*` namespace.
 - Opt-in primitives cover buttons, fields, cards, badges, tabs, tables, empty states, toasts and reader prose with keyboard focus and touch sizing.
 - The homepage, shell, discovery, reader, account, creator, community, OmniPortal and administrator surfaces have targeted migration rules.
-- A build regression test verifies both shells use one stylesheet, administrator inline CSS is absent, legacy runtime assets are not imported or precached, semantic tokens, component primitives, primary-action contrast, accessibility safeguards, reader themes and page-family selectors.
+- Build regression tests verify both shells use one stylesheet, static runtime presentation is not emitted inline, admin templates contain no inline style attributes, legacy runtime assets are not imported or precached, semantic tokens, component primitives, primary-action contrast, accessibility safeguards, reader themes, RTL logical edges and route-family selectors.
 
 ## Consequences
 
