@@ -92,7 +92,7 @@ const runtime = fs.readFileSync(`public/app-${version}.js`,'utf8');
 const editableRuntime = fs.readFileSync('public/app.js','utf8');
 assert.equal(editableRuntime, runtime, 'Editable application source must match the active versioned runtime to prevent feature and localization drift');
 const sw = fs.readFileSync('public/sw.js','utf8');
-const luxuryCss = fs.readFileSync(`public/imperial-luxury-${version}.css`,'utf8');
+const designSystemCss = fs.readFileSync('public/imperial-design-system.css','utf8');
 assert.ok(entry.includes(`/app-${version}.js`), 'Entry point loads the cache-busted application runtime');
 assert.ok(entry.includes('property="og:title"') && entry.includes('property="og:description"') && entry.includes('name="twitter:card"'), 'Entry point provides international social-sharing metadata');
 assert.ok(entry.includes('https://god-emperornovel.sikandershehzadkhan.workers.dev/imperial-novel-app-icon.svg'), 'Social preview uses the new absolute crest URL');
@@ -114,8 +114,8 @@ for (const asset of coreAssets) {
 }
 
 assert.ok(runtime.includes("navigator.serviceWorker.register('/sw.js',{updateViaCache:'none'})"), 'Application registers the cache worker without stale update checks');
-assert.ok(luxuryCss.includes(':focus-visible') && luxuryCss.includes('prefers-reduced-motion:reduce') && luxuryCss.includes('forced-colors:active'), 'Design system includes keyboard, reduced-motion, and forced-color accessibility safeguards');
-assert.ok(runtime.includes('class="skipLink" href="#app">Skip to main content</a>') && entry.includes('id="app" class="appBootRoot" tabindex="-1"') && luxuryCss.includes('.skipLink:focus-visible'), 'Keyboard users can skip navigation and focus the main content landmark');
+assert.ok(designSystemCss.includes(':focus-visible') && designSystemCss.includes('prefers-reduced-motion: reduce') && designSystemCss.includes('forced-colors: active'), 'Design system includes keyboard, reduced-motion, and forced-color accessibility safeguards');
+assert.ok(runtime.includes('class="skipLink" href="#app">Skip to main content</a>') && entry.includes('id="app" class="appBootRoot" tabindex="-1"') && designSystemCss.includes('.skipLink:focus-visible'), 'Keyboard users can skip navigation and focus the main content landmark');
 assert.ok(runtime.includes('".navlinks a,.menuDrawer a span,.footerLinks a,.mobileNav a"'), 'Shared localization includes the mobile navigation and footer');
 assert.ok(runtime.includes('n.nodeType===3&&n.textContent.trim()') && runtime.includes('e.dataset.inLangKey'), 'Language switching preserves mobile navigation icons and original translation keys');
 assert.ok(runtime.includes('document.documentElement.dir=(c==="ur"||c==="ar"||c==="fa")?"rtl":"ltr"'), 'Arabic, Urdu and Persian languages switch the document to right-to-left layout');
