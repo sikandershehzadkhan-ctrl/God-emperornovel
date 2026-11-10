@@ -33,4 +33,18 @@ for (const rule of [
 ]) {
   assert.ok(fit.includes(rule), 'Missing narrow mobile navigation contract: ' + rule);
 }
+const readerMarker = '/* Reader viewport containment: prevent intrinsic sticky-toolbar width';
+const readerMarkerIndex = css.lastIndexOf(readerMarker);
+assert.ok(readerMarkerIndex >= 0, 'Reader viewport containment override must exist.');
+const readerFit = css.slice(readerMarkerIndex);
+for (const rule of [
+  '@media (max-width: 760px)',
+  '#app > .readerPage {',
+  'width: 100%;',
+  'min-width: 0;',
+  'max-width: 100%;',
+  'box-sizing: border-box;'
+]) {
+  assert.ok(readerFit.includes(rule), 'Missing narrow reader containment contract: ' + rule);
+}
 console.log('Mobile navigation narrow-viewport layout contracts passed.');
