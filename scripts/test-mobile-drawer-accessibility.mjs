@@ -3,6 +3,7 @@ import fs from 'node:fs';
 
 const app = fs.readFileSync('public/app.js', 'utf8');
 const served = fs.readFileSync('public/app-17.23.0.js', 'utf8');
+const css = fs.readFileSync('public/imperial-design-system.css', 'utf8');
 assert.equal(app, served, 'Editable and served application runtimes must remain byte-for-byte identical.');
 
 assert.match(app, /<aside class="menuDrawer" id="imperialMenuDrawer" role="dialog" aria-modal="true" aria-label="Main navigation" aria-hidden="true" inert>/,
@@ -33,4 +34,8 @@ assert.match(app, /if\(e\.key==='Escape'\)\{e\.preventDefault\(\);closeMenu\(\);
   'Escape must close the open drawer.');
 assert.match(app, /menuScrim\?\.addEventListener\('click',closeMenu\)/,
   'The visible scrim must continue to close the drawer.');
+assert.match(css, /@media \(max-width: 760px\)[\s\S]*?html\[data-theme\] \.menuDrawer \.menuClose \{\s*width: 44px;\s*min-width: 44px;\s*height: 44px;\s*min-height: 44px;/,
+  'The mobile drawer close control must retain a 44px square touch target.');
+assert.match(css, /:focus-visible,a:focus-visible,input:focus-visible,select:focus-visible,textarea:focus-visible\s*\{\s*outline: 2px solid var\(--gold2\);/,
+  'Drawer keyboard controls must inherit the shared visible focus indicator.');
 console.log('Mobile navigation keyboard accessibility contracts passed.');
