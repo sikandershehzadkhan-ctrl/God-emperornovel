@@ -23,7 +23,7 @@ assert.match(app, /menuCloseButton\?\.focus\(\)/,
   'Opening the drawer must move keyboard focus inside it.');
 assert.match(app, /if\(wasOpen\)menuButton\?\.focus\(\)/,
   'Closing the drawer must return focus to the menu trigger without stealing focus when already closed.');
-assert.match(app, /if\(e\.key!=='Tab'\)return;const focusable=\[\.\.\.menuDrawer\.querySelectorAll\('a\[href\],button:not\(\[disabled\]\)\),\[tabindex\]:not\(\[tabindex="-1"\]\)'\)\]/,
+assert.match(app, /if\(e\.key!=='Tab'\)return;const focusable=\[\.\.\.menuDrawer\.querySelectorAll\('a\[href\],button:not\(\[disabled\]\),\[tabindex\]:not\(\[tabindex="-1"\]\)'\)\]/,
   'The open drawer must enumerate its interactive descendants for keyboard focus containment.');
 assert.match(app, /e\.shiftKey&&\(document\.activeElement===first\|\|!menuDrawer\.contains\(document\.activeElement\)\)/,
   'Shift+Tab at the first item or outside the drawer must wrap focus to the last item.');
