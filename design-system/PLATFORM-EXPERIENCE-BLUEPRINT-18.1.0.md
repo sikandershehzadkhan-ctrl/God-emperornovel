@@ -255,3 +255,7 @@ Next migration family: Library, history, following, requests, Crown Vault, and n
 
 - Rebuilt the standalone reading-history page with chronological return-to-chapter rows, author/title context, cover art, responsive layout, and an explicit empty/error state.
 - Added reading-history design contract coverage to the existing library page-family test.
+
+- Added the standalone reading-history route and a quiet canonical boot/recovery state. The retired “Your next world is loading / Preparing your storyverse” placeholder copy is removed from the boot path.
+- The reader markup has been migrated off its former `.readerPage`, `.readerArticle`, and related legacy class family. The new reader components are isolated under `.in-reader-*` selectors, while stable control IDs and local reading-progress keys are preserved.
+- The shell contract test now also guards the boot and recovery states against reintroducing the retired placeholder.
