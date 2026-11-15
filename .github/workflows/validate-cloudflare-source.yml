@@ -4,7 +4,7 @@ on:
   pull_request:
     branches: [main, rebuild/imperial-unified-design-foundation-18-10]
   push:
-    branches: [main, rebuild/imperial-unified-design-foundation-18-10]
+    branches: [main, rebuild/imperial-unified-design-foundation-18-10, fix/reader-bookmark-toggle-18-11]
     paths:
       - 'src/**'
       - 'scripts/**'
