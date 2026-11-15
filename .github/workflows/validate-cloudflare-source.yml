@@ -2,9 +2,9 @@ name: Imperial Novel Cloudflare Source Validation
 
 on:
   pull_request:
-    branches: [main]
+    branches: [main, rebuild/imperial-unified-design-foundation-18-10]
   push:
-    branches: [main]
+    branches: [main, rebuild/imperial-unified-design-foundation-18-10, integration/reader-session-bookmarks-onto-unified-2026-11-15]
     paths:
       - 'src/**'
       - 'scripts/**'
