@@ -62,6 +62,7 @@ const readerSource = readFileSync(new URL("../public/app.js", import.meta.url), 
 assert.match(readerSource, /import\(['"]\/reader-session\.mjs['"]\)/, "reader route must load the session engine");
 assert.match(readerSource, /readerSessions\.write\(id,num,pct\)/, "scroll progress must persist through the session engine");
 assert.match(readerSource, /navigation\.isCurrent\(navigationToken\)/, "stale chapter responses must be rejected");
+assert.match(readerSource, /!navigation\.isCurrent\(navigationToken\)/, "stale scroll callbacks must not overwrite the active chapter session");
 assert.doesNotMatch(readerSource, /if\(d\.unlocked\)api\(['"]\/api\/bookmark['"]/, "opening a chapter must not silently bookmark it");
 
 console.log("Reader session engine and route integration checks passed.");
