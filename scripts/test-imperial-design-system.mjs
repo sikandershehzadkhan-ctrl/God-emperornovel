@@ -532,3 +532,25 @@ for (const [theme, colors] of Object.entries({
 }
 assert.ok(readerThemes.includes('.readerPage .readerContent{color:var(--reader-text)}'), 'Reader chapter text must use the independent reader theme token.');
 assert.ok(readerThemes.includes('.readerPage .readerArticle,.readerPage .readerFooterCard,.readerPage .readerLock{background:var(--reader-panel)'), 'Reader surfaces must use the reader theme surface token.');
+
+function relativeLuminance(hex) {
+  const channels = hex.match(/[0-9A-Fa-f]{2}/g).map(value => parseInt(value, 16) / 255)
+    .map(value => value <= 0.04045 ? value / 12.92 : ((value + 0.055) / 1.055) ** 2.4);
+  return 0.2126 * channels[0] + 0.7152 * channels[1] + 0.0722 * channels[2];
+}
+function contrastRatio(first, second) {
+  const values = [relativeLuminance(first), relativeLuminance(second)].sort((a, b) => b - a);
+  return (values[0] + 0.05) / (values[1] + 0.05);
+}
+for (const [theme, surface, textColor, link] of [
+  ['light', '#FFFFFF', '#172027', '#0F52BA'],
+  ['dark', '#151F24', '#E8EDEF', '#6AA5FF'],
+  ['midnight', '#0B1215', '#D6DEE8', '#5B9BFF'],
+  ['sepia', '#FBF3E4', '#332719', '#315F83'],
+  ['imperial', '#1B1228', '#FBF7FF', '#8DB8FF'],
+  ['cosmic', '#111A32', '#F2F6FF', '#68A7FF']
+]) {
+  assert.ok(contrastRatio(surface, textColor) >= 4.5, 'Reader ' + theme + ' body text must meet WCAG AA contrast.');
+  assert.ok(contrastRatio(surface, link) >= 4.5, 'Reader ' + theme + ' links must meet WCAG AA contrast.');
+}
+
