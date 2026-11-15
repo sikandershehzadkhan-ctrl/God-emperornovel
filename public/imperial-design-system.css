@@ -6025,3 +6025,121 @@ html[data-theme="cosmic"]{--in-text:#FFFFFF;--in-text-muted:#DCE5FF;--in-line:#8
     max-width: 100%;
   }
 }
+
+
+/* Reader comfort palette: the reader owns its surface tokens independently of
+   the global application theme, so long-form reading stays calm and consistent. */
+.readerPage[data-reader-theme="light"] {
+  --reader-canvas: #FDFBF7;
+  --reader-surface: #FFFFFF;
+  --reader-text: #172027;
+  --reader-muted: #536168;
+  --reader-line: #DCE1E3;
+  --reader-accent: #6A0DAD;
+  --reader-link: #0F52BA;
+  color-scheme: light;
+}
+.readerPage[data-reader-theme="dark"] {
+  --reader-canvas: #0B1215;
+  --reader-surface: #151F24;
+  --reader-text: #E8EDEF;
+  --reader-muted: #B5C1C7;
+  --reader-line: rgba(232,237,239,.16);
+  --reader-accent: #C08AFF;
+  --reader-link: #6AA5FF;
+  color-scheme: dark;
+}
+.readerPage[data-reader-theme="midnight"] {
+  --reader-canvas: #05070C;
+  --reader-surface: #0B1215;
+  --reader-text: #D6DEE8;
+  --reader-muted: #AAB8C8;
+  --reader-line: rgba(214,222,232,.17);
+  --reader-accent: #A78BFA;
+  --reader-link: #5B9BFF;
+  color-scheme: dark;
+}
+.readerPage[data-reader-theme="sepia"] {
+  --reader-canvas: #F1E5D2;
+  --reader-surface: #FBF3E4;
+  --reader-text: #332719;
+  --reader-muted: #66533D;
+  --reader-line: rgba(78,57,32,.2);
+  --reader-accent: #70418B;
+  --reader-link: #315F83;
+  color-scheme: light;
+}
+.readerPage[data-reader-theme="imperial"] {
+  --reader-canvas: #100B18;
+  --reader-surface: #1B1228;
+  --reader-text: #FBF7FF;
+  --reader-muted: #C8B9D8;
+  --reader-line: rgba(183,138,226,.22);
+  --reader-accent: #D0A9F0;
+  --reader-link: #8DB8FF;
+  color-scheme: dark;
+}
+.readerPage[data-reader-theme="cosmic"] {
+  --reader-canvas: #080D1B;
+  --reader-surface: #111A32;
+  --reader-text: #F2F6FF;
+  --reader-muted: #B1C0DD;
+  --reader-line: rgba(141,184,255,.2);
+  --reader-accent: #B6AAFF;
+  --reader-link: #68A7FF;
+  color-scheme: dark;
+}
+.readerPage[data-reader-theme] {
+  background: var(--reader-canvas);
+  color: var(--reader-text);
+}
+.readerPage[data-reader-theme] .readerBar {
+  background: var(--reader-surface);
+  border-color: var(--reader-line);
+}
+.readerPage[data-reader-theme] .readerArticle,
+.readerPage[data-reader-theme] .readerFooterCard {
+  background: var(--reader-surface);
+  color: var(--reader-text);
+  border-color: var(--reader-line);
+  box-shadow: none;
+}
+.readerPage[data-reader-theme] .readerArticle h1,
+.readerPage[data-reader-theme] .readerFooterCard h3,
+.readerPage[data-reader-theme] .readerBook b {
+  color: var(--reader-text);
+}
+.readerPage[data-reader-theme] .readerBook span,
+.readerPage[data-reader-theme] .readerProgressText,
+.readerPage[data-reader-theme] .readerMeta {
+  color: var(--reader-muted);
+}
+.readerPage[data-reader-theme] .readerContent {
+  color: var(--reader-text);
+  line-height: var(--in-leading-reading, 1.85);
+}
+.readerPage[data-reader-theme] .readerTool,
+.readerPage[data-reader-theme] .readerPrefs select {
+  background: var(--reader-surface);
+  color: var(--reader-text);
+  border-color: var(--reader-line);
+}
+.readerPage[data-reader-theme] .readerPrefs label { color: var(--reader-muted); }
+.readerPage[data-reader-theme] .readerProgress > span { background: var(--reader-accent); }
+.readerPage[data-reader-theme] .readerActions .primary,
+.readerPage[data-reader-theme] .readerFooterCard .primary {
+  background: var(--reader-accent);
+  border-color: var(--reader-accent);
+  color: #FFFFFF;
+}
+.readerPage[data-reader-theme] .readerActions .secondary,
+.readerPage[data-reader-theme] .readerActions .ghost,
+.readerPage[data-reader-theme] .readerFooterCard .secondary {
+  color: var(--reader-link);
+  border-color: var(--reader-line);
+}
+.readerPage[data-reader-theme] a:focus-visible,
+.readerPage[data-reader-theme] button:focus-visible,
+.readerPage[data-reader-theme] select:focus-visible {
+  outline-color: var(--reader-link);
+}
