@@ -26,6 +26,10 @@ assert.match(app, /now=!!result\.bookmarked/,
   "The reader button must use the server's authoritative bookmark state.");
 assert.match(app, /localStorage\.removeItem\(key\)/,
   "Guest bookmarks must also be removable.");
+assert.match(app, /guestBookmark===num/,
+  "Guest bookmark state must be restored when the reader page reloads.");
+assert.match(app, /readerIdentity\.user\?Number\(n\.bookmark\|\|0\)===num:guestBookmark===num/,
+  "Authenticated and guest bookmark state must use their own authoritative stores.");
 assert.doesNotMatch(app, /if\(d\.unlocked\)api\('\/api\/bookmark'/,
   "Opening a chapter must not silently create a bookmark.");
 assert.match(app, /if\(isFollowing\)\{[\s\S]*?api\('\/api\/follows'\)/,
