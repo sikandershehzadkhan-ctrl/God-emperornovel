@@ -37,6 +37,17 @@ assert.match(app, /You are not following any stories yet/,
 assert.match(app, /if\(isFollowing\)[\s\S]*?return;[\s\S]*?const \[items,historyRows,bookmarks\]/,
   "The Following page must not fall through to the saved-library renderer.");
 
+const historyPost = source.split("\\n").find(line => line.includes('if(p==="/api/history"&&m==="POST")'));
+assert.ok(historyPost, "history write endpoint must exist");
+assert.match(historyPost, /Number\\.isSafeInteger\\(novelId\\)/, "novel ID must be validated");
+assert.match(historyPost, /Number\\.isSafeInteger\\(chapterNumber\\)/, "chapter number must be validated");
+assert.match(historyPost, /c\\.publication_status='published'/, "only published chapters may enter reading history");
+assert.match(historyPost, /n\\.publication_status='published'/, "only published novels may enter reading history");
+assert.match(historyPost, /n\\.rights_status IN \\('original','public_domain','licensed','authorized'\\)/, "rights eligibility must be enforced");
+assert.match(historyPost, /chapter\\.is_locked&&u\\.role!==\\"admin\\"/, "locked chapters require unlock or admin access");
+assert.match(historyPost, /FROM unlocks WHERE user_id=\\? AND chapter_id=\\?/, "unlock ownership must be scoped to the signed-in user");
+assert.match(historyPost, /Unlock this chapter before saving reading progress/, "denied locked chapter writes must explain why");
+
 assert.equal(runtime, app,
   "The served versioned runtime must exactly match the public application source.");
 
