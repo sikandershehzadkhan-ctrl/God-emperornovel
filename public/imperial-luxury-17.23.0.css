@@ -576,3 +576,209 @@ html[data-theme="dark"] .navlinks a.active,
 html[data-theme="dark"] .mobileNav a.active{color:#FFFFFF;background:rgba(106,13,173,.22)}
 html[data-theme="dark"] a:not(.primary):not(.secondary):not(.pill):not(.brand){color:#8DB8FF}
 html[data-theme="dark"] a:not(.primary):not(.secondary):not(.pill):not(.brand):hover{color:#B78AE2}
+
+
+/* Imperial Novel approved palette reconciliation.
+   Keep the brand anchors exact; use softened semantic surfaces for long reading sessions. */
+:root{
+  color-scheme:light;
+  --in-obsidian:#0B1215;
+  --in-panel:#151F24;
+  --in-panel-raised:#1B292F;
+  --in-line:rgba(11,18,21,.12);
+  --in-purple:#6A0DAD;
+  --in-purple-bright:#6A0DAD;
+  --in-sapphire:#0F52BA;
+  --in-sapphire-bright:#0F52BA;
+  --in-white:#0B1215;
+  --in-muted:#53636A;
+}
+html[data-theme="light"]{
+  color-scheme:light;
+  --in-obsidian:#0B1215;
+  --in-panel:#FFFFFF;
+  --in-panel-raised:#F5F1EA;
+  --in-line:rgba(11,18,21,.13);
+  --in-purple:#6A0DAD;
+  --in-purple-bright:#6A0DAD;
+  --in-sapphire:#0F52BA;
+  --in-sapphire-bright:#0F52BA;
+  --in-white:#0B1215;
+  --in-muted:#53636A;
+}
+html[data-theme="light"] body{
+  color:#0B1215;
+  background:#FDFBF7;
+}
+html[data-theme="light"] .top,
+html[data-theme="light"] .mobileNav{
+  color:#0B1215;
+  background:rgba(253,251,247,.96);
+  border-color:rgba(11,18,21,.12);
+  -webkit-backdrop-filter:none;
+  backdrop-filter:none;
+}
+html[data-theme="light"] .brand b,
+html[data-theme="light"] .footerBrand,
+html[data-theme="light"] .page h1,
+html[data-theme="light"] .page h2,
+html[data-theme="light"] .page h3,
+html[data-theme="light"] .sectionHead h2,
+html[data-theme="light"] .sectionHead h3{
+  color:#0B1215;
+}
+html[data-theme="light"] .brand small,
+html[data-theme="light"] .muted,
+html[data-theme="light"] .sectionHead p,
+html[data-theme="light"] .page .sub{
+  color:#53636A;
+}
+html[data-theme="light"] .navlinks a,
+html[data-theme="light"] .mobileNav a,
+html[data-theme="light"] .footer a{
+  color:#34454C;
+}
+html[data-theme="light"] .navlinks a:hover,
+html[data-theme="light"] .navlinks a.active,
+html[data-theme="light"] .mobileNav a.active{
+  color:#6A0DAD;
+  background:rgba(106,13,173,.07);
+  border-color:rgba(106,13,173,.18);
+}
+html[data-theme="light"] .card,
+html[data-theme="light"] .catalogCard,
+html[data-theme="light"] .panel,
+html[data-theme="light"] .settingsPanel,
+html[data-theme="light"] .novelHero,
+html[data-theme="light"] .catalogTop,
+html[data-theme="light"] .heroSideCard{
+  color:#0B1215;
+  background:#FFFFFF;
+  border-color:rgba(11,18,21,.12);
+  box-shadow:0 8px 24px rgba(11,18,21,.045);
+}
+html[data-theme="light"] .cardTitle,
+html[data-theme="light"] .catalogTitle{
+  color:#0B1215;
+}
+html[data-theme="light"] .pill,
+html[data-theme="light"] .rankBadge{
+  color:#54208A;
+  background:#F3ECFA;
+  border-color:#E2D2F2;
+}
+html[data-theme="light"] .ghost,
+html[data-theme="light"] .secondary,
+html[data-theme="light"] .iconbtn,
+html[data-theme="light"] .menuToggle{
+  color:#183D75;
+  background:#F2F6FC;
+  border-color:#D6E1F2;
+}
+html[data-theme="light"] .primary,
+html[data-theme="light"] .heroSearch button{
+  color:#FFFFFF;
+  background:#0F52BA;
+  border-color:#0F52BA;
+  box-shadow:none;
+}
+html[data-theme="light"] input,
+html[data-theme="light"] select,
+html[data-theme="light"] textarea{
+  color:#0B1215;
+  background:#FFFFFF;
+  border-color:#C9D1D4;
+}
+html[data-theme="light"] a:focus-visible,
+html[data-theme="light"] button:focus-visible,
+html[data-theme="light"] input:focus-visible,
+html[data-theme="light"] select:focus-visible,
+html[data-theme="light"] textarea:focus-visible{
+  outline:2px solid #0F52BA;
+  outline-offset:3px;
+}
+html[data-theme="light"] .hero.imperialArchiveHero{
+  color:#0B1215;
+  background:#FFFFFF;
+  border:1px solid rgba(11,18,21,.12);
+  box-shadow:0 18px 48px rgba(11,18,21,.055);
+}
+html[data-theme="light"] .hero.imperialArchiveHero h1{
+  color:#0B1215;
+}
+html[data-theme="light"] .hero.imperialArchiveHero h1 span{
+  color:#6A0DAD;
+  background:none;
+  -webkit-text-fill-color:#6A0DAD;
+}
+html[data-theme="light"] .hero.imperialArchiveHero .nextHeroLead{
+  color:#53636A;
+}
+html[data-theme="light"] .hero.imperialArchiveHero .heroTags a{
+  color:#183D75;
+  background:#F2F6FC;
+  border-color:#D6E1F2;
+}
+html[data-theme="light"] .hero.imperialArchiveHero .heroPromise{
+  color:#0B1215;
+}
+html[data-theme="light"] .hero.imperialArchiveHero .promiseText{
+  color:#53636A;
+}
+html[data-theme="light"] .footer{
+  color:#53636A;
+  background:#F5F1EA;
+  border-color:rgba(11,18,21,.12);
+}
+html[data-theme="dark"]{
+  color-scheme:dark;
+  --in-obsidian:#0B1215;
+  --in-panel:#151F24;
+  --in-panel-raised:#1B292F;
+  --in-line:rgba(232,237,239,.13);
+  --in-purple:#6A0DAD;
+  --in-purple-bright:#C08AFF;
+  --in-sapphire:#0F52BA;
+  --in-sapphire-bright:#6AA5FF;
+  --in-white:#E8EDEF;
+  --in-muted:#AAB7BC;
+}
+html[data-theme="dark"] body{
+  color:#E8EDEF;
+  background:#0B1215;
+}
+html[data-theme="dark"] .top,
+html[data-theme="dark"] .mobileNav{
+  background:rgba(11,18,21,.96);
+  border-color:rgba(232,237,239,.13);
+  -webkit-backdrop-filter:none;
+  backdrop-filter:none;
+}
+html[data-theme="dark"] .card,
+html[data-theme="dark"] .catalogCard,
+html[data-theme="dark"] .panel,
+html[data-theme="dark"] .settingsPanel,
+html[data-theme="dark"] .novelHero,
+html[data-theme="dark"] .catalogTop{
+  background:#151F24;
+  border-color:rgba(232,237,239,.13);
+  box-shadow:none;
+}
+html[data-theme="dark"] .primary,
+html[data-theme="dark"] .heroSearch button{
+  background:#6A0DAD;
+  border-color:#8D43C5;
+}
+html[data-theme="dark"] .hero.nextHero,
+html[data-theme="dark"] .hero.imperialArchiveHero{
+  background:#0B1215;
+  border-color:rgba(192,138,255,.24);
+}
+html[data-theme="dark"] .nextHero h1 span{
+  color:#C08AFF;
+  -webkit-text-fill-color:#C08AFF;
+}
+html[data-theme="dark"] .nextHeroLead,
+html[data-theme="dark"] .muted{
+  color:#AAB7BC;
+}
