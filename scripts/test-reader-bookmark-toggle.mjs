@@ -45,7 +45,7 @@ for (const fragment of [
   "c.publication_status='published'",
   "n.publication_status='published'",
   "n.rights_status IN ('original','public_domain','licensed','authorized')",
-  "chapter.is_locked&&u.role!==\\"admin\\"",
+   'chapter.is_locked&&u.role!==\"admin\"',
   "FROM unlocks WHERE user_id=? AND chapter_id=?",
   "Unlock this chapter before saving reading progress"
 ]) assert.ok(historyPost.includes(fragment), `history authorization must include: ${fragment}`);
