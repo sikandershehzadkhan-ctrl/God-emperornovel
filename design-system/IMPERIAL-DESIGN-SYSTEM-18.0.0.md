@@ -258,3 +258,18 @@ The existing Community route is a discovery landing page rather than a discussio
 This is presentation-only. It does not add a comment composer, direct messages, follows, moderation, reporting or new social capabilities. Existing community discussion API visibility and rights-cleared story constraints remain unchanged.
 
 Browser QA remains required for populated/empty/error discussion feeds, no-story catalog states, all six themes, RTL, keyboard/screen-reader behavior, reduced motion and 360px/390px layouts.
+
+
+## Reader Settings Studio
+
+The chapter reader exposes a device-local Reading Settings Studio inside its chapter drawer. It extends the existing six reader themes without changing the site's global theme preference.
+
+- **Background presets:** warm white, blush, parchment, sage, mist blue, rose, soft grey, lavender mist, soft lemon, blue haze, soft black, obsidian, galaxy and plum, plus a native custom colour picker.
+- **Text presets:** ink black, charcoal, graphite, slate blue, deep sapphire, muted sage, white, soft white, amethyst and sapphire light, plus an independent custom text colour picker.
+- **Typography:** 15–32px size, system sans, Nunito, Inter, Georgia, Lora, Merriweather and system serif stacks; default, left, centre, right and justified alignment.
+- **Reading rhythm:** compact, comfort, relaxed and extra-relaxed line spacing; focused, standard, wide and extra-wide text widths.
+- **Persistence:** reader theme, custom ink/paper, font family, size, alignment, line spacing and width use separate `imperial_reader_*` localStorage keys (font size retains the established `readerSize` key). These are per-device preferences and are not represented as cross-device account sync.
+- **Reset:** the reader reset clears only reader appearance keys and restores the reader defaults; it does not clear bookmarks, progress, account data or global site theme.
+- **Accessibility:** native select and colour inputs, labelled colour groups, named preset buttons, visible selected states and a single-column mobile layout.
+
+Custom colours intentionally override the selected reader theme's paper and ink until the reader custom colours are changed or reset. The global website theme remains independent.
