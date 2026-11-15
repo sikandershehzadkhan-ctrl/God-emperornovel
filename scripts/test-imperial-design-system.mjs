@@ -513,7 +513,9 @@ assert.equal(new Set(canonicalRules).size, canonicalRules.length,
   'The canonical design system must not contain byte-identical CSS rules repeated in the same conditional context.');
 
 
-const readerThemes = css.slice(css.indexOf('.readerPage[data-reader-theme="light"]{'));
+const readerThemeStart = css.indexOf('.readerPage[data-reader-theme="light"]{\n  --reader-canvas:');
+assert.ok(readerThemeStart >= 0, 'The canonical reader theme token map must exist.');
+const readerThemes = css.slice(readerThemeStart);
 for (const [theme, colors] of Object.entries({
   light: ['#FDFBF7', '#FFFFFF', '#172027', '#6A0DAD', '#0F52BA'],
   dark: ['#0B1215', '#151F24', '#E8EDEF', '#C08AFF', '#6AA5FF'],
