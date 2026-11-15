@@ -28,6 +28,15 @@ assert.match(app, /localStorage\.removeItem\(key\)/,
   "Guest bookmarks must also be removable.");
 assert.doesNotMatch(app, /if\(d\.unlocked\)api\('\/api\/bookmark'/,
   "Opening a chapter must not silently create a bookmark.");
+assert.match(app, /if\(isFollowing\)\{[\s\S]*?api\('\/api\/follows'\)/,
+  "The Following page must fetch the signed-in user's followed stories.");
+assert.match(app, /id="followedList"/,
+  "The Following page must render a dedicated followed-stories list.");
+assert.match(app, /You are not following any stories yet/,
+  "The Following page must provide an accurate empty state.");
+assert.match(app, /if\(isFollowing\)[\s\S]*?return;[\s\S]*?const \[items,historyRows,bookmarks\]/,
+  "The Following page must not fall through to the saved-library renderer.");
+
 assert.equal(runtime, app,
   "The served versioned runtime must exactly match the public application source.");
 
