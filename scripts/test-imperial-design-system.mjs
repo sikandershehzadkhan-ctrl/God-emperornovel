@@ -513,7 +513,7 @@ assert.equal(new Set(canonicalRules).size, canonicalRules.length,
   'The canonical design system must not contain byte-identical CSS rules repeated in the same conditional context.');
 
 
-const readerComfort = css.slice(css.indexOf('/* Reader comfort palette:'));
+const readerThemes = css.slice(css.indexOf('.readerPage[data-reader-theme="light"]{'));
 for (const [theme, colors] of Object.entries({
   light: ['#FDFBF7', '#FFFFFF', '#172027', '#6A0DAD', '#0F52BA'],
   dark: ['#0B1215', '#151F24', '#E8EDEF', '#C08AFF', '#6AA5FF'],
@@ -522,11 +522,11 @@ for (const [theme, colors] of Object.entries({
   imperial: ['#100B18', '#1B1228'],
   cosmic: ['#080D1B', '#111A32']
 })) {
-  const start = readerComfort.indexOf('.readerPage[data-reader-theme="' + theme + '"] {');
+  const start = readerThemes.indexOf('.readerPage[data-reader-theme="' + theme + '"]{');
   assert.ok(start >= 0, 'Reader comfort tokens must exist for ' + theme);
-  const end = readerComfort.indexOf('}', start);
-  const block = readerComfort.slice(start, end);
+  const end = readerThemes.indexOf('}', start);
+  const block = readerThemes.slice(start, end);
   for (const color of colors) assert.ok(block.includes(color), 'Reader ' + theme + ' palette must include ' + color);
 }
-assert.ok(readerComfort.includes('.readerPage[data-reader-theme] .readerContent'), 'All reader themes must use a shared readable content rule.');
-assert.ok(readerComfort.includes('line-height: var(--in-leading-reading, 1.85)'), 'Reader content must use the reading line-height token.');
+assert.ok(readerThemes.includes('.readerPage .readerContent{color:var(--reader-text)}'), 'Reader chapter text must use the independent reader theme token.');
+assert.ok(readerThemes.includes('.readerPage .readerArticle,.readerPage .readerFooterCard,.readerPage .readerLock{background:var(--reader-panel)'), 'Reader surfaces must use the reader theme surface token.');
