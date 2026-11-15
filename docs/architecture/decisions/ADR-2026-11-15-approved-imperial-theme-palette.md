@@ -35,3 +35,5 @@ This PR changes source only. It does not deploy to Cloudflare, alter D1, or chan
 ## Rollback
 
 Revert the stylesheet change. No data migration or user-data rollback is required.
+
+Implementation note: this proposal is deliberately limited to the two currently selectable global themes; expanding the global theme registry is a separate feature contract and release.
