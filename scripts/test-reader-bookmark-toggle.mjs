@@ -26,6 +26,10 @@ assert.match(app, /now=!!result\.bookmarked/,
   "The reader button must use the server's authoritative bookmark state.");
 assert.match(app, /localStorage\.removeItem\(key\)/,
   "Guest bookmarks must also be removable.");
+assert.match(app, /aria-pressed="\$\{bookmarked\?'true':'false'\}"/,
+  "The bookmark control must expose its saved state to assistive technology.");
+assert.match(app, /setAttribute\('aria-pressed',String\(now\)\)/,
+  "Bookmark toggles must keep the accessible pressed state synchronized.");
 assert.match(app, /guestBookmark===num/,
   "Guest bookmark state must be restored when the reader page reloads.");
 assert.match(app, /readerIdentity\.user\?Number\(n\.bookmark\|\|0\)===num:guestBookmark===num/,
