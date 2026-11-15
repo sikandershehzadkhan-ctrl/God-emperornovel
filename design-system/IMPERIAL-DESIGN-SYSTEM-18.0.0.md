@@ -266,7 +266,7 @@ The chapter reader exposes a device-local Reading Settings Studio inside its cha
 
 - **Background presets:** warm white, blush, parchment, sage, mist blue, rose, soft grey, lavender mist, soft lemon, blue haze, soft black, obsidian, galaxy and plum, plus a native custom colour picker.
 - **Text presets:** ink black, charcoal, graphite, slate blue, deep sapphire, muted sage, white, soft white, amethyst and sapphire light, plus an independent custom text colour picker.
-- **Typography:** 15–32px size, system sans, Nunito, Inter, Georgia, Lora, Merriweather and system serif stacks; default, left, centre, right and justified alignment.
+- **Typography:** 15–32px size, system sans, Arial, Trebuchet MS, Georgia, Palatino and system serif stacks; default, left, centre, right and justified alignment.
 - **Reading rhythm:** compact, comfort, relaxed and extra-relaxed line spacing; focused, standard, wide and extra-wide text widths.
 - **Persistence:** reader theme, custom ink/paper, font family, size, alignment, line spacing and width use separate `imperial_reader_*` localStorage keys (font size retains the established `readerSize` key). These are per-device preferences and are not represented as cross-device account sync.
 - **Reset:** the reader reset clears only reader appearance keys and restores the reader defaults; it does not clear bookmarks, progress, account data or global site theme.
