@@ -7,7 +7,7 @@
 .formatLinkMain{display:flex;flex-direction:column;gap:4px;min-width:0}
 .formatLinkMain b{font-size:14px;font-weight:650}
 .formatLinkMain small{font-size:11px;line-height:1.35;color:var(--muted,#a3abc2);font-weight:400}
-.formatExperience{display:flex;align-items:center;gap:6px;max-width:48%;font-size:10px;line-height:1.3;text-align:right;color:var(--muted,#a3abc2)}
+.formatExperience{display:flex;align-items:center;gap:6px;max-width:48%;font-size:10px;line-height:1.3;text-align:end;color:var(--muted,#a3abc2)}
 .formatProfile{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;margin:16px 0;padding:16px;border:1px solid var(--line,rgba(150,160,190,.2));border-radius:16px;background:var(--panel,#101421)}
 .formatProfile>div{display:flex;flex-direction:column;gap:6px;min-width:0}
 .formatProfile strong{font-size:14px;font-weight:600}
@@ -27,7 +27,7 @@
 .homeFormatCopy{display:flex;flex-direction:column;gap:5px;min-width:0}
 .homeFormatCopy b{font-size:13px;line-height:1.25;font-weight:700}
 .homeFormatCopy small{font-size:11px;line-height:1.4;color:var(--muted,#a3abc2)}
-.homeFormatArrow{margin-left:auto;color:var(--in-sapphire,#4f8cff);font-size:17px}
+.homeFormatArrow{margin-inline-start:auto;color:var(--in-sapphire,#4f8cff);font-size:17px}
 @media(max-width:760px){.homeFormatGrid{grid-template-columns:repeat(2,minmax(0,1fr))}.homeFormatHeading{align-items:flex-start;flex-direction:column}.homeFormatShelf{margin:24px 0;padding:17px}}
 @media(max-width:420px){.homeFormatGrid{grid-template-columns:minmax(0,1fr)}.homeFormatCard{min-height:70px;padding:12px}}
 @media(prefers-reduced-motion:reduce){.homeFormatCard{transition:none}.homeFormatCard:hover{transform:none}}
