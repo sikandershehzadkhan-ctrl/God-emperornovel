@@ -6,7 +6,7 @@ from pathlib import Path
 migration = Path("migrations/0028_runtime_feature_integrity.sql").read_text(encoding="utf-8")
 worker = Path("src/index.js").read_text(encoding="utf-8")
 assert "INSERT OR IGNORE INTO comment_likes" in worker, "duplicate concurrent likes must be conflict-safe"
-assert 'message.includes("comment_report_claims.user_id")' in worker and 'message.includes("UNIQUE constraint failed")' in worker, "duplicate concurrent reports must return a conflict instead of HTTP 500"
+assert "INSERT OR IGNORE INTO comment_reports" in worker and "insertedCount!==1" in worker, "duplicate concurrent reports must be conflict-safe and return HTTP 409"
 db = sqlite3.connect(":memory:")
 db.execute("PRAGMA foreign_keys=ON")
 db.executescript("""
