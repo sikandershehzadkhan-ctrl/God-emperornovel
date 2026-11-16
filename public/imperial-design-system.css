@@ -6074,3 +6074,30 @@ html[data-theme="cosmic"]{--in-text:#FFFFFF;--in-text-muted:#DCE5FF;--in-line:#8
  .readerPrefActions button{width:100%}
 }
 @media(prefers-reduced-motion:reduce){.readerSwatches button{transition:none}}
+
+
+/* Accessible reader swatch colours: data-driven selectors, no inline presentation. */
+.readerSwatches button[data-color="#FDFBF7"]{background-color:#FDFBF7}
+.readerSwatches button[data-color="#F4EDE8"]{background-color:#F4EDE8}
+.readerSwatches button[data-color="#F4F1E8"]{background-color:#F4F1E8}
+.readerSwatches button[data-color="#EAF3EB"]{background-color:#EAF3EB}
+.readerSwatches button[data-color="#E4F0F3"]{background-color:#E4F0F3}
+.readerSwatches button[data-color="#FCEBEC"]{background-color:#FCEBEC}
+.readerSwatches button[data-color="#E8E8E8"]{background-color:#E8E8E8}
+.readerSwatches button[data-color="#F8F5FF"]{background-color:#F8F5FF}
+.readerSwatches button[data-color="#F9F5C9"]{background-color:#F9F5C9}
+.readerSwatches button[data-color="#DCE5F5"]{background-color:#DCE5F5}
+.readerSwatches button[data-color="#17191D"]{background-color:#17191D}
+.readerSwatches button[data-color="#0B1215"]{background-color:#0B1215}
+.readerSwatches button[data-color="#21143A"]{background-color:#21143A}
+.readerSwatches button[data-color="#34204D"]{background-color:#34204D}
+.readerSwatches button[data-color="#171717"]{background-color:#171717}
+.readerSwatches button[data-color="#303030"]{background-color:#303030}
+.readerSwatches button[data-color="#666666"]{background-color:#666666}
+.readerSwatches button[data-color="#263B4B"]{background-color:#263B4B}
+.readerSwatches button[data-color="#304D62"]{background-color:#304D62}
+.readerSwatches button[data-color="#788B8A"]{background-color:#788B8A}
+.readerSwatches button[data-color="#FFFFFF"]{background-color:#FFFFFF}
+.readerSwatches button[data-color="#E8EDEF"]{background-color:#E8EDEF}
+.readerSwatches button[data-color="#C08AFF"]{background-color:#C08AFF}
+.readerSwatches button[data-color="#6AA5FF"]{background-color:#6AA5FF}
