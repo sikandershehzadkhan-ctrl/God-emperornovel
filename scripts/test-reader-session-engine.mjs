@@ -36,6 +36,17 @@ assert.equal(sessions.read(12, 4).progress, 0, "progress must clamp at zero");
 assert.equal(sessions.clear(12, 4), true);
 assert.equal(sessions.read(12, 4), null);
 assert.throws(() => sessions.write(0, 1, 10), /positive integers/);
+assert.throws(() => sessions.read(1, 0), /positive integers/);
+
+const unavailableStorage = {
+  getItem() { throw new Error("storage access denied"); },
+  setItem() { throw new Error("storage quota or access denied"); },
+  removeItem() { throw new Error("storage access denied"); }
+};
+const unavailableSessions = createReaderSessionStore(unavailableStorage);
+assert.equal(unavailableSessions.read(12, 4), null, "unavailable storage reads must fail safely");
+assert.equal(unavailableSessions.write(12, 4, 50), false, "failed persistence must be reported without crashing the reader");
+assert.equal(unavailableSessions.clear(12, 4), false, "failed removal must be reported without crashing the reader");
 
 storage.setItem("imperial:reader-session:v1:12:4", "{broken");
 assert.equal(sessions.read(12, 4), null, "corrupt local state must fail closed");
