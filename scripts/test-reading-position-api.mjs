@@ -32,4 +32,8 @@ assert.ok(client.includes("sessionStorage.setItem('imperialReaderAccount',progre
 assert.ok(client.includes("sessionStorage.removeItem('imperialReaderAccount')"),"confirmed logout must clear remembered tab identity");
 assert.ok(client.includes("progressConflict=true;progressSync='conflict'"),"stale offline writes must be preserved as conflicts");
 assert.ok(client.includes("window.addEventListener('online',async()=>"),"reader must attempt safe recovery when connectivity returns");
+assert.ok(client.includes("!identityVerified||!d.unlocked"),"offline cached identity must never authorize a server write");
+assert.ok(client.includes("const identity=await api('/api/me')"),"online recovery must revalidate the active account");
+assert.ok(client.includes("verifiedAccount!==progressAccount"),"offline recovery must reject a different signed-in account");
+assert.ok(client.includes("if(progressAccount&&identityVerified)"),"initial remote sync requires a freshly verified identity");
 console.log("PASS: reading-position API, session ownership, optimistic concurrency, offline fallback and served bundle parity.");
