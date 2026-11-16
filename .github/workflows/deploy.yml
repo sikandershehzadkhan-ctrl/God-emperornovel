@@ -274,6 +274,10 @@ jobs:
             exit 1
           fi
 
+          printf '%s' "$html" | grep -F 'data-home-ssr="true"' >/dev/null || { echo "::error::Live homepage is missing the rights-filtered server-rendered content marker."; exit 1; }
+          printf '%s' "$html" | grep -F 'homeSsrNav' >/dev/null || { echo "::error::Live homepage is missing crawlable SSR navigation."; exit 1; }
+          printf '%s' "$html" | grep -F 'homeSsrFooter' >/dev/null || { echo "::error::Live homepage is missing the server-rendered footer."; exit 1; }
+
           asset_paths="$(printf '%s' "$html" | node -e 'let s="";process.stdin.on("data",d=>s+=d).on("end",()=>{const found=[...s.matchAll(/(?:src|href)="(\/[^\"?#]+\.(?:js|css|webmanifest|svg))"/g)].map(m=>m[1]);console.log([...new Set(found)].join("\n"))})')"
           test -n "$asset_paths" || { echo "::error::No local frontend assets found in live homepage HTML."; exit 1; }
           while IFS= read -r asset; do
