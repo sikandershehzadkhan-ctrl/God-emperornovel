@@ -67,3 +67,12 @@ export async function loadHomepageStories(db) {
   ]);
   return { trending: trending.results || [], latest: latest.results || [] };
 }
+
+export function injectHomepageMarkup(documentHtml, homepageMarkup) {
+  const source = String(documentHtml ?? "");
+  if (!homepageMarkup) return source;
+  const appStart = source.indexOf('<main id="app"');
+  const appClose = source.indexOf("</main>", appStart);
+  if (appStart < 0 || appClose < 0) return source;
+  return source.slice(0, appStart) + homepageMarkup + source.slice(appClose + 7);
+}
