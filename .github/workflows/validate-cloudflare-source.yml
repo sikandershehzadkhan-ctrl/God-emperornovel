@@ -59,8 +59,21 @@ jobs:
           node --check src/index.js
           node --check public/app.js
 
-      - name: Build application
-        run: npm run build
+      - name: Build application and report the first regression failure
+        shell: bash
+        run: |
+          set +e
+          npm run build > "$RUNNER_TEMP/imperial-novel-build.log" 2>&1
+          build_status=$?
+          cat "$RUNNER_TEMP/imperial-novel-build.log"
+          if [ "$build_status" -ne 0 ]; then
+            failure_line="$(grep -m1 -E 'AssertionError|Assertion failed|Error:|SyntaxError|not ok|FAIL:' "$RUNNER_TEMP/imperial-novel-build.log" || true)"
+            if [ -z "$failure_line" ]; then
+              failure_line="$(tail -n 8 "$RUNNER_TEMP/imperial-novel-build.log" | tr '\\n' ' ')"
+            fi
+            echo "::error title=Imperial Novel build regression::$failure_line"
+            exit "$build_status"
+          fi
 
       - name: Validate Cloudflare Worker bundle without deploying
         run: npx --yes wrangler@4 deploy --dry-run
