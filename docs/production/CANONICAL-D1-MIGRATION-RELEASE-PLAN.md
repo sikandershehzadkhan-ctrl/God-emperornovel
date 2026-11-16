@@ -8,7 +8,7 @@ The development integration now has one canonical migration chain, 0001–0046. 
 
 The production D1 database's exact applied migration history has not been inspected and reconciled in this work session. A source-tree replay against fresh SQLite is not evidence of the remote D1 state.
 
-The workflow is therefore hard-disabled. Do not remove that block merely to deploy the new Worker.
+The workflow is therefore mechanically disabled at the deploy-job condition (`if: ${{ false }}`), in addition to its manual confirmation input and migration safety checks. Even a manually dispatched run with `confirm_production_deploy=true` cannot execute production commands. Do not remove that condition merely to deploy the new Worker.
 
 ## D1 recovery point procedure
 
