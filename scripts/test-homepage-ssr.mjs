@@ -41,6 +41,11 @@ for (const sql of sqlCalls) {
 }
 assert.match(sqlCalls[0], /unlocked_at>=datetime\('now','-7 days'\)/);
 assert.match(sqlCalls[1], /ORDER BY n.updated_at DESC/);
+const worker = readFileSync("src/index.js", "utf8");
+assert.match(worker, /import \{ loadHomepageStories, renderHomepage \} from "\.\/homepage-ssr\.mjs"/);
+assert.match(worker, /if\(p==="\/"&&env\.DB\)/);
+assert.match(worker, /homepageMarkup=renderHomepage\(shelves\.trending,shelves\.latest\)/);
+assert.match(worker, /if\(homepageMarkup\)\{const appStart=text\.indexOf/);
 for (const path of ["public/app.js", "public/app-17.23.0.js"]) {
   const client = readFileSync(path, "utf8");
   assert.match(client, /if\(!root\.querySelector\('\[data-home-ssr="true"\]'\)\)root\.innerHTML=/);
