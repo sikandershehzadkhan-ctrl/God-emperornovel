@@ -115,6 +115,30 @@ jobs:
       - name: Validate Cloudflare bundle without deploying
         run: npx --yes wrangler@4 deploy --dry-run
 
+      - name: Block 1–10 rating release until migration 0035 is in the reviewed deployment plan
+        shell: bash
+        run: |
+          set -euo pipefail
+          if grep -Fq 'CHECK(rating BETWEEN 1 AND 10 AND rating=CAST(rating AS INTEGER))' src/index.js; then
+            if [ ! -s migrations/0035_ten_point_ratings.sql ]; then
+              echo "::error::Deployment blocked: the Worker accepts 1–10 ratings but migration 0035 is not present. Integrate and review the reserved migration before release."
+              exit 1
+            fi
+            migration_apply_marker="Apply and verify 1–10 rating migration "
+            migration_apply_marker="${migration_apply_marker}0035 before Worker deployment"
+            if ! grep -Fq "$migration_apply_marker" .github/workflows/deploy.yml; then
+              echo "::error::Deployment blocked: migration 0035 has no reviewed production apply step. Add live-schema preflight and postflight verification first."
+              exit 1
+            fi
+            backup_marker="Export production D1 backup "
+            backup_marker="${backup_marker}before schema mutation"
+            if ! grep -Fq "$backup_marker" .github/workflows/deploy.yml; then
+              echo "::error::Deployment blocked: a production D1 backup step is required before rebuilding the ratings table."
+              exit 1
+            fi
+          fi
+          echo "Rating release gate passed or the Worker still uses the legacy rating schema."
+
       - name: Apply and verify additive D1 migrations before Worker deployment
         shell: bash
         env:
