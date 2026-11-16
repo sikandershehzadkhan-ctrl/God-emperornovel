@@ -61,7 +61,6 @@ assert.match(worker, /import \{ injectHomepageMarkup, loadHomepageStories, rende
 assert.match(worker, /if\(p==="\/"&&env\.DB\)/);
 assert.match(worker, /if\(homepageMarkup\)text=injectHomepageMarkup\(text,homepageMarkup\)/);
 assert.match(worker, /homepageMarkup=renderHomepage\(shelves\.trending,shelves\.latest\)/);
-assert.match(worker, /if\\(homepageMarkup\\)text=injectHomepageMarkup\\(text,homepageMarkup\\)/);
 for (const path of ["public/app.js", "public/app-17.23.0.js"]) {
   const client = readFileSync(path, "utf8");
   assert.match(client, /if\(!root\.querySelector\('\[data-home-ssr="true"\]'\)\)root\.innerHTML=/);
