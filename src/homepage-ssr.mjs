@@ -20,11 +20,8 @@ function storyCard(story) {
   const title = escapeHtml(story.title || "Untitled story");
   const author = escapeHtml(story.author || "Unknown author");
   const chapters = Math.max(0, Number(story.chapter_count) || 0);
-  const rating = Number(story.rating);
-  const ratingLabel = Number.isFinite(rating) && rating >= 1 && rating <= 10
-    ? Math.round(rating) + "/10" : "Not rated";
   const cover = escapeHtml(coverSource(story.cover_url));
-  return `<a class="card" href="/novel/${id}"><div class="cover"><img src="${cover}" alt="${title} cover" loading="lazy" decoding="async"></div><div class="cardBody"><div class="cardTitle">${title}</div><div class="muted">${author}</div><div class="meta"><span>★ ${ratingLabel}</span><span>◷ ${chapters} ch.</span></div></div></a>`;
+  return `<a class="card" href="/novel/${id}"><div class="cover"><img src="${cover}" alt="${title} cover" loading="lazy" decoding="async"></div><div class="cardBody"><div class="cardTitle">${title}</div><div class="muted">${author}</div><div class="meta"><span>◷ ${chapters} chapters</span></div></div></a>`;
 }
 
 function shelf(title, description, link, label, rows, emptyText, id) {
