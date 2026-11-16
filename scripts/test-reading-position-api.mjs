@@ -36,4 +36,9 @@ assert.ok(client.includes("!identityVerified||!d.unlocked"),"offline cached iden
 assert.ok(client.includes("const identity=await api('/api/me')"),"online recovery must revalidate the active account");
 assert.ok(client.includes("verifiedAccount!==progressAccount"),"offline recovery must reject a different signed-in account");
 assert.ok(client.includes("if(progressAccount&&identityVerified)"),"initial remote sync requires a freshly verified identity");
+assert.ok(client.includes('id="readerSyncStatus"'),"reader must expose a visible sync status");
+assert.ok(client.includes("Progress synced to your account"),"reader must confirm successful account sync");
+assert.ok(client.includes("Offline · progress kept on this device"),"reader must explain offline progress retention");
+assert.ok(client.includes("Sync conflict · newer progress exists on another device"),"reader must explain revision conflicts");
+assert.ok(client.includes("Account changed · local progress was not uploaded"),"reader must explain account mismatch protection");
 console.log("PASS: reading-position API, session ownership, optimistic concurrency, offline fallback and served bundle parity.");
