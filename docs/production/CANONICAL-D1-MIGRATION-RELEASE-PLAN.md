@@ -10,6 +10,22 @@ The production D1 database's exact applied migration history has not been inspec
 
 The workflow is therefore hard-disabled. Do not remove that block merely to deploy the new Worker.
 
+## D1 recovery point procedure
+
+Cloudflare D1 Time Travel is always enabled for databases on the production storage backend. Cloudflare's current documentation states that it retains up to 7 days on the Workers Free plan and up to 30 days on paid plans, with no additional charge for history or restoring. This is a short-window recovery mechanism, not a substitute for a long-term encrypted export.
+
+Before any approved production schema mutation:
+
+1. Run `npx wrangler@4 d1 info god-emperornovel-db` and confirm the database reports `version: production`. If it reports another backend, stop and review the applicable backup mechanism.
+2. Run `npx wrangler@4 d1 time-travel info god-emperornovel-db` and record the current timestamp and bookmark in the restricted release record before the first write.
+3. Confirm the bookmark is returned successfully. Do not treat a fresh SQLite replay or a bookmark lookup as proof that a restore has been rehearsed.
+4. Keep the bookmark available for the full migration and observation window. If a restore is required, an authorized operator must review the exact target bookmark and manually run `npx wrangler@4 d1 time-travel restore god-emperornovel-db --bookmark=<RECORDED_BOOKMARK>`.
+5. Treat restore as a break-glass operation: it overwrites the database state and cancels in-flight queries. Never invoke it automatically from a failed deployment job. Record the previous bookmark returned by the restore so the restore itself can be undone if necessary.
+6. Do not upload raw production D1 exports to ordinary repository artifacts or logs. Any long-term export must be encrypted and stored in a private location with restricted access.
+
+Official references: [D1 Time Travel and backups](https://developers.cloudflare.com/d1/reference/time-travel/) and [Wrangler D1 commands](https://developers.cloudflare.com/d1/wrangler-commands/).
+
+
 ## Canonical migration chain
 
 - 0001–0011: existing platform foundation and author application base.
@@ -42,7 +58,7 @@ The workflow is therefore hard-disabled. Do not remove that block merely to depl
 
 ## Required work before a production release
 
-1. Obtain a recoverable production D1 backup and verify that it can be restored.
+1. Confirm the production D1 storage backend supports Time Travel and capture a current recovery bookmark using the procedure above. Rehearse restore on a disposable production-shaped copy when one is available; do not test restore against the live database.
 2. Inspect the remote D1 schema marker, tables, columns, indexes, triggers, foreign keys and any existing migration ledger using read-only queries.
 3. Compare the actual remote schema against each canonical migration. Determine which changes were previously applied manually, through runtime bootstrap, or by earlier deployment workflows.
 4. Build a signed-off applied-migration ledger with the exact canonical filename and SHA-256 checksum for every migration already represented in production. Never infer that a migration ran merely because a similarly named table exists.
