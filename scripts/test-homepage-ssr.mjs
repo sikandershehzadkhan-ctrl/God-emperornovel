@@ -18,6 +18,8 @@ assert.match(html, /id="latest"/);
 assert.equal((html.match(/href="\/novel\/7"/g) || []).length, 1);
 assert.match(html, /href="\/novel\/8"/);
 assert.match(html, /name="q"/);
+assert.match(html, /12 chapters/);
+assert.doesNotMatch(html, /5\/10|10\/10|Not rated/);
 
 const sqlCalls = [];
 const db = {
