@@ -1,6 +1,6 @@
 import assert from "node:assert/strict";
 import { readFileSync } from "node:fs";
-import { loadHomepageStories, renderHomepage } from "../src/homepage-ssr.mjs";
+import { injectHomepageMarkup, loadHomepageStories, renderHomepage } from "../src/homepage-ssr.mjs";
 
 const html = renderHomepage(
   [{ id: 7, title: '<script>alert(1)</script>', author: 'A & B', cover_url: 'javascript:alert(1)', rating: 0, chapter_count: 12 }],
@@ -20,6 +20,15 @@ assert.match(html, /href="\/novel\/8"/);
 assert.match(html, /name="q"/);
 assert.match(html, /12 chapters/);
 assert.doesNotMatch(html, /5\/10|10\/10|Not rated/);
+
+const documentShell = '<html><body><header>Existing shell</header><main id="app" class="appBootRoot"><p>Boot fallback</p></main><script src="/app.js"></script></body></html>';
+const injectedShell = injectHomepageMarkup(documentShell, html);
+assert.ok(injectedShell.includes('<header class="top homeSsrHeader">'));
+assert.ok(injectedShell.includes('<main id="app" class="appBootRoot"'));
+assert.ok(injectedShell.includes('<script src="/app.js"></script>'));
+assert.ok(!injectedShell.includes("Boot fallback"));
+assert.equal(injectHomepageMarkup(documentShell, null), documentShell);
+assert.equal(injectHomepageMarkup("<html><body>No app root</body></html>", html), "<html><body>No app root</body></html>");
 
 const sqlCalls = [];
 const db = {
