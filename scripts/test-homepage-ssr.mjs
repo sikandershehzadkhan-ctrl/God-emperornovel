@@ -1,4 +1,5 @@
 import assert from "node:assert/strict";
+import { readFileSync } from "node:fs";
 import { loadHomepageStories, renderHomepage } from "../src/homepage-ssr.mjs";
 
 const html = renderHomepage(
@@ -40,4 +41,10 @@ for (const sql of sqlCalls) {
 }
 assert.match(sqlCalls[0], /unlocked_at>=datetime\('now','-7 days'\)/);
 assert.match(sqlCalls[1], /ORDER BY n.updated_at DESC/);
+for (const path of ["public/app.js", "public/app-17.23.0.js"]) {
+  const client = readFileSync(path, "utf8");
+  assert.match(client, /if\(!root\.querySelector\('\[data-home-ssr="true"\]'\)\)root\.innerHTML=/);
+  assert.match(client, /const ssrHeader=document\.querySelector\('header\.homeSsrHeader'\)/);
+  assert.match(client, /if\(root\.querySelector\('\[data-home-ssr="true"\]'\)\)return;/);
+}
 console.log("Homepage SSR safety, rights eligibility, deduplication, and query contracts passed.");
