@@ -6025,3 +6025,13 @@ html[data-theme="cosmic"]{--in-text:#FFFFFF;--in-text-muted:#DCE5FF;--in-line:#8
     max-width: 100%;
   }
 }
+
+/* Server-rendered homepage navigation and footer */
+.homeSsrHeader{position:relative;z-index:20}
+.homeSsrNav{display:flex;align-items:center;justify-content:space-between;gap:20px;min-height:72px}
+.homeSsrNav nav,.homeSsrFooter nav{display:flex;align-items:center;flex-wrap:wrap;gap:clamp(10px,2vw,24px)}
+.homeSsrNav nav a,.homeSsrFooter a{color:var(--text-secondary,var(--text));text-decoration:none;font-size:.92rem}
+.homeSsrNav nav a:hover,.homeSsrFooter a:hover{color:var(--accent,var(--primary));text-decoration:underline}
+.homeSsrFooter{border-top:1px solid var(--border,var(--line));padding:22px 0;color:var(--text-secondary,var(--muted));font-size:.88rem}
+.homeSsrFooter .wrap{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:14px}
+@media(max-width:700px){.homeSsrNav{align-items:flex-start;flex-direction:column;padding-block:14px}.homeSsrNav nav{gap:9px 16px}.homeSsrNav nav a{min-height:40px;display:inline-flex;align-items:center}.homeSsrFooter .wrap{align-items:flex-start;flex-direction:column}}
