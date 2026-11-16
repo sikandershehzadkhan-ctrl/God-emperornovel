@@ -1,5 +1,3 @@
-const RIGHTS_SQL = "n.publication_status='published' AND n.rights_status IN ('original','public_domain','licensed','authorized')";
-
 function escapeHtml(value) {
   return String(value ?? "").replaceAll("&", "&amp;").replaceAll("<", "&lt;")
     .replaceAll(">", "&gt;").replaceAll('"', "&quot;").replaceAll("'", "&#39;");
@@ -37,7 +35,7 @@ function shelf(title, description, link, label, rows, emptyText, id) {
 export function renderHomepage(trending = [], latest = []) {
   const trendIds = new Set(trending.map(row => String(row.id)));
   const distinctLatest = latest.filter(row => !trendIds.has(String(row.id)));
-  return `<main id="app" class="appBootRoot" tabindex="-1"><div class="page homePage" data-home-ssr="true"><div class="wrap">
+  return `<a class="skipLink" href="#app">Skip to main content</a><header class="top homeSsrHeader"><div class="wrap homeSsrNav"><a class="brand" href="/"><span class="brandText"><b>IMPERIAL NOVEL</b><small>Read • Create • Conquer</small></span></a><nav aria-label="Main navigation"><a href="/catalog">Discover</a><a href="/formats">Formats</a><a href="/genres">Genres</a><a href="/community">Community</a><a href="/author">Create</a><a href="/account">Account</a></nav></div></header><main id="app" class="appBootRoot" tabindex="-1"><div class="page homePage" data-home-ssr="true"><div class="wrap">
     <section class="hero nextHero imperialArchiveHero"><div class="nextHeroGlow" aria-hidden="true"></div><div class="nextHeroCopy">
       <p class="eyebrow">WELCOME TO IMPERIAL NOVEL</p><h1>Open a world.<br><span>Shape an empire.</span></h1>
       <p class="nextHeroLead">Discover stories worth staying up for, then create the worlds only you can imagine.</p>
@@ -60,7 +58,7 @@ export function renderHomepage(trending = [], latest = []) {
       <a class="nextFeatureTile featurePortal" href="/omniportal"><span class="featureMeta">04 / CONNECT</span><b>OmniPortal</b><p>A rights-first gateway for approved sources and future partnerships.</p></a></section>
     ${shelf("New chapters. New reasons to stay.", "Recently updated stories from the live catalog.", "/catalog?sort=updated", "FRESH FROM THE REALM", distinctLatest, "No new updates yet. Explore the catalog and find your first world.", "latest")}
     <section class="nextReaderPromise"><span class="promiseIcon">◈</span><div><b>Clear rules. Your reading, your call.</b><p>Imperial Crowns and chapter unlocks show their real status. Payments remain pending until manually reviewed.</p></div><a href="/tickets">Imperial Crown Vault ↗</a></section>
-  </div></div></main>`;
+  </div></div></main><footer class="homeSsrFooter"><div class="wrap"><span>IMPERIAL NOVEL · Read • Create • Conquer</span><nav aria-label="Footer navigation"><a href="/privacy">Privacy</a><a href="/terms">Terms</a><a href="/copyright">Copyright</a></nav></div></footer>`;
 }
 
 export async function loadHomepageStories(db) {
