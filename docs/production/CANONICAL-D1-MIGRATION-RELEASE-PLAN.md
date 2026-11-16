@@ -75,3 +75,7 @@ At minimum, the reviewed release runner must verify these structures before depl
 - Existing deployment workflow: hard-disabled in `.github/workflows/deploy.yml`.
 - Fresh SQLite migration replay: validated in Cloudflare Source Validation, but it does not replace the remote audit above.
 - Migrations 0036–0046: present in the development integration only; their presence and successful fresh-database replay do not establish that they have been applied to production D1.
+
+## Required integration CI evidence
+
+Before this pull request is considered ready for review, its current head must have fresh successful pull-request checks for both **Imperial Novel Cloudflare Source Validation** and **Graphify architecture map**. Confirm the checks belong to the exact current head SHA, not an earlier commit. A mergeable GitHub status and a successful fresh-SQLite replay are not substitutes for those checks. If either workflow is skipped or does not start, treat validation as pending and investigate the workflow trigger; do not mark this release plan complete.
