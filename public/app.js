@@ -212,6 +212,7 @@ async function reader(){
  const savePendingProgress=pct=>{if(!progressAccount)return;readerStorage.setItem(progressPendingKey,JSON.stringify({chapter_number:num,percent:pct,expected_revision:progressRevision,updated_at:Date.now()}));};
  const syncReadingPosition=async pct=>{
   if(!progressAccount||!d.unlocked||!navigation.isCurrent(navigationToken)||progressConflict)return;
+  savePendingProgress(pct);
   if(progressSaveInFlight){progressSaveQueued=true;return;}
   progressSaveInFlight=true;
   try{
