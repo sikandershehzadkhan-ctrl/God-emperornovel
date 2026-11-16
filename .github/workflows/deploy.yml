@@ -23,7 +23,9 @@ concurrency:
 
 jobs:
   deploy:
-    if: ${{ github.event_name == 'workflow_dispatch' && inputs.confirm_production_deploy == 'true' }}
+    # Deliberate release lock: remote D1 history has not been reconciled against migrations 0001–0046.
+    # Remove only in a separately reviewed release after the read-only audit and migration rehearsal.
+    if: ${{ false }}
     runs-on: ubuntu-latest
     timeout-minutes: 10
     steps:
