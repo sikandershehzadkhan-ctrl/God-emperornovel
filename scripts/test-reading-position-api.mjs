@@ -13,6 +13,11 @@ assert.ok(getAt>=0&&postAt>getAt&&historyAt>postAt,"both reader-progress methods
 const get=worker.slice(getAt,postAt),post=worker.slice(postAt,historyAt);
 assert.ok(get.includes("need(u)")&&get.includes("rp.user_id=?"),"GET must be authenticated and scoped to session owner");
 assert.ok(post.includes("need(u)")&&post.includes("u.id"),"POST must derive ownership from authenticated session");
+assert.ok(post.includes("c.is_locked"),"POST must inspect whether the target chapter is locked");
+assert.ok(post.includes('valid.is_locked&&u.role!=="admin"'),"locked chapters must reject progress writes from ordinary users");
+assert.ok(post.includes("FROM unlocks WHERE user_id=? AND chapter_id=?"),"locked progress writes must verify the current user's unlock");
+assert.ok(post.includes("Unlock this chapter before saving reading progress."),"locked progress denial must be explicit");
+
 assert.ok(post.includes('req.headers.get("origin")!==url.origin'),"POST must reject cross-origin writes");
 assert.ok(post.includes("consumeAuthRateLimit"),"POST must be rate-limited");
 assert.ok(post.includes("expected_revision")&&post.includes("WHERE ?=0 OR EXISTS")&&post.includes("WHERE reading_positions.revision=? RETURNING"),"writes must use optimistic revision checks");
