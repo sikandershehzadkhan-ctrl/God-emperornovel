@@ -6025,3 +6025,52 @@ html[data-theme="cosmic"]{--in-text:#FFFFFF;--in-text-muted:#DCE5FF;--in-line:#8
     max-width: 100%;
   }
 }
+
+
+/* Reader Settings Studio migrated from the 18.0 reader implementation into the unified stylesheet. */
+@media(max-width:420px){
+  .readerBarInner{height:auto!important;min-height:60px;flex-wrap:wrap;row-gap:7px;padding-block:8px}
+  .readerBack{min-height:44px;display:inline-flex;align-items:center}
+  .readerBook{text-align:start;flex:1 1 110px}
+  .readerTools{flex:1 0 100%;width:100%;justify-content:flex-end;gap:6px!important}
+  .readerTools .readerTool{min-width:44px!important;min-height:44px!important;height:44px!important;padding:0 10px!important;font-size:13px!important}
+  .readerActions{flex-wrap:wrap}
+  .readerActions a{min-height:44px;display:inline-flex;align-items:center;justify-content:center}
+  .chapterDrawerHead .ghost{min-height:44px}
+}
+
+
+/* Reader Settings Studio: mobile-first controls and independent personal colours */
+.readerPrefsStudio{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px;padding:16px;background:var(--panel,#fff);color:var(--text,#302c48)}
+.readerPrefsStudio .readerPrefGroup{display:grid;gap:7px;min-width:0;align-content:start}
+.readerPrefsStudio .readerPrefGroup>label{font-size:12px;font-weight:800;color:var(--muted,#777489)}
+.readerPrefsStudio select{min-height:44px;font:inherit;font-size:14px;padding:9px 11px;border:1px solid var(--line,#ddd8e8);border-radius:10px;background:var(--panel,#fff);color:var(--text,#302c48);width:100%}
+.readerSwatches{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+.readerSwatches button{width:44px;height:44px;min-width:44px;padding:0;border-radius:50%;border:2px solid rgba(90,85,105,.22);background:var(--swatch);position:relative;cursor:pointer}
+.readerSwatches button.active{outline:3px solid #0F52BA;outline-offset:2px}
+.readerSwatches button.active:after{content:"✓";position:absolute;inset:0;display:grid;place-items:center;color:var(--swatch-check,#fff);font-size:17px;font-weight:900;text-shadow:0 1px 3px rgba(0,0,0,.7)}
+.readerColorPicker{width:44px;height:44px;display:grid;place-items:center;border:1px dashed var(--muted,#777489);border-radius:10px;font-size:21px;cursor:pointer;position:relative;overflow:hidden}
+.readerColorPicker input{position:absolute;inset:0;width:100%;height:100%;opacity:0;cursor:pointer}
+.readerPrefActions{grid-column:1/-1;display:flex;justify-content:flex-end;padding-top:4px;border-top:1px solid var(--line,#ddd8e8)}
+.readerPrefActions button{min-height:40px;padding:8px 12px}
+.readerPage.readerCustomColors{background:var(--reader-custom-bg)!important;color:var(--reader-custom-text)!important}
+.readerPage.readerCustomColors .readerArticle,
+.readerPage.readerCustomColors .readerFooterCard{background:var(--reader-custom-bg)!important;color:var(--reader-custom-text)!important;border-color:color-mix(in srgb,var(--reader-custom-text) 18%,transparent)!important;box-shadow:none}
+.readerPage.readerCustomColors .readerArticle h1,
+.readerPage.readerCustomColors .readerFooterCard h3,
+.readerPage.readerCustomColors .readerContent{color:var(--reader-custom-text)!important}
+.readerPage.readerCustomColors .readerBar{background:var(--reader-custom-bg)!important;color:var(--reader-custom-text)!important;border-color:color-mix(in srgb,var(--reader-custom-text) 18%,transparent)!important}
+.readerPage.readerCustomColors .readerBook b,
+.readerPage.readerCustomColors .readerBook span,
+.readerPage.readerCustomColors .readerProgressText{color:var(--reader-custom-text)!important}
+.readerPage.readerCustomColors .readerTool{color:var(--reader-custom-text);background:color-mix(in srgb,var(--reader-custom-bg) 88%,var(--reader-custom-text));border-color:color-mix(in srgb,var(--reader-custom-text) 22%,transparent)}
+.readerPage.readerCustomColors .readerProgress{background:color-mix(in srgb,var(--reader-custom-bg) 80%,var(--reader-custom-text))}
+@media(max-width:520px){
+ .readerPrefsStudio{grid-template-columns:minmax(0,1fr);gap:12px;padding:12px}
+ .readerPrefsStudio .readerPrefGroup{grid-template-columns:1fr;gap:7px}
+ .readerSwatches{gap:9px}
+ .readerSwatches button{width:44px;height:44px;min-width:44px}
+ .readerPrefActions{justify-content:stretch}
+ .readerPrefActions button{width:100%}
+}
+@media(prefers-reduced-motion:reduce){.readerSwatches button{transition:none}}
