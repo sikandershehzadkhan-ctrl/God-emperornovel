@@ -190,11 +190,12 @@ async function loadComments(id){
  catch(error){box.innerHTML='<div class="empty" role="status">Community comments are temporarily unavailable.</div>'}
 }
 async function chapters(){const id=location.pathname.split('/')[2];const n=await api('/api/novels/'+id);const root=$('#app');root.innerHTML=pageStart(n.title,'Complete chapter archive')+`<div class="toolbar"><a class="primary" href="/read/${id}/1">Start at Chapter 1</a><button id="batch" class="secondary">Batch Unlock</button></div><div class="chapterList">${n.chapters.map(ch=>chapterRow(ch,id)).join('')}</div></div></div>`;$('#batch').onclick=async()=>{try{const count=Number(prompt('Batch size: 10, 25, 50 or 100','10'));if(![10,25,50,100].includes(count))return;const d=await api('/api/novels/'+id+'/batch-unlock',{method:'POST',body:JSON.stringify({count,start_chapter:1})});alert(`Unlocked ${d.unlocked} chapters for ${d.cost} Imperial Crowns. Balance: ${d.tickets} Imperial Crowns`);location.reload()}catch(e){alert(e.message)}}}
+function safeStorageGet(key){try{return localStorage.getItem(key)}catch(e){return null}}
 async function reader(){
  const parts=location.pathname.split('/');const id=parts[2],num=Math.max(1,Number(parts[3]||1));
  const n=await api('/api/novels/'+id);const ch=n.chapters.find(x=>Number(x.chapter_number)===num);if(!ch){location.href='/novel/'+id+'/chapters';return}
  const d=await api('/api/chapters/'+ch.id);const total=n.chapters.length;
- const stored=Number(localStorage.getItem('readerProgress:'+id)||0);const chapterPct=Math.min(100,Math.max(0,Number.isFinite(stored)&&num===Number(localStorage.getItem('readerProgressChapter:'+id))?stored:0));
+ const stored=Number(safeStorageGet('readerProgress:'+id)||0);const chapterPct=Math.min(100,Math.max(0,Number.isFinite(stored)&&num===Number(safeStorageGet('readerProgressChapter:'+id))?stored:0));
  const root=$('#app');
  const chapterList=n.chapters.map(x=>`<a class="readerChapterItem ${Number(x.chapter_number)===num?'current':''}" href="/read/${id}/${Number(x.chapter_number)}"><span>Chapter ${Number(x.chapter_number)}</span><span>${esc(x.title)} ${x.is_locked?'🔒':''}</span></a>`).join('');
  const bookmarked=Number(n.bookmark||0)===num;
