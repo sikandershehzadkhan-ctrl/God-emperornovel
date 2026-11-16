@@ -24,8 +24,14 @@ assert.match(app, /const openReaderSettings=\(\)=>\{[\s\S]*?readerSettingsSectio
   "The settings shortcut must open the drawer and move focus into the settings panel.");
 assert.match(app, /const closeReaderDrawer=\(\)=>\{drawer\.hidden=true;syncDrawerState\(\);\}/,
   "The reader drawer must keep both toolbar expanded states synchronized.");
-assert.match(app, /readerSessionModule\.createReaderSessionStore\(localStorage\)/,
-  "Reader settings integration must retain the chapter-scoped session engine.");
+assert.match(app, /const readerStorage=\{[\s\S]*?getItem:key=>\{try\{return window\.localStorage\.getItem\(key\)\}catch\{return null\}\}/,
+  "Reader session storage reads must tolerate browser storage being unavailable.");
+assert.match(app, /createReaderSessionStore\(readerStorage\)/,
+  "The reader session engine must use the guarded storage adapter.");
+assert.match(app, /legacyStored=Number\(readerStorage\.getItem\(/,
+  "Legacy progress migration must use guarded storage reads.");
+assert.match(app, /guestBookmark=Number\(readerStorage\.getItem\(/,
+  "Guest bookmark reads must use guarded storage reads.");
 assert.match(app, /if\(!navigation\.isCurrent\(navigationToken\)\)return/,
   "Stale chapter responses must remain guarded.");
 assert.match(app, /readerSessions\.write\(id,num,pct\)/,
