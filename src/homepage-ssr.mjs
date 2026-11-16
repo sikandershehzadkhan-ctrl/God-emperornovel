@@ -5,7 +5,7 @@ function escapeHtml(value) {
 
 function coverSource(value) {
   const source = String(value ?? "").trim();
-  if (source.startsWith("/") && !source.startsWith("//") && !source.includes("\\\\")) return source;
+  if (source.startsWith("/") && !source.startsWith("//") && !source.includes(String.fromCharCode(92))) return source;
   try {
     const url = new URL(source);
     return url.protocol === "https:" ? url.href : "/story-cover-placeholder.svg";
