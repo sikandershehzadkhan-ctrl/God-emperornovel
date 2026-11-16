@@ -36,7 +36,7 @@ assert.match(app, /const key='readerBookmark:'\+id,previous=Number\(readerStorag
   "Guest bookmark toggles must use guarded storage writes and deletes.");
 assert.match(app, /if\(!navigation\.isCurrent\(navigationToken\)\)return/,
   "Stale chapter responses must remain guarded.");
-assert.match(app, /readerSessions\.write\(id,num,pct\)/,
+assert.match(app, /readerSessions\.write\(sessionNovelKey,num,pct\)/,
   "Reading progress must continue to use the reader session store.");
 assert.match(app, /now=!!result\.bookmarked/,
   "Authenticated bookmark state must remain server-authoritative.");
