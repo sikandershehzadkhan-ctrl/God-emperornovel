@@ -26,8 +26,8 @@ assert.equal(client,served,"canonical and served application bundles must be byt
 assert.ok(client.includes("/api/reading-position?novel_id="),"reader must retrieve server progress");
 assert.ok(client.includes("expected_revision:progressRevision"),"writes must use optimistic revision checks");
 assert.ok(client.includes("setTimeout(()=>syncReadingPosition(pct),900)"),"scroll autosave must be debounced");
-assert.ok(client.includes("readerProgressPending:"+ "sessionNovelKey"),"offline pending state must be account scoped");
-assert.ok(client.includes("readerProgressRevision:"+ "sessionNovelKey"),"server revision must be cached per account");
+assert.ok(client.includes("readerProgressPending:'+sessionNovelKey"),"offline pending state must be account scoped");
+assert.ok(client.includes("readerProgressRevision:'+sessionNovelKey"),"server revision must be cached per account");
 assert.ok(client.includes("sessionStorage.setItem('imperialReaderAccount',progressAccount)"),"last verified account must be retained for offline reload");
 assert.ok(client.includes("sessionStorage.removeItem('imperialReaderAccount')"),"confirmed logout must clear remembered tab identity");
 assert.ok(client.includes("progressConflict=true;progressSync='conflict'"),"stale offline writes must be preserved as conflicts");
