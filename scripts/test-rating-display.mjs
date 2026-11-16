@@ -32,7 +32,9 @@ assert.ok(worker.includes("CHECK(rating BETWEEN 1 AND 10 AND rating=CAST(rating 
 assert.ok(worker.includes('typeof rating!=="number"||!Number.isSafeInteger(rating)||rating<1||rating>10'), "Rating API must reject strings, fractions and out-of-range values");
 assert.ok(!worker.includes("rating>5") && !worker.includes("Rating must be 1-5"), "No legacy 1–5 API guard may remain");
 assert.equal((worker.match(/if\(p==="\/api\/rating"&&m==="POST"\)/g) || []).length, 1, "Exactly one canonical rating POST handler must remain");
-assert.ok(worker.includes("Math.min(10,minRating)"), "Catalog minimum-rating filter must support 10");
+assert.ok(worker.includes('minRatingRaw=q.get("min_rating"),minRating=minRatingRaw===null||minRatingRaw===""?0:Number(minRatingRaw)'), "Catalog minimum-rating input must be parsed explicitly.");
+assert.ok(worker.includes('if(!Number.isSafeInteger(minRating)||minRating<0||minRating>10)return json({error:"Minimum rating must be a whole number from 1-10, or empty."},400)'), "Catalog API must reject fractional, malformed and out-of-range rating filters.");
+assert.ok(worker.includes('if(minRating>0){sql+=" AND n.rating>=?";a.push(minRating)}'), "Catalog query must bind the validated 1-10 threshold without silently clamping invalid input.");
 assert.ok(ratingReadStart >= 0 && ratingWriteStart > ratingReadStart, "Canonical public rating read handler must exist before the write handler");
 assert.ok(ratingReadHandler.includes("Number.isSafeInteger(nid)") && ratingReadHandler.includes("nid<1"), "Public rating reads must validate the novel identifier");
 assert.ok(ratingReadHandler.includes("publication_status='published'") && ratingReadHandler.includes("rights_status IN ('original','public_domain','licensed','authorized')"), "Public rating reads must exclude unpublished and rights-ineligible novels");
