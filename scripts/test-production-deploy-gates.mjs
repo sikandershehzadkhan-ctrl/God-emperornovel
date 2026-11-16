@@ -6,6 +6,7 @@ assert.ok(workflow.includes("workflow_dispatch:"), "Production deploy must remai
 assert.ok(workflow.includes("confirm_production_deploy"), "Production deploy must require an explicit confirmation input.");
 assert.ok(workflow.includes("inputs.confirm_production_deploy == 'true'"), "Production job must be gated by the explicit true confirmation.");
 assert.ok(!/^\s*push:/m.test(workflow) && !/^\s*pull_request:/m.test(workflow), "Pushes and pull requests must never auto-deploy production.");
+assert.ok(workflow.includes("Block 1–10 rating release until migration 0035 is in the reviewed deployment plan"), "The 1–10 Worker must fail closed until its schema migration is reviewed.");
 assert.ok(workflow.includes("npx --yes wrangler@4 deploy --dry-run"), "Production bundle must be validated before deployment.");
 assert.ok(workflow.includes("Verify catalog and author-application D1 migrations after deployment"), "Production deployment must verify additive catalog and creator migrations.");
 assert.ok(workflow.includes("Apply and verify additive D1 migrations before Worker deployment"), "Production D1 migrations must run before publishing the Worker.");
