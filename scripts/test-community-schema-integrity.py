@@ -7,6 +7,7 @@ migration = Path("migrations/0028_runtime_feature_integrity.sql").read_text(enco
 worker = Path("src/index.js").read_text(encoding="utf-8")
 assert "INSERT OR IGNORE INTO comment_likes" in worker, "duplicate concurrent likes must be conflict-safe"
 assert "INSERT OR IGNORE INTO comment_reports" in worker and "insertedCount!==1" in worker, "duplicate concurrent reports must be conflict-safe and return HTTP 409"
+assert "INSERT OR IGNORE INTO request_votes" in worker and "const saved=await env.DB.prepare(\"SELECT 1 FROM request_votes WHERE request_id=? AND user_id=?\")" in worker, "concurrent request votes must be conflict-safe and return persisted state"
 db = sqlite3.connect(":memory:")
 db.execute("PRAGMA foreign_keys=ON")
 db.executescript("""
