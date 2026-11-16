@@ -71,8 +71,8 @@ assert.equal(navigation.isCurrent(second), false);
 
 const readerSource = readFileSync(new URL("../public/app.js", import.meta.url), "utf8");
 assert.match(readerSource, /import\(['"]\/reader-session\.mjs['"]\)/, "reader route must load the session engine");
-assert.match(readerSource, /readerSessions\.write\(id,num,pct\)/, "scroll progress must persist through the session engine");
-assert.match(readerSource, /pct!==lastSavedProgress&&readerSessions\.write\(id,num,pct\)/, "scroll progress must only be persisted when the integer percentage changes and a write succeeds.");
+assert.match(readerSource, /readerSessions\\.write\\(sessionNovelKey,num,pct\\)/, "scroll progress must persist through the session engine");
+assert.match(readerSource, /pct!==lastSavedProgress&&readerSessions\\.write\\(sessionNovelKey,num,pct\\)/, "scroll progress must only be persisted when the integer percentage changes and a write succeeds.");
 assert.match(readerSource, /pct!==lastRenderedProgress/, "progress DOM updates must be skipped when the displayed percentage has not changed.");
 assert.match(readerSource, /navigation\.isCurrent\(navigationToken\)/, "stale chapter responses must be rejected");
 assert.match(readerSource, /!navigation\.isCurrent\(navigationToken\)/, "stale scroll callbacks must not overwrite the active chapter session");
