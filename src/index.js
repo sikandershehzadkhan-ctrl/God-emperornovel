@@ -566,8 +566,9 @@ async function api(req,env){
   const e=need(u);if(e)return e; const b=await body(req),id=Number(b.request_id);if(!id)return json({error:'Request id required'},400);
   const r=await env.DB.prepare("SELECT id,status FROM novel_requests WHERE id=?").bind(id).first();if(!r)return json({error:'Request not found'},404);if(!['pending','approved'].includes(r.status))return json({error:'This request is not open for voting'},409);
   const existing=await env.DB.prepare("SELECT 1 FROM request_votes WHERE request_id=? AND user_id=?").bind(id,u.id).first();
-  if(existing){await env.DB.prepare("DELETE FROM request_votes WHERE request_id=? AND user_id=?").bind(id,u.id).run();return json({voted:false});}
-  await env.DB.prepare("INSERT INTO request_votes(request_id,user_id) VALUES(?,?)").bind(id,u.id).run();return json({voted:true});
+  if(existing)await env.DB.prepare("DELETE FROM request_votes WHERE request_id=? AND user_id=?").bind(id,u.id).run();
+  else await env.DB.prepare("INSERT OR IGNORE INTO request_votes(request_id,user_id) VALUES(?,?)").bind(id,u.id).run();
+  const saved=await env.DB.prepare("SELECT 1 FROM request_votes WHERE request_id=? AND user_id=?").bind(id,u.id).first();return json({voted:!!saved});
  }
  if(p==="/api/notifications"&&m==="GET"){const e=need(u);if(e)return e;return json((await env.DB.prepare("SELECT * FROM notifications WHERE user_id=? ORDER BY created_at DESC LIMIT 50").bind(u.id).all()).results)}
  if(p==="/api/notifications/read"&&m==="POST"){const e=need(u);if(e)return e;await env.DB.prepare("UPDATE notifications SET read_at=CURRENT_TIMESTAMP WHERE user_id=? AND read_at IS NULL").bind(u.id).run();return json({ok:true})}
