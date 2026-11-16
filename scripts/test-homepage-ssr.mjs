@@ -57,10 +57,10 @@ assert.match(serviceWorker, /design-system-4-homepage-ssr/);
 assert.match(serviceWorker, /\/app-17\.23\.0\.js/);
 assert.match(serviceWorker, /\/imperial-design-system\.css/);
 const worker = readFileSync("src/index.js", "utf8");
-assert.match(worker, /import \{ loadHomepageStories, renderHomepage \} from "\.\/homepage-ssr\.mjs"/);
+assert.match(worker, /import \\{ injectHomepageMarkup, loadHomepageStories, renderHomepage \\} from "\\.\\/homepage-ssr\\.mjs"/);
 assert.match(worker, /if\(p==="\/"&&env\.DB\)/);
 assert.match(worker, /homepageMarkup=renderHomepage\(shelves\.trending,shelves\.latest\)/);
-assert.match(worker, /if\(homepageMarkup\)\{const appStart=text\.indexOf/);
+assert.match(worker, /if\\(homepageMarkup\\)text=injectHomepageMarkup\\(text,homepageMarkup\\)/);
 for (const path of ["public/app.js", "public/app-17.23.0.js"]) {
   const client = readFileSync(path, "utf8");
   assert.match(client, /if\(!root\.querySelector\('\[data-home-ssr="true"\]'\)\)root\.innerHTML=/);
