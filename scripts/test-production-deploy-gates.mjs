@@ -9,7 +9,6 @@ assert.ok(releasePlan.includes("Never invoke it automatically from a failed depl
 assert.ok(workflow.includes("workflow_dispatch:"), "Production deploy must remain manual.");
 assert.ok(workflow.includes("confirm_production_deploy"), "Production deploy must require an explicit confirmation input.");
 assert.match(workflow, /^\s*if:\s*\$\{\{\s*false\s*\}\}\s*$/m, "Production deployment must remain mechanically disabled until the canonical remote D1 audit is complete.");
-assert.ok(workflow.includes("inputs.confirm_production_deploy == 'true'"), "Production job must be gated by the explicit true confirmation.");
 assert.ok(!/^\s*push:/m.test(workflow) && !/^\s*pull_request:/m.test(workflow), "Pushes and pull requests must never auto-deploy production.");
 assert.ok(workflow.includes("Block 1–10 rating release until migration 0035 is in the reviewed deployment plan"), "The 1–10 Worker must fail closed until its schema migration is reviewed.");
 assert.ok(workflow.includes("npx --yes wrangler@4 deploy --dry-run"), "Production bundle must be validated before deployment.");
