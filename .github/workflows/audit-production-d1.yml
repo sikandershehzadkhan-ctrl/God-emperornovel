@@ -1,10 +1,6 @@
 name: Imperial Novel Read-Only Production D1 Audit
 
 on:
-  push:
-    branches: [main]
-    paths:
-      - '.github/workflows/audit-production-d1.yml'
   workflow_dispatch:
     inputs:
       confirm_read_only_audit:
@@ -81,6 +77,7 @@ jobs:
         run: |
           set -euo pipefail
           echo "Checking current Time Travel recovery bookmark; this step does not restore or modify data."
+          npx --yes wrangler@4 d1 info god-emperornovel-db
           output="$(npx --yes wrangler@4 d1 time-travel info god-emperornovel-db 2>&1)"
           printf '%s\\n' "$output"
           if ! printf '%s' "$output" | grep -Eqi 'bookmark'; then
@@ -125,6 +122,7 @@ jobs:
             npx --yes wrangler@4 d1 execute god-emperornovel-db --remote --command "$sql"
           }
           run_query "Complete production table inventory" "SELECT name FROM sqlite_master WHERE type='table' AND name NOT LIKE 'sqlite_%' ORDER BY name;"
+          run_query "Foreign key integrity check (read-only)" "PRAGMA foreign_key_check;"
           core_tables_sql="$(cat <<'SQL'
           WITH required(name) AS (
             VALUES ('users'),('sessions'),('novels'),('chapters'),('genres'),('tags'),('novel_genres'),('novel_tags'),
