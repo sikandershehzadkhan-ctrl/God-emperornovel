@@ -58,6 +58,7 @@ assert.match(serviceWorker, /\/app-17\.23\.0\.js/);
 assert.match(serviceWorker, /\/imperial-design-system\.css/);
 const worker = readFileSync("src/index.js", "utf8");
 assert.match(worker, /import \{ injectHomepageMarkup, loadHomepageStories, renderHomepage \} from "\.\/homepage-ssr\.mjs"/);
+assert.match(worker, /if\(p==="\/"&&env\.DB\)/);
 assert.match(worker, /if\(homepageMarkup\)text=injectHomepageMarkup\(text,homepageMarkup\)/);
 assert.match(worker, /homepageMarkup=renderHomepage\(shelves\.trending,shelves\.latest\)/);
 assert.match(worker, /if\\(homepageMarkup\\)text=injectHomepageMarkup\\(text,homepageMarkup\\)/);
