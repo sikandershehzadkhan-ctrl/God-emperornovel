@@ -57,5 +57,6 @@ for (const path of ["public/app.js", "public/app-17.23.0.js"]) {
   assert.match(client, /if\(!root\.querySelector\('\[data-home-ssr="true"\]'\)\)root\.innerHTML=/);
   assert.match(client, /const ssrHeader=document\.querySelector\('header\.homeSsrHeader'\)/);
   assert.match(client, /if\(root\.querySelector\('\[data-home-ssr="true"\]'\)\)return;/);
+  assert.match(client, /rows\.map\(n=>card\(n,\{showRating:false\}\)\)\.join\(\)/);
 }
 console.log("Homepage SSR safety, rights eligibility, deduplication, and query contracts passed.");
