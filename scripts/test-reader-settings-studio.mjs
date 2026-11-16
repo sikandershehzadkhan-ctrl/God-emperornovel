@@ -32,6 +32,8 @@ assert.match(app, /legacyStored=Number\(readerStorage\.getItem\(/,
   "Legacy progress migration must use guarded storage reads.");
 assert.match(app, /guestBookmark=Number\(readerStorage\.getItem\(/,
   "Guest bookmark reads must use guarded storage reads.");
+assert.match(app, /const key='readerBookmark:'\+id,previous=Number\(readerStorage\.getItem\(key\)\|\|0\);now=previous!==num;if\(now\)readerStorage\.setItem\(key,String\(num\)\);else readerStorage\.removeItem\(key\)/,
+  "Guest bookmark toggles must use guarded storage writes and deletes.");
 assert.match(app, /if\(!navigation\.isCurrent\(navigationToken\)\)return/,
   "Stale chapter responses must remain guarded.");
 assert.match(app, /readerSessions\.write\(id,num,pct\)/,
