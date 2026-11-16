@@ -65,7 +65,7 @@ function shell(){const path=location.pathname;const active=x=>(x==='/'?path==='/
 function pageStart(title,sub=''){return `<div class="page"><div class="wrap"><div class="title"><div class="eyebrow">Imperial Library</div><h1>${esc(title)}</h1>${sub?`<p class="sub">${esc(sub)}</p>`:''}</div>`}
 async function home(){
  const root=$('#app');
- root.innerHTML=`<div class="page homePage"><div class="wrap">
+ if(!root.querySelector('[data-home-ssr="true"]'))root.innerHTML=`<div class="page homePage"><div class="wrap">
   <section class="hero nextHero imperialArchiveHero">
    <div class="nextHeroGlow" aria-hidden="true"></div>
    <div class="nextHeroCopy">
