@@ -201,11 +201,45 @@ async function reader(){
  const n=await api('/api/novels/'+id);if(!navigation.isCurrent(navigationToken))return;
  const ch=n.chapters.find(x=>Number(x.chapter_number)===num);if(!ch){location.href='/novel/'+id+'/chapters';return}
  const d=await api('/api/chapters/'+ch.id);if(!navigation.isCurrent(navigationToken))return;const total=n.chapters.length;
- const savedSession=readerSessions.read(id,num);const legacyStored=Number(readerStorage.getItem('readerProgress:'+id)||0);const legacyChapter=Number(readerStorage.getItem('readerProgressChapter:'+id));const chapterPct=savedSession?savedSession.progress:Math.min(100,Math.max(0,Number.isFinite(legacyStored)&&num===legacyChapter?legacyStored:0));
- if(!savedSession&&chapterPct>0)readerSessions.write(id,num,chapterPct);
+ const readerIdentity=await api('/api/me').catch(()=>({user:null}));if(!navigation.isCurrent(navigationToken))return;
+ const progressAccount=readerIdentity.user?String(readerIdentity.user.id||readerIdentity.user.username||'signed-in'):null;
+ const sessionNovelKey=progressAccount?id+':account:'+encodeURIComponent(progressAccount):id;
+ const savedSession=readerSessions.read(sessionNovelKey,num);const legacyStored=Number(readerStorage.getItem('readerProgress:'+sessionNovelKey)||0);const legacyChapter=Number(readerStorage.getItem('readerProgressChapter:'+sessionNovelKey));let chapterPct=savedSession?savedSession.progress:Math.min(100,Math.max(0,Number.isFinite(legacyStored)&&num===legacyChapter?legacyStored:0));
+ if(!savedSession&&chapterPct>0)readerSessions.write(sessionNovelKey,num,chapterPct);
+ let progressRevision=0,progressSync='local',progressSaveTimer=null,progressSaveInFlight=false,progressSaveQueued=false,progressConflict=false;
+ const progressPendingKey='readerProgressPending:'+sessionNovelKey;
+ const savePendingProgress=pct=>{if(!progressAccount)return;readerStorage.setItem(progressPendingKey,JSON.stringify({chapter_number:num,percent:pct,expected_revision:progressRevision,updated_at:Date.now()}));};
+ const syncReadingPosition=async pct=>{
+  if(!progressAccount||!d.unlocked||!navigation.isCurrent(navigationToken)||progressConflict)return;
+  if(progressSaveInFlight){progressSaveQueued=true;return;}
+  progressSaveInFlight=true;
+  try{
+   const result=await api('/api/reading-position',{method:'POST',body:JSON.stringify({novel_id:Number(id),chapter_number:num,percent:pct,expected_revision:progressRevision})});
+   progressRevision=Number(result.position?.revision)||progressRevision;progressSync='synced';readerStorage.removeItem(progressPendingKey);
+  }catch(error){
+   if(error.status===409){progressConflict=true;progressSync='conflict';}
+   else{progressSync='offline';savePendingProgress(pct);}
+  }finally{
+   progressSaveInFlight=false;
+   if(progressSaveQueued){progressSaveQueued=false;if(!progressConflict)syncReadingPosition(Number(readerSessions.read(sessionNovelKey,num)?.progress||pct));}
+  }
+ };
+ if(progressAccount){
+  try{
+   const remote=await api('/api/reading-position?novel_id='+encodeURIComponent(id));
+   progressRevision=Number(remote.position?.revision)||0;progressSync='synced';
+   const pendingRaw=readerStorage.getItem(progressPendingKey);let pending=null;
+   try{pending=pendingRaw?JSON.parse(pendingRaw):null}catch{readerStorage.removeItem(progressPendingKey)}
+   if(pending&&Number(pending.expected_revision)===progressRevision){
+    const synced=await api('/api/reading-position',{method:'POST',body:JSON.stringify({novel_id:Number(id),chapter_number:Number(pending.chapter_number),percent:Number(pending.percent),expected_revision:progressRevision})});
+    progressRevision=Number(synced.position?.revision)||progressRevision;readerStorage.removeItem(progressPendingKey);
+    if(Number(pending.chapter_number)===num){chapterPct=Math.min(100,Math.max(0,Number(pending.percent)||0));readerSessions.write(sessionNovelKey,num,chapterPct);}
+   }else if(pending){progressConflict=true;progressSync='conflict';}
+   if(remote.position&&Number(remote.position.chapter_number)===num&&!progressConflict&&!pending){chapterPct=Math.min(100,Math.max(0,Number(remote.position.percent)||0));readerSessions.write(sessionNovelKey,num,chapterPct);}
+  }catch{progressSync='offline';}
+ }
  const root=$('#app');
  const chapterList=n.chapters.map(x=>`<a class="readerChapterItem ${Number(x.chapter_number)===num?'current':''}" href="/read/${id}/${Number(x.chapter_number)}"><span>Chapter ${Number(x.chapter_number)}</span><span>${esc(x.title)} ${x.is_locked?'🔒':''}</span></a>`).join('');
- const readerIdentity=await api('/api/me').catch(()=>({user:null}));if(!navigation.isCurrent(navigationToken))return;
  const guestBookmark=Number(readerStorage.getItem('readerBookmark:'+id)||0);
  const bookmarked=readerIdentity.user?Number(n.bookmark||0)===num:guestBookmark===num;
  const initialNovelProgress=Math.min(100,Math.round((num/Math.max(total,1))*100));
@@ -240,7 +274,7 @@ async function reader(){
  if($('#unlock'))$('#unlock').onclick=async()=>{try{await api('/api/chapters/'+ch.id+'/unlock',{method:'POST'});location.reload()}catch(e){alert(e.message)}};
  if(d.unlocked)api('/api/history',{method:'POST',body:JSON.stringify({novel_id:Number(id),chapter_number:num})}).catch(()=>{});
  
- let lastRenderedProgress=-1,lastSavedProgress=chapterPct;const updateProgress=()=>{if(!d.unlocked||!navigation.isCurrent(navigationToken))return;const pct=readerSessionModule.getScrollProgress({scrollTop:window.scrollY,scrollHeight:document.documentElement.scrollHeight,viewportHeight:window.innerHeight});if(pct!==lastRenderedProgress){$('#readerProgressBar').style.width=pct+'%';$('.readerProgress').setAttribute('aria-valuenow',String(pct));$('#progressText').textContent=`${pct}% through chapter · ${initialNovelProgress}% through novel`;lastRenderedProgress=pct}if(pct!==lastSavedProgress&&readerSessions.write(id,num,pct))lastSavedProgress=pct};window.addEventListener('scroll',updateProgress,{passive:true});updateProgress();
+ let lastRenderedProgress=-1,lastSavedProgress=chapterPct;const updateProgress=()=>{if(!d.unlocked||!navigation.isCurrent(navigationToken))return;const pct=readerSessionModule.getScrollProgress({scrollTop:window.scrollY,scrollHeight:document.documentElement.scrollHeight,viewportHeight:window.innerHeight});if(pct!==lastRenderedProgress){$('#readerProgressBar').style.width=pct+'%';$('.readerProgress').setAttribute('aria-valuenow',String(pct));$('#progressText').textContent=`${pct}% through chapter · ${initialNovelProgress}% through novel`;lastRenderedProgress=pct}if(pct!==lastSavedProgress&&readerSessions.write(sessionNovelKey,num,pct)){lastSavedProgress=pct;if(progressAccount&&d.unlocked){savePendingProgress(pct);clearTimeout(progressSaveTimer);progressSaveTimer=setTimeout(()=>syncReadingPosition(pct),900)}}};window.addEventListener('scroll',updateProgress,{passive:true});updateProgress();
  if(d.unlocked&&chapterPct>0)setTimeout(()=>{const max=Math.max(0,document.documentElement.scrollHeight-window.innerHeight);window.scrollTo({top:max*chapterPct/100,behavior:'auto'});updateProgress()},80);
  document.addEventListener('keydown',e=>{const target=e.target;const typing=target&&(/INPUT|TEXTAREA|SELECT/.test(target.tagName)||target.isContentEditable);if(typing)return;if(e.altKey&&e.key==='ArrowRight'&&d.next){e.preventDefault();location.href='/read/'+id+'/'+Number(d.next.chapter_number)}else if(e.altKey&&e.key==='ArrowLeft'&&d.previous){e.preventDefault();location.href='/read/'+id+'/'+Number(d.previous.chapter_number)}else if(e.key==='+'||e.key==='='){e.preventDefault();$('#fontUp').click()}else if(e.key==='-'){e.preventDefault();$('#fontDown').click()}else if(e.key.toLowerCase()==='t'){const i=themeNames.indexOf(readerPage.dataset.readerTheme);setReaderTheme(themeNames[(i+1)%themeNames.length])}});
 
