@@ -41,4 +41,9 @@ assert.ok(client.includes("Progress synced to your account"),"reader must confir
 assert.ok(client.includes("Offline · progress kept on this device"),"reader must explain offline progress retention");
 assert.ok(client.includes("Sync conflict · newer progress exists on another device"),"reader must explain revision conflicts");
 assert.ok(client.includes("Account changed · local progress was not uploaded"),"reader must explain account mismatch protection");
+const shell=fs.readFileSync("public/index.html","utf8");
+const designSystem=fs.readFileSync("public/imperial-design-system.css","utf8");
+assert.ok(shell.includes("/imperial-design-system.css"),"reader status styling must use the active design system");
+assert.ok(designSystem.includes(".readerSyncStatus[data-state=\"synced\"]"),"synced progress must have a visible success treatment");
+assert.ok(designSystem.includes("@media(max-width:640px){.readerMeta"),"sync status must wrap cleanly on mobile");
 console.log("PASS: reading-position API, session ownership, optimistic concurrency, offline fallback and served bundle parity.");
