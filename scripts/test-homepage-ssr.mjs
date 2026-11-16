@@ -7,7 +7,7 @@ const html = renderHomepage(
   [{ id: 7, title: "Duplicate" }, { id: 8, title: "Latest story", author: "Writer", chapter_count: 3 }]
 );
 assert.match(html, /data-home-ssr="true"/);
-assert.match(html, /class="homeSsrHeader"/);
+assert.match(html, /class="top homeSsrHeader"/);
 assert.match(html, /class="homeSsrFooter"/);
 assert.match(html, /href="\/novel\/7"/);
 assert.match(html, /&lt;script&gt;alert\(1\)&lt;\/script&gt;/);
