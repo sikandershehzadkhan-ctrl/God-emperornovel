@@ -30,6 +30,8 @@ assert.ok(!source.includes('<option value="3">3+</option>'), "Legacy 1–5 catal
 
 assert.ok(worker.includes("CHECK(rating BETWEEN 1 AND 10 AND rating=CAST(rating AS INTEGER))"), "Runtime rating schema must enforce integer values from 1–10");
 assert.ok(worker.includes('typeof rating!=="number"||!Number.isSafeInteger(rating)||rating<1||rating>10'), "Rating API must reject strings, fractions and out-of-range values");
+assert.ok(worker.includes('req.headers.get("origin")!==url.origin') && worker.includes("Cross-origin rating writes are not allowed."), "Rating writes must reject cross-origin requests");
+assert.ok(worker.includes('consumeAuthRateLimit(env,"rating",String(u.id),60,3600)'), "Rating writes must be rate-limited per authenticated account");
 assert.ok(!worker.includes("rating>5") && !worker.includes("Rating must be 1-5"), "No legacy 1–5 API guard may remain");
 assert.equal((worker.match(/if\(p==="\/api\/rating"&&m==="POST"\)/g) || []).length, 1, "Exactly one canonical rating POST handler must remain");
 assert.ok(worker.includes('minRatingRaw=q.get("min_rating"),minRating=minRatingRaw===null||minRatingRaw===""?0:Number(minRatingRaw)'), "Catalog minimum-rating input must be parsed explicitly.");
