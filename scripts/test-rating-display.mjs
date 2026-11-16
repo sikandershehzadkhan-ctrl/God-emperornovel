@@ -7,6 +7,9 @@ const served = fs.readFileSync("public/app-17.23.0.js", "utf8");
 const worker = fs.readFileSync("src/index.js", "utf8");
 const component = fs.readFileSync("src/react/NovelRating.jsx", "utf8");
 const styles = fs.readFileSync("public/imperial-design-system.css", "utf8");
+const ratingReadStart = worker.indexOf('if(p==="/api/rating"&&m==="GET")');
+const ratingWriteStart = worker.indexOf('if(p==="/api/rating"&&m==="POST")');
+const ratingReadHandler = worker.slice(ratingReadStart, ratingWriteStart);
 
 assert.equal(source, served, "Editable app source and served runtime must remain identical");
 const match = source.match(/function ratingText\(value\)\s*\{[\s\S]*?\}/);
@@ -30,8 +33,9 @@ assert.ok(worker.includes('typeof rating!=="number"||!Number.isSafeInteger(ratin
 assert.ok(!worker.includes("rating>5") && !worker.includes("Rating must be 1-5"), "No legacy 1–5 API guard may remain");
 assert.equal((worker.match(/if\(p==="\/api\/rating"&&m==="POST"\)/g) || []).length, 1, "Exactly one canonical rating POST handler must remain");
 assert.ok(worker.includes("Math.min(10,minRating)"), "Catalog minimum-rating filter must support 10");
-assert.ok(worker.includes('if(p==="/api/rating"&&m==="GET"){const nid=Number(url.searchParams.get("novel_id"));if(!Number.isSafeInteger(nid)||nid<1)'), "Public rating reads must validate the novel identifier");
-assert.ok(worker.includes("publication_status='published'") && worker.includes("rights_status IN ('original','public_domain','licensed','authorized')"), "Public rating reads must exclude unpublished and rights-ineligible novels");
+assert.ok(ratingReadStart >= 0 && ratingWriteStart > ratingReadStart, "Canonical public rating read handler must exist before the write handler");
+assert.ok(ratingReadHandler.includes("Number.isSafeInteger(nid)") && ratingReadHandler.includes("nid<1"), "Public rating reads must validate the novel identifier");
+assert.ok(ratingReadHandler.includes("publication_status='published'") && ratingReadHandler.includes("rights_status IN ('original','public_domain','licensed','authorized')"), "Public rating reads must exclude unpublished and rights-ineligible novels");
 
 assert.ok(component.includes("[1, 2, 3, 4, 5, 6, 7, 8, 9, 10].map"), "Rating control must expose ten choices");
 assert.ok(component.includes("out of 10"), "Rating controls must announce the 10-point scale");
