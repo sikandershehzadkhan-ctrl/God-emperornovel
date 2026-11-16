@@ -6101,3 +6101,5 @@ html[data-theme="cosmic"]{--in-text:#FFFFFF;--in-text-muted:#DCE5FF;--in-line:#8
 .readerSwatches button[data-color="#E8EDEF"]{background-color:#E8EDEF}
 .readerSwatches button[data-color="#C08AFF"]{background-color:#C08AFF}
 .readerSwatches button[data-color="#6AA5FF"]{background-color:#6AA5FF}
+
+.readerSyncStatus{font-size:10px;line-height:1.4;color:var(--muted,#777);margin-left:auto;white-space:nowrap}.readerSyncStatus[data-state="synced"]{color:var(--success,#247a50)}.readerSyncStatus[data-state="offline"],.readerSyncStatus[data-state="conflict"],.readerSyncStatus[data-state="account-mismatch"]{color:var(--warning,#9a5b12)}@media(max-width:640px){.readerMeta{align-items:flex-start;flex-wrap:wrap}.readerSyncStatus{width:100%;margin-left:0}}
