@@ -2,6 +2,10 @@ import assert from "node:assert/strict";
 import fs from "node:fs";
 
 const workflow = fs.readFileSync(".github/workflows/deploy.yml", "utf8");
+const releasePlan = fs.readFileSync("docs/production/CANONICAL-D1-MIGRATION-RELEASE-PLAN.md", "utf8");
+assert.ok(releasePlan.includes("npx wrangler@4 d1 time-travel info god-emperornovel-db"), "The release plan must capture a D1 Time Travel recovery bookmark before writes.");
+assert.ok(releasePlan.includes("time-travel restore god-emperornovel-db --bookmark=<RECORDED_BOOKMARK>"), "The release plan must document the exact manual break-glass restore command.");
+assert.ok(releasePlan.includes("Never invoke it automatically from a failed deployment job."), "A failed deployment must never trigger a destructive automatic D1 restore.");
 assert.ok(workflow.includes("workflow_dispatch:"), "Production deploy must remain manual.");
 assert.ok(workflow.includes("confirm_production_deploy"), "Production deploy must require an explicit confirmation input.");
 assert.ok(workflow.includes("inputs.confirm_production_deploy == 'true'"), "Production job must be gated by the explicit true confirmation.");
