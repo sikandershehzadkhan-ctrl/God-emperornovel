@@ -6,6 +6,8 @@ const html = renderHomepage(
   [{ id: 7, title: "Duplicate" }, { id: 8, title: "Latest story", author: "Writer", chapter_count: 3 }]
 );
 assert.match(html, /data-home-ssr="true"/);
+assert.match(html, /class="homeSsrHeader"/);
+assert.match(html, /class="homeSsrFooter"/);
 assert.match(html, /href="\/novel\/7"/);
 assert.match(html, /&lt;script&gt;alert\(1\)&lt;\/script&gt;/);
 assert.doesNotMatch(html, /<script>alert\(1\)<\/script>/);
@@ -19,10 +21,10 @@ assert.match(html, /name="q"/);
 const sqlCalls = [];
 const db = {
   prepare(sql) {
-    sqlCalls.push(sql);
+    const index = sqlCalls.push(sql) - 1;
     return {
       async all() {
-        return { results: sqlCalls.length === 1 ? [{ id: 1 }] : [{ id: 2 }] };
+        return { results: index === 0 ? [{ id: 1 }] : [{ id: 2 }] };
       }
     };
   }
