@@ -48,3 +48,9 @@ assert.ok(app.includes("method:'DELETE'"), "bookmark removal must use its dedica
 assert.ok(app.includes('class="ghost unfollowStory"'), "following page must expose an unfollow action");
 assert.ok(app.includes("api('/api/follow',{method:'POST',body:JSON.stringify({novel_id:Number(button.dataset.id)})})"), "unfollow action must use the authenticated follow toggle");
 assert.ok(app.includes("Following since '+esc(formatDateLabel(x.created_at))"), "following page must show its saved date when supplied");
+
+assert.ok(worker.includes("LEFT JOIN reading_positions rp ON rp.user_id=h.user_id AND rp.novel_id=h.novel_id"), "history must include the user's saved reading position");
+assert.ok(worker.includes("rp.percent progress_percent"), "history must return saved chapter progress");
+assert.ok(app.includes('class="reading-progress"'), "library and history must display saved reading progress");
+assert.ok(app.includes("progress_chapter_number||x.chapter_number"), "continue reading must resume at the saved reading-position chapter");
+assert.ok(app.includes("progress_chapter_number||n.chapter_number"), "history resume link must use the saved reading-position chapter");
