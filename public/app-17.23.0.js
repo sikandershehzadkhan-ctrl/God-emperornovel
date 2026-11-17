@@ -303,7 +303,18 @@ async function library(mode='library'){
   if(isFollowing){
    const followed=await api('/api/follows');
    root.innerHTML=pageStart('Following','Stories you follow, gathered in one place.')+`<div class="tabs"><a href="/library">My Library</a><a href="/history">History</a><a class="active" href="/following">Following</a></div><section class="section"><div class="sectionHead"><div><h2>Followed Stories</h2><p>${followed.length} stor${followed.length===1?'y':'ies'} followed.</p></div></div><div class="grid" id="followedList"></div></section></div></div>`;
-   $('#followedList').innerHTML=followed.length?followed.map(x=>card({...x,chapter_count:x.latest_chapter?Number(x.latest_chapter)+' ch.':'No chapters'})).join(''):`<div class="empty in-grid-span-all">You are not following any stories yet. Open a novel and tap Follow to add it here.</div>`;
+   $('#followedList').innerHTML=followed.length?followed.map(x=>`<div class="followed-item">${card({...x,chapter_count:x.latest_chapter?Number(x.latest_chapter)+' ch.':'No chapters'})}<div class="in-card-actions-pad"><span class="muted">${x.created_at?'Following since '+esc(formatDateLabel(x.created_at)):''}</span><button class="ghost unfollowStory" data-id="${Number(x.id||x.novel_id)}" type="button">Unfollow</button></div></div>`).join(''):`<div class="empty in-grid-span-all">You are not following any stories yet. Open a novel and tap Follow to add it here.</div>`;
+$('.unfollowStory').forEach(button=>button.onclick=async()=>{
+ button.disabled=true;
+ try{
+  await api('/api/follow',{method:'POST',body:JSON.stringify({novel_id:Number(button.dataset.id)})});
+  button.closest('.followed-item')?.remove();
+  const remaining=$('.unfollowStory').length;
+  const heading=$('#followedList')?.closest('.section')?.querySelector('.sectionHead p');
+  if(heading)heading.textContent=remaining+' stor'+(remaining===1?'y':'ies')+' followed.';
+  if(!remaining)$('#followedList').innerHTML='<div class="empty in-grid-span-all">You are not following any stories yet. Open a novel and tap Follow to add it here.</div>';
+ }catch(error){button.disabled=false;alert(error.message)}
+});
    return;
   }
   const [items,historyRows,bookmarks]=await Promise.all([api('/api/library'),api('/api/history'),api('/api/bookmarks')]);
