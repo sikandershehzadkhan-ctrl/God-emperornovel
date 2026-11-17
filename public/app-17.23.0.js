@@ -461,7 +461,11 @@ document.addEventListener('keydown',e=>{if(drawer.hidden)return;if(e.key==='Esca
       chapterPct=remotePercent;lastSavedProgress=remotePercent;
       const max=Math.max(0,document.documentElement.scrollHeight-window.innerHeight);
       window.scrollTo({top:max*remotePercent/100,behavior:'auto'});
+     }else{
+      readerSessions.clear(sessionNovelKey,num);chapterPct=0;lastSavedProgress=0;window.scrollTo({top:0,behavior:'auto'});
      }
+    }else{
+     readerSessions.clear(sessionNovelKey,num);chapterPct=0;lastSavedProgress=0;window.scrollTo({top:0,behavior:'auto'});
     }
    }
    readerStorage.setItem(progressRevisionKey,String(progressRevision));

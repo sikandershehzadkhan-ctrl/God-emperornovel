@@ -44,7 +44,7 @@ assert.equal(sessions.read(12, 4).progress, 0, "progress must clamp at zero");
 assert.equal(sessions.clear(12, 4), true);
 assert.equal(sessions.read(12, 4), null);
 assert.throws(() => sessions.write(0, 1, 10), /valid/);
-assert.throws(() => sessions.read(1, 0), /positive integers/);
+assert.throws(() => sessions.read(1, 0), /valid/);
 
 const unavailableStorage = {
   getItem() { throw new Error("storage access denied"); },
