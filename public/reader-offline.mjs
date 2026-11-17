@@ -27,7 +27,6 @@ export function createOfflineChapterStore(cacheStorage) {
       for (const request of keys) {
         const segments = new URL(request.url).pathname.split('/');
         if (segments.length !== 5 || segments[1] !== '__imperial_offline__' || segments[2] !== 'chapter' || !safeId(segments[3]) || !safeId(segments[4])) continue;
-        if (!match) continue;
         try {
           const response = await store.match(request);
           if (!response) continue;
