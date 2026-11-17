@@ -6122,3 +6122,16 @@ html[data-theme="cosmic"]{--in-text:#FFFFFF;--in-text-muted:#DCE5FF;--in-line:#8
 .chapterDrawer:focus{outline:none;}
 @media(max-width:760px){.chapterDrawer{top:64px;width:min(420px,96vw);padding:14px}.chapterDrawerScrim{inset:64px 0 0}.readerBar{top:64px}.readerPage{padding-bottom:calc(90px + env(safe-area-inset-bottom))}}
 @media(prefers-reduced-motion:reduce){.chapterDrawerScrim{transition:none}}
+
+/* Explicit offline chapter library. */
+.readerOfflinePanel{max-width:900px;margin:24px auto 48px;padding:20px;border:1px solid var(--border,rgba(127,127,127,.24));border-radius:18px;background:var(--surface,rgba(127,127,127,.06));display:grid;gap:12px}
+.readerOfflinePanel h3{margin:4px 0;font-size:1.1rem}
+.readerOfflinePanel p{margin:4px 0;color:var(--muted,inherit);font-size:.92rem}
+.readerOfflinePanel>button{justify-self:start;min-height:44px}
+.readerOfflineSummary{font-size:.82rem;color:var(--muted,inherit)}
+.readerOfflineItem{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:10px 0;border-top:1px solid var(--border,rgba(127,127,127,.2))}
+.readerOfflineItem a{display:grid;gap:3px;min-width:0;color:inherit;text-decoration:none}
+.readerOfflineItem a span{font-size:.86rem;color:var(--muted,inherit);overflow-wrap:anywhere}
+.readerOfflineItem button{min-height:44px;flex:0 0 auto}
+#readerOfflineStatus{min-height:1.2em}
+@media(max-width:600px){.readerOfflinePanel{margin:18px 12px 36px;padding:16px}.readerOfflineItem{align-items:flex-start}.readerOfflineItem button{padding:8px 10px}}
