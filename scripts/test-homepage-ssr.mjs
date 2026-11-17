@@ -53,7 +53,7 @@ for (const sql of sqlCalls) {
 assert.match(sqlCalls[0], /unlocked_at>=datetime\('now','-7 days'\)/);
 assert.match(sqlCalls[1], /ORDER BY n.updated_at DESC/);
 const serviceWorker = readFileSync("public/sw.js", "utf8");
-assert.match(serviceWorker, /design-system-4-homepage-ssr/);
+assert.match(serviceWorker, /reader-static-cache-1/);
 assert.match(serviceWorker, /\/app-17\.23\.0\.js/);
 assert.match(serviceWorker, /\/imperial-design-system\.css/);
 const worker = readFileSync("src/index.js", "utf8");
