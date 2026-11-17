@@ -15,7 +15,9 @@ assert.match(historyPost, /Unlock this chapter before saving reading progress/, 
 
 console.log("Reader history authorization checks passed.");
 
-const historyDelete = worker.split("\n").find(line => line.includes('if(p==="/api/history"&&m==="DELETE")'));
+const historyDeleteStart = worker.indexOf('if(p==="/api/history"&&m==="DELETE")');
+const historyDeleteEnd = worker.indexOf('if(p==="/api/library"', historyDeleteStart);
+const historyDelete = worker.slice(historyDeleteStart, historyDeleteEnd);
 assert.ok(historyDelete, "history deletion endpoint must exist");
 assert.match(historyDelete, /need\(u\)/, "history deletion must require authentication");
 assert.match(historyDelete, /req\.headers\.get\("origin"\)!==url\.origin/, "history deletion must reject cross-origin requests");
