@@ -11,7 +11,7 @@ self.addEventListener('fetch',event=>{
  if(request.mode==='navigate'){
   const readerPath=url.pathname.endsWith('/')?url.pathname.slice(0,-1):url.pathname;
   const readerParts=readerPath.split('/');
-  const readerRoute=readerParts.length===4&&((readerParts[1]==='read'&&readerParts.length===4)||(readerParts[1]==='offline'&&readerParts.length===2))&&(readerParts[1]==='offline'||(Number.isSafeInteger(Number(readerParts[2]))&&Number(readerParts[2])>0&&Number.isSafeInteger(Number(readerParts[3]))&&Number(readerParts[3])>0));
+  const readerRoute=(readerParts[1]==='offline'&&readerParts.length===2)||(readerParts.length===4&&readerParts[1]==='read'&&Number.isSafeInteger(Number(readerParts[2]))&&Number(readerParts[2])>0&&Number.isSafeInteger(Number(readerParts[3]))&&Number(readerParts[3])>0);
   if(url.pathname!=='/'&&!readerRoute)return;
   event.respondWith(fetch(request).catch(()=>caches.match('/')));
   return;
