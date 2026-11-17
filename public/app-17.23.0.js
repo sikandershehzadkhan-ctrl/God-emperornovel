@@ -190,7 +190,50 @@ async function loadComments(id){
  try{await ensureImperialReactIslands();window.ImperialReactIslands.mountNovelComments(box,id)}
  catch(error){box.innerHTML='<div class="empty" role="status">Community comments are temporarily unavailable.</div>'}
 }
-async function chapters(){const id=location.pathname.split('/')[2];const n=await api('/api/novels/'+id);const root=$('#app');root.innerHTML=pageStart(n.title,'Complete chapter archive')+`<div class="toolbar"><a class="primary" href="/read/${id}/1">Start at Chapter 1</a><button id="batch" class="secondary">Batch Unlock</button></div><div class="chapterList">${n.chapters.map(ch=>chapterRow(ch,id)).join('')}</div></div></div>`;$('#batch').onclick=async()=>{try{const count=Number(prompt('Batch size: 10, 25, 50 or 100','10'));if(![10,25,50,100].includes(count))return;const d=await api('/api/novels/'+id+'/batch-unlock',{method:'POST',body:JSON.stringify({count,start_chapter:1})});alert(`Unlocked ${d.unlocked} chapters for ${d.cost} Imperial Crowns. Balance: ${d.tickets} Imperial Crowns`);location.reload()}catch(e){alert(e.message)}}}
+async function chapters(){
+ const id=location.pathname.split('/')[2],n=await api('/api/novels/'+id),root=$('#app');
+ const offlineModule=await import('/reader-offline.mjs');
+ const offlineStore=offlineModule.createOfflineChapterStore(window.caches||{open:async()=>{throw new Error('Cache API unavailable')}});
+ root.innerHTML=pageStart(n.title,'Complete chapter archive')+`<div class="toolbar"><a class="primary" href="/read/${id}/1">Start at Chapter 1</a><button id="batch" class="secondary">Batch Unlock</button><button id="downloadOfflineQueue" class="secondary" type="button">Download eligible chapters</button></div><section class="offlineQueuePanel" aria-labelledby="offlineQueueTitle"><div><h2 id="offlineQueueTitle">Offline download queue</h2><p>Downloads only chapters already unlocked for your account and approved for offline reading. This never unlocks paid chapters.</p></div><progress id="offlineQueueProgress" max="1" value="0">0%</progress><p id="offlineQueueStatus" role="status" aria-live="polite">Ready when you are. Storage limit: 25 chapters / 20 MB.</p></section><div class="chapterList">${n.chapters.map(ch=>chapterRow(ch,id)).join('')}</div></div></div>`;
+ const queueButton=$('#downloadOfflineQueue'),queueStatus=$('#offlineQueueStatus'),queueProgress=$('#offlineQueueProgress');
+ let queueRunning=false,queueCancelled=false;
+ queueButton.onclick=async()=>{
+  if(queueRunning){queueCancelled=true;queueButton.textContent='Canceling…';return}
+  queueRunning=true;queueCancelled=false;queueButton.disabled=false;queueButton.textContent='Cancel queue';
+  try{
+   if('serviceWorker' in navigator&&!navigator.serviceWorker.controller){try{await navigator.serviceWorker.ready}catch{}}
+   if('serviceWorker' in navigator&&!navigator.serviceWorker.controller){queueStatus.textContent='Offline support is activating. Refresh this page once while online, then try again.';return}
+   const existing=await offlineStore.list(),savedKeys=new Set(existing.map(item=>item.novelId+':'+item.chapterNumber));
+   const eligible=n.chapters.filter(ch=>Number(ch.unlocked)===1&&Number(ch.offline_allowed)===1&&!savedKeys.has(Number(id)+':'+Number(ch.chapter_number)));
+   const slots=Math.max(0,offlineModule.OFFLINE_CHAPTER_LIMIT-existing.length);
+   if(!slots){queueStatus.textContent='Your 25-chapter offline limit is full. Remove a saved chapter in Offline Library first.';return}
+   if(!eligible.length){queueStatus.textContent='No new chapters are currently unlocked and approved for offline reading.';return}
+   const queue=eligible.slice(0,slots);
+   if(!confirm('Save '+queue.length+' eligible chapter'+(queue.length===1?'':'s')+' on this device? No paid chapters will be unlocked.'))return;
+   queueProgress.max=queue.length;queueProgress.value=0;
+   if(queue.length<eligible.length)queueStatus.textContent='Queue limited to '+queue.length+' chapters by the device storage cap.';
+   let saved=0,skipped=0,processed=0,stopReason='';
+   for(const item of queue){
+    if(queueCancelled)break;
+    try{
+     const detail=await api('/api/chapters/'+Number(item.id)+'?purpose=offline');
+     if(detail.unlocked!==true||detail.offline_allowed!==true||typeof detail.content!=='string'||!detail.content.trim()){skipped++;processed++;queueProgress.value=processed;continue}
+     const result=await offlineStore.save({novel:{id:Number(id),title:n.title,author:n.author,kind:n.kind,totalChapters:Number(n.chapter_count||n.latest_chapter||n.chapters.length)},chapter:{id:Number(detail.id),chapter_number:Number(detail.chapter_number),title:detail.title,unlocked:detail.unlocked,offlineAllowed:detail.offline_allowed,content:detail.content}});
+     if(result.ok)saved++;
+     else if(result.reason==='chapter-too-large'||result.reason==='not-authorized')skipped++;
+     else{stopReason=result.reason==='storage-limit'?'The 20 MB storage limit was reached.':result.reason==='chapter-limit'?'The 25-chapter limit was reached.':'Device storage is unavailable.';processed++;queueProgress.value=processed;break}
+    }catch(error){stopReason=error.message||'Network error while downloading.';processed++;queueProgress.value=processed;break}
+    processed++;queueProgress.value=processed;
+    queueStatus.textContent='Downloading '+processed+' of '+queue.length+' · '+saved+' saved · '+skipped+' skipped';
+   }
+   const suffix=queueCancelled?'Queue canceled. ':stopReason?'Queue stopped. ':'Queue finished. ';
+   queueStatus.textContent=suffix+saved+' saved, '+skipped+' skipped, '+processed+' of '+queue.length+' checked.'+(stopReason?' '+stopReason:'');
+  }catch(error){queueStatus.textContent=error.message==='Cache API unavailable'?'Offline storage is unavailable in this browser.':'Could not start the offline queue. '+(error.message||'Please try again.')}
+  finally{queueRunning=false;queueCancelled=false;queueButton.disabled=false;queueButton.textContent='Download eligible chapters'}
+ };
+ $('#batch').onclick=async()=>{try{const count=Number(prompt('Batch size: 10, 25, 50 or 100','10'));if(![10,25,50,100].includes(count))return;const d=await api('/api/novels/'+id+'/batch-unlock',{method:'POST',body:JSON.stringify({count,start_chapter:1})});alert(`Unlocked ${d.unlocked} chapters for ${d.cost} Imperial Crowns. Balance: ${d.tickets} Imperial Crowns`);location.reload()}catch(e){alert(e.message)}}
+}
+
 async function reader(){
  const readerSessionModule=await import('/reader-session.mjs');
  const readerOfflineModule=await import('/reader-offline.mjs');
