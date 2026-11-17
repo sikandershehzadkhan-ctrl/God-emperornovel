@@ -9,7 +9,7 @@ self.addEventListener('fetch',event=>{
  const url=new URL(request.url);
  if(url.origin!==self.location.origin||url.pathname.startsWith('/api/'))return;
  if(request.mode==='navigate'){
-  if(url.pathname!=='/')return;
+  if(url.pathname!=='/'&&!/^\\/read\\/\\d+\\/\\d+\\/?$/.test(url.pathname))return;
   event.respondWith(fetch(request).catch(()=>caches.match('/')));
   return;
  }
