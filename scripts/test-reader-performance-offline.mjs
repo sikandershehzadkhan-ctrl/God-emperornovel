@@ -19,8 +19,10 @@ assert.match(worker,/const STATIC_ASSET=\/\\\./,
   'Offline runtime caching must be restricted to static asset file extensions.');
 assert.match(worker,/url\.origin!==self\.location\.origin\|\|url\.pathname\.startsWith\('\/api\/'\)/,
   'Cross-origin requests and API responses must never enter the service-worker cache.');
-assert.match(worker,/request\.mode==='navigate'[\s\S]*?if\(url\.pathname!=='\/'\)return/,
-  'The service worker must not cache chapter or account navigation responses.');
+assert.match(worker,/request\.mode==='navigate'[\s\S]*?if\(url\.pathname!=='\/'&& !?[^\n]*read/,
+  'Only the homepage and reader routes may use the cached app shell for navigation fallback.');
+assert.match(worker,/fetch\(request\)\.catch\(\)=>caches\.match\('\/'\)/,
+  'An offline reader route must fall back to the cached application shell, not a cached chapter response.');
 assert.match(worker,/!\/private\|no-store\/i\.test\(cacheControl\)/,
   'Responses marked private or no-store must not be cached.');
 assert.match(worker,/cache\.put\(request,response\.clone\(\)\)/,
