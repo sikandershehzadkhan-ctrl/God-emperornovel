@@ -6102,7 +6102,7 @@ html[data-theme="cosmic"]{--in-text:#FFFFFF;--in-text-muted:#DCE5FF;--in-line:#8
 .readerSwatches button[data-color="#C08AFF"]{background-color:#C08AFF}
 .readerSwatches button[data-color="#6AA5FF"]{background-color:#6AA5FF}
 
-.readerSyncStatus{font-size:10px;line-height:1.4;color:var(--muted,#777);margin-left:auto;white-space:nowrap}.readerSyncStatus[data-state="synced"]{color:var(--success,#247a50)}.readerSyncStatus[data-state="offline"],.readerSyncStatus[data-state="conflict"],.readerSyncStatus[data-state="account-mismatch"]{color:var(--warning,#9a5b12)}@media(max-width:640px){.readerMeta{align-items:flex-start;flex-wrap:wrap}.readerSyncStatus{width:100%;margin-left:0}}
+.readerSyncStatus{font-size:10px;line-height:1.4;color:var(--muted,#777);margin-left:auto;white-space:nowrap}.readerSyncStatus[data-state="synced"]{color:var(--success,#247a50)}.readerSyncStatus[data-state="offline"],.readerSyncStatus[data-state="conflict"],.readerSyncStatus[data-state="account-mismatch"]{color:var(--warning,#9a5b12)}.readerProgressConflictActions{display:flex;align-items:center;flex-wrap:wrap;gap:8px;width:100%;padding:10px 0}.readerProgressConflictActions[hidden]{display:none}.readerProgressConflictActions span{font-size:12px;color:var(--muted,#777);width:100%}.readerProgressConflictActions button{min-height:44px}@media(max-width:640px){.readerMeta{align-items:flex-start;flex-wrap:wrap}.readerSyncStatus{width:100%;margin-left:0}.readerProgressConflictActions button{flex:1 1 100%}}
 
 .homeSsrHeader{position:relative;z-index:20}
 .homeSsrNav{display:flex;align-items:center;justify-content:space-between;gap:20px;min-height:72px}
