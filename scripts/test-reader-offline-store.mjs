@@ -7,13 +7,13 @@ const served=fs.readFileSync('public/app-17.23.0.js','utf8');
 const worker=fs.readFileSync('public/sw.js','utf8');
 const css=fs.readFileSync('public/imperial-design-system.css','utf8');
 assert.equal(app,served,'Editable and served browser bundles must remain identical.');
-assert.match(app,/import\\('\/reader-offline\\.mjs'\\)/,'Reader must load the offline chapter store.');
-assert.match(app,/const saved=await offlineStore\\.get\\(id,num\\)/,'Reader must fall back to locally saved chapters when the API is unavailable.');
-assert.match(app,/d\\.unlocked===true/,'Only content currently authorized by the chapter API may be saved.');
-assert.match(app,/Save chapter offline/,'Offline downloads must require an explicit user action.');
-assert.match(app,/data-offline-remove/,'Users must be able to remove individual offline chapters.');
-assert.match(worker,/!key\\.startsWith\\('imperial-novel-offline-chapters-'\\)/,'App updates must preserve the separate user offline-chapter cache.');
-assert.match(css,/\\.readerOfflinePanel/,'Offline library must have a responsive reader UI.');
+assert.ok(app.includes("import('/reader-offline.mjs')"),'Reader must load the offline chapter store.');
+assert.ok(app.includes('const saved=await offlineStore.get(id,num)'),'Reader must fall back to locally saved chapters when the API is unavailable.');
+assert.ok(app.includes('unlocked:d.unlocked===true'),'Only content currently authorized by the chapter API may be saved.');
+assert.ok(app.includes('Save chapter offline'),'Offline downloads must require an explicit user action.');
+assert.ok(app.includes('data-offline-remove'),'Users must be able to remove individual offline chapters.');
+assert.ok(worker.includes("!key.startsWith('imperial-novel-offline-chapters-')"),'App updates must preserve the separate user offline-chapter cache.');
+assert.ok(css.includes('.readerOfflinePanel'),'Offline library must have a responsive reader UI.');
 
 class MemoryCache {
   entries = new Map();
