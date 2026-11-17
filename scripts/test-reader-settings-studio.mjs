@@ -16,6 +16,7 @@ for (const control of ["readerBgColor", "readerTextColor", "readerFontSize", "re
 }
 assert.match(app, /const applyCustomColor=\(kind,color\)=>\{if\(!\/\^#\[0-9a-f\]\{6\}\$\/i\.test\(color\)\)return;/,
   "Custom colours must be validated as six-digit hex values.");
+assert.ok(app.includes("readerContrastStatus") && app.includes("updateReaderContrast") && app.includes("WCAG AA for normal text"), "Custom reader colours must expose a live WCAG contrast warning.");
 assert.match(app, /const prefGet=key=>\{try\{return localStorage\.getItem\(key\)\}catch\(e\)\{return null\}\}/,
   "Reader preference reads must tolerate unavailable browser storage.");
 assert.match(app, /readerResetPrefs[\s\S]*?prefRemove\(k\)[\s\S]*?setReaderTheme\('dark'\)/,
