@@ -17,7 +17,7 @@ for (const control of ["readerBgColor", "readerTextColor", "readerFontSize", "re
 assert.match(app, /const applyCustomColor=\(kind,color\)=>\{if\(!\/\^#\[0-9a-f\]\{6\}\$\/i\.test\(color\)\)return;/,
   "Custom colours must be validated as six-digit hex values.");
 assert.ok(app.includes("readerContrastStatus") && app.includes("updateReaderContrast") && app.includes("WCAG AA for normal text") && app.includes("ratio>=4.5"), "Custom reader colours must expose a live WCAG AA contrast warning.");
-assert.match(app, /readerThemeBtn\)\.onclick=\(\)=>\{[\s\S]*?setReaderTheme\(themeNames\[\(i\+1\)%themeNames\.length\]\);updateReaderContrast\(\)\}/, "Cycling reader themes must refresh the live contrast result.");
+assert.match(app, /\$\('#readerThemeBtn'\)\.onclick=\(\)=>\{[\s\S]*?setReaderTheme\(themeNames\[\(i\+1\)%themeNames\.length\]\);updateReaderContrast\(\)\}/, "Cycling reader themes must refresh the live contrast result.");
 assert.match(app, /readerThemeSelect\)\.onchange=\(\)=>\{setReaderTheme\(\$\('#readerThemeSelect'\)\.value\);updateReaderContrast\(\)\}/, "Selecting a reader theme must refresh the live contrast result.");
 assert.match(app, /readerResetPrefs[\s\S]*?updateReaderContrast\(\)/, "Resetting reader settings must refresh the live contrast result.");
 assert.match(app, /const prefGet=key=>\{try\{return localStorage\.getItem\(key\)\}catch\(e\)\{return null\}\}/,
