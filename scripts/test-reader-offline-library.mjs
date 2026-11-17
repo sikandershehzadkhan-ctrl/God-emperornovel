@@ -14,7 +14,7 @@ assert.ok(app.includes("else if(p==='/offline')await offlineLibrary()"),'The app
 assert.ok(app.includes("import('/reader-offline.mjs')"),'The offline library must use the shared offline chapter store.');
 assert.ok(app.includes('data-offline-library-remove'),'Each download must have an individual remove action.');
 assert.ok(app.includes("clear.onclick=async()=>"),'The offline library must support removing all local downloads.');
-assert.ok(app.includes('confirm(\'Remove all '+records.length+' offline chapter copies from this device?\')'),'Bulk removal must require explicit confirmation.');
+assert.ok(app.includes("confirm('Remove all '+records.length+' offline chapter copies from this device?')"),'Bulk removal must require explicit confirmation.');
 assert.ok(app.includes('item.savedAt?esc(new Intl.DateTimeFormat'),'Saved timestamps must be rendered with safe date formatting.');
 assert.ok(app.includes('module.OFFLINE_TOTAL_MAX_BYTES'),'Storage usage must be derived from the store limit.');
 assert.ok(app.includes('Anyone with access to this device profile may be able to read them.'),'The page must disclose local-device privacy risk.');
