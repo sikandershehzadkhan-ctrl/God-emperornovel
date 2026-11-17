@@ -6135,3 +6135,18 @@ html[data-theme="cosmic"]{--in-text:#FFFFFF;--in-text-muted:#DCE5FF;--in-line:#8
 .readerOfflineItem button{min-height:44px;flex:0 0 auto}
 #readerOfflineStatus{min-height:1.2em}
 @media(max-width:600px){.readerOfflinePanel{margin:18px 12px 36px;padding:16px}.readerOfflineItem{align-items:flex-start}.readerOfflineItem button{padding:8px 10px}}
+
+/* Dedicated on-device download manager. */
+.offlineLibrarySection{max-width:980px;margin-inline:auto}
+.offlineLibraryUsage{display:grid;gap:9px;padding:14px;border:1px solid var(--border,rgba(127,127,127,.2));border-radius:14px;background:var(--surface,rgba(127,127,127,.05))}
+.offlineLibraryMeter{height:9px;overflow:hidden;border-radius:99px;background:var(--border,rgba(127,127,127,.2))}
+.offlineLibraryMeter span{display:block;width:0;height:100%;border-radius:inherit;background:var(--accent,#6a0dad);transition:width .2s ease}
+.offlineLibraryList{display:grid;gap:0}
+.offlineLibraryItem{display:flex;align-items:center;justify-content:space-between;gap:16px;padding:16px 0;border-bottom:1px solid var(--border,rgba(127,127,127,.2))}
+.offlineLibraryItemCopy{display:grid;gap:5px;min-width:0}
+.offlineLibraryItemCopy span,.offlineLibraryItemCopy small{color:var(--muted,inherit);font-size:.88rem;overflow-wrap:anywhere}
+.offlineLibraryItemActions{display:flex;align-items:center;gap:8px;flex:0 0 auto}
+.offlineLibraryItemActions a,.offlineLibraryItemActions button{min-height:44px}
+.offlineLibraryFootnote{font-size:.84rem;line-height:1.55}
+@media(max-width:620px){.offlineLibraryItem{align-items:flex-start;flex-direction:column}.offlineLibraryItemActions{width:100%}.offlineLibraryItemActions>*{flex:1;text-align:center;justify-content:center}.offlineLibrarySection .sectionHead{align-items:flex-start;flex-direction:column}.offlineLibrarySection .sectionHead>button{width:100%;min-height:44px}}
+@media(prefers-reduced-motion:reduce){.offlineLibraryMeter span{transition:none}}
