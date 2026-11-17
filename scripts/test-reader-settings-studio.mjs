@@ -19,6 +19,7 @@ assert.match(app, /const applyCustomColor=\(kind,color\)=>\{if\(!\/\^#\[0-9a-f\]
 assert.ok(app.includes("readerContrastStatus") && app.includes("updateReaderContrast") && app.includes("WCAG AA for normal text") && app.includes("ratio>=4.5"), "Custom reader colours must expose a live WCAG AA contrast warning.");
 assert.match(app, /\$\('#readerThemeBtn'\)\.onclick=\(\)=>\{[\s\S]*?setReaderTheme\(themeNames\[\(i\+1\)%themeNames\.length\]\);updateReaderContrast\(\)\}/, "Cycling reader themes must refresh the live contrast result.");
 assert.match(app, /\$\('#readerThemeSelect'\)\.onchange=\(\)=>\{setReaderTheme\(\$\('#readerThemeSelect'\)\.value\);updateReaderContrast\(\)\}/, "Selecting a reader theme must refresh the live contrast result.");
+assert.match(app, /e\.key\.toLowerCase\(\)==\='t'\)\{const i=themeNames\.indexOf\(readerPage\.dataset\.readerTheme\);setReaderTheme\(themeNames\[\(i\+1\)%themeNames\.length\]\);updateReaderContrast\(\)\}/, "The keyboard theme shortcut must refresh the live contrast result.");
 assert.match(app, /readerResetPrefs[\s\S]*?updateReaderContrast\(\)/, "Resetting reader settings must refresh the live contrast result.");
 assert.match(app, /const prefGet=key=>\{try\{return localStorage\.getItem\(key\)\}catch\(e\)\{return null\}\}/,
   "Reader preference reads must tolerate unavailable browser storage.");
