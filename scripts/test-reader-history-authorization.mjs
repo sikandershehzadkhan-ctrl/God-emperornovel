@@ -34,3 +34,13 @@ assert.ok(app.includes("Last read ${esc(formatDateLabel(n.updated_at))}"), "hist
 assert.ok(app.includes('class="active" href="/history"'), "history must share the library navigation tabs");
 assert.ok(app.includes("Saved ${esc(formatDateLabel(x.created_at))}"), "saved stories must show when they were added");
 assert.ok(app.includes(" · Saved ${esc(formatDateLabel(x.updated_at))}"), "bookmarks must show their saved date when supplied");
+
+const bookmarkDeleteStart = worker.indexOf('if(p==="/api/bookmark"&&m==="DELETE")');
+const bookmarkDeleteEnd = worker.indexOf('if(p==="/api/bookmark"&&m==="POST")', bookmarkDeleteStart);
+const bookmarkDelete = worker.slice(bookmarkDeleteStart, bookmarkDeleteEnd);
+assert.ok(bookmarkDelete, "bookmark deletion endpoint must exist");
+assert.match(bookmarkDelete, /need\(u\)/, "bookmark deletion must require authentication");
+assert.match(bookmarkDelete, /req\.headers\.get\("origin"\)!==url\.origin/, "bookmark deletion must reject cross-origin requests");
+assert.ok(bookmarkDelete.includes("DELETE FROM bookmarks WHERE user_id=? AND novel_id=? AND chapter_number=?"), "bookmark deletion must be scoped to the owner and exact bookmark");
+assert.ok(app.includes('class="ghost removeBookmark"'), "bookmark list must expose direct removal");
+assert.ok(app.includes("method:'DELETE'"), "bookmark removal must use its dedicated deletion endpoint");
