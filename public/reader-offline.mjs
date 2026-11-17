@@ -56,7 +56,7 @@ export function createOfflineChapterStore(cacheStorage) {
         const value = await response.json();
         if (value?.version !== 1 || Number(value.novel?.id) !== novel ||
             Number(value.chapter?.chapter_number) !== chapter ||
-            value.chapter?.unlocked !== true || typeof value.chapter?.content !== 'string') return null;
+            value.chapter?.unlocked !== true || value.chapter?.offlineAllowed !== true || typeof value.chapter?.content !== 'string') return null;
         return value;
       } catch { return null; }
     },
@@ -64,7 +64,7 @@ export function createOfflineChapterStore(cacheStorage) {
     async save({ novel, chapter }) {
       const novelId = safeId(novel?.id);
       const chapterNumber = safeId(chapter?.chapter_number);
-      if (!novelId || !chapterNumber || chapter?.unlocked !== true ||
+      if (!novelId || !chapterNumber || chapter?.unlocked !== true || chapter?.offlineAllowed !== true ||
           typeof chapter.content !== 'string' || !chapter.content.trim()) {
         return { ok:false, reason:'not-authorized' };
       }
@@ -84,8 +84,8 @@ export function createOfflineChapterStore(cacheStorage) {
         version:1,
         savedAt:Date.now(),
         sizeBytes,
-        novel:{id:novelId,title:String(novel.title||'Untitled novel').slice(0,240),author:String(novel.author||'').slice(0,160),kind:String(novel.kind||'text').slice(0,40)},
-        chapter:{id:safeId(chapter.id),novel_id:novelId,chapter_number:chapterNumber,title:String(chapter.title||`Chapter ${chapterNumber}`).slice(0,240),unlocked:true,content:chapter.content}
+        novel:{id:novelId,title:String(novel.title||'Untitled novel').slice(0,240),author:String(novel.author||'').slice(0,160),kind:String(novel.kind||'text').slice(0,40),totalChapters:Math.max(1,Number(novel.totalChapters)||1)},
+        chapter:{id:safeId(chapter.id),novel_id:novelId,chapter_number:chapterNumber,title:String(chapter.title||`Chapter ${chapterNumber}`).slice(0,240),unlocked:true,offlineAllowed:true,content:chapter.content}
       };
       try {
         await store.put(key,new Response(JSON.stringify(record),{headers:{'content-type':'application/json;charset=UTF-8'}}));
