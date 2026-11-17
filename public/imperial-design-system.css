@@ -6150,3 +6150,11 @@ html[data-theme="cosmic"]{--in-text:#FFFFFF;--in-text-muted:#DCE5FF;--in-line:#8
 .offlineLibraryFootnote{font-size:.84rem;line-height:1.55}
 @media(max-width:620px){.offlineLibraryItem{align-items:flex-start;flex-direction:column}.offlineLibraryItemActions{width:100%}.offlineLibraryItemActions>*{flex:1;text-align:center;justify-content:center}.offlineLibrarySection .sectionHead{align-items:flex-start;flex-direction:column}.offlineLibrarySection .sectionHead>button{width:100%;min-height:44px}}
 @media(prefers-reduced-motion:reduce){.offlineLibraryMeter span{transition:none}}
+
+/* Rights-checked multi-chapter offline queue. */
+.offlineQueuePanel{display:grid;gap:10px;margin:18px 0 22px;padding:16px;border:1px solid var(--border,rgba(127,127,127,.24));border-radius:16px;background:var(--surface,rgba(127,127,127,.05))}
+.offlineQueuePanel h2{margin:0;font-size:1.05rem}
+.offlineQueuePanel p{margin:0;color:var(--muted,inherit);font-size:.9rem;line-height:1.5}
+.offlineQueuePanel progress{width:100%;height:10px;accent-color:var(--accent,#6a0dad)}
+#downloadOfflineQueue{min-height:44px}
+@media(max-width:620px){.offlineQueuePanel{padding:14px;margin:14px 0}.toolbar #downloadOfflineQueue{width:100%}}
