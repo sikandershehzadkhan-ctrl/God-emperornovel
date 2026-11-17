@@ -34,7 +34,7 @@ const accountB = "12:account:reader-200";
 assert.equal(sessions.write(accountA, 4, 62, 1700000000001), true, "account-scoped novel keys must be accepted");
 assert.equal(sessions.read(accountA, 4).progress, 62, "signed-in reader progress must restore from its account namespace");
 assert.equal(sessions.read(accountB, 4), null, "progress must not leak between signed-in accounts");
-assert.equal(sessions.read(12, 4), null, "guest progress must remain separate from signed-in progress");
+assert.equal(sessions.read(12, 4).progress, 37, "signed-in writes must not overwrite the guest progress namespace");
 assert.throws(() => sessions.write("12:account:reader-100/unsafe", 4, 20), /valid/, "unsafe account namespaces must be rejected");
 
 assert.equal(sessions.write(12, 4, 150, 1), true);
