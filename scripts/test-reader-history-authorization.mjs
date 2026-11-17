@@ -29,3 +29,8 @@ assert.match(app, /id="clearHistory"/, "history page must expose a clear-history
 assert.match(app, /class="ghost removeHistory"/, "history entries must expose individual removal");
 assert.match(app, /method:'DELETE'/, "history controls must use the deletion endpoint");
 assert.match(app, /Bookmarks and saved stories will remain/, "clear-history confirmation must explain unaffected saved data");
+assert.ok(app.includes("function formatDateLabel(value)"), "reading hub must safely format server timestamps");
+assert.ok(app.includes("Last read ${esc(formatDateLabel(n.updated_at))}"), "history entries must show their last-read date");
+assert.ok(app.includes('class="active" href="/history"'), "history must share the library navigation tabs");
+assert.ok(app.includes("Saved ${esc(formatDateLabel(x.created_at))}"), "saved stories must show when they were added");
+assert.ok(app.includes(" · Saved ${esc(formatDateLabel(x.updated_at))}"), "bookmarks must show their saved date when supplied");
