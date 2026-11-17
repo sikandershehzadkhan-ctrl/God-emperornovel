@@ -44,3 +44,7 @@ assert.match(bookmarkDelete, /req\.headers\.get\("origin"\)!==url\.origin/, "boo
 assert.ok(bookmarkDelete.includes("DELETE FROM bookmarks WHERE user_id=? AND novel_id=? AND chapter_number=?"), "bookmark deletion must be scoped to the owner and exact bookmark");
 assert.ok(app.includes('class="ghost removeBookmark"'), "bookmark list must expose direct removal");
 assert.ok(app.includes("method:'DELETE'"), "bookmark removal must use its dedicated deletion endpoint");
+
+assert.ok(app.includes('class="ghost unfollowStory"'), "following page must expose an unfollow action");
+assert.ok(app.includes("api('/api/follow',{method:'POST',body:JSON.stringify({novel_id:Number(button.dataset.id)})})"), "unfollow action must use the authenticated follow toggle");
+assert.ok(app.includes("Following since '+esc(formatDateLabel(x.created_at))"), "following page must show its saved date when supplied");
