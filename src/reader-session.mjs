@@ -3,7 +3,7 @@ export const READER_SESSION_VERSION = 1;
 const safeNovelKey = value => {
   const id = Number(value);
   if (Number.isSafeInteger(id) && id > 0) return id;
-  return typeof value === "string" && /^\\d+:account:[A-Za-z0-9._~%-]{1,160}$/.test(value) ? value : null;
+  return typeof value === "string" && /^\d+:account:[A-Za-z0-9._~%-]{1,160}$/.test(value) ? value : null;
 };
 
 const safeId = value => {

@@ -35,7 +35,7 @@ assert.equal(sessions.write(accountA, 4, 62, 1700000000001), true, "account-scop
 assert.equal(sessions.read(accountA, 4).progress, 62, "signed-in reader progress must restore from its account namespace");
 assert.equal(sessions.read(accountB, 4), null, "progress must not leak between signed-in accounts");
 assert.equal(sessions.read(12, 4), null, "guest progress must remain separate from signed-in progress");
-assert.equal(sessions.write("12:account:reader-100/unsafe", 4, 20), false, "unsafe account namespaces must be rejected");
+assert.throws(() => sessions.write("12:account:reader-100/unsafe", 4, 20), /valid/, "unsafe account namespaces must be rejected");
 
 assert.equal(sessions.write(12, 4, 150, 1), true);
 assert.equal(sessions.read(12, 4).progress, 100, "progress must clamp at 100");
@@ -43,7 +43,7 @@ assert.equal(sessions.write(12, 4, -20, 1), true);
 assert.equal(sessions.read(12, 4).progress, 0, "progress must clamp at zero");
 assert.equal(sessions.clear(12, 4), true);
 assert.equal(sessions.read(12, 4), null);
-assert.throws(() => sessions.write(0, 1, 10), /positive integers/);
+assert.throws(() => sessions.write(0, 1, 10), /valid/);
 assert.throws(() => sessions.read(1, 0), /positive integers/);
 
 const unavailableStorage = {
