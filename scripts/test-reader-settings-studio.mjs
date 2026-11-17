@@ -53,7 +53,7 @@ for (const selector of [".readerPrefsStudio", ".readerSwatches button", ".reader
 }
 assert.match(css, /\.readerPage \.readerContent\{unicode-bidi:plaintext;text-align:start\}/,
   "Mixed Urdu, Arabic, Persian and Latin paragraphs must resolve direction independently without forcing the whole chapter RTL.");
-assert.match(css, /\\.readerSwatches button\\{width:44px;height:44px;min-width:44px;/,
+assert.match(css, /\.readerSwatches button\{width:44px;height:44px;min-width:44px;/,
   "Colour swatches must preserve 44px touch targets.");
 assert.match(css, /@media\(max-width:520px\)\{[\s\S]*?\.readerPrefsStudio\{grid-template-columns:minmax\(0,1fr\)/,
   "The settings studio must collapse to a single column on narrow screens.");
