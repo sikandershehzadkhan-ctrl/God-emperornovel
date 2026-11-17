@@ -14,3 +14,16 @@ assert.match(historyPost, /FROM unlocks WHERE user_id=\? AND chapter_id=\?/, "un
 assert.match(historyPost, /Unlock this chapter before saving reading progress/, "denied locked chapter writes must explain why");
 
 console.log("Reader history authorization checks passed.");
+
+const historyDelete = worker.split("\n").find(line => line.includes('if(p==="/api/history"&&m==="DELETE")'));
+assert.ok(historyDelete, "history deletion endpoint must exist");
+assert.match(historyDelete, /need\(u\)/, "history deletion must require authentication");
+assert.match(historyDelete, /req\.headers\.get\("origin"\)!==url\.origin/, "history deletion must reject cross-origin requests");
+assert.match(historyDelete, /DELETE FROM history WHERE user_id=\?/, "history deletion must be scoped to the session owner");
+assert.match(historyDelete, /DELETE FROM history WHERE user_id=\? AND novel_id=\?/, "single-entry deletion must be scoped to the session owner and novel");
+assert.match(historyDelete, /Number\.isSafeInteger\(novelId\)/, "single-entry deletion must validate the novel id");
+const app = readFileSync(new URL("../public/app.js", import.meta.url), "utf8");
+assert.match(app, /id="clearHistory"/, "history page must expose a clear-history action");
+assert.match(app, /class="ghost removeHistory"/, "history entries must expose individual removal");
+assert.match(app, /method:'DELETE'/, "history controls must use the deletion endpoint");
+assert.match(app, /Bookmarks and saved chapters will remain/, "clear-history confirmation must explain unaffected saved data");
