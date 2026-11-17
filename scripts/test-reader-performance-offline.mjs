@@ -15,7 +15,7 @@ assert.match(app,/addEventListener\('resize',scheduleProgressUpdate,\{passive:tr
 assert.match(app,/addEventListener\('pageshow',scheduleProgressUpdate\)/,
   'Progress must refresh when a reader page returns from the back-forward cache.');
 
-assert.match(worker,/const STATIC_ASSET=\/\\\\\./,
+assert.match(worker,/const STATIC_ASSET=\/\\\./,
   'Offline runtime caching must be restricted to static asset file extensions.');
 assert.match(worker,/url\.origin!==self\.location\.origin\|\|url\.pathname\.startsWith\('\/api\/'\)/,
   'Cross-origin requests and API responses must never enter the service-worker cache.');
