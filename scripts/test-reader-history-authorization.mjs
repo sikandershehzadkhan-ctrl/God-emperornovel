@@ -28,4 +28,4 @@ const app = readFileSync(new URL("../public/app.js", import.meta.url), "utf8");
 assert.match(app, /id="clearHistory"/, "history page must expose a clear-history action");
 assert.match(app, /class="ghost removeHistory"/, "history entries must expose individual removal");
 assert.match(app, /method:'DELETE'/, "history controls must use the deletion endpoint");
-assert.match(app, /Bookmarks and saved chapters will remain/, "clear-history confirmation must explain unaffected saved data");
+assert.match(app, /Bookmarks and saved stories will remain/, "clear-history confirmation must explain unaffected saved data");
