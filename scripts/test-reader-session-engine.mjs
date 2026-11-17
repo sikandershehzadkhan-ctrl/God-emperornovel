@@ -29,6 +29,14 @@ assert.deepEqual(sessions.read(12, 4), {
 });
 assert.equal(sessions.read(12, 5), null, "progress must not leak between chapters");
 assert.equal(sessions.read(13, 4), null, "progress must not leak between novels");
+const accountA = "12:account:reader-100";
+const accountB = "12:account:reader-200";
+assert.equal(sessions.write(accountA, 4, 62, 1700000000001), true, "account-scoped novel keys must be accepted");
+assert.equal(sessions.read(accountA, 4).progress, 62, "signed-in reader progress must restore from its account namespace");
+assert.equal(sessions.read(accountB, 4), null, "progress must not leak between signed-in accounts");
+assert.equal(sessions.read(12, 4), null, "guest progress must remain separate from signed-in progress");
+assert.equal(sessions.write("12:account:reader-100/unsafe", 4, 20), false, "unsafe account namespaces must be rejected");
+
 assert.equal(sessions.write(12, 4, 150, 1), true);
 assert.equal(sessions.read(12, 4).progress, 100, "progress must clamp at 100");
 assert.equal(sessions.write(12, 4, -20, 1), true);
