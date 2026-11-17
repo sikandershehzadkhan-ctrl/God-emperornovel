@@ -6112,3 +6112,6 @@ html[data-theme="cosmic"]{--in-text:#FFFFFF;--in-text-muted:#DCE5FF;--in-line:#8
 .homeSsrFooter{border-top:1px solid var(--border,var(--line));padding:22px 0;color:var(--text-secondary,var(--muted));font-size:.88rem}
 .homeSsrFooter .wrap{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:14px}
 @media(max-width:700px){.homeSsrNav{align-items:flex-start;flex-direction:column;padding-block:14px}.homeSsrNav nav{gap:9px 16px}.homeSsrNav nav a{min-height:40px;display:inline-flex;align-items:center}.homeSsrFooter .wrap{align-items:flex-start;flex-direction:column}}
+
+/* Mixed-script chapter text: resolve bidi direction independently for each paragraph. */
+.readerPage .readerContent{unicode-bidi:plaintext;text-align:start}
