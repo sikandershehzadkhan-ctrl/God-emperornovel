@@ -25,10 +25,12 @@ assert.match(app, /const prefGet=key=>\{try\{return localStorage\.getItem\(key\)
   "Reader preference reads must tolerate unavailable browser storage.");
 assert.match(app, /readerResetPrefs[\s\S]*?prefRemove\(k\)[\s\S]*?setReaderTheme\('dark'\)/,
   "Reset must clear reader-only preferences and restore the default theme.");
-assert.match(app, /const openReaderSettings=\(\)=>\{[\s\S]*?readerSettingsSection[\s\S]*?focus\(\{preventScroll:true\}\)/,
-  "The settings shortcut must open the drawer and move focus into the settings panel.");
-assert.match(app, /const closeReaderDrawer=\(\)=>\{drawer\.hidden=true;syncDrawerState\(\);\}/,
-  "The reader drawer must keep both toolbar expanded states synchronized.");
+assert.match(app, /const openReaderDrawer=\(trigger,target\)=>\{[\s\S]*?drawer\.hidden=false[\s\S]*?target\.focus\(\{preventScroll:true\}\)/,
+  "Opening reader settings must expose the drawer and move focus into its selected control.");
+assert.match(app, /const openReaderSettings=\(\)=>openReaderDrawer\(settingsBtn,\$\('#readerThemeSelect'\)\)/,
+  "The settings shortcut must focus the reader theme control.");
+assert.match(app, /const closeReaderDrawer=\(restoreFocus=true\)=>\{[\s\S]*?drawer\.hidden=true[\s\S]*?if\(restoreFocus\)drawerTrigger\.focus\(\)/,
+  "Closing the reader drawer must hide it and restore focus to its trigger.");
 assert.match(app, /const readerStorage=\{[\s\S]*?getItem:key=>\{try\{return window\.localStorage\.getItem\(key\)\}catch\{return null\}\}/,
   "Reader session storage reads must tolerate browser storage being unavailable.");
 assert.match(app, /createReaderSessionStore\(readerStorage\)/,
