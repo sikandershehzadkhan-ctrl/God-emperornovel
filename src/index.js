@@ -491,7 +491,7 @@ async function api(req,env){
   if(!result){const current=await env.DB.prepare("SELECT novel_id,chapter_number,percent,revision,updated_at FROM reading_positions WHERE user_id=? AND novel_id=?").bind(u.id,nid).first();return json({error:"A newer reading position already exists. Refresh the saved position before retrying.",position:current||null},409)}
   return json({position:result});
  }
- if(p==="/api/history"&&m==="GET"){const e=need(u);if(e)return e;return json((await env.DB.prepare(`SELECT h.novel_id,h.chapter_number,h.updated_at,n.title,n.author,n.cover_url FROM history h JOIN novels n ON n.id=h.novel_id WHERE h.user_id=? AND n.publication_status='published' AND n.rights_status IN ('original','public_domain','licensed','authorized') ORDER BY h.updated_at DESC LIMIT 50`).bind(u.id).all()).results)}
+ if(p==="/api/history"&&m==="GET"){const e=need(u);if(e)return e;return json((await env.DB.prepare(`SELECT h.novel_id,h.chapter_number,h.updated_at,n.title,n.author,n.cover_url,rp.chapter_number progress_chapter_number,rp.percent progress_percent,rp.updated_at progress_updated_at FROM history h JOIN novels n ON n.id=h.novel_id LEFT JOIN reading_positions rp ON rp.user_id=h.user_id AND rp.novel_id=h.novel_id WHERE h.user_id=? AND n.publication_status='published' AND n.rights_status IN ('original','public_domain','licensed','authorized') ORDER BY h.updated_at DESC LIMIT 50`).bind(u.id).all()).results)}
  if(p==="/api/history"&&m==="DELETE"){
   const e=need(u);if(e)return e;
   if(req.headers.get("origin")!==url.origin)return json({error:"Cross-origin history changes are not allowed."},403);
