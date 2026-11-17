@@ -194,7 +194,7 @@ async function chapters(){const id=location.pathname.split('/')[2];const n=await
 async function reader(){
  const readerSessionModule=await import('/reader-session.mjs');
  const readerOfflineModule=await import('/reader-offline.mjs');
- const offlineStore=readerOfflineModule.createOfflineChapterStore(window.caches);
+ const offlineStore=readerOfflineModule.createOfflineChapterStore(window.caches||{open:async()=>{throw new Error('Cache API unavailable')}});
  const readerStorage={
   getItem:key=>{try{return window.localStorage.getItem(key)}catch{return null}},
   setItem:(key,value)=>{try{window.localStorage.setItem(key,value)}catch{}},
