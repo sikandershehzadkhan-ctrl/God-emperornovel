@@ -14,6 +14,8 @@ assert.ok(app.includes('unlocked:d.unlocked===true'),'Only content currently aut
 assert.ok(app.includes('offlineAllowed:d.offline_allowed===true'),'Client downloads must require the API offline-rights flag.');
 assert.ok(workerSource.includes("offline_allowed:['original','public_domain'].includes(String(c.rights_status))"),'Only original and public-domain works are currently approved for offline copies.');
 assert.ok(app.includes('Save chapter offline'),'Offline downloads must require an explicit user action.');
+assert.ok(app.includes('Anyone with access to this browser profile'),'The offline library must disclose local-device privacy risk.');
+assert.ok(app.includes('navigator.serviceWorker.ready'),'Offline downloads must wait for service-worker readiness.');
 assert.ok(app.includes('data-offline-remove'),'Users must be able to remove individual offline chapters.');
 assert.ok(worker.includes("!key.startsWith('imperial-novel-offline-chapters-')"),'App updates must preserve the separate user offline-chapter cache.');
 assert.ok(css.includes('.readerOfflinePanel'),'Offline library must have a responsive reader UI.');
@@ -43,6 +45,13 @@ assert.equal((await store.save({novel,chapter:{...chapter,chapter_number:4,offli
 assert.equal((await store.save({novel,chapter:{...chapter,chapter_number:4,content:'x'.repeat(OFFLINE_CHAPTER_MAX_BYTES+1)}})).reason,'chapter-too-large','Oversized chapters must be rejected.');
 assert.equal(await store.remove(7,3),true,'A user must be able to remove a saved chapter.');
 assert.equal(await store.get(7,3),null,'Removed content must no longer be available.');
+const limitedStorage=new MemoryCacheStorage();
+const limitedStore=createOfflineChapterStore(limitedStorage);
+for(let number=1;number<=OFFLINE_CHAPTER_LIMIT;number++){
+  const saved=await limitedStore.save({novel:{...novel,id:8},chapter:{...chapter,id:80+number,chapter_number:number}});
+  assert.equal(saved.ok,true,'Each chapter up to the offline limit should save.');
+}
+assert.equal((await limitedStore.save({novel:{...novel,id:8},chapter:{...chapter,id:999,chapter_number:999}})).reason,'chapter-limit','The store must refuse downloads beyond its chapter cap.');
 assert.equal(OFFLINE_CHAPTER_LIMIT,25,'Offline storage must have a bounded chapter count.');
 assert.equal(OFFLINE_TOTAL_MAX_BYTES,20*1024*1024,'Offline storage must have a bounded total size.');
 console.log('Offline chapter authorization, storage limits, retrieval and removal checks passed.');
