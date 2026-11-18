@@ -26,19 +26,19 @@ These are source-level positive signals. They do not replace adversarial cross-a
 
 ### 1. Comic chapter policy consistency
 
-<badge>Resolved in PR branch</badge>
+**Status: resolved in PR branch.**
 
 The author chapter PATCH handler now loads the parent novel's content format and calls `validateComicChapterContent(content)` for comic formats, matching the create path. Invalid content is rejected rather than silently rewritten. A regression assertion covers the shared validator call.
 
 ### 2. Bookmark write validation
 
-<badge>Resolved in PR branch</badge>
+**Status: resolved in PR branch.**
 
 `POST /api/bookmark` now validates positive safe-integer novel/chapter identifiers and confirms that the requested chapter number belongs to that novel, with both chapter and novel published and the novel rights-eligible. The write remains scoped to the authenticated `u.id`. Regression assertions cover the identifier and resource relationship checks.
 
 ### 3. Partial chapter update integrity
 
-<badge>Resolved in PR branch</badge>
+**Status: resolved in PR branch.**
 
 The author chapter PATCH handler now preserves the existing lock state when `is_locked` is omitted and rejects ticket costs that are not safe integers in the range 0 through 1,000,000. This prevents a title/body-only edit from implicitly unlocking a chapter and aligns update validation with reader unlock constraints.
 
