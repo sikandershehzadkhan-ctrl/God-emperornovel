@@ -4,12 +4,14 @@ import { SITEMAP_STATIC_PATHS } from "../src/sitemap.mjs";
 
 const manifest = JSON.parse(await readFile(new URL("../docs/architecture/IMPERIAL-ROUTE-INVENTORY-BASELINE-2026-11-18.json", import.meta.url), "utf8"));
 const worker = await readFile(new URL("../src/index.js", import.meta.url), "utf8");
+const client = await readFile(new URL("../public/app.js", import.meta.url), "utf8");
 const sitemapSource = await readFile(new URL("../src/sitemap.mjs", import.meta.url), "utf8");
 const wrangler = await readFile(new URL("../wrangler.toml", import.meta.url), "utf8");
 
 assert.equal(manifest.status, "source-inventory-baseline-not-release-certified");
 assert.equal(manifest.source_evidence.worker_file, "src/index.js");
 assert.equal(manifest.source_evidence.sitemap_file, "src/sitemap.mjs");
+assert.equal(manifest.source_evidence.client_file, "public/app.js");
 
 const mapMatch = worker.match(/const map=\{([\s\S]*?)\};if\(map\[p\]\)/);
 assert.ok(mapMatch, "Worker exact HTML route map must remain discoverable");
@@ -28,6 +30,7 @@ for (const route of manifest.dynamic_page_patterns) {
   assert.ok(route.samples?.length, "dynamic route must include representative samples: " + route.kind);
   for (const sample of route.samples) assert.ok(pattern.test(sample), "dynamic route sample mismatch: " + sample);
   assert.ok(worker.includes(route.source_expression), "Worker dynamic route expression missing: " + route.kind);
+  if (route.client_source_expression) assert.ok(client.includes(route.client_source_expression), "Client route behavior expression missing: " + route.kind);
 }
 
 const apiStart = worker.indexOf("async function api(");
