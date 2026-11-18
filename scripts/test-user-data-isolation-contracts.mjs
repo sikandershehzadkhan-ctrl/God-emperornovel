@@ -52,7 +52,8 @@ assert.ok((profile.match(/\.bind\(u\.id\)/g) || []).length >= 4, "Profile aggreg
 const appStatus = requiresSession('if(p==="/api/author/applications/me"&&m==="GET")');
 assert.ok(appStatus.includes("WHERE user_id=?") && appStatus.includes(".bind(u.id)"), "Author application status must be scoped to its applicant");
 
-const projectList = requiresSession('if(p==="/api/author/ai/projects"&&m==="GET")');
+const projectList = routeBlock('if(p==="/api/author/ai/projects"&&m==="GET")');
+assert.ok(projectList.includes("author(u)"), "Author AI project listing must require author access");
 assert.ok(projectList.includes("WHERE p.owner_user_id=?") && projectList.includes(".bind(u.id)"), "Author AI project listing must be scoped to its owner");
 
 assert.ok(api.includes("let aip=p.match"), "Individual author AI project routes must remain registered");
