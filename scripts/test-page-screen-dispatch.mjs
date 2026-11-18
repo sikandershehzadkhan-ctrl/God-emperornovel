@@ -58,5 +58,5 @@ for (const family of screen.dynamic_routes) {
 }
 
 assert.ok(screen.acceptance_gaps.some(gap => gap.includes("live browser")));
-assert.ok(screen.asset_observations.some(note => note.includes("rewrites legacy shell asset references")));
+assert.ok(screen.asset_observations.some(note => note.includes("rewrites legacy /app.js")));
 console.log("Page screen capability inventory passed: " + screen.exact_routes.length + " exact routes, " + screen.dynamic_routes.length + " dynamic families, version " + pkg.version + " bundle parity. Visual and browser QA remain explicitly unverified.");
