@@ -1,7 +1,7 @@
 import assert from "node:assert/strict";
 import { readFile } from "node:fs/promises";
 import { SITEMAP_STATIC_PATHS as sitemapPaths } from "../src/sitemap.mjs";
-import { PAGE_ROUTE_SHELLS, DYNAMIC_PAGE_ROUTES, NOINDEX_EXACT_PATHS, SITEMAP_STATIC_PATHS, resolvePageShell, isNoindexPath } from "../src/route-registry.mjs";
+import { PAGE_ROUTE_SHELLS, DYNAMIC_PAGE_ROUTES, NOINDEX_EXACT_PATHS, SITEMAP_STATIC_PATHS, SITEMAP_ENDPOINTS, resolvePageShell, isNoindexPath } from "../src/route-registry.mjs";
 
 const manifest = JSON.parse(await readFile(new URL("../docs/architecture/IMPERIAL-ROUTE-INVENTORY-BASELINE-2026-11-18.json", import.meta.url), "utf8"));
 const worker = await readFile(new URL("../src/index.js", import.meta.url), "utf8");
@@ -42,6 +42,7 @@ for (const route of manifest.dynamic_page_patterns) {
 assert.deepEqual([...NOINDEX_EXACT_PATHS], manifest.noindex_exact_paths, "noindex paths must match audited source baseline");
 for (const path of NOINDEX_EXACT_PATHS) assert.equal(isNoindexPath(path), true, "noindex policy missing: " + path);
 assert.equal(isNoindexPath("/catalog"), false, "public catalog must remain indexable by default");
+assert.deepEqual([...SITEMAP_ENDPOINTS], manifest.sitemap_endpoints, "canonical sitemap endpoints must match audited baseline");
 assert.deepEqual([...SITEMAP_STATIC_PATHS], manifest.sitemap_static_paths, "canonical sitemap paths must match audited baseline");
 assert.deepEqual([...sitemapPaths], [...SITEMAP_STATIC_PATHS], "sitemap renderer must consume canonical static paths");
 assert.ok(sitemapSource.includes("route-registry.mjs"), "sitemap source must import the canonical route registry");
