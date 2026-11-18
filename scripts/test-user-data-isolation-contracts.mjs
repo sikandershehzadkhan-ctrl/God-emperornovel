@@ -55,7 +55,31 @@ const projectList = requiresSession('if(p==="/api/author/ai/projects"&&m==="GET"
 assert.ok(projectList.includes("WHERE p.owner_user_id=?") && projectList.includes(".bind(u.id)"), "Author AI project listing must be scoped to its owner");
 
 assert.ok(api.includes("let aip=p.match"), "Individual author AI project routes must remain registered");
-assert.ok(api.includes("Number(row.owner_user_id)!==Number(u.id)"), "Individual author AI projects must enforce owner identity");
+const aiProjectRoutes = [
+  'if(aip&&m==="GET")',
+  'if(aip&&m==="PATCH")',
+  'if(/^\\/api\\/author\\/ai\\/projects\\/\\d+\\/blueprint$/.test(p)&&m==="POST")',
+  'if(/^\\/api\\/author\\/ai\\/projects\\/\\d+\\/run$/.test(p)&&m==="POST")',
+  'if(/^\\/api\\/author\\/ai\\/projects\\/\\d+\\/jobs$/.test(p)&&m==="GET")',
+];
+for (const marker of aiProjectRoutes) {
+  const block = routeBlock(marker);
+  assert.ok(block.includes("author(u)"), "AI project operation must require author access: " + marker);
+  assert.ok(block.includes("Number(row.owner_user_id)!==Number(u.id)"),
+    "Every individual AI project operation must enforce project ownership: " + marker);
+}
+const authorChapterRoutes = [
+  'if(p==="/api/author/chapters"&&m==="GET")',
+  'if(p==="/api/author/chapters"&&m==="POST")',
+  'if(/^\\/api\\/author\\/chapters\\/\\d+$/.test(p)&&m==="PATCH")',
+  'if(/^\\/api\\/author\\/chapters\\/\\d+\\/publish$/.test(p)&&m==="POST")',
+];
+for (const marker of authorChapterRoutes) {
+  const block = routeBlock(marker);
+  assert.ok(block.includes("author(u)"), "Author chapter operation must require author access: " + marker);
+  assert.ok(block.includes("owner_user_id") || block.includes("novel_id"),
+    "Author chapter operation must resolve its parent novel ownership: " + marker);
+}
 assert.ok(api.includes("Number(c.owner_user_id)!==Number(u.id)"), "Author chapter operations must enforce parent novel ownership");
 assert.ok(api.includes("Number(n.owner_user_id)!==Number(u.id)"), "Author novel operations must enforce novel ownership");
 
