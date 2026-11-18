@@ -17,6 +17,7 @@ const bookmarks = [], history = [], library = [];
 const follows = [{ user_id: 301, novel_id: 10, created_at: "2026-11-18 00:00:00" }];
 const notifications = [{ id: 1, user_id: 301, message: "Private notice" }];
 const ticketLedger = [{ id: 1, user_id: 301, delta: -5, reason: "test", reference: "private", created_at: "2026-11-18 00:00:00" }];
+const authorApplications = [{ id: 91, user_id: 301, display_name: "A's private application", bio: "Private", experience: "New", portfolio_url: "", preferred_formats: '["original"]', status: "pending" }];
 const novels = [{ id: 501, owner_user_id: 301, title: "A's Novel", author: "account_a", description: "", status: "ongoing", kind: "original", language: "English", rights_status: "original", publication_status: "draft" }];
 const chapters = [{ id: 601, novel_id: 501, chapter_number: 1, title: "A's Chapter", content: "Chapter text", is_locked: 0, ticket_cost: 0, owner_user_id: 301, kind: "original" }];
 
@@ -37,6 +38,7 @@ class FakeStatement {
     if (this.sql.includes("SELECT 1 FROM user_library WHERE user_id=? AND novel_id=?")) {
       return library.some(row => row.user_id === this.values[0] && row.novel_id === this.values[1]) ? { 1: 1 } : null;
     }
+    if (this.sql.includes("FROM author_applications WHERE user_id=?")) return authorApplications.find(row => row.user_id === this.values[0]) || null;
     if (this.sql.includes("SELECT * FROM novels WHERE id=?")) return novels.find(row => row.id === this.values[0]) || null;
     if (this.sql.includes("SELECT c.*,n.owner_user_id,n.kind FROM chapters c JOIN novels n ON n.id=c.novel_id WHERE c.id=?")) {
       return chapters.find(row => row.id === this.values[0]) || null;
@@ -168,5 +170,9 @@ assert.deepEqual(await payload(await request("account-b-token", "/api/notificati
 assert.deepEqual((await payload(await request("account-a-token", "/api/notifications", "GET"))).map(row => row.id), [1]);
 assert.deepEqual(await payload(await request("account-b-token", "/api/tickets/ledger", "GET")), [], "B must not read A's ticket ledger");
 assert.deepEqual((await payload(await request("account-a-token", "/api/tickets/ledger", "GET"))).map(row => row.delta), [-5]);
+const bApplication = await payload(await request("account-b-token", "/api/author/applications/me", "GET"));
+assert.equal(bApplication.application, null, "B must not read A's author application");
+const aApplication = await payload(await request("account-a-token", "/api/author/applications/me", "GET"));
+assert.equal(aApplication.application.id, 91, "A must be able to read A's own author application");
 
-console.log("PASS: Worker fetch two-account isolation for bookmarks, history, library, follows, notifications, ticket ledger, author novel listing/update, and author chapter update; forged identity and invalid chapter relationships rejected. Deterministic D1 test double only, not live Cloudflare D1.");
+console.log("PASS: Worker fetch two-account isolation for bookmarks, history, library, follows, notifications, ticket ledger, author applications, author novel listing/update, and author chapter update; forged identity and invalid chapter relationships rejected. Deterministic D1 test double only, not live Cloudflare D1.");
