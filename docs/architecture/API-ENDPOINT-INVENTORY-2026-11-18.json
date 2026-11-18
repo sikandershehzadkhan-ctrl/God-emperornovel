@@ -873,8 +873,8 @@
       ],
       "method_evidence": "explicit-literal-conditions",
       "source_lines": [
-        727,
-        733
+        728,
+        734
       ],
       "observed_helper_signals": [
         "author",
@@ -891,8 +891,8 @@
       ],
       "method_evidence": "explicit-literal-conditions",
       "source_lines": [
-        738,
-        742
+        739,
+        743
       ],
       "observed_helper_signals": [
         "author"
@@ -908,8 +908,8 @@
       ],
       "method_evidence": "explicit-literal-conditions",
       "source_lines": [
-        770,
-        774
+        771,
+        775
       ],
       "observed_helper_signals": [
         "author"
@@ -924,7 +924,7 @@
       ],
       "method_evidence": "explicit-literal-conditions",
       "source_lines": [
-        796
+        797
       ],
       "observed_helper_signals": [
         "admin"
@@ -939,7 +939,7 @@
       ],
       "method_evidence": "explicit-literal-conditions",
       "source_lines": [
-        797
+        798
       ],
       "observed_helper_signals": [
         "admin"
@@ -954,7 +954,7 @@
       ],
       "method_evidence": "explicit-literal-conditions",
       "source_lines": [
-        844
+        845
       ],
       "observed_helper_signals": [
         "admin"
@@ -969,7 +969,7 @@
       ],
       "method_evidence": "explicit-literal-conditions",
       "source_lines": [
-        859
+        860
       ],
       "observed_helper_signals": [
         "admin"
@@ -984,7 +984,7 @@
       ],
       "method_evidence": "explicit-literal-conditions",
       "source_lines": [
-        860
+        861
       ],
       "observed_helper_signals": [
         "admin"
@@ -999,7 +999,7 @@
       ],
       "method_evidence": "explicit-literal-conditions",
       "source_lines": [
-        862
+        863
       ],
       "observed_helper_signals": [
         "admin"
@@ -1014,7 +1014,7 @@
       ],
       "method_evidence": "explicit-literal-conditions",
       "source_lines": [
-        864
+        865
       ],
       "observed_helper_signals": [
         "admin"
@@ -1031,9 +1031,9 @@
       ],
       "method_evidence": "explicit-literal-conditions",
       "source_lines": [
-        865,
         866,
-        870
+        867,
+        871
       ],
       "observed_helper_signals": [
         "admin"
@@ -1048,7 +1048,7 @@
       ],
       "method_evidence": "explicit-literal-conditions",
       "source_lines": [
-        867
+        868
       ],
       "observed_helper_signals": [
         "admin"
@@ -1063,7 +1063,7 @@
       ],
       "method_evidence": "explicit-literal-conditions",
       "source_lines": [
-        868
+        869
       ],
       "observed_helper_signals": [
         "admin"
@@ -1078,7 +1078,7 @@
       ],
       "method_evidence": "explicit-literal-conditions",
       "source_lines": [
-        869
+        870
       ],
       "observed_helper_signals": [
         "need"
@@ -1093,7 +1093,7 @@
       ],
       "method_evidence": "explicit-literal-conditions",
       "source_lines": [
-        871
+        872
       ],
       "observed_helper_signals": [
         "admin"
@@ -1108,7 +1108,7 @@
       ],
       "method_evidence": "explicit-literal-conditions",
       "source_lines": [
-        873
+        874
       ],
       "observed_helper_signals": [
         "admin"
