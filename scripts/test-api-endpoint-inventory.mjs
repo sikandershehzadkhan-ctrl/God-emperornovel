@@ -15,7 +15,7 @@ const sourceOccurrences = new Map();
 const sourcePattern = /p\s*===?\s*["']([^"']+)["']/g;
 let sourceMatch;
 while ((sourceMatch = sourcePattern.exec(api))) {
-  const line = api.slice(0, sourceMatch.index).split("\n").length;
+  const line = worker.slice(0, apiStart + sourceMatch.index).split("\n").length;
   const existing = sourceOccurrences.get(sourceMatch[1]) || [];
   existing.push(line);
   sourceOccurrences.set(sourceMatch[1], existing);
