@@ -14,6 +14,10 @@ const accounts = new Map([
 const sessions = new Map();
 for (const [token, user] of accounts) sessions.set(await hash(token), user);
 const history = [];
+const recommendations = [
+  { user_id: 101, novel_id: 10, reason: "Matches Account A reading history", score: 91 },
+  { user_id: 202, novel_id: 20, reason: "Matches Account B reading history", score: 87 },
+];
 const ticketLedger = [
   { id: 11, user_id: 101, delta: 25, reason: "purchase", reference: "A-ORDER" },
   { id: 22, user_id: 202, delta: 10, reason: "purchase", reference: "B-ORDER" },
@@ -41,6 +45,16 @@ class FakeStatement {
     return null;
   }
   async all() {
+    if (this.sql.includes("FROM recommendations r JOIN novels n")) {
+      const userId = this.values[0];
+      return { results: recommendations.filter(row => row.user_id === userId).map(row => ({
+        id: row.novel_id, title: "Recommended Novel " + row.novel_id, alt_titles: "",
+        author: "Test Author", description: "Rights-cleared test novel", status: "ongoing",
+        kind: "novel", language: "English", cover_url: "", rights_status: "original",
+        views: 100, rating: 8, publication_status: "published", genres: "Fantasy",
+        tags: "System", chapter_count: 4, latest_chapter: 4, reason: row.reason, score: row.score
+      })) };
+    }
     if (this.sql.includes("FROM history h JOIN novels n")) {
       const userId = this.values[0];
       return { results: history.filter(row => row.user_id === userId).map(row => ({
@@ -105,7 +119,7 @@ class FakeStatement {
   }
 }
 
-const env = { DB: { prepare: sql => new FakeStatement(sql) }, SITE_NAME: "Imperial Novel" };
+const env = { DB: { prepare: sql => new FakeStatement(sql), batch: async statements => Promise.all(statements.map(statement => statement.run())) }, SITE_NAME: "Imperial Novel" };
 async function request(token, method, body, path = "/api/history") {
   const headers = { cookie: "session=" + token };
   const init = { method, headers };
@@ -174,6 +188,13 @@ assert.equal(aApplication.application.id, 31,
 assert.equal(bApplication.application, null,
   "Account B must not read Account A's author application");
 
+const aRecommendations = await payload(await request("reader-a-token", "GET", undefined, "/api/recommendations"));
+const bRecommendations = await payload(await request("reader-b-token", "GET", undefined, "/api/recommendations"));
+assert.deepEqual(aRecommendations.map(row => row.id), [10], "Account A must see only its own recommendations");
+assert.deepEqual(bRecommendations.map(row => row.id), [20], "Account B must not read Account A recommendations");
+assert.equal(aRecommendations[0].reason, "Matches Account A reading history");
+assert.equal(bRecommendations[0].reason, "Matches Account B reading history");
+
 const aFollows = await payload(await request("reader-a-token", "GET", undefined, "/api/follows"));
 const bFollows = await payload(await request("reader-b-token", "GET", undefined, "/api/follows"));
 assert.deepEqual(aFollows.map(row => row.id), [10],
@@ -186,4 +207,4 @@ assert.deepEqual(follows.sort((a, b) => a.user_id - b.user_id), [
   { user_id: 101, novel_id: 10 }, { user_id: 202, novel_id: 10 }
 ], "Follow ownership must use the authenticated session, not a forged user_id");
 
-console.log("PASS: Worker fetch two-account history, library, notification, follow, ticket-ledger, and author-application isolation; authenticated history/follow ownership; forged user_id rejection; and account-scoped notification mutation using a deterministic D1 test double. This is not a live Cloudflare D1 test.");
+console.log("PASS: Worker fetch two-account history, library, notification, follow, recommendations, ticket-ledger, and author-application isolation; authenticated history/follow ownership; forged user_id rejection; and account-scoped notification mutation using a deterministic D1 test double. This is not a live Cloudflare D1 test.");
