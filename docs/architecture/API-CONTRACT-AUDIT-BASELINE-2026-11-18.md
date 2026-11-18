@@ -11,7 +11,7 @@ Establish a source-backed starting point for the API method, authentication, aut
 - Existing inventory source checks: `scripts/test-api-endpoint-inventory.mjs`
 - Public client runtime: `public/app.js`
 
-The inventory is a first-pass static scan of literal path branches and dynamic path matchers. It is now pinned to Worker blob `d35630f02e392496ce8826c9f720b75672b099c8`, with exact route source-line evidence checked by the build gate. Its method and helper-signal fields are evidence hints only. They do not prove allowed methods, authorization outcomes, or resource-level ownership.
+The inventory is a first-pass static scan of literal path branches and dynamic path matchers. It is now pinned to Worker blob `f4559f1b3442c5a2d38db4694ec6c945f31ac736`, with exact route source-line evidence checked by the build gate. Its method and helper-signal fields are evidence hints only. They do not prove allowed methods, authorization outcomes, or resource-level ownership.
 
 ## Verified inventory totals
 
@@ -52,13 +52,19 @@ Fourteen literal paths previously had no explicit method evidence. They are now 
 
 Unsupported methods now receive HTTP 405 with an `Allow` header. `/api/taxonomy` allows GET and POST; the other 13 paths allow GET only. This resolves method dispatch for these paths, but does not resolve their authentication or resource-ownership contracts.
 
-### 3. Authorization signals are not sufficient evidence
+### 3. Taxonomy submitter identity required server-side binding
+
+The public taxonomy submission handler previously accepted `creator_id` and `creator_name` directly from the request body. A caller could therefore spoof attribution. The handler now requires an authenticated user for POST submissions and derives both identity fields from the session. GET remains public. A build-gated regression test rejects any return to client-controlled submitter identity.
+
+Status: **source-level remediation implemented; CI verification pending**.
+
+### 4. Authorization signals are not sufficient evidence
 
 The inventory records nearby calls to `need(u)`, `admin(u)`, and `author(u)`. These are useful navigation signals, but they do not prove that every database read or write is scoped to the authenticated account, that an author owns the addressed resource, or that an administrator-only action is correctly guarded.
 
 Dynamic routes need explicit per-operation ownership review, especially author AI projects, author novels/chapters, user records, publishing resources, donations, reports, requests, and connector authorization requests.
 
-### 4. Duplicate rating route branch remains present
+### 5. Duplicate rating route branch remains present
 
 The inventory records three literal `/api/rating` branch occurrences. Preserve this as a reconciliation item until the GET/POST handlers and any duplicate branch are reviewed together. Do not silently normalize the inventory count.
 
@@ -95,4 +101,4 @@ Unknown values must remain marked **unverified**, not inferred from route names 
 - No production deployment was performed.
 - No browser session or authenticated multi-account production test was performed.
 - This baseline does not certify endpoint security, API completeness, or client parity.
-- The separate API resource-validation work in PR #336 remains a separate stacked change and must be reconciled before the API foundation is declared complete.
+- The separate API resource-validation work in PR #336 remains a separate stacked change and must be reconciled before the API foundation is declared complete. The current branch includes source-level method guards and taxonomy identity hardening, but neither is considered validated until CI passes.
