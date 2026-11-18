@@ -232,4 +232,23 @@ const adminChapterPatch = worker.slice(adminChapterPatchStart, adminChapterPatch
 assert.ok(adminChapterPatchStart>=0 && adminChapterPatchEnd>adminChapterPatchStart, "Admin chapter review route must remain explicit");
 assert.match(adminChapterPatch, /\['draft','review','published'\]/, "Administrators must be able to retain, review, or approve chapters");
 
+
+const adminNovelStart = worker.indexOf('let apn=p.match(/^\\/api\\/admin\\/publishing\\/novels');
+const adminNovelEnd = worker.indexOf('\n let ach=p.match', adminNovelStart);
+const adminNovelPatch = worker.slice(adminNovelStart, adminNovelEnd);
+assert.ok(adminNovelStart>=0&&adminNovelEnd>adminNovelStart, "Admin novel review route must remain explicit");
+assert.match(adminNovelPatch, /previous!=='review'&&previous!=='published'/, "A novel cannot be approved directly from draft");
+assert.match(adminNovelPatch, /pub==='draft'&&previous==='review'&&!feedback/, "Returning a novel for changes requires reviewer feedback");
+assert.match(adminNovelPatch, /rights_verified_by/, "Novel approval must record rights reviewer identity");
+assert.match(adminNovelPatch, /reviewedBy=decision\?u\.id/, "Novel review decisions must record reviewer identity");
+assert.match(adminNovelPatch, /notifyUser\(env,row\.owner_user_id,'Novel approved and published'/, "Novel approval must notify its owner");
+assert.match(adminNovelPatch, /notifyUser\(env,row\.owner_user_id,'Changes requested for your novel'/, "Novel rejection must send reviewer feedback to its owner");
+assert.match(adminChapterPatch, /previous!=='review'&&previous!=='published'/, "A chapter cannot be approved directly from draft");
+assert.match(adminChapterPatch, /pub==='draft'&&previous==='review'&&!feedback/, "Returning a chapter for changes requires reviewer feedback");
+assert.match(adminChapterPatch, /admin_chapter_review_decision/, "Chapter decisions must be audited");
+assert.match(adminChapterPatch, /audit\(env,u,'admin_chapter_review_decision'/, "Chapter audit events must identify the acting administrator");
+assert.match(adminChapterPatch, /notifyUser\(env,parent\.owner_user_id,'Chapter approved and published'/, "Chapter approval must notify its owner");
+assert.match(adminChapterPatch, /notifyUser\(env,parent\.owner_user_id,'Changes requested for your chapter'/, "Chapter rejection must send reviewer feedback to its owner");
+assert.match(adminChapterPatch, /feedback=\$\{feedback\}/, "Chapter reviewer feedback must be retained in the audit trail");
+
 console.log("API authorization audit slice passed: 14 route classifications and taxonomy identity boundaries.");
