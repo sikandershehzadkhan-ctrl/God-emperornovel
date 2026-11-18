@@ -54,12 +54,7 @@ assert.ok(appStatus.includes("WHERE user_id=?") && appStatus.includes(".bind(u.i
 const projectList = requiresSession('if(p==="/api/author/ai/projects"&&m==="GET")');
 assert.ok(projectList.includes("WHERE p.owner_user_id=?") && projectList.includes(".bind(u.id)"), "Author AI project listing must be scoped to its owner");
 
-for (const marker of [
-  'if(p==="/api/author/ai/projects/"',
-  'if(p==="/api/author/ai/projects/"',
-]) {
-  assert.ok(api.includes(marker), "Expected author project route family must remain present");
-}
+assert.ok(api.includes('let aip=p.match(/^\\/api\\/author\\/ai\\/projects\\/(\\d+)$/)'), "Individual author AI project routes must remain registered");
 assert.ok(api.includes("Number(row.owner_user_id)!==Number(u.id)"), "Individual author AI projects must enforce owner identity");
 assert.ok(api.includes("Number(c.owner_user_id)!==Number(u.id)"), "Author chapter operations must enforce parent novel ownership");
 assert.ok(api.includes("Number(n.owner_user_id)!==Number(u.id)"), "Author novel operations must enforce novel ownership");
