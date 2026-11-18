@@ -51,5 +51,18 @@ assert.match(bookmarkHandler, /Number\.isSafeInteger\(novelId\)/, "Bookmark writ
 assert.match(bookmarkHandler, /c\.novel_id=\? AND c\.chapter_number=\?/);
 assert.match(bookmarkHandler, /c\.publication_status='published'.*n\.publication_status='published'/);
 assert.match(authorChapterPatch, /validateComicChapterContent\(content\)/, "Comic chapter edits must use the same content policy as creation");
+const historyStart = worker.indexOf('if(p==="/api/history"&&m==="POST")');
+const historyEnd = worker.indexOf('if(p==="/api/library"&&m==="GET")', historyStart);
+const historyWrite = worker.slice(historyStart, historyEnd);
+assert.match(historyWrite, /Number\.isSafeInteger\(chapterNumber\)/, "History writes must validate chapter numbers");
+assert.match(historyWrite, /c\.novel_id=\? AND c\.chapter_number=\?/);
+assert.match(historyWrite, /c\.publication_status='published'.*n\.publication_status='published'/);
+const commentsStart = worker.indexOf('if(p==="/api/comments"&&m==="GET")');
+const commentsEnd = worker.indexOf('if(p==="/api/comments/like"&&m==="POST")', commentsStart);
+const commentsRoutes = worker.slice(commentsStart, commentsEnd);
+assert.equal((commentsRoutes.match(/publication_status='published' AND rights_status IN/g)||[]).length, 2, "Public comment reads and writes must enforce novel publication and rights eligibility");
+const ratingGetStart = worker.indexOf('if(p==="/api/rating"&&m==="GET")');
+const ratingGetEnd = worker.indexOf('if(p==="/api/rating"&&m==="POST")', ratingGetStart);
+assert.match(worker.slice(ratingGetStart, ratingGetEnd), /publication_status='published' AND rights_status IN/, "Public rating reads must hide unpublished and ineligible novels");
 assert.ok(client.length > 0, "Client source must be available for literal call-site review");
 console.log("API authorization audit slice passed: 14 route classifications and taxonomy identity boundaries.");
