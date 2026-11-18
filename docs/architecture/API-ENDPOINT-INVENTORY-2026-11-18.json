@@ -2,12 +2,12 @@
   "audit_date": "2026-11-18",
   "branch": "architecture/phase-01-foundation-route-registry",
   "source_file": "src/index.js",
-  "source_blob": "a92a46b7a1c8243e278dda8240aed7e37fb00477",
+  "source_blob": "eadf78443f771ff1fbe6af72486c1d1b874901f5",
   "scope": "First-pass static inventory of literal API path branches and dynamic path matchers inside async function api(req,env).",
   "counts": {
     "literal_endpoint_paths": 74,
-    "literal_route_branch_occurrences": 94,
-    "explicit_method_conditions": 77,
+    "literal_route_branch_occurrences": 92,
+    "explicit_method_conditions": 112,
     "dynamic_route_families": 21
   },
   "method_semantics": "explicit_methods lists methods directly checked in the Worker dispatcher. allowed_methods may also record methods enforced inside a delegated handler. Unresolved method evidence is not proof of allowed methods. Unsupported-method behavior must be verified separately.",
@@ -18,7 +18,7 @@
       "explicit_methods": [
         "GET"
       ],
-      "method_evidence": "mixed-or-unconstrained-branches",
+      "method_evidence": "explicit-handler-method-guard",
       "source_lines": [
         413,
         423
@@ -26,9 +26,10 @@
       "observed_helper_signals": [],
       "review_required": true,
       "occurrences": 2,
-      "method_detail": "No explicit method predicate appears on this literal dispatcher branch. Current implementation behaves as a read-style handler, but unsupported methods are not explicitly rejected here; method enforcement remains unresolved.",
-      "observed_handler_style": "implicit-read-handler",
-      "method_enforcement": "not-explicitly-enforced"
+      "method_detail": "The fast path explicitly handles GET; the later branch rejects every non-GET request with 405 before schema initialization.",
+      "allowed_methods": [
+        "GET"
+      ]
     },
     {
       "path": "/api/agents",
@@ -147,129 +148,129 @@
     },
     {
       "path": "/api/me",
-      "explicit_methods": [],
-      "method_evidence": "mixed-or-unconstrained-branches",
+      "explicit_methods": [
+        "GET"
+      ],
+      "method_evidence": "explicit-literal-conditions",
       "source_lines": [
         427
       ],
       "observed_helper_signals": [],
       "review_required": true,
       "occurrences": 1,
-      "method_detail": "No explicit method predicate appears on this literal dispatcher branch. Current implementation behaves as a read-style handler, but unsupported methods are not explicitly rejected here; method enforcement remains unresolved.",
-      "observed_handler_style": "implicit-read-handler",
-      "method_enforcement": "not-explicitly-enforced"
+      "method_detail": "The dispatcher explicitly restricts this read-only endpoint to GET."
     },
     {
       "path": "/api/config",
-      "explicit_methods": [],
-      "method_evidence": "mixed-or-unconstrained-branches",
+      "explicit_methods": [
+        "GET"
+      ],
+      "method_evidence": "explicit-literal-conditions",
       "source_lines": [
         428
       ],
       "observed_helper_signals": [],
       "review_required": true,
       "occurrences": 1,
-      "method_detail": "No explicit method predicate appears on this literal dispatcher branch. Current implementation behaves as a read-style handler, but unsupported methods are not explicitly rejected here; method enforcement remains unresolved.",
-      "observed_handler_style": "implicit-read-handler",
-      "method_enforcement": "not-explicitly-enforced"
+      "method_detail": "The dispatcher explicitly restricts this read-only endpoint to GET."
     },
     {
       "path": "/api/genres",
-      "explicit_methods": [],
-      "method_evidence": "mixed-or-unconstrained-branches",
+      "explicit_methods": [
+        "GET"
+      ],
+      "method_evidence": "explicit-literal-conditions",
       "source_lines": [
         429
       ],
       "observed_helper_signals": [],
       "review_required": true,
       "occurrences": 1,
-      "method_detail": "No explicit method predicate appears on this literal dispatcher branch. Current implementation behaves as a read-style handler, but unsupported methods are not explicitly rejected here; method enforcement remains unresolved.",
-      "observed_handler_style": "implicit-read-handler",
-      "method_enforcement": "not-explicitly-enforced"
+      "method_detail": "The dispatcher explicitly restricts this read-only endpoint to GET."
     },
     {
       "path": "/api/tags",
-      "explicit_methods": [],
-      "method_evidence": "mixed-or-unconstrained-branches",
+      "explicit_methods": [
+        "GET"
+      ],
+      "method_evidence": "explicit-literal-conditions",
       "source_lines": [
         430
       ],
       "observed_helper_signals": [],
       "review_required": true,
       "occurrences": 1,
-      "method_detail": "No explicit method predicate appears on this literal dispatcher branch. Current implementation behaves as a read-style handler, but unsupported methods are not explicitly rejected here; method enforcement remains unresolved.",
-      "observed_handler_style": "implicit-read-handler",
-      "method_enforcement": "not-explicitly-enforced"
+      "method_detail": "The dispatcher explicitly restricts this read-only endpoint to GET."
     },
     {
       "path": "/api/public-authors",
-      "explicit_methods": [],
-      "method_evidence": "mixed-or-unconstrained-branches",
+      "explicit_methods": [
+        "GET"
+      ],
+      "method_evidence": "explicit-literal-conditions",
       "source_lines": [
         431
       ],
       "observed_helper_signals": [],
       "review_required": true,
       "occurrences": 1,
-      "method_detail": "No explicit method predicate appears on this literal dispatcher branch. Current implementation behaves as a read-style handler, but unsupported methods are not explicitly rejected here; method enforcement remains unresolved.",
-      "observed_handler_style": "implicit-read-handler",
-      "method_enforcement": "not-explicitly-enforced"
+      "method_detail": "The dispatcher explicitly restricts this read-only endpoint to GET."
     },
     {
       "path": "/api/sources",
-      "explicit_methods": [],
-      "method_evidence": "mixed-or-unconstrained-branches",
+      "explicit_methods": [
+        "GET"
+      ],
+      "method_evidence": "explicit-literal-conditions",
       "source_lines": [
         436
       ],
       "observed_helper_signals": [],
       "review_required": true,
       "occurrences": 1,
-      "method_detail": "No explicit method predicate appears on this literal dispatcher branch. Current implementation behaves as a read-style handler, but unsupported methods are not explicitly rejected here; method enforcement remains unresolved.",
-      "observed_handler_style": "implicit-read-handler",
-      "method_enforcement": "not-explicitly-enforced"
+      "method_detail": "The dispatcher explicitly restricts this read-only endpoint to GET."
     },
     {
       "path": "/api/omni/status",
-      "explicit_methods": [],
-      "method_evidence": "mixed-or-unconstrained-branches",
+      "explicit_methods": [
+        "GET"
+      ],
+      "method_evidence": "explicit-literal-conditions",
       "source_lines": [
         437
       ],
       "observed_helper_signals": [],
       "review_required": true,
       "occurrences": 1,
-      "method_detail": "No explicit method predicate appears on this literal dispatcher branch. Current implementation behaves as a read-style handler, but unsupported methods are not explicitly rejected here; method enforcement remains unresolved.",
-      "observed_handler_style": "implicit-read-handler",
-      "method_enforcement": "not-explicitly-enforced"
+      "method_detail": "The dispatcher explicitly restricts this read-only endpoint to GET."
     },
     {
       "path": "/api/omni/search",
-      "explicit_methods": [],
-      "method_evidence": "mixed-or-unconstrained-branches",
+      "explicit_methods": [
+        "GET"
+      ],
+      "method_evidence": "explicit-literal-conditions",
       "source_lines": [
         438
       ],
       "observed_helper_signals": [],
       "review_required": true,
       "occurrences": 1,
-      "method_detail": "No explicit method predicate appears on this literal dispatcher branch. Current implementation behaves as a read-style handler, but unsupported methods are not explicitly rejected here; method enforcement remains unresolved.",
-      "observed_handler_style": "implicit-read-handler",
-      "method_enforcement": "not-explicitly-enforced"
+      "method_detail": "The dispatcher explicitly restricts this read-only endpoint to GET."
     },
     {
       "path": "/api/omni/resolve",
-      "explicit_methods": [],
-      "method_evidence": "mixed-or-unconstrained-branches",
+      "explicit_methods": [
+        "GET"
+      ],
+      "method_evidence": "explicit-literal-conditions",
       "source_lines": [
         439
       ],
       "observed_helper_signals": [],
       "review_required": true,
       "occurrences": 1,
-      "method_detail": "No explicit method predicate appears on this literal dispatcher branch. Current implementation behaves as a read-style handler, but unsupported methods are not explicitly rejected here; method enforcement remains unresolved.",
-      "observed_handler_style": "implicit-read-handler",
-      "method_enforcement": "not-explicitly-enforced"
+      "method_detail": "The dispatcher explicitly restricts this read-only endpoint to GET."
     },
     {
       "path": "/api/omni/import",
@@ -303,8 +304,10 @@
     },
     {
       "path": "/api/omni/smart-unlock",
-      "explicit_methods": [],
-      "method_evidence": "mixed-or-unconstrained-branches",
+      "explicit_methods": [
+        "GET"
+      ],
+      "method_evidence": "explicit-literal-conditions",
       "source_lines": [
         442
       ],
@@ -313,9 +316,7 @@
       ],
       "review_required": true,
       "occurrences": 1,
-      "method_detail": "No explicit method predicate appears on this literal dispatcher branch. Current implementation behaves as a read-style handler, but unsupported methods are not explicitly rejected here; method enforcement remains unresolved.",
-      "observed_handler_style": "implicit-read-handler",
-      "method_enforcement": "not-explicitly-enforced"
+      "method_detail": "The dispatcher explicitly restricts this read-only endpoint to GET."
     },
     {
       "path": "/api/formats",
@@ -332,17 +333,17 @@
     },
     {
       "path": "/api/novels",
-      "explicit_methods": [],
-      "method_evidence": "mixed-or-unconstrained-branches",
+      "explicit_methods": [
+        "GET"
+      ],
+      "method_evidence": "explicit-literal-conditions",
       "source_lines": [
         446
       ],
       "observed_helper_signals": [],
       "review_required": true,
       "occurrences": 1,
-      "method_detail": "No explicit method predicate appears on this literal dispatcher branch. Current implementation behaves as a read-style handler, but unsupported methods are not explicitly rejected here; method enforcement remains unresolved.",
-      "observed_handler_style": "implicit-read-handler",
-      "method_enforcement": "not-explicitly-enforced"
+      "method_detail": "The dispatcher explicitly restricts this read-only endpoint to GET."
     },
     {
       "path": "/api/bookmark",
@@ -818,8 +819,10 @@
     },
     {
       "path": "/api/admin/stats",
-      "explicit_methods": [],
-      "method_evidence": "mixed-or-unconstrained-branches",
+      "explicit_methods": [
+        "GET"
+      ],
+      "method_evidence": "explicit-literal-conditions",
       "source_lines": [
         610
       ],
@@ -828,9 +831,7 @@
       ],
       "review_required": true,
       "occurrences": 1,
-      "method_detail": "No explicit method predicate appears on this literal dispatcher branch. Current implementation behaves as a read-style handler, but unsupported methods are not explicitly rejected here; method enforcement remains unresolved.",
-      "observed_handler_style": "implicit-read-handler",
-      "method_enforcement": "not-explicitly-enforced"
+      "method_detail": "The dispatcher explicitly restricts this read-only endpoint to GET."
     },
     {
       "path": "/api/admin/users",
