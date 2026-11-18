@@ -289,7 +289,9 @@ await payload(await request("account-b-token", "/api/author/ai/projects/801", "G
 await payload(await request("account-a-token", "/api/author/ai/projects/801", "PATCH", { name: "A renamed AI project" }));
 await payload(await request("account-b-token", "/api/author/ai/projects/801", "PATCH", { name: "B takeover" }), 403);
 assert.equal(aiProjects.find(row => row.id === 801).name, "A renamed AI project");
-assert.deepEqual((await payload(await request("account-a-token", "/api/author/ai/projects/801/jobs", "GET"))).map(row => row.id), [901]);
+const aJobs = await payload(await request("account-a-token", "/api/author/ai/projects/801/jobs", "GET"));
+assert.deepEqual(aJobs, [{ id: 901, chapter_number: 1, job_type: "draft", status: "complete" }], "The owner receives only the safe job-status projection, not prompt/result/error fields");
+assert.deepEqual(Object.keys(aJobs[0]).sort(), ["chapter_number", "id", "job_type", "status"]);
 await payload(await request("account-b-token", "/api/author/ai/projects/801/jobs", "GET"), 403);
 await payload(await request("account-b-token", "/api/author/ai/projects/801/blueprint", "POST"), 403);
 await payload(await request("account-b-token", "/api/author/ai/projects/801/run", "POST"), 403);
