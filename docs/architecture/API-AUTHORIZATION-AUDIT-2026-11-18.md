@@ -172,3 +172,14 @@ The author novel PATCH path now detects changes to the novel's title, author att
 The author chapter PATCH path now detects changes to chapter number, title, body, lock state, and ticket cost. A material edit to a published chapter moves it to `review`, records an audit event, and notifies administrators. The author chapter submission endpoint now routes a requested publication into `review` rather than directly publishing it, preventing an author from bypassing moderation after an edit. The admin chapter editor accepts the `review` state so administrators can inspect and then approve or return a chapter to draft.
 
 Source regression assertions cover the review transition, audit events, administrator notifications, author submission behavior, and admin review-state support. These are source-level protections only. The test script has not yet been executed in a verified repository runtime, and live D1 behavior, full CI, production deployment, and browser QA remain unverified.
+
+
+## Admin publication approval and return-for-changes controls
+
+A further review of the admin moderation boundary found that a draft novel or chapter could be moved directly to published, bypassing the review queue. Returning a novel from review to draft did not require reviewer feedback, and chapter decisions did not consistently notify the author or retain the reason for a return.
+
+The admin novel PATCH route now requires a novel to be in `review` before first approval. Returning a novel from review to draft requires non-empty reviewer feedback (bounded to 3,000 characters). Approval records the acting administrator as both the rights verifier and publication reviewer with timestamps; review re-queue clears stale decision metadata. Approval and return-for-changes notify the owning author, and the decision plus feedback is written to the audit log.
+
+The admin chapter PATCH route applies the same review-before-approval and feedback-required return policy. It rechecks that the parent novel is published and rights-eligible before chapter approval, records the acting administrator and decision details in the audit log, and notifies the novel owner of approval or requested changes. Chapter feedback is retained in the audit log because the current chapter schema has no dedicated review-feedback/reviewer columns. No schema migration was introduced in this audit branch.
+
+Regression assertions were added for direct-approval rejection, feedback requirements, reviewer identity, audit events, parent rights checks, and author notifications. These assertions have been committed but have not yet been executed in a verified repository runtime. This remains source-level remediation; full CI, real-D1 behavior, production deployment, and browser QA are not claimed.
