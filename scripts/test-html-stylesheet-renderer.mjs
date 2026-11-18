@@ -19,16 +19,16 @@ const routeShells = [
 for (const file of routeShells) {
   const source = fs.readFileSync('public/' + file, 'utf8');
   const rendered = applyCanonicalStylesheet(source);
-  const links = [...rendered.matchAll(/<link\\b(?=[^>]*\\brel\\s*=\\s*["']stylesheet["'])[^>]*>/gi)].map(match => match[0]);
+  const links = [...rendered.matchAll(/<link\b(?=[^>]*\brel\s*=\s*["']stylesheet["'])[^>]*>/gi)].map(match => match[0]);
   assert.equal(links.length, 1, file + ' must render exactly one stylesheet entry point');
   assert.equal(links[0], '<link rel="stylesheet" href="/imperial-design-system.css">', file + ' must use the canonical design system');
-  assert.ok(!/href=["']\\/(?:style(?:-[^"']+)?|app(?:-[^"']+)?|imperial-luxury-[^"']+|imperial-formats-[^"']+|imperial-comic-reader-[^"']+)\\.css/i.test(rendered), file + ' must not retain retired stylesheet assets');
+  assert.ok(!/href=["']\/(?:style(?:-[^"']+)?|app(?:-[^"']+)?|imperial-luxury-[^"']+|imperial-formats-[^"']+|imperial-comic-reader-[^"']+)\.css/i.test(rendered), file + ' must not retain retired stylesheet assets');
 }
 
 const alreadyCanonical = '<html><head><link rel="stylesheet" href="/imperial-design-system.css"></head><body></body></html>';
 assert.equal((applyCanonicalStylesheet(alreadyCanonical).match(/rel="stylesheet"/g) || []).length, 1);
 assert.throws(() => applyCanonicalStylesheet('<html><body>missing head</body></html>'), /closing head/);
 
-assert.ok(worker.includes('"\/offline":"offline.html"'), 'Worker must keep the Offline Library shell route');
+assert.ok(worker.includes('"/offline":"offline.html"'), 'Worker must keep the Offline Library shell route');
 assert.ok(worker.includes('const noindex=new Set(["/admin","/account","/login","/register","/library","/offline"'), 'Offline Library must remain noindex');
 console.log('Canonical stylesheet renderer contracts passed for all representative HTML shells.');
