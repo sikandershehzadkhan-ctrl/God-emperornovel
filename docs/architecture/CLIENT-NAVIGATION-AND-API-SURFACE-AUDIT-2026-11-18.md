@@ -64,6 +64,11 @@ The current source scan is not yet a canonical API contract. Remaining work:
 
 A helper-name signal is evidence of source structure only. It is not proof that a route is secure or correctly scoped to the current user.
 
+
+### Known rating integration dependency
+
+The current `main` source snapshot used by this baseline still contains two `POST /api/rating` branches, both validating 1–5. This is recorded as a baseline observation, not a proposal to restore the legacy scale. The separate 1–10 integration is tracked in [PR #318](https://github.com/sikandershehzadkhan-ctrl/God-emperornovel/pull/318), which states that it removes the duplicate legacy handler and depends on the reserved schema migration in [PR #195](https://github.com/sikandershehzadkhan-ctrl/God-emperornovel/pull/195). The canonical route registry must be refreshed against the integrated result after that work is resolved; this foundation PR must not create a competing rating migration or handler fix.
+
 ## Non-claims
 
 This audit does not certify that every screen is complete, every API is correct, all authorization is secure, the sitemap policy is correct, or the live Worker has deployed these source changes. No production deployment or D1 mutation was performed.
