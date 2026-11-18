@@ -256,4 +256,12 @@ assert.match(adminChapterPatch, /notifyUser\(env,parent\.owner_user_id,'Chapter 
 assert.match(adminChapterPatch, /notifyUser\(env,parent\.owner_user_id,'Changes requested for your chapter'/, "Chapter rejection must send reviewer feedback to its owner");
 assert.match(adminChapterPatch, /feedback=\$\{feedback\}/, "Chapter reviewer feedback must be retained in the audit trail");
 
+
+const adminChapterCreateStart = worker.indexOf('if(p==="\/api\/admin\/publishing\/chapters"&&m==="POST")');
+const adminChapterCreateEnd = worker.indexOf('if(p==="\/api\/admin\/donations"&&m==="GET")', adminChapterCreateStart);
+const adminChapterCreate = worker.slice(adminChapterCreateStart, adminChapterCreateEnd);
+assert.ok(adminChapterCreateStart>=0&&adminChapterCreateEnd>adminChapterCreateStart, "Admin chapter creation route must remain explicit");
+assert.match(adminChapterCreate, /chapterPublication!=='draft'/, "New admin chapters must be created as drafts");
+assert.match(adminChapterCreate, /submitted for review before publication/, "New chapter creation must direct moderators through review");
+
 console.log("API authorization audit slice passed: 14 route classifications and taxonomy identity boundaries.");
