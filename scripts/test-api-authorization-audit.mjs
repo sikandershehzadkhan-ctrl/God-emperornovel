@@ -44,6 +44,14 @@ assert.match(report, /Public Omni search exposure/);
 assert.match(report, /Public Omni status side effects/);
 assert.match(report, /Full API authorization, resource ownership/);
 
+const aiRunStart = worker.indexOf('if(/^\\/api\\/author\\/ai\\/projects\\/\\d+\\/run$/.test(p)&&m==="POST")');
+const aiJobsStart = worker.indexOf('if(/^\\/api\\/author\\/ai\\/projects\\/\\d+\\/jobs$/.test(p)&&m==="GET")');
+const aiRunHandler = worker.slice(aiRunStart, aiJobsStart);
+assert.ok(aiRunStart >= 0 && aiJobsStart > aiRunStart, "AI chapter generation route must remain explicit");
+assert.match(aiRunHandler, /status<>'running'[\s\S]*claimed\.meta\?\.changes/, "AI generation must atomically claim a non-running project to prevent concurrent duplicate runs");
+assert.match(aiRunHandler, /status,output_summary,provider\) VALUES\(\?,\?,\? ,\? ,'failed',\?,\?,\?\)/, "Failed AI chapter attempts must be recorded in generation history");
+assert.match(aiRunHandler, /aiSafeText\(ai\.error\|\|'AI provider returned no chapter text',500\)/, "Stored AI failure summaries must be length-bounded");
+
 const exactPaths = ["/api/health","/api/taxonomy","/api/me","/api/config","/api/genres","/api/tags","/api/public-authors","/api/sources","/api/omni/status","/api/omni/search","/api/omni/resolve","/api/omni/smart-unlock","/api/novels","/api/admin/stats"];
 assert.equal(exactPaths.length, 14);
 for (const path of exactPaths) assert.ok(inventory.literal_endpoints.some(x => x.path === path), "Authorization slice must stay in route inventory: " + path);
