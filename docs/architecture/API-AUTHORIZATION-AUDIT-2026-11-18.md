@@ -194,3 +194,8 @@ The admin chapter-creation route now accepts only draft creation. A newly create
 Public-facing source queries inspected in this pass consistently filter novels by published status and eligible rights, and chapter reads require both a published parent novel and a published chapter. Public-author discovery, local Omni search, recommendations, tier/random lists, ratings, comments, reactions, follows, library operations, and sitemap generation were also inspected for publication eligibility filters. This is source inspection, not live endpoint verification.
 
 Regression assertions were added for rights-change detection, blocking an in-place rights change on a published novel, fresh rights verification on approval, and draft-only admin chapter creation. Tests remain unexecuted in a verified repository runtime; no production deployment or live D1/browser validation is claimed.
+
+
+## Novel archive and restoration lifecycle
+
+The admin novel review route now requires a non-empty reason (up to the existing 3,000-character feedback bound) when moving a novel into `archived`. The reason is retained in the existing `review_feedback` field, included in the audit decision event, and sent to the novel owner in an archive notification. Restoring an archived novel to public publication still requires the normal review transition and a subsequent approval; direct `archived` to `published` remains rejected. Re-queueing into review clears the old archive reason so it cannot be mistaken for a new decision. Regression assertions were added for the archive reason, persistence, notification, and review-before-restoration boundary. These are source-level changes only; exact-head CI, live D1 behavior, deployment, and browser QA remain unverified.
