@@ -494,7 +494,9 @@
       "responsive_qa": "not-verified",
       "accessibility_qa": "not-verified",
       "locale_rtl_qa": "not-verified",
-      "deployed_direct_load_qa": "not-verified"
+      "deployed_direct_load_qa": "not-verified",
+      "source_expression": "/^\\/format\\/[^/]+\\/?$/.test(p)",
+      "client_source_expression": null
     },
     {
       "pattern": "^/novel/[0-9]+/chapters/?$",
@@ -508,7 +510,9 @@
       "responsive_qa": "not-verified",
       "accessibility_qa": "not-verified",
       "locale_rtl_qa": "not-verified",
-      "deployed_direct_load_qa": "not-verified"
+      "deployed_direct_load_qa": "not-verified",
+      "source_expression": "/^\\/novel\\/\\d+\\/chapters\\/?$/.test(p)",
+      "client_source_expression": null
     },
     {
       "pattern": "^/novel/[0-9]+/?$",
@@ -522,7 +526,9 @@
       "responsive_qa": "not-verified",
       "accessibility_qa": "not-verified",
       "locale_rtl_qa": "not-verified",
-      "deployed_direct_load_qa": "not-verified"
+      "deployed_direct_load_qa": "not-verified",
+      "source_expression": "/^\\/novel\\/\\d+\\/?$/.test(p)",
+      "client_source_expression": null
     },
     {
       "pattern": "^/read/[0-9]+/[0-9]+/?$",
@@ -536,7 +542,9 @@
       "responsive_qa": "not-verified",
       "accessibility_qa": "not-verified",
       "locale_rtl_qa": "not-verified",
-      "deployed_direct_load_qa": "not-verified"
+      "deployed_direct_load_qa": "not-verified",
+      "source_expression": "/^\\/read\\/\\d+\\/\\d+\\/?$/.test(p)",
+      "client_source_expression": null
     },
     {
       "pattern": "^/fandom/",
@@ -550,7 +558,9 @@
       "responsive_qa": "not-verified",
       "accessibility_qa": "not-verified",
       "locale_rtl_qa": "not-verified",
-      "deployed_direct_load_qa": "not-verified"
+      "deployed_direct_load_qa": "not-verified",
+      "source_expression": "/^\\/fandom\\//.test(p)",
+      "client_source_expression": "else if(p.startsWith('/fandom/'))"
     },
     {
       "pattern": "^/author/[^/]+$",
@@ -564,7 +574,9 @@
       "responsive_qa": "not-verified",
       "accessibility_qa": "not-verified",
       "locale_rtl_qa": "not-verified",
-      "deployed_direct_load_qa": "not-verified"
+      "deployed_direct_load_qa": "not-verified",
+      "source_expression": "/^\\/author\\/[^/]+$/.test(p)",
+      "client_source_expression": null
     }
   ],
   "standalone_page_notes": [
