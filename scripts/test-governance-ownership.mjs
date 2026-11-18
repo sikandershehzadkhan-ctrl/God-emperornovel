@@ -65,11 +65,11 @@ function selfTest() {
     { id: 'architecture', paths: ['docs/architecture/'], requiresAdr: true },
     { id: 'archive', paths: ['DEPLOY-1.txt'], requiresAdr: false }
   ] };
-  assert.equal(validateOwnership(registry, ['src/index.js', 'docs/architecture/decisions/ADR-0001.md'], ['src/index.js', 'DEPLOY-1.txt']).ownedChanges.length, 2);
+  assert.equal(validateOwnership(registry, ['src/index.js', 'docs/architecture/decisions/ADR-0001.md'], ['src/index.js', 'migrations/0001.sql', '.github/workflows/ci.yml', 'docs/architecture/decisions/ADR-0001.md', 'DEPLOY-1.txt']).ownedChanges.length, 2);
   assert.throws(() => validateOwnership(registry, ['src/index.js']), /require an ADR or feature contract/);
   assert.throws(() => validateOwnership({ version: 1, owners: [{ id: 'stale', paths: ['missing-owner-file.txt'], requiresAdr: false }] }, [], ['src/index.js']), /registered ownership path does not exist in tracked repository/);
   assert.throws(() => validateOwnership(registry, ['scripts/new-unguarded-file.mjs']), /no registered owner/);
-  assert.throws(() => validateOwnership(registry, [], ['DEPLOY-1.txt', 'scripts/existing-unowned-file.mjs']), /tracked repository path has no registered owner/);
+  assert.throws(() => validateOwnership(registry, [], ['src/index.js', 'migrations/0001.sql', '.github/workflows/ci.yml', 'docs/architecture/decisions/ADR-0001.md', 'DEPLOY-1.txt', 'scripts/existing-unowned-file.mjs']), /tracked repository path has no registered owner/);
   assert.throws(() => validateOwnership({ version: 1, owners: [...registry.owners, { id: 'overlap', paths: ['src/'], requiresAdr: true }] }), /overlapping ownership roots/);
   assert.throws(() => validateOwnership({ version: 1, owners: [{ id: 'bad-separator', paths: ['src' + String.fromCharCode(92) + 'escape'], requiresAdr: false }] }), /invalid ownership path/);
   assert.throws(() => validateOwnership(registry, ['migrations/0009_new.sql']), /require an ADR or feature contract/);
