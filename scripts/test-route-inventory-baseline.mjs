@@ -20,6 +20,9 @@ const expectedMap = Object.fromEntries(manifest.page_routes.map(route => [route.
 assert.deepEqual(PAGE_ROUTE_SHELLS, expectedMap, "canonical exact page route map must match the audited baseline");
 assert.equal(Object.keys(PAGE_ROUTE_SHELLS).length, 33, "expected 33 exact page routes");
 assert.equal(new Set(Object.keys(PAGE_ROUTE_SHELLS)).size, Object.keys(PAGE_ROUTE_SHELLS).length, "exact page routes must be unique");
+for (const path of SITEMAP_STATIC_PATHS) assert.ok(Object.hasOwn(PAGE_ROUTE_SHELLS, path), "sitemap path must resolve to a registered exact page route: " + path);
+for (const path of NOINDEX_EXACT_PATHS) assert.ok(Object.hasOwn(PAGE_ROUTE_SHELLS, path), "noindex path must resolve to a registered exact page route: " + path);
+assert.equal(new Set(DYNAMIC_PAGE_ROUTES.map(route => route.pattern)).size, DYNAMIC_PAGE_ROUTES.length, "dynamic route patterns must be unique");
 for (const route of manifest.page_routes) assert.equal(resolvePageShell(route.path), route.shell, "exact route shell mismatch: " + route.path);
 assert.equal(resolvePageShell("/not-a-real-page"), "404.html", "unknown paths must resolve to the 404 shell");
 
