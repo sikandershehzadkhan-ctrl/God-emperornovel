@@ -363,7 +363,7 @@ async function ensureCommunityTaxonomySchema(env){
  created_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,reviewed_at TEXT,reviewer_id INTEGER,
  UNIQUE(type,slug))`).run();
 }
-async function communityTaxonomy(req,env){
+async function communityTaxonomy(req,env,u){
  const u=new URL(req.url), method=req.method;
  if(method==='GET'){
   const type=String(u.searchParams.get('type')||'').toLowerCase();
@@ -378,6 +378,7 @@ async function communityTaxonomy(req,env){
   return json(r.results||[]);
  }
  if(method==='POST'){
+  const e=need(u);if(e)return e;
   const b=await body(req),type=String(b.type||'').toLowerCase(),name=String(b.name||'').trim().replace(/\s+/g,' ');
   if(!['genre','tag'].includes(type)) return json({error:'type must be genre or tag'},400);
   if(name.length<2||name.length>80)return json({error:'Name must be 2-80 characters'},400);
@@ -385,7 +386,7 @@ async function communityTaxonomy(req,env){
   if(await env.DB.prepare(`SELECT id FROM ${table} WHERE slug=? LIMIT 1`).bind(s).first())return json({error:'Already exists in official taxonomy'},409);
   const existing=await env.DB.prepare('SELECT id,status FROM taxonomy_submissions WHERE type=? AND slug=? LIMIT 1').bind(type,s).first();
   if(existing) return json({error:'Already submitted',id:existing.id,status:existing.status},409);
-  try{const r=await env.DB.prepare(`INSERT INTO taxonomy_submissions(type,name,slug,description,creator_id,creator_name,status) VALUES(?,?,?,?,?,?,?)`).bind(type,name,s,String(b.description||'').slice(0,500),b.creator_id||null,String(b.creator_name||'').slice(0,80),'pending').run();return json({ok:true,id:r.meta.last_row_id,status:'pending'})}catch(e){console.error('taxonomy submission write failed',e);return json({error:'Unable to save submission. Please try again later.'},500)}
+  try{const r=await env.DB.prepare(`INSERT INTO taxonomy_submissions(type,name,slug,description,creator_id,creator_name,status) VALUES(?,?,?,?,?,?,?)`).bind(type,name,s,String(b.description||'').slice(0,500),u.id,String(u.username||'').slice(0,80),'pending').run();return json({ok:true,id:r.meta.last_row_id,status:'pending'})}catch(e){console.error('taxonomy submission write failed',e);return json({error:'Unable to save submission. Please try again later.'},500)}
  }
  return json({error:'Method not allowed'},405);
 }
@@ -438,7 +439,7 @@ async function api(req,env){
  if(p==="/api/agents"&&m==="GET"){return json((await env.DB.prepare(`SELECT slug,name,role,icon,mode,status,last_run_at FROM agents WHERE enabled=1 ORDER BY id`).all()).results)}
  if(p==="/api/admin/agents"&&m==="GET"){const e=admin(u);if(e)return e;return json((await env.DB.prepare(`SELECT id,slug,name,role,icon,mode,status,enabled,last_run_at,last_result FROM agents ORDER BY id`).all()).results)}
  if(p==="/api/admin/agents/run"&&m==="POST"){const e=admin(u);if(e)return e;const b=await body(req);const slug=String(b.slug||'');if(slug)return json(await runAgent(env,slug,'admin'));return json(await runAutomation(env))}
- if(p==="/api/taxonomy")return communityTaxonomy(req,env);
+ if(p==="/api/taxonomy")return communityTaxonomy(req,env,u);
  if(p==="/api/admin/taxonomy"&&m==='GET'){const e=admin(u);if(e)return e;return json((await env.DB.prepare("SELECT * FROM taxonomy_submissions ORDER BY CASE status WHEN 'pending' THEN 0 ELSE 1 END,created_at DESC LIMIT 300").all()).results||[])}
  if(p==="/api/admin/taxonomy"&&m==='POST')return adminTaxonomy(req,env,u);
  if(p==="/api/auth/register"&&m==="POST"){const ip=String(req.headers.get("cf-connecting-ip")||"unknown").trim().slice(0,128);const limited=await consumeAuthRateLimit(env,"register-ip",ip,5,3600);if(limited)return limited;const b=await body(req),username=String(b.username||"").trim(),email=String(b.email||"").trim().toLowerCase(),password=String(b.password||"");if(!/^[a-zA-Z0-9_]{3,24}$/.test(username))return json({error:"Username must be 3-24 letters, numbers or underscores"},400);if(!email.includes("@"))return json({error:"Enter a valid email"},400);if(password.length<8||password.length>1024)return json({error:"Password must be between 8 and 1024 characters"},400);const passwordHash=await hashPassword(password);try{await env.DB.prepare("INSERT INTO users(username,email,password_hash) VALUES(?,?,?)").bind(username,email,passwordHash).run()}catch{return json({error:"Username or email already exists"},409)}return json({ok:true,message:"Account created. You can now sign in."})}
