@@ -57,7 +57,7 @@ const actualNoindex = [...noindexMatch[1].matchAll(/"([^"]+)"/g)].map(match => m
 assert.deepEqual(actualNoindex, manifest.noindex_exact_paths, "noindex route list must match source");
 for (const route of manifest.page_routes) {
   if (manifest.noindex_exact_paths.includes(route.path)) {
-    const utilityNoindex = ["/search", "/omniportal", "/trend-factory"].includes(route.path);
+    const utilityNoindex = ["/search", "/omniportal", "/trend-factory", "/made-for-you", "/for-you"].includes(route.path);
     assert.equal(route.access_policy, utilityNoindex ? "public-utility-noindex-not-an-access-control" : "noindex-route-authentication-still-requires-server-verification");
   }
 }
