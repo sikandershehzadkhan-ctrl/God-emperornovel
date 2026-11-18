@@ -11,6 +11,10 @@ assert.ok(workflow.includes("d1_migrations"), "The audit must inspect any existi
 assert.ok(workflow.includes("core_schema_version"), "The audit must inspect the runtime schema marker.");
 assert.ok(workflow.includes("reader_preferences"), "The audit must inventory the account-scoped reader preferences table introduced by migration 0047.");
 assert.ok(workflow.includes("PRAGMA table_info(reader_preferences)"), "The audit must inspect reader preference columns without reading user preference values.");
+assert.ok(workflow.includes("required runtime tables are missing"), "The audit must fail closed when any required runtime table is missing.");
+assert.ok(workflow.includes("critical runtime columns are missing"), "The audit must fail closed when any critical runtime column is missing.");
+assert.ok(workflow.includes("foreign-key violations"), "The audit must fail closed when production foreign-key integrity is broken.");
+assert.ok(workflow.includes("NOT EXISTS (SELECT 1 FROM pragma_foreign_key_check)"), "The audit must assert foreign-key integrity instead of only printing diagnostic rows.");
 assert.ok(fs.readFileSync("docs/production/CANONICAL-D1-MIGRATION-RELEASE-PLAN.md", "utf8").includes("Imperial Novel Read-Only Production D1 Audit"), "The release plan must direct reviewers to the read-only audit workflow.");
 assert.ok(workflow.includes("PRAGMA foreign_key_check"), "The audit must inspect foreign-key integrity.");
 assert.ok(!/time-travel restore|wrangler@4 deploy\\b/i.test(workflow), "The audit must never restore or deploy.");

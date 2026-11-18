@@ -139,6 +139,12 @@ jobs:
           SQL
           )"
           run_query "Core runtime table presence" "$core_tables_sql"
+          core_tables_assertion="$(npx --yes wrangler@4 d1 execute god-emperornovel-db --remote --command "WITH required(name) AS (VALUES ('users'),('sessions'),('novels'),('chapters'),('genres'),('tags'),('novel_genres'),('novel_tags'),('unlocks'),('unlock_batches'),('bookmarks'),('history'),('donations'),('connectors'),('comments'),('novel_requests'),('audit_logs'),('ticket_ledger'),('follows'),('user_library'),('ratings'),('reports'),('notifications'),('agents'),('agent_runs'),('app_settings'),('chapter_views'),('connector_events'),('import_jobs'),('recommendations'),('request_votes'),('comment_likes'),('comment_reports'),('novel_reactions'),('connector_authorization_requests'),('taxonomy_submissions'),('taxonomy_suggestions'),('tag_follows'),('ai_author_projects'),('ai_chapter_jobs'),('ai_generation_runs'),('ai_provider_benchmarks'),('ai_publish_policies'),('auth_rate_limits'),('reader_preferences')) SELECT CASE WHEN NOT EXISTS (SELECT 1 FROM required r LEFT JOIN sqlite_master s ON s.type='table' AND s.name=r.name WHERE s.name IS NULL) THEN 'PASS' ELSE 'FAIL' END AS audit_status;" 2>&1)"
+          printf '%s\n' "$core_tables_assertion"
+          if ! printf '%s' "$core_tables_assertion" | grep -q '"PASS"'; then
+            echo "::error::One or more required runtime tables are missing. Production release remains blocked."
+            exit 1
+          fi
           migration_table_check="$(npx --yes wrangler@4 d1 execute god-emperornovel-db --remote --command "SELECT CASE WHEN EXISTS (SELECT 1 FROM sqlite_master WHERE type='table' AND name='d1_migrations') THEN 'present' ELSE 'absent' END AS migration_history_table;" 2>&1)"
           printf '%s\n' "$migration_table_check"
           if printf '%s' "$migration_table_check" | grep -q '"present"'; then
@@ -186,6 +192,18 @@ jobs:
           SQL
           )"
           run_query "Critical runtime column compatibility (read-only)" "$critical_columns_sql"
+          critical_columns_assertion="$(npx --yes wrangler@4 d1 execute god-emperornovel-db --remote --command "WITH expected(table_name,column_name) AS (VALUES ('users','id'),('users','username'),('users','email'),('users','password_hash'),('users','role'),('users','tickets'),('users','verified'),('users','banned'),('sessions','token_hash'),('sessions','user_id'),('sessions','expires_at'),('novels','id'),('novels','title'),('novels','author'),('novels','description'),('novels','status'),('novels','kind'),('novels','rights_status'),('novels','views'),('novels','rating'),('novels','publication_status'),('novels','owner_user_id'),('novels','rights_evidence'),('chapters','id'),('chapters','novel_id'),('chapters','chapter_number'),('chapters','title'),('chapters','content'),('chapters','is_locked'),('chapters','ticket_cost'),('chapters','publication_status'),('app_settings','key'),('app_settings','value'),('donations','id'),('donations','user_id'),('donations','amount'),('donations','reference_id'),('donations','status'),('novel_requests','id'),('novel_requests','user_id'),('novel_requests','status'),('reader_preferences','user_id'),('reader_preferences','preferences_json'),('reader_preferences','updated_at')) SELECT CASE WHEN NOT EXISTS (SELECT 1 FROM expected e WHERE NOT EXISTS (SELECT 1 FROM pragma_table_info(e.table_name) p WHERE p.name=e.column_name)) THEN 'PASS' ELSE 'FAIL' END AS audit_status;" 2>&1)"
+          printf '%s\n' "$critical_columns_assertion"
+          if ! printf '%s' "$critical_columns_assertion" | grep -q '"PASS"'; then
+            echo "::error::One or more critical runtime columns are missing. Production release remains blocked."
+            exit 1
+          fi
+          foreign_key_assertion="$(npx --yes wrangler@4 d1 execute god-emperornovel-db --remote --command "SELECT CASE WHEN NOT EXISTS (SELECT 1 FROM pragma_foreign_key_check) THEN 'PASS' ELSE 'FAIL' END AS audit_status;" 2>&1)"
+          printf '%s\n' "$foreign_key_assertion"
+          if ! printf '%s' "$foreign_key_assertion" | grep -q '"PASS"'; then
+            echo "::error::Production D1 reports foreign-key violations. Production release remains blocked."
+            exit 1
+          fi
           run_query "Published catalog rights readiness (aggregate only)" "SELECT COUNT(*) AS published_novels, SUM(CASE WHEN COALESCE(rights_status,'') NOT IN ('original','licensed','authorized','public_domain','cc') THEN 1 ELSE 0 END) AS unusual_rights_status, SUM(CASE WHEN COALESCE(rights_evidence,'')='' THEN 1 ELSE 0 END) AS missing_rights_evidence, SUM(CASE WHEN owner_user_id IS NULL THEN 1 ELSE 0 END) AS missing_owner FROM novels WHERE publication_status='published';"
           run_query "Published chapter integrity (aggregate only)" "SELECT COUNT(*) AS published_chapters, SUM(CASE WHEN n.id IS NULL THEN 1 ELSE 0 END) AS chapters_without_novel FROM chapters c LEFT JOIN novels n ON n.id=c.novel_id WHERE COALESCE(c.publication_status,'published')='published';"
           echo
