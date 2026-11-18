@@ -82,5 +82,10 @@ for (const route of manifest.page_routes) {
     assert.equal(route.server_access_gate, false);
   }
 }
+const authPageStart = client.indexOf("function authPage(");
+const authPageEnd = client.indexOf("\\nasync function account(", authPageStart);
+const authPageSource = client.slice(authPageStart, authPageEnd);
+assert.ok(authPageSource.includes("new URL(candidate,location.origin)"), "Login must safely resolve the requested return destination");
+assert.ok(authPageSource.includes("parsed.origin===location.origin"), "Login return destinations must be restricted to the same origin");
 assert.ok(manifest.known_gaps.some(gap => gap.includes("Screen completeness")));
 console.log("Route inventory baseline passed: " + manifest.page_routes.length + " exact HTML routes, " + manifest.dynamic_page_patterns.length + " dynamic patterns, " + manifest.api_route_literals.length + " API path literals, and " + manifest.sitemap_endpoints.length + " sitemap endpoints.");
