@@ -414,6 +414,7 @@ async function api(req,env){
  // Enforce these before schema bootstrap and session lookup so rejected methods are cheap and side-effect-free.
  // Taxonomy POST also derives submitter identity from the authenticated session.
  // Public catalog reads remain anonymous; account, author, and admin routes guard their own resources.
+ // Public Omni endpoints need abuse controls before external connectors are enabled in production.
  const methodContracts={
   "/api/health":["GET"],
   "/api/taxonomy":["GET","POST"],
