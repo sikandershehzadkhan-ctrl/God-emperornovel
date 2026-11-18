@@ -18,6 +18,12 @@ const recommendations = [
   { user_id: 101, novel_id: 10, reason: "Matches Account A reading history", score: 91 },
   { user_id: 202, novel_id: 20, reason: "Matches Account B reading history", score: 87 },
 ];
+const requestWeek = Math.floor(now / 604800);
+const novelRequests = [
+  { user_id: 101, week_key: requestWeek },
+  { user_id: 101, week_key: requestWeek },
+  { user_id: 202, week_key: requestWeek },
+];
 const ticketLedger = [
   { id: 11, user_id: 101, delta: 25, reason: "purchase", reference: "A-ORDER" },
   { id: 22, user_id: 202, delta: 10, reason: "purchase", reference: "B-ORDER" },
@@ -42,6 +48,7 @@ class FakeStatement {
     if (this.sql.includes("SELECT 1 FROM novels WHERE id=?")) return Number(this.values[0]) === 10 ? { ok: 1 } : null;
     if (this.sql.includes("SELECT 1 FROM follows WHERE user_id=? AND novel_id=?")) return follows.some(row => row.user_id === this.values[0] && row.novel_id === this.values[1]) ? { ok: 1 } : null;
     if (this.sql.includes("FROM author_applications WHERE user_id=?")) return authorApplications.find(row => row.user_id === this.values[0]) || null;
+    if (this.sql.includes("SELECT COUNT(*) n FROM novel_requests WHERE user_id=? AND week_key=?")) return { n: novelRequests.filter(row => row.user_id === this.values[0] && row.week_key === this.values[1]).length };
     return null;
   }
   async all() {
@@ -188,6 +195,11 @@ assert.equal(aApplication.application.id, 31,
 assert.equal(bApplication.application, null,
   "Account B must not read Account A's author application");
 
+const aRequestUsage = await payload(await request("reader-a-token", "GET", undefined, "/api/requests"));
+const bRequestUsage = await payload(await request("reader-b-token", "GET", undefined, "/api/requests"));
+assert.equal(aRequestUsage.used, 2, "Account A must see only its own weekly novel-request usage");
+assert.equal(bRequestUsage.used, 1, "Account B must not read Account A weekly novel-request usage");
+
 const aRecommendations = await payload(await request("reader-a-token", "GET", undefined, "/api/recommendations"));
 const bRecommendations = await payload(await request("reader-b-token", "GET", undefined, "/api/recommendations"));
 assert.deepEqual(aRecommendations.map(row => row.id), [10], "Account A must see only its own recommendations");
@@ -207,4 +219,4 @@ assert.deepEqual(follows.sort((a, b) => a.user_id - b.user_id), [
   { user_id: 101, novel_id: 10 }, { user_id: 202, novel_id: 10 }
 ], "Follow ownership must use the authenticated session, not a forged user_id");
 
-console.log("PASS: Worker fetch two-account history, library, notification, follow, recommendations, ticket-ledger, and author-application isolation; authenticated history/follow ownership; forged user_id rejection; and account-scoped notification mutation using a deterministic D1 test double. This is not a live Cloudflare D1 test.");
+console.log("PASS: Worker fetch two-account history, library, notification, follow, recommendations, weekly request usage, ticket-ledger, and author-application isolation; authenticated history/follow ownership; forged user_id rejection; and account-scoped notification mutation using a deterministic D1 test double. This is not a live Cloudflare D1 test.");
