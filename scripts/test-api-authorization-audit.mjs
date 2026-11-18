@@ -245,7 +245,7 @@ assert.match(adminNovelPatch, /const rightsVerified=pub==='published'/, "Rights 
 
 assert.match(adminNovelPatch, /pub==='draft'&&previous==='review'&&!feedback/, "Returning a novel for changes requires reviewer feedback");
 assert.match(adminNovelPatch, /pub==='archived'&&previous!=='archived'&&!feedback/, "Archiving a novel requires a reason");
-assert.match(adminNovelPatch, /pub==='archived'?feedback/, "Archive reason must be retained for audit and author visibility");
+assert.match(adminNovelPatch, /pub==='archived'\\?feedback/, "Archive reason must be retained for audit and author visibility");
 assert.match(adminNovelPatch, /'Novel archived'/, "Archiving a novel must notify its owner");
 assert.match(adminNovelPatch, /previous!=='review'&&previous!=='published'/, "Restoring an archived novel must pass through review before publication");
 assert.match(adminNovelPatch, /rights_verified_by/, "Novel approval must record rights reviewer identity");
@@ -267,5 +267,12 @@ const adminChapterCreate = worker.slice(adminChapterCreateStart, adminChapterCre
 assert.ok(adminChapterCreateStart>=0&&adminChapterCreateEnd>adminChapterCreateStart, "Admin chapter creation route must remain explicit");
 assert.match(adminChapterCreate, /chapterPublication!=='draft'/, "New admin chapters must be created as drafts");
 assert.match(adminChapterCreate, /submitted for review before publication/, "New chapter creation must direct moderators through review");
+const authorChapterCreateStart = worker.indexOf('if(p==="/api/author/chapters"&&m==="POST")');
+const authorChapterCreateEnd = worker.indexOf('if(/^\\/api\\/author\\/chapters\\/\\d+$/.test(p)&&m==="PATCH")', authorChapterCreateStart);
+const authorChapterCreate = worker.slice(authorChapterCreateStart, authorChapterCreateEnd);
+assert.ok(authorChapterCreateStart>=0&&authorChapterCreateEnd>authorChapterCreateStart, "Author chapter creation route must remain explicit");
+assert.match(authorChapterCreate, /publication_status.*'draft'/, "Author-created chapters must start as drafts");
+const aiChapterInsert = worker.slice(worker.indexOf('const draft=ai.text'), worker.indexOf('await env.DB.batch([', worker.indexOf('const draft=ai.text')));
+assert.match(aiChapterInsert, /publication_status\) VALUES\([^\n]*'draft'\)/, "AI-generated chapters must be saved as drafts, never auto-published");
 
 console.log("API authorization audit slice passed: 14 route classifications and taxonomy identity boundaries.");
