@@ -56,9 +56,9 @@ Regression assertions cover the history relationship and the publication/rights 
 
 **Status: partial runtime coverage added in PR branch.**
 
-`scripts/test-api-user-bookmark-isolation-runtime.mjs` now calls the real Worker `fetch()` handler with two independently authenticated sessions and a deterministic D1 test double. The test exercises account-scoped reads and writes for bookmarks, reading history, and personal library membership; it also checks that a forged `user_id` is ignored, history/bookmark chapter relationships are validated, author novel listings are owner-filtered, and a second author cannot update another author's novel or chapter. The test is included in the normal `npm run build` gate.
+`scripts/test-api-user-bookmark-isolation-runtime.mjs` now calls the real Worker `fetch()` handler with two independently authenticated sessions and a deterministic D1 test double. The test exercises account-scoped reads and writes for bookmarks, reading history, and personal library membership; it also checks that a forged `user_id` is ignored, history/bookmark chapter relationships are validated, author novel listings are owner-filtered, and a second author cannot update another author's novel or chapter. It also verifies that follows, notifications, and ticket-ledger reads return only the authenticated account's rows. The test is included in the normal `npm run build` gate.
 
-This is not a live Cloudflare D1 test. It does not yet cover follows, notifications, ticket ledger, novel requests, author applications, or AI projects. Those remain explicit follow-up test targets.
+This is not a live Cloudflare D1 test. It does not yet cover novel requests, author applications, or AI projects. Those remain explicit follow-up test targets.
 
 ## Security boundary
 
