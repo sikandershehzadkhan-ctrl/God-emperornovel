@@ -11,6 +11,22 @@ const api = worker.slice(apiStart, apiEnd);
 const literalPaths = new Set([...api.matchAll(/p\s*===?\s*["']([^"']+)["']/g)].map(match => match[1]));
 const manifestPaths = new Set(manifest.literal_endpoints.map(endpoint => endpoint.path));
 const literalOccurrences = [...api.matchAll(/p\s*===?\s*["']([^"']+)["']/g)];
+const sourceOccurrences = new Map();
+const sourcePattern = /p\s*===?\s*["']([^"']+)["']/g;
+let sourceMatch;
+while ((sourceMatch = sourcePattern.exec(api))) {
+  const line = api.slice(0, sourceMatch.index).split("\n").length;
+  const existing = sourceOccurrences.get(sourceMatch[1]) || [];
+  existing.push(line);
+  sourceOccurrences.set(sourceMatch[1], existing);
+}
+for (const endpoint of manifest.literal_endpoints) {
+  const actualLines = [...new Set(sourceOccurrences.get(endpoint.path) || [])];
+  assert.deepEqual(endpoint.source_lines, actualLines, "API source line evidence must match current Worker source: " + endpoint.path);
+  assert.equal(endpoint.occurrences, (sourceOccurrences.get(endpoint.path) || []).length, "API branch occurrence evidence must match current Worker source: " + endpoint.path);
+}
+assert.equal([...sourceOccurrences.values()].reduce((sum, values) => sum + values.length, 0), manifest.counts.literal_route_branch_occurrences, "Total literal branch count must match current Worker source");
+assert.equal(manifest.source_line_count, worker.split("\n").length, "Inventory source line count must match Worker source");
 assert.equal(literalOccurrences.length, manifest.counts.literal_route_branch_occurrences, "Literal API branch occurrence count must match source");
 assert.deepEqual([...manifestPaths].sort(), [...literalPaths].sort(), "API literal path inventory must match Worker dispatcher");
 
