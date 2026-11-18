@@ -6,12 +6,12 @@
   "product": "Imperial Novel",
   "source_evidence": {
     "repository": "sikandershehzadkhan-ctrl/God-emperornovel",
-    "branch": "main",
+    "branch": "architecture/phase-01-foundation-route-registry",
     "worker_file": "src/index.js",
-    "worker_blob": "237f4461135eb77258b7184e361ce9dfd9a140e9",
+    "worker_blob": "0ba8207e00efac0ddb3faf20b956be0aa4e27a55",
     "sitemap_file": "src/sitemap.mjs",
-    "sitemap_blob": "c868fb87931be08f132b83232f379fd5fd63e2d3",
-    "method": "Static source extraction from current main. Does not prove live deployment, browser screen completeness, or authorization correctness."
+    "sitemap_blob": "502021167ebdb6fc5ce24ee77f3b7130beda81e4",
+    "method": "Static source extraction from the PR branch after route-policy changes. Does not prove live deployment, browser screen completeness, or authorization correctness."
   },
   "page_routes": [
     {
