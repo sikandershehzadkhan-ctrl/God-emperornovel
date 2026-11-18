@@ -413,6 +413,7 @@ async function api(req,env){
  // Central method contracts for paths whose earlier branches accepted any HTTP method.
  // Enforce these before schema bootstrap and session lookup so rejected methods are cheap and side-effect-free.
  // Taxonomy POST also derives submitter identity from the authenticated session.
+ // Public catalog reads remain anonymous; account, author, and admin routes guard their own resources.
  const methodContracts={
   "/api/health":["GET"],
   "/api/taxonomy":["GET","POST"],
