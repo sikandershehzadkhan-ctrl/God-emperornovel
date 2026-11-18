@@ -68,6 +68,12 @@ Dynamic routes need explicit per-operation ownership review, especially author A
 
 The inventory records three literal `/api/rating` branch occurrences. Preserve this as a reconciliation item until the GET/POST handlers and any duplicate branch are reviewed together. Do not silently normalize the inventory count.
 
+## Public Omni follow-up completed in the audit branch
+
+- `/api/omni/status`: per-IP limit of 60 requests per 60 seconds; no longer seeds connector registry rows. Seeding moved to authenticated admin connector listing.
+- `/api/omni/search`: per-IP limit of 20 requests per 60 seconds; query length capped at 120 characters; only enabled, rights-authorized connectors are searched; outbound fetch timeout remains 7 seconds.
+- These controls do not replace edge/WAF controls or bound aggregate concurrency across many IPs. Those remain production review items.
+
 ## Required contract dimensions
 
 Every endpoint operation must ultimately document:
