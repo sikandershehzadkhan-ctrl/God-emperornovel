@@ -10,6 +10,8 @@ const now = Math.floor(Date.now() / 1000);
 const accounts = new Map([
   ["reader-a-token", { id: 101, username: "reader_a", email: "a@example.test", role: "user", tickets: 0, verified: 1, banned: 0, expires_at: now + 3600 }],
   ["reader-b-token", { id: 202, username: "reader_b", email: "b@example.test", role: "user", tickets: 0, verified: 1, banned: 0, expires_at: now + 3600 }],
+  ["author-token", { id: 303, username: "author_user", email: "author@example.test", role: "author", tickets: 0, verified: 1, banned: 0, expires_at: now + 3600 }],
+  ["admin-token", { id: 404, username: "admin_user", email: "admin@example.test", role: "admin", tickets: 0, verified: 1, banned: 0, expires_at: now + 3600 }],
 ]);
 const sessions = new Map();
 for (const [token, user] of accounts) sessions.set(await hash(token), user);
@@ -126,7 +128,7 @@ class FakeStatement {
   }
 }
 
-const env = { DB: { prepare: sql => new FakeStatement(sql), batch: async statements => Promise.all(statements.map(statement => statement.run())) }, SITE_NAME: "Imperial Novel" };
+const env = { DB: { prepare: sql => new FakeStatement(sql), batch: async statements => Promise.all(statements.map(statement => statement.run())) }, ASSETS: { fetch: async () => new Response("<!doctype html><html><head><link rel=\"stylesheet\" href=\"/style.css\"></head><body>test page</body></html>", { headers: { "content-type": "text/html;charset=UTF-8" } }) }, APP_VERSION: "17.23.0", SITE_NAME: "Imperial Novel" };
 async function request(token, method, body, path = "/api/history") {
   const headers = { cookie: "session=" + token };
   const init = { method, headers };
@@ -249,4 +251,27 @@ assert.deepEqual(follows.sort((a, b) => a.user_id - b.user_id), [
   { user_id: 101, novel_id: 10 }, { user_id: 202, novel_id: 10 }
 ], "Follow ownership must use the authenticated session, not a forged user_id");
 
-console.log("PASS: Worker fetch two-account history, library, notification, follow, recommendations, weekly request usage, ticket-ledger, and author-application isolation; ordinary-reader denial across 23 admin read/write routes; authenticated history/follow ownership; forged user_id rejection; and account-scoped notification mutation using a deterministic D1 test double. This is not a live Cloudflare D1 test.");
+async function page(token, path) {
+  const headers = token ? { cookie: "session=" + token } : {};
+  return worker.fetch(new Request("https://imperial.test" + path, { method: "GET", headers }), env);
+}
+const privateAnonymous = await page(null, "/library");
+assert.equal(privateAnonymous.status, 302, "Anonymous visitors must be redirected away from private library pages");
+assert.match(privateAnonymous.headers.get("location") || "", /\/login\?next=%2Flibrary/);
+const privateReader = await page("reader-a-token", "/library");
+assert.equal(privateReader.status, 200, "Authenticated readers may access their private library page");
+assert.equal(privateReader.headers.get("x-robots-tag"), "noindex, nofollow");
+const adminReader = await page("reader-a-token", "/admin");
+assert.equal(adminReader.status, 403, "Ordinary readers must not receive the administrator page document");
+const adminPage = await page("admin-token", "/admin");
+assert.equal(adminPage.status, 200, "Administrators may receive the administrator page document");
+const authorReader = await page("reader-a-token", "/author");
+assert.equal(authorReader.status, 403, "Ordinary readers must not receive Author Studio");
+const authorPage = await page("author-token", "/author");
+assert.equal(authorPage.status, 200, "Authors may receive Author Studio");
+const anonymousAuthor = await page(null, "/author");
+assert.equal(anonymousAuthor.status, 302, "Anonymous visitors must be redirected away from Author Studio");
+const publicAuthor = await page(null, "/author/public-name");
+assert.equal(publicAuthor.status, 200, "Public author profiles must remain publicly accessible");
+
+console.log("PASS: Worker fetch two-account history, library, notification, follow, recommendations, weekly request usage, ticket-ledger, and author-application isolation; ordinary-reader denial across 23 admin read/write routes; authenticated history/follow ownership; forged user_id rejection; account-scoped notification mutation, and server-side private-page authorization using a deterministic D1 test double. This is not a live Cloudflare D1 test.");
