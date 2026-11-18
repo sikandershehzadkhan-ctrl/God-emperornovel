@@ -140,7 +140,7 @@ assert.match(authorChapterPatch, /Number\.isSafeInteger\(id\)\|\|id<1/, "Author 
 assert.match(authorChapterPatch, /Number\.isSafeInteger\(num\)\|\|num<1/, "Edited chapter numbers must be positive safe integers");
 
 const authorChapterPublishStart = worker.indexOf('if(/^\/api\/author\/chapters\/\d+\/publish$/.test(p)&&m==="POST"){');
-const authorChapterPublishEnd = worker.indexOf('if(p==="/api/author/chapters"', authorChapterPublishStart);
+const authorChapterPublishEnd = worker.indexOf('if(p==="/api/admin/publishing"&&m==="GET"){', authorChapterPublishStart);
 const authorChapterPublish = worker.slice(authorChapterPublishStart, authorChapterPublishEnd);
 assert.ok(authorChapterPublishStart >= 0 && authorChapterPublishEnd > authorChapterPublishStart, "Author chapter publish route must remain explicit");
 assert.match(authorChapterPublish, /Number\.isSafeInteger\(id\)\|\|id<1/, "Author chapter publication must validate its chapter ID");
