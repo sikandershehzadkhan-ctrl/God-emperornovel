@@ -87,11 +87,11 @@ const reportStart = worker.indexOf('if(p==="/api/report"&&m==="POST")');
 const reportEnd = worker.indexOf('if(p==="/api/tickets/ledger"', reportStart);
 assert.ok(reportStart >= 0 && reportEnd > reportStart, "User report submission route must remain explicit");
 const reportHandler = worker.slice(reportStart, reportEnd);
-assert.match(reportHandler, /Number\\.isSafeInteger\\(novelId\\)/, "Report novel identifiers must be positive safe integers");
-assert.match(reportHandler, /Number\\.isSafeInteger\\(chapterId\\)/, "Report chapter identifiers must be positive safe integers");
-assert.match(reportHandler, /SELECT id,novel_id FROM chapters WHERE id=\\?/);
-assert.match(reportHandler, /Number\\(chapter\\.novel_id\\)!==novelId/, "A reported chapter must belong to the supplied novel");
-assert.match(reportHandler, /resolvedNovelId=Number\\(chapter\\.novel_id\\)/, "Chapter-only reports must be linked to their actual novel");
-assert.match(reportHandler, /typeof b\\.details==="string"\\?b\\.details\\.slice\\(0,2000\\):""/, "Report details must be bounded plain text");
+assert.match(reportHandler, /Number\.isSafeInteger\(novelId\)/, "Report novel identifiers must be positive safe integers");
+assert.match(reportHandler, /Number\.isSafeInteger\(chapterId\)/, "Report chapter identifiers must be positive safe integers");
+assert.match(reportHandler, /SELECT id,novel_id FROM chapters WHERE id=\?/);
+assert.match(reportHandler, /Number\(chapter\.novel_id\)!==novelId/, "A reported chapter must belong to the supplied novel");
+assert.match(reportHandler, /resolvedNovelId=Number\(chapter\.novel_id\)/, "Chapter-only reports must be linked to their actual novel");
+assert.match(reportHandler, /typeof b\.details==="string"\?b\.details\.slice\(0,2000\):""/, "Report details must be bounded plain text");
 
 console.log("API authorization audit slice passed: 14 route classifications and taxonomy identity boundaries.");
