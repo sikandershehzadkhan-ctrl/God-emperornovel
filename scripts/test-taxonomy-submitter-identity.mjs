@@ -11,7 +11,7 @@ const handler = worker.slice(start, end);
 assert.ok(handler.includes("u?.id??null"), "Taxonomy creator ID must come from session identity or remain null for anonymous proposals");
 assert.ok(!handler.includes("b.creator_id"), "Taxonomy handler must ignore caller-supplied creator IDs");
 assert.ok(handler.includes("String(b.creator_name||'').slice(0,80)"), "Optional public-form display name remains supported");
-assert.ok(handler.includes("status='approved'"), "Public taxonomy reads must remain approved-only");
+assert.ok(handler.includes("status!=='approved'") && handler.includes("WHERE type=? AND status=?") && handler.includes(".bind(type,'approved')"), "Public taxonomy reads must reject non-approved filters and query only approved entries");
 assert.ok(handler.includes("const urlObj=new URL(req.url)"), "Taxonomy request URL must not shadow the authenticated session user");
 assert.ok(!handler.includes("const u=new URL(req.url)"), "Taxonomy handler must avoid redeclaring the session user");
 const adminStart = worker.indexOf("async function adminTaxonomy");
