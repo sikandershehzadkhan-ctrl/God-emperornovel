@@ -363,13 +363,13 @@ async function ensureCommunityTaxonomySchema(env){
  UNIQUE(type,slug))`).run();
 }
 async function communityTaxonomy(req,env,u){
- const u=new URL(req.url), method=req.method;
+ const urlObj=new URL(req.url), method=req.method;
  if(method==='GET'){
-  const type=String(u.searchParams.get('type')||'').toLowerCase();
+  const type=String(urlObj.searchParams.get('type')||'').toLowerCase();
   if(!['genre','tag'].includes(type)) return json({error:'type must be genre or tag'},400);
   // Public discovery exposes approved vocabulary only. Pending/rejected proposals and
   // submitter details belong exclusively to the authenticated moderation endpoint.
-  const status=String(u.searchParams.get('status')||'approved').toLowerCase();
+  const status=String(urlObj.searchParams.get('status')||'approved').toLowerCase();
   if(status!=='approved') return json({error:'Only approved taxonomy entries are public'},403);
   const r=await env.DB.prepare(
    'SELECT id,type,name,slug,description,created_at FROM taxonomy_submissions WHERE type=? AND status=? ORDER BY name COLLATE NOCASE LIMIT 500'
@@ -389,8 +389,8 @@ async function communityTaxonomy(req,env,u){
  return json({error:'Method not allowed'},405);
 }
 async function adminTaxonomy(req,env,u){
- const e=admin(u);if(e)return e;const b=await body(req),id=Number(b.id||0),decision=String(b.decision||'').toLowerCase();
- if(!id||!['approve','reject'].includes(decision))return json({error:'id and decision required'},400);
+ const e=admin(u);if(e)return e;const b=await body(req),id=Number(b.id),decision=String(b.decision||'').toLowerCase();
+ if(!Number.isSafeInteger(id)||id<1||!['approve','reject'].includes(decision))return json({error:'id and decision required'},400);
  const row=await env.DB.prepare('SELECT * FROM taxonomy_submissions WHERE id=?').bind(id).first();if(!row)return json({error:'Submission not found'},404);
  if(row.status!=='pending')return json({error:'Already reviewed'},409);
  if(decision==='reject'){await env.DB.prepare("UPDATE taxonomy_submissions SET status='rejected',reviewed_at=CURRENT_TIMESTAMP,reviewer_id=? WHERE id=?").bind(u.id,id).run();return json({ok:true,status:'rejected'});}
