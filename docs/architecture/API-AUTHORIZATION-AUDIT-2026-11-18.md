@@ -140,3 +140,10 @@ Regression assertions cover the owner validation and role/ban checks. This is a 
 The author chapter publish route checked ownership and novel rights but did not check the parent novel's publication state. This allowed a chapter to be marked published while its parent novel was still a draft or awaiting review. The route now loads the parent novel publication status and rejects chapter publication until the parent novel is published. Moving a chapter back to draft remains allowed.
 
 Regression assertions cover the parent-state lookup and publication gate. This is a source-level safeguard; runtime behavior still requires the repository test suite and deployment validation.
+
+
+## Author chapter creation numeric validation
+
+The author chapter creation route previously accepted any integer chapter number and only rejected negative ticket costs. Non-integer, non-finite, or excessively large ticket costs could reach the database layer, and chapter numbers were not constrained to safe integers. The route now validates a positive safe-integer novel ID and chapter number, plus a safe-integer ticket cost from 0 through 1,000,000, before database access or insertion.
+
+Regression assertions cover all three numeric boundaries. This is source-level validation and does not substitute for running the full Worker test suite.
