@@ -11,7 +11,7 @@ Establish a source-backed starting point for the API method, authentication, aut
 - Existing inventory source checks: `scripts/test-api-endpoint-inventory.mjs`
 - Public client runtime: `public/app.js`
 
-The inventory is a first-pass static scan of literal path branches and dynamic path matchers. Its method and helper-signal fields are evidence hints only. They do not prove allowed methods, authorization outcomes, or resource-level ownership.
+The inventory is a first-pass static scan of literal path branches and dynamic path matchers. At audit time it records Worker source blob `6448ddfc5ae08694e67d57b4a8e52e0637be2383`. Its method and helper-signal fields are evidence hints only. They do not prove allowed methods, authorization outcomes, or resource-level ownership.
 
 ## Verified inventory totals
 
