@@ -39,6 +39,7 @@ export const PAGE_ROUTE_SHELLS = Object.freeze({
   "/author": "index.html"
 });
 
+// Keep the more specific chapter-directory matcher before the broader novel-detail matcher.
 export const DYNAMIC_PAGE_ROUTES = Object.freeze([
   {
     "pattern": "^/format/[^/]+/?$",
