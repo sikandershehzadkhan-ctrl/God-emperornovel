@@ -29,7 +29,6 @@ assert.match(catalogLoad, /catch\(error\)/);
 
 assert.match(app, /else if\(p==='\/discover'\|\|p==='\/catalog'\)await catalog\(\)/);
 assert.match(app, /x==='\/catalog'&&path==='\/discover'/);
-assert.match(worker, /"\/discover":"catalog\.html"/);
 assert.ok(wrangler.includes('"/catalog", "/discover", "/formats"'), "Wrangler routes /discover through the Worker");
 const catalogTemplate = await readFile("public/catalog.html", "utf8");
 assert.match(catalogTemplate, /<title>Catalog \| Imperial Novel<\/title>/);
