@@ -167,7 +167,7 @@ const env = {
       const requests = novelRequests.map(row => ({ ...row }));
       const balances = new Map(accountBalances);
       const ledger = requestLedger.map(row => ({ ...row }));
-      let lastInsertId = 0, priorChanges = 0;
+      let lastInsertId = 0, nextId = nextRequestId, priorChanges = 0;
       const results = [];
       for (const statement of statements) {
         const sql = statement.sql, values = statement.values;
@@ -178,7 +178,7 @@ const env = {
           const balance = balances.get(user_id);
           const inserted = Number.isFinite(balance) && balance >= cost;
           if (inserted) {
-            lastInsertId = nextRequestId++;
+            lastInsertId = nextId++;
             requests.push({ id: lastInsertId, user_id, url, source_host, week_key, cost, status: "pending" });
           }
           priorChanges = inserted ? 1 : 0;
@@ -315,9 +315,19 @@ assert.equal(bFreeRequest.cost, 0);
 assert.equal(accountBalances.get(402), 0, "B's free request must not change either account balance");
 assert.equal(accountBalances.get(301), 900, "B's request must not debit A");
 assert.equal(novelRequests.find(row => row.id === bFreeRequest.request_id).user_id, 402);
+await payload(await request("account-b-token", "/api/requests", "POST", { url: requestUrl }), 200);
+await payload(await request("account-b-token", "/api/requests", "POST", { url: requestUrl }), 200);
+const beforeUnaffordable = novelRequests.length;
+const unaffordable = await payload(await request("account-b-token", "/api/requests", "POST", { url: requestUrl }), 402);
+assert.equal(unaffordable.cost, 100);
+assert.equal(novelRequests.length, beforeUnaffordable, "Insufficient funds must not leave a request row");
+assert.equal(novelRequests.filter(row => row.user_id === 402).length, 3, "B's free quota must be independent");
+assert.equal(accountBalances.get(402), 0, "An unaffordable paid request must not overdraw B");
+assert.equal(accountBalances.get(301), 900, "B's failed paid request must not touch A's balance");
+assert.equal(requestLedger.length, 1, "A failed paid request must not create a ledger entry");
 await payload(await request("account-a-token", "/api/requests", "POST", { url: "http://fanqienovel.com/page/123" }), 400);
 await payload(await request("account-a-token", "/api/requests", "POST", { url: "https://unregistered.example/page/123" }), 400);
-assert.equal(novelRequests.length, 5, "Rejected URLs must not create request rows");
+assert.equal(novelRequests.length, 7, "Rejected URLs and unaffordable requests must not create request rows");
 assert.equal(requestLedger.length, 1, "Rejected URLs must not create ledger entries");
 
-console.log("PASS: Worker fetch two-account isolation for bookmarks, history, library, follows, notifications, ticket ledger, author applications, author novel listing/update, author chapter update, and AI project creation/listing/read/update/job access, novel-request free/paid transaction accounting, and per-account request isolation; forged identity and invalid chapter relationships rejected. Deterministic D1 test double only, not live Cloudflare D1.");
+console.log("PASS: Worker fetch two-account isolation for bookmarks, history, library, follows, notifications, ticket ledger, author applications, author novel listing/update, author chapter update, and AI project creation/listing/read/update/job access, novel-request free/paid/insufficient-balance transaction accounting, and per-account request isolation; forged identity and invalid chapter relationships rejected. Deterministic D1 test double only, not live Cloudflare D1.");
