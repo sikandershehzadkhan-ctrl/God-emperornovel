@@ -117,3 +117,12 @@ The admin novel review handler could clear `rights_verified_by` when a work retu
 A focused review found that the admin user PATCH handler treated an omitted role as `user`, while its self-demotion guard used a different fallback. An administrator could therefore submit a partial update (or omit `role`) and unintentionally demote their own account. The same handler also reset omitted `verified` and `banned` values to false, making partial updates destructive, and it did not verify that the target user existed before returning success.
 
 The route now validates a positive safe-integer user ID, loads the current account, returns 404 for a missing user, preserves each omitted field, validates the effective role, and blocks self-demotion based on that effective role. Build-gated source assertions cover these boundaries. This is a source-level fix; exact-head CI, runtime behavior against real D1, and production behavior remain unverified.
+
+
+## Admin publishing resource ID validation
+
+The next resource-boundary pass found that several admin publishing routes converted path or request identifiers with `Number()` but accepted any truthy number. This allowed fractional or unsafe-integer identifiers to reach D1 bindings, and chapter numbering used `Number.isInteger` rather than the safer integer bound.
+
+The novel PATCH, chapter list, chapter PATCH/DELETE, chapter reorder, and chapter creation paths now require positive safe-integer IDs. Chapter numbers on create/update also require positive safe integers. The author-application review path already had a positive safe-integer guard and was retained.
+
+These are source-level validation safeguards. The regression assertions are added to the build-gated authorization audit; CI and real-D1 behavior still require verification.
