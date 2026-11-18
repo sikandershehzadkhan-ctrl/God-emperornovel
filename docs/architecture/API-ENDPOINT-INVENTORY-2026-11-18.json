@@ -8,7 +8,7 @@
     "literal_endpoint_paths": 74,
     "literal_route_branch_occurrences": 92,
     "explicit_method_conditions": 77,
-    "dynamic_route_families": 14
+    "dynamic_route_families": 22
   },
   "method_semantics": "explicit_methods lists only literal methods directly checked in source. Empty or mixed method evidence is not proof of allowed methods. Unsupported-method behavior and framework fallthrough must be verified separately.",
   "authorization_semantics": "observed_helper_signals records only visible need(u), admin(u), and author(u) calls in a nearby branch segment. It is not a security certification and does not establish resource-level ownership.",
@@ -1090,25 +1090,23 @@
   "dynamic_endpoints": [
     {
       "pattern": "/api/novels/{id}",
-      "source": "p.match(/^\\/api\\/novels\\/(\\d+)/)",
-      "methods": [
-        "GET",
-        "PATCH",
-        "DELETE"
-      ],
+      "source": "p.match(/^\\/api\\/novels\\/(\\d+)",
+      "source_line": 459,
+      "methods": [],
+      "observed_helper_signals": [],
       "review_required": true
     },
     {
       "pattern": "/api/chapters/{id}",
-      "source": "p.match(/^\\/api\\/chapters\\/(\\d+)/)",
-      "methods": [
-        "GET"
-      ],
+      "source": "p.match(/^\\/api\\/chapters\\/(\\d+)",
+      "source_line": 460,
+      "methods": [],
+      "observed_helper_signals": [],
       "review_required": true
     },
     {
       "pattern": "/api/chapters/{id}/unlock",
-      "source": "/^\\\\/api\\\\/chapters\\\\/\\\\d+\\\\/unlock$/.test(p)",
+      "source": "/^\\/api\\/chapters\\/\\d+\\/unlock$/.test(p)",
       "source_line": 461,
       "methods": [
         "POST"
@@ -1120,7 +1118,7 @@
     },
     {
       "pattern": "/api/novels/{id}/batch-unlock",
-      "source": "p.match(/^\\\\/api\\\\/novels\\\\/(\\\\d+)\\\\/batch-unlock$/)",
+      "source": "p.match(/^\\/api\\/novels\\/(\\d+)",
       "source_line": 462,
       "methods": [
         "POST"
@@ -1133,44 +1131,61 @@
     {
       "pattern": "/api/admin/author-applications/{id}",
       "source": "p.startsWith(\"/api/admin/author-applications/\")",
+      "source_line": 588,
       "methods": [
         "PATCH"
+      ],
+      "observed_helper_signals": [
+        "admin"
       ],
       "review_required": true
     },
     {
       "pattern": "/api/admin/users/{id}",
-      "source": "p.match(/^\\/api\\/admin\\/users\\/(\\d+)/)",
+      "source": "p.match(/^\\/api\\/admin\\/users\\/(\\d+)",
+      "source_line": 612,
       "methods": [
         "PATCH"
+      ],
+      "observed_helper_signals": [
+        "admin"
       ],
       "review_required": true
     },
     {
       "pattern": "/api/author/ai/projects/{id}",
-      "source": "p.match(/^\\/api\\/author\\/ai\\/projects\\/(\\d+)/)",
+      "source": "p.match(/^\\/api\\/author\\/ai\\/projects\\/(\\d+)",
+      "source_line": 633,
       "methods": [
         "GET",
-        "PATCH",
-        "DELETE"
+        "PATCH"
+      ],
+      "observed_helper_signals": [
+        "author"
       ],
       "review_required": true
     },
     {
       "pattern": "/api/admin/publishing/novels/{id}",
-      "source": "p.match(/^\\/api\\/admin\\/publishing\\/novels\\/(\\d+)/)",
+      "source": "p.match(/^\\/api\\/admin\\/publishing\\/novels\\/(\\d+)",
+      "source_line": 772,
       "methods": [
-        "PATCH",
-        "DELETE"
+        "PATCH"
+      ],
+      "observed_helper_signals": [
+        "admin"
       ],
       "review_required": true
     },
     {
       "pattern": "/api/admin/publishing/chapters/{id}",
-      "source": "p.match(/^\\/api\\/admin\\/publishing\\/chapters(?:\\/(\\d+)/)",
+      "source": "p.match(/^\\/api\\/admin\\/publishing\\/chapters\\/(\\d+)",
+      "source_line": 781,
       "methods": [
-        "PATCH",
-        "DELETE"
+        "PATCH"
+      ],
+      "observed_helper_signals": [
+        "admin"
       ],
       "review_required": true
     },
@@ -1184,33 +1199,145 @@
     },
     {
       "pattern": "/api/admin/donations/{id}",
-      "source": "p.match(/^\\/api\\/admin\\/donations\\/(\\d+)/)",
+      "source": "p.match(/^\\/api\\/admin\\/donations\\/(\\d+)",
+      "source_line": 822,
       "methods": [
         "PATCH"
+      ],
+      "observed_helper_signals": [
+        "admin"
       ],
       "review_required": true
     },
     {
       "pattern": "/api/admin/reports/{id}",
-      "source": "p.match(/^\\/api\\/admin\\/reports\\/(\\d+)/)",
+      "source": "p.match(/^\\/api\\/admin\\/reports\\/(\\d+)",
+      "source_line": 824,
       "methods": [
         "PATCH"
+      ],
+      "observed_helper_signals": [
+        "admin"
       ],
       "review_required": true
     },
     {
       "pattern": "/api/admin/requests/{id}",
       "source": "p.startsWith(\"/api/admin/requests/\")",
+      "source_line": 833,
       "methods": [
         "PATCH"
+      ],
+      "observed_helper_signals": [
+        "admin"
       ],
       "review_required": true
     },
     {
       "pattern": "/api/admin/connector-authorization-requests/{id}",
-      "source": "p.match(/^\\/api\\/admin\\/connector-authorization-requests\\/(\\d+)/)",
+      "source": "p.match(/^\\/api\\/admin\\/connector-authorization-requests\\/(\\d+)",
+      "source_line": 835,
       "methods": [
         "PATCH"
+      ],
+      "observed_helper_signals": [
+        "admin"
+      ],
+      "review_required": true
+    },
+    {
+      "pattern": "/api/author/ai/projects/{id}/blueprint",
+      "source": "/^\\/api\\/author\\/ai\\/projects\\/\\d+\\/blueprint$/.test(p)",
+      "source_line": 646,
+      "methods": [
+        "POST"
+      ],
+      "observed_helper_signals": [
+        "author"
+      ],
+      "review_required": true
+    },
+    {
+      "pattern": "/api/author/ai/projects/{id}/run",
+      "source": "/^\\/api\\/author\\/ai\\/projects\\/\\d+\\/run$/.test(p)",
+      "source_line": 657,
+      "methods": [
+        "POST"
+      ],
+      "observed_helper_signals": [
+        "author"
+      ],
+      "review_required": true
+    },
+    {
+      "pattern": "/api/author/ai/projects/{id}/jobs",
+      "source": "/^\\/api\\/author\\/ai\\/projects\\/\\d+\\/jobs$/.test(p)",
+      "source_line": 686,
+      "methods": [
+        "GET"
+      ],
+      "observed_helper_signals": [
+        "author"
+      ],
+      "review_required": true
+    },
+    {
+      "pattern": "/api/author/novels/{id}/submit",
+      "source": "/^\\/api\\/author\\/novels\\/\\d+\\/submit$/.test(p)",
+      "source_line": 715,
+      "methods": [
+        "POST"
+      ],
+      "observed_helper_signals": [
+        "author"
+      ],
+      "review_required": true
+    },
+    {
+      "pattern": "/api/author/novels/{id}",
+      "source": "/^\\/api\\/author\\/novels\\/\\d+$/.test(p)",
+      "source_line": 721,
+      "methods": [
+        "PATCH"
+      ],
+      "observed_helper_signals": [
+        "author"
+      ],
+      "review_required": true
+    },
+    {
+      "pattern": "/api/author/chapters/{id}",
+      "source": "/^\\/api\\/author\\/chapters\\/\\d+$/.test(p)",
+      "source_line": 745,
+      "methods": [
+        "PATCH"
+      ],
+      "observed_helper_signals": [
+        "author"
+      ],
+      "review_required": true
+    },
+    {
+      "pattern": "/api/author/chapters/{id}/publish",
+      "source": "/^\\/api\\/author\\/chapters\\/\\d+\\/publish$/.test(p)",
+      "source_line": 752,
+      "methods": [
+        "POST"
+      ],
+      "observed_helper_signals": [
+        "author"
+      ],
+      "review_required": true
+    },
+    {
+      "pattern": "/api/admin/publishing/chapters",
+      "source": "p.match(/^\\/api\\/admin\\/publishing\\/chapters(?:\\/(\\d+)",
+      "source_line": 773,
+      "methods": [
+        "GET"
+      ],
+      "observed_helper_signals": [
+        "admin"
       ],
       "review_required": true
     }
