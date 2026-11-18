@@ -11,7 +11,7 @@ Establish a source-backed starting point for the API method, authentication, aut
 - Existing inventory source checks: `scripts/test-api-endpoint-inventory.mjs`
 - Public client runtime: `public/app.js`
 
-The inventory is a first-pass static scan of literal path branches and dynamic path matchers. Its recorded Worker source blob is `6448ddfc5ae08694e67d57b4a8e52e0637be2383`, while the fetched `src/index.js` blob on this audit branch is `d35630f02e392496ce8826c9f720b75672b099c8`. The fingerprint is therefore stale relative to the audited branch and must be regenerated before treating source-line evidence as authoritative. Its method and helper-signal fields are evidence hints only. They do not prove allowed methods, authorization outcomes, or resource-level ownership.
+The inventory is a first-pass static scan of literal path branches and dynamic path matchers. It is now pinned to Worker blob `d35630f02e392496ce8826c9f720b75672b099c8`, with exact route source-line evidence checked by the build gate. Its method and helper-signal fields are evidence hints only. They do not prove allowed methods, authorization outcomes, or resource-level ownership.
 
 ## Verified inventory totals
 
