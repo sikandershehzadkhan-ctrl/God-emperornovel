@@ -242,7 +242,7 @@ const adminOnlyRoutes = [
   ["GET", "/api/admin/connector-authorization-requests"],
 ];
 for (const [method, path] of adminOnlyRoutes) {
-  const response = await request("reader-a-token", method, {}, path);
+  const response = await request("reader-a-token", method, method === "GET" ? undefined : {}, path);
   assert.equal(response.status, 403, "Ordinary reader accounts must be denied admin route " + method + " " + path);
 }
 assert.deepEqual(follows.sort((a, b) => a.user_id - b.user_id), [
