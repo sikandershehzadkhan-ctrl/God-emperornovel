@@ -12,5 +12,11 @@ assert.ok(handler.includes("u?.id??null"), "Taxonomy creator ID must come from s
 assert.ok(!handler.includes("b.creator_id"), "Taxonomy handler must ignore caller-supplied creator IDs");
 assert.ok(handler.includes("String(b.creator_name||'').slice(0,80)"), "Optional public-form display name remains supported");
 assert.ok(handler.includes("status='approved'"), "Public taxonomy reads must remain approved-only");
+assert.ok(handler.includes("const urlObj=new URL(req.url)"), "Taxonomy request URL must not shadow the authenticated session user");
+assert.ok(!handler.includes("const u=new URL(req.url)"), "Taxonomy handler must avoid redeclaring the session user");
+const adminStart = worker.indexOf("async function adminTaxonomy");
+const adminEnd = worker.indexOf("async function seed", adminStart);
+const adminHandler = worker.slice(adminStart, adminEnd);
+assert.ok(adminHandler.includes("Number.isSafeInteger(id)||id<1"), "Admin moderation IDs must be positive safe integers");
 assert.ok(handler.includes("'pending')"), "New taxonomy proposals must remain pending moderation");
 console.log("Taxonomy submitter identity tests passed.");
