@@ -25,7 +25,7 @@
       "observed_helper_signals": [],
       "review_required": true,
       "occurrences": 1,
-      "method_detail": "The fast path explicitly handles GET; the later branch rejects every non-GET request with 405 before schema initialization.",
+      "method_detail": "The fast path explicitly handles GET and rejects every non-GET request with 405 before schema initialization.",
       "allowed_methods": [
         "GET"
       ]
