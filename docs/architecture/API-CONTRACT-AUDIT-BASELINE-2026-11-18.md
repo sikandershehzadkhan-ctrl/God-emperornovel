@@ -11,7 +11,7 @@ Establish a source-backed starting point for the API method, authentication, aut
 - Existing inventory source checks: `scripts/test-api-endpoint-inventory.mjs`
 - Public client runtime: `public/app.js`
 
-The inventory is a first-pass static scan of literal path branches and dynamic path matchers. It is now pinned to Worker blob `0a036b7d612754d9ead7fe24219f8d9d94213ca3`, with exact route source-line evidence checked by the build gate. Its method and helper-signal fields are evidence hints only. They do not prove allowed methods, authorization outcomes, or resource-level ownership.
+The inventory is a first-pass static scan of literal path branches and dynamic path matchers. It is now pinned to Worker blob `ccdd18433f7a53f851b6942245cebfd521a71ee3`, with exact route source-line evidence checked by the build gate. Its method and helper-signal fields are evidence hints only. They do not prove allowed methods, authorization outcomes, or resource-level ownership.
 
 ## Verified inventory totals
 
@@ -30,7 +30,7 @@ All 74 literal paths and all 21 dynamic families remain review-required for auth
 
 ### 0. Inventory source fingerprint and line evidence
 
-The inventory has been regenerated against Worker blob `0a036b7d612754d9ead7fe24219f8d9d94213ca3`. The build-gated audit test recomputes the Git blob SHA-1, verifies all literal route occurrence line numbers, and verifies each dynamic route source line. This closes the stale-fingerprint and shifted-line evidence issue for this audited revision.
+The inventory has been regenerated against Worker blob `ccdd18433f7a53f851b6942245cebfd521a71ee3`. The build-gated audit test recomputes the Git blob SHA-1, verifies all literal route occurrence line numbers, and verifies each dynamic route source line. This closes the stale-fingerprint and shifted-line evidence issue for this audited revision.
 
 ### 1. Rating contract mismatch
 
