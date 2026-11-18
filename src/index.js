@@ -829,7 +829,11 @@ async function api(req,env){
   const rights=String(b.rights_status??row.rights_status??'').toLowerCase();
   const pub=String(b.publication_status??row.publication_status??'draft').toLowerCase();
   const previous=String(row.publication_status||'draft').toLowerCase();
+  const rightsChanged=rights!==String(row.rights_status||'').toLowerCase()
+   ||String(b.rights_evidence??row.rights_evidence??'')!==String(row.rights_evidence||'')
+   ||String(b.rights_notes??row.rights_notes??'')!==String(row.rights_notes||'');
   if(!['original','public_domain','licensed','authorized'].includes(rights))return json({error:'Invalid rights status'},400);
+  if(previous==='published'&&pub==='published'&&rightsChanged)return json({error:'Rights declaration or evidence changed. Move the novel to review before changing rights details.'},409);
   if(!['draft','review','published','archived'].includes(pub))return json({error:'Invalid publication status'},400);
   const feedback=String(b.review_feedback??'').trim().slice(0,3000);
   if(pub==='published'&&previous!=='review'&&previous!=='published')return json({error:'A novel must enter review before it can be approved'},409);
