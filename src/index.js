@@ -839,10 +839,11 @@ async function api(req,env){
   if(pub==='published'&&previous!=='review'&&previous!=='published')return json({error:'A novel must enter review before it can be approved'},409);
   if(pub==='published'&&rights!=='original'&&!String(b.rights_evidence??row.rights_evidence??'').trim())return json({error:'Rights evidence is required for licensed, public-domain, or authorized works.'},400);
   if(pub==='draft'&&previous==='review'&&!feedback)return json({error:'Reviewer feedback is required when returning a novel for changes'},400);
+   if(pub==='archived'&&previous!=='archived'&&!feedback)return json({error:'An archive reason is required'},400);
   const decision=pub==='published'||(pub==='draft'&&previous==='review');
   const reviewedBy=decision?u.id:(pub==='review'?null:row.reviewed_by||null);
   const reviewedAt=decision?new Date().toISOString():(pub==='review'?null:row.reviewed_at||null);
-  const storedFeedback=pub==='review'?'':pub==='published'?'':(feedback||String(row.review_feedback||''));
+  const storedFeedback=pub==='review'?'':pub==='published'?'':(pub==='archived'?feedback:(feedback||String(row.review_feedback||'')));
   const rightsVerified=pub==='published';
   const verified=rightsVerified?u.id:null,verifiedAt=rightsVerified?new Date().toISOString():null;
   await env.DB.prepare(`UPDATE novels SET title=?,author=?,description=?,status=?,kind=?,language=?,cover_url=?,source_url=?,rights_status=?,publication_status=?,rights_evidence=?,rights_notes=?,review_feedback=?,rights_verified_by=?,rights_verified_at=?,reviewed_by=?,reviewed_at=?,updated_at=CURRENT_TIMESTAMP WHERE id=?`).bind(String(b.title??row.title),String(b.author??row.author),String(b.description??row.description),['ongoing','completed'].includes(String(b.status??row.status))?String(b.status??row.status):row.status,String(b.kind??row.kind),String(b.language??row.language),String(b.cover_url??row.cover_url),String(b.source_url??row.source_url),rights,pub,String(b.rights_evidence??row.rights_evidence),String(b.rights_notes??row.rights_notes),storedFeedback,verified,verifiedAt,reviewedBy,reviewedAt,id).run();
@@ -851,6 +852,7 @@ async function api(req,env){
   if(row.owner_user_id&&Number(row.owner_user_id)!==Number(u.id)){
    if(pub==='published')await notifyUser(env,row.owner_user_id,'Novel approved and published',`Your novel "${String(row.title||'Untitled')}" has been approved and published.`);
    else if(pub==='draft'&&previous==='review')await notifyUser(env,row.owner_user_id,'Changes requested for your novel',`Admin review requested changes for "${String(row.title||'Untitled')}": ${feedback}`);
+    else if(pub==='archived'&&previous!=='archived')await notifyUser(env,row.owner_user_id,'Novel archived',`Your novel "${String(row.title||'Untitled')}" was archived by an administrator. Reason: ${feedback}`);
   }
   return json({ok:true,id,status:pub,rights_status:rights});
  }
