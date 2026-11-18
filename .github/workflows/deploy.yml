@@ -23,7 +23,7 @@ concurrency:
 
 jobs:
   deploy:
-    # Deliberate release lock: remote D1 history has not been reconciled against migrations 0001–0046.
+    # Deliberate release lock: remote D1 history has not been reconciled against migrations 0001–0047.
     # Remove only in a separately reviewed release after the read-only audit and migration rehearsal.
     if: ${{ false }}
     runs-on: ubuntu-latest

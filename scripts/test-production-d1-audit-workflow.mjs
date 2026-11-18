@@ -9,6 +9,8 @@ assert.ok(workflow.includes("npx --yes wrangler@4 d1 time-travel info god-empero
 assert.ok(workflow.includes("sqlite_master"), "The audit must inspect actual remote schema definitions.");
 assert.ok(workflow.includes("d1_migrations"), "The audit must inspect any existing D1 migration ledger.");
 assert.ok(workflow.includes("core_schema_version"), "The audit must inspect the runtime schema marker.");
+assert.ok(workflow.includes("reader_preferences"), "The audit must inventory the account-scoped reader preferences table introduced by migration 0047.");
+assert.ok(workflow.includes("PRAGMA table_info(reader_preferences)"), "The audit must inspect reader preference columns without reading user preference values.");
 assert.ok(fs.readFileSync("docs/production/CANONICAL-D1-MIGRATION-RELEASE-PLAN.md", "utf8").includes("Imperial Novel Read-Only Production D1 Audit"), "The release plan must direct reviewers to the read-only audit workflow.");
 assert.ok(workflow.includes("PRAGMA foreign_key_check"), "The audit must inspect foreign-key integrity.");
 assert.ok(!/time-travel restore|wrangler@4 deploy\\b/i.test(workflow), "The audit must never restore or deploy.");

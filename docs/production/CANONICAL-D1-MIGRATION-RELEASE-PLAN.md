@@ -4,7 +4,7 @@ STATUS: BLOCKED
 
 ## Why production release is blocked
 
-The development integration now has one canonical migration chain, 0001–0046. The production deployment workflow previously referenced branch-local files named `0012_chapter_revisions.sql` and `0013_scheduled_chapter_publications.sql`. Those names are no longer valid in the canonical chain: profile/account migrations own 0012–0015, and chapter revisions/scheduling are 0016–0017.
+The development integration now has one canonical migration chain, 0001–0047. The production deployment workflow previously referenced branch-local files named `0012_chapter_revisions.sql` and `0013_scheduled_chapter_publications.sql`. Those names are no longer valid in the canonical chain: profile/account migrations own 0012–0015, and chapter revisions/scheduling are 0016–0017.
 
 The production D1 database's exact applied migration history has not been inspected and reconciled in this work session. A source-tree replay against fresh SQLite is not evidence of the remote D1 state.
 
@@ -55,6 +55,7 @@ Official references: [D1 Time Travel and backups](https://developers.cloudflare.
 - 0044: independent immutable approval bound to the exact disposition-plan digest.
 - 0045: specialist-scoped immutable account-deletion findings and corresponding audit events.
 - 0046: token-fenced AI Author Studio run-claim columns and lookup index.
+- 0047: account-scoped reader preferences for cross-device reader settings continuity.
 
 ## Required work before a production release
 
@@ -82,6 +83,7 @@ At minimum, the reviewed release runner must verify these structures before depl
 - `account_closure_requests` with its pending-per-user and status/grace indexes.
 - `account_deletion_reviews`, `account_deletion_review_events`, `account_deletion_reviewer_assignments`, `account_deletion_reviewer_assignment_events`, `account_deletion_disposition_plans`, `account_deletion_disposition_items`, `account_deletion_disposition_approvals`, and `account_deletion_disposition_findings`; verify their foreign keys, uniqueness constraints, reviewer/scope guards, version/digest checks, and append-only audit/immutability triggers.
 - `ai_author_projects.active_run_token`, `ai_author_projects.active_run_started_at`, `ai_author_projects.active_run_owner_user_id`, `ai_chapter_jobs.run_token`, and `idx_ai_chapter_jobs_run_token`.
+- `reader_preferences` with `user_id` primary/foreign key, valid bounded JSON in `preferences_json`, and `updated_at`; confirm the table exists without exposing individual preference values.
 - `PRAGMA integrity_check` and `PRAGMA foreign_key_check` on the rehearsal database.
 
 ## Current safety state
