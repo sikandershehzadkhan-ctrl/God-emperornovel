@@ -2,7 +2,7 @@ name: Imperial Novel Cloudflare Source Validation
 
 on:
   pull_request:
-    branches: [main]
+    branches: [main, "architecture/phase-01-foundation-route-registry"]
   push:
     branches: [main]
     paths:
