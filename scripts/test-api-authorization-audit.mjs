@@ -51,6 +51,9 @@ assert.ok(aiRunStart >= 0 && aiJobsStart > aiRunStart, "AI chapter generation ro
 assert.match(aiRunHandler, /status<>'running'[\s\S]*claimed\.meta\?\.changes/, "AI generation must atomically claim a non-running project to prevent concurrent duplicate runs");
 assert.match(aiRunHandler, /status,output_summary,provider\) VALUES\(\?,\?,\? ,\? ,'failed',\?,\?,\?\)/, "Failed AI chapter attempts must be recorded in generation history");
 assert.match(aiRunHandler, /aiSafeText\(ai\.error\|\|'AI provider returned no chapter text',500\)/, "Stored AI failure summaries must be length-bounded");
+assert.match(aiRunHandler, /ai_chapter_jobs\(project_id,owner_user_id,chapter_number[\s\S]*row\.owner_user_id/, "AI job ownership must follow the project owner, including admin-assisted runs");
+assert.equal((aiRunHandler.match(/ai_generation_runs\(project_id,owner_user_id/g)||[]).length, 2, "Both failed and successful chapter attempts must write generation history");
+assert.match(aiRunHandler, /ai_generation_runs\(project_id,owner_user_id[\s\S]*row\.owner_user_id/, "Generation history must remain associated with the project owner");
 
 const exactPaths = ["/api/health","/api/taxonomy","/api/me","/api/config","/api/genres","/api/tags","/api/public-authors","/api/sources","/api/omni/status","/api/omni/search","/api/omni/resolve","/api/omni/smart-unlock","/api/novels","/api/admin/stats"];
 assert.equal(exactPaths.length, 14);
