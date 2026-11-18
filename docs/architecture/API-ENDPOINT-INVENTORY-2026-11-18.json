@@ -1198,7 +1198,7 @@
     {
       "pattern": "/api/admin/publishing/novels/{id}",
       "source": "p.match(/^\\/api\\/admin\\/publishing\\/novels\\/(\\d+)",
-      "source_line": 803,
+      "source_line": 812,
       "methods": [
         "PATCH"
       ],
@@ -1210,7 +1210,7 @@
     {
       "pattern": "/api/admin/publishing/chapters/{id}",
       "source": "p.match(/^\\/api\\/admin\\/publishing\\/chapters\\/(\\d+)",
-      "source_line": 812,
+      "source_line": 821,
       "methods": [
         "PATCH"
       ],
@@ -1222,7 +1222,7 @@
     {
       "pattern": "/api/admin/donations/{id}",
       "source": "p.match(/^\\/api\\/admin\\/donations\\/(\\d+)",
-      "source_line": 853,
+      "source_line": 862,
       "methods": [
         "PATCH"
       ],
@@ -1234,7 +1234,7 @@
     {
       "pattern": "/api/admin/reports/{id}",
       "source": "p.match(/^\\/api\\/admin\\/reports\\/(\\d+)",
-      "source_line": 855,
+      "source_line": 864,
       "methods": [
         "PATCH"
       ],
@@ -1246,7 +1246,7 @@
     {
       "pattern": "/api/admin/requests/{id}",
       "source": "p.startsWith(\"/api/admin/requests/\")",
-      "source_line": 864,
+      "source_line": 873,
       "methods": [
         "PATCH"
       ],
@@ -1258,7 +1258,7 @@
     {
       "pattern": "/api/admin/connector-authorization-requests/{id}",
       "source": "p.match(/^\\/api\\/admin\\/connector-authorization-requests\\/(\\d+)",
-      "source_line": 866,
+      "source_line": 875,
       "methods": [
         "PATCH"
       ],
@@ -1294,7 +1294,7 @@
     {
       "pattern": "/api/author/ai/projects/{id}/jobs",
       "source": "/^\\/api\\/author\\/ai\\/projects\\/\\d+\\/jobs$/.test(p)",
-      "source_line": 715,
+      "source_line": 724,
       "methods": [
         "GET"
       ],
@@ -1306,7 +1306,7 @@
     {
       "pattern": "/api/author/novels/{id}/submit",
       "source": "/^\\/api\\/author\\/novels\\/\\d+\\/submit$/.test(p)",
-      "source_line": 744,
+      "source_line": 753,
       "methods": [
         "POST"
       ],
@@ -1318,7 +1318,7 @@
     {
       "pattern": "/api/author/novels/{id}",
       "source": "/^\\/api\\/author\\/novels\\/\\d+$/.test(p)",
-      "source_line": 750,
+      "source_line": 759,
       "methods": [
         "PATCH"
       ],
@@ -1330,7 +1330,7 @@
     {
       "pattern": "/api/author/chapters/{id}",
       "source": "/^\\/api\\/author\\/chapters\\/\\d+$/.test(p)",
-      "source_line": 774,
+      "source_line": 783,
       "methods": [
         "PATCH"
       ],
@@ -1342,7 +1342,7 @@
     {
       "pattern": "/api/author/chapters/{id}/publish",
       "source": "/^\\/api\\/author\\/chapters\\/\\d+\\/publish$/.test(p)",
-      "source_line": 783,
+      "source_line": 792,
       "methods": [
         "POST"
       ],
@@ -1354,7 +1354,7 @@
     {
       "pattern": "/api/admin/publishing/chapters",
       "source": "p.match(/^\\/api\\/admin\\/publishing\\/chapters(?:\\/(\\d+)",
-      "source_line": 804,
+      "source_line": 813,
       "methods": [
         "GET"
       ],
