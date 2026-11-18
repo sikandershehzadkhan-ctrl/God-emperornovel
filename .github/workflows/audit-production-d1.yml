@@ -149,8 +149,15 @@ jobs:
           printf '%s\n' "$migration_table_check"
           if printf '%s' "$migration_table_check" | grep -q '"present"'; then
             run_query "Applied D1 migration history" "SELECT * FROM d1_migrations ORDER BY id;"
+            ledger_assertion="$(npx --yes wrangler@4 d1 execute god-emperornovel-db --remote --command "WITH expected(name) AS (VALUES ('0001_initial'),('0002_omniportal'),('0003_finish_product'),('0004_legal_publishing'),('0005_chapter_publishing'),('0006_rights_first_security'),('0007_ai_author_studio'),('0008_discovery_community'),('0009_catalog_filter_indexes'),('0010_catalog_sort_indexes'),('0011_author_applications'),('0012_user_profiles'),('0013_username_change_cooldown'),('0014_account_preferences'),('0015_username_historical_insert_guard'),('0016_chapter_revisions'),('0017_scheduled_chapter_publications'),('0018_media_asset_registry'),('0019_media_publication_gates'),('0020_comic_asset_owner_guards'),('0021_media_rights_review_audit'),('0022_media_storage_quotas'),('0023_comic_page_draft_guards'),('0024_donation_review_audit'),('0025_admin_ticket_adjustments'),('0026_donation_independent_review'),('0027_novel_request_refunds'),('0028_runtime_feature_integrity'),('0029_chapter_update_timestamps'),('0030_daily_view_analytics'),('0031_account_closure_requests'),('0032_author_story_goals'),('0033_author_private_notes'),('0034_ratings_baseline'),('0035_ten_point_ratings'),('0036_password_reset_tokens'),('0037_email_verification'),('0038_password_reset_email_snapshot'),('0039_novel_ownership_transfers'),('0040_account_deletion_requests'),('0041_account_deletion_review_store'),('0042_account_deletion_reviewer_roles'),('0043_account_deletion_disposition_plans'),('0044_account_deletion_disposition_approvals'),('0045_account_deletion_specialist_findings'),('0046_atomic_ai_run_claims'),('0047_reader_preferences')) SELECT CASE WHEN NOT EXISTS (SELECT 1 FROM expected e LEFT JOIN d1_migrations m ON m.name=e.name WHERE m.name IS NULL) THEN 'PASS' ELSE 'FAIL' END AS audit_status;" 2>&1)"
+            printf '%s\\n' "$ledger_assertion"
+            if ! printf '%s' "$ledger_assertion" | grep -q '"PASS"'; then
+              echo "::error::Production D1 migration history is missing one or more canonical migrations 0001-0047. Reconcile the remote ledger before any release."
+              exit 1
+            fi
           else
-            echo "No d1_migrations table exists in this production database. This is an observed schema fact, not a reason to stop the remaining read-only checks."
+            echo "::error::Production D1 has no d1_migrations table. Canonical migration history cannot be verified; release remains blocked."
+            exit 1
           fi
           run_query "Publication status counts" "SELECT COALESCE(publication_status,'<NULL>') AS publication_status, COUNT(*) AS novel_count FROM novels GROUP BY publication_status ORDER BY publication_status;"
           run_query "Chapter publication status counts" "SELECT COALESCE(publication_status,'<NULL>') AS publication_status, COUNT(*) AS chapter_count FROM chapters GROUP BY publication_status ORDER BY publication_status;"

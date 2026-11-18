@@ -8,6 +8,9 @@ assert.ok(workflow.includes("npx --yes wrangler@4 d1 info god-emperornovel-db"),
 assert.ok(workflow.includes("npx --yes wrangler@4 d1 time-travel info god-emperornovel-db"), "The audit must inspect the current recovery bookmark.");
 assert.ok(workflow.includes("sqlite_master"), "The audit must inspect actual remote schema definitions.");
 assert.ok(workflow.includes("d1_migrations"), "The audit must inspect any existing D1 migration ledger.");
+assert.ok(workflow.includes("canonical migrations 0001-0047"), "The audit must fail closed unless all canonical migration names are recorded remotely.");
+assert.ok(workflow.includes("LEFT JOIN d1_migrations m ON m.name=e.name"), "The audit must compare the remote migration ledger against the canonical migration list.");
+assert.ok(workflow.includes("Production D1 has no d1_migrations table"), "The audit must block release when migration history cannot be verified.");
 assert.ok(workflow.includes("core_schema_version"), "The audit must inspect the runtime schema marker.");
 assert.ok(workflow.includes("reader_preferences"), "The audit must inventory the account-scoped reader preferences table introduced by migration 0047.");
 assert.ok(workflow.includes("PRAGMA table_info(reader_preferences)"), "The audit must inspect reader preference columns without reading user preference values.");
