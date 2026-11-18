@@ -2,7 +2,7 @@
 
 **Audit date:** 2026-11-18  
 **Source:** `src/index.js` at foundation branch snapshot  
-**Scope:** User-scoped reader data, author-owned works, AI projects, and administrative mutations. Static source review only.
+**Scope:** User-scoped reader data, author-owned works, AI projects, and administrative mutations. Source review plus deterministic Worker-handler tests; not live Cloudflare D1 verification.
 
 ## Positive ownership controls observed
 
@@ -58,9 +58,9 @@ Regression assertions cover the history relationship and the publication/rights 
 
 The authenticated `GET /api/requests` quota count filters by both `user_id=u.id` and the current week. The `POST /api/requests` insert binds the authenticated `u.id` as the owner, and both weekly cost subqueries are scoped to that same user. The API intentionally exposes only the submitting account's quota count; the public vote listing is a separate, intentionally public surface and does not expose private request ownership controls.
 
-The AI project collection filters by `owner_user_id=u.id`; creation assigns `owner_user_id=u.id` rather than accepting a client owner. Project detail, update, blueprint, run, and jobs handlers load the addressed project and reject non-admin users whose ID does not match its owner. Job listing is then selected by the verified project ID. Generation-run and job creation bind the authenticated user ID. The test harness now exercises two-author project list/read/update isolation, project job-feed authorization, and rejection of cross-account blueprint/run actions before provider invocation. It also checks that each account sees only its own novel-request quota count.
+The AI project collection filters by `owner_user_id=u.id`; creation assigns `owner_user_id=u.id` rather than accepting a client owner. Project detail, update, blueprint, run, and jobs handlers load the addressed project and reject non-admin users whose ID does not match its owner. Job listing is then selected by the verified project ID. Generation-run and job creation bind the authenticated user ID. The test harness now exercises two-author project creation/list/read/update isolation, project job-feed authorization, and rejection of cross-account blueprint/run actions before provider invocation. Novel request creation is also exercised through the Worker with a deterministic D1 batch model: three free requests, the fourth request's server-derived 100-Crown price, exact balance deduction, paid-request ledger entry, ownership despite forged client user IDs, independent weekly quotas, and rejection of an unaffordable request without leaving a request row or ledger entry.
 
-These tests use the actual Worker request handler with a deterministic D1 test double. They do not execute live Cloudflare D1 transactions or prove all SQL semantics under concurrency. The test double intentionally does not claim to model the multi-statement `env.DB.batch()` accounting sequence in novel-request creation; that transaction path remains untested until a faithful batch/changes/last-row-id model is added.
+These tests use the actual Worker request handler with a deterministic D1 test double. The request-accounting test models the exact ordered three-statement `env.DB.batch()` sequence, including `changes()` dependencies and `last_insert_rowid()` ownership checks. It does not execute live Cloudflare D1, prove real transactional rollback/concurrency behavior, or validate production balances.
 
 ### 6. Cross-account isolation test coverage
 
@@ -68,7 +68,7 @@ These tests use the actual Worker request handler with a deterministic D1 test d
 
 `scripts/test-api-user-bookmark-isolation-runtime.mjs` now calls the real Worker `fetch()` handler with two independently authenticated sessions and a deterministic D1 test double. The test exercises account-scoped reads and writes for bookmarks, reading history, and personal library membership; it also checks that a forged `user_id` is ignored, history/bookmark chapter relationships are validated, author novel listings are owner-filtered, and a second author cannot update another author's novel or chapter. It also verifies that follows, notifications, ticket-ledger reads, and the current author-application read return only the authenticated account's rows. The test is included in the normal `npm run build` gate.
 
-This is not a live Cloudflare D1 test. It now includes per-account novel-request quota reads and AI project list/read/update/job-feed isolation, plus cross-account rejection for blueprint and run actions. Novel-request creation/accounting still needs a transaction-level test, and AI job/run persistence still needs broader runtime coverage.
+This is not a live Cloudflare D1 test. It now includes novel-request free/paid/insufficient-balance accounting through a deterministic batch model, AI project creation/list/read/update/job-feed isolation, and cross-account rejection for blueprint/run actions. Real-D1 concurrency/rollback verification and AI job/run persistence still need broader runtime coverage.
 
 ## Security boundary
 
