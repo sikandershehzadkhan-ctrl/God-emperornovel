@@ -98,3 +98,9 @@ Admin connector creation previously inserted new connector records with `rights_
 
 The authenticated POST /api/report handler now validates target IDs, verifies referenced records exist, and rejects a chapter that does not belong to the supplied novel. A chapter-only report is linked to the chapter's actual novel. Details are bounded plain text. Regression assertions were added to the API authorization build gate. This is source-level remediation; live database behavior and exact-head CI are not yet verified.
 
+
+
+## Admin chapter publication boundary
+
+Admin chapter PATCH and POST previously allowed a chapter to be marked published when its parent novel was still a draft. The PATCH path checked rights eligibility but did not require the parent novel itself to be published; the create path only rejected ineligible rights when the parent novel was already published. Both paths now require the parent novel to be published and rights-eligible before publishing a chapter. Admin chapter create/update also enforce whole-number ticket costs from 0 through 1,000,000 instead of silently clamping arbitrary values. Build-gated regression assertions cover both paths. This is source-level remediation; exact-head CI and deployed behavior remain to be verified.
+
