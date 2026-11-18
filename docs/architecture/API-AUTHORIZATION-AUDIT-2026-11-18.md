@@ -68,8 +68,8 @@ The handler now preserves the stored lock state when `is_locked` is absent and v
 - Method behavior for these 14 paths: **implemented and CI-verified**.
 - Taxonomy submitter identity binding: **implemented and CI-verified**.
 - Authentication/role behavior for these 14 paths: **source-reviewed; Omni public endpoint rate/query bounds implemented, edge/WAF and concurrency controls remain open**.
-- User-owned reader data is session-scoped in the reviewed handlers: history, library, bookmarks, notifications, ticket ledger, recommendations, and follows bind queries to the authenticated user's ID. Author novel/chapter and AI project/job handlers include owner checks, with admin bypasses where intended. Source assertions now cover these boundaries; this is not a two-account runtime test.
-- Remaining cross-account validation must exercise two real accounts against every dynamic family, including denied reads and writes, admin boundaries, and concurrent mutation paths.
+- User-owned reader data is session-scoped in the reviewed handlers: history, library, bookmarks, notifications, ticket ledger, recommendations, and follows bind queries to the authenticated user's ID. Author novel/chapter and AI project/job handlers include owner checks, with admin bypasses where intended. In addition to source assertions, `scripts/test-api-user-bookmark-isolation-runtime.mjs` exercises the actual Worker fetch handler using two simulated accounts and a deterministic D1 test double. It covers cross-account denials and independent user data, but is not a live Cloudflare D1 test.
+- Remaining cross-account validation must extend beyond the currently covered routes to every dynamic family, including denied reads and writes, admin boundaries, and concurrent mutation paths.
 - Full API authorization, resource ownership, cross-account isolation, and client parity: **not complete**.
 - No production D1 access, production deployment, or live-browser test was performed.
 
