@@ -3,6 +3,7 @@
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import path from 'node:path';
+import { resolvePageShell } from '../src/route-registry.mjs';
 
 const pkg = JSON.parse(fs.readFileSync('package.json', 'utf8'));
 const wrangler = fs.readFileSync('wrangler.toml', 'utf8');
@@ -54,7 +55,8 @@ const iconPath = iconPathMatch[1];
 assert.ok(iconPath.startsWith('/') && !iconPath.includes('..') && !/^\/\//.test(iconPath), 'APP_ICON_PATH must be a safe same-origin path');
 assert.ok(fs.existsSync(path.join('public', iconPath.replace(/^\/+/, ''))), `Configured crest asset is missing: ${iconPath}`);
 assert.ok(!worker.includes('style-17.11.0.css') && !worker.includes('app-17.13.0.js') && !worker.includes('manifest-17.13.0.webmanifest'), 'HTML rendering has no stale hardcoded frontend release URLs');
-assert.ok(worker.includes('"/author":"index.html"'), 'Author Studio uses the unified branded application shell');
-assert.ok(worker.includes('"/formats":"index.html"') && worker.includes('else if(/^\\/format\\/[^/]+\\/?$/.test(p))file="index.html"'), 'Format directory and shelves are routed through the branded shell');
+assert.equal(resolvePageShell('/author'), 'index.html', 'Author Studio uses the unified branded application shell');
+assert.equal(resolvePageShell('/formats'), 'index.html', 'Format directory uses the branded application shell');
+assert.equal(resolvePageShell('/format/novel'), 'index.html', 'Format landing pages use the branded application shell');
 
 console.log(`Release and precache consistency passed: ${pkg.version}; ${coreAssets.length} assets verified.`);
