@@ -42,6 +42,15 @@ const adminConnectors = worker.slice(worker.indexOf('if(p==="/api/admin/connecto
 assert.match(adminConnectors, /admin\(u\)/);
 assert.ok(adminConnectors.includes("seedOmni(env)"), "Only the authenticated admin connector listing should seed the registry");
 
+const adminNovelPatchStart = worker.indexOf('let apn=p.match(/^\\/api\\/admin\\/publishing\\/novels\\/(\\d+)$/)');
+const adminNovelPatchEnd = worker.indexOf('let ach=p.match', adminNovelPatchStart);
+const adminNovelPatch = worker.slice(adminNovelPatchStart, adminNovelPatchEnd);
+assert.ok(adminNovelPatchStart >= 0 && adminNovelPatchEnd > adminNovelPatchStart, "Admin novel publication route must remain explicit");
+assert.match(adminNovelPatch, /const rightsVerified=pub==='published'\\|\\|b\\.rights_verified===true/);
+assert.match(adminNovelPatch, /const verified=rightsVerified\\?u\\.id:null;const verifiedAt=rightsVerified\\?new Date\\(\\)\\.toISOString\\(\\):null/);
+assert.match(adminNovelPatch, /rights_verified_by=\\?,rights_verified_at=\\?/);
+assert.match(adminNovelPatch, /verified,verifiedAt,reviewedBy/);
+
 const adminChapterPatchStart = worker.indexOf('let acm=p.match(/^\\/api\\/admin\\/publishing\\/chapters(?:\\/(\\d+))?$/)');
 const adminChapterPostStart = worker.indexOf('if(p==="/api/admin/publishing/chapters"&&m==="POST")');
 const adminChapterRoutes = worker.slice(adminChapterPatchStart, adminChapterPostStart);
