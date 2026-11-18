@@ -11,7 +11,7 @@ The static sitemap included `/search`, `/omniportal`, and `/trend-factory`. Sour
 - `/omniportal` is a federated search tool over the local catalog and enabled, rights-authorized connectors. Imports are a separate authenticated metadata-only request.
 - `/trend-factory` is a catalog-signal workspace for discovery and rights review.
 
-These routes do not need to be offered as canonical search-engine landing pages. Query-driven search URLs in particular can create thin or duplicative crawl surfaces.
+These routes do not need to be offered as canonical search-engine landing pages. Query-driven search URLs can create thin or duplicative crawl surfaces, while recommendation pages can vary by signed-in user.
 
 ## Decision
 
