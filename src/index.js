@@ -820,7 +820,36 @@ async function api(req,env){
    return json({ok:true,id,status:'draft',message:`Novel saved as draft. Novel ID: ${id}. Rights review is required before publication.`});
   }catch(err){console.error('admin novel create',err);return json({error:'Unable to save draft: '+String(err?.message||err).slice(0,240)},500)}
  }
- let apn=p.match(/^\/api\/admin\/publishing\/novels\/(\d+)$/);if(apn&&m==="PATCH"){const e=admin(u);if(e)return e;await ensurePublishingSchema(env);const id=Number(apn[1]);if(!Number.isSafeInteger(id)||id<1)return json({error:'Invalid novel ID'},400);const b=await body(req),row=await env.DB.prepare('SELECT * FROM novels WHERE id=?').bind(id).first();if(!row)return json({error:'Novel not found'},404);const rights=String(b.rights_status||row.rights_status||'').toLowerCase();const pub=String(b.publication_status||row.publication_status||'draft').toLowerCase();if(!['original','public_domain','licensed','authorized'].includes(rights))return json({error:'Invalid rights status'},400);if(!['draft','review','published','archived'].includes(pub))return json({error:'Invalid publication status'},400);if(pub==='published' && !['original','public_domain','licensed','authorized'].includes(rights))return json({error:'This work cannot be published without an eligible rights status.'},403);if(pub==='published' && !String(b.rights_evidence||row.rights_evidence||'').trim() && rights!=='original')return json({error:'Rights evidence is required for licensed, public-domain, or authorized works.'},400);const rightsVerified=pub==='published'||b.rights_verified===true;const verified=rightsVerified?u.id:null;const verifiedAt=rightsVerified?new Date().toISOString():null;const feedback=String(b.review_feedback??row.review_feedback??'').trim().slice(0,3000);const reviewedBy=(pub==='published'||(pub==='draft'&&feedback))?u.id:(row.reviewed_by||null);const reviewedAt=(pub==='published'||(pub==='draft'&&feedback))?new Date().toISOString():(row.reviewed_at||null);await env.DB.prepare(`UPDATE novels SET title=?,author=?,description=?,status=?,kind=?,language=?,cover_url=?,source_url=?,rights_status=?,publication_status=?,rights_evidence=?,rights_notes=?,review_feedback=?,rights_verified_by=?,rights_verified_at=?,reviewed_by=?,reviewed_at=?,updated_at=CURRENT_TIMESTAMP WHERE id=?`).bind(String(b.title||row.title),String(b.author||row.author),String(b.description??row.description),['ongoing','completed'].includes(String(b.status||row.status))?String(b.status||row.status):row.status,String(b.kind||row.kind),String(b.language||row.language),String(b.cover_url??row.cover_url),String(b.source_url??row.source_url),rights,pub,String(b.rights_evidence??row.rights_evidence),String(b.rights_notes??row.rights_notes),feedback,verified,verifiedAt,reviewedBy,reviewedAt,id).run();await audit(env,u,'admin_novel_publication',`novel=${id};status=${pub};rights=${rights}`);if(row.owner_user_id&&Number(row.owner_user_id)!==Number(u.id)){if(pub==='published')await notifyUser(env,row.owner_user_id,'Novel approved and published',`Your novel "${String(row.title||'Untitled')}" has been approved and published.`);else if(pub==='draft'&&feedback)await notifyUser(env,row.owner_user_id,'Changes requested for your novel',`Admin review requested changes for "${String(row.title||'Untitled')}": ${feedback}`)}return json({ok:true,id,status:pub,rights_status:rights})}
+ let apn=p.match(/^\/api\/admin\/publishing\/novels\/(\d+)$/);
+ if(apn&&m==="PATCH"){
+  const e=admin(u);if(e)return e;await ensurePublishingSchema(env);
+  const id=Number(apn[1]);if(!Number.isSafeInteger(id)||id<1)return json({error:'Invalid novel ID'},400);
+  const b=await body(req),row=await env.DB.prepare('SELECT * FROM novels WHERE id=?').bind(id).first();
+  if(!row)return json({error:'Novel not found'},404);
+  const rights=String(b.rights_status??row.rights_status??'').toLowerCase();
+  const pub=String(b.publication_status??row.publication_status??'draft').toLowerCase();
+  const previous=String(row.publication_status||'draft').toLowerCase();
+  if(!['original','public_domain','licensed','authorized'].includes(rights))return json({error:'Invalid rights status'},400);
+  if(!['draft','review','published','archived'].includes(pub))return json({error:'Invalid publication status'},400);
+  const feedback=String(b.review_feedback??'').trim().slice(0,3000);
+  if(pub==='published'&&previous!=='review'&&previous!=='published')return json({error:'A novel must enter review before it can be approved'},409);
+  if(pub==='published'&&rights!=='original'&&!String(b.rights_evidence??row.rights_evidence??'').trim())return json({error:'Rights evidence is required for licensed, public-domain, or authorized works.'},400);
+  if(pub==='draft'&&previous==='review'&&!feedback)return json({error:'Reviewer feedback is required when returning a novel for changes'},400);
+  const decision=pub==='published'||(pub==='draft'&&previous==='review');
+  const reviewedBy=decision?u.id:(pub==='review'?null:row.reviewed_by||null);
+  const reviewedAt=decision?new Date().toISOString():(pub==='review'?null:row.reviewed_at||null);
+  const storedFeedback=pub==='review'?'':pub==='published'?'':(feedback||String(row.review_feedback||''));
+  const rightsVerified=pub==='published';
+  const verified=rightsVerified?u.id:null,verifiedAt=rightsVerified?new Date().toISOString():null;
+  await env.DB.prepare(`UPDATE novels SET title=?,author=?,description=?,status=?,kind=?,language=?,cover_url=?,source_url=?,rights_status=?,publication_status=?,rights_evidence=?,rights_notes=?,review_feedback=?,rights_verified_by=?,rights_verified_at=?,reviewed_by=?,reviewed_at=?,updated_at=CURRENT_TIMESTAMP WHERE id=?`).bind(String(b.title??row.title),String(b.author??row.author),String(b.description??row.description),['ongoing','completed'].includes(String(b.status??row.status))?String(b.status??row.status):row.status,String(b.kind??row.kind),String(b.language??row.language),String(b.cover_url??row.cover_url),String(b.source_url??row.source_url),rights,pub,String(b.rights_evidence??row.rights_evidence),String(b.rights_notes??row.rights_notes),storedFeedback,verified,verifiedAt,reviewedBy,reviewedAt,id).run();
+  await audit(env,u,'admin_novel_review_decision',`novel=${id};from=${previous};to=${pub};rights=${rights};feedback=${feedback}`);
+  if(pub==='review'&&previous!=='review')await notifyAdmins(env,'Novel awaiting publication review',`Novel "${String(row.title||'Untitled')}" (ID ${id}) is in the review queue.`);
+  if(row.owner_user_id&&Number(row.owner_user_id)!==Number(u.id)){
+   if(pub==='published')await notifyUser(env,row.owner_user_id,'Novel approved and published',`Your novel "${String(row.title||'Untitled')}" has been approved and published.`);
+   else if(pub==='draft'&&previous==='review')await notifyUser(env,row.owner_user_id,'Changes requested for your novel',`Admin review requested changes for "${String(row.title||'Untitled')}": ${feedback}`);
+  }
+  return json({ok:true,id,status:pub,rights_status:rights});
+ }
  let ach=p.match(/^\/api\/admin\/publishing\/chapters(?:\/(\d+))?$/);
  if(ach && m==="GET"){
   const e=admin(u);if(e)return e;await ensurePublishingSchema(env);
@@ -837,21 +866,33 @@ async function api(req,env){
   if(!row)return json({error:"Chapter not found"},404);
   const num=Number(b.chapter_number??row.chapter_number);
   if(!Number.isSafeInteger(num)||num<1)return json({error:"Valid chapter number is required"},400);
-  const title=String(b.title??row.title).trim();
-  const content=String(b.content??row.content).trim();
+  const title=String(b.title??row.title).trim(),content=String(b.content??row.content).trim();
   if(!title||!content)return json({error:"Chapter title and content are required"},400);
   const locked=b.is_locked===undefined?Number(row.is_locked):b.is_locked?1:0;
   const cost=b.ticket_cost===undefined?Number(row.ticket_cost):Number(b.ticket_cost);
   if(!Number.isSafeInteger(cost)||cost<0||cost>1000000)return json({error:"Ticket cost must be a whole number from 0 through 1,000,000"},400);
-  const pub=String(b.publication_status??row.publication_status??'draft').toLowerCase();
+  const previous=String(row.publication_status||'draft').toLowerCase();
+  const pub=String(b.publication_status??previous).toLowerCase();
   if(!['draft','review','published'].includes(pub))return json({error:"Invalid chapter publication status"},400);
-  if(pub==='published'){const novel=await env.DB.prepare('SELECT publication_status,rights_status FROM novels WHERE id=?').bind(row.novel_id).first();if(!novel||novel.publication_status!=='published'||!['original','public_domain','licensed','authorized'].includes(String(novel.rights_status)))return json({error:"Parent novel must be published and rights-eligible before a chapter can be published"},403);}
+  const feedback=String(b.review_feedback??'').trim().slice(0,3000);
+  if(pub==='published'&&previous!=='review'&&previous!=='published')return json({error:"A chapter must enter review before it can be approved"},409);
+  if(pub==='draft'&&previous==='review'&&!feedback)return json({error:"Reviewer feedback is required when returning a chapter for changes"},400);
+  if(pub==='published'){
+   const novel=await env.DB.prepare('SELECT publication_status,rights_status,owner_user_id FROM novels WHERE id=?').bind(row.novel_id).first();
+   if(!novel||novel.publication_status!=='published'||!['original','public_domain','licensed','authorized'].includes(String(novel.rights_status)))return json({error:"Parent novel must be published and rights-eligible before a chapter can be published"},403);
+  }
   const duplicate=await env.DB.prepare("SELECT id FROM chapters WHERE novel_id=? AND chapter_number=? AND id<>?").bind(row.novel_id,num,id).first();
   if(duplicate)return json({error:"Chapter number already exists for this novel."},409);
   await env.DB.prepare("UPDATE chapters SET chapter_number=?,title=?,content=?,is_locked=?,ticket_cost=?,publication_status=? WHERE id=?").bind(num,title,content,locked,cost,pub,id).run();
   await env.DB.prepare("UPDATE novels SET updated_at=CURRENT_TIMESTAMP WHERE id=?").bind(row.novel_id).run();
-  await audit(env,u,"admin_chapter_updated",`chapter=${id};novel=${row.novel_id};number=${num}`);
-  return json({ok:true,id,message:"Chapter updated."});
+  await audit(env,'admin_chapter_review_decision',`chapter=${id};novel=${row.novel_id};from=${previous};to=${pub};feedback=${feedback}`);
+  const parent=await env.DB.prepare('SELECT owner_user_id FROM novels WHERE id=?').bind(row.novel_id).first();
+  if(pub==='review'&&previous!=='review')await notifyAdmins(env,'Chapter awaiting publication review',`Chapter "${title}" (ID ${id}) was placed in the review queue.`);
+  if(parent?.owner_user_id&&Number(parent.owner_user_id)!==Number(u.id)){
+   if(pub==='published')await notifyUser(env,parent.owner_user_id,'Chapter approved and published',`Your chapter "${title}" (Chapter ${num}) has been approved and published.`);
+   else if(pub==='draft'&&previous==='review')await notifyUser(env,parent.owner_user_id,'Changes requested for your chapter',`Admin review requested changes for "${title}" (Chapter ${num}): ${feedback}`);
+  }
+  return json({ok:true,id,message:"Chapter review decision saved."});
  }
  if(p==='/api/admin/publishing/chapters/reorder'&&m==='POST'){const e=admin(u);if(e)return e;await ensurePublishingSchema(env);const b=await body(req),id=Number(b.id),direction=String(b.direction||'');if(!Number.isSafeInteger(id)||id<1||!['up','down'].includes(direction))return json({error:'A valid chapter ID and direction are required'},400);const row=await env.DB.prepare('SELECT id,novel_id,chapter_number FROM chapters WHERE id=?').bind(id).first();if(!row)return json({error:'Chapter not found'},404);const op=direction==='up'?'<':'>';const order=direction==='up'?'DESC':'ASC';const target=await env.DB.prepare(`SELECT id,chapter_number FROM chapters WHERE novel_id=? AND chapter_number ${op} ? ORDER BY chapter_number ${order} LIMIT 1`).bind(row.novel_id,row.chapter_number).first();if(!target)return json({ok:true,moved:false,message:direction==='up'?'Already first.':'Already last.'});const temp=-Math.max(row.chapter_number,target.chapter_number)-1000000;await env.DB.batch([env.DB.prepare('UPDATE chapters SET chapter_number=? WHERE id=?').bind(temp,row.id),env.DB.prepare('UPDATE chapters SET chapter_number=? WHERE id=?').bind(row.chapter_number,target.id),env.DB.prepare('UPDATE chapters SET chapter_number=? WHERE id=?').bind(target.chapter_number,row.id),env.DB.prepare('UPDATE novels SET updated_at=CURRENT_TIMESTAMP WHERE id=?').bind(row.novel_id)]);await audit(env,u,'admin_chapter_reordered',`chapter=${id};target=${target.id};direction=${direction}`);return json({ok:true,moved:true});}
  if(acm && m==="DELETE"){
