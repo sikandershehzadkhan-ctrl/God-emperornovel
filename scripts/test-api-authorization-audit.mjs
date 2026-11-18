@@ -214,4 +214,22 @@ assert.match(reportHandler, /Number\(chapter\.novel_id\)!==novelId/, "A reported
 assert.match(reportHandler, /resolvedNovelId=Number\(chapter\.novel_id\)/, "Chapter-only reports must be linked to their actual novel");
 assert.match(reportHandler, /typeof b\.details==="string"\?b\.details\.slice\(0,2000\):""/, "Report details must be bounded plain text");
 
+
+const authorChapterReviewEdit = authorChapterPatch;
+assert.match(authorChapterReviewEdit, /chapterChanged=.*content!==String\(c\.content\|\|''\)/, "Changes to published chapter content must be detected");
+assert.match(authorChapterReviewEdit, /publication_status=CASE WHEN \?=1 THEN 'review'/, "Editing a published chapter must move it into review");
+assert.match(authorChapterReviewEdit, /author_chapter_paused_for_review/, "Published chapter edits must be audited");
+assert.match(authorChapterReviewEdit, /notifyAdmins\(env,'Published chapter requires review'/, "Published chapter edits must notify administrators");
+assert.match(authorChapterPublish, /requestedStatus==='published'\?'review':'draft'/, "Authors must submit chapters for review instead of publishing directly");
+assert.match(authorChapterPublish, /author_chapter_submitted_for_review/, "Chapter review submissions must be audited");
+assert.match(authorNovelPatch, /novelContentChanged=.*description/, "Published novel content and metadata changes must be detected");
+assert.match(authorNovelPatch, /publication_status=CASE WHEN \?=1 THEN 'review'/, "Material edits to published novels must move them into review");
+assert.match(authorNovelPatch, /author_novel_paused_for_review/, "Published novel edits must be audited as review transitions");
+assert.match(authorNovelPatch, /notifyAdmins\(env,'Published novel requires renewed review'/, "Published novel edits must notify administrators");
+const adminChapterPatchStart = worker.indexOf('if(acm && m==="PATCH"){');
+const adminChapterPatchEnd = worker.indexOf("if(p==='/api/admin/publishing/chapters/reorder'", adminChapterPatchStart);
+const adminChapterPatch = worker.slice(adminChapterPatchStart, adminChapterPatchEnd);
+assert.ok(adminChapterPatchStart>=0 && adminChapterPatchEnd>adminChapterPatchStart, "Admin chapter review route must remain explicit");
+assert.match(adminChapterPatch, /\['draft','review','published'\]/, "Administrators must be able to retain, review, or approve chapters");
+
 console.log("API authorization audit slice passed: 14 route classifications and taxonomy identity boundaries.");
