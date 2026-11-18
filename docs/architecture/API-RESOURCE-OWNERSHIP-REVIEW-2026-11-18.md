@@ -42,7 +42,17 @@ The author chapter PATCH handler now loads the parent novel's content format and
 
 The author chapter PATCH handler now preserves the existing lock state when `is_locked` is omitted and rejects ticket costs that are not safe integers in the range 0 through 1,000,000. This prevents a title/body-only edit from implicitly unlocking a chapter and aligns update validation with reader unlock constraints.
 
-### 4. Cross-account isolation still needs executable tests
+### 4. Reader activity must reference eligible published resources
+
+**Status: resolved in PR branch.**
+
+The history write now validates safe-integer novel/chapter identifiers and confirms the exact chapter belongs to a published, rights-eligible novel before storing progress.
+
+Public comment reads and writes now reject unknown, unpublished, or rights-ineligible novels. Public rating reads apply the same publication and rights filter. This prevents public activity endpoints from exposing or accepting activity against works that are not currently eligible for public reading.
+
+Regression assertions cover the history relationship and the publication/rights gates for comments and ratings. These changes enforce publication boundaries; they do not establish a cross-account data exposure.
+
+### 5. Cross-account isolation still needs executable tests
 
 Static SQL inspection shows multiple user-id predicates, but it does not prove that no alternate code path leaks data. Add tests with two independent users for library, history, bookmarks, follows, notifications, ticket ledger, novel requests, author applications, AI projects, novels, and chapters.
 
