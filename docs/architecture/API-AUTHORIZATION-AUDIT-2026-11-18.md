@@ -74,7 +74,11 @@ The handler now preserves the stored lock state when `is_locked` is absent and v
 
 ## Rating scale integration dependency
 
-The 1–10 rating migration and full API/UI implementation are owned by PR #195 through governed migration 0035 (with baseline 0034). That branch includes legacy score conversion, integer-only constraints, canonical single rating POST handler, 1–10 API validation, catalog thresholds, reader controls, display formatting, and regression coverage. This audit branch does not include PR #195's reservation and must not create a competing migration. After PR #195 is integrated into the canonical base, rebase this audit branch and reconcile its route inventory, duplicate rating handler finding, and tests. Current 1–5 behavior in this branch remains unresolved until that integration.
+The earlier reference to PR #195 is historical and is no longer the current integration target. The canonical migration work has been ported to PR #329 (migrations 0012–0046, including reserved migrations 0034/0035), and the ten-point Worker/API/UI implementation is carried by PR #331. Reader Settings Studio integration is tracked separately in PR #328.
+
+This API audit branch is still based on the public-domain ownership stack, not on the canonical migration/rating stack. Its source snapshot therefore still contains legacy five-point assumptions, including the catalog minimum-rating clamp. Do not create a competing rating migration or treat this branch's rating behavior as compliant. Once the canonical migration and ten-point rating changes are integrated into the chosen unified base, rebase this audit branch, remove/reconcile the duplicate legacy rating route and five-point assumptions, refresh the source-pinned endpoint inventory, and run the full API/client regression suite against the exact rebased commit.
+
+Current dependency status: PR #329 and PR #331 remain open drafts; their described checks do not validate this branch. No rating integration is claimed here.
 
 ## 2026-11-18 follow-up: public Omni endpoint abuse controls
 
