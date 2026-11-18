@@ -6,38 +6,26 @@ const packageJson = JSON.parse(fs.readFileSync("package.json", "utf8"));
 const appPath = "public/app.js";
 const releaseAppPath = path.join("public", `app-${packageJson.version}.js`);
 const workerPath = "src/index.js";
+const routeRegistryPath = "src/route-registry.mjs";
 
-for (const file of [appPath, releaseAppPath, workerPath]) {
+for (const file of [appPath, releaseAppPath, workerPath, routeRegistryPath]) {
   assert.ok(fs.existsSync(file), `Required navigation source is missing: ${file}`);
 }
 
 const app = fs.readFileSync(appPath, "utf8");
 const releaseApp = fs.readFileSync(releaseAppPath, "utf8");
 const worker = fs.readFileSync(workerPath, "utf8");
+const { resolvePageShell } = await import("../src/route-registry.mjs");
 
 // The Worker serves the versioned application bundle, so navigation evidence
 // must come from the same bytes that are shipped to readers.
 assert.equal(releaseApp, app, "Versioned application bundle is out of sync with public/app.js");
 
-const mapMatch = worker.match(/const map=\{([\s\S]*?)\};if\(map\[p\]\)/);
-assert.ok(mapMatch, "Could not locate the Worker HTML page map");
-const exactRoutes = new Set([
-  "/",
-  ...[...mapMatch[1].matchAll(/["'](\/[^"']+)["']\s*:/g)].map(match => match[1])
-]);
+const exactRoutes = new Set(Object.keys((await import("../src/route-registry.mjs")).PAGE_ROUTE_SHELLS));
 
-const dynamicPatterns = [
-  /^\/format\/[^/]+\/?$/,
-  /^\/novel\/[^/]+\/chapters\/?$/,
-  /^\/novel\/[^/]+\/?$/,
-  /^\/read\/[^/]+\/[^/]+\/?$/,
-  /^\/fandom\/.+$/,
-  /^\/author\/[^/]+$/
-];
 
 function servedByWorker(route) {
-  if (exactRoutes.has(route)) return true;
-  return dynamicPatterns.some(pattern => pattern.test(route));
+  return exactRoutes.has(route) || resolvePageShell(route) !== "404.html";
 }
 
 const rawLinks = [...app.matchAll(/href=["'`]([^"'\`]+)["'`]/g)]
@@ -58,8 +46,8 @@ for (const raw of rawLinks) {
   // destinations. Their corresponding parameterized Worker route is checked.
   if (route === "/novel/" || route === "/read/") {
     destinations.add(route);
-    const completedPattern = route === "/read/" ? route + "novel-id/chapter-number" : route + "novel-id";
-    if (!dynamicPatterns.some(pattern => pattern.test(completedPattern))) {
+    const completedPattern = route === "/read/" ? "/read/123/456" : "/novel/123";
+    if (resolvePageShell(completedPattern) === "404.html") {
       unresolved.push({ source: raw, normalized: route, reason: "unmatched dynamic route prefix" });
     }
     continue;
