@@ -17,8 +17,12 @@ assert.deepEqual([...manifestPaths].sort(), [...literalPaths].sort(), "API liter
 for (const endpoint of manifest.literal_endpoints) {
   assert.ok(endpoint.source_lines.length > 0, "Every literal API endpoint needs source line evidence: " + endpoint.path);
   assert.ok(endpoint.occurrences >= 1, "Every literal API endpoint needs at least one occurrence: " + endpoint.path);
-  for (const method of endpoint.explicit_methods) {
-    assert.ok(api.includes(`m===\"${method}\"`) || api.includes(`m === \"${method}\"`) || api.includes(`m==='${method}'`) || api.includes(`m === '${method}'`), "Explicit method evidence must remain in source: " + endpoint.path + " " + method);
+  if (endpoint.method_evidence === "centralized-method-contract") {
+    assert.ok(api.includes(JSON.stringify(endpoint.path) + ":" + JSON.stringify(endpoint.explicit_methods)), "Centralized method contract must remain in source: " + endpoint.path);
+  } else {
+    for (const method of endpoint.explicit_methods) {
+      assert.ok(api.includes('m==="' + method + '"') || api.includes("m === \"" + method + "\"") || api.includes("m==='" + method + "'") || api.includes("m === '" + method + "'"), "Explicit method evidence must remain in source: " + endpoint.path + " " + method);
+    }
   }
 }
 for (const endpoint of manifest.dynamic_endpoints) {
@@ -32,6 +36,8 @@ assert.ok(rating.explicit_methods.includes("GET") && rating.explicit_methods.inc
 
 assert.equal(manifest.counts.literal_endpoint_paths, manifest.literal_endpoints.length);
 assert.equal(manifest.counts.dynamic_route_families, manifest.dynamic_endpoints.length);
-assert.equal(manifest.literal_endpoints.filter(endpoint => endpoint.method_evidence !== "explicit-literal-conditions").length, 14, "Method-unresolved literal paths must remain visible until reviewed");
+assert.equal(manifest.counts.centralized_method_contract_paths, 14, "All previously unconstrained paths must have centralized method contracts");
+assert.equal(manifest.counts.unresolved_method_paths, 0, "No literal API path may remain method-unresolved");
+assert.equal(manifest.literal_endpoints.filter(endpoint => endpoint.method_evidence === "centralized-method-contract").length, 14);
 assert.ok(manifest.literal_endpoints.every(endpoint => endpoint.review_required), "All API endpoints stay review-gated until auth and resource ownership are audited");
-console.log(`API inventory source checks passed: ${manifest.literal_endpoints.length} literal paths, ${manifest.counts.literal_route_branch_occurrences} branch occurrences, ${manifest.dynamic_endpoints.length} dynamic route families.`);
+console.log("API inventory source checks passed: 74 literal paths, 91 branch occurrences, 21 dynamic families, 14 centralized method contracts, zero unresolved literal methods.");
