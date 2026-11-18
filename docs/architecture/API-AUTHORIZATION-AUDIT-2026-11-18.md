@@ -154,3 +154,10 @@ Regression assertions cover all three numeric boundaries. This is source-level v
 The Author Studio chapter list route converted the supplied `novel_id` with `Number()` and queried D1 without first rejecting missing, fractional, non-finite, zero, negative, or unsafe identifiers. The chapter edit route likewise relied on its digit-only path matcher without checking that the converted chapter ID was a positive safe integer, and chapter-number edits used `Number.isInteger` rather than a safe-integer bound.
 
 The list route now rejects invalid novel IDs before database access. Chapter edits validate the path ID and require a positive safe-integer chapter number. Regression assertions cover each boundary. These are source-level safeguards; the full repository test suite, real-D1 behavior, and production deployment remain unverified.
+
+
+## Author publishing route path-ID validation
+
+The author novel submission, novel editing, and chapter publication handlers converted digit-only path captures to JavaScript numbers and proceeded to database lookups without confirming that the values were positive safe integers. These handlers now reject invalid IDs before database access. Regression assertions cover each route, complementing the prior chapter-list and chapter-edit checks.
+
+This remains a source-level validation result. It does not establish that the full repository test suite passed, that production D1 behaves identically, or that the changes are deployed.
