@@ -74,4 +74,4 @@ This is not a live Cloudflare D1 test. It now includes per-account novel-request
 
 No confirmed cross-user data exposure was established by this first pass. The two findings above are validation/policy consistency issues. This audit does not certify CSRF protections, rate limits, method rejection, session rotation, or all delegated handlers.
 
-No production deployment, D1 mutation, or live API test was performed. The expanded Worker-level test has been committed but must still pass the repository build/CI gate on the resulting exact commit before its assertions are treated as validated.
+No production deployment, D1 mutation, or live API test was performed. The expanded ownership test is still awaiting exact-head CI execution; the deterministic harness is not a substitute for production verification. The expanded Worker-level test has been committed but must still pass the repository build/CI gate on the resulting exact commit before its assertions are treated as validated.
