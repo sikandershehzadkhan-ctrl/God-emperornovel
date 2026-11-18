@@ -66,8 +66,8 @@
       "path": "/search",
       "shell": "search.html",
       "status": "observed-worker-dispatch",
-      "access_policy": "not-certified",
-      "sitemap_policy": "included-in-static-sitemap",
+      "access_policy": "public-utility-noindex-not-an-access-control",
+      "sitemap_policy": "excluded-from-static-sitemap-utility-route",
       "screen_completeness": "not-yet-audited"
     },
     {
@@ -114,8 +114,8 @@
       "path": "/omniportal",
       "shell": "omniportal.html",
       "status": "observed-worker-dispatch",
-      "access_policy": "not-certified",
-      "sitemap_policy": "included-in-static-sitemap",
+      "access_policy": "public-utility-noindex-not-an-access-control",
+      "sitemap_policy": "excluded-from-static-sitemap-utility-route",
       "screen_completeness": "not-yet-audited"
     },
     {
@@ -202,8 +202,8 @@
       "path": "/trend-factory",
       "shell": "index.html",
       "status": "observed-worker-dispatch",
-      "access_policy": "not-certified",
-      "sitemap_policy": "included-in-static-sitemap",
+      "access_policy": "public-utility-noindex-not-an-access-control",
+      "sitemap_policy": "excluded-from-static-sitemap-utility-route",
       "screen_completeness": "not-yet-audited"
     },
     {
@@ -987,11 +987,8 @@
     "/formats",
     "/genres",
     "/tags",
-    "/search",
     "/community",
     "/leaderboard",
-    "/omniportal",
-    "/trend-factory",
     "/community-taxonomy",
     "/privacy",
     "/terms",
@@ -1009,15 +1006,18 @@
     "/requests",
     "/settings",
     "/notifications",
-    "/author"
+    "/author",
+    "/search",
+    "/omniportal",
+    "/trend-factory"
   ],
   "known_gaps": [
-    "This baseline is extracted from Worker dispatch and API path literals only; client navigation, links, redirects, locale alternates, and all browser routes still require reconciliation.",
     "API path literals are not a complete method/permission contract. Dynamic suffix routes and delegated handlers require handler-level extraction.",
     "A noindex directive is not authorization. Private route access must be enforced and tested server-side.",
-    "Static sitemap membership is maintained separately from the Worker page map and currently includes /search; canonical/indexability policy needs an explicit decision.",
+    "Canonical route policy is now explicitly excluding /search, /omniportal and /trend-factory as utility routes; remaining routes still require a complete indexability and canonical review.",
     "Several exact page routes share index.html. Route existence does not prove a dedicated screen or complete interactions.",
     "Dynamic novel/chapter sitemap inclusion is rights-filtered in the Worker; this must remain a mandatory invariant.",
-    "Observed source is not proof of deployed Worker behavior."
+    "Observed source is not proof of deployed Worker behavior.",
+    "Client href destinations have a separate static coverage test; event-driven navigation, redirect behavior, and locale alternates still require review."
   ]
 }
