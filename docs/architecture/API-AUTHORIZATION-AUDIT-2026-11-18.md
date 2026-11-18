@@ -183,3 +183,14 @@ The admin novel PATCH route now requires a novel to be in `review` before first 
 The admin chapter PATCH route applies the same review-before-approval and feedback-required return policy. It rechecks that the parent novel is published and rights-eligible before chapter approval, records the acting administrator and decision details in the audit log, and notifies the novel owner of approval or requested changes. Chapter feedback is retained in the audit log because the current chapter schema has no dedicated review-feedback/reviewer columns. No schema migration was introduced in this audit branch.
 
 Regression assertions were added for direct-approval rejection, feedback requirements, reviewer identity, audit events, parent rights checks, and author notifications. These assertions have been committed but have not yet been executed in a verified repository runtime. This remains source-level remediation; full CI, real-D1 behavior, production deployment, and browser QA are not claimed.
+
+
+## Renewed rights review and chapter creation gate
+
+The admin novel decision route now detects changes to the rights declaration, rights evidence, or rights notes. A currently published novel cannot keep its published state while those fields change; the administrator must first move it to review. The existing approval transition then revalidates evidence for non-original works and records a fresh rights reviewer and timestamp. Moving the work into review clears the previous rights verification.
+
+The admin chapter-creation route now accepts only draft creation. A newly created chapter must subsequently enter review through the admin chapter decision route before it can be published. This closes the direct-publication path that previously existed only on chapter creation, separate from the existing review gate on chapter updates.
+
+Public-facing source queries inspected in this pass consistently filter novels by published status and eligible rights, and chapter reads require both a published parent novel and a published chapter. Public-author discovery, local Omni search, recommendations, tier/random lists, ratings, comments, reactions, follows, library operations, and sitemap generation were also inspected for publication eligibility filters. This is source inspection, not live endpoint verification.
+
+Regression assertions were added for rights-change detection, blocking an in-place rights change on a published novel, fresh rights verification on approval, and draft-only admin chapter creation. Tests remain unexecuted in a verified repository runtime; no production deployment or live D1/browser validation is claimed.
