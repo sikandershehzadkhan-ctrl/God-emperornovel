@@ -8,7 +8,7 @@
     "literal_endpoint_paths": 74,
     "literal_route_branch_occurrences": 92,
     "explicit_method_conditions": 77,
-    "dynamic_route_families": 22
+    "dynamic_route_families": 21
   },
   "method_semantics": "explicit_methods lists only literal methods directly checked in source. Empty or mixed method evidence is not proof of allowed methods. Unsupported-method behavior and framework fallthrough must be verified separately.",
   "authorization_semantics": "observed_helper_signals records only visible need(u), admin(u), and author(u) calls in a nearby branch segment. It is not a security certification and does not establish resource-level ownership.",
@@ -1186,14 +1186,6 @@
       ],
       "observed_helper_signals": [
         "admin"
-      ],
-      "review_required": true
-    },
-    {
-      "pattern": "/api/admin/publishing/chapters/{id}/...",
-      "source": "p.match(/^\\/api\\/admin\\/publishing\\/chapters\\/(\\d+)/)",
-      "methods": [
-        "POST"
       ],
       "review_required": true
     },
