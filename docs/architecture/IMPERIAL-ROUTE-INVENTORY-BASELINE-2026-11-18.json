@@ -156,8 +156,8 @@
       "path": "/made-for-you",
       "shell": "index.html",
       "status": "observed-worker-dispatch",
-      "access_policy": "not-certified",
-      "sitemap_policy": "not-in-static-sitemap",
+      "access_policy": "public-utility-noindex-not-an-access-control",
+      "sitemap_policy": "not-in-static-sitemap-personalized-utility",
       "screen_completeness": "not-yet-audited"
     },
     {
@@ -172,8 +172,8 @@
       "path": "/for-you",
       "shell": "index.html",
       "status": "observed-worker-dispatch",
-      "access_policy": "not-certified",
-      "sitemap_policy": "not-in-static-sitemap",
+      "access_policy": "public-utility-noindex-not-an-access-control",
+      "sitemap_policy": "not-in-static-sitemap-personalized-utility",
       "screen_completeness": "not-yet-audited"
     },
     {
@@ -1013,7 +1013,9 @@
     "/author",
     "/search",
     "/omniportal",
-    "/trend-factory"
+    "/trend-factory",
+    "/made-for-you",
+    "/for-you"
   ],
   "known_gaps": [
     "API path literals are not a complete method/permission contract. Dynamic suffix routes and delegated handlers require handler-level extraction.",
@@ -1022,6 +1024,7 @@
     "Several exact page routes share index.html. Route existence does not prove a dedicated screen or complete interactions.",
     "Dynamic novel/chapter sitemap inclusion is rights-filtered in the Worker; this must remain a mandatory invariant.",
     "Observed source is not proof of deployed Worker behavior.",
-    "Client href destinations have a separate static coverage test; event-driven navigation, redirect behavior, and locale alternates still require review."
+    "Client href destinations have a separate static coverage test; event-driven navigation, redirect behavior, and locale alternates still require review.",
+    "Personalized recommendation routes are noindex utilities; this does not enforce account authentication or user-data isolation."
   ]
 }
