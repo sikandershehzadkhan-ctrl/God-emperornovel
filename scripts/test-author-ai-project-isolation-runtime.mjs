@@ -63,8 +63,10 @@ async function request(token, method, path, body) {
   return worker.fetch(new Request("https://imperial.test" + path, init), env);
 }
 async function json(response, expectedStatus = 200) {
-  assert.equal(response.status, expectedStatus, await response.text());
-  return response.status === 200 ? response.json() : null;
+  if (response.status !== expectedStatus) {
+    throw new Error("Expected status " + expectedStatus + ", received " + response.status + ": " + await response.text());
+  }
+  return expectedStatus === 200 ? response.json() : null;
 }
 
 const base = "/api/author/ai/projects";
