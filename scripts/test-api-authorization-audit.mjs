@@ -7,6 +7,15 @@ const client = await readFile(new URL("public/app.js", root), "utf8");
 const inventory = JSON.parse(await readFile(new URL("docs/architecture/API-ENDPOINT-INVENTORY-2026-11-18.json", root), "utf8"));
 const report = await readFile(new URL("docs/architecture/API-AUTHORIZATION-AUDIT-2026-11-18.md", root), "utf8");
 
+const adminUserRoute = worker.slice(worker.indexOf('let au=p.match(/^\\/api\\/admin\\/users\\/(\\d+)$/)'), worker.indexOf('if(p==="/api/author/ai/status"', worker.indexOf('let au=p.match(/^\\/api\\/admin\\/users\\/(\\d+)$/)'));
+assert.ok(adminUserRoute.length > 0, "Admin user PATCH route must remain explicit");
+assert.match(adminUserRoute, /Number\\.isSafeInteger\\(id\\)\\|\\|id<1/, "Admin user IDs must be positive safe integers");
+assert.match(adminUserRoute, /SELECT id,role,verified,banned FROM users WHERE id=\\?/);
+assert.match(adminUserRoute, /b\\.role===undefined\\?String\\(current\\.role\\):String\\(b\\.role\\)/, "Omitted role must preserve the current role");
+assert.match(adminUserRoute, /id===u\\.id&&role!=='admin'/, "An administrator must not demote their own account");
+assert.match(adminUserRoute, /b\\.verified===undefined\\?Number\\(current\\.verified\\)/, "Omitted verification state must be preserved");
+assert.match(adminUserRoute, /b\\.banned===undefined\\?Number\\(current\\.banned\\)/, "Omitted ban state must be preserved");
+
 const userLookup = worker.indexOf("const u=await getUser(req,env)");
 const health = worker.indexOf('if(p==="/api/health"&&m==="GET")');
 assert.ok(health >= 0 && userLookup > health, "Health route must bypass session lookup");
