@@ -1,12 +1,12 @@
 {
   "audit_date": "2026-11-18",
-  "branch": "architecture/phase-01-foundation-route-registry",
+  "branch": "architecture/api-contract-audit-baseline",
   "source_file": "src/index.js",
-  "source_blob": "6448ddfc5ae08694e67d57b4a8e52e0637be2383",
+  "source_blob": "d35630f02e392496ce8826c9f720b75672b099c8",
   "scope": "First-pass static inventory of literal API path branches and dynamic path matchers inside async function api(req,env).",
   "counts": {
     "literal_endpoint_paths": 74,
-    "literal_route_branch_occurrences": 92,
+    "literal_route_branch_occurrences": 0,
     "explicit_method_conditions": 77,
     "dynamic_route_families": 21
   },
@@ -19,13 +19,10 @@
         "GET"
       ],
       "method_evidence": "mixed-or-unconstrained-branches",
-      "source_lines": [
-        413,
-        423
-      ],
+      "source_lines": [],
       "observed_helper_signals": [],
       "review_required": true,
-      "occurrences": 2
+      "occurrences": 0
     },
     {
       "path": "/api/agents",
@@ -33,12 +30,10 @@
         "GET"
       ],
       "method_evidence": "explicit-literal-conditions",
-      "source_lines": [
-        417
-      ],
+      "source_lines": [],
       "observed_helper_signals": [],
       "review_required": true,
-      "occurrences": 1
+      "occurrences": 0
     },
     {
       "path": "/api/admin/agents",
@@ -46,14 +41,12 @@
         "GET"
       ],
       "method_evidence": "explicit-literal-conditions",
-      "source_lines": [
-        418
-      ],
+      "source_lines": [],
       "observed_helper_signals": [
         "admin"
       ],
       "review_required": true,
-      "occurrences": 1
+      "occurrences": 0
     },
     {
       "path": "/api/admin/agents/run",
@@ -61,25 +54,21 @@
         "POST"
       ],
       "method_evidence": "explicit-literal-conditions",
-      "source_lines": [
-        419
-      ],
+      "source_lines": [],
       "observed_helper_signals": [
         "admin"
       ],
       "review_required": true,
-      "occurrences": 1
+      "occurrences": 0
     },
     {
       "path": "/api/taxonomy",
       "explicit_methods": [],
       "method_evidence": "mixed-or-unconstrained-branches",
-      "source_lines": [
-        420
-      ],
+      "source_lines": [],
       "observed_helper_signals": [],
       "review_required": true,
-      "occurrences": 1
+      "occurrences": 0
     },
     {
       "path": "/api/admin/taxonomy",
@@ -88,15 +77,12 @@
         "POST"
       ],
       "method_evidence": "explicit-literal-conditions",
-      "source_lines": [
-        421,
-        422
-      ],
+      "source_lines": [],
       "observed_helper_signals": [
         "admin"
       ],
       "review_required": true,
-      "occurrences": 2
+      "occurrences": 0
     },
     {
       "path": "/api/auth/register",
@@ -104,12 +90,10 @@
         "POST"
       ],
       "method_evidence": "explicit-literal-conditions",
-      "source_lines": [
-        424
-      ],
+      "source_lines": [],
       "observed_helper_signals": [],
       "review_required": true,
-      "occurrences": 1
+      "occurrences": 0
     },
     {
       "path": "/api/auth/login",
@@ -117,12 +101,10 @@
         "POST"
       ],
       "method_evidence": "explicit-literal-conditions",
-      "source_lines": [
-        425
-      ],
+      "source_lines": [],
       "observed_helper_signals": [],
       "review_required": true,
-      "occurrences": 1
+      "occurrences": 0
     },
     {
       "path": "/api/auth/logout",
@@ -130,111 +112,91 @@
         "POST"
       ],
       "method_evidence": "explicit-literal-conditions",
-      "source_lines": [
-        426
-      ],
+      "source_lines": [],
       "observed_helper_signals": [],
       "review_required": true,
-      "occurrences": 1
+      "occurrences": 0
     },
     {
       "path": "/api/me",
       "explicit_methods": [],
       "method_evidence": "mixed-or-unconstrained-branches",
-      "source_lines": [
-        427
-      ],
+      "source_lines": [],
       "observed_helper_signals": [],
       "review_required": true,
-      "occurrences": 1
+      "occurrences": 0
     },
     {
       "path": "/api/config",
       "explicit_methods": [],
       "method_evidence": "mixed-or-unconstrained-branches",
-      "source_lines": [
-        428
-      ],
+      "source_lines": [],
       "observed_helper_signals": [],
       "review_required": true,
-      "occurrences": 1
+      "occurrences": 0
     },
     {
       "path": "/api/genres",
       "explicit_methods": [],
       "method_evidence": "mixed-or-unconstrained-branches",
-      "source_lines": [
-        429
-      ],
+      "source_lines": [],
       "observed_helper_signals": [],
       "review_required": true,
-      "occurrences": 1
+      "occurrences": 0
     },
     {
       "path": "/api/tags",
       "explicit_methods": [],
       "method_evidence": "mixed-or-unconstrained-branches",
-      "source_lines": [
-        430
-      ],
+      "source_lines": [],
       "observed_helper_signals": [],
       "review_required": true,
-      "occurrences": 1
+      "occurrences": 0
     },
     {
       "path": "/api/public-authors",
       "explicit_methods": [],
       "method_evidence": "mixed-or-unconstrained-branches",
-      "source_lines": [
-        431
-      ],
+      "source_lines": [],
       "observed_helper_signals": [],
       "review_required": true,
-      "occurrences": 1
+      "occurrences": 0
     },
     {
       "path": "/api/sources",
       "explicit_methods": [],
       "method_evidence": "mixed-or-unconstrained-branches",
-      "source_lines": [
-        436
-      ],
+      "source_lines": [],
       "observed_helper_signals": [],
       "review_required": true,
-      "occurrences": 1
+      "occurrences": 0
     },
     {
       "path": "/api/omni/status",
       "explicit_methods": [],
       "method_evidence": "mixed-or-unconstrained-branches",
-      "source_lines": [
-        437
-      ],
+      "source_lines": [],
       "observed_helper_signals": [],
       "review_required": true,
-      "occurrences": 1
+      "occurrences": 0
     },
     {
       "path": "/api/omni/search",
       "explicit_methods": [],
       "method_evidence": "mixed-or-unconstrained-branches",
-      "source_lines": [
-        438
-      ],
+      "source_lines": [],
       "observed_helper_signals": [],
       "review_required": true,
-      "occurrences": 1
+      "occurrences": 0
     },
     {
       "path": "/api/omni/resolve",
       "explicit_methods": [],
       "method_evidence": "mixed-or-unconstrained-branches",
-      "source_lines": [
-        439
-      ],
+      "source_lines": [],
       "observed_helper_signals": [],
       "review_required": true,
-      "occurrences": 1
+      "occurrences": 0
     },
     {
       "path": "/api/omni/import",
@@ -242,14 +204,12 @@
         "POST"
       ],
       "method_evidence": "explicit-literal-conditions",
-      "source_lines": [
-        440
-      ],
+      "source_lines": [],
       "observed_helper_signals": [
         "need"
       ],
       "review_required": true,
-      "occurrences": 1
+      "occurrences": 0
     },
     {
       "path": "/api/omni/jobs",
@@ -257,27 +217,23 @@
         "GET"
       ],
       "method_evidence": "explicit-literal-conditions",
-      "source_lines": [
-        441
-      ],
+      "source_lines": [],
       "observed_helper_signals": [
         "need"
       ],
       "review_required": true,
-      "occurrences": 1
+      "occurrences": 0
     },
     {
       "path": "/api/omni/smart-unlock",
       "explicit_methods": [],
       "method_evidence": "mixed-or-unconstrained-branches",
-      "source_lines": [
-        442
-      ],
+      "source_lines": [],
       "observed_helper_signals": [
         "need"
       ],
       "review_required": true,
-      "occurrences": 1
+      "occurrences": 0
     },
     {
       "path": "/api/formats",
@@ -285,23 +241,19 @@
         "GET"
       ],
       "method_evidence": "explicit-literal-conditions",
-      "source_lines": [
-        444
-      ],
+      "source_lines": [],
       "observed_helper_signals": [],
       "review_required": true,
-      "occurrences": 1
+      "occurrences": 0
     },
     {
       "path": "/api/novels",
       "explicit_methods": [],
       "method_evidence": "mixed-or-unconstrained-branches",
-      "source_lines": [
-        446
-      ],
+      "source_lines": [],
       "observed_helper_signals": [],
       "review_required": true,
-      "occurrences": 1
+      "occurrences": 0
     },
     {
       "path": "/api/bookmark",
@@ -309,14 +261,12 @@
         "POST"
       ],
       "method_evidence": "explicit-literal-conditions",
-      "source_lines": [
-        463
-      ],
+      "source_lines": [],
       "observed_helper_signals": [
         "need"
       ],
       "review_required": true,
-      "occurrences": 1
+      "occurrences": 0
     },
     {
       "path": "/api/history",
@@ -325,15 +275,12 @@
         "POST"
       ],
       "method_evidence": "explicit-literal-conditions",
-      "source_lines": [
-        464,
-        465
-      ],
+      "source_lines": [],
       "observed_helper_signals": [
         "need"
       ],
       "review_required": true,
-      "occurrences": 2
+      "occurrences": 0
     },
     {
       "path": "/api/library",
@@ -342,15 +289,12 @@
         "POST"
       ],
       "method_evidence": "explicit-literal-conditions",
-      "source_lines": [
-        466,
-        467
-      ],
+      "source_lines": [],
       "observed_helper_signals": [
         "need"
       ],
       "review_required": true,
-      "occurrences": 2
+      "occurrences": 0
     },
     {
       "path": "/api/bookmarks",
@@ -358,14 +302,12 @@
         "GET"
       ],
       "method_evidence": "explicit-literal-conditions",
-      "source_lines": [
-        468
-      ],
+      "source_lines": [],
       "observed_helper_signals": [
         "need"
       ],
       "review_required": true,
-      "occurrences": 1
+      "occurrences": 0
     },
     {
       "path": "/api/novel-reactions",
@@ -374,15 +316,12 @@
         "POST"
       ],
       "method_evidence": "explicit-literal-conditions",
-      "source_lines": [
-        469,
-        470
-      ],
+      "source_lines": [],
       "observed_helper_signals": [
         "need"
       ],
       "review_required": true,
-      "occurrences": 2
+      "occurrences": 0
     },
     {
       "path": "/api/comments",
@@ -391,15 +330,12 @@
         "POST"
       ],
       "method_evidence": "explicit-literal-conditions",
-      "source_lines": [
-        471,
-        472
-      ],
+      "source_lines": [],
       "observed_helper_signals": [
         "need"
       ],
       "review_required": true,
-      "occurrences": 2
+      "occurrences": 0
     },
     {
       "path": "/api/comments/like",
@@ -407,14 +343,12 @@
         "POST"
       ],
       "method_evidence": "explicit-literal-conditions",
-      "source_lines": [
-        473
-      ],
+      "source_lines": [],
       "observed_helper_signals": [
         "need"
       ],
       "review_required": true,
-      "occurrences": 1
+      "occurrences": 0
     },
     {
       "path": "/api/comments/report",
@@ -422,14 +356,12 @@
         "POST"
       ],
       "method_evidence": "explicit-literal-conditions",
-      "source_lines": [
-        474
-      ],
+      "source_lines": [],
       "observed_helper_signals": [
         "need"
       ],
       "review_required": true,
-      "occurrences": 1
+      "occurrences": 0
     },
     {
       "path": "/api/rating",
@@ -438,16 +370,12 @@
         "POST"
       ],
       "method_evidence": "explicit-literal-conditions",
-      "source_lines": [
-        475,
-        476,
-        503
-      ],
+      "source_lines": [],
       "observed_helper_signals": [
         "need"
       ],
       "review_required": true,
-      "occurrences": 3
+      "occurrences": 0
     },
     {
       "path": "/api/admin/community/comments",
@@ -456,15 +384,12 @@
         "PATCH"
       ],
       "method_evidence": "explicit-literal-conditions",
-      "source_lines": [
-        477,
-        478
-      ],
+      "source_lines": [],
       "observed_helper_signals": [
         "admin"
       ],
       "review_required": true,
-      "occurrences": 2
+      "occurrences": 0
     },
     {
       "path": "/api/admin/community/reports",
@@ -473,15 +398,12 @@
         "PATCH"
       ],
       "method_evidence": "explicit-literal-conditions",
-      "source_lines": [
-        479,
-        480
-      ],
+      "source_lines": [],
       "observed_helper_signals": [
         "admin"
       ],
       "review_required": true,
-      "occurrences": 2
+      "occurrences": 0
     },
     {
       "path": "/api/donations",
@@ -489,14 +411,12 @@
         "POST"
       ],
       "method_evidence": "explicit-literal-conditions",
-      "source_lines": [
-        482
-      ],
+      "source_lines": [],
       "observed_helper_signals": [
         "need"
       ],
       "review_required": true,
-      "occurrences": 1
+      "occurrences": 0
     },
     {
       "path": "/api/payment/webhook",
@@ -504,12 +424,10 @@
         "POST"
       ],
       "method_evidence": "explicit-literal-conditions",
-      "source_lines": [
-        499
-      ],
+      "source_lines": [],
       "observed_helper_signals": [],
       "review_required": true,
-      "occurrences": 1
+      "occurrences": 0
     },
     {
       "path": "/api/requests",
@@ -518,15 +436,12 @@
         "GET"
       ],
       "method_evidence": "explicit-literal-conditions",
-      "source_lines": [
-        500,
-        501
-      ],
+      "source_lines": [],
       "observed_helper_signals": [
         "need"
       ],
       "review_required": true,
-      "occurrences": 2
+      "occurrences": 0
     },
     {
       "path": "/api/follow",
@@ -534,14 +449,12 @@
         "POST"
       ],
       "method_evidence": "explicit-literal-conditions",
-      "source_lines": [
-        502
-      ],
+      "source_lines": [],
       "observed_helper_signals": [
         "need"
       ],
       "review_required": true,
-      "occurrences": 1
+      "occurrences": 0
     },
     {
       "path": "/api/community/discussions",
@@ -549,12 +462,10 @@
         "GET"
       ],
       "method_evidence": "explicit-literal-conditions",
-      "source_lines": [
-        504
-      ],
+      "source_lines": [],
       "observed_helper_signals": [],
       "review_required": true,
-      "occurrences": 1
+      "occurrences": 0
     },
     {
       "path": "/api/leaderboard",
@@ -562,12 +473,10 @@
         "GET"
       ],
       "method_evidence": "explicit-literal-conditions",
-      "source_lines": [
-        516
-      ],
+      "source_lines": [],
       "observed_helper_signals": [],
       "review_required": true,
-      "occurrences": 1
+      "occurrences": 0
     },
     {
       "path": "/api/tier-list",
@@ -575,12 +484,10 @@
         "GET"
       ],
       "method_evidence": "explicit-literal-conditions",
-      "source_lines": [
-        524
-      ],
+      "source_lines": [],
       "observed_helper_signals": [],
       "review_required": true,
-      "occurrences": 1
+      "occurrences": 0
     },
     {
       "path": "/api/random",
@@ -588,12 +495,10 @@
         "GET"
       ],
       "method_evidence": "explicit-literal-conditions",
-      "source_lines": [
-        529
-      ],
+      "source_lines": [],
       "observed_helper_signals": [],
       "review_required": true,
-      "occurrences": 1
+      "occurrences": 0
     },
     {
       "path": "/api/made-for-you",
@@ -601,12 +506,10 @@
         "GET"
       ],
       "method_evidence": "explicit-literal-conditions",
-      "source_lines": [
-        533
-      ],
+      "source_lines": [],
       "observed_helper_signals": [],
       "review_required": true,
-      "occurrences": 1
+      "occurrences": 0
     },
     {
       "path": "/api/vote-novels",
@@ -615,15 +518,12 @@
         "POST"
       ],
       "method_evidence": "explicit-literal-conditions",
-      "source_lines": [
-        541,
-        545
-      ],
+      "source_lines": [],
       "observed_helper_signals": [
         "need"
       ],
       "review_required": true,
-      "occurrences": 2
+      "occurrences": 0
     },
     {
       "path": "/api/notifications",
@@ -631,14 +531,12 @@
         "GET"
       ],
       "method_evidence": "explicit-literal-conditions",
-      "source_lines": [
-        552
-      ],
+      "source_lines": [],
       "observed_helper_signals": [
         "need"
       ],
       "review_required": true,
-      "occurrences": 1
+      "occurrences": 0
     },
     {
       "path": "/api/notifications/read",
@@ -646,14 +544,12 @@
         "POST"
       ],
       "method_evidence": "explicit-literal-conditions",
-      "source_lines": [
-        553
-      ],
+      "source_lines": [],
       "observed_helper_signals": [
         "need"
       ],
       "review_required": true,
-      "occurrences": 1
+      "occurrences": 0
     },
     {
       "path": "/api/report",
@@ -661,14 +557,12 @@
         "POST"
       ],
       "method_evidence": "explicit-literal-conditions",
-      "source_lines": [
-        554
-      ],
+      "source_lines": [],
       "observed_helper_signals": [
         "need"
       ],
       "review_required": true,
-      "occurrences": 1
+      "occurrences": 0
     },
     {
       "path": "/api/tickets/ledger",
@@ -676,14 +570,12 @@
         "GET"
       ],
       "method_evidence": "explicit-literal-conditions",
-      "source_lines": [
-        555
-      ],
+      "source_lines": [],
       "observed_helper_signals": [
         "need"
       ],
       "review_required": true,
-      "occurrences": 1
+      "occurrences": 0
     },
     {
       "path": "/api/recommendations",
@@ -691,14 +583,12 @@
         "GET"
       ],
       "method_evidence": "explicit-literal-conditions",
-      "source_lines": [
-        556
-      ],
+      "source_lines": [],
       "observed_helper_signals": [
         "need"
       ],
       "review_required": true,
-      "occurrences": 1
+      "occurrences": 0
     },
     {
       "path": "/api/follows",
@@ -706,14 +596,12 @@
         "GET"
       ],
       "method_evidence": "explicit-literal-conditions",
-      "source_lines": [
-        557
-      ],
+      "source_lines": [],
       "observed_helper_signals": [
         "need"
       ],
       "review_required": true,
-      "occurrences": 1
+      "occurrences": 0
     },
     {
       "path": "/api/profile",
@@ -721,14 +609,12 @@
         "GET"
       ],
       "method_evidence": "explicit-literal-conditions",
-      "source_lines": [
-        558
-      ],
+      "source_lines": [],
       "observed_helper_signals": [
         "need"
       ],
       "review_required": true,
-      "occurrences": 1
+      "occurrences": 0
     },
     {
       "path": "/api/author/applications/me",
@@ -736,14 +622,12 @@
         "GET"
       ],
       "method_evidence": "explicit-literal-conditions",
-      "source_lines": [
-        559
-      ],
+      "source_lines": [],
       "observed_helper_signals": [
         "need"
       ],
       "review_required": true,
-      "occurrences": 1
+      "occurrences": 0
     },
     {
       "path": "/api/author/applications",
@@ -751,14 +635,12 @@
         "POST"
       ],
       "method_evidence": "explicit-literal-conditions",
-      "source_lines": [
-        565
-      ],
+      "source_lines": [],
       "observed_helper_signals": [
         "need"
       ],
       "review_required": true,
-      "occurrences": 1
+      "occurrences": 0
     },
     {
       "path": "/api/admin/author-applications",
@@ -766,27 +648,23 @@
         "GET"
       ],
       "method_evidence": "explicit-literal-conditions",
-      "source_lines": [
-        581
-      ],
+      "source_lines": [],
       "observed_helper_signals": [
         "admin"
       ],
       "review_required": true,
-      "occurrences": 1
+      "occurrences": 0
     },
     {
       "path": "/api/admin/stats",
       "explicit_methods": [],
       "method_evidence": "mixed-or-unconstrained-branches",
-      "source_lines": [
-        610
-      ],
+      "source_lines": [],
       "observed_helper_signals": [
         "admin"
       ],
       "review_required": true,
-      "occurrences": 1
+      "occurrences": 0
     },
     {
       "path": "/api/admin/users",
@@ -794,14 +672,12 @@
         "GET"
       ],
       "method_evidence": "explicit-literal-conditions",
-      "source_lines": [
-        611
-      ],
+      "source_lines": [],
       "observed_helper_signals": [
         "admin"
       ],
       "review_required": true,
-      "occurrences": 1
+      "occurrences": 0
     },
     {
       "path": "/api/author/ai/status",
@@ -809,14 +685,12 @@
         "GET"
       ],
       "method_evidence": "explicit-literal-conditions",
-      "source_lines": [
-        615
-      ],
+      "source_lines": [],
       "observed_helper_signals": [
         "author"
       ],
       "review_required": true,
-      "occurrences": 1
+      "occurrences": 0
     },
     {
       "path": "/api/author/ai/projects",
@@ -825,15 +699,12 @@
         "POST"
       ],
       "method_evidence": "explicit-literal-conditions",
-      "source_lines": [
-        619,
-        623
-      ],
+      "source_lines": [],
       "observed_helper_signals": [
         "author"
       ],
       "review_required": true,
-      "occurrences": 2
+      "occurrences": 0
     },
     {
       "path": "/api/author/ai/benchmarks",
@@ -842,16 +713,13 @@
         "POST"
       ],
       "method_evidence": "explicit-literal-conditions",
-      "source_lines": [
-        690,
-        696
-      ],
+      "source_lines": [],
       "observed_helper_signals": [
         "author",
         "admin"
       ],
       "review_required": true,
-      "occurrences": 2
+      "occurrences": 0
     },
     {
       "path": "/api/author/novels",
@@ -860,15 +728,12 @@
         "POST"
       ],
       "method_evidence": "explicit-literal-conditions",
-      "source_lines": [
-        701,
-        705
-      ],
+      "source_lines": [],
       "observed_helper_signals": [
         "author"
       ],
       "review_required": true,
-      "occurrences": 2
+      "occurrences": 0
     },
     {
       "path": "/api/author/chapters",
@@ -877,15 +742,12 @@
         "POST"
       ],
       "method_evidence": "explicit-literal-conditions",
-      "source_lines": [
-        733,
-        737
-      ],
+      "source_lines": [],
       "observed_helper_signals": [
         "author"
       ],
       "review_required": true,
-      "occurrences": 2
+      "occurrences": 0
     },
     {
       "path": "/api/admin/publishing",
@@ -893,14 +755,12 @@
         "GET"
       ],
       "method_evidence": "explicit-literal-conditions",
-      "source_lines": [
-        757
-      ],
+      "source_lines": [],
       "observed_helper_signals": [
         "admin"
       ],
       "review_required": true,
-      "occurrences": 1
+      "occurrences": 0
     },
     {
       "path": "/api/admin/publishing/novels",
@@ -908,14 +768,12 @@
         "POST"
       ],
       "method_evidence": "explicit-literal-conditions",
-      "source_lines": [
-        758
-      ],
+      "source_lines": [],
       "observed_helper_signals": [
         "admin"
       ],
       "review_required": true,
-      "occurrences": 1
+      "occurrences": 0
     },
     {
       "path": "/api/admin/publishing/chapters/reorder",
@@ -923,14 +781,12 @@
         "POST"
       ],
       "method_evidence": "explicit-literal-conditions",
-      "source_lines": [
-        805
-      ],
+      "source_lines": [],
       "observed_helper_signals": [
         "admin"
       ],
       "review_required": true,
-      "occurrences": 1
+      "occurrences": 0
     },
     {
       "path": "/api/admin/publishing/chapters",
@@ -938,14 +794,12 @@
         "POST"
       ],
       "method_evidence": "explicit-literal-conditions",
-      "source_lines": [
-        820
-      ],
+      "source_lines": [],
       "observed_helper_signals": [
         "admin"
       ],
       "review_required": true,
-      "occurrences": 1
+      "occurrences": 0
     },
     {
       "path": "/api/admin/donations",
@@ -953,14 +807,12 @@
         "GET"
       ],
       "method_evidence": "explicit-literal-conditions",
-      "source_lines": [
-        821
-      ],
+      "source_lines": [],
       "observed_helper_signals": [
         "admin"
       ],
       "review_required": true,
-      "occurrences": 1
+      "occurrences": 0
     },
     {
       "path": "/api/admin/reports",
@@ -968,14 +820,12 @@
         "GET"
       ],
       "method_evidence": "explicit-literal-conditions",
-      "source_lines": [
-        823
-      ],
+      "source_lines": [],
       "observed_helper_signals": [
         "admin"
       ],
       "review_required": true,
-      "occurrences": 1
+      "occurrences": 0
     },
     {
       "path": "/api/admin/tickets",
@@ -983,14 +833,12 @@
         "POST"
       ],
       "method_evidence": "explicit-literal-conditions",
-      "source_lines": [
-        825
-      ],
+      "source_lines": [],
       "observed_helper_signals": [
         "admin"
       ],
       "review_required": true,
-      "occurrences": 1
+      "occurrences": 0
     },
     {
       "path": "/api/admin/connectors",
@@ -1000,16 +848,12 @@
         "POST"
       ],
       "method_evidence": "explicit-literal-conditions",
-      "source_lines": [
-        826,
-        827,
-        831
-      ],
+      "source_lines": [],
       "observed_helper_signals": [
         "admin"
       ],
       "review_required": true,
-      "occurrences": 3
+      "occurrences": 0
     },
     {
       "path": "/api/admin/omni/health",
@@ -1017,14 +861,12 @@
         "POST"
       ],
       "method_evidence": "explicit-literal-conditions",
-      "source_lines": [
-        828
-      ],
+      "source_lines": [],
       "observed_helper_signals": [
         "admin"
       ],
       "review_required": true,
-      "occurrences": 1
+      "occurrences": 0
     },
     {
       "path": "/api/admin/connectors/cleanup",
@@ -1032,14 +874,12 @@
         "POST"
       ],
       "method_evidence": "explicit-literal-conditions",
-      "source_lines": [
-        829
-      ],
+      "source_lines": [],
       "observed_helper_signals": [
         "admin"
       ],
       "review_required": true,
-      "occurrences": 1
+      "occurrences": 0
     },
     {
       "path": "/api/connector-authorization-requests",
@@ -1047,14 +887,12 @@
         "POST"
       ],
       "method_evidence": "explicit-literal-conditions",
-      "source_lines": [
-        830
-      ],
+      "source_lines": [],
       "observed_helper_signals": [
         "need"
       ],
       "review_required": true,
-      "occurrences": 1
+      "occurrences": 0
     },
     {
       "path": "/api/admin/requests",
@@ -1062,14 +900,12 @@
         "GET"
       ],
       "method_evidence": "explicit-literal-conditions",
-      "source_lines": [
-        832
-      ],
+      "source_lines": [],
       "observed_helper_signals": [
         "admin"
       ],
       "review_required": true,
-      "occurrences": 1
+      "occurrences": 0
     },
     {
       "path": "/api/admin/connector-authorization-requests",
@@ -1077,21 +913,19 @@
         "GET"
       ],
       "method_evidence": "explicit-literal-conditions",
-      "source_lines": [
-        834
-      ],
+      "source_lines": [],
       "observed_helper_signals": [
         "admin"
       ],
       "review_required": true,
-      "occurrences": 1
+      "occurrences": 0
     }
   ],
   "dynamic_endpoints": [
     {
       "pattern": "/api/novels/{id}",
       "source": "p.match(/^\\/api\\/novels\\/(\\d+)",
-      "source_line": 459,
+      "source_line": 460,
       "methods": [],
       "observed_helper_signals": [],
       "review_required": true
@@ -1099,7 +933,7 @@
     {
       "pattern": "/api/chapters/{id}",
       "source": "p.match(/^\\/api\\/chapters\\/(\\d+)",
-      "source_line": 460,
+      "source_line": 461,
       "methods": [],
       "observed_helper_signals": [],
       "review_required": true
@@ -1107,7 +941,7 @@
     {
       "pattern": "/api/chapters/{id}/unlock",
       "source": "/^\\/api\\/chapters\\/\\d+\\/unlock$/.test(p)",
-      "source_line": 461,
+      "source_line": 462,
       "methods": [
         "POST"
       ],
@@ -1119,7 +953,7 @@
     {
       "pattern": "/api/novels/{id}/batch-unlock",
       "source": "p.match(/^\\/api\\/novels\\/(\\d+)",
-      "source_line": 462,
+      "source_line": 463,
       "methods": [
         "POST"
       ],
@@ -1131,7 +965,7 @@
     {
       "pattern": "/api/admin/author-applications/{id}",
       "source": "p.startsWith(\"/api/admin/author-applications/\")",
-      "source_line": 588,
+      "source_line": 589,
       "methods": [
         "PATCH"
       ],
@@ -1143,7 +977,7 @@
     {
       "pattern": "/api/admin/users/{id}",
       "source": "p.match(/^\\/api\\/admin\\/users\\/(\\d+)",
-      "source_line": 612,
+      "source_line": 613,
       "methods": [
         "PATCH"
       ],
@@ -1155,7 +989,7 @@
     {
       "pattern": "/api/author/ai/projects/{id}",
       "source": "p.match(/^\\/api\\/author\\/ai\\/projects\\/(\\d+)",
-      "source_line": 633,
+      "source_line": 634,
       "methods": [
         "GET",
         "PATCH"
@@ -1168,7 +1002,7 @@
     {
       "pattern": "/api/admin/publishing/novels/{id}",
       "source": "p.match(/^\\/api\\/admin\\/publishing\\/novels\\/(\\d+)",
-      "source_line": 772,
+      "source_line": 773,
       "methods": [
         "PATCH"
       ],
@@ -1180,7 +1014,7 @@
     {
       "pattern": "/api/admin/publishing/chapters/{id}",
       "source": "p.match(/^\\/api\\/admin\\/publishing\\/chapters\\/(\\d+)",
-      "source_line": 781,
+      "source_line": 782,
       "methods": [
         "PATCH"
       ],
@@ -1192,7 +1026,7 @@
     {
       "pattern": "/api/admin/donations/{id}",
       "source": "p.match(/^\\/api\\/admin\\/donations\\/(\\d+)",
-      "source_line": 822,
+      "source_line": 823,
       "methods": [
         "PATCH"
       ],
@@ -1204,7 +1038,7 @@
     {
       "pattern": "/api/admin/reports/{id}",
       "source": "p.match(/^\\/api\\/admin\\/reports\\/(\\d+)",
-      "source_line": 824,
+      "source_line": 825,
       "methods": [
         "PATCH"
       ],
@@ -1216,7 +1050,7 @@
     {
       "pattern": "/api/admin/requests/{id}",
       "source": "p.startsWith(\"/api/admin/requests/\")",
-      "source_line": 833,
+      "source_line": 834,
       "methods": [
         "PATCH"
       ],
@@ -1228,7 +1062,7 @@
     {
       "pattern": "/api/admin/connector-authorization-requests/{id}",
       "source": "p.match(/^\\/api\\/admin\\/connector-authorization-requests\\/(\\d+)",
-      "source_line": 835,
+      "source_line": 836,
       "methods": [
         "PATCH"
       ],
@@ -1240,7 +1074,7 @@
     {
       "pattern": "/api/author/ai/projects/{id}/blueprint",
       "source": "/^\\/api\\/author\\/ai\\/projects\\/\\d+\\/blueprint$/.test(p)",
-      "source_line": 646,
+      "source_line": 647,
       "methods": [
         "POST"
       ],
@@ -1252,7 +1086,7 @@
     {
       "pattern": "/api/author/ai/projects/{id}/run",
       "source": "/^\\/api\\/author\\/ai\\/projects\\/\\d+\\/run$/.test(p)",
-      "source_line": 657,
+      "source_line": 658,
       "methods": [
         "POST"
       ],
@@ -1264,7 +1098,7 @@
     {
       "pattern": "/api/author/ai/projects/{id}/jobs",
       "source": "/^\\/api\\/author\\/ai\\/projects\\/\\d+\\/jobs$/.test(p)",
-      "source_line": 686,
+      "source_line": 687,
       "methods": [
         "GET"
       ],
@@ -1276,7 +1110,7 @@
     {
       "pattern": "/api/author/novels/{id}/submit",
       "source": "/^\\/api\\/author\\/novels\\/\\d+\\/submit$/.test(p)",
-      "source_line": 715,
+      "source_line": 716,
       "methods": [
         "POST"
       ],
@@ -1288,7 +1122,7 @@
     {
       "pattern": "/api/author/novels/{id}",
       "source": "/^\\/api\\/author\\/novels\\/\\d+$/.test(p)",
-      "source_line": 721,
+      "source_line": 722,
       "methods": [
         "PATCH"
       ],
@@ -1300,7 +1134,7 @@
     {
       "pattern": "/api/author/chapters/{id}",
       "source": "/^\\/api\\/author\\/chapters\\/\\d+$/.test(p)",
-      "source_line": 745,
+      "source_line": 746,
       "methods": [
         "PATCH"
       ],
@@ -1312,7 +1146,7 @@
     {
       "pattern": "/api/author/chapters/{id}/publish",
       "source": "/^\\/api\\/author\\/chapters\\/\\d+\\/publish$/.test(p)",
-      "source_line": 752,
+      "source_line": 753,
       "methods": [
         "POST"
       ],
@@ -1324,7 +1158,7 @@
     {
       "pattern": "/api/admin/publishing/chapters",
       "source": "p.match(/^\\/api\\/admin\\/publishing\\/chapters(?:\\/(\\d+)",
-      "source_line": 773,
+      "source_line": 774,
       "methods": [
         "GET"
       ],
