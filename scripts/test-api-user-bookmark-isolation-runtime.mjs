@@ -220,7 +220,7 @@ await payload(await request("account-b-token", "/api/author/ai/projects", "POST"
 }), 403);
 
 // AI author projects and their job feed must remain private to the owning author.
-assert.deepEqual((await payload(await request("account-a-token", "/api/author/ai/projects", "GET"))).map(row => row.id), [801]);
+assert.deepEqual((await payload(await request("account-a-token", "/api/author/ai/projects", "GET"))).map(row => row.id), [801, 803]);
 assert.deepEqual((await payload(await request("account-b-token", "/api/author/ai/projects", "GET"))).map(row => row.id), [802]);
 assert.equal((await payload(await request("account-a-token", "/api/author/ai/projects/801", "GET"))).name, "A private AI project");
 await payload(await request("account-b-token", "/api/author/ai/projects/801", "GET"), 403);
