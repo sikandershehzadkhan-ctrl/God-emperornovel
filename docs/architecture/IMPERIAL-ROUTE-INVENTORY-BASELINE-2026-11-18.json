@@ -8,7 +8,7 @@
     "repository": "sikandershehzadkhan-ctrl/God-emperornovel",
     "branch": "architecture/phase-01-foundation-route-registry",
     "worker_file": "src/index.js",
-    "worker_blob": "0ba8207e00efac0ddb3faf20b956be0aa4e27a55",
+    "worker_blob": "6448ddfc5ae08694e67d57b4a8e52e0637be2383",
     "sitemap_file": "src/sitemap.mjs",
     "sitemap_blob": "502021167ebdb6fc5ce24ee77f3b7130beda81e4",
     "method": "Static source extraction from the PR branch: Worker dispatch, sitemap source, and client boot/navigation source. Does not prove live deployment, browser screen completeness, or authorization correctness.",
