@@ -8,7 +8,7 @@
     "page_inventory": "docs/architecture/IMPERIAL-ROUTE-INVENTORY-BASELINE-2026-11-18.json",
     "api_inventory": "docs/architecture/API-ENDPOINT-INVENTORY-2026-11-18.json",
     "worker_file": "src/index.js",
-    "worker_blob": "3d6b465c8d8e36d62dd52e60727dba5bd9b61fce",
+    "worker_blob": "3d04cb5ac2969dc1651c0708897a1987eddbd819",
     "client_file": "public/app.js",
     "client_blob": "a640fbfed7221adac1a6fd7fd6d5f0524016004a",
     "sitemap_file": "src/sitemap.mjs",
@@ -20,49 +20,55 @@
         "path": "/",
         "shell": "index.html",
         "status": "observed-worker-dispatch",
-        "access_policy": "not-certified",
+        "access_policy": "public-or-unverified-resource-policy",
         "sitemap_policy": "included-in-static-sitemap",
-        "screen_completeness": "not-yet-audited"
+        "screen_completeness": "not-yet-audited",
+        "server_access_gate": false
       },
       {
         "path": "/catalog",
         "shell": "catalog.html",
         "status": "observed-worker-dispatch",
-        "access_policy": "not-certified",
+        "access_policy": "public-or-unverified-resource-policy",
         "sitemap_policy": "included-in-static-sitemap",
-        "screen_completeness": "not-yet-audited"
+        "screen_completeness": "not-yet-audited",
+        "server_access_gate": false
       },
       {
         "path": "/discover",
         "shell": "catalog.html",
         "status": "observed-worker-dispatch",
-        "access_policy": "not-certified",
+        "access_policy": "public-or-unverified-resource-policy",
         "sitemap_policy": "not-in-static-sitemap",
-        "screen_completeness": "not-yet-audited"
+        "screen_completeness": "not-yet-audited",
+        "server_access_gate": false
       },
       {
         "path": "/formats",
         "shell": "index.html",
         "status": "observed-worker-dispatch",
-        "access_policy": "not-certified",
+        "access_policy": "public-or-unverified-resource-policy",
         "sitemap_policy": "included-in-static-sitemap",
-        "screen_completeness": "not-yet-audited"
+        "screen_completeness": "not-yet-audited",
+        "server_access_gate": false
       },
       {
         "path": "/genres",
         "shell": "genres.html",
         "status": "observed-worker-dispatch",
-        "access_policy": "not-certified",
+        "access_policy": "public-or-unverified-resource-policy",
         "sitemap_policy": "included-in-static-sitemap",
-        "screen_completeness": "not-yet-audited"
+        "screen_completeness": "not-yet-audited",
+        "server_access_gate": false
       },
       {
         "path": "/tags",
         "shell": "tags.html",
         "status": "observed-worker-dispatch",
-        "access_policy": "not-certified",
+        "access_policy": "public-or-unverified-resource-policy",
         "sitemap_policy": "included-in-static-sitemap",
-        "screen_completeness": "not-yet-audited"
+        "screen_completeness": "not-yet-audited",
+        "server_access_gate": false
       },
       {
         "path": "/search",
@@ -70,47 +76,53 @@
         "status": "observed-worker-dispatch",
         "access_policy": "public-utility-noindex-not-an-access-control",
         "sitemap_policy": "excluded-from-static-sitemap-utility-route",
-        "screen_completeness": "not-yet-audited"
+        "screen_completeness": "not-yet-audited",
+        "server_access_gate": false
       },
       {
         "path": "/library",
         "shell": "library.html",
         "status": "observed-worker-dispatch",
-        "access_policy": "noindex-route-authentication-still-requires-server-verification",
+        "access_policy": "authenticated-server-gated",
         "sitemap_policy": "not-in-static-sitemap",
-        "screen_completeness": "not-yet-audited"
+        "screen_completeness": "not-yet-audited",
+        "server_access_gate": true
       },
       {
         "path": "/history",
         "shell": "history.html",
         "status": "observed-worker-dispatch",
-        "access_policy": "noindex-route-authentication-still-requires-server-verification",
+        "access_policy": "authenticated-server-gated",
         "sitemap_policy": "not-in-static-sitemap",
-        "screen_completeness": "not-yet-audited"
+        "screen_completeness": "not-yet-audited",
+        "server_access_gate": true
       },
       {
         "path": "/following",
         "shell": "following.html",
         "status": "observed-worker-dispatch",
-        "access_policy": "noindex-route-authentication-still-requires-server-verification",
+        "access_policy": "authenticated-server-gated",
         "sitemap_policy": "not-in-static-sitemap",
-        "screen_completeness": "not-yet-audited"
+        "screen_completeness": "not-yet-audited",
+        "server_access_gate": true
       },
       {
         "path": "/tickets",
         "shell": "tickets.html",
         "status": "observed-worker-dispatch",
-        "access_policy": "noindex-route-authentication-still-requires-server-verification",
+        "access_policy": "authenticated-server-gated",
         "sitemap_policy": "not-in-static-sitemap",
-        "screen_completeness": "not-yet-audited"
+        "screen_completeness": "not-yet-audited",
+        "server_access_gate": true
       },
       {
         "path": "/requests",
         "shell": "requests.html",
         "status": "observed-worker-dispatch",
-        "access_policy": "noindex-route-authentication-still-requires-server-verification",
+        "access_policy": "authenticated-server-gated",
         "sitemap_policy": "not-in-static-sitemap",
-        "screen_completeness": "not-yet-audited"
+        "screen_completeness": "not-yet-audited",
+        "server_access_gate": true
       },
       {
         "path": "/omniportal",
@@ -118,39 +130,44 @@
         "status": "observed-worker-dispatch",
         "access_policy": "public-utility-noindex-not-an-access-control",
         "sitemap_policy": "excluded-from-static-sitemap-utility-route",
-        "screen_completeness": "not-yet-audited"
+        "screen_completeness": "not-yet-audited",
+        "server_access_gate": false
       },
       {
         "path": "/community",
         "shell": "index.html",
         "status": "observed-worker-dispatch",
-        "access_policy": "not-certified",
+        "access_policy": "public-or-unverified-resource-policy",
         "sitemap_policy": "included-in-static-sitemap",
-        "screen_completeness": "not-yet-audited"
+        "screen_completeness": "not-yet-audited",
+        "server_access_gate": false
       },
       {
         "path": "/leaderboard",
         "shell": "index.html",
         "status": "observed-worker-dispatch",
-        "access_policy": "not-certified",
+        "access_policy": "public-or-unverified-resource-policy",
         "sitemap_policy": "included-in-static-sitemap",
-        "screen_completeness": "not-yet-audited"
+        "screen_completeness": "not-yet-audited",
+        "server_access_gate": false
       },
       {
         "path": "/tier-list",
         "shell": "index.html",
         "status": "observed-worker-dispatch",
-        "access_policy": "not-certified",
+        "access_policy": "public-or-unverified-resource-policy",
         "sitemap_policy": "not-in-static-sitemap",
-        "screen_completeness": "not-yet-audited"
+        "screen_completeness": "not-yet-audited",
+        "server_access_gate": false
       },
       {
         "path": "/random",
         "shell": "index.html",
         "status": "observed-worker-dispatch",
-        "access_policy": "not-certified",
+        "access_policy": "public-or-unverified-resource-policy",
         "sitemap_policy": "not-in-static-sitemap",
-        "screen_completeness": "not-yet-audited"
+        "screen_completeness": "not-yet-audited",
+        "server_access_gate": false
       },
       {
         "path": "/made-for-you",
@@ -158,15 +175,17 @@
         "status": "observed-worker-dispatch",
         "access_policy": "public-utility-noindex-not-an-access-control",
         "sitemap_policy": "not-in-static-sitemap-personalized-utility",
-        "screen_completeness": "not-yet-audited"
+        "screen_completeness": "not-yet-audited",
+        "server_access_gate": false
       },
       {
         "path": "/settings",
         "shell": "index.html",
         "status": "observed-worker-dispatch",
-        "access_policy": "noindex-route-authentication-still-requires-server-verification",
+        "access_policy": "authenticated-server-gated",
         "sitemap_policy": "not-in-static-sitemap",
-        "screen_completeness": "not-yet-audited"
+        "screen_completeness": "not-yet-audited",
+        "server_access_gate": true
       },
       {
         "path": "/for-you",
@@ -174,31 +193,35 @@
         "status": "observed-worker-dispatch",
         "access_policy": "public-utility-noindex-not-an-access-control",
         "sitemap_policy": "not-in-static-sitemap-personalized-utility",
-        "screen_completeness": "not-yet-audited"
+        "screen_completeness": "not-yet-audited",
+        "server_access_gate": false
       },
       {
         "path": "/trending",
         "shell": "index.html",
         "status": "observed-worker-dispatch",
-        "access_policy": "not-certified",
+        "access_policy": "public-or-unverified-resource-policy",
         "sitemap_policy": "not-in-static-sitemap",
-        "screen_completeness": "not-yet-audited"
+        "screen_completeness": "not-yet-audited",
+        "server_access_gate": false
       },
       {
         "path": "/vote",
         "shell": "index.html",
         "status": "observed-worker-dispatch",
-        "access_policy": "not-certified",
+        "access_policy": "public-or-unverified-resource-policy",
         "sitemap_policy": "not-in-static-sitemap",
-        "screen_completeness": "not-yet-audited"
+        "screen_completeness": "not-yet-audited",
+        "server_access_gate": false
       },
       {
         "path": "/notifications",
         "shell": "index.html",
         "status": "observed-worker-dispatch",
-        "access_policy": "noindex-route-authentication-still-requires-server-verification",
+        "access_policy": "authenticated-server-gated",
         "sitemap_policy": "not-in-static-sitemap",
-        "screen_completeness": "not-yet-audited"
+        "screen_completeness": "not-yet-audited",
+        "server_access_gate": true
       },
       {
         "path": "/trend-factory",
@@ -206,79 +229,89 @@
         "status": "observed-worker-dispatch",
         "access_policy": "public-utility-noindex-not-an-access-control",
         "sitemap_policy": "excluded-from-static-sitemap-utility-route",
-        "screen_completeness": "not-yet-audited"
+        "screen_completeness": "not-yet-audited",
+        "server_access_gate": false
       },
       {
         "path": "/community-taxonomy",
         "shell": "community-taxonomy.html",
         "status": "observed-worker-dispatch",
-        "access_policy": "not-certified",
+        "access_policy": "public-or-unverified-resource-policy",
         "sitemap_policy": "included-in-static-sitemap",
-        "screen_completeness": "not-yet-audited"
+        "screen_completeness": "not-yet-audited",
+        "server_access_gate": false
       },
       {
         "path": "/privacy",
         "shell": "privacy.html",
         "status": "observed-worker-dispatch",
-        "access_policy": "not-certified",
+        "access_policy": "public-or-unverified-resource-policy",
         "sitemap_policy": "included-in-static-sitemap",
-        "screen_completeness": "not-yet-audited"
+        "screen_completeness": "not-yet-audited",
+        "server_access_gate": false
       },
       {
         "path": "/terms",
         "shell": "terms.html",
         "status": "observed-worker-dispatch",
-        "access_policy": "not-certified",
+        "access_policy": "public-or-unverified-resource-policy",
         "sitemap_policy": "included-in-static-sitemap",
-        "screen_completeness": "not-yet-audited"
+        "screen_completeness": "not-yet-audited",
+        "server_access_gate": false
       },
       {
         "path": "/copyright",
         "shell": "copyright.html",
         "status": "observed-worker-dispatch",
-        "access_policy": "not-certified",
+        "access_policy": "public-or-unverified-resource-policy",
         "sitemap_policy": "included-in-static-sitemap",
-        "screen_completeness": "not-yet-audited"
+        "screen_completeness": "not-yet-audited",
+        "server_access_gate": false
       },
       {
         "path": "/account",
         "shell": "account.html",
         "status": "observed-worker-dispatch",
-        "access_policy": "noindex-route-authentication-still-requires-server-verification",
+        "access_policy": "authenticated-server-gated",
         "sitemap_policy": "not-in-static-sitemap",
-        "screen_completeness": "not-yet-audited"
+        "screen_completeness": "not-yet-audited",
+        "server_access_gate": true
       },
       {
         "path": "/login",
         "shell": "login.html",
         "status": "observed-worker-dispatch",
-        "access_policy": "noindex-route-authentication-still-requires-server-verification",
+        "access_policy": "public-auth-entry-noindex",
         "sitemap_policy": "not-in-static-sitemap",
-        "screen_completeness": "not-yet-audited"
+        "screen_completeness": "not-yet-audited",
+        "server_access_gate": false
       },
       {
         "path": "/register",
         "shell": "register.html",
         "status": "observed-worker-dispatch",
-        "access_policy": "noindex-route-authentication-still-requires-server-verification",
+        "access_policy": "public-auth-entry-noindex",
         "sitemap_policy": "not-in-static-sitemap",
-        "screen_completeness": "not-yet-audited"
+        "screen_completeness": "not-yet-audited",
+        "server_access_gate": false
       },
       {
         "path": "/admin",
         "shell": "admin.html",
         "status": "observed-worker-dispatch",
-        "access_policy": "noindex-route-authentication-still-requires-server-verification",
+        "access_policy": "admin-server-gated",
         "sitemap_policy": "not-in-static-sitemap",
-        "screen_completeness": "not-yet-audited"
+        "screen_completeness": "not-yet-audited",
+        "server_access_gate": true
       },
       {
         "path": "/author",
         "shell": "index.html",
         "status": "observed-worker-dispatch",
-        "access_policy": "noindex-route-authentication-still-requires-server-verification",
+        "access_policy": "author-server-gated",
         "sitemap_policy": "not-in-static-sitemap",
-        "screen_completeness": "not-yet-audited"
+        "screen_completeness": "not-yet-audited",
+        "server_access_gate": true
       }
     ],
     "dynamic": [
@@ -2382,9 +2415,9 @@
   },
   "known_gaps": [
     "Page screen completeness remains not-yet-audited; shell dispatch does not prove a finished screen.",
-    "Authentication signals on literal routes are evidence, not complete per-method authorization certification.",
     "Resource ownership remains review-required for each route; use the API resource ownership review and runtime tests.",
     "Response schemas and error contracts are not yet normalized.",
-    "Client route behavior and server route behavior still require end-to-end browser verification."
+    "Client route behavior and server route behavior still require end-to-end browser verification.",
+    "Page-level gates cover account, reader-private, author, and admin route shells; dynamic resource authorization still requires endpoint-level review."
   ]
 }
