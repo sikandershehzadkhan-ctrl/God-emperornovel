@@ -25,6 +25,7 @@ const aiProjects = [
   { id: 802, owner_user_id: 402, novel_id: null, name: "B private AI project", mode: "manual", status: "draft", genre: "fantasy", fandom: "", premise: "Private premise B", protagonist: "B", settings_json: "{}", bible_json: "{}" }
 ];
 const aiJobs = [{ id: 901, project_id: 801, owner_user_id: 301, chapter_number: 1, job_type: "draft", status: "complete" }];
+const novelRequests = [{ id: 1001, user_id: 301, week_key: Math.floor(now / 604800), url: "https://example.test/novel", status: "pending" }];
 
 class FakeStatement {
   constructor(sql) { this.sql = sql; this.values = []; }
@@ -36,6 +37,9 @@ class FakeStatement {
     if (this.sql.includes("SELECT c.id FROM novels n JOIN chapters c ON c.novel_id=n.id") ||
         this.sql.includes("SELECT c.id FROM chapters c JOIN novels n ON n.id=c.novel_id")) {
       return this.values[0] === 10 && this.values[1] === 7 ? { id: 700 } : null;
+    }
+    if (this.sql.includes("SELECT COUNT(*) n FROM novel_requests WHERE user_id=? AND week_key=?")) {
+      return { n: novelRequests.filter(row => row.user_id === this.values[0] && row.week_key === this.values[1]).length };
     }
     if (this.sql.includes("SELECT id FROM novels WHERE id=? AND publication_status='published'")) {
       return this.values[0] === 10 ? { id: 10 } : null;
@@ -208,5 +212,9 @@ assert.deepEqual((await payload(await request("account-a-token", "/api/author/ai
 await payload(await request("account-b-token", "/api/author/ai/projects/801/jobs", "GET"), 403);
 await payload(await request("account-b-token", "/api/author/ai/projects/801/blueprint", "POST"), 403);
 await payload(await request("account-b-token", "/api/author/ai/projects/801/run", "POST"), 403);
+
+// Novel-request quota reads are scoped to the authenticated account.
+assert.deepEqual(await payload(await request("account-a-token", "/api/requests", "GET")), { used: 1, limit: 3 });
+assert.deepEqual(await payload(await request("account-b-token", "/api/requests", "GET")), { used: 0, limit: 3 });
 
 console.log("PASS: Worker fetch two-account isolation for bookmarks, history, library, follows, notifications, ticket ledger, author applications, author novel listing/update, author chapter update, and AI project listing/read/update/job access; forged identity and invalid chapter relationships rejected. Deterministic D1 test double only, not live Cloudflare D1.");
