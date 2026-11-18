@@ -1,10 +1,8 @@
 export const SITEMAP_PAGE_SIZE = 10000;
 
-const STATIC_PATHS = [
-  "/", "/catalog", "/formats", "/genres", "/tags",
-  "/community", "/leaderboard",
-  "/community-taxonomy", "/privacy", "/terms", "/copyright"
-];
+import { SITEMAP_STATIC_PATHS } from "./route-registry.mjs";
+export { SITEMAP_STATIC_PATHS };
+const STATIC_PATHS = SITEMAP_STATIC_PATHS;
 
 function xmlEscape(value) {
   return String(value ?? "").replace(/[&<>"']/g, character => ({
@@ -54,4 +52,3 @@ export function renderChapterSitemap(originValue, rows = []) {
   return `<?xml version="1.0" encoding="UTF-8"?><urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">${entries.join("")}</urlset>`;
 }
 
-export const SITEMAP_STATIC_PATHS = Object.freeze([...STATIC_PATHS]);
