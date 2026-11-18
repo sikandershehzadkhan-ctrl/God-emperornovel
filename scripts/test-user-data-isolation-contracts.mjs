@@ -58,9 +58,9 @@ assert.ok(api.includes("let aip=p.match"), "Individual author AI project routes 
 const aiProjectRoutes = [
   'if(aip&&m==="GET")',
   'if(aip&&m==="PATCH")',
-  'if(/^\/api\/author\/ai\/projects\/\\d+\/blueprint$/.test(p)&&m==="POST")',
-  'if(/^\/api\/author\/ai\/projects\/\\d+\/run$/.test(p)&&m==="POST")',
-  'if(/^\/api\/author\/ai\/projects\/\\d+\/jobs$/.test(p)&&m==="GET")',
+  'if(/^\\/api\\/author\\/ai\\/projects\\/\\d+\\/blueprint$/.test(p)&&m==="POST")',
+  'if(/^\\/api\\/author\\/ai\\/projects\\/\\d+\\/run$/.test(p)&&m==="POST")',
+  'if(/^\\/api\\/author\\/ai\\/projects\\/\\d+\\/jobs$/.test(p)&&m==="GET")',
 ];
 for (const marker of aiProjectRoutes) {
   const block = routeBlock(marker);
@@ -71,8 +71,8 @@ for (const marker of aiProjectRoutes) {
 const authorChapterRoutes = [
   'if(p==="/api/author/chapters"&&m==="GET")',
   'if(p==="/api/author/chapters"&&m==="POST")',
-  'if(/^\/api\/author\/chapters\/\\d+$/.test(p)&&m==="PATCH")',
-  'if(/^\/api\/author\/chapters\/\\d+\/publish$/.test(p)&&m==="POST")',
+  'if(/^\\/api\\/author\\/chapters\\/\\d+$/.test(p)&&m==="PATCH")',
+  'if(/^\\/api\\/author\\/chapters\\/\\d+\\/publish$/.test(p)&&m==="POST")',
 ];
 for (const marker of authorChapterRoutes) {
   const block = routeBlock(marker);
