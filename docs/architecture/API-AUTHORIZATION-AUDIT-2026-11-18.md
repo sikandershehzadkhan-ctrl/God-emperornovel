@@ -47,6 +47,14 @@ Before this audit, taxonomy POST accepted `creator_id` and `creator_name` from t
 
 All 14 routes now reject unsupported methods with HTTP 405 and an `Allow` header before schema bootstrap and session lookup. Taxonomy allows GET and POST; the other 13 routes allow GET only.
 
+## Additional author-resource update finding
+
+### Partial chapter edits must not change lock state implicitly
+
+The author chapter PATCH handler previously converted an omitted `is_locked` field to false through a truthiness expression. A client updating only a title or chapter body could therefore unintentionally unlock the chapter. The same handler accepted ticket costs without requiring a bounded whole number, unlike the reader unlock path's safe-integer validation.
+
+The handler now preserves the stored lock state when `is_locked` is absent and validates ticket cost as a safe integer from 0 through 1,000,000. A source regression assertion protects both behaviors. This is a verified input/update-integrity defect and remediation in the PR branch, not a demonstrated cross-account data exposure.
+
 ## Remaining security and operational questions
 
 1. **Public Omni search exposure:** `/api/omni/search` can query enabled, rights-authorized external connectors for anonymous callers. Confirm request-size bounds, per-IP rate limiting, concurrency limits, and provider-abuse controls before enabling connectors in production.
