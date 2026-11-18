@@ -6163,3 +6163,9 @@ html[data-theme="cosmic"]{--in-text:#FFFFFF;--in-text-muted:#DCE5FF;--in-line:#8
 
 .readerNavDisabled{display:inline-flex;align-items:center;justify-content:center;min-height:40px;padding:9px 12px;border:1px solid var(--line);border-radius:10px;color:var(--muted);background:var(--panel2,transparent);font-size:13px;font-weight:700;opacity:.78;cursor:not-allowed;user-select:none}
 @media(max-width:760px){.readerNavDisabled{min-height:44px;padding:9px 10px;font-size:11px}}
+
+
+/* Language-aware Arabic-script fallback while preserving the reader's chosen Latin font. */
+.readerPage .readerContent:lang(ur){font-kerning:normal;font-variant-ligatures:common-ligatures contextual;font-feature-settings:"kern" 1,"liga" 1,"calt" 1}
+.readerPage .readerContent:lang(ar),.readerPage .readerContent:lang(fa){font-kerning:normal;font-variant-ligatures:common-ligatures contextual;font-feature-settings:"kern" 1,"liga" 1,"calt" 1}
+.readerPage .readerArticle h1:lang(ur),.readerPage .readerArticle h1:lang(ar),.readerPage .readerArticle h1:lang(fa){font-kerning:normal;font-feature-settings:"kern" 1,"liga" 1,"calt" 1}

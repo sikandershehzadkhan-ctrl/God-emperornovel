@@ -65,3 +65,12 @@ assert.match(css, /@media\(max-width:520px\)\{[\s\S]*?\.readerPrefsStudio\{grid-
   "The settings studio must collapse to a single column on narrow screens.");
 
 console.log("Reader Settings Studio and protected reader-session integration checks passed.");
+
+assert.match(app, /function readerLanguageCode\(value\)/, "The reader must normalize chapter language metadata independently from the interface language.");
+for (const [label,code] of [["Urdu","ur"],["Arabic","ar"],["Persian","fa"],["English","en"]]) assert.ok(app.includes(`${label.toLowerCase()}: '${code}'`) || app.includes(`${label.toLowerCase()}: '${code}'`), `Reader language aliases must include ${label}.`);
+assert.match(app, /id="readerContent" class="readerContent" dir="auto" lang="\$\{esc\(readerLang\)\}"/, "Chapter text must carry its own language metadata and retain automatic paragraph direction.");
+assert.match(app, /readerFontStack=\(choice,language\)=>/, "Reader font selection must append script-capable fallback fonts before generic fallback.");
+assert.match(app, /Noto Nastaliq Urdu/);
+assert.match(app, /Noto Naskh Arabic/);
+assert.match(css, /\.readerPage \.readerContent:lang\(ur\)/, "Urdu reader text must enable contextual shaping features.");
+assert.match(css, /\.readerPage \.readerContent:lang\(ar\),\.readerPage \.readerContent:lang\(fa\)/, "Arabic and Persian reader text must enable contextual shaping features.");
