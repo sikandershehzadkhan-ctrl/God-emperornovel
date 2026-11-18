@@ -135,7 +135,14 @@ for (const path of exactPaths) assert.ok(inventory.literal_endpoints.some(x => x
 const authorChapterPatch = worker.slice(worker.indexOf('if(/^\\/api\\/author\\/chapters\\/\\d+$/.test(p)&&m==="PATCH")'), worker.indexOf('if(/^\\/api\\/author\\/chapters\\/\\d+\\/publish$/.test(p)'));
 assert.match(authorChapterPatch, /b\.is_locked===undefined\?Number\(c\.is_locked\):b\.is_locked\?1:0/, "Partial chapter edits must preserve the existing lock state");
 assert.match(authorChapterPatch, /Number\.isSafeInteger\(cost\).*cost>1000000/, "Chapter ticket costs must be bounded whole numbers");
-const bookmarkStart = worker.indexOf('if(p==="/api/bookmark"&&m==="POST")');
+
+assert.match(authorChapterPatch, /Number\.isSafeInteger\(id\)\|\|id<1/, "Author chapter path IDs must be positive safe integers");
+assert.match(authorChapterPatch, /Number\.isSafeInteger\(num\)\|\|num<1/, "Edited chapter numbers must be positive safe integers");
+const authorChapterListStart = worker.indexOf('if(p==="/api/author/chapters"&&m==="GET"){');
+const authorChapterListEnd = worker.indexOf('if(p==="/api/author/chapters"&&m==="POST"){', authorChapterListStart);
+const authorChapterList = worker.slice(authorChapterListStart, authorChapterListEnd);
+assert.ok(authorChapterListStart >= 0 && authorChapterListEnd > authorChapterListStart, "Author chapter list route must remain explicit");
+assert.match(authorChapterList, /Number\.isSafeInteger\(nid\)\|\|nid<1/, "Author chapter list must reject invalid novel IDs before database lookup");const bookmarkStart = worker.indexOf('if(p==="/api/bookmark"&&m==="POST")');
 const bookmarkEnd = worker.indexOf('if(p==="/api/history"&&m==="GET")', bookmarkStart);
 const bookmarkHandler = worker.slice(bookmarkStart, bookmarkEnd);
 assert.match(bookmarkHandler, /Number\.isSafeInteger\(novelId\)/, "Bookmark writes must validate the novel ID");
