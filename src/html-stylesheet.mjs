@@ -12,7 +12,7 @@ export function applyCanonicalStylesheet(html) {
   }
 
   const withoutStylesheetLinks = html.replace(
-    /<link\\b(?=[^>]*\\brel\\s*=\\s*["']stylesheet["'])[^>]*>/gi,
+    /<link\b(?=[^>]*\brel\s*=\s*["']stylesheet["'])[^>]*>/gi,
     ''
   );
   const canonicalLink = '<link rel="stylesheet" href="' + CANONICAL_STYLESHEET + '">';
