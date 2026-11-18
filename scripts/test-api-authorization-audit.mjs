@@ -30,6 +30,16 @@ assert.match(worker.slice(adminChapterDeleteStart,adminChapterCreateStart), /Num
 assert.match(worker, /Number\\.isSafeInteger\\(id\\)\\|\\|id<1\\|\\|!\\['up','down'\\]\\.includes\\(direction\\)/);
 assert.match(worker.slice(adminChapterCreateStart), /Number\\.isSafeInteger\\(nid\\)\\|\\|nid<1\\|\\|!Number\\.isSafeInteger\\(num\\)/);
 
+const adminNovelCreateStart = worker.indexOf('if(p==="/api/admin/publishing/novels"&&m==="POST")');
+const adminNovelCreateEnd = worker.indexOf('let apn=p.match',adminNovelCreateStart);
+const adminNovelCreate = worker.slice(adminNovelCreateStart,adminNovelCreateEnd);
+assert.ok(adminNovelCreateStart>=0 && adminNovelCreateEnd>adminNovelCreateStart);
+assert.match(adminNovelCreate,/Number\\.isSafeInteger\\(ownerId\\)\\|\\|ownerId<1/,"Admin novel owner IDs must be positive safe integers");
+assert.match(adminNovelCreate,/SELECT id,role,banned FROM users WHERE id=\\?/,"Admin novel creation must resolve the target owner account");
+assert.match(adminNovelCreate,/!\\['author','admin'\\]\\.includes\\(String\\(owner\\.role\\)\\)/,"Only active author/admin accounts may own admin-created novels");
+assert.match(adminNovelCreate,/Number\\(owner\\.banned\\)!==0/,"Banned accounts cannot be assigned new novels");
+assert.match(adminNovelCreate,/rights,ownerId,'draft'/,"Novel creation must bind the validated owner ID");
+
 const userLookup = worker.indexOf("const u=await getUser(req,env)");
 const health = worker.indexOf('if(p==="/api/health"&&m==="GET")');
 assert.ok(health >= 0 && userLookup > health, "Health route must bypass session lookup");
