@@ -35,6 +35,7 @@ const novelsStart = worker.indexOf('if(p==="/api/novels"){');
 const novelsEnd = worker.indexOf("let nm=p.match", novelsStart);
 assert.ok(novelsStart >= 0 && novelsEnd > novelsStart && worker.slice(novelsStart, novelsEnd).includes("publication_status='published'"), "Public novel listing must filter to published content");
 assert.match(report, /Public Omni search exposure/);
+assert.match(report, /Public Omni status side effects/);
 assert.match(report, /Full API authorization, resource ownership/);
 
 const exactPaths = ["/api/health","/api/taxonomy","/api/me","/api/config","/api/genres","/api/tags","/api/public-authors","/api/sources","/api/omni/status","/api/omni/search","/api/omni/resolve","/api/omni/smart-unlock","/api/novels","/api/admin/stats"];
