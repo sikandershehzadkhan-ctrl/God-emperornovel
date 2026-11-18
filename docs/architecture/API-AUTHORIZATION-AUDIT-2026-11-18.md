@@ -70,3 +70,12 @@ The handler now preserves the stored lock state when `is_locked` is absent and v
 - Authentication/role behavior for these 14 paths: **source-reviewed; remaining abuse and operational controls listed above**.
 - Full API authorization, resource ownership, cross-account isolation, and client parity: **not complete**.
 - No production D1 access, production deployment, or live-browser test was performed.
+
+
+## 2026-11-18 follow-up: public Omni endpoint abuse controls
+
+- Public `GET /api/omni/status` is now IP-rate-limited to 60 requests per 60-second window and no longer seeds/writes connector registry rows. Registry seeding happens from the authenticated admin connector listing instead.
+- Public `GET /api/omni/search` is now IP-rate-limited to 20 requests per 60-second window and rejects query strings longer than 120 characters before searching local content or contacting authorized connectors.
+- External connector searches remain limited to enabled connectors with `rights_status='authorized'`, and the existing 7-second outbound fetch timeout remains in place.
+- The rate-limit helper uses the existing D1-backed auth rate-limit table. This introduces bounded D1 writes for public requests; it is not a substitute for Cloudflare edge/WAF controls, and the shared `unknown` IP fallback must be reviewed if requests can reach the Worker without `cf-connecting-ip`.
+- Regression coverage is source-level in `scripts/test-api-authorization-audit.mjs`; exact-head CI and production behavior remain unverified until the build workflows pass and the Worker is deployed.
