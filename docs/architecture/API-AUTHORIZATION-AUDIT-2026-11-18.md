@@ -83,3 +83,8 @@ The 1–10 rating migration and full API/UI implementation are owned by PR #195 
 - External connector searches remain limited to enabled connectors with `rights_status='authorized'`, and the existing 7-second outbound fetch timeout remains in place.
 - The rate-limit helper uses the existing D1-backed auth rate-limit table. This introduces bounded D1 writes for public requests; it is not a substitute for Cloudflare edge/WAF controls, and the shared `unknown` IP fallback must be reviewed if requests can reach the Worker without `cf-connecting-ip`.
 - Regression coverage is source-level in `scripts/test-api-authorization-audit.mjs`; exact-head CI and production behavior remain unverified until the build workflows pass and the Worker is deployed.
+
+## Report resource-reference validation
+
+The authenticated POST /api/report handler now validates target IDs, verifies referenced records exist, and rejects a chapter that does not belong to the supplied novel. A chapter-only report is linked to the chapter's actual novel. Details are bounded plain text. Regression assertions were added to the API authorization build gate. This is source-level remediation; live database behavior and exact-head CI are not yet verified.
+
