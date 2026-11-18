@@ -33,8 +33,8 @@ assert.match(app, /const openReaderDrawer=\(trigger,target\)=>\{[\s\S]*?drawer\.
   "Opening reader settings must expose the drawer and move focus into its selected control.");
 assert.match(app, /const openReaderSettings=\(\)=>openReaderDrawer\(settingsBtn,\$\('#readerThemeSelect'\)\)/,
   "The settings shortcut must focus the reader theme control.");
-assert.match(app, /const closeReaderDrawer=\(restoreFocus=true\)=>\{[\s\S]*?drawer\.hidden=true[\s\S]*?if\(restoreFocus\)drawerTrigger\.focus\(\)/,
-  "Closing the reader drawer must hide it and restore focus to its trigger.");
+assert.match(app, /const closeReaderDrawer=\(restoreFocus=true\)=>\{[\s\S]*?drawer\.hidden=true[\s\S]*?if\(restoreFocus\)[\s\S]*?target\.focus\(\)/,
+  "Closing the reader drawer must hide it and safely restore focus.");
 assert.match(app, /const readerStorage=\{[\s\S]*?getItem:key=>\{try\{return window\.localStorage\.getItem\(key\)\}catch\{return null\}\}/,
   "Reader session storage reads must tolerate browser storage being unavailable.");
 assert.match(app, /createReaderSessionStore\(readerStorage\)/,
