@@ -2,11 +2,11 @@
   "audit_date": "2026-11-18",
   "branch": "architecture/phase-01-foundation-route-registry",
   "source_file": "src/index.js",
-  "source_blob": "6448ddfc5ae08694e67d57b4a8e52e0637be2383",
+  "source_blob": "a92a46b7a1c8243e278dda8240aed7e37fb00477",
   "scope": "First-pass static inventory of literal API path branches and dynamic path matchers inside async function api(req,env).",
   "counts": {
     "literal_endpoint_paths": 74,
-    "literal_route_branch_occurrences": 92,
+    "literal_route_branch_occurrences": 94,
     "explicit_method_conditions": 77,
     "dynamic_route_families": 21
   },
@@ -25,7 +25,10 @@
       ],
       "observed_helper_signals": [],
       "review_required": true,
-      "occurrences": 2
+      "occurrences": 2,
+      "method_detail": "No explicit method predicate appears on this literal dispatcher branch. Current implementation behaves as a read-style handler, but unsupported methods are not explicitly rejected here; method enforcement remains unresolved.",
+      "observed_handler_style": "implicit-read-handler",
+      "method_enforcement": "not-explicitly-enforced"
     },
     {
       "path": "/api/agents",
@@ -151,7 +154,10 @@
       ],
       "observed_helper_signals": [],
       "review_required": true,
-      "occurrences": 1
+      "occurrences": 1,
+      "method_detail": "No explicit method predicate appears on this literal dispatcher branch. Current implementation behaves as a read-style handler, but unsupported methods are not explicitly rejected here; method enforcement remains unresolved.",
+      "observed_handler_style": "implicit-read-handler",
+      "method_enforcement": "not-explicitly-enforced"
     },
     {
       "path": "/api/config",
@@ -162,7 +168,10 @@
       ],
       "observed_helper_signals": [],
       "review_required": true,
-      "occurrences": 1
+      "occurrences": 1,
+      "method_detail": "No explicit method predicate appears on this literal dispatcher branch. Current implementation behaves as a read-style handler, but unsupported methods are not explicitly rejected here; method enforcement remains unresolved.",
+      "observed_handler_style": "implicit-read-handler",
+      "method_enforcement": "not-explicitly-enforced"
     },
     {
       "path": "/api/genres",
@@ -173,7 +182,10 @@
       ],
       "observed_helper_signals": [],
       "review_required": true,
-      "occurrences": 1
+      "occurrences": 1,
+      "method_detail": "No explicit method predicate appears on this literal dispatcher branch. Current implementation behaves as a read-style handler, but unsupported methods are not explicitly rejected here; method enforcement remains unresolved.",
+      "observed_handler_style": "implicit-read-handler",
+      "method_enforcement": "not-explicitly-enforced"
     },
     {
       "path": "/api/tags",
@@ -184,7 +196,10 @@
       ],
       "observed_helper_signals": [],
       "review_required": true,
-      "occurrences": 1
+      "occurrences": 1,
+      "method_detail": "No explicit method predicate appears on this literal dispatcher branch. Current implementation behaves as a read-style handler, but unsupported methods are not explicitly rejected here; method enforcement remains unresolved.",
+      "observed_handler_style": "implicit-read-handler",
+      "method_enforcement": "not-explicitly-enforced"
     },
     {
       "path": "/api/public-authors",
@@ -195,7 +210,10 @@
       ],
       "observed_helper_signals": [],
       "review_required": true,
-      "occurrences": 1
+      "occurrences": 1,
+      "method_detail": "No explicit method predicate appears on this literal dispatcher branch. Current implementation behaves as a read-style handler, but unsupported methods are not explicitly rejected here; method enforcement remains unresolved.",
+      "observed_handler_style": "implicit-read-handler",
+      "method_enforcement": "not-explicitly-enforced"
     },
     {
       "path": "/api/sources",
@@ -206,7 +224,10 @@
       ],
       "observed_helper_signals": [],
       "review_required": true,
-      "occurrences": 1
+      "occurrences": 1,
+      "method_detail": "No explicit method predicate appears on this literal dispatcher branch. Current implementation behaves as a read-style handler, but unsupported methods are not explicitly rejected here; method enforcement remains unresolved.",
+      "observed_handler_style": "implicit-read-handler",
+      "method_enforcement": "not-explicitly-enforced"
     },
     {
       "path": "/api/omni/status",
@@ -217,7 +238,10 @@
       ],
       "observed_helper_signals": [],
       "review_required": true,
-      "occurrences": 1
+      "occurrences": 1,
+      "method_detail": "No explicit method predicate appears on this literal dispatcher branch. Current implementation behaves as a read-style handler, but unsupported methods are not explicitly rejected here; method enforcement remains unresolved.",
+      "observed_handler_style": "implicit-read-handler",
+      "method_enforcement": "not-explicitly-enforced"
     },
     {
       "path": "/api/omni/search",
@@ -228,7 +252,10 @@
       ],
       "observed_helper_signals": [],
       "review_required": true,
-      "occurrences": 1
+      "occurrences": 1,
+      "method_detail": "No explicit method predicate appears on this literal dispatcher branch. Current implementation behaves as a read-style handler, but unsupported methods are not explicitly rejected here; method enforcement remains unresolved.",
+      "observed_handler_style": "implicit-read-handler",
+      "method_enforcement": "not-explicitly-enforced"
     },
     {
       "path": "/api/omni/resolve",
@@ -239,7 +266,10 @@
       ],
       "observed_helper_signals": [],
       "review_required": true,
-      "occurrences": 1
+      "occurrences": 1,
+      "method_detail": "No explicit method predicate appears on this literal dispatcher branch. Current implementation behaves as a read-style handler, but unsupported methods are not explicitly rejected here; method enforcement remains unresolved.",
+      "observed_handler_style": "implicit-read-handler",
+      "method_enforcement": "not-explicitly-enforced"
     },
     {
       "path": "/api/omni/import",
@@ -282,7 +312,10 @@
         "need"
       ],
       "review_required": true,
-      "occurrences": 1
+      "occurrences": 1,
+      "method_detail": "No explicit method predicate appears on this literal dispatcher branch. Current implementation behaves as a read-style handler, but unsupported methods are not explicitly rejected here; method enforcement remains unresolved.",
+      "observed_handler_style": "implicit-read-handler",
+      "method_enforcement": "not-explicitly-enforced"
     },
     {
       "path": "/api/formats",
@@ -306,7 +339,10 @@
       ],
       "observed_helper_signals": [],
       "review_required": true,
-      "occurrences": 1
+      "occurrences": 1,
+      "method_detail": "No explicit method predicate appears on this literal dispatcher branch. Current implementation behaves as a read-style handler, but unsupported methods are not explicitly rejected here; method enforcement remains unresolved.",
+      "observed_handler_style": "implicit-read-handler",
+      "method_enforcement": "not-explicitly-enforced"
     },
     {
       "path": "/api/bookmark",
@@ -791,7 +827,10 @@
         "admin"
       ],
       "review_required": true,
-      "occurrences": 1
+      "occurrences": 1,
+      "method_detail": "No explicit method predicate appears on this literal dispatcher branch. Current implementation behaves as a read-style handler, but unsupported methods are not explicitly rejected here; method enforcement remains unresolved.",
+      "observed_handler_style": "implicit-read-handler",
+      "method_enforcement": "not-explicitly-enforced"
     },
     {
       "path": "/api/admin/users",
@@ -899,7 +938,7 @@
       ],
       "method_evidence": "explicit-literal-conditions",
       "source_lines": [
-        757
+        758
       ],
       "observed_helper_signals": [
         "admin"
@@ -914,7 +953,7 @@
       ],
       "method_evidence": "explicit-literal-conditions",
       "source_lines": [
-        758
+        759
       ],
       "observed_helper_signals": [
         "admin"
@@ -929,7 +968,7 @@
       ],
       "method_evidence": "explicit-literal-conditions",
       "source_lines": [
-        805
+        806
       ],
       "observed_helper_signals": [
         "admin"
@@ -944,7 +983,7 @@
       ],
       "method_evidence": "explicit-literal-conditions",
       "source_lines": [
-        820
+        821
       ],
       "observed_helper_signals": [
         "admin"
@@ -959,7 +998,7 @@
       ],
       "method_evidence": "explicit-literal-conditions",
       "source_lines": [
-        821
+        822
       ],
       "observed_helper_signals": [
         "admin"
@@ -974,7 +1013,7 @@
       ],
       "method_evidence": "explicit-literal-conditions",
       "source_lines": [
-        823
+        824
       ],
       "observed_helper_signals": [
         "admin"
@@ -989,7 +1028,7 @@
       ],
       "method_evidence": "explicit-literal-conditions",
       "source_lines": [
-        825
+        826
       ],
       "observed_helper_signals": [
         "admin"
@@ -1006,9 +1045,9 @@
       ],
       "method_evidence": "explicit-literal-conditions",
       "source_lines": [
-        826,
         827,
-        831
+        828,
+        832
       ],
       "observed_helper_signals": [
         "admin"
@@ -1023,7 +1062,7 @@
       ],
       "method_evidence": "explicit-literal-conditions",
       "source_lines": [
-        828
+        829
       ],
       "observed_helper_signals": [
         "admin"
@@ -1038,7 +1077,7 @@
       ],
       "method_evidence": "explicit-literal-conditions",
       "source_lines": [
-        829
+        830
       ],
       "observed_helper_signals": [
         "admin"
@@ -1053,7 +1092,7 @@
       ],
       "method_evidence": "explicit-literal-conditions",
       "source_lines": [
-        830
+        831
       ],
       "observed_helper_signals": [
         "need"
@@ -1068,7 +1107,7 @@
       ],
       "method_evidence": "explicit-literal-conditions",
       "source_lines": [
-        832
+        833
       ],
       "observed_helper_signals": [
         "admin"
@@ -1083,7 +1122,7 @@
       ],
       "method_evidence": "explicit-literal-conditions",
       "source_lines": [
-        834
+        835
       ],
       "observed_helper_signals": [
         "admin"
@@ -1342,9 +1381,9 @@
   "known_findings": [
     "POST /api/rating is declared twice in the audited source snapshot; separate rating integration work is tracked in PR #318 and reserved migration dependency PR #195.",
     "/api/taxonomy delegates to communityTaxonomy(req,env); /api/admin/taxonomy POST delegates to adminTaxonomy(req,env,u). Their internal method and permission logic needs separate inspection.",
-    "Some endpoint branches have no explicit method predicate and therefore remain method-contract unresolved.",
     "Resource-level ownership must be reviewed at SQL predicates and mutation statements, not inferred from route-level authentication helpers.",
-    "Dynamic reader routes include public GET lookups for published/rights-eligible novels and chapters, plus authenticated POST chapter unlock and batch-unlock operations."
+    "Dynamic reader routes include public GET lookups for published/rights-eligible novels and chapters, plus authenticated POST chapter unlock and batch-unlock operations.",
+    "Thirteen literal API paths still lack an explicit method predicate at the dispatcher. They are recorded as implicit read-style handlers, not certified method restrictions; unsupported methods are not explicitly rejected."
   ],
   "not_certified": [
     "complete API coverage outside the api() dispatcher",
@@ -1352,5 +1391,6 @@
     "resource ownership and cross-user isolation",
     "rate limits and abuse controls for every endpoint",
     "live deployed behavior"
-  ]
+  ],
+  "source_line_count": 871
 }
