@@ -2,7 +2,7 @@
   "audit_date": "2026-11-18",
   "branch": "architecture/api-contract-audit-baseline",
   "source_file": "src/index.js",
-  "source_blob": "d4eb2234773aed49d3aa824496069a8b8d3662f1",
+  "source_blob": "451d8ad3b60dc66a4adcc3a73d33b1becf9418d4",
   "scope": "First-pass static inventory of literal API path branches and dynamic path matchers inside async function api(req,env).",
   "counts": {
     "literal_endpoint_paths": 74,
@@ -1365,7 +1365,7 @@
     }
   ],
   "known_findings": [
-    "POST /api/rating is declared twice in the audited source snapshot; separate rating integration work is tracked in PR #318 and reserved migration dependency PR #195.",
+    "Rating API/client reconciliation remains dependent on canonical migration and ten-point integration PRs #329 and #331; this inventory branch still requires a rebase before claiming rating-scale parity.",
     "/api/taxonomy delegates to communityTaxonomy(req,env); /api/admin/taxonomy POST delegates to adminTaxonomy(req,env,u). Their internal method and permission logic needs separate inspection.",
     "Some endpoint branches have no explicit method predicate and therefore remain method-contract unresolved.",
     "Resource-level ownership must be reviewed at SQL predicates and mutation statements, not inferred from route-level authentication helpers.",
