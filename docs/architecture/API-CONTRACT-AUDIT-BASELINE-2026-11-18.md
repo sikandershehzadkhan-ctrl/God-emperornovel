@@ -11,7 +11,7 @@ Establish a source-backed starting point for the API method, authentication, aut
 - Existing inventory source checks: `scripts/test-api-endpoint-inventory.mjs`
 - Public client runtime: `public/app.js`
 
-The inventory is a first-pass static scan of literal path branches and dynamic path matchers. It is now pinned to Worker blob `99051a220f841eeca909616770ccef5bd3a7b829`, with exact route source-line evidence checked by the build gate. Its method and helper-signal fields are evidence hints only. They do not prove allowed methods, authorization outcomes, or resource-level ownership.
+The inventory is a first-pass static scan of literal path branches and dynamic path matchers. It is now pinned to Worker blob `d4eb2234773aed49d3aa824496069a8b8d3662f1`, with exact route source-line evidence checked by the build gate. Its method and helper-signal fields are evidence hints only. They do not prove allowed methods, authorization outcomes, or resource-level ownership.
 
 ## Verified inventory totals
 
@@ -30,7 +30,7 @@ All 74 literal paths and all 21 dynamic families remain review-required for auth
 
 ### 0. Inventory source fingerprint and line evidence
 
-The inventory has been regenerated against Worker blob `99051a220f841eeca909616770ccef5bd3a7b829`. The build-gated audit test recomputes the Git blob SHA-1, verifies all literal route occurrence line numbers, and verifies each dynamic route source line. This closes the stale-fingerprint and shifted-line evidence issue for this audited revision.
+The inventory has been regenerated against Worker blob `d4eb2234773aed49d3aa824496069a8b8d3662f1`. The build-gated audit test recomputes the Git blob SHA-1, verifies all literal route occurrence line numbers, and verifies each dynamic route source line. This closes the stale-fingerprint and shifted-line evidence issue for this audited revision.
 
 ### 1. Rating contract mismatch
 
@@ -74,6 +74,14 @@ This API audit branch is based on PR #341's ownership stack and does not contain
 ### 5. Duplicate rating route branch remains present
 
 The inventory records three literal `/api/rating` branch occurrences. Preserve this as a reconciliation item until the GET/POST handlers and any duplicate branch are reviewed together. Do not silently normalize the inventory count.
+
+### 7. Report submission resource references
+
+The authenticated report endpoint previously accepted arbitrary novel_id and chapter_id values without validating their types, existence, or relationship. A malformed or mismatched chapter reference could therefore be stored against an unrelated novel, and a report could be created without identifying any resource.
+
+The handler now requires at least one target, validates supplied identifiers as positive safe integers, verifies the referenced novel/chapter exists, confirms a supplied chapter belongs to the supplied novel, and derives the novel ID from a chapter-only report. Report details are accepted only as bounded plain text (2,000 characters maximum).
+
+Status: **source remediation and build-gated regression assertions added; exact-head CI and live D1 behavior still require verification**.
 
 ## Public Omni follow-up completed in the audit branch
 
