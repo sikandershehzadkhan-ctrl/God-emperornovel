@@ -62,6 +62,19 @@ The shared page runtime also rewrites legacy shell asset references to the confi
 
 The Worker-fetch runtime test exercises anonymous redirects, reader access to private reader pages, reader denial for Author Studio and Admin, author/admin access, and public author profile access. It uses a deterministic D1 session test double, not production D1.
 
+## Renderer and asset capability inventory
+
+A separate machine-readable inventory now records the renderer and shell type for all 33 exact routes and all 6 dynamic route families in `PAGE-SCREEN-CAPABILITY-INVENTORY-2026-11-18.json`.
+
+- 28 exact routes use the shared application renderer.
+- 2 exact routes use standalone screens: Admin and Community Taxonomy.
+- 3 exact routes are static legal documents.
+- 6 dynamic families map to a renderer or explicit redirect.
+- The active `public/app-17.23.0.js` bundle is byte-identical to `public/app.js`.
+- `public/author.html` exists as an asset but is not the active `/author` route target. The Worker serves the shared application shell, which dispatches to `authorStudio()`.
+
+The build now checks shell-to-renderer dispatch, dynamic route expressions, standalone/static asset existence, and versioned bundle parity. This proves that a renderer is wired in source; it does not prove that the screen is visually complete or that its controls work end to end.
+
 ## Important route behavior: fandom
 
 The Worker recognizes `/fandom/{slug}` and serves `fandom.html`, but the client boot router does not render a dedicated fandom screen. It redirects the browser to `/catalog?tag={slug}`.
