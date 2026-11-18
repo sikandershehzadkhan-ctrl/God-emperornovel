@@ -45,7 +45,7 @@ const ratingPost = worker.match(/if\(p===["']\/api\/rating["']&&m===["']POST["']
 assert.ok(ratingPost, "The rating POST handler must remain discoverable");
 assert.match(ratingPost[0], /rating>5/);
 assert.match(ratingPost[0], /Rating must be 1-5/);
-assert.match(client, /\[5, ['"]5\/5['"]\]/, "Client rating formatter must retain explicit 5-point evidence until coordinated remediation");
+assert.match(client, /rating>=1&&rating<=5\?Math\.round\(rating\)\+'\/5'/, "Client rating formatter must retain explicit 5-point evidence until coordinated remediation");
 
 for (const path of [
   "/api/health", "/api/taxonomy", "/api/me", "/api/config", "/api/genres",
