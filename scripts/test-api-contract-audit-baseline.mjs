@@ -35,7 +35,7 @@ for (const endpoint of inventory.literal_endpoints) {
   assert.equal(endpoint.occurrences, endpoint.source_lines.length, "Literal route occurrence count must match source: " + endpoint.path);
 }
 for (const endpoint of inventory.dynamic_endpoints) {
-  const sourceLine = worker.split("\\n")[endpoint.source_line - 1] || "";
+  const sourceLine = worker.split("\n")[endpoint.source_line - 1] || "";
   assert.ok(sourceLine.includes(endpoint.source), "Dynamic route source line must match Worker: " + endpoint.pattern);
 }
 
