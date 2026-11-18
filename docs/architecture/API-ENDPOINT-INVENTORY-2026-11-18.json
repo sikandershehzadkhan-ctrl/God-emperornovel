@@ -7,7 +7,7 @@
   "counts": {
     "literal_endpoint_paths": 74,
     "literal_route_branch_occurrences": 92,
-    "explicit_method_conditions": 112,
+    "explicit_method_conditions": 89,
     "dynamic_route_families": 21
   },
   "method_semantics": "explicit_methods lists methods directly checked in the Worker dispatcher. allowed_methods may also record methods enforced inside a delegated handler. Unresolved method evidence is not proof of allowed methods. Unsupported-method behavior must be verified separately.",
