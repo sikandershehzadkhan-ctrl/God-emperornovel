@@ -81,6 +81,30 @@ assert.equal((commentsRoutes.match(/publication_status='published' AND rights_st
 const ratingGetStart = worker.indexOf('if(p==="/api/rating"&&m==="GET")');
 const ratingGetEnd = worker.indexOf('if(p==="/api/rating"&&m==="POST")', ratingGetStart);
 assert.match(worker.slice(ratingGetStart, ratingGetEnd), /publication_status='published' AND rights_status IN/, "Public rating reads must hide unpublished and ineligible novels");
+
+const userScopedRoutes = [
+  ['history reads', /WHERE h\\.user_id=\\?/],
+  ['library reads', /WHERE l\\.user_id=\\?/],
+  ['bookmark reads', /WHERE b\\.user_id=\\?/],
+  ['notifications reads', /notifications WHERE user_id=\\?/],
+  ['ticket ledger reads', /ticket_ledger WHERE user_id=\\?/],
+  ['recommendation reads', /WHERE r\\.user_id=\\?/],
+  ['follow reads', /WHERE f\\.user_id=\\?/]
+];
+for (const [label, pattern] of userScopedRoutes) {
+  assert.match(worker, pattern, label + " must be scoped to the authenticated account");
+}
+assert.match(worker, /if\\(u\\.role!==['"]admin['"]&&Number\\(row\\.owner_user_id\\)!==Number\\(u\\.id\\)\\)return json\\(\\{error:['"]You do not own this project/);
+assert.match(worker, /if\\(u\\.role!==['"]admin['"]&&Number\\(n\\.owner_user_id\\)!==Number\\(u\\.id\\)\\)return json\\(\\{error:['"]You do not own this novel/);
+assert.match(worker, /if\\(u\\.role!==['"]admin['"]&&Number\\(c\\.owner_user_id\\)!==Number\\(u\\.id\\)\\)return json\\(\\{error:['"]You do not own this chapter/);
+const aiJobsStart = worker.indexOf('if(/^\\\\/api\\\\/author\\\\/ai\\\\/projects\\\\/\\\\d+\\\\/jobs$/.test(p)&&m==="GET")');
+const aiJobsEnd = worker.indexOf('if(p==="/api/author/novels"', aiJobsStart);
+const aiJobsHandler = worker.slice(aiJobsStart, aiJobsEnd);
+assert.ok(aiJobsStart >= 0 && aiJobsEnd > aiJobsStart, "AI job history route must remain explicit");
+assert.match(aiJobsHandler, /SELECT owner_user_id FROM ai_author_projects WHERE id=\\?/);
+assert.match(aiJobsHandler, /Number\\(row\\.owner_user_id\\)!==Number\\(u\\.id\\)/);
+assert.match(aiJobsHandler, /ai_chapter_jobs WHERE project_id=\\?/);
+
 assert.ok(client.length > 0, "Client source must be available for literal call-site review");
 
 const reportStart = worker.indexOf('if(p==="/api/report"&&m==="POST")');
