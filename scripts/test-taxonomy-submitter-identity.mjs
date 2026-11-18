@@ -1,0 +1,16 @@
+import assert from "node:assert/strict";
+import { readFile } from "node:fs/promises";
+
+const worker = await readFile(new URL("../src/index.js", import.meta.url), "utf8");
+assert.ok(worker.includes("async function communityTaxonomy(req,env,u)"), "Taxonomy handler must receive the resolved session user");
+assert.ok(worker.includes('if(p==="/api/taxonomy")return communityTaxonomy(req,env,u);'), "Dispatcher must pass the resolved session user");
+const start = worker.indexOf("async function communityTaxonomy(req,env,u)");
+const end = worker.indexOf("async function adminTaxonomy", start);
+assert.ok(start >= 0 && end > start, "Taxonomy handler boundaries must exist");
+const handler = worker.slice(start, end);
+assert.ok(handler.includes("u?.id??null"), "Taxonomy creator ID must come from session identity or remain null for anonymous proposals");
+assert.ok(!handler.includes("b.creator_id"), "Taxonomy handler must ignore caller-supplied creator IDs");
+assert.ok(handler.includes("String(b.creator_name||'').slice(0,80)"), "Optional public-form display name remains supported");
+assert.ok(handler.includes("status='approved'"), "Public taxonomy reads must remain approved-only");
+assert.ok(handler.includes("'pending')"), "New taxonomy proposals must remain pending moderation");
+console.log("Taxonomy submitter identity tests passed.");
