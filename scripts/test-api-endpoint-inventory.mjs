@@ -46,6 +46,15 @@ for (const endpoint of manifest.literal_endpoints) {
 for (const endpoint of manifest.dynamic_endpoints) {
   assert.ok(api.includes(endpoint.source), "Dynamic API route expression must remain in source: " + endpoint.pattern);
   assert.ok(endpoint.review_required, "Dynamic API routes must remain flagged for contract review: " + endpoint.pattern);
+  assert.ok(endpoint.allowed_methods.length > 0, "Dynamic API route methods must be inventoried: " + endpoint.pattern);
+  assert.equal(endpoint.method_guards.length, endpoint.method_guard_lines.length, "Every dynamic method guard needs source line evidence: " + endpoint.pattern);
+  assert.ok(["public","authenticated","author","admin"].includes(endpoint.access_class), "Dynamic API route access class must be documented: " + endpoint.pattern);
+  assert.ok(endpoint.resource_scope.length > 0, "Dynamic API resource scope must be documented: " + endpoint.pattern);
+  for (let i = 0; i < endpoint.method_guards.length; i++) {
+    assert.ok(api.includes(endpoint.method_guards[i]), "Dynamic API method guard must remain in source: " + endpoint.pattern);
+    const line = worker.split("\n")[endpoint.method_guard_lines[i] - 1] || "";
+    assert.ok(line.includes(endpoint.method_guards[i]), "Dynamic API method guard line evidence must match source: " + endpoint.pattern);
+  }
 }
 
 const health = manifest.literal_endpoints.find(endpoint => endpoint.path === "/api/health");
