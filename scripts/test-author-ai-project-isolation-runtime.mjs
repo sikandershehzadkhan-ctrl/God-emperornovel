@@ -12,6 +12,8 @@ const users = new Map([
 ]);
 const sessions = new Map();
 for (const [token, user] of users) sessions.set(await hash(token), user);
+const novels = [{ id: 11, owner_user_id: 101 }, { id: 22, owner_user_id: 202 }];
+const createdProjects = [];
 const project = {
   id: 77, owner_user_id: 101, novel_id: null, name: "Author A private project",
   mode: "manual", status: "draft", genre: "Fantasy", fandom: "Original World",
@@ -28,6 +30,9 @@ class FakeStatement {
     if (this.sql.includes("SELECT value FROM app_settings WHERE key='core_schema_version'")) return { value: "16.64.0" };
     if (this.sql.includes("SELECT value FROM app_settings WHERE key='runtime_feature_schema_version'")) return { value: "1" };
     if (this.sql.includes("FROM sessions s JOIN users u ON u.id=s.user_id")) return sessions.get(this.values[0]) || null;
+    if (this.sql.includes("SELECT id,owner_user_id FROM novels WHERE id=?")) {
+      return novels.find(row => row.id === Number(this.values[0])) || null;
+    }
     if (this.sql.includes("SELECT owner_user_id FROM ai_author_projects WHERE id=?")) {
       return Number(this.values[0]) === project.id ? { owner_user_id: project.owner_user_id } : null;
     }
@@ -46,6 +51,10 @@ class FakeStatement {
     return { results: [] };
   }
   async run() {
+    if (this.sql.includes("INSERT INTO ai_author_projects(owner_user_id,novel_id,name,mode,status,genre,fandom,premise,protagonist,settings_json,bible_json,auto_publish,chapters_target)")) {
+      createdProjects.push({ owner_user_id: this.values[0], novel_id: this.values[1], name: this.values[2] });
+      return { success: true, meta: { changes: 1, last_row_id: 88 } };
+    }
     if (this.sql.includes("UPDATE ai_author_projects SET name=?")) {
       writes.push({ sql: this.sql, values: this.values });
       project.name = this.values[0];
@@ -55,7 +64,7 @@ class FakeStatement {
   }
 }
 
-const env = { DB: { prepare: sql => new FakeStatement(sql) }, SITE_NAME: "Imperial Novel" };
+const env = { DB: { prepare: sql => new FakeStatement(sql) }, SITE_NAME: "Imperial Novel", OPENAI_API_KEY: "test-key" };
 async function request(token, method, path, body) {
   const headers = { cookie: "session=" + token };
   const init = { method, headers };
@@ -85,4 +94,12 @@ assert.equal(project.name, "Author A updated", "The project must retain the legi
 
 await json(await request("author-a-token", "GET", base + "/77/jobs"));
 await json(await request("author-b-token", "GET", base + "/77/jobs"), 403);
-console.log("PASS: Worker fetch two-author AI project list/detail/update/jobs isolation using deterministic D1 test double. This is not a live Cloudflare D1 test.");
+
+await json(await request("author-b-token", "POST", base, { name: "Forged linked project", novel_id: 11 }), 403);
+assert.equal(createdProjects.length, 0,
+  "Author B must not create an AI project linked to Author A's novel");
+await json(await request("author-a-token", "POST", base, { name: "Owned linked project", novel_id: 11 }), 201);
+assert.deepEqual(createdProjects[0], { owner_user_id: 101, novel_id: 11, name: "Owned linked project" },
+  "AI project owner must come from the session and linked novel must belong to that author");
+
+console.log("PASS: Worker fetch two-author AI project list/detail/update/jobs isolation, linked-novel ownership, and session-derived project ownership using deterministic D1 test double. This is not a live Cloudflare D1 test.");
