@@ -10,7 +10,7 @@
     "explicit_method_conditions": 77,
     "dynamic_route_families": 21
   },
-  "method_semantics": "explicit_methods lists only literal methods directly checked in source. Empty or mixed method evidence is not proof of allowed methods. Unsupported-method behavior and framework fallthrough must be verified separately.",
+  "method_semantics": "explicit_methods lists methods directly checked in the Worker dispatcher. allowed_methods may also record methods enforced inside a delegated handler. Unresolved method evidence is not proof of allowed methods. Unsupported-method behavior must be verified separately.",
   "authorization_semantics": "observed_helper_signals records only visible need(u), admin(u), and author(u) calls in a nearby branch segment. It is not a security certification and does not establish resource-level ownership.",
   "literal_endpoints": [
     {
@@ -73,13 +73,18 @@
     {
       "path": "/api/taxonomy",
       "explicit_methods": [],
-      "method_evidence": "mixed-or-unconstrained-branches",
+      "method_evidence": "delegated-method-dispatch",
       "source_lines": [
         420
       ],
       "observed_helper_signals": [],
       "review_required": true,
-      "occurrences": 1
+      "occurrences": 1,
+      "allowed_methods": [
+        "GET",
+        "POST"
+      ],
+      "method_detail": "Worker dispatch delegates to communityTaxonomy(req,env,u), which explicitly handles GET and POST and returns 405 for other methods."
     },
     {
       "path": "/api/admin/taxonomy",
