@@ -16,10 +16,12 @@ for (const [token, user] of users) sessions.set(await hash(token), user);
 const novels = new Map([
   [10, { id: 10, owner_user_id: 101, kind: "original", rights_status: "original" }],
   [20, { id: 20, owner_user_id: 202, kind: "original", rights_status: "original" }],
+  [30, { id: 30, owner_user_id: 101, kind: "comic", rights_status: "original" }],
 ]);
 const chapters = new Map([
   [700, { id: 700, novel_id: 10, chapter_number: 1, title: "A private chapter", content: "<p>Draft A</p>", owner_user_id: 101, rights_status: "original", publication_status: "draft", is_locked: 0, ticket_cost: 0 }],
   [800, { id: 800, novel_id: 20, chapter_number: 1, title: "B private chapter", content: "<p>Draft B</p>", owner_user_id: 202, rights_status: "original", publication_status: "draft", is_locked: 0, ticket_cost: 0 }],
+  [900, { id: 900, novel_id: 30, chapter_number: 1, title: "Comic chapter", content: JSON.stringify({type:"imperial_comic_chapter",version:1,pages:[{src:"https://cdn.example.com/one.webp",alt:"Page one"}]}), owner_user_id: 101, rights_status: "original", publication_status: "draft", is_locked: 0, ticket_cost: 0 }],
 ]);
 const writes = [];
 
@@ -39,7 +41,7 @@ class FakeStatement {
     if (this.sql.includes("SELECT c.*,n.owner_user_id FROM chapters c JOIN novels n")) {
       const row = chapters.get(Number(this.values[0]));
       if (!row) return null;
-      return { ...row, owner_user_id: novels.get(row.novel_id).owner_user_id };
+      return { ...row, owner_user_id: novels.get(row.novel_id).owner_user_id, novel_kind: novels.get(row.novel_id).kind };
     }
     if (this.sql.includes("SELECT id,owner_user_id FROM novels WHERE id=?")) {
       const row = novels.get(Number(this.values[0]));
@@ -96,6 +98,18 @@ assert.equal(chapters.get(700).publication_status, "published");
 await expectStatus(await request("chapter-b-token", "PATCH", "/api/author/chapters/700", { title: "Stolen title" }), 403);
 assert.equal(chapters.get(700).title, "A private chapter",
   "A different author must not edit another author's chapter");
+
+const invalidComic = await request("chapter-a-token", "PATCH", "/api/author/chapters/900", {
+  content: "<p>This is not the required comic page document.</p>"
+});
+await expectStatus(invalidComic, 400);
+assert.notEqual(chapters.get(900).content, "<p>This is not the required comic page document.</p>",
+  "Invalid comic content must not be persisted during edits");
+
+const validComic = JSON.stringify({type:"imperial_comic_chapter",version:1,pages:[{src:"https://cdn.example.com/two.webp",alt:"Page two"}]});
+await expectStatus(await request("chapter-a-token", "PATCH", "/api/author/chapters/900", { content: validComic }), 200);
+assert.equal(chapters.get(900).content, validComic,
+  "Valid comic page documents must remain editable");
 
 const own = await expectStatus(await request("chapter-b-token", "GET", "/api/author/chapters?novel_id=20"), 200);
 assert.deepEqual(own.map(row => row.id), [800], "Authors must list chapters only for novels they own");
