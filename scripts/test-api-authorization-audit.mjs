@@ -41,5 +41,8 @@ assert.match(report, /Full API authorization, resource ownership/);
 const exactPaths = ["/api/health","/api/taxonomy","/api/me","/api/config","/api/genres","/api/tags","/api/public-authors","/api/sources","/api/omni/status","/api/omni/search","/api/omni/resolve","/api/omni/smart-unlock","/api/novels","/api/admin/stats"];
 assert.equal(exactPaths.length, 14);
 for (const path of exactPaths) assert.ok(inventory.literal_endpoints.some(x => x.path === path), "Authorization slice must stay in route inventory: " + path);
+const authorChapterPatch = worker.slice(worker.indexOf('if(/^\\/api\\/author\\/chapters\\/\\d+$/.test(p)&&m==="PATCH")'), worker.indexOf('if(/^\\/api\\/author\\/chapters\\/\\d+\\/publish$/.test(p)'));
+assert.match(authorChapterPatch, /b\.is_locked===undefined\?Number\(c\.is_locked\):b\.is_locked\?1:0/, "Partial chapter edits must preserve the existing lock state");
+assert.match(authorChapterPatch, /Number\.isSafeInteger\(cost\).*cost>1000000/, "Chapter ticket costs must be bounded whole numbers");
 assert.ok(client.length > 0, "Client source must be available for literal call-site review");
 console.log("API authorization audit slice passed: 14 route classifications and taxonomy identity boundaries.");
