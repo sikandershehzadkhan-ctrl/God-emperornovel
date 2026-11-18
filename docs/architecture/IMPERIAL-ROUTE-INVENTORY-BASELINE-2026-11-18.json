@@ -287,7 +287,12 @@
       "status": "observed-worker-dispatch",
       "access_policy": "must-be-verified-per-resource",
       "sitemap_policy": "resource-specific-or-not-listed",
-      "screen_completeness": "not-yet-audited"
+      "screen_completeness": "not-yet-audited",
+      "source_expression": "/^\\/format\\/[^/]+\\/?$/.test(p)",
+      "samples": [
+        "/format/novel",
+        "/format/comic/"
+      ]
     },
     {
       "pattern": "^/novel/\\\\d+/chapters/?$",
@@ -296,7 +301,12 @@
       "status": "observed-worker-dispatch",
       "access_policy": "must-be-verified-per-resource",
       "sitemap_policy": "resource-specific-or-not-listed",
-      "screen_completeness": "not-yet-audited"
+      "screen_completeness": "not-yet-audited",
+      "source_expression": "/^\\/novel\\/\\d+\\/chapters\\/?$/.test(p)",
+      "samples": [
+        "/novel/12/chapters",
+        "/novel/12/chapters/"
+      ]
     },
     {
       "pattern": "^/novel/\\\\d+/?$",
@@ -305,7 +315,12 @@
       "status": "observed-worker-dispatch",
       "access_policy": "must-be-verified-per-resource",
       "sitemap_policy": "resource-specific-or-not-listed",
-      "screen_completeness": "not-yet-audited"
+      "screen_completeness": "not-yet-audited",
+      "source_expression": "/^\\/novel\\/\\d+\\/?$/.test(p)",
+      "samples": [
+        "/novel/12",
+        "/novel/12/"
+      ]
     },
     {
       "pattern": "^/read/\\\\d+/\\\\d+/?$",
@@ -314,7 +329,12 @@
       "status": "observed-worker-dispatch",
       "access_policy": "must-be-verified-per-resource",
       "sitemap_policy": "resource-specific-or-not-listed",
-      "screen_completeness": "not-yet-audited"
+      "screen_completeness": "not-yet-audited",
+      "source_expression": "/^\\/read\\/\\d+\\/\\d+\\/?$/.test(p)",
+      "samples": [
+        "/read/12/3",
+        "/read/12/3/"
+      ]
     },
     {
       "pattern": "^/fandom/",
@@ -323,7 +343,12 @@
       "status": "observed-worker-dispatch",
       "access_policy": "must-be-verified-per-resource",
       "sitemap_policy": "resource-specific-or-not-listed",
-      "screen_completeness": "not-yet-audited"
+      "screen_completeness": "not-yet-audited",
+      "source_expression": "/^\\/fandom\\//.test(p)",
+      "samples": [
+        "/fandom/example",
+        "/fandom/abc/def"
+      ]
     },
     {
       "pattern": "^/author/[^/]+$",
@@ -332,7 +357,12 @@
       "status": "observed-worker-dispatch",
       "access_policy": "must-be-verified-per-resource",
       "sitemap_policy": "resource-specific-or-not-listed",
-      "screen_completeness": "not-yet-audited"
+      "screen_completeness": "not-yet-audited",
+      "source_expression": "/^\\/author\\/[^/]+$/.test(p)",
+      "samples": [
+        "/author/example",
+        "/author/a"
+      ]
     }
   ],
   "api_route_literals": [
