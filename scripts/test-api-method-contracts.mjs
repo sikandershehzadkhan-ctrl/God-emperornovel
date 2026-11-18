@@ -31,6 +31,17 @@ for (const match of table[1].matchAll(/["']([^"']+)["']\s*:\s*\[([^\]]*)\]/g)) {
 }
 assert.deepEqual(actual, expected, "Centralized method contracts must match the reviewed allowlist");
 
+
+const dynamicStart = api.indexOf("const dynamicMethodContracts=[");
+const dynamicEnd = api.indexOf("const dynamicAllowedMethods=", dynamicStart);
+assert.ok(dynamicStart >= 0 && dynamicEnd > dynamicStart, "Dynamic resource method contracts must exist");
+const dynamicContracts = api.slice(dynamicStart, dynamicEnd);
+assert.ok(dynamicContracts.includes(String.raw`/^\\/api\\/novels\\/\\d+$/`), "Novel detail route must be GET-only");
+assert.ok(dynamicContracts.includes(String.raw`/^\\/api\\/chapters\\/\\d+$/`), "Chapter detail route must be GET-only");
+assert.equal((dynamicContracts.match(/\["GET"\]/g) || []).length, 2, "Both dynamic resource routes must allow GET only");
+const dynamicGate = api.indexOf("const dynamicAllowedMethods=dynamicMethodContracts.find");
+assert.ok(dynamicGate >= 0 && dynamicGate < schema, "Dynamic method contracts must reject unsupported methods before schema setup");
+
 const gate = api.indexOf("if(allowedMethods&&!allowedMethods.includes(m))");
 const schema = api.indexOf("await ensureCoreSchema(env)");
 const session = api.indexOf("await getUser(req,env)");
@@ -39,4 +50,4 @@ assert.ok(gate >= 0 && gate < schema && gate < session && gate < health, "Unsupp
 assert.match(api.slice(gate, schema), /405/);
 assert.match(api.slice(gate, schema), /allow:allowedMethods\.join\(", "\)/);
 assert.equal((api.match(/if\(p==="\/api\/health"/g) || []).length, 1, "Health route must have one GET handler, not a permissive fallback");
-console.log("API method contract tests passed: 14 centralized routes, 405 + Allow behavior, and rejection before bootstrap.");
+console.log("API method contract tests passed: 14 literal routes plus 2 dynamic GET families, 405 + Allow behavior, and rejection before bootstrap.");
