@@ -364,13 +364,13 @@ async function ensureCommunityTaxonomySchema(env){
  UNIQUE(type,slug))`).run();
 }
 async function communityTaxonomy(req,env,user){
- const u=new URL(req.url), method=req.method;
+ const requestUrl=new URL(req.url), method=req.method;
  if(method==='GET'){
-  const type=String(u.searchParams.get('type')||'').toLowerCase();
+  const type=String(requestUrl.searchParams.get('type')||'').toLowerCase();
   if(!['genre','tag'].includes(type)) return json({error:'type must be genre or tag'},400);
   // Public discovery exposes approved vocabulary only. Pending/rejected proposals and
   // submitter details belong exclusively to the authenticated moderation endpoint.
-  const status=String(u.searchParams.get('status')||'approved').toLowerCase();
+  const status=String(requestUrl.searchParams.get('status')||'approved').toLowerCase();
   if(status!=='approved') return json({error:'Only approved taxonomy entries are public'},403);
   const r=await env.DB.prepare(
    'SELECT id,type,name,slug,description,created_at FROM taxonomy_submissions WHERE type=? AND status=? ORDER BY name COLLATE NOCASE LIMIT 500'
@@ -378,7 +378,7 @@ async function communityTaxonomy(req,env,user){
   return json(r.results||[]);
  }
  if(method==='POST'){
-  const e=need(u);if(e)return e;
+  const e=need(user);if(e)return e;
   const b=await body(req),type=String(b.type||'').toLowerCase(),name=String(b.name||'').trim().replace(/\s+/g,' ');
   if(!['genre','tag'].includes(type)) return json({error:'type must be genre or tag'},400);
   if(name.length<2||name.length>80)return json({error:'Name must be 2-80 characters'},400);
