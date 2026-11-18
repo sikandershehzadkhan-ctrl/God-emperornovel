@@ -35,7 +35,7 @@ const destinations = new Set();
 const unresolved = [];
 
 for (const raw of rawLinks) {
-  const route = raw.split(/[?#]/, 1)[0].replace(/\$\{[^}]+\}/g, "route-param");
+  const route = raw.split(/[?#]/, 1)[0].replace(/\$\{[^}]+\}/g, "123");
   if (!route || route === "/") {
     destinations.add("/");
     continue;
