@@ -11,11 +11,13 @@ const audit = await readFile(new URL("docs/architecture/API-CONTRACT-AUDIT-BASEL
 const blobSha = createHash("sha1").update("blob " + Buffer.byteLength(worker) + "\0").update(worker).digest("hex");
 assert.equal(inventory.source_blob, blobSha, "API inventory must be pinned to the exact Worker source blob");
 assert.equal(inventory.counts.literal_endpoint_paths, 74);
-assert.equal(inventory.counts.literal_route_branch_occurrences, 92);
+assert.equal(inventory.counts.literal_route_branch_occurrences, 91);
 assert.equal(inventory.counts.explicit_method_conditions, 77);
 assert.equal(inventory.counts.dynamic_route_families, 21);
-assert.equal(inventory.literal_endpoints.filter(x => x.method_evidence !== "explicit-literal-conditions").length, 14);
+assert.equal(inventory.counts.centralized_method_contract_paths, 14);
+assert.equal(inventory.counts.unresolved_method_paths, 0);
 assert.equal(inventory.literal_endpoints.length, 74);
+assert.equal(inventory.literal_endpoints.filter(x => x.method_evidence === "centralized-method-contract").length, 14);
 assert.equal(inventory.dynamic_endpoints.length, 21);
 
 const apiStart = worker.indexOf("async function api(");
@@ -51,11 +53,11 @@ for (const path of [
   "/api/omni/search", "/api/omni/resolve", "/api/omni/smart-unlock",
   "/api/novels", "/api/admin/stats"
 ]) {
-  assert.ok(inventory.literal_endpoints.some(endpoint => endpoint.path === path && endpoint.method_evidence !== "explicit-literal-conditions"),
+  assert.ok(inventory.literal_endpoints.some(endpoint => endpoint.path === path && endpoint.method_evidence === "centralized-method-contract"),
     "Method-unverified endpoint must remain in the audit queue: " + path);
 }
 
 assert.match(audit, /Unknown values must remain marked \*\*unverified\*\*/);
 assert.match(audit, /confirmed contract mismatch/);
 assert.match(audit, /No production deployment was performed/);
-console.log("API contract audit baseline passed: 74 literal paths, 21 dynamic families, 14 method-unverified paths, and the 1–5 rating mismatch remain explicitly visible.");
+console.log("API contract audit baseline passed: 74 literal paths, 21 dynamic families, 14 centralized method contracts, zero method-unresolved literal paths, and the 1–5 rating mismatch remain explicitly visible.");
