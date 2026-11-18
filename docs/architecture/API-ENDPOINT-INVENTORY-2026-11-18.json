@@ -2,7 +2,7 @@
   "audit_date": "2026-11-18",
   "branch": "architecture/phase-01-foundation-route-registry",
   "source_file": "src/index.js",
-  "source_blob": "e5d37ad886a062b1380979979f3a26c0a13817b0",
+  "source_blob": "cdf2efe31a3e427295692be3b79e838f016caea9",
   "scope": "First-pass static inventory of literal API path branches and dynamic path matchers inside async function api(req,env).",
   "counts": {
     "literal_endpoint_paths": 74,
