@@ -102,6 +102,7 @@ export const SITEMAP_ENDPOINTS = Object.freeze([
 ]);
 const sitemapEndpointSet = new Set(SITEMAP_ENDPOINTS);
 
+// Match URL pathnames only; pagination query parameters are validated by the sitemap handler.
 export function isSitemapEndpoint(path) {
   return sitemapEndpointSet.has(path);
 }
