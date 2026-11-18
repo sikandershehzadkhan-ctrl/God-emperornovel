@@ -258,9 +258,13 @@ async function page(token, path) {
 const privateAnonymous = await page(null, "/library");
 assert.equal(privateAnonymous.status, 302, "Anonymous visitors must be redirected away from private library pages");
 assert.match(privateAnonymous.headers.get("location") || "", /\/login\?next=%2Flibrary/);
-const privateReader = await page("reader-a-token", "/library");
-assert.equal(privateReader.status, 200, "Authenticated readers may access their private library page");
-assert.equal(privateReader.headers.get("x-robots-tag"), "noindex, nofollow");
+for (const path of ["/library", "/history", "/following", "/tickets", "/requests", "/settings", "/notifications", "/account"]) {
+  const anonymous = await page(null, path);
+  assert.equal(anonymous.status, 302, "Anonymous visitors must be redirected away from " + path);
+  const authenticated = await page("reader-a-token", path);
+  assert.equal(authenticated.status, 200, "Authenticated readers may access " + path);
+  assert.equal(authenticated.headers.get("x-robots-tag"), "noindex, nofollow", path + " must remain noindex");
+}
 const adminReader = await page("reader-a-token", "/admin");
 assert.equal(adminReader.status, 403, "Ordinary readers must not receive the administrator page document");
 const adminPage = await page("admin-token", "/admin");
