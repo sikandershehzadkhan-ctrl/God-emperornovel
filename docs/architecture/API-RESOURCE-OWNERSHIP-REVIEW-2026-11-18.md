@@ -60,7 +60,7 @@ The authenticated `GET /api/requests` quota count filters by both `user_id=u.id`
 
 The AI project collection filters by `owner_user_id=u.id`; creation assigns `owner_user_id=u.id` rather than accepting a client owner. Project detail, update, blueprint, run, and jobs handlers load the addressed project and reject non-admin users whose ID does not match its owner. Job listing is then selected by the verified project ID. Generation-run and job creation bind the authenticated user ID. The test harness now exercises two-author project list/read/update isolation, project job-feed authorization, and rejection of cross-account blueprint/run actions before provider invocation. It also checks that each account sees only its own novel-request quota count.
 
-These tests use the actual Worker request handler with a deterministic D1 test double. They do not execute live Cloudflare D1 transactions or prove all SQL semantics under concurrency.
+These tests use the actual Worker request handler with a deterministic D1 test double. They do not execute live Cloudflare D1 transactions or prove all SQL semantics under concurrency. The test double intentionally does not claim to model the multi-statement `env.DB.batch()` accounting sequence in novel-request creation; that transaction path remains untested until a faithful batch/changes/last-row-id model is added.
 
 ### 6. Cross-account isolation test coverage
 
