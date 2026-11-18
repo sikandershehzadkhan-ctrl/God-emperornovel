@@ -27,10 +27,16 @@ const routeLine = path => {
   return worker.split("\n")[entry.source_lines[0] - 1] || "";
 };
 assert.match(routeLine("/api/me"), /u\?/);
-assert.match(routeLine("/api/omni/status"), /seedOmni\(env\)/);
+assert.ok(routeLine("/api/omni/status").includes('consumeAuthRateLimit(env,"omni-status-ip",ip,60,60)'));
+assert.ok(!routeLine("/api/omni/status").includes("seedOmni(env)"), "Public Omni status must not seed/write the connector registry");
 assert.match(routeLine("/api/omni/search"), /rights_status='authorized'/);
+assert.ok(routeLine("/api/omni/search").includes('consumeAuthRateLimit(env,"omni-search-ip",ip,20,60)'));
+assert.ok(routeLine("/api/omni/search").includes("q.length>120"));
 assert.match(routeLine("/api/omni/smart-unlock"), /need\(u\)/);
 assert.match(routeLine("/api/admin/stats"), /admin\(u\)/);
+const adminConnectors = worker.slice(worker.indexOf('if(p==="/api/admin/connectors"&&m==="GET")'), worker.indexOf('if(p==="/api/admin/connectors"&&m==="PATCH")'));
+assert.match(adminConnectors, /admin\(u\)/);
+assert.ok(adminConnectors.includes("seedOmni(env)"), "Only the authenticated admin connector listing should seed the registry");
 const novelsStart = worker.indexOf('if(p==="/api/novels"){');
 const novelsEnd = worker.indexOf("let nm=p.match", novelsStart);
 assert.ok(novelsStart >= 0 && novelsEnd > novelsStart && worker.slice(novelsStart, novelsEnd).includes("publication_status='published'"), "Public novel listing must filter to published content");
