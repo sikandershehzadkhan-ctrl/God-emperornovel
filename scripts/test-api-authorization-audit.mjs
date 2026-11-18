@@ -245,7 +245,7 @@ assert.match(adminNovelPatch, /const rightsVerified=pub==='published'/, "Rights 
 
 assert.match(adminNovelPatch, /pub==='draft'&&previous==='review'&&!feedback/, "Returning a novel for changes requires reviewer feedback");
 assert.match(adminNovelPatch, /pub==='archived'&&previous!=='archived'&&!feedback/, "Archiving a novel requires a reason");
-assert.match(adminNovelPatch, /pub==='archived'\\?feedback/, "Archive reason must be retained for audit and author visibility");
+assert.match(adminNovelPatch, /pub==='archived'\?feedback/, "Archive reason must be retained for audit and author visibility");
 assert.match(adminNovelPatch, /'Novel archived'/, "Archiving a novel must notify its owner");
 assert.match(adminNovelPatch, /previous!=='review'&&previous!=='published'/, "Restoring an archived novel must pass through review before publication");
 assert.match(adminNovelPatch, /rights_verified_by/, "Novel approval must record rights reviewer identity");
