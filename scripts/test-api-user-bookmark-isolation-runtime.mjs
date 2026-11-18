@@ -9,7 +9,7 @@ const hash = async value => b64url(await crypto.subtle.digest("SHA-256", encoder
 const now = Math.floor(Date.now() / 1000);
 const users = new Map([
   ["account-a-token", { id: 301, username: "account_a", email: "a@example.test", role: "author", tickets: 0, verified: 1, banned: 0, expires_at: now + 3600 }],
-  ["account-b-token", { id: 402, username: "account_b", email: "b@example.test", role: "user", tickets: 0, verified: 1, banned: 0, expires_at: now + 3600 }],
+  ["account-b-token", { id: 402, username: "account_b", email: "b@example.test", role: "author", tickets: 0, verified: 1, banned: 0, expires_at: now + 3600 }],
 ]);
 const sessions = new Map();
 for (const [token, user] of users) sessions.set(await hash(token), user);
@@ -20,6 +20,11 @@ const ticketLedger = [{ id: 1, user_id: 301, delta: -5, reason: "test", referenc
 const authorApplications = [{ id: 91, user_id: 301, display_name: "A's private application", bio: "Private", experience: "New", portfolio_url: "", preferred_formats: '["original"]', status: "pending" }];
 const novels = [{ id: 501, owner_user_id: 301, title: "A's Novel", author: "account_a", description: "", status: "ongoing", kind: "original", language: "English", rights_status: "original", publication_status: "draft" }];
 const chapters = [{ id: 601, novel_id: 501, chapter_number: 1, title: "A's Chapter", content: "Chapter text", is_locked: 0, ticket_cost: 0, owner_user_id: 301, kind: "original" }];
+const aiProjects = [
+  { id: 801, owner_user_id: 301, novel_id: 501, name: "A private AI project", mode: "manual", status: "draft", genre: "fantasy", fandom: "", premise: "Private premise A", protagonist: "A", settings_json: "{}", bible_json: "{}" },
+  { id: 802, owner_user_id: 402, novel_id: null, name: "B private AI project", mode: "manual", status: "draft", genre: "fantasy", fandom: "", premise: "Private premise B", protagonist: "B", settings_json: "{}", bible_json: "{}" }
+];
+const aiJobs = [{ id: 901, project_id: 801, owner_user_id: 301, chapter_number: 1, job_type: "draft", status: "complete" }];
 
 class FakeStatement {
   constructor(sql) { this.sql = sql; this.values = []; }
@@ -39,6 +44,11 @@ class FakeStatement {
       return library.some(row => row.user_id === this.values[0] && row.novel_id === this.values[1]) ? { 1: 1 } : null;
     }
     if (this.sql.includes("FROM author_applications WHERE user_id=?")) return authorApplications.find(row => row.user_id === this.values[0]) || null;
+    if (this.sql.includes("SELECT owner_user_id FROM ai_author_projects WHERE id=?")) {
+      const row = aiProjects.find(item => item.id === this.values[0]);
+      return row ? { owner_user_id: row.owner_user_id } : null;
+    }
+    if (this.sql.includes("SELECT * FROM ai_author_projects WHERE id=?")) return aiProjects.find(row => row.id === this.values[0]) || null;
     if (this.sql.includes("SELECT * FROM novels WHERE id=?")) return novels.find(row => row.id === this.values[0]) || null;
     if (this.sql.includes("SELECT c.*,n.owner_user_id,n.kind FROM chapters c JOIN novels n ON n.id=c.novel_id WHERE c.id=?")) {
       return chapters.find(row => row.id === this.values[0]) || null;
@@ -75,6 +85,12 @@ class FakeStatement {
     if (this.sql.includes("FROM notifications WHERE user_id=?")) {
       return { results: notifications.filter(row => row.user_id === this.values[0]) };
     }
+    if (this.sql.includes("FROM ai_author_projects p LEFT JOIN novels n")) {
+      return { results: aiProjects.filter(row => row.owner_user_id === this.values[0]).map(row => ({ ...row, novel_title: row.novel_id ? "Test Novel" : null })) };
+    }
+    if (this.sql.includes("FROM ai_chapter_jobs WHERE project_id=?")) {
+      return { results: aiJobs.filter(row => row.project_id === this.values[0]).map(({ id, chapter_number, job_type, status }) => ({ id, chapter_number, job_type, status })) };
+    }
     if (this.sql.includes("FROM ticket_ledger WHERE user_id=?")) {
       return { results: ticketLedger.filter(row => row.user_id === this.values[0]) };
     }
@@ -105,6 +121,11 @@ class FakeStatement {
       if (!library.some(row => row.user_id === user_id && row.novel_id === novel_id)) library.push({ user_id, novel_id });
       return { success: true, meta: { changes: 1 } };
     }
+    if (this.sql.includes("UPDATE ai_author_projects SET name=?")) {
+      const row = aiProjects.find(item => item.id === this.values[this.values.length - 1]);
+      if (row) row.name = this.values[0];
+      return { success: true, meta: { changes: row ? 1 : 0 } };
+    }
     if (this.sql.includes("UPDATE novels SET title=?")) return { success: true, meta: { changes: 1 } };
     if (this.sql.includes("UPDATE chapters SET chapter_number=?")) {
       const row = chapters.find(item => item.id === this.values[5]);
@@ -115,7 +136,7 @@ class FakeStatement {
   }
 }
 
-const env = { DB: { prepare: sql => new FakeStatement(sql) }, SITE_NAME: "Imperial Novel" };
+const env = { DB: { prepare: sql => new FakeStatement(sql) }, SITE_NAME: "Imperial Novel", OPENAI_API_KEY: "test-key" };
 async function request(token, path, method, body) {
   const headers = { cookie: "session=" + token };
   const init = { method, headers };
@@ -175,4 +196,17 @@ assert.equal(bApplication.application, null, "B must not read A's author applica
 const aApplication = await payload(await request("account-a-token", "/api/author/applications/me", "GET"));
 assert.equal(aApplication.application.id, 91, "A must be able to read A's own author application");
 
-console.log("PASS: Worker fetch two-account isolation for bookmarks, history, library, follows, notifications, ticket ledger, author applications, author novel listing/update, and author chapter update; forged identity and invalid chapter relationships rejected. Deterministic D1 test double only, not live Cloudflare D1.");
+// AI author projects and their job feed must remain private to the owning author.
+assert.deepEqual((await payload(await request("account-a-token", "/api/author/ai/projects", "GET"))).map(row => row.id), [801]);
+assert.deepEqual((await payload(await request("account-b-token", "/api/author/ai/projects", "GET"))).map(row => row.id), [802]);
+assert.equal((await payload(await request("account-a-token", "/api/author/ai/projects/801", "GET"))).name, "A private AI project");
+await payload(await request("account-b-token", "/api/author/ai/projects/801", "GET"), 403);
+await payload(await request("account-a-token", "/api/author/ai/projects/801", "PATCH", { name: "A renamed AI project" }));
+await payload(await request("account-b-token", "/api/author/ai/projects/801", "PATCH", { name: "B takeover" }), 403);
+assert.equal(aiProjects.find(row => row.id === 801).name, "A renamed AI project");
+assert.deepEqual((await payload(await request("account-a-token", "/api/author/ai/projects/801/jobs", "GET"))).map(row => row.id), [901]);
+await payload(await request("account-b-token", "/api/author/ai/projects/801/jobs", "GET"), 403);
+await payload(await request("account-b-token", "/api/author/ai/projects/801/blueprint", "POST"), 403);
+await payload(await request("account-b-token", "/api/author/ai/projects/801/run", "POST"), 403);
+
+console.log("PASS: Worker fetch two-account isolation for bookmarks, history, library, follows, notifications, ticket ledger, author applications, author novel listing/update, author chapter update, and AI project listing/read/update/job access; forged identity and invalid chapter relationships rejected. Deterministic D1 test double only, not live Cloudflare D1.");
