@@ -18,12 +18,13 @@ The inventory is a first-pass static scan of literal path branches and dynamic p
 | Measure | Count |
 |---|---:|
 | Literal API path values | 74 |
-| Literal route branch occurrences | 92 |
+| Literal route branch occurrences | 91 |
 | Explicit method conditions recorded by the inventory | 77 |
 | Dynamic route families | 21 |
-| Literal paths with unresolved method evidence | 14 |
+| Previously unconstrained literal paths now covered by centralized method contracts | 14 |
+| Literal paths still unresolved for method | 0 |
 
-All 74 literal paths and all 21 dynamic families remain review-required. The 77 explicit method conditions are not a complete list of accepted methods: branches without a visible method predicate may accept more than one method, and dispatcher fallthrough behavior must be checked separately.
+All 74 literal paths and all 21 dynamic families remain review-required for auth and resource scope. The 14 paths that previously lacked explicit method evidence now have centralized method contracts enforced before schema bootstrap and session lookup. The remaining 77 direct method conditions are still source evidence, not a full security contract.
 
 ## Concrete findings confirmed in source
 
@@ -46,10 +47,10 @@ Required follow-up:
 
 ### 2. Method evidence is incomplete
 
-Fourteen literal paths have no explicit method evidence in the static inventory:
+Fourteen literal paths previously had no explicit method evidence. They are now covered by a centralized allowlist enforced before schema bootstrap and session lookup:
 `/api/health`, `/api/taxonomy`, `/api/me`, `/api/config`, `/api/genres`, `/api/tags`, `/api/public-authors`, `/api/sources`, `/api/omni/status`, `/api/omni/search`, `/api/omni/resolve`, `/api/omni/smart-unlock`, `/api/novels`, and `/api/admin/stats`.
 
-This is not proof that those handlers are method-unsafe. Each handler and its delegated helper must be reviewed for method behavior, including unsupported methods and side effects.
+Unsupported methods now receive HTTP 405 with an `Allow` header. `/api/taxonomy` allows GET and POST; the other 13 paths allow GET only. This resolves method dispatch for these paths, but does not resolve their authentication or resource-ownership contracts.
 
 ### 3. Authorization signals are not sufficient evidence
 
@@ -80,7 +81,7 @@ Unknown values must remain marked **unverified**, not inferred from route names 
 
 ## Audit sequence
 
-1. Resolve method behavior for all 74 literal paths and 21 dynamic families.
+1. Resolve method behavior for all 74 literal paths and 21 dynamic families. The 14 previously unconstrained literal paths now have explicit centralized guards; continue reviewing all remaining branches and dynamic families.
 2. Resolve authentication and role requirements from full control flow, including delegated helpers.
 3. Trace resource ownership and cross-account isolation for every read/write.
 4. Reconcile API operations with frontend call sites.
