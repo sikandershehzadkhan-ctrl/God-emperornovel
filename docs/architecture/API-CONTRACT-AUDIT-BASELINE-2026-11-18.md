@@ -47,10 +47,10 @@ Required follow-up:
 
 ### 2. Method evidence is incomplete
 
-Fourteen literal paths previously had no explicit method evidence. They are now covered by a centralized allowlist enforced before schema bootstrap and session lookup:
+Fourteen literal paths previously had no explicit method evidence. They are now covered by a centralized allowlist enforced before schema bootstrap and session lookup. Two dynamic resource read families are also explicitly restricted to GET before bootstrap: `/api/novels/{id}` and `/api/chapters/{id}`.
 `/api/health`, `/api/taxonomy`, `/api/me`, `/api/config`, `/api/genres`, `/api/tags`, `/api/public-authors`, `/api/sources`, `/api/omni/status`, `/api/omni/search`, `/api/omni/resolve`, `/api/omni/smart-unlock`, `/api/novels`, and `/api/admin/stats`.
 
-Unsupported methods now receive HTTP 405 with an `Allow` header. `/api/taxonomy` allows GET and POST; the other 13 paths allow GET only. This resolves method dispatch for these paths, but does not resolve their authentication or resource-ownership contracts.
+Unsupported methods now receive HTTP 405 with an `Allow` header. `/api/taxonomy` allows GET and POST; the other 13 literal paths allow GET only. The two dynamic resource families also return 405 with `Allow: GET`, preventing POST, PATCH, or DELETE requests from triggering read handlers and view-count side effects. This resolves method dispatch for these paths, but does not resolve their authentication or resource-ownership contracts.
 
 ### 3. Taxonomy submitter identity required server-side binding
 
