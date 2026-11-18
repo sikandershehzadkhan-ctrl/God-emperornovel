@@ -104,3 +104,9 @@ The authenticated POST /api/report handler now validates target IDs, verifies re
 
 Admin chapter PATCH and POST previously allowed a chapter to be marked published when its parent novel was still a draft. The PATCH path checked rights eligibility but did not require the parent novel itself to be published; the create path only rejected ineligible rights when the parent novel was already published. Both paths now require the parent novel to be published and rights-eligible before publishing a chapter. Admin chapter create/update also enforce whole-number ticket costs from 0 through 1,000,000 instead of silently clamping arbitrary values. Build-gated regression assertions cover both paths. This is source-level remediation; exact-head CI and deployed behavior remain to be verified.
 
+
+
+## Rights-verification audit-field consistency
+
+The admin novel review handler could clear `rights_verified_by` when a work returned to draft while retaining an earlier `rights_verified_at` timestamp. It could also set the reviewer ID from a truthy request value without ensuring a matching timestamp was written. The handler now treats publication or an explicit boolean `rights_verified: true` as the verification event, and writes the reviewer ID and timestamp together; otherwise both fields are cleared. A regression assertion protects the paired fields. This preserves audit-record consistency, but does not independently prove the evidence itself is legally sufficient.
+
