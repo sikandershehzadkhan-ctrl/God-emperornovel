@@ -138,7 +138,22 @@ assert.match(authorChapterPatch, /Number\.isSafeInteger\(cost\).*cost>1000000/, 
 
 assert.match(authorChapterPatch, /Number\.isSafeInteger\(id\)\|\|id<1/, "Author chapter path IDs must be positive safe integers");
 assert.match(authorChapterPatch, /Number\.isSafeInteger\(num\)\|\|num<1/, "Edited chapter numbers must be positive safe integers");
-const authorChapterListStart = worker.indexOf('if(p==="/api/author/chapters"&&m==="GET"){');
+
+const authorChapterPublishStart = worker.indexOf('if(/^\/api\/author\/chapters\/\d+\/publish$/.test(p)&&m==="POST"){');
+const authorChapterPublishEnd = worker.indexOf('if(p==="/api/author/chapters"', authorChapterPublishStart);
+const authorChapterPublish = worker.slice(authorChapterPublishStart, authorChapterPublishEnd);
+assert.ok(authorChapterPublishStart >= 0 && authorChapterPublishEnd > authorChapterPublishStart, "Author chapter publish route must remain explicit");
+assert.match(authorChapterPublish, /Number\.isSafeInteger\(id\)\|\|id<1/, "Author chapter publication must validate its chapter ID");
+const authorNovelSubmitStart = worker.indexOf('if(/^\/api\/author\/novels\/\d+\/submit$/.test(p)&&m==="POST"){');
+const authorNovelSubmitEnd = worker.indexOf('if(/^\/api\/author\/novels\/\d+$/.test(p)&&m==="PATCH"){', authorNovelSubmitStart);
+const authorNovelSubmit = worker.slice(authorNovelSubmitStart, authorNovelSubmitEnd);
+assert.ok(authorNovelSubmitStart >= 0 && authorNovelSubmitEnd > authorNovelSubmitStart, "Author novel submit route must remain explicit");
+assert.match(authorNovelSubmit, /Number\.isSafeInteger\(id\)\|\|id<1/, "Author novel submission must validate its novel ID");
+const authorNovelPatchStart = worker.indexOf('if(/^\/api\/author\/novels\/\d+$/.test(p)&&m==="PATCH"){');
+const authorNovelPatchEnd = worker.indexOf('if(p==="/api/author/chapters"&&m==="GET"){', authorNovelPatchStart);
+const authorNovelPatch = worker.slice(authorNovelPatchStart, authorNovelPatchEnd);
+assert.ok(authorNovelPatchStart >= 0 && authorNovelPatchEnd > authorNovelPatchStart, "Author novel edit route must remain explicit");
+assert.match(authorNovelPatch, /Number\.isSafeInteger\(id\)\|\|id<1/, "Author novel edits must validate their novel ID");const authorChapterListStart = worker.indexOf('if(p==="/api/author/chapters"&&m==="GET"){');
 const authorChapterListEnd = worker.indexOf('if(p==="/api/author/chapters"&&m==="POST"){', authorChapterListStart);
 const authorChapterList = worker.slice(authorChapterListStart, authorChapterListEnd);
 assert.ok(authorChapterListStart >= 0 && authorChapterListEnd > authorChapterListStart, "Author chapter list route must remain explicit");
