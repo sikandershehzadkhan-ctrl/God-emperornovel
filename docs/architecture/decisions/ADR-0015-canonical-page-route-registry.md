@@ -17,9 +17,9 @@ Introduce `src/route-registry.mjs` as the shared source for:
 - Exact page-path to HTML-shell mappings.
 - Ordered dynamic page-route patterns and their shells.
 - Exact noindex path policy.
-- Static sitemap path membership.
+- Exact sitemap endpoint membership and static sitemap path membership.
 
-The Worker resolves page shells and noindex policy through this module. The sitemap renderer imports its static path list from the same module. The route-inventory regression test compares the canonical registry against the evidence-stamped audit manifest and exercises every exact route and representative dynamic sample.
+The Worker resolves page shells and noindex policy through this module. The sitemap renderer imports its static path list from the same module, and the Worker only dispatches the four registered sitemap endpoints. The route-inventory regression test compares the canonical registry against the evidence-stamped audit manifest and exercises every exact route and representative dynamic sample.
 
 ## Security and indexing boundaries
 
@@ -37,4 +37,4 @@ The Worker resolves page shells and noindex policy through this module. The site
 
 ## Validation
 
-The route registry test must verify all 33 exact routes, all six dynamic route families and their samples, all 17 noindex paths, the static sitemap path list, and the existing API inventory's unresolved status. Cloudflare CI must pass before this decision is accepted.
+The route registry test must verify all 33 exact routes, all six dynamic route families and their samples, all 17 noindex paths, all four sitemap endpoints, the static sitemap path list, and the existing API inventory's unresolved status. Cloudflare CI must pass before this decision is accepted.
