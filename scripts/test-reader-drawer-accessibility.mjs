@@ -28,7 +28,7 @@ assert.match(app,/if\(e\.shiftKey&&\(document\.activeElement===first\|\|!drawer\
   'Shift+Tab must wrap focus to the final reader-drawer control.');
 assert.match(app,/!e\.shiftKey&&\(document\.activeElement===last\|\|!drawer\.contains\(document\.activeElement\)\)/,
   'Tab must wrap focus to the first reader-drawer control.');
-assert.match(app,/document\.body\.style\.overflow='hidden'/,
+assert.match(app,/const openReaderDrawer=\(trigger,target\)=>\{drawerTrigger=trigger;if\(drawer\.hidden\)bodyOverflowBeforeDrawer=document\.body\.style\.overflow;/,\n  'Reopening an already-open reader drawer must preserve the original page overflow value.');\nassert.match(app,/document\.body\.style\.overflow='hidden'/,
   'Opening the reader drawer must prevent background-page scrolling.');
 assert.match(app,/document\.body\.style\.overflow=bodyOverflowBeforeDrawer/,
   'Closing the reader drawer must restore the previous body overflow style.');
