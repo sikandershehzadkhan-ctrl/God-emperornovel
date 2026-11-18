@@ -206,6 +206,7 @@ const env = {
       accountBalances.clear();
       for (const [id, balance] of balances) accountBalances.set(id, balance);
       requestLedger.splice(0, requestLedger.length, ...ledger);
+      nextRequestId = nextId;
       return results;
     }
   },
@@ -308,6 +309,7 @@ assert.equal(paidRequest.cost, 100, "Fourth weekly request must use server-deriv
 assert.equal(accountBalances.get(301), 900, "Paid request must debit the owning account exactly once");
 assert.deepEqual(requestLedger, [{ id: 1, user_id: 301, delta: -100, reason: "novel_request", reference: requestUrl }]);
 assert.equal(novelRequests.find(row => row.id === paidRequest.request_id).user_id, 301);
+assert.equal(new Set(novelRequests.map(row => row.id)).size, novelRequests.length, "D1 test double must preserve unique inserted request IDs across batches");
 assert.deepEqual(await payload(await request("account-a-token", "/api/requests", "GET")), { used: 4, limit: 3 });
 assert.deepEqual(await payload(await request("account-b-token", "/api/requests", "GET")), { used: 0, limit: 3 });
 const bFreeRequest = await payload(await request("account-b-token", "/api/requests", "POST", { url: requestUrl, user_id: 301 }), 200);
