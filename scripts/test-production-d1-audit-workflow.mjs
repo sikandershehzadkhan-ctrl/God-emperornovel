@@ -1,0 +1,27 @@
+import assert from "node:assert/strict";
+import fs from "node:fs";
+
+const workflow = fs.readFileSync(".github/workflows/audit-production-d1.yml", "utf8");
+assert.ok(workflow.includes("workflow_dispatch:"), "The production D1 audit must be manually invoked.");
+assert.ok(!/^\\s*push:/m.test(workflow) && !/^\\s*pull_request:/m.test(workflow), "The production D1 audit must not run automatically on code pushes or pull requests.");
+assert.ok(workflow.includes("npx --yes wrangler@4 d1 info god-emperornovel-db"), "The audit must identify the actual D1 backend.");
+assert.ok(workflow.includes("npx --yes wrangler@4 d1 time-travel info god-emperornovel-db"), "The audit must inspect the current recovery bookmark.");
+assert.ok(workflow.includes("sqlite_master"), "The audit must inspect actual remote schema definitions.");
+assert.ok(workflow.includes("d1_migrations"), "The audit must inspect any existing D1 migration ledger.");
+assert.ok(workflow.includes("canonical migrations 0001-0047"), "The audit must fail closed unless all canonical migration names are recorded remotely.");
+assert.ok(workflow.includes("LEFT JOIN d1_migrations m ON m.name=e.name"), "The audit must compare the remote migration ledger against the canonical migration list.");
+assert.ok(workflow.includes("Production D1 has no d1_migrations table"), "The audit must block release when migration history cannot be verified.");
+assert.ok(workflow.includes("core_schema_version"), "The audit must inspect the runtime schema marker.");
+assert.ok(workflow.includes("reader_preferences"), "The audit must inventory the account-scoped reader preferences table introduced by migration 0047.");
+assert.ok(workflow.includes("PRAGMA table_info(reader_preferences)"), "The audit must inspect reader preference columns without reading user preference values.");
+assert.ok(workflow.includes("required runtime tables are missing"), "The audit must fail closed when any required runtime table is missing.");
+assert.ok(workflow.includes("critical runtime columns are missing"), "The audit must fail closed when any critical runtime column is missing.");
+assert.ok(workflow.includes("foreign-key violations"), "The audit must fail closed when production foreign-key integrity is broken.");
+assert.ok(workflow.includes("NOT EXISTS (SELECT 1 FROM pragma_foreign_key_check)"), "The audit must assert foreign-key integrity instead of only printing diagnostic rows.");
+assert.ok(fs.readFileSync("docs/production/CANONICAL-D1-MIGRATION-RELEASE-PLAN.md", "utf8").includes("Imperial Novel Read-Only Production D1 Audit"), "The release plan must direct reviewers to the read-only audit workflow.");
+assert.ok(workflow.includes("PRAGMA foreign_key_check"), "The audit must inspect foreign-key integrity.");
+assert.ok(!/time-travel restore|wrangler@4 deploy\\b/i.test(workflow), "The audit must never restore or deploy.");
+assert.ok(!/d1 execute[^\\n]*--file/i.test(workflow), "The audit must never apply a migration file.");
+assert.ok(workflow.includes("SELECT") && workflow.includes("PRAGMA"), "The audit must use read-only SQL inspection.");
+assert.ok(workflow.includes("No data was changed and no deployment was performed."), "The report must explicitly state that it did not mutate production.");
+console.log("Read-only production D1 audit workflow tests passed.");

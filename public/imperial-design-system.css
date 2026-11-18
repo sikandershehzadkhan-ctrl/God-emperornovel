@@ -6102,4 +6102,175 @@ html[data-theme="cosmic"]{--in-text:#FFFFFF;--in-text-muted:#DCE5FF;--in-line:#8
 .readerSwatches button[data-color="#C08AFF"]{background-color:#C08AFF}
 .readerSwatches button[data-color="#6AA5FF"]{background-color:#6AA5FF}
 
-.readerSyncStatus{font-size:10px;line-height:1.4;color:var(--muted,#777);margin-left:auto;white-space:nowrap}.readerSyncStatus[data-state="synced"]{color:var(--success,#247a50)}.readerSyncStatus[data-state="offline"],.readerSyncStatus[data-state="conflict"],.readerSyncStatus[data-state="account-mismatch"]{color:var(--warning,#9a5b12)}@media(max-width:640px){.readerMeta{align-items:flex-start;flex-wrap:wrap}.readerSyncStatus{width:100%;margin-left:0}}
+.readerSyncStatus{font-size:10px;line-height:1.4;color:var(--muted,#777);margin-left:auto;white-space:nowrap}.readerSyncStatus[data-state="synced"]{color:var(--success,#247a50)}.readerSyncStatus[data-state="offline"],.readerSyncStatus[data-state="conflict"],.readerSyncStatus[data-state="account-mismatch"]{color:var(--warning,#9a5b12)}.readerProgressConflictActions{display:flex;align-items:center;flex-wrap:wrap;gap:8px;width:100%;padding:10px 0}.readerProgressConflictActions[hidden]{display:none}.readerProgressConflictActions span{font-size:12px;color:var(--muted,#777);width:100%}.readerProgressConflictActions button{min-height:44px}@media(max-width:640px){.readerMeta{align-items:flex-start;flex-wrap:wrap}.readerSyncStatus{width:100%;margin-left:0}.readerProgressConflictActions button{flex:1 1 100%}}
+
+.homeSsrHeader{position:relative;z-index:20}
+.homeSsrNav{display:flex;align-items:center;justify-content:space-between;gap:20px;min-height:72px}
+.homeSsrNav nav,.homeSsrFooter nav{display:flex;align-items:center;flex-wrap:wrap;gap:clamp(10px,2vw,24px)}
+.homeSsrNav nav a,.homeSsrFooter a{color:var(--text-secondary,var(--text));text-decoration:none;font-size:.92rem}
+.homeSsrNav nav a:hover,.homeSsrFooter a:hover{color:var(--accent,var(--primary));text-decoration:underline}
+.homeSsrFooter{border-top:1px solid var(--border,var(--line));padding:22px 0;color:var(--text-secondary,var(--muted));font-size:.88rem}
+.homeSsrFooter .wrap{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:14px}
+@media(max-width:700px){.homeSsrNav{align-items:flex-start;flex-direction:column;padding-block:14px}.homeSsrNav nav{gap:9px 16px}.homeSsrNav nav a{min-height:40px;display:inline-flex;align-items:center}.homeSsrFooter .wrap{align-items:flex-start;flex-direction:column}}
+
+/* Mixed-script chapter text: resolve bidi direction independently for each paragraph. */
+.readerPage .readerContent{unicode-bidi:plaintext;text-align:start}
+
+/* Reader drawer: modal scrim, scroll containment and predictable mobile focus. */
+.chapterDrawerScrim{position:fixed;z-index:70;inset:74px 0 0;background:rgba(5,8,16,.48);}
+.chapterDrawer{overscroll-behavior:contain;}
+.chapterDrawer:focus{outline:none;}
+@media(max-width:760px){.chapterDrawer{top:64px;width:min(420px,96vw);padding:14px}.chapterDrawerScrim{inset:64px 0 0}.readerBar{top:64px}.readerPage{padding-bottom:calc(90px + env(safe-area-inset-bottom))}}
+@media(prefers-reduced-motion:reduce){.chapterDrawerScrim{transition:none}}
+
+/* Explicit offline chapter library. */
+.readerOfflinePanel{max-width:900px;margin:24px auto 48px;padding:20px;border:1px solid var(--border,rgba(127,127,127,.24));border-radius:18px;background:var(--surface,rgba(127,127,127,.06));display:grid;gap:12px}
+.readerOfflinePanel h3{margin:4px 0;font-size:1.1rem}
+.readerOfflinePanel p{margin:4px 0;color:var(--muted,inherit);font-size:.92rem}
+.readerOfflinePanel>button{justify-self:start;min-height:44px}
+.readerOfflineSummary{font-size:.82rem;color:var(--muted,inherit)}
+.readerOfflineItem{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:10px 0;border-top:1px solid var(--border,rgba(127,127,127,.2))}
+.readerOfflineItem a{display:grid;gap:3px;min-width:0;color:inherit;text-decoration:none}
+.readerOfflineItem a span{font-size:.86rem;color:var(--muted,inherit);overflow-wrap:anywhere}
+.readerOfflineItem button{min-height:44px;flex:0 0 auto}
+#readerOfflineStatus{min-height:1.2em}
+@media(max-width:600px){.readerOfflinePanel{margin:18px 12px 36px;padding:16px}.readerOfflineItem{align-items:flex-start}.readerOfflineItem button{padding:8px 10px}}
+
+/* Dedicated on-device download manager. */
+.offlineLibrarySection{max-width:980px;margin-inline:auto}
+.offlineLibraryUsage{display:grid;gap:9px;padding:14px;border:1px solid var(--border,rgba(127,127,127,.2));border-radius:14px;background:var(--surface,rgba(127,127,127,.05))}
+.offlineLibraryMeter{height:9px;overflow:hidden;border-radius:99px;background:var(--border,rgba(127,127,127,.2))}
+.offlineLibraryMeter span{display:block;width:0;height:100%;border-radius:inherit;background:var(--accent,#6a0dad);transition:width .2s ease}
+.offlineLibraryList{display:grid;gap:0}
+.offlineLibraryItem{display:flex;align-items:center;justify-content:space-between;gap:16px;padding:16px 0;border-bottom:1px solid var(--border,rgba(127,127,127,.2))}
+.offlineLibraryItemCopy{display:grid;gap:5px;min-width:0}
+.offlineLibraryItemCopy span,.offlineLibraryItemCopy small{color:var(--muted,inherit);font-size:.88rem;overflow-wrap:anywhere}
+.offlineLibraryItemActions{display:flex;align-items:center;gap:8px;flex:0 0 auto}
+.offlineLibraryItemActions a,.offlineLibraryItemActions button{min-height:44px}
+.offlineLibraryFootnote{font-size:.84rem;line-height:1.55}
+@media(max-width:620px){.offlineLibraryItem{align-items:flex-start;flex-direction:column}.offlineLibraryItemActions{width:100%}.offlineLibraryItemActions>*{flex:1;text-align:center;justify-content:center}.offlineLibrarySection .sectionHead{align-items:flex-start;flex-direction:column}.offlineLibrarySection .sectionHead>button{width:100%;min-height:44px}}
+@media(prefers-reduced-motion:reduce){.offlineLibraryMeter span{transition:none}}
+
+/* Rights-checked multi-chapter offline queue. */
+.offlineQueuePanel{display:grid;gap:10px;margin:18px 0 22px;padding:16px;border:1px solid var(--border,rgba(127,127,127,.24));border-radius:16px;background:var(--surface,rgba(127,127,127,.05))}
+.offlineQueuePanel h2{margin:0;font-size:1.05rem}
+.offlineQueuePanel p{margin:0;color:var(--muted,inherit);font-size:.9rem;line-height:1.5}
+.offlineQueuePanel progress{width:100%;height:10px;accent-color:var(--accent,#6a0dad)}
+#downloadOfflineQueue{min-height:44px}
+@media(max-width:620px){.offlineQueuePanel{padding:14px;margin:14px 0}.toolbar #downloadOfflineQueue{width:100%}}
+
+.readerChapterSearch{display:grid;gap:6px;margin:0 0 12px}.readerChapterSearch>label{font-size:13px;font-weight:700;color:var(--text-secondary,var(--text))}.readerChapterSearch input{width:100%;min-height:44px;padding:10px 12px;border:1px solid var(--line);border-radius:10px;background:var(--surface,var(--panel));color:var(--text);font:inherit}.readerChapterSearch input:focus-visible{outline:2px solid var(--accent,var(--gold2));outline-offset:2px}.readerChapterSearchStatus{min-height:1.2em;margin:0;font-size:12px;color:var(--text-secondary,var(--muted))}.readerChapterItem[hidden]{display:none!important}
+
+.readerNavDisabled{display:inline-flex;align-items:center;justify-content:center;min-height:40px;padding:9px 12px;border:1px solid var(--line);border-radius:10px;color:var(--muted);background:var(--panel2,transparent);font-size:13px;font-weight:700;opacity:.78;cursor:not-allowed;user-select:none}
+@media(max-width:760px){.readerNavDisabled{min-height:44px;padding:9px 10px;font-size:11px}}
+
+
+/* Language-aware Arabic-script fallback while preserving the reader's chosen Latin font. */
+.readerPage .readerContent:lang(ur){font-kerning:normal;font-variant-ligatures:common-ligatures contextual;font-feature-settings:"kern" 1,"liga" 1,"calt" 1}
+.readerPage .readerContent:lang(ar),.readerPage .readerContent:lang(fa){font-kerning:normal;font-variant-ligatures:common-ligatures contextual;font-feature-settings:"kern" 1,"liga" 1,"calt" 1}
+.readerPage .readerArticle h1:lang(ur),.readerPage .readerArticle h1:lang(ar),.readerPage .readerArticle h1:lang(fa){font-kerning:normal;font-feature-settings:"kern" 1,"liga" 1,"calt" 1}
+
+
+/* Reader mobile layout: stable two-row toolbar and reachable chapter navigation. */
+@media (max-width: 760px) {
+  .readerPage,
+  .readerPage * { box-sizing: border-box; }
+  .readerBarInner {
+    width: calc(100% - 20px);
+    min-width: 0;
+    height: auto !important;
+    min-height: 60px;
+    flex-wrap: wrap;
+    align-content: center;
+    row-gap: 6px;
+    padding-block: 8px;
+  }
+  .readerBack {
+    flex: 0 0 auto;
+    min-width: 44px;
+    min-height: 44px;
+    display: inline-flex;
+    align-items: center;
+  }
+  .readerBook {
+    flex: 1 1 120px;
+    min-width: 0;
+    max-width: 100%;
+    text-align: start;
+  }
+  .readerTools {
+    flex: 1 0 100%;
+    width: 100%;
+    min-width: 0;
+    display: flex;
+    justify-content: space-between;
+    gap: 4px;
+  }
+  .readerTools .readerTool {
+    flex: 1 1 0;
+    min-width: 44px;
+    min-height: 44px;
+    height: 44px;
+    padding-inline: 4px;
+  }
+  .readerMain {
+    width: calc(100% - 24px);
+    min-width: 0;
+    padding: 18px 0 28px;
+  }
+  .readerArticle {
+    min-width: 0;
+    padding: clamp(20px, 5vw, 34px) clamp(14px, 4vw, 24px);
+    overflow-wrap: anywhere;
+  }
+  .readerArticle h1 {
+    font-size: clamp(25px, 7vw, 34px);
+    overflow-wrap: anywhere;
+  }
+  .readerContent {
+    min-width: 0;
+    max-width: 100%;
+    font-size: clamp(16px, 4.5vw, 18px);
+    overflow-wrap: anywhere;
+  }
+  .readerActions {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    align-items: stretch;
+    gap: 8px;
+  }
+  .readerActions > div:first-child { grid-column: 1; grid-row: 1; }
+  .readerActions > div:last-child { grid-column: 2; grid-row: 1; }
+  .readerActions .readerChapterJump {
+    grid-column: 1 / -1;
+    grid-row: 2;
+    text-align: center;
+  }
+  .readerActions > div > a,
+  .readerActions .readerNavDisabled {
+    width: 100%;
+    min-width: 0;
+    min-height: 44px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    padding-inline: 6px;
+    overflow-wrap: anywhere;
+  }
+  .readerFooterCard {
+    min-width: 0;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+    padding: 16px;
+  }
+  .readerFooterCard > * { min-width: 0; max-width: 100%; }
+}
+@media (max-width: 360px) {
+  .readerBarInner { width: calc(100% - 16px); }
+  .readerTools { gap: 3px; }
+  .readerTools .readerTool { min-width: 44px; padding-inline: 2px; }
+  .readerArticle { padding-inline: 12px; }
+  .readerActions { gap: 6px; }
+}

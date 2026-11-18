@@ -183,7 +183,7 @@ assert.ok(readerStart >= 0 && readerEnd > readerStart, 'Reader route must remain
 const readerSource = runtime.slice(readerStart, readerEnd);
 assert.ok(readerSource.includes("setINLang(document.documentElement.lang||'en');"), 'Reader theme options must be localized after reader markup is rendered.');
 assert.ok(readerSource.includes('class="readerContent" dir="auto"'), 'Chapter body direction must follow chapter text independently of the interface locale.');
-assert.ok(readerSource.includes('<h1 dir="auto">${esc(ch.title)}</h1>'), 'Chapter headings must support independently detected RTL text.');
+assert.ok(readerSource.includes('<h1 dir="auto" lang="${esc(readerLang)}">${esc(ch.title)}</h1>'), 'Chapter headings must retain independent language metadata and automatic text direction.');
 assert.ok(runtime.includes('<figcaption dir="auto">'), 'Comic captions must detect their own text direction.');
 assert.ok(runtime.includes('document.querySelectorAll("option[data-in-lang]").forEach'), 'Language changes must translate reader theme option labels, not only the global navigation.');
 assert.ok(runtime.includes('document.querySelectorAll("[data-in-lang]:not(option)").forEach'), 'Language changes must translate reader labels and navigation text nodes.');
@@ -307,7 +307,7 @@ assert.ok(rtlLogicalPass.includes('@media (max-width: 700px)') && rtlLogicalPass
 // allowed inline style is the reader progress width, which is data-driven.
 const runtimeStyleAttributes = [...appJs.matchAll(/\sstyle="([^"]*)"/g)].map(match => match[1]);
 assert.equal(runtimeStyleAttributes.length, 1, 'Static runtime presentation must be migrated out of inline style attributes.');
-assert.match(runtimeStyleAttributes[0], /^width:\$\{chapterPct\|\|initialNovelProgress\}%$/,
+assert.match(runtimeStyleAttributes[0], /^width:\$\{chapterPct\}%$/,
   'The only runtime inline style must be the data-driven reader progress width.');
 for (const utility of [
   'in-grid-span-all','in-language-select','in-mt-12','in-mt-18','in-flex-fill',

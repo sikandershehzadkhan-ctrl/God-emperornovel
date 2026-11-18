@@ -60,3 +60,30 @@ for (const rule of [
   assert.ok(filterInputRules.includes(rule), 'Missing responsive catalog filter sizing contract: ' + rule);
 }
 console.log('Mobile navigation narrow-viewport layout contracts passed.');
+
+
+const readerMobileMarker = '/* Reader mobile layout: stable two-row toolbar';
+const readerMobileIndex = css.lastIndexOf(readerMobileMarker);
+assert.ok(readerMobileIndex >= 0, 'Reader mobile toolbar and chapter-navigation layout rules must exist.');
+const readerMobile = css.slice(readerMobileIndex);
+for (const rule of [
+  '@media (max-width: 760px)',
+  '.readerBarInner {',
+  'flex-wrap: wrap;',
+  '.readerTools {',
+  'flex: 1 0 100%;',
+  'min-height: 44px;',
+  '.readerMain {',
+  'width: calc(100% - 24px);',
+  '.readerArticle {',
+  'overflow-wrap: anywhere;',
+  '.readerActions {',
+  'grid-template-columns: repeat(2, minmax(0, 1fr));',
+  '.readerChapterJump {',
+  'grid-column: 1 / -1;',
+  '@media (max-width: 360px)',
+  '.readerFooterCard {',
+  'flex-wrap: wrap;'
+]) {
+  assert.ok(readerMobile.includes(rule), 'Missing reader mobile layout contract: ' + rule);
+}

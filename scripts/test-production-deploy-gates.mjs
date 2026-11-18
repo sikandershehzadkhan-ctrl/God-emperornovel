@@ -2,12 +2,18 @@ import assert from "node:assert/strict";
 import fs from "node:fs";
 
 const workflow = fs.readFileSync(".github/workflows/deploy.yml", "utf8");
+const releasePlan = fs.readFileSync("docs/production/CANONICAL-D1-MIGRATION-RELEASE-PLAN.md", "utf8");
+assert.ok(releasePlan.includes("npx wrangler@4 d1 time-travel info god-emperornovel-db"), "The release plan must capture a D1 Time Travel recovery bookmark before writes.");
+assert.ok(releasePlan.includes("time-travel restore god-emperornovel-db --bookmark=<RECORDED_BOOKMARK>"), "The release plan must document the exact manual break-glass restore command.");
+assert.ok(releasePlan.includes("Never invoke it automatically from a failed deployment job."), "A failed deployment must never trigger a destructive automatic D1 restore.");
 assert.ok(workflow.includes("workflow_dispatch:"), "Production deploy must remain manual.");
 assert.ok(workflow.includes("confirm_production_deploy"), "Production deploy must require an explicit confirmation input.");
-assert.ok(workflow.includes("inputs.confirm_production_deploy == 'true'"), "Production job must be gated by the explicit true confirmation.");
+assert.match(workflow, /^\s*if:\s*\$\{\{\s*false\s*\}\}\s*$/m, "Production deployment must remain mechanically disabled until the canonical remote D1 audit is complete.");
 assert.ok(!/^\s*push:/m.test(workflow) && !/^\s*pull_request:/m.test(workflow), "Pushes and pull requests must never auto-deploy production.");
 assert.ok(workflow.includes("Block 1–10 rating release until migration 0035 is in the reviewed deployment plan"), "The 1–10 Worker must fail closed until its schema migration is reviewed.");
 assert.ok(workflow.includes("npx --yes wrangler@4 deploy --dry-run"), "Production bundle must be validated before deployment.");
+assert.ok(workflow.includes('data-home-ssr="true"'), "Live homepage verification must require rights-filtered server-rendered content.");
+assert.ok(workflow.includes("homeSsrNav") && workflow.includes("homeSsrFooter"), "Live homepage verification must require crawlable SSR navigation and footer.");
 assert.ok(workflow.includes("Verify catalog and author-application D1 migrations after deployment"), "Production deployment must verify additive catalog and creator migrations.");
 assert.ok(workflow.includes("Apply and verify additive D1 migrations before Worker deployment"), "Production D1 migrations must run before publishing the Worker.");
 for (const migration of ["migrations/0009_catalog_filter_indexes.sql", "migrations/0010_catalog_sort_indexes.sql", "migrations/0011_author_applications.sql"]) {
