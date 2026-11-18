@@ -52,7 +52,7 @@ const health = manifest.literal_endpoints.find(endpoint => endpoint.path === "/a
 assert.ok(health, "Health endpoint must be inventoried");
 assert.deepEqual(health.allowed_methods, ["GET"], "Health endpoint must allow only GET");
 assert.equal(health.method_evidence, "explicit-handler-method-guard");
-assert.ok(worker.includes('if(p==="/api/health"&&m!=="GET")return json({error:"Method not allowed"},405);'), "Health endpoint must reject non-GET methods before schema initialization");
+assert.ok(worker.includes('if(p==="/api/health"){if(m!=="GET")return json({error:"Method not allowed"},405);'), "Health endpoint must reject non-GET methods inside its fast path before schema initialization");
 
 const taxonomy = manifest.literal_endpoints.find(endpoint => endpoint.path === "/api/taxonomy");
 assert.ok(taxonomy, "Taxonomy endpoint must be inventoried");
