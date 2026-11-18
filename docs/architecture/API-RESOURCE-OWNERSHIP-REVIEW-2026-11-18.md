@@ -70,6 +70,14 @@ These tests use the actual Worker request handler with a deterministic D1 test d
 
 This is not a live Cloudflare D1 test. It now includes novel-request free/paid/insufficient-balance accounting through a deterministic batch model, AI project creation/list/read/update/job-feed isolation, and cross-account rejection for blueprint/run actions. Real-D1 concurrency/rollback verification and AI job/run persistence still need broader runtime coverage.
 
+### 7. Canonical client route reconciliation
+
+**Status: path-level mapping added; method and payload parity remain open.**
+
+A build-gated check now scans literal URL arguments passed to `api()` and `apiWithTimeout()` in `public/app.js`. At this snapshot it finds 63 call sites and 42 distinct literal path expressions, which map to 38 distinct server literal endpoints or dynamic route families in the API inventory. No captured call-site path expression is currently unmatched. The check is implemented in `scripts/test-api-client-contract-coverage.mjs` and included in `npm run build`.
+
+This is only path-level reconciliation for the canonical `public/app.js` client. It does not yet prove that each call uses the correct HTTP method, request schema, authorization expectation, response shape, or error handling. Dynamically assembled URL suffixes, inline HTML scripts, version-stamped client copies, and separately bundled clients still need dedicated review.
+
 ## Security boundary
 
 No confirmed cross-user data exposure was established by this first pass. The two findings above are validation/policy consistency issues. This audit does not certify CSRF protections, rate limits, method rejection, session rotation, or all delegated handlers.
