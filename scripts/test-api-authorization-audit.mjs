@@ -34,6 +34,10 @@ assert.ok(routeLine("/api/omni/search").includes('consumeAuthRateLimit(env,"omni
 assert.ok(routeLine("/api/omni/search").includes("q.length>120"));
 assert.match(routeLine("/api/omni/smart-unlock"), /need\(u\)/);
 assert.match(routeLine("/api/admin/stats"), /admin\(u\)/);
+const connectorCreate = worker.slice(worker.indexOf('if(p==="/api/admin/connectors"&&m==="POST")'), worker.indexOf('if(p==="/api/admin/requests"&&m==="GET")'));
+assert.match(connectorCreate, /VALUES\\(\\?,\\?,\\?,0,'pending'\\)/, "New connectors must default to disabled and pending rights review");
+assert.doesNotMatch(connectorCreate, /VALUES\\(\\?,\\?,\\?,0,'authorized'\\)/, "Connector creation must never self-assert authorization");
+
 const adminConnectors = worker.slice(worker.indexOf('if(p==="/api/admin/connectors"&&m==="GET")'), worker.indexOf('if(p==="/api/admin/connectors"&&m==="PATCH")'));
 assert.match(adminConnectors, /admin\(u\)/);
 assert.ok(adminConnectors.includes("seedOmni(env)"), "Only the authenticated admin connector listing should seed the registry");
