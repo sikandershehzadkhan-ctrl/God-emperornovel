@@ -238,6 +238,11 @@ const adminNovelEnd = worker.indexOf('\n let ach=p.match', adminNovelStart);
 const adminNovelPatch = worker.slice(adminNovelStart, adminNovelEnd);
 assert.ok(adminNovelStart>=0&&adminNovelEnd>adminNovelStart, "Admin novel review route must remain explicit");
 assert.match(adminNovelPatch, /previous!=='review'&&previous!=='published'/, "A novel cannot be approved directly from draft");
+assert.match(adminNovelPatch, /rightsChanged=rights!==String\(row\.rights_status/, "Changes to rights declarations or evidence must be detected");
+assert.match(adminNovelPatch, /previous==='published'&&pub==='published'&&rightsChanged/, "Published rights changes cannot bypass renewed review");
+assert.match(adminNovelPatch, /rights declaration or evidence changed/i, "Rights changes must explain the review requirement");
+assert.match(adminNovelPatch, /const rightsVerified=pub==='published'/, "Rights verification must only be recorded on approval");
+
 assert.match(adminNovelPatch, /pub==='draft'&&previous==='review'&&!feedback/, "Returning a novel for changes requires reviewer feedback");
 assert.match(adminNovelPatch, /rights_verified_by/, "Novel approval must record rights reviewer identity");
 assert.match(adminNovelPatch, /reviewedBy=decision\?u\.id/, "Novel review decisions must record reviewer identity");
