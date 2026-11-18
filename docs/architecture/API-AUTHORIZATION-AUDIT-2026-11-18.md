@@ -126,3 +126,10 @@ The next resource-boundary pass found that several admin publishing routes conve
 The novel PATCH, chapter list, chapter PATCH/DELETE, chapter reorder, and chapter creation paths now require positive safe-integer IDs. Chapter numbers on create/update also require positive safe integers. The author-application review path already had a positive safe-integer guard and was retained.
 
 These are source-level validation safeguards. The regression assertions are added to the build-gated authorization audit; CI and real-D1 behavior still require verification.
+
+
+## Admin-created novel owner assignment
+
+A review of the admin novel creation route found that `owner_user_id` was converted with `Number(...)` and inserted without checking that the target account existed, was active, or had an author-capable role. The route now requires a positive safe-integer owner ID, resolves the account, and permits assignment only to an unbanned author or administrator. If no owner is supplied, the current administrator remains the default owner. This prevents malformed or arbitrary account IDs from silently becoming novel ownership assignments.
+
+Regression assertions cover the owner validation and role/ban checks. This is a source-level safeguard, not yet a live D1 authorization test.
