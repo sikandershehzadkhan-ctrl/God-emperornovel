@@ -183,7 +183,7 @@ assert.ok(readerStart >= 0 && readerEnd > readerStart, 'Reader route must remain
 const readerSource = runtime.slice(readerStart, readerEnd);
 assert.ok(readerSource.includes("setINLang(document.documentElement.lang||'en');"), 'Reader theme options must be localized after reader markup is rendered.');
 assert.ok(readerSource.includes('class="readerContent" dir="auto"'), 'Chapter body direction must follow chapter text independently of the interface locale.');
-assert.ok(readerSource.includes('<h1 dir="auto">${esc(ch.title)}</h1>'), 'Chapter headings must support independently detected RTL text.');
+assert.ok(readerSource.includes('<h1 dir="auto" lang="${esc(readerLang)}">${esc(ch.title)}</h1>'), 'Chapter headings must retain independent language metadata and automatic text direction.');
 assert.ok(runtime.includes('<figcaption dir="auto">'), 'Comic captions must detect their own text direction.');
 assert.ok(runtime.includes('document.querySelectorAll("option[data-in-lang]").forEach'), 'Language changes must translate reader theme option labels, not only the global navigation.');
 assert.ok(runtime.includes('document.querySelectorAll("[data-in-lang]:not(option)").forEach'), 'Language changes must translate reader labels and navigation text nodes.');
