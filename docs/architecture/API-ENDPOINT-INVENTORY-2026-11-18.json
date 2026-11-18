@@ -2,7 +2,7 @@
   "audit_date": "2026-11-18",
   "branch": "architecture/phase-01-foundation-route-registry",
   "source_file": "src/index.js",
-  "source_blob": "cdf2efe31a3e427295692be3b79e838f016caea9",
+  "source_blob": "3d6b465c8d8e36d62dd52e60727dba5bd9b61fce",
   "scope": "First-pass static inventory of literal API path branches and dynamic path matchers inside async function api(req,env).",
   "counts": {
     "literal_endpoint_paths": 74,
@@ -1138,7 +1138,22 @@
       "source_line": 459,
       "methods": [],
       "observed_helper_signals": [],
-      "review_required": true
+      "review_required": true,
+      "source_lines": [
+        459
+      ],
+      "allowed_methods": [
+        "GET"
+      ],
+      "method_guards": [
+        "if(nm&&m===\"GET\")"
+      ],
+      "method_evidence": "explicit-dynamic-route-conditions",
+      "method_guard_lines": [
+        459
+      ],
+      "access_class": "public",
+      "resource_scope": "Rights-filtered public novel; optional personal bookmark/library/follow/rating fields are scoped to the authenticated user."
     },
     {
       "pattern": "/api/chapters/{id}",
@@ -1146,7 +1161,22 @@
       "source_line": 460,
       "methods": [],
       "observed_helper_signals": [],
-      "review_required": true
+      "review_required": true,
+      "source_lines": [
+        460
+      ],
+      "allowed_methods": [
+        "GET"
+      ],
+      "method_guards": [
+        "if(cm&&m===\"GET\")"
+      ],
+      "method_evidence": "explicit-dynamic-route-conditions",
+      "method_guard_lines": [
+        460
+      ],
+      "access_class": "public",
+      "resource_scope": "Rights-filtered published chapter; locked content is returned only when unlocked by this user or the user is an administrator."
     },
     {
       "pattern": "/api/chapters/{id}/unlock",
@@ -1158,7 +1188,22 @@
       "observed_helper_signals": [
         "need"
       ],
-      "review_required": true
+      "review_required": true,
+      "source_lines": [
+        461
+      ],
+      "allowed_methods": [
+        "POST"
+      ],
+      "method_guards": [
+        "if(/^\\/api\\/chapters\\/\\d+\\/unlock$/.test(p)&&m===\"POST\")"
+      ],
+      "method_evidence": "explicit-dynamic-route-conditions",
+      "method_guard_lines": [
+        461
+      ],
+      "access_class": "authenticated",
+      "resource_scope": "Unlock, ticket debit, and ledger write are scoped to the authenticated user."
     },
     {
       "pattern": "/api/novels/{id}/batch-unlock",
@@ -1170,7 +1215,22 @@
       "observed_helper_signals": [
         "need"
       ],
-      "review_required": true
+      "review_required": true,
+      "source_lines": [
+        459
+      ],
+      "allowed_methods": [
+        "POST"
+      ],
+      "method_guards": [
+        "if(bu&&m===\"POST\")"
+      ],
+      "method_evidence": "explicit-dynamic-route-conditions",
+      "method_guard_lines": [
+        462
+      ],
+      "access_class": "authenticated",
+      "resource_scope": "Batch unlock and ticket debit are scoped to the authenticated user."
     },
     {
       "pattern": "/api/admin/author-applications/{id}",
@@ -1182,7 +1242,22 @@
       "observed_helper_signals": [
         "admin"
       ],
-      "review_required": true
+      "review_required": true,
+      "source_lines": [
+        588
+      ],
+      "allowed_methods": [
+        "PATCH"
+      ],
+      "method_guards": [
+        "if(authorApplicationReviewId>0&&Number.isSafeInteger(authorApplicationReviewId)&&m===\"PATCH\")"
+      ],
+      "method_evidence": "explicit-dynamic-route-conditions",
+      "method_guard_lines": [
+        589
+      ],
+      "access_class": "admin",
+      "resource_scope": "Administrator-only application moderation; applicant identity is read from the target application."
     },
     {
       "pattern": "/api/admin/users/{id}",
@@ -1194,7 +1269,22 @@
       "observed_helper_signals": [
         "admin"
       ],
-      "review_required": true
+      "review_required": true,
+      "source_lines": [
+        612
+      ],
+      "allowed_methods": [
+        "PATCH"
+      ],
+      "method_guards": [
+        "if(au&&m===\"PATCH\")"
+      ],
+      "method_evidence": "explicit-dynamic-route-conditions",
+      "method_guard_lines": [
+        612
+      ],
+      "access_class": "admin",
+      "resource_scope": "Administrator-only user role, verification, and ban management."
     },
     {
       "pattern": "/api/author/ai/projects/{id}",
@@ -1207,7 +1297,25 @@
       "observed_helper_signals": [
         "author"
       ],
-      "review_required": true
+      "review_required": true,
+      "source_lines": [
+        633
+      ],
+      "allowed_methods": [
+        "GET",
+        "PATCH"
+      ],
+      "method_guards": [
+        "if(aip&&m===\"GET\")",
+        "if(aip&&m===\"PATCH\")"
+      ],
+      "method_evidence": "explicit-dynamic-route-conditions",
+      "method_guard_lines": [
+        634,
+        638
+      ],
+      "access_class": "author",
+      "resource_scope": "Author-only; project owner_user_id must match the authenticated author unless the user is an administrator."
     },
     {
       "pattern": "/api/admin/publishing/novels/{id}",
@@ -1219,7 +1327,22 @@
       "observed_helper_signals": [
         "admin"
       ],
-      "review_required": true
+      "review_required": true,
+      "source_lines": [
+        773
+      ],
+      "allowed_methods": [
+        "PATCH"
+      ],
+      "method_guards": [
+        "if(apn&&m===\"PATCH\")"
+      ],
+      "method_evidence": "explicit-dynamic-route-conditions",
+      "method_guard_lines": [
+        773
+      ],
+      "access_class": "admin",
+      "resource_scope": "Administrator-only publication and rights moderation."
     },
     {
       "pattern": "/api/admin/publishing/chapters/{id}",
@@ -1231,7 +1354,22 @@
       "observed_helper_signals": [
         "admin"
       ],
-      "review_required": true
+      "review_required": true,
+      "source_lines": [
+        782
+      ],
+      "allowed_methods": [
+        "PATCH"
+      ],
+      "method_guards": [
+        "if(acm && m===\"PATCH\")"
+      ],
+      "method_evidence": "explicit-dynamic-route-conditions",
+      "method_guard_lines": [
+        783
+      ],
+      "access_class": "admin",
+      "resource_scope": "Administrator-only chapter moderation."
     },
     {
       "pattern": "/api/admin/donations/{id}",
@@ -1243,7 +1381,22 @@
       "observed_helper_signals": [
         "admin"
       ],
-      "review_required": true
+      "review_required": true,
+      "source_lines": [
+        823
+      ],
+      "allowed_methods": [
+        "PATCH"
+      ],
+      "method_guards": [
+        "if(ad&&m===\"PATCH\")"
+      ],
+      "method_evidence": "explicit-dynamic-route-conditions",
+      "method_guard_lines": [
+        823
+      ],
+      "access_class": "admin",
+      "resource_scope": "Administrator-only donation review and ticket-credit decision."
     },
     {
       "pattern": "/api/admin/reports/{id}",
@@ -1255,7 +1408,22 @@
       "observed_helper_signals": [
         "admin"
       ],
-      "review_required": true
+      "review_required": true,
+      "source_lines": [
+        825
+      ],
+      "allowed_methods": [
+        "PATCH"
+      ],
+      "method_guards": [
+        "if(ar&&m===\"PATCH\")"
+      ],
+      "method_evidence": "explicit-dynamic-route-conditions",
+      "method_guard_lines": [
+        825
+      ],
+      "access_class": "admin",
+      "resource_scope": "Administrator-only report moderation."
     },
     {
       "pattern": "/api/admin/requests/{id}",
@@ -1267,7 +1435,22 @@
       "observed_helper_signals": [
         "admin"
       ],
-      "review_required": true
+      "review_required": true,
+      "source_lines": [
+        834
+      ],
+      "allowed_methods": [
+        "PATCH"
+      ],
+      "method_guards": [
+        "if(p.startsWith(\"/api/admin/requests/\")&&m===\"PATCH\")"
+      ],
+      "method_evidence": "explicit-dynamic-route-conditions",
+      "method_guard_lines": [
+        834
+      ],
+      "access_class": "admin",
+      "resource_scope": "Administrator-only novel-request review and conditional requester refund."
     },
     {
       "pattern": "/api/admin/connector-authorization-requests/{id}",
@@ -1279,7 +1462,22 @@
       "observed_helper_signals": [
         "admin"
       ],
-      "review_required": true
+      "review_required": true,
+      "source_lines": [
+        836
+      ],
+      "allowed_methods": [
+        "PATCH"
+      ],
+      "method_guards": [
+        "if(car&&m===\"PATCH\")"
+      ],
+      "method_evidence": "explicit-dynamic-route-conditions",
+      "method_guard_lines": [
+        836
+      ],
+      "access_class": "admin",
+      "resource_scope": "Administrator-only connector rights authorization review."
     },
     {
       "pattern": "/api/author/ai/projects/{id}/blueprint",
@@ -1291,7 +1489,22 @@
       "observed_helper_signals": [
         "author"
       ],
-      "review_required": true
+      "review_required": true,
+      "source_lines": [
+        646
+      ],
+      "allowed_methods": [
+        "POST"
+      ],
+      "method_guards": [
+        "if(/^\\/api\\/author\\/ai\\/projects\\/\\d+\\/blueprint$/.test(p)&&m===\"POST\")"
+      ],
+      "method_evidence": "explicit-dynamic-route-conditions",
+      "method_guard_lines": [
+        646
+      ],
+      "access_class": "author",
+      "resource_scope": "Author-only; project owner_user_id must match the authenticated author unless the user is an administrator."
     },
     {
       "pattern": "/api/author/ai/projects/{id}/run",
@@ -1303,7 +1516,22 @@
       "observed_helper_signals": [
         "author"
       ],
-      "review_required": true
+      "review_required": true,
+      "source_lines": [
+        657
+      ],
+      "allowed_methods": [
+        "POST"
+      ],
+      "method_guards": [
+        "if(/^\\/api\\/author\\/ai\\/projects\\/\\d+\\/run$/.test(p)&&m===\"POST\")"
+      ],
+      "method_evidence": "explicit-dynamic-route-conditions",
+      "method_guard_lines": [
+        657
+      ],
+      "access_class": "author",
+      "resource_scope": "Author-only; project owner_user_id must match the authenticated author unless the user is an administrator."
     },
     {
       "pattern": "/api/author/ai/projects/{id}/jobs",
@@ -1315,7 +1543,22 @@
       "observed_helper_signals": [
         "author"
       ],
-      "review_required": true
+      "review_required": true,
+      "source_lines": [
+        686
+      ],
+      "allowed_methods": [
+        "GET"
+      ],
+      "method_guards": [
+        "if(/^\\/api\\/author\\/ai\\/projects\\/\\d+\\/jobs$/.test(p)&&m===\"GET\")"
+      ],
+      "method_evidence": "explicit-dynamic-route-conditions",
+      "method_guard_lines": [
+        686
+      ],
+      "access_class": "author",
+      "resource_scope": "Author-only; project owner_user_id must match the authenticated author unless the user is an administrator."
     },
     {
       "pattern": "/api/author/novels/{id}/submit",
@@ -1327,7 +1570,22 @@
       "observed_helper_signals": [
         "author"
       ],
-      "review_required": true
+      "review_required": true,
+      "source_lines": [
+        715
+      ],
+      "allowed_methods": [
+        "POST"
+      ],
+      "method_guards": [
+        "if(/^\\/api\\/author\\/novels\\/\\d+\\/submit$/.test(p)&&m===\"POST\")"
+      ],
+      "method_evidence": "explicit-dynamic-route-conditions",
+      "method_guard_lines": [
+        715
+      ],
+      "access_class": "author",
+      "resource_scope": "Author-only; parent novel owner_user_id must match the authenticated author unless the user is an administrator."
     },
     {
       "pattern": "/api/author/novels/{id}",
@@ -1339,7 +1597,22 @@
       "observed_helper_signals": [
         "author"
       ],
-      "review_required": true
+      "review_required": true,
+      "source_lines": [
+        721
+      ],
+      "allowed_methods": [
+        "PATCH"
+      ],
+      "method_guards": [
+        "if(/^\\/api\\/author\\/novels\\/\\d+$/.test(p)&&m===\"PATCH\")"
+      ],
+      "method_evidence": "explicit-dynamic-route-conditions",
+      "method_guard_lines": [
+        721
+      ],
+      "access_class": "author",
+      "resource_scope": "Author-only; novel owner_user_id must match the authenticated author unless the user is an administrator."
     },
     {
       "pattern": "/api/author/chapters/{id}",
@@ -1351,7 +1624,22 @@
       "observed_helper_signals": [
         "author"
       ],
-      "review_required": true
+      "review_required": true,
+      "source_lines": [
+        745
+      ],
+      "allowed_methods": [
+        "PATCH"
+      ],
+      "method_guards": [
+        "if(/^\\/api\\/author\\/chapters\\/\\d+$/.test(p)&&m===\"PATCH\")"
+      ],
+      "method_evidence": "explicit-dynamic-route-conditions",
+      "method_guard_lines": [
+        745
+      ],
+      "access_class": "author",
+      "resource_scope": "Author-only; parent novel owner_user_id must match the authenticated author unless the user is an administrator."
     },
     {
       "pattern": "/api/author/chapters/{id}/publish",
@@ -1363,7 +1651,22 @@
       "observed_helper_signals": [
         "author"
       ],
-      "review_required": true
+      "review_required": true,
+      "source_lines": [
+        753
+      ],
+      "allowed_methods": [
+        "POST"
+      ],
+      "method_guards": [
+        "if(/^\\/api\\/author\\/chapters\\/\\d+\\/publish$/.test(p)&&m===\"POST\")"
+      ],
+      "method_evidence": "explicit-dynamic-route-conditions",
+      "method_guard_lines": [
+        753
+      ],
+      "access_class": "author",
+      "resource_scope": "Author-only; parent novel owner_user_id must match the authenticated author unless the user is an administrator."
     },
     {
       "pattern": "/api/admin/publishing/chapters",
@@ -1375,7 +1678,28 @@
       "observed_helper_signals": [
         "admin"
       ],
-      "review_required": true
+      "review_required": true,
+      "source_lines": [
+        774
+      ],
+      "allowed_methods": [
+        "GET",
+        "POST",
+        "PATCH"
+      ],
+      "method_guards": [
+        "if(ach && m===\"GET\")",
+        "if(acm && m===\"PATCH\")",
+        "if(p===\"/api/admin/publishing/chapters\"&&m===\"POST\")"
+      ],
+      "method_evidence": "explicit-dynamic-route-conditions",
+      "method_guard_lines": [
+        775,
+        783,
+        821
+      ],
+      "access_class": "admin",
+      "resource_scope": "Administrator-only chapter listing, creation, and editing."
     }
   ],
   "known_findings": [
