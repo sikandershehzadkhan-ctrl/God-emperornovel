@@ -21,6 +21,10 @@ assert.match(app, /\$\('#readerThemeBtn'\)\.onclick=\(\)=>\{[\s\S]*?setReaderThe
 assert.match(app, /\$\('#readerThemeSelect'\)\.onchange=\(\)=>\{setReaderTheme\(\$\('#readerThemeSelect'\)\.value\);updateReaderContrast\(\)\}/, "Selecting a reader theme must refresh the live contrast result.");
 assert.match(app, /e\.key\.toLowerCase\(\)==\='t'\)\{const i=themeNames\.indexOf\(readerPage\.dataset\.readerTheme\);setReaderTheme\(themeNames\[\(i\+1\)%themeNames\.length\]\);updateReaderContrast\(\)\}/, "The keyboard theme shortcut must refresh the live contrast result.");
 assert.match(app, /readerResetPrefs[\s\S]*?updateReaderContrast\(\)/, "Resetting reader settings must refresh the live contrast result.");
+assert.match(app, /const prefScope=progressAccount\?'account:'\+encodeURIComponent\(progressAccount\):'guest'/, "reader settings must be isolated by account on shared devices");
+assert.match(app, /api\('\/api\/reader-preferences'\)/, "signed-in readers must restore account preferences from the server");
+assert.match(app, /method:'PUT',body:JSON\.stringify\(\{preferences:preferenceSnapshot\(\)\}\)/, "reader preference changes must sync to the account API");
+assert.match(app, /const preferenceSnapshot=\(\)=>\(\{theme:/, "reader preferences must be serialized as a validated snapshot");
 assert.match(app, /const prefGet=key=>\{try\{return localStorage\.getItem\(key\)\}catch\(e\)\{return null\}\}/,
   "Reader preference reads must tolerate unavailable browser storage.");
 assert.match(app, /readerResetPrefs[\s\S]*?prefRemove\(k\)[\s\S]*?setReaderTheme\('dark'\)/,

@@ -388,19 +388,19 @@ async function reader(){
  const content=$('#readerContent'),readerPage=$('.readerPage'),themeNames=['light','dark','midnight','sepia','imperial','cosmic'];
  initComicViewer();
  const prefGet=key=>{try{return localStorage.getItem(key)}catch(e){return null}};const prefSet=(key,value)=>{try{localStorage.setItem(key,value)}catch(e){}};const prefRemove=key=>{try{localStorage.removeItem(key)}catch(e){}};
- const prefKeys={bg:'imperial_reader_bg',text:'imperial_reader_text',font:'imperial_reader_font',align:'imperial_reader_align',size:'readerSize',line:'imperial_reader_line_height',width:'imperial_reader_width'};
+ const prefScope=progressAccount?'account:'+encodeURIComponent(progressAccount):'guest';const prefKeys={bg:'imperial_reader_bg:'+prefScope,text:'imperial_reader_text:'+prefScope,font:'imperial_reader_font:'+prefScope,align:'imperial_reader_align:'+prefScope,size:'readerSize:'+prefScope,line:'imperial_reader_line_height:'+prefScope,width:'imperial_reader_width:'+prefScope,theme:'imperial_reader_theme:'+prefScope};
  let size=Math.min(32,Math.max(15,Number(prefGet(prefKeys.size)||18)));if(!Number.isFinite(size))size=18;
- const setReaderTheme=theme=>{const chosen=themeNames.includes(theme)?theme:'dark';readerPage.dataset.readerTheme=chosen;prefSet('imperial_reader_theme',chosen);$('#readerThemeSelect').value=chosen;$('#readerThemeBtn').title='Reader theme: '+chosen;$('#readerThemeBtn').setAttribute('aria-label','Reader theme: '+chosen)};
- setReaderTheme(prefGet('imperial_reader_theme')||'dark');
+ const setReaderTheme=theme=>{const chosen=themeNames.includes(theme)?theme:'dark';readerPage.dataset.readerTheme=chosen;prefSet(prefKeys.theme,chosen);persistReaderPreferences();$('#readerThemeSelect').value=chosen;$('#readerThemeBtn').title='Reader theme: '+chosen;$('#readerThemeBtn').setAttribute('aria-label','Reader theme: '+chosen)};
+ setReaderTheme(prefGet(prefKeys.theme)||'dark');
  $('#readerThemeBtn').onclick=()=>{const i=themeNames.indexOf(readerPage.dataset.readerTheme);setReaderTheme(themeNames[(i+1)%themeNames.length]);updateReaderContrast()};
  const lineSelect=$('#readerLineSelect'),widthSelect=$('#readerWidthSelect'),sizeSelect=$('#readerFontSize'),fontSelect=$('#readerFontFamily'),alignSelect=$('#readerTextAlign');
  const fontStacks={system:'system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif',arial:'Arial,Helvetica,sans-serif',trebuchet:'"Trebuchet MS",Arial,sans-serif',georgia:'Georgia,serif',palatino:'Palatino Linotype,Book Antiqua,Palatino,serif',serif:'ui-serif,Georgia,serif'};
- const applyReaderPrefs=()=>{content.style.fontSize=size+'px';content.style.lineHeight=lineSelect.value;content.style.maxWidth=widthSelect.value+'px';content.style.fontFamily=fontStacks[fontSelect.value]||fontStacks.system;content.style.textAlign=alignSelect.value==='start'?'start':alignSelect.value;prefSet(prefKeys.size,String(size));prefSet(prefKeys.line,lineSelect.value);prefSet(prefKeys.width,widthSelect.value);prefSet(prefKeys.font,fontSelect.value);prefSet(prefKeys.align,alignSelect.value)};
+ let preferenceSyncReady=false,preferenceHydrating=false,preferenceSaveTimer=0;const preferenceSnapshot=()=>({theme:readerPage.dataset.readerTheme||'dark',size,font:fontSelect.value,align:alignSelect.value,line:lineSelect.value,width:widthSelect.value,...(prefGet(prefKeys.bg)?{bg:prefGet(prefKeys.bg)}:{}),...(prefGet(prefKeys.text)?{text:prefGet(prefKeys.text)}:{})});const persistReaderPreferences=()=>{if(!readerIdentity.user||!preferenceSyncReady||preferenceHydrating)return;clearTimeout(preferenceSaveTimer);preferenceSaveTimer=setTimeout(()=>api('/api/reader-preferences',{method:'PUT',body:JSON.stringify({preferences:preferenceSnapshot()})}).catch(()=>{}),500)};const applyReaderPrefs=()=>{content.style.fontSize=size+'px';content.style.lineHeight=lineSelect.value;content.style.maxWidth=widthSelect.value+'px';content.style.fontFamily=fontStacks[fontSelect.value]||fontStacks.system;content.style.textAlign=alignSelect.value==='start'?'start':alignSelect.value;prefSet(prefKeys.size,String(size));prefSet(prefKeys.line,lineSelect.value);prefSet(prefKeys.width,widthSelect.value);prefSet(prefKeys.font,fontSelect.value);prefSet(prefKeys.align,alignSelect.value);persistReaderPreferences()};
  const contrastStatus=$('#readerContrastStatus');
  const parseRgb=value=>{const parts=String(value||'').match(/[0-9]+/g);return parts&&parts.length>=3?parts.slice(0,3).map(Number):null};
  const luminance=rgb=>rgb.reduce((sum,channel,index)=>{const v=channel/255;return sum+[0.2126,0.7152,0.0722][index]*(v<=0.04045?v/12.92:Math.pow((v+0.055)/1.055,2))},0);
  const updateReaderContrast=()=>{if(!contrastStatus)return;const bg=parseRgb(getComputedStyle($('.readerArticle')||readerPage).backgroundColor),fg=parseRgb(getComputedStyle(content).color);if(!bg||!fg){contrastStatus.textContent='';return}const a=luminance(bg),b=luminance(fg),ratio=(Math.max(a,b)+0.05)/(Math.min(a,b)+0.05);contrastStatus.textContent=ratio>=4.5?'Text contrast '+ratio.toFixed(2)+':1 · WCAG AA for normal text.':'Low text contrast '+ratio.toFixed(2)+':1 · choose a darker text or lighter background for easier reading.';contrastStatus.dataset.state=ratio>=4.5?'pass':'warning'};
- const applyCustomColor=(kind,color)=>{if(!/^#[0-9a-f]{6}$/i.test(color))return;readerPage.style.setProperty(kind==='bg'?'--reader-custom-bg':'--reader-custom-text',color);readerPage.classList.add('readerCustomColors');prefSet(kind==='bg'?prefKeys.bg:prefKeys.text,color);const picker=$('#'+(kind==='bg'?'readerBgColor':'readerTextColor'));picker.value=color;const group=$('#'+(kind==='bg'?'readerBgSwatches':'readerTextSwatches'));group.querySelectorAll('button[data-color]').forEach(b=>{const active=b.dataset.color.toLowerCase()===color.toLowerCase();b.classList.toggle('active',active);b.setAttribute('aria-pressed',String(active))});updateReaderContrast()};
+ const applyCustomColor=(kind,color)=>{if(!/^#[0-9a-f]{6}$/i.test(color))return;readerPage.style.setProperty(kind==='bg'?'--reader-custom-bg':'--reader-custom-text',color);readerPage.classList.add('readerCustomColors');prefSet(kind==='bg'?prefKeys.bg:prefKeys.text,color);persistReaderPreferences();const picker=$('#'+(kind==='bg'?'readerBgColor':'readerTextColor'));picker.value=color;const group=$('#'+(kind==='bg'?'readerBgSwatches':'readerTextSwatches'));group.querySelectorAll('button[data-color]').forEach(b=>{const active=b.dataset.color.toLowerCase()===color.toLowerCase();b.classList.toggle('active',active);b.setAttribute('aria-pressed',String(active))});updateReaderContrast()};
  const bindSwatches=(kind)=>{$$('#'+(kind==='bg'?'readerBgSwatches':'readerTextSwatches')+' button[data-color]').forEach(b=>{b.onclick=()=>applyCustomColor(kind,b.dataset.color)})};
  bindSwatches('bg');bindSwatches('text');
  $('#readerBgColor').oninput=e=>applyCustomColor('bg',e.target.value);$('#readerTextColor').oninput=e=>applyCustomColor('text',e.target.value);
@@ -410,7 +410,27 @@ async function reader(){
  $('#readerThemeSelect').onchange=()=>{setReaderTheme($('#readerThemeSelect').value);updateReaderContrast()};
  [lineSelect,widthSelect,sizeSelect,fontSelect,alignSelect].forEach(el=>el.onchange=()=>{if(el===sizeSelect)size=Number(sizeSelect.value);applyReaderPrefs()});
  applyReaderPrefs();
- $('#readerResetPrefs').onclick=()=>{Object.values(prefKeys).forEach(k=>prefRemove(k));prefRemove('imperial_reader_theme');setReaderTheme('dark');readerPage.style.removeProperty('--reader-custom-bg');readerPage.style.removeProperty('--reader-custom-text');readerPage.classList.remove('readerCustomColors');size=18;lineSelect.value='1.85';widthSelect.value='600';sizeSelect.value='18';fontSelect.value='system';alignSelect.value='start';applyReaderPrefs();$('#readerBgColor').value='#FDFBF7';$('#readerTextColor').value='#171717';$('#readerBgSwatches').querySelectorAll('button').forEach(b=>{b.classList.remove('active');b.setAttribute('aria-pressed','false')});$('#readerTextSwatches').querySelectorAll('button').forEach(b=>{b.classList.remove('active');b.setAttribute('aria-pressed','false')});updateReaderContrast()};
+ if(readerIdentity.user){
+  preferenceHydrating=true;
+  try{
+   const remote=await api('/api/reader-preferences');
+   const saved=remote.preferences||{};
+   if(Object.keys(saved).length){
+    if(themeNames.includes(saved.theme))setReaderTheme(saved.theme);
+    if(Number.isInteger(Number(saved.size))&&Number(saved.size)>=15&&Number(saved.size)<=32)size=Number(saved.size);
+    if(Object.prototype.hasOwnProperty.call(fontStacks,saved.font))fontSelect.value=saved.font;
+    if(['start','left','center','right','justify'].includes(saved.align))alignSelect.value=saved.align;
+    if(['1.65','1.85','2','2.15'].includes(String(saved.line)))lineSelect.value=String(saved.line);
+    if(['500','600','680','760'].includes(String(saved.width)))widthSelect.value=String(saved.width);
+    sizeSelect.value=String(size);applyReaderPrefs();
+    if(saved.bg)applyCustomColor('bg',saved.bg);if(saved.text)applyCustomColor('text',saved.text);
+   }else{
+    const seeded=await api('/api/reader-preferences',{method:'PUT',body:JSON.stringify({preferences:preferenceSnapshot()})});
+   }
+  }catch(error){console.warn('Reader preferences could not sync:',error)}
+  preferenceHydrating=false;preferenceSyncReady=true;
+ }
+ $('#readerResetPrefs').onclick=()=>{Object.values(prefKeys).forEach(k=>prefRemove(k));prefRemove(prefKeys.theme);setReaderTheme('dark');readerPage.style.removeProperty('--reader-custom-bg');readerPage.style.removeProperty('--reader-custom-text');readerPage.classList.remove('readerCustomColors');size=18;lineSelect.value='1.85';widthSelect.value='600';sizeSelect.value='18';fontSelect.value='system';alignSelect.value='start';applyReaderPrefs();$('#readerBgColor').value='#FDFBF7';$('#readerTextColor').value='#171717';$('#readerBgSwatches').querySelectorAll('button').forEach(b=>{b.classList.remove('active');b.setAttribute('aria-pressed','false')});$('#readerTextSwatches').querySelectorAll('button').forEach(b=>{b.classList.remove('active');b.setAttribute('aria-pressed','false')});updateReaderContrast();persistReaderPreferences()};
  $('#fontDown').onclick=()=>{size=Math.max(15,size-1);sizeSelect.value=String(size);applyReaderPrefs()};
  $('#fontUp').onclick=()=>{size=Math.min(32,size+1);sizeSelect.value=String(size);applyReaderPrefs()};
  const drawer=$('#chapterDrawer'),scrim=$('#chapterDrawerScrim'),settingsBtn=$('#readerSettingsBtn'),chapterBtn=$('#chapterMenu');
