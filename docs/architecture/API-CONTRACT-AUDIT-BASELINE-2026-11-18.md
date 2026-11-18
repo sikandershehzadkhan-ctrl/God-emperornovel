@@ -11,7 +11,7 @@ Establish a source-backed starting point for the API method, authentication, aut
 - Existing inventory source checks: `scripts/test-api-endpoint-inventory.mjs`
 - Public client runtime: `public/app.js`
 
-The inventory is a first-pass static scan of literal path branches and dynamic path matchers. At audit time it records Worker source blob `6448ddfc5ae08694e67d57b4a8e52e0637be2383`. Its method and helper-signal fields are evidence hints only. They do not prove allowed methods, authorization outcomes, or resource-level ownership.
+The inventory is a first-pass static scan of literal path branches and dynamic path matchers. Its recorded Worker source blob is `6448ddfc5ae08694e67d57b4a8e52e0637be2383`, while the fetched `src/index.js` blob on this audit branch is `d35630f02e392496ce8826c9f720b75672b099c8`. The fingerprint is therefore stale relative to the audited branch and must be regenerated before treating source-line evidence as authoritative. Its method and helper-signal fields are evidence hints only. They do not prove allowed methods, authorization outcomes, or resource-level ownership.
 
 ## Verified inventory totals
 
@@ -26,6 +26,10 @@ The inventory is a first-pass static scan of literal path branches and dynamic p
 All 74 literal paths and all 21 dynamic families remain review-required. The 77 explicit method conditions are not a complete list of accepted methods: branches without a visible method predicate may accept more than one method, and dispatcher fallthrough behavior must be checked separately.
 
 ## Concrete findings confirmed in source
+
+### 0. Inventory source fingerprint is stale
+
+The inventory's recorded `source_blob` does not match the current Worker file blob on this branch. The route-count source check still compares literal paths and branch occurrences, but the stale fingerprint means the inventory is not cryptographically pinned to the current Worker revision. Regenerate the inventory from the exact audited source before relying on its source-line references.
 
 ### 1. Rating contract mismatch
 
