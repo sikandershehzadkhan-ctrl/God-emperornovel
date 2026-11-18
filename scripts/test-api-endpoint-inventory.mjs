@@ -32,6 +32,12 @@ assert.deepEqual([...manifestPaths].sort(), [...literalPaths].sort(), "API liter
 
 for (const endpoint of manifest.literal_endpoints) {
   assert.ok(endpoint.source_lines.length > 0, "Every literal API endpoint needs source line evidence: " + endpoint.path);
+  if (endpoint.path !== "/api/taxonomy") {
+    for (const lineNumber of endpoint.source_lines) {
+      const line = worker.split("\n")[lineNumber - 1] || "";
+      assert.ok(/m\s*(?:===|!==|==|!=)\s*["'][A-Z]+["']/.test(line), "Every literal API dispatcher branch must enforce an HTTP method on its own source line: " + endpoint.path + " line " + lineNumber);
+    }
+  }
   assert.ok(endpoint.occurrences >= 1, "Every literal API endpoint needs at least one occurrence: " + endpoint.path);
   for (const method of endpoint.explicit_methods) {
     assert.ok(api.includes(`m===\"${method}\"`) || api.includes(`m === \"${method}\"`) || api.includes(`m==='${method}'`) || api.includes(`m === '${method}'`), "Explicit method evidence must remain in source: " + endpoint.path + " " + method);
@@ -65,6 +71,7 @@ assert.equal(rating.occurrences, 3, "Rating GET and duplicate POST source branch
 assert.ok(rating.explicit_methods.includes("GET") && rating.explicit_methods.includes("POST"), "Rating methods must include GET and POST");
 
 assert.equal(manifest.counts.literal_endpoint_paths, manifest.literal_endpoints.length);
+assert.equal(manifest.counts.explicit_method_conditions, manifest.literal_endpoints.reduce((sum, endpoint) => sum + endpoint.explicit_methods.length, 0), "Explicit method-condition count must match endpoint method declarations");
 assert.equal(manifest.counts.dynamic_route_families, manifest.dynamic_endpoints.length);
 assert.equal(manifest.literal_endpoints.filter(endpoint => endpoint.method_evidence === "mixed-or-unconstrained-branches").length, 0, "Every literal API path must have explicit or delegated method enforcement");
 assert.ok(manifest.literal_endpoints.every(endpoint => endpoint.review_required), "All API endpoints stay review-gated until auth and resource ownership are audited");
