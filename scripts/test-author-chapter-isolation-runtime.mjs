@@ -38,7 +38,7 @@ class FakeStatement {
       const novel = novels.get(row.novel_id);
       return { ...row, owner_user_id: novel.owner_user_id, rights_status: novel.rights_status };
     }
-    if (this.sql.includes("SELECT c.*,n.owner_user_id FROM chapters c JOIN novels n")) {
+    if (this.sql.includes("SELECT c.*,n.owner_user_id,n.kind AS novel_kind FROM chapters c JOIN novels n")) {
       const row = chapters.get(Number(this.values[0]));
       if (!row) return null;
       return { ...row, owner_user_id: novels.get(row.novel_id).owner_user_id, novel_kind: novels.get(row.novel_id).kind };
