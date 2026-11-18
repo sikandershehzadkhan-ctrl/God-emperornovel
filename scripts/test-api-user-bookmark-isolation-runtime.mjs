@@ -14,6 +14,9 @@ const users = new Map([
 const sessions = new Map();
 for (const [token, user] of users) sessions.set(await hash(token), user);
 const bookmarks = [], history = [], library = [];
+const follows = [{ user_id: 301, novel_id: 10, created_at: "2026-11-18 00:00:00" }];
+const notifications = [{ id: 1, user_id: 301, message: "Private notice" }];
+const ticketLedger = [{ id: 1, user_id: 301, delta: -5, reason: "test", reference: "private", created_at: "2026-11-18 00:00:00" }];
 const novels = [{ id: 501, owner_user_id: 301, title: "A's Novel", author: "account_a", description: "", status: "ongoing", kind: "original", language: "English", rights_status: "original", publication_status: "draft" }];
 const chapters = [{ id: 601, novel_id: 501, chapter_number: 1, title: "A's Chapter", content: "Chapter text", is_locked: 0, ticket_cost: 0, owner_user_id: 301, kind: "original" }];
 
@@ -63,6 +66,15 @@ class FakeStatement {
     }
     if (this.sql.includes("FROM novels n WHERE n.owner_user_id=?")) {
       return { results: novels.filter(row => row.owner_user_id === this.values[0]) };
+    }
+    if (this.sql.includes("FROM follows f JOIN novels n")) {
+      return { results: follows.filter(row => row.user_id === this.values[0]).map(row => ({ ...row, id: row.novel_id, title: "Followed Novel", publication_status: "published", rights_status: "original" })) };
+    }
+    if (this.sql.includes("FROM notifications WHERE user_id=?")) {
+      return { results: notifications.filter(row => row.user_id === this.values[0]) };
+    }
+    if (this.sql.includes("FROM ticket_ledger WHERE user_id=?")) {
+      return { results: ticketLedger.filter(row => row.user_id === this.values[0]) };
     }
     return { results: [] };
   }
@@ -149,4 +161,12 @@ await payload(await request("account-a-token", "/api/author/chapters/601", "PATC
 await payload(await request("account-b-token", "/api/author/chapters/601", "PATCH", { title: "Hijacked Chapter" }), 403);
 assert.equal(chapters[0].title, "A's Updated Chapter", "Author B must not overwrite Author A's chapter");
 
-console.log("PASS: Worker fetch two-account isolation for bookmarks, history, personal library, author novel listing/update, and author chapter update; forged identity and invalid chapter relationships rejected. Deterministic D1 test double only, not live Cloudflare D1.");
+// Additional private account feeds must never return another account's rows.
+assert.deepEqual(await payload(await request("account-b-token", "/api/follows", "GET")), [], "B must not read A's follows");
+assert.deepEqual((await payload(await request("account-a-token", "/api/follows", "GET"))).map(row => row.id), [10]);
+assert.deepEqual(await payload(await request("account-b-token", "/api/notifications", "GET")), [], "B must not read A's notifications");
+assert.deepEqual((await payload(await request("account-a-token", "/api/notifications", "GET"))).map(row => row.id), [1]);
+assert.deepEqual(await payload(await request("account-b-token", "/api/tickets/ledger", "GET")), [], "B must not read A's ticket ledger");
+assert.deepEqual((await payload(await request("account-a-token", "/api/tickets/ledger", "GET"))).map(row => row.delta), [-5]);
+
+console.log("PASS: Worker fetch two-account isolation for bookmarks, history, library, follows, notifications, ticket ledger, author novel listing/update, and author chapter update; forged identity and invalid chapter relationships rejected. Deterministic D1 test double only, not live Cloudflare D1.");
