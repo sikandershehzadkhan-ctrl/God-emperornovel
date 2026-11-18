@@ -20,7 +20,7 @@
   "exact_routes": [
     {
       "path": "/",
-      "shell": "public/index.html",
+      "shell": "index.html",
       "renderer": "home",
       "shell_type": "spa",
       "dispatch": "if(p==='/')await home()",
@@ -30,11 +30,12 @@
       "responsive_qa": "not-verified",
       "accessibility_qa": "not-verified",
       "locale_rtl_qa": "not-verified",
-      "deployed_direct_load_qa": "not-verified"
+      "deployed_direct_load_qa": "not-verified",
+      "shell_file": "public/index.html"
     },
     {
       "path": "/catalog",
-      "shell": "public/catalog.html",
+      "shell": "catalog.html",
       "renderer": "catalog",
       "shell_type": "spa-shell",
       "dispatch": "else if(p==='/discover'||p==='/catalog')await catalog()",
@@ -44,11 +45,12 @@
       "responsive_qa": "not-verified",
       "accessibility_qa": "not-verified",
       "locale_rtl_qa": "not-verified",
-      "deployed_direct_load_qa": "not-verified"
+      "deployed_direct_load_qa": "not-verified",
+      "shell_file": "public/catalog.html"
     },
     {
       "path": "/discover",
-      "shell": "public/catalog.html",
+      "shell": "catalog.html",
       "renderer": "catalog",
       "shell_type": "spa-shell",
       "dispatch": "else if(p==='/discover'||p==='/catalog')await catalog()",
@@ -58,11 +60,12 @@
       "responsive_qa": "not-verified",
       "accessibility_qa": "not-verified",
       "locale_rtl_qa": "not-verified",
-      "deployed_direct_load_qa": "not-verified"
+      "deployed_direct_load_qa": "not-verified",
+      "shell_file": "public/catalog.html"
     },
     {
       "path": "/formats",
-      "shell": "public/index.html",
+      "shell": "index.html",
       "renderer": "formatDirectory",
       "shell_type": "spa-shell",
       "dispatch": "else if(p==='/formats')await formatDirectory()",
@@ -72,11 +75,12 @@
       "responsive_qa": "not-verified",
       "accessibility_qa": "not-verified",
       "locale_rtl_qa": "not-verified",
-      "deployed_direct_load_qa": "not-verified"
+      "deployed_direct_load_qa": "not-verified",
+      "shell_file": "public/index.html"
     },
     {
       "path": "/genres",
-      "shell": "public/genres.html",
+      "shell": "genres.html",
       "renderer": "genres",
       "shell_type": "spa-shell",
       "dispatch": "else if(p==='/genres')await genres()",
@@ -86,11 +90,12 @@
       "responsive_qa": "not-verified",
       "accessibility_qa": "not-verified",
       "locale_rtl_qa": "not-verified",
-      "deployed_direct_load_qa": "not-verified"
+      "deployed_direct_load_qa": "not-verified",
+      "shell_file": "public/genres.html"
     },
     {
       "path": "/tags",
-      "shell": "public/tags.html",
+      "shell": "tags.html",
       "renderer": "tags",
       "shell_type": "spa-shell",
       "dispatch": "else if(p==='/tags')await tags()",
@@ -100,11 +105,12 @@
       "responsive_qa": "not-verified",
       "accessibility_qa": "not-verified",
       "locale_rtl_qa": "not-verified",
-      "deployed_direct_load_qa": "not-verified"
+      "deployed_direct_load_qa": "not-verified",
+      "shell_file": "public/tags.html"
     },
     {
       "path": "/search",
-      "shell": "public/search.html",
+      "shell": "search.html",
       "renderer": "search",
       "shell_type": "spa-shell",
       "dispatch": "else if(p==='/search')await search()",
@@ -114,11 +120,12 @@
       "responsive_qa": "not-verified",
       "accessibility_qa": "not-verified",
       "locale_rtl_qa": "not-verified",
-      "deployed_direct_load_qa": "not-verified"
+      "deployed_direct_load_qa": "not-verified",
+      "shell_file": "public/search.html"
     },
     {
       "path": "/library",
-      "shell": "public/library.html",
+      "shell": "library.html",
       "renderer": "library",
       "shell_type": "spa-shell",
       "dispatch": "else if(p==='/library')await library()",
@@ -128,11 +135,12 @@
       "responsive_qa": "not-verified",
       "accessibility_qa": "not-verified",
       "locale_rtl_qa": "not-verified",
-      "deployed_direct_load_qa": "not-verified"
+      "deployed_direct_load_qa": "not-verified",
+      "shell_file": "public/library.html"
     },
     {
       "path": "/history",
-      "shell": "public/history.html",
+      "shell": "history.html",
       "renderer": "history",
       "shell_type": "spa-shell",
       "dispatch": "else if(p==='/history')await history()",
@@ -142,11 +150,12 @@
       "responsive_qa": "not-verified",
       "accessibility_qa": "not-verified",
       "locale_rtl_qa": "not-verified",
-      "deployed_direct_load_qa": "not-verified"
+      "deployed_direct_load_qa": "not-verified",
+      "shell_file": "public/history.html"
     },
     {
       "path": "/following",
-      "shell": "public/following.html",
+      "shell": "following.html",
       "renderer": "following",
       "shell_type": "spa-shell",
       "dispatch": "else if(p==='/following')await following()",
@@ -156,11 +165,12 @@
       "responsive_qa": "not-verified",
       "accessibility_qa": "not-verified",
       "locale_rtl_qa": "not-verified",
-      "deployed_direct_load_qa": "not-verified"
+      "deployed_direct_load_qa": "not-verified",
+      "shell_file": "public/following.html"
     },
     {
       "path": "/tickets",
-      "shell": "public/tickets.html",
+      "shell": "tickets.html",
       "renderer": "tickets",
       "shell_type": "spa-shell",
       "dispatch": "else if(p==='/tickets')await tickets()",
@@ -170,11 +180,12 @@
       "responsive_qa": "not-verified",
       "accessibility_qa": "not-verified",
       "locale_rtl_qa": "not-verified",
-      "deployed_direct_load_qa": "not-verified"
+      "deployed_direct_load_qa": "not-verified",
+      "shell_file": "public/tickets.html"
     },
     {
       "path": "/requests",
-      "shell": "public/requests.html",
+      "shell": "requests.html",
       "renderer": "requests",
       "shell_type": "spa-shell",
       "dispatch": "else if(p==='/requests')await requests()",
@@ -184,11 +195,12 @@
       "responsive_qa": "not-verified",
       "accessibility_qa": "not-verified",
       "locale_rtl_qa": "not-verified",
-      "deployed_direct_load_qa": "not-verified"
+      "deployed_direct_load_qa": "not-verified",
+      "shell_file": "public/requests.html"
     },
     {
       "path": "/omniportal",
-      "shell": "public/omniportal.html",
+      "shell": "omniportal.html",
       "renderer": "omni",
       "shell_type": "spa-shell",
       "dispatch": "else if(p==='/omniportal')await omni()",
@@ -198,11 +210,12 @@
       "responsive_qa": "not-verified",
       "accessibility_qa": "not-verified",
       "locale_rtl_qa": "not-verified",
-      "deployed_direct_load_qa": "not-verified"
+      "deployed_direct_load_qa": "not-verified",
+      "shell_file": "public/omniportal.html"
     },
     {
       "path": "/community",
-      "shell": "public/index.html",
+      "shell": "index.html",
       "renderer": "discoveryPage:community",
       "shell_type": "spa-shell",
       "dispatch": "else if(p==='/community')await discoveryPage('community')",
@@ -212,11 +225,12 @@
       "responsive_qa": "not-verified",
       "accessibility_qa": "not-verified",
       "locale_rtl_qa": "not-verified",
-      "deployed_direct_load_qa": "not-verified"
+      "deployed_direct_load_qa": "not-verified",
+      "shell_file": "public/index.html"
     },
     {
       "path": "/leaderboard",
-      "shell": "public/index.html",
+      "shell": "index.html",
       "renderer": "discoveryPage:leaderboard",
       "shell_type": "spa-shell",
       "dispatch": "else if(p==='/leaderboard')await discoveryPage('leaderboard')",
@@ -226,11 +240,12 @@
       "responsive_qa": "not-verified",
       "accessibility_qa": "not-verified",
       "locale_rtl_qa": "not-verified",
-      "deployed_direct_load_qa": "not-verified"
+      "deployed_direct_load_qa": "not-verified",
+      "shell_file": "public/index.html"
     },
     {
       "path": "/tier-list",
-      "shell": "public/index.html",
+      "shell": "index.html",
       "renderer": "discoveryPage:tier-list",
       "shell_type": "spa-shell",
       "dispatch": "else if(p==='/tier-list')await discoveryPage('tier-list')",
@@ -240,11 +255,12 @@
       "responsive_qa": "not-verified",
       "accessibility_qa": "not-verified",
       "locale_rtl_qa": "not-verified",
-      "deployed_direct_load_qa": "not-verified"
+      "deployed_direct_load_qa": "not-verified",
+      "shell_file": "public/index.html"
     },
     {
       "path": "/random",
-      "shell": "public/index.html",
+      "shell": "index.html",
       "renderer": "discoveryPage:random",
       "shell_type": "spa-shell",
       "dispatch": "else if(p==='/random')await discoveryPage('random')",
@@ -254,11 +270,12 @@
       "responsive_qa": "not-verified",
       "accessibility_qa": "not-verified",
       "locale_rtl_qa": "not-verified",
-      "deployed_direct_load_qa": "not-verified"
+      "deployed_direct_load_qa": "not-verified",
+      "shell_file": "public/index.html"
     },
     {
       "path": "/made-for-you",
-      "shell": "public/index.html",
+      "shell": "index.html",
       "renderer": "discoveryPage:made-for-you",
       "shell_type": "spa-shell",
       "dispatch": "else if(p==='/made-for-you'||p==='/for-you')await discoveryPage('made-for-you')",
@@ -268,11 +285,12 @@
       "responsive_qa": "not-verified",
       "accessibility_qa": "not-verified",
       "locale_rtl_qa": "not-verified",
-      "deployed_direct_load_qa": "not-verified"
+      "deployed_direct_load_qa": "not-verified",
+      "shell_file": "public/index.html"
     },
     {
       "path": "/settings",
-      "shell": "public/index.html",
+      "shell": "index.html",
       "renderer": "settings",
       "shell_type": "spa-shell",
       "dispatch": "else if(p==='/settings')settings()",
@@ -282,11 +300,12 @@
       "responsive_qa": "not-verified",
       "accessibility_qa": "not-verified",
       "locale_rtl_qa": "not-verified",
-      "deployed_direct_load_qa": "not-verified"
+      "deployed_direct_load_qa": "not-verified",
+      "shell_file": "public/index.html"
     },
     {
       "path": "/for-you",
-      "shell": "public/index.html",
+      "shell": "index.html",
       "renderer": "discoveryPage:made-for-you",
       "shell_type": "spa-shell",
       "dispatch": "else if(p==='/made-for-you'||p==='/for-you')await discoveryPage('made-for-you')",
@@ -296,11 +315,12 @@
       "responsive_qa": "not-verified",
       "accessibility_qa": "not-verified",
       "locale_rtl_qa": "not-verified",
-      "deployed_direct_load_qa": "not-verified"
+      "deployed_direct_load_qa": "not-verified",
+      "shell_file": "public/index.html"
     },
     {
       "path": "/trending",
-      "shell": "public/index.html",
+      "shell": "index.html",
       "renderer": "discoveryPage:trending",
       "shell_type": "spa-shell",
       "dispatch": "else if(p==='/trending')await discoveryPage('trending')",
@@ -310,11 +330,12 @@
       "responsive_qa": "not-verified",
       "accessibility_qa": "not-verified",
       "locale_rtl_qa": "not-verified",
-      "deployed_direct_load_qa": "not-verified"
+      "deployed_direct_load_qa": "not-verified",
+      "shell_file": "public/index.html"
     },
     {
       "path": "/vote",
-      "shell": "public/index.html",
+      "shell": "index.html",
       "renderer": "discoveryPage:vote",
       "shell_type": "spa-shell",
       "dispatch": "else if(p==='/vote')await discoveryPage('vote')",
@@ -324,11 +345,12 @@
       "responsive_qa": "not-verified",
       "accessibility_qa": "not-verified",
       "locale_rtl_qa": "not-verified",
-      "deployed_direct_load_qa": "not-verified"
+      "deployed_direct_load_qa": "not-verified",
+      "shell_file": "public/index.html"
     },
     {
       "path": "/notifications",
-      "shell": "public/index.html",
+      "shell": "index.html",
       "renderer": "discoveryPage:notifications",
       "shell_type": "spa-shell",
       "dispatch": "else if(p==='/notifications')await discoveryPage('notifications')",
@@ -338,11 +360,12 @@
       "responsive_qa": "not-verified",
       "accessibility_qa": "not-verified",
       "locale_rtl_qa": "not-verified",
-      "deployed_direct_load_qa": "not-verified"
+      "deployed_direct_load_qa": "not-verified",
+      "shell_file": "public/index.html"
     },
     {
       "path": "/trend-factory",
-      "shell": "public/index.html",
+      "shell": "index.html",
       "renderer": "trendFactory",
       "shell_type": "spa-shell",
       "dispatch": "else if(p==='/trend-factory')await trendFactory()",
@@ -352,11 +375,12 @@
       "responsive_qa": "not-verified",
       "accessibility_qa": "not-verified",
       "locale_rtl_qa": "not-verified",
-      "deployed_direct_load_qa": "not-verified"
+      "deployed_direct_load_qa": "not-verified",
+      "shell_file": "public/index.html"
     },
     {
       "path": "/community-taxonomy",
-      "shell": "public/community-taxonomy.html",
+      "shell": "community-taxonomy.html",
       "renderer": "standalone:community-taxonomy",
       "shell_type": "standalone",
       "dispatch": "Worker direct standalone dispatch",
@@ -366,11 +390,12 @@
       "responsive_qa": "not-verified",
       "accessibility_qa": "not-verified",
       "locale_rtl_qa": "not-verified",
-      "deployed_direct_load_qa": "not-verified"
+      "deployed_direct_load_qa": "not-verified",
+      "shell_file": "public/community-taxonomy.html"
     },
     {
       "path": "/privacy",
-      "shell": "public/privacy.html",
+      "shell": "privacy.html",
       "renderer": "static-document",
       "shell_type": "static-document",
       "dispatch": "Worker exact HTML shell map",
@@ -380,11 +405,12 @@
       "responsive_qa": "not-verified",
       "accessibility_qa": "not-verified",
       "locale_rtl_qa": "not-verified",
-      "deployed_direct_load_qa": "not-verified"
+      "deployed_direct_load_qa": "not-verified",
+      "shell_file": "public/privacy.html"
     },
     {
       "path": "/terms",
-      "shell": "public/terms.html",
+      "shell": "terms.html",
       "renderer": "static-document",
       "shell_type": "static-document",
       "dispatch": "Worker exact HTML shell map",
@@ -394,11 +420,12 @@
       "responsive_qa": "not-verified",
       "accessibility_qa": "not-verified",
       "locale_rtl_qa": "not-verified",
-      "deployed_direct_load_qa": "not-verified"
+      "deployed_direct_load_qa": "not-verified",
+      "shell_file": "public/terms.html"
     },
     {
       "path": "/copyright",
-      "shell": "public/copyright.html",
+      "shell": "copyright.html",
       "renderer": "static-document",
       "shell_type": "static-document",
       "dispatch": "Worker exact HTML shell map",
@@ -408,11 +435,12 @@
       "responsive_qa": "not-verified",
       "accessibility_qa": "not-verified",
       "locale_rtl_qa": "not-verified",
-      "deployed_direct_load_qa": "not-verified"
+      "deployed_direct_load_qa": "not-verified",
+      "shell_file": "public/copyright.html"
     },
     {
       "path": "/account",
-      "shell": "public/account.html",
+      "shell": "account.html",
       "renderer": "account",
       "shell_type": "spa-shell",
       "dispatch": "else if(p==='/account')await account()",
@@ -422,11 +450,12 @@
       "responsive_qa": "not-verified",
       "accessibility_qa": "not-verified",
       "locale_rtl_qa": "not-verified",
-      "deployed_direct_load_qa": "not-verified"
+      "deployed_direct_load_qa": "not-verified",
+      "shell_file": "public/account.html"
     },
     {
       "path": "/login",
-      "shell": "public/login.html",
+      "shell": "login.html",
       "renderer": "authPage:login",
       "shell_type": "spa-shell",
       "dispatch": "else if(p==='/login')await authPage('login')",
@@ -436,11 +465,12 @@
       "responsive_qa": "not-verified",
       "accessibility_qa": "not-verified",
       "locale_rtl_qa": "not-verified",
-      "deployed_direct_load_qa": "not-verified"
+      "deployed_direct_load_qa": "not-verified",
+      "shell_file": "public/login.html"
     },
     {
       "path": "/register",
-      "shell": "public/register.html",
+      "shell": "register.html",
       "renderer": "authPage:register",
       "shell_type": "spa-shell",
       "dispatch": "else if(p==='/register')await authPage('register')",
@@ -450,11 +480,12 @@
       "responsive_qa": "not-verified",
       "accessibility_qa": "not-verified",
       "locale_rtl_qa": "not-verified",
-      "deployed_direct_load_qa": "not-verified"
+      "deployed_direct_load_qa": "not-verified",
+      "shell_file": "public/register.html"
     },
     {
       "path": "/admin",
-      "shell": "public/admin.html",
+      "shell": "admin.html",
       "renderer": "standalone:admin",
       "shell_type": "standalone",
       "dispatch": "Worker exact HTML shell map",
@@ -464,11 +495,12 @@
       "responsive_qa": "not-verified",
       "accessibility_qa": "not-verified",
       "locale_rtl_qa": "not-verified",
-      "deployed_direct_load_qa": "not-verified"
+      "deployed_direct_load_qa": "not-verified",
+      "shell_file": "public/admin.html"
     },
     {
       "path": "/author",
-      "shell": "public/index.html",
+      "shell": "index.html",
       "renderer": "authorStudio",
       "shell_type": "spa-shell",
       "dispatch": "else if(p==='/author')await authorStudio()",
@@ -478,7 +510,8 @@
       "responsive_qa": "not-verified",
       "accessibility_qa": "not-verified",
       "locale_rtl_qa": "not-verified",
-      "deployed_direct_load_qa": "not-verified"
+      "deployed_direct_load_qa": "not-verified",
+      "shell_file": "public/index.html"
     }
   ],
   "dynamic_routes": [
