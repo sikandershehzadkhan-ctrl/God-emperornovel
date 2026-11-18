@@ -44,6 +44,6 @@ assert.ok(rating.explicit_methods.includes("GET") && rating.explicit_methods.inc
 
 assert.equal(manifest.counts.literal_endpoint_paths, manifest.literal_endpoints.length);
 assert.equal(manifest.counts.dynamic_route_families, manifest.dynamic_endpoints.length);
-assert.equal(manifest.literal_endpoints.filter(endpoint => endpoint.method_evidence !== "explicit-literal-conditions").length, 13, "Method-unresolved literal paths must remain visible until reviewed");
+assert.equal(manifest.literal_endpoints.filter(endpoint => endpoint.method_evidence === "mixed-or-unconstrained-branches").length, 13, "Method-unresolved literal paths must remain visible until reviewed");
 assert.ok(manifest.literal_endpoints.every(endpoint => endpoint.review_required), "All API endpoints stay review-gated until auth and resource ownership are audited");
 console.log(`API inventory source checks passed: ${manifest.literal_endpoints.length} literal paths, ${manifest.counts.literal_route_branch_occurrences} branch occurrences, ${manifest.dynamic_endpoints.length} dynamic route families.`);
