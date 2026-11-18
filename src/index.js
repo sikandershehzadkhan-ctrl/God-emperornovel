@@ -680,7 +680,7 @@ async function api(req,env){
   let output;try{output={...blueprint,...JSON.parse(ai.text)}}catch{return json({error:'The AI provider returned invalid Story Bible JSON. Nothing was saved.'},502)}
   const provider=ai.provider;
   await env.DB.prepare('UPDATE ai_author_projects SET bible_json=?,updated_at=CURRENT_TIMESTAMP WHERE id=?').bind(JSON.stringify(output),id).run();
-  await env.DB.prepare(`INSERT INTO ai_generation_runs(project_id,owner_user_id,agent,mode,status,input_summary,output_summary,provider) VALUES(?,?,?,?,'ok',?,?,?)`).bind(id,u.id,'worldbuilding',row.mode,`${row.genre}/${row.fandom}`,`Story bible generated with ${Object.keys(output).length} sections`,provider).run();
+  await env.DB.prepare(`INSERT INTO ai_generation_runs(project_id,owner_user_id,agent,mode,status,input_summary,output_summary,provider) VALUES(?,?,?,?,'ok',?,?,?)`).bind(id,row.owner_user_id,'worldbuilding',row.mode,`${row.genre}/${row.fandom}`,`Story bible generated with ${Object.keys(output).length} sections`,provider).run();
   return json({ok:true,provider,blueprint:output});
  }
  if(/^\/api\/author\/ai\/projects\/\d+\/run$/.test(p)&&m==="POST"){
@@ -690,7 +690,7 @@ async function api(req,env){
   if(Number(claimed.meta?.changes||0)!==1)return json({error:'Project is already running'},409);
   const next=Number(row.chapters_generated||0)+1, target=Number(row.chapters_target||0);
   if(target&&next>target){await env.DB.prepare("UPDATE ai_author_projects SET status='complete' WHERE id=?").bind(id).run();return json({ok:true,status:'complete',message:'Chapter target reached.'})}
-  const job=await env.DB.prepare(`INSERT INTO ai_chapter_jobs(project_id,owner_user_id,chapter_number,job_type,status,prompt) VALUES(?,?,?,'draft','queued',?)`).bind(id,u.id,next,aiSafeText(row.premise,3000)).run();
+  const job=await env.DB.prepare(`INSERT INTO ai_chapter_jobs(project_id,owner_user_id,chapter_number,job_type,status,prompt) VALUES(?,?,?,'draft','queued',?)`).bind(id,row.owner_user_id,next,aiSafeText(row.premise,3000)).run();
   const jobId=Number(job.meta.last_row_id);
   const ai=await callAuthorModel(env,'You are the chapter writer for a rights-aware novel platform. Write an original clean chapter based only on the supplied story bible/project data. Do not reproduce protected text from any source. Keep continuity, character consistency, gradual world/territory building, dialogue and concrete consequences. Return HTML paragraphs only.',JSON.stringify({project:{name:row.name,genre:row.genre,fandom:row.fandom,premise:row.premise,protagonist:row.protagonist},bible:aiJson(row.bible_json),chapter_number:next}),3200);
   if(ai.error||!ai.text){
@@ -698,7 +698,7 @@ async function api(req,env){
    await env.DB.batch([
     env.DB.prepare("UPDATE ai_chapter_jobs SET status='failed',error=?,attempts=1,started_at=CURRENT_TIMESTAMP,finished_at=CURRENT_TIMESTAMP WHERE id=?").bind(failure,jobId),
     env.DB.prepare("UPDATE ai_author_projects SET status='paused',updated_at=CURRENT_TIMESTAMP WHERE id=?").bind(id),
-    env.DB.prepare("INSERT INTO ai_generation_runs(project_id,owner_user_id,agent,mode,status,input_summary,output_summary,provider) VALUES(?,?,? ,? ,'failed',?,?,?)").bind(id,u.id,'chapter-writer',row.mode,`chapter=${next}`,failure,ai.provider||'unknown')
+    env.DB.prepare("INSERT INTO ai_generation_runs(project_id,owner_user_id,agent,mode,status,input_summary,output_summary,provider) VALUES(?,?,? ,? ,'failed',?,?,?)").bind(id,row.owner_user_id,'chapter-writer',row.mode,`chapter=${next}`,failure,ai.provider||'unknown')
    ]);
    return json({error:ai.error||'The AI provider returned no chapter text. The project remains paused and no chapter was published.'},502);
   }
@@ -716,7 +716,7 @@ async function api(req,env){
   await env.DB.batch([
    env.DB.prepare("UPDATE ai_chapter_jobs SET status='complete',result=?,attempts=1,started_at=CURRENT_TIMESTAMP,finished_at=CURRENT_TIMESTAMP WHERE id=?").bind(draft.slice(0,50000),jobId),
    env.DB.prepare("UPDATE ai_author_projects SET chapters_generated=?,status=?,updated_at=CURRENT_TIMESTAMP WHERE id=?").bind(next,target&&next>=target?'complete':'paused',id),
-   env.DB.prepare("INSERT INTO ai_generation_runs(project_id,owner_user_id,agent,mode,status,input_summary,output_summary,provider) VALUES(?,?,? ,? ,'ok',?,?,?)").bind(id,u.id,'chapter-writer',row.mode,`chapter=${next}`,`draft=${draft.length} chars`,provider)
+   env.DB.prepare("INSERT INTO ai_generation_runs(project_id,owner_user_id,agent,mode,status,input_summary,output_summary,provider) VALUES(?,?,? ,? ,'ok',?,?,?)").bind(id,row.owner_user_id,'chapter-writer',row.mode,`chapter=${next}`,`draft=${draft.length} chars`,provider)
   ]);
   await audit(env,u,'ai_author_chapter_generated',`project=${id};chapter=${next};provider=${provider}`);
   return json({ok:true,project_id:id,chapter_number:next,chapter_id:createdChapter,provider,draft,status:target&&next>=target?'complete':'paused',message:createdChapter?'Draft chapter created in Chapter Studio.':'Draft generated. Link a novel to store it automatically.'});
