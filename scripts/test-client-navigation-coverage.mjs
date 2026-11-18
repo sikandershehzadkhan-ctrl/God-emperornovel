@@ -58,7 +58,8 @@ for (const raw of rawLinks) {
   // destinations. Their corresponding parameterized Worker route is checked.
   if (route === "/novel/" || route === "/read/") {
     destinations.add(route);
-    if (!dynamicPatterns.some(pattern => pattern.test(route + "route-param"))) {
+    const completedPattern = route === "/read/" ? route + "novel-id/chapter-number" : route + "novel-id";
+    if (!dynamicPatterns.some(pattern => pattern.test(completedPattern))) {
       unresolved.push({ source: raw, normalized: route, reason: "unmatched dynamic route prefix" });
     }
     continue;
