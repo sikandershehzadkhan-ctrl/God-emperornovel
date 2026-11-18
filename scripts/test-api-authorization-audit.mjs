@@ -40,6 +40,13 @@ assert.match(adminNovelCreate,/!\\['author','admin'\\]\\.includes\\(String\\(own
 assert.match(adminNovelCreate,/Number\\(owner\\.banned\\)!==0/,"Banned accounts cannot be assigned new novels");
 assert.match(adminNovelCreate,/rights,ownerId,'draft'/,"Novel creation must bind the validated owner ID");
 
+const authorChapterPublishStart = worker.indexOf('if(/^\\/api\\/author\\/chapters\\/\\d+\\/publish$/.test(p)&&m==="POST"){');
+const authorChapterPublishEnd = worker.indexOf('if(p==="/api/admin/publishing"',authorChapterPublishStart);
+const authorChapterPublish = worker.slice(authorChapterPublishStart,authorChapterPublishEnd);
+assert.ok(authorChapterPublishStart>=0 && authorChapterPublishEnd>authorChapterPublishStart,"Author chapter publication route must remain explicit");
+assert.match(authorChapterPublish,/n\\.publication_status novel_publication_status/,"Author chapter publication must load parent novel status");
+assert.match(authorChapterPublish,/status==='published'&&c\\.novel_publication_status!=='published'/,"Author chapter publication must require a published parent novel");
+
 const userLookup = worker.indexOf("const u=await getUser(req,env)");
 const health = worker.indexOf('if(p==="/api/health"&&m==="GET")');
 assert.ok(health >= 0 && userLookup > health, "Health route must bypass session lookup");
