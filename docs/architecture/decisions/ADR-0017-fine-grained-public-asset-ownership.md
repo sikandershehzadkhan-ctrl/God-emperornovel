@@ -22,7 +22,7 @@ Replace the broad `public/` ownership catch-all with seven explicit owner groups
 - Crawl and sitemap policy (2 files).
 - Cover library (`public/covers/`).
 
-All these owners require an ADR or feature contract for changes. Add a build-gated test that enumerates tracked public files, classifies each file into exactly one expected owner, and rejects unclassified files or a reintroduced broad catch-all.
+All these owners require an ADR or feature contract for changes. Add a build-gated test that enumerates tracked public files, classifies each file into exactly one expected owner, and rejects unclassified files or a reintroduced broad catch-all. New public files and directories must be assigned to a named owner group before integration; a fallback `public/` owner is prohibited.
 
 ## Boundaries
 
