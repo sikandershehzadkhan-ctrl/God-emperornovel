@@ -1134,7 +1134,7 @@
   "dynamic_endpoints": [
     {
       "pattern": "/api/novels/{id}",
-      "source": "p.match(/^\\/api\\/novels\\/(\\d+)",
+      "source": "let nm=p.match(/^\\/api\\/novels\\/(\\d+)$/)",
       "source_line": 459,
       "methods": [],
       "observed_helper_signals": [],
@@ -1157,7 +1157,7 @@
     },
     {
       "pattern": "/api/chapters/{id}",
-      "source": "p.match(/^\\/api\\/chapters\\/(\\d+)",
+      "source": "let cm=p.match(/^\\/api\\/chapters\\/(\\d+)$/)",
       "source_line": 460,
       "methods": [],
       "observed_helper_signals": [],
@@ -1207,7 +1207,7 @@
     },
     {
       "pattern": "/api/novels/{id}/batch-unlock",
-      "source": "p.match(/^\\/api\\/novels\\/(\\d+)",
+      "source": "let bu=p.match(/^\\/api\\/novels\\/(\\d+)\\/batch-unlock$/)",
       "source_line": 462,
       "methods": [
         "POST"
@@ -1217,7 +1217,7 @@
       ],
       "review_required": true,
       "source_lines": [
-        459
+        462
       ],
       "allowed_methods": [
         "POST"
