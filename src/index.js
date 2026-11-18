@@ -412,6 +412,7 @@ async function api(req,env){
  const url=new URL(req.url),p=url.pathname,m=req.method;
  // Central method contracts for paths whose earlier branches accepted any HTTP method.
  // Enforce these before schema bootstrap and session lookup so rejected methods are cheap and side-effect-free.
+ // Taxonomy POST also derives submitter identity from the authenticated session.
  const methodContracts={
   "/api/health":["GET"],
   "/api/taxonomy":["GET","POST"],
