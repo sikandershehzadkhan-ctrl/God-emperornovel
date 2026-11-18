@@ -67,7 +67,7 @@ assert.match(css, /@media\(max-width:520px\)\{[\s\S]*?\.readerPrefsStudio\{grid-
 console.log("Reader Settings Studio and protected reader-session integration checks passed.");
 
 assert.match(app, /function readerLanguageCode\(value\)/, "The reader must normalize chapter language metadata independently from the interface language.");
-for (const [label,code] of [["Urdu","ur"],["Arabic","ar"],["Persian","fa"],["English","en"]]) assert.ok(app.includes(`${label.toLowerCase()}: '${code}'`) || app.includes(`${label.toLowerCase()}: '${code}'`), `Reader language aliases must include ${label}.`);
+for (const [alias,code] of [["urdu","ur"],["arabic","ar"],["persian","fa"],["english","en"]]) assert.ok(app.includes(`${alias}:'${code}'`), `Reader language aliases must include ${alias}.`);
 assert.match(app, /id="readerContent" class="readerContent" dir="auto" lang="\$\{esc\(readerLang\)\}"/, "Chapter text must carry its own language metadata and retain automatic paragraph direction.");
 assert.match(app, /readerFontStack=\(choice,language\)=>/, "Reader font selection must append script-capable fallback fonts before generic fallback.");
 assert.match(app, /Noto Nastaliq Urdu/);
