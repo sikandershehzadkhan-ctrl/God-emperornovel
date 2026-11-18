@@ -885,7 +885,7 @@ async function api(req,env){
   if(duplicate)return json({error:"Chapter number already exists for this novel."},409);
   await env.DB.prepare("UPDATE chapters SET chapter_number=?,title=?,content=?,is_locked=?,ticket_cost=?,publication_status=? WHERE id=?").bind(num,title,content,locked,cost,pub,id).run();
   await env.DB.prepare("UPDATE novels SET updated_at=CURRENT_TIMESTAMP WHERE id=?").bind(row.novel_id).run();
-  await audit(env,'admin_chapter_review_decision',`chapter=${id};novel=${row.novel_id};from=${previous};to=${pub};feedback=${feedback}`);
+  await audit(env,u,'admin_chapter_review_decision',`chapter=${id};novel=${row.novel_id};from=${previous};to=${pub};feedback=${feedback}`);
   const parent=await env.DB.prepare('SELECT owner_user_id FROM novels WHERE id=?').bind(row.novel_id).first();
   if(pub==='review'&&previous!=='review')await notifyAdmins(env,'Chapter awaiting publication review',`Chapter "${title}" (ID ${id}) was placed in the review queue.`);
   if(parent?.owner_user_id&&Number(parent.owner_user_id)!==Number(u.id)){
