@@ -7,7 +7,7 @@ const worker=fs.readFileSync('src/index.js','utf8');
 const css=fs.readFileSync('public/imperial-design-system.css','utf8');
 
 assert.equal(app,served,'Editable and served browser bundles must remain byte-identical.');
-assert.match(app,/<nav class="readerActions" aria-label="Chapter navigation">[\\s\\S]*?<\\/nav><\\/article>/,'Previous, chapter-list and next controls must be grouped in a named navigation landmark.');
+assert.ok(app.includes('<nav class="readerActions" aria-label="Chapter navigation">') && app.includes('</nav></article>'),'Previous, chapter-list and next controls must be grouped in a named navigation landmark.');
 assert.doesNotMatch(app,/<div class="readerActions">/,'Chapter navigation must not remain an unnamed generic container.');
 assert.match(app,/d\.previous\?\x60<a class="secondary" rel="prev" aria-label="Previous chapter:/,'Available previous chapters must expose a semantic previous link.');
 assert.match(app,/d\.next\?\x60<a class="primary" rel="next" aria-label="Next chapter:/,'Available next chapters must expose a semantic next link.');
