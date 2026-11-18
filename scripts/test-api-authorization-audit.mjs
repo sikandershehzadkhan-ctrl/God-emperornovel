@@ -47,6 +47,14 @@ assert.ok(authorChapterPublishStart>=0 && authorChapterPublishEnd>authorChapterP
 assert.match(authorChapterPublish,/n\\.publication_status novel_publication_status/,"Author chapter publication must load parent novel status");
 assert.match(authorChapterPublish,/status==='published'&&c\\.novel_publication_status!=='published'/,"Author chapter publication must require a published parent novel");
 
+const authorChapterCreateStart = worker.indexOf('if(p==="/api/author/chapters"&&m==="POST"){');
+const authorChapterCreateEnd = worker.indexOf('if(/^\\/api\\/author\\/chapters\\/\\d+$/.test(p)&&m==="PATCH"){',authorChapterCreateStart);
+const authorChapterCreate = worker.slice(authorChapterCreateStart,authorChapterCreateEnd);
+assert.ok(authorChapterCreateStart>=0 && authorChapterCreateEnd>authorChapterCreateStart,"Author chapter creation route must remain explicit");
+assert.match(authorChapterCreate,/Number\\.isSafeInteger\\(nid\\)\\|\\|nid<1/,"Author chapter creation must validate the parent novel ID");
+assert.match(authorChapterCreate,/Number\\.isSafeInteger\\(num\\)\\|\\|num<1/,"Author chapter numbers must be positive safe integers");
+assert.match(authorChapterCreate,/Number\\.isSafeInteger\\(cost\\)\\|\\|cost<0\\|\\|cost>1000000/,"Author chapter ticket costs must be whole numbers within the platform limit");
+
 const userLookup = worker.indexOf("const u=await getUser(req,env)");
 const health = worker.indexOf('if(p==="/api/health"&&m==="GET")');
 assert.ok(health >= 0 && userLookup > health, "Health route must bypass session lookup");
