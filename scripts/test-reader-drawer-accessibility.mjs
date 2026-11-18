@@ -14,6 +14,8 @@ assert.match(app,/drawer\.inert=!open/,
   'Closing the reader drawer must remove its controls from keyboard interaction.');
 assert.match(app,/drawer\.setAttribute\('aria-hidden',String\(!open\)\)/,
   'The reader drawer must synchronize its accessibility-tree visibility.');
+assert.match(app,/id="chapterMenu"[^>]*aria-controls="chapterDrawer"/,
+  'The chapter-list trigger must identify its controlled dialog.');
 assert.match(app,/chapterBtn\.setAttribute\('aria-expanded',String\(open\)\)/,
   'The chapter-list trigger must announce its expanded state.');
 assert.match(app,/settingsBtn\.setAttribute\('aria-expanded',String\(open\)\)/,
@@ -30,7 +32,13 @@ assert.match(app,/document\.body\.style\.overflow='hidden'/,
   'Opening the reader drawer must prevent background-page scrolling.');
 assert.match(app,/document\.body\.style\.overflow=bodyOverflowBeforeDrawer/,
   'Closing the reader drawer must restore the previous body overflow style.');
-assert.match(app,/const closeReaderDrawer=\(restoreFocus=true\)=>\{[\s\S]*?if\(restoreFocus\)drawerTrigger\.focus\(\)/,
+assert.match(app,/const closeReaderDrawer=\(restoreFocus=true\)=>\{[\s\S]*?drawerTrigger\?\.isConnected[\s\S]*?target\.focus\(\)/,
+  'Closing the reader drawer must safely restore focus even if its original trigger was removed.');
+assert.match(app,/document\.addEventListener\('focusin',[\s\S]*?drawer\.contains\(e\.target\)[\s\S]*?focus\(\)/,
+  'Programmatic focus must not escape the open modal drawer.');
+assert.match(app,/node\.getClientRects\(\)\.length>0/,
+  'Hidden chapter search results and off-screen controls must not enter the focus trap.');
+assert.match(app,/const closeReaderDrawer=\(restoreFocus=true\)=>\{[\s\S]*?if\(restoreFocus\)/,
   'Closing the reader drawer must return focus to the element that opened it.');
 assert.match(css,/\.chapterDrawerScrim\{position:fixed;z-index:70;inset:74px 0 0;/,
   'The scrim must cover the page beneath the sticky reader toolbar.');
