@@ -53,6 +53,10 @@ class FakeStatement {
       return row ? { owner_user_id: row.owner_user_id } : null;
     }
     if (this.sql.includes("SELECT * FROM ai_author_projects WHERE id=?")) return aiProjects.find(row => row.id === this.values[0]) || null;
+    if (this.sql.includes("SELECT id,owner_user_id FROM novels WHERE id=?")) {
+      const row = novels.find(item => item.id === this.values[0]);
+      return row ? { id: row.id, owner_user_id: row.owner_user_id } : null;
+    }
     if (this.sql.includes("SELECT * FROM novels WHERE id=?")) return novels.find(row => row.id === this.values[0]) || null;
     if (this.sql.includes("SELECT c.*,n.owner_user_id,n.kind FROM chapters c JOIN novels n ON n.id=c.novel_id WHERE c.id=?")) {
       return chapters.find(row => row.id === this.values[0]) || null;
@@ -101,6 +105,12 @@ class FakeStatement {
     return { results: [] };
   }
   async run() {
+    if (this.sql.includes("INSERT INTO ai_author_projects(")) {
+      const [owner_user_id, novel_id, name, mode, status, genre, fandom, premise, protagonist, settings_json, bible_json, auto_publish, chapters_target] = this.values;
+      const id = 803;
+      aiProjects.push({ id, owner_user_id, novel_id, name, mode, status, genre, fandom, premise, protagonist, settings_json, bible_json, auto_publish, chapters_target, chapters_generated: 0 });
+      return { success: true, meta: { changes: 1, last_row_id: id } };
+    }
     if (this.sql.includes("INSERT INTO bookmarks(user_id,novel_id,chapter_number)")) {
       const [user_id, novel_id, chapter_number] = this.values;
       const existing = bookmarks.find(row => row.user_id === user_id && row.novel_id === novel_id);
@@ -200,6 +210,15 @@ assert.equal(bApplication.application, null, "B must not read A's author applica
 const aApplication = await payload(await request("account-a-token", "/api/author/applications/me", "GET"));
 assert.equal(aApplication.application.id, 91, "A must be able to read A's own author application");
 
+// AI project creation must bind ownership to the session, never a forged owner_user_id.
+const createdAi = await payload(await request("account-a-token", "/api/author/ai/projects", "POST", {
+  name: "A created project", novel_id: 501, owner_user_id: 402
+}), 201);
+assert.equal(aiProjects.find(row => row.id === createdAi.id).owner_user_id, 301);
+await payload(await request("account-b-token", "/api/author/ai/projects", "POST", {
+  name: "B tries A's novel", novel_id: 501
+}), 403);
+
 // AI author projects and their job feed must remain private to the owning author.
 assert.deepEqual((await payload(await request("account-a-token", "/api/author/ai/projects", "GET"))).map(row => row.id), [801]);
 assert.deepEqual((await payload(await request("account-b-token", "/api/author/ai/projects", "GET"))).map(row => row.id), [802]);
@@ -217,4 +236,4 @@ await payload(await request("account-b-token", "/api/author/ai/projects/801/run"
 assert.deepEqual(await payload(await request("account-a-token", "/api/requests", "GET")), { used: 1, limit: 3 });
 assert.deepEqual(await payload(await request("account-b-token", "/api/requests", "GET")), { used: 0, limit: 3 });
 
-console.log("PASS: Worker fetch two-account isolation for bookmarks, history, library, follows, notifications, ticket ledger, author applications, author novel listing/update, author chapter update, and AI project listing/read/update/job access; forged identity and invalid chapter relationships rejected. Deterministic D1 test double only, not live Cloudflare D1.");
+console.log("PASS: Worker fetch two-account isolation for bookmarks, history, library, follows, notifications, ticket ledger, author applications, author novel listing/update, author chapter update, and AI project creation/listing/read/update/job access; forged identity and invalid chapter relationships rejected. Deterministic D1 test double only, not live Cloudflare D1.");
