@@ -8,12 +8,14 @@ const b64url = bytes => btoa(String.fromCharCode(...new Uint8Array(bytes))).repl
 const hash = async value => b64url(await crypto.subtle.digest("SHA-256", encoder.encode(value)));
 const now = Math.floor(Date.now() / 1000);
 const users = new Map([
-  ["account-a-token", { id: 301, username: "account_a", email: "a@example.test", role: "user", tickets: 0, verified: 1, banned: 0, expires_at: now + 3600 }],
+  ["account-a-token", { id: 301, username: "account_a", email: "a@example.test", role: "author", tickets: 0, verified: 1, banned: 0, expires_at: now + 3600 }],
   ["account-b-token", { id: 402, username: "account_b", email: "b@example.test", role: "user", tickets: 0, verified: 1, banned: 0, expires_at: now + 3600 }],
 ]);
 const sessions = new Map();
 for (const [token, user] of users) sessions.set(await hash(token), user);
 const bookmarks = [], history = [], library = [];
+const novels = [{ id: 501, owner_user_id: 301, title: "A's Novel", author: "account_a", description: "", status: "ongoing", kind: "original", language: "English", rights_status: "original", publication_status: "draft" }];
+const chapters = [{ id: 601, novel_id: 501, chapter_number: 1, title: "A's Chapter", content: "Chapter text", is_locked: 0, ticket_cost: 0, owner_user_id: 301, kind: "original" }];
 
 class FakeStatement {
   constructor(sql) { this.sql = sql; this.values = []; }
@@ -32,6 +34,11 @@ class FakeStatement {
     if (this.sql.includes("SELECT 1 FROM user_library WHERE user_id=? AND novel_id=?")) {
       return library.some(row => row.user_id === this.values[0] && row.novel_id === this.values[1]) ? { 1: 1 } : null;
     }
+    if (this.sql.includes("SELECT * FROM novels WHERE id=?")) return novels.find(row => row.id === this.values[0]) || null;
+    if (this.sql.includes("SELECT c.*,n.owner_user_id,n.kind FROM chapters c JOIN novels n ON n.id=c.novel_id WHERE c.id=?")) {
+      return chapters.find(row => row.id === this.values[0]) || null;
+    }
+    if (this.sql.includes("SELECT id FROM chapters WHERE novel_id=? AND chapter_number=? AND id<>?")) return null;
     return null;
   }
   async all() {
@@ -53,6 +60,9 @@ class FakeStatement {
         author: "Test Author", cover_url: "", rating: 0, status: "ongoing",
         last_chapter: null, bookmark_chapter: null, latest_chapter: 7
       })) };
+    }
+    if (this.sql.includes("FROM novels n WHERE n.owner_user_id=?")) {
+      return { results: novels.filter(row => row.owner_user_id === this.values[0]) };
     }
     return { results: [] };
   }
@@ -80,6 +90,12 @@ class FakeStatement {
       const [user_id, novel_id] = this.values;
       if (!library.some(row => row.user_id === user_id && row.novel_id === novel_id)) library.push({ user_id, novel_id });
       return { success: true, meta: { changes: 1 } };
+    }
+    if (this.sql.includes("UPDATE novels SET title=?")) return { success: true, meta: { changes: 1 } };
+    if (this.sql.includes("UPDATE chapters SET chapter_number=?")) {
+      const row = chapters.find(item => item.id === this.values[5]);
+      if (row) { row.chapter_number = this.values[0]; row.title = this.values[1]; row.content = this.values[2]; }
+      return { success: true, meta: { changes: row ? 1 : 0 } };
     }
     return { success: true, meta: { changes: 0 } };
   }
@@ -123,4 +139,14 @@ await payload(await request("account-b-token", "/api/library", "POST", { novel_i
 assert.deepEqual(library, [{ user_id: 301, novel_id: 10 }, { user_id: 402, novel_id: 10 }],
   "Each account must receive its own library membership row");
 
-console.log("PASS: Worker fetch two-account isolation for bookmarks, reading history, and personal library; forged identity and invalid chapter relationships rejected. Deterministic D1 test double only, not live Cloudflare D1.");
+// Author workspace reads and writes must enforce ownership of the addressed novel and chapter.
+assert.deepEqual((await payload(await request("account-a-token", "/api/author/novels", "GET"))).map(row => row.id), [501]);
+assert.deepEqual(await payload(await request("account-b-token", "/api/author/novels", "GET")), [],
+  "Author B must not list Author A's novel");
+await payload(await request("account-a-token", "/api/author/novels/501", "PATCH", { title: "A's Updated Novel" }));
+await payload(await request("account-b-token", "/api/author/novels/501", "PATCH", { title: "Hijacked Novel" }), 403);
+await payload(await request("account-a-token", "/api/author/chapters/601", "PATCH", { title: "A's Updated Chapter" }));
+await payload(await request("account-b-token", "/api/author/chapters/601", "PATCH", { title: "Hijacked Chapter" }), 403);
+assert.equal(chapters[0].title, "A's Updated Chapter", "Author B must not overwrite Author A's chapter");
+
+console.log("PASS: Worker fetch two-account isolation for bookmarks, history, personal library, author novel listing/update, and author chapter update; forged identity and invalid chapter relationships rejected. Deterministic D1 test double only, not live Cloudflare D1.");
