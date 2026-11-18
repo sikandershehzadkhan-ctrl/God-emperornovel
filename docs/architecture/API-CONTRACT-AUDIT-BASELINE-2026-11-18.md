@@ -64,6 +64,13 @@ The inventory records nearby calls to `need(u)`, `admin(u)`, and `author(u)`. Th
 
 Dynamic routes need explicit per-operation ownership review, especially author AI projects, author novels/chapters, user records, publishing resources, donations, reports, requests, and connector authorization requests.
 
+
+
+### 6. Ten-point rating implementation is owned by the governed migration stack
+
+The canonical 1–10 rating implementation is already developed in PR #195 (`integration/architecture-governance-root-17-70`), not in this audit branch. PR #195 reserves migration `0035_ten_point_ratings.sql` and includes migration `0034_ratings_baseline.sql`, whole-number 1–10 database constraints, legacy 1–5 to even 1–10 conversion with timestamps preserved, aggregate recalculation, the canonical single POST handler, 1–10 API validation, catalog thresholds, reader rating controls, display formatting, and migration/UI/API regression tests. The historical PR #297 migration 0012 is explicitly superseded and must not be revived.
+
+This API audit branch is based on PR #341's ownership stack and does not contain PR #195's reservation or migration. Do not copy migration 0035 into this branch or create a competing migration. Integration order must bring PR #195's governed migration into the canonical base, then rebase/reconcile this audit branch and refresh the route inventory and rating contract tests against the unified source. Until then, this branch's current 1–5 schema/API and duplicate rating POST branch are known unresolved dependencies, not a completed 1–10 implementation.
 ### 5. Duplicate rating route branch remains present
 
 The inventory records three literal `/api/rating` branch occurrences. Preserve this as a reconciliation item until the GET/POST handlers and any duplicate branch are reviewed together. Do not silently normalize the inventory count.
