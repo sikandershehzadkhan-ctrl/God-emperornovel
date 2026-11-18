@@ -79,6 +79,11 @@ for (const marker of authorChapterRoutes) {
   assert.ok(block.includes("owner_user_id") || block.includes("novel_id"),
     "Author chapter operation must resolve its parent novel ownership: " + marker);
 }
+const chapterPublish = routeBlock('publish$/.test(p)&&m==="POST")');
+assert.ok(chapterPublish.includes("Number(p.split('/')[4])"),
+  "Chapter publish route must extract the numeric chapter ID from /api/author/chapters/:id/publish");
+assert.ok(chapterPublish.includes("Number(c.owner_user_id)!==Number(u.id)"),
+  "Chapter publish route must enforce parent novel ownership");
 assert.ok(api.includes("Number(c.owner_user_id)!==Number(u.id)"), "Author chapter operations must enforce parent novel ownership");
 assert.ok(api.includes("Number(n.owner_user_id)!==Number(u.id)"), "Author novel operations must enforce novel ownership");
 
