@@ -110,3 +110,10 @@ Admin chapter PATCH and POST previously allowed a chapter to be marked published
 
 The admin novel review handler could clear `rights_verified_by` when a work returned to draft while retaining an earlier `rights_verified_at` timestamp. It could also set the reviewer ID from a truthy request value without ensuring a matching timestamp was written. The handler now treats publication or an explicit boolean `rights_verified: true` as the verification event, and writes the reviewer ID and timestamp together; otherwise both fields are cleared. A regression assertion protects the paired fields. This preserves audit-record consistency, but does not independently prove the evidence itself is legally sufficient.
 
+
+
+## Admin user PATCH: partial-update and self-demotion safeguards
+
+A focused review found that the admin user PATCH handler treated an omitted role as `user`, while its self-demotion guard used a different fallback. An administrator could therefore submit a partial update (or omit `role`) and unintentionally demote their own account. The same handler also reset omitted `verified` and `banned` values to false, making partial updates destructive, and it did not verify that the target user existed before returning success.
+
+The route now validates a positive safe-integer user ID, loads the current account, returns 404 for a missing user, preserves each omitted field, validates the effective role, and blocks self-demotion based on that effective role. Build-gated source assertions cover these boundaries. This is a source-level fix; exact-head CI, runtime behavior against real D1, and production behavior remain unverified.
