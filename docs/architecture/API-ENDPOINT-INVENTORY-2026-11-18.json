@@ -2,7 +2,7 @@
   "audit_date": "2026-11-18",
   "branch": "architecture/api-contract-audit-baseline",
   "source_file": "src/index.js",
-  "source_blob": "313975dc32db6beaf33fc25a94f45a7fbfc16b06",
+  "source_blob": "8fdef9fdd251b570a760fd91e13bfe21125209f7",
   "scope": "First-pass static inventory of literal API path branches and dynamic path matchers inside async function api(req,env).",
   "counts": {
     "literal_endpoint_paths": 74,
