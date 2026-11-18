@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "purpose": "Fail-closed ownership map covering every tracked repository path. Directory-level owners are intentionally coarse initial domain boundaries; owners must be refined before the affected domain is split into independently governed modules.",
+  "purpose": "Fail-closed ownership map covering every tracked repository path. Source files use domain-level ownership roots; other directory-level owners remain initial boundaries until their domains are split into independently governed modules.",
   "owners": [
     {
       "id": "repository-root-artifacts",
@@ -245,7 +245,74 @@
     {
       "id": "worker-runtime",
       "paths": [
-        "src/"
+        "src/index.js"
+      ],
+      "requiresAdr": true
+    },
+    {
+      "id": "route-and-sitemap",
+      "paths": [
+        "src/route-registry.mjs",
+        "src/sitemap.mjs"
+      ],
+      "requiresAdr": true
+    },
+    {
+      "id": "authentication-security",
+      "paths": [
+        "src/auth-password.mjs"
+      ],
+      "requiresAdr": true
+    },
+    {
+      "id": "connector-security",
+      "paths": [
+        "src/connector-url-policy.mjs"
+      ],
+      "requiresAdr": true
+    },
+    {
+      "id": "content-policy",
+      "paths": [
+        "src/comic-chapter-policy.mjs",
+        "src/content-formats.mjs"
+      ],
+      "requiresAdr": true
+    },
+    {
+      "id": "author-application-policy",
+      "paths": [
+        "src/author-application-policy.mjs"
+      ],
+      "requiresAdr": true
+    },
+    {
+      "id": "donation-domain",
+      "paths": [
+        "src/donation-approval-policy.mjs",
+        "src/donation-reference-index.mjs",
+        "src/donation-reference-policy.mjs"
+      ],
+      "requiresAdr": true
+    },
+    {
+      "id": "public-novel-projection",
+      "paths": [
+        "src/public-novel.mjs"
+      ],
+      "requiresAdr": true
+    },
+    {
+      "id": "runtime-schema",
+      "paths": [
+        "src/runtime-feature-schema.mjs"
+      ],
+      "requiresAdr": true
+    },
+    {
+      "id": "reader-community-components",
+      "paths": [
+        "src/react/"
       ],
       "requiresAdr": true
     }
