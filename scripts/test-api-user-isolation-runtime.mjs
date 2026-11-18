@@ -14,6 +14,13 @@ const accounts = new Map([
 const sessions = new Map();
 for (const [token, user] of accounts) sessions.set(await hash(token), user);
 const history = [];
+const ticketLedger = [
+  { id: 11, user_id: 101, delta: 25, reason: "purchase", reference: "A-ORDER" },
+  { id: 22, user_id: 202, delta: 10, reason: "purchase", reference: "B-ORDER" },
+];
+const authorApplications = [
+  { id: 31, user_id: 101, display_name: "Author A", status: "pending", preferred_formats: "[]" },
+];
 const library = [{ user_id: 101, novel_id: 10 }];
 const follows = [{ user_id: 101, novel_id: 10 }];
 const notifications = [
@@ -30,6 +37,7 @@ class FakeStatement {
     if (this.sql.includes("FROM sessions s JOIN users u ON u.id=s.user_id")) return sessions.get(this.values[0]) || null;
     if (this.sql.includes("SELECT 1 FROM novels WHERE id=?")) return Number(this.values[0]) === 10 ? { ok: 1 } : null;
     if (this.sql.includes("SELECT 1 FROM follows WHERE user_id=? AND novel_id=?")) return follows.some(row => row.user_id === this.values[0] && row.novel_id === this.values[1]) ? { ok: 1 } : null;
+    if (this.sql.includes("FROM author_applications WHERE user_id=?")) return authorApplications.find(row => row.user_id === this.values[0]) || null;
     return null;
   }
   async all() {
@@ -53,6 +61,10 @@ class FakeStatement {
     if (this.sql.includes("FROM follows f JOIN novels n")) {
       const userId = this.values[0];
       return { results: follows.filter(row => row.user_id === userId).map(row => ({ id: row.novel_id, title: "Test Novel", author: "Test Author" })) };
+    }
+    if (this.sql.includes("FROM ticket_ledger WHERE user_id=?")) {
+      const userId = this.values[0];
+      return { results: ticketLedger.filter(row => row.user_id === userId).map(({ id, delta, reason, reference }) => ({ id, delta, reason, reference, created_at: "2026-11-18 00:00:00" })) };
     }
     if (this.sql.includes("FROM notifications WHERE user_id=?")) {
       const userId = this.values[0];
@@ -148,6 +160,20 @@ assert.equal(notifications.find(row => row.id === 1).read_at, null,
 assert.notEqual(notifications.find(row => row.id === 2).read_at, null,
   "Account B must be able to mark its own notifications as read");
 
+const aLedger = await payload(await request("reader-a-token", "GET", undefined, "/api/tickets/ledger"));
+const bLedger = await payload(await request("reader-b-token", "GET", undefined, "/api/tickets/ledger"));
+assert.deepEqual(aLedger.map(row => row.reference), ["A-ORDER"],
+  "Account A must see only its own ticket ledger");
+assert.deepEqual(bLedger.map(row => row.reference), ["B-ORDER"],
+  "Account B must see only its own ticket ledger");
+
+const aApplication = await payload(await request("reader-a-token", "GET", undefined, "/api/author/applications/me"));
+const bApplication = await payload(await request("reader-b-token", "GET", undefined, "/api/author/applications/me"));
+assert.equal(aApplication.application.id, 31,
+  "Account A must see its own author application status");
+assert.equal(bApplication.application, null,
+  "Account B must not read Account A's author application");
+
 const aFollows = await payload(await request("reader-a-token", "GET", undefined, "/api/follows"));
 const bFollows = await payload(await request("reader-b-token", "GET", undefined, "/api/follows"));
 assert.deepEqual(aFollows.map(row => row.id), [10],
@@ -160,4 +186,4 @@ assert.deepEqual(follows.sort((a, b) => a.user_id - b.user_id), [
   { user_id: 101, novel_id: 10 }, { user_id: 202, novel_id: 10 }
 ], "Follow ownership must use the authenticated session, not a forged user_id");
 
-console.log("PASS: Worker fetch two-account history, library, notification, and follow isolation; authenticated history/follow ownership; forged user_id rejection; and account-scoped notification mutation using a deterministic D1 test double. This is not a live Cloudflare D1 test.");
+console.log("PASS: Worker fetch two-account history, library, notification, follow, ticket-ledger, and author-application isolation; authenticated history/follow ownership; forged user_id rejection; and account-scoped notification mutation using a deterministic D1 test double. This is not a live Cloudflare D1 test.");
