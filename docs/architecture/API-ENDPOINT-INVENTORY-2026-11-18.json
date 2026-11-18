@@ -924,7 +924,7 @@
       ],
       "method_evidence": "explicit-literal-conditions",
       "source_lines": [
-        781
+        783
       ],
       "observed_helper_signals": [
         "admin"
@@ -939,7 +939,7 @@
       ],
       "method_evidence": "explicit-literal-conditions",
       "source_lines": [
-        782
+        784
       ],
       "observed_helper_signals": [
         "admin"
@@ -954,7 +954,7 @@
       ],
       "method_evidence": "explicit-literal-conditions",
       "source_lines": [
-        829
+        831
       ],
       "observed_helper_signals": [
         "admin"
@@ -969,7 +969,7 @@
       ],
       "method_evidence": "explicit-literal-conditions",
       "source_lines": [
-        844
+        846
       ],
       "observed_helper_signals": [
         "admin"
@@ -984,7 +984,7 @@
       ],
       "method_evidence": "explicit-literal-conditions",
       "source_lines": [
-        845
+        847
       ],
       "observed_helper_signals": [
         "admin"
@@ -999,7 +999,7 @@
       ],
       "method_evidence": "explicit-literal-conditions",
       "source_lines": [
-        847
+        849
       ],
       "observed_helper_signals": [
         "admin"
@@ -1014,7 +1014,7 @@
       ],
       "method_evidence": "explicit-literal-conditions",
       "source_lines": [
-        849
+        851
       ],
       "observed_helper_signals": [
         "admin"
@@ -1031,9 +1031,9 @@
       ],
       "method_evidence": "explicit-literal-conditions",
       "source_lines": [
-        850,
-        851,
-        855
+        852,
+        853,
+        857
       ],
       "observed_helper_signals": [
         "admin"
@@ -1048,7 +1048,7 @@
       ],
       "method_evidence": "explicit-literal-conditions",
       "source_lines": [
-        852
+        854
       ],
       "observed_helper_signals": [
         "admin"
@@ -1063,7 +1063,7 @@
       ],
       "method_evidence": "explicit-literal-conditions",
       "source_lines": [
-        853
+        855
       ],
       "observed_helper_signals": [
         "admin"
@@ -1078,7 +1078,7 @@
       ],
       "method_evidence": "explicit-literal-conditions",
       "source_lines": [
-        854
+        856
       ],
       "observed_helper_signals": [
         "need"
@@ -1093,7 +1093,7 @@
       ],
       "method_evidence": "explicit-literal-conditions",
       "source_lines": [
-        856
+        858
       ],
       "observed_helper_signals": [
         "admin"
@@ -1108,7 +1108,7 @@
       ],
       "method_evidence": "explicit-literal-conditions",
       "source_lines": [
-        858
+        860
       ],
       "observed_helper_signals": [
         "admin"
@@ -1198,7 +1198,7 @@
     {
       "pattern": "/api/admin/publishing/novels/{id}",
       "source": "p.match(/^\\/api\\/admin\\/publishing\\/novels\\/(\\d+)",
-      "source_line": 796,
+      "source_line": 798,
       "methods": [
         "PATCH"
       ],
@@ -1210,7 +1210,7 @@
     {
       "pattern": "/api/admin/publishing/chapters/{id}",
       "source": "p.match(/^\\/api\\/admin\\/publishing\\/chapters\\/(\\d+)",
-      "source_line": 805,
+      "source_line": 807,
       "methods": [
         "PATCH"
       ],
@@ -1222,7 +1222,7 @@
     {
       "pattern": "/api/admin/donations/{id}",
       "source": "p.match(/^\\/api\\/admin\\/donations\\/(\\d+)",
-      "source_line": 846,
+      "source_line": 848,
       "methods": [
         "PATCH"
       ],
@@ -1234,7 +1234,7 @@
     {
       "pattern": "/api/admin/reports/{id}",
       "source": "p.match(/^\\/api\\/admin\\/reports\\/(\\d+)",
-      "source_line": 848,
+      "source_line": 850,
       "methods": [
         "PATCH"
       ],
@@ -1246,7 +1246,7 @@
     {
       "pattern": "/api/admin/requests/{id}",
       "source": "p.startsWith(\"/api/admin/requests/\")",
-      "source_line": 857,
+      "source_line": 859,
       "methods": [
         "PATCH"
       ],
@@ -1258,7 +1258,7 @@
     {
       "pattern": "/api/admin/connector-authorization-requests/{id}",
       "source": "p.match(/^\\/api\\/admin\\/connector-authorization-requests\\/(\\d+)",
-      "source_line": 859,
+      "source_line": 861,
       "methods": [
         "PATCH"
       ],
@@ -1342,7 +1342,7 @@
     {
       "pattern": "/api/author/chapters/{id}/publish",
       "source": "/^\\/api\\/author\\/chapters\\/\\d+\\/publish$/.test(p)",
-      "source_line": 776,
+      "source_line": 778,
       "methods": [
         "POST"
       ],
@@ -1354,7 +1354,7 @@
     {
       "pattern": "/api/admin/publishing/chapters",
       "source": "p.match(/^\\/api\\/admin\\/publishing\\/chapters(?:\\/(\\d+)",
-      "source_line": 797,
+      "source_line": 799,
       "methods": [
         "GET"
       ],
