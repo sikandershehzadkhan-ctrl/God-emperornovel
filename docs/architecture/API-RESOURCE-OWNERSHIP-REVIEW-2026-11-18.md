@@ -52,9 +52,13 @@ Public comment reads and writes now reject unknown, unpublished, or rights-ineli
 
 Regression assertions cover the history relationship and the publication/rights gates for comments and ratings. These changes enforce publication boundaries; they do not establish a cross-account data exposure.
 
-### 5. Cross-account isolation still needs executable tests
+### 5. Cross-account isolation test coverage
 
-Static SQL inspection shows multiple user-id predicates, but it does not prove that no alternate code path leaks data. Add tests with two independent users for library, history, bookmarks, follows, notifications, ticket ledger, novel requests, author applications, AI projects, novels, and chapters.
+**Status: partial runtime coverage added in PR branch.**
+
+`scripts/test-api-user-bookmark-isolation-runtime.mjs` now calls the real Worker `fetch()` handler with two independently authenticated sessions and a deterministic D1 test double. The test exercises account-scoped reads and writes for bookmarks, reading history, and personal library membership; it also checks that a forged `user_id` is ignored and that history/bookmark chapter relationships are validated. The test is included in the normal `npm run build` gate.
+
+This is not a live Cloudflare D1 test. It does not yet cover follows, notifications, ticket ledger, novel requests, author applications, AI projects, author-owned novels, or author chapters. Those remain explicit follow-up test targets.
 
 ## Security boundary
 
