@@ -11,7 +11,7 @@ function routeBlock(marker) {
   const start = api.indexOf(marker);
   assert.ok(start >= 0, "Expected API route not found: " + marker);
   const tail = api.slice(start + marker.length);
-  const next = tail.search(/\\n\\s+if\\(/);
+  const next = tail.search(/\n\s+if\(/);
   return api.slice(start, next >= 0 ? start + marker.length + next : api.length);
 }
 function requiresSession(marker) {
