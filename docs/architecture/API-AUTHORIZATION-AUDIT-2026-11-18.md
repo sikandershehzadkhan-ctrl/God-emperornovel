@@ -28,7 +28,7 @@ Except for the early `/api/health` fast path, the API dispatcher performs schema
 | `/api/tags` | GET | Public | Tag vocabulary | 1 |
 | `/api/public-authors` | GET | Public | Aggregated authors from published, rights-eligible novels | 0 |
 | `/api/sources` | GET | Public | Static connector/source registry metadata | 0 |
-| `/api/omni/status` | GET | Public | Connector registry status; calls `seedOmni`, which ensures tables and seeds registry rows | 0 |
+| `/api/omni/status` | GET | Public, D1-backed per-IP limit: 60/minute | Reads connector status; does not seed or mutate registry rows | 0 |
 | `/api/omni/search` | GET | Public | Local search plus enabled connectors marked rights-authorized | 1 |
 | `/api/omni/resolve` | GET | Public | Validates and resolves a supported source URL; no user-owned resource | 0 |
 | `/api/omni/smart-unlock` | GET | Authenticated account required | Calculates the current user's remaining locked chapters and affordable packs for a published, rights-eligible novel; does not perform an unlock | 0 |
@@ -57,8 +57,8 @@ The handler now preserves the stored lock state when `is_locked` is absent and v
 
 ## Remaining security and operational questions
 
-1. **Public Omni search exposure:** `/api/omni/search` can query enabled, rights-authorized external connectors for anonymous callers. Confirm request-size bounds, per-IP rate limiting, concurrency limits, and provider-abuse controls before enabling connectors in production.
-2. **Public Omni status side effects:** `/api/omni/status` is a public GET that calls `seedOmni`, which can create schema and seed registry rows. Prefer moving initialization to a controlled setup/migration path or prove this bootstrap is bounded and safe under concurrent anonymous requests.
+1. **Public Omni search exposure:** `/api/omni/search` remains public and can query enabled, rights-authorized external connectors. It now has a 20/minute per-IP D1-backed limit, a 120-character query cap, at most 30 eligible connectors per request, and a 7-second outbound timeout. Concurrency and edge/WAF controls still need production review.
+2. **Public Omni status side effects:** resolved in the audit branch. Public status now only ensures required tables and reads connector rows; registry seeding is moved to the authenticated admin connector listing. Public status is rate-limited to 60/minute per IP.
 3. **Taxonomy submission abuse:** POST now requires login and binds identity correctly, but per-account/IP submission rate limits and moderation abuse controls still need review.
 4. **Client parity:** Several routes have no exact literal reference in `public/app.js`; trace dynamic callers and other frontend bundles before calling them unused.
 5. **Remaining routes:** This report does not cover the other literal routes or the 21 dynamic route families.
@@ -67,7 +67,7 @@ The handler now preserves the stored lock state when `is_locked` is absent and v
 
 - Method behavior for these 14 paths: **implemented and CI-verified**.
 - Taxonomy submitter identity binding: **implemented and CI-verified**.
-- Authentication/role behavior for these 14 paths: **source-reviewed; remaining abuse and operational controls listed above**.
+- Authentication/role behavior for these 14 paths: **source-reviewed; Omni public endpoint rate/query bounds implemented, edge/WAF and concurrency controls remain open**.
 - Full API authorization, resource ownership, cross-account isolation, and client parity: **not complete**.
 - No production D1 access, production deployment, or live-browser test was performed.
 
