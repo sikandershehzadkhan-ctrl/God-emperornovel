@@ -22,8 +22,8 @@ const apiStart = worker.indexOf("async function api(");
 const apiEnd = worker.indexOf("async function sitemap(", apiStart);
 assert.ok(apiStart >= 0 && apiEnd > apiStart, "Worker API dispatcher boundaries must exist");
 const api = worker.slice(apiStart, apiEnd);
-const lineAt = index => worker.slice(0, apiStart + index).split("\\n").length;
-const sourceOccurrences = [...api.matchAll(/p\\s*===?\\s*["']([^"']+)["']/g)];
+const lineAt = index => worker.slice(0, apiStart + index).split("\n").length;
+const sourceOccurrences = [...api.matchAll(/p\s*===?\s*["']([^"']+)["']/g)];
 const lineMap = new Map();
 for (const match of sourceOccurrences) {
   const lines = lineMap.get(match[1]) || [];
