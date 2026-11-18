@@ -22,6 +22,11 @@ assert.match(source, /c\.publication_status='published'/,
 assert.match(source, /n\.rights_status IN \('original','public_domain','licensed','authorized'\)/,
   "Bookmark writes must enforce published-rights eligibility.");
 
+const bookmarkPost = source.split("\n").find(line => line.includes('if(p==="/api/bookmark"&&m==="POST")'));
+const libraryPost = source.split("\n").find(line => line.includes('if(p==="/api/library"&&m==="POST")'));
+assert.ok(bookmarkPost.includes('req.headers.get("origin")!==url.origin'), "bookmark writes must reject cross-origin requests");
+assert.ok(libraryPost.includes('req.headers.get("origin")!==url.origin'), "library changes must reject cross-origin requests");
+assert.ok(libraryPost.includes("Number.isSafeInteger(nid)") && libraryPost.includes("nid<1"), "library writes must validate a positive safe novel identifier");
 assert.match(app, /now=!!result\.bookmarked/,
   "The reader button must use the server's authoritative bookmark state.");
 assert.match(app, /localStorage\.removeItem\(key\)/,
