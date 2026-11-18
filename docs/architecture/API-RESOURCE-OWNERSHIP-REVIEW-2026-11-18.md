@@ -52,16 +52,26 @@ Public comment reads and writes now reject unknown, unpublished, or rights-ineli
 
 Regression assertions cover the history relationship and the publication/rights gates for comments and ratings. These changes enforce publication boundaries; they do not establish a cross-account data exposure.
 
-### 5. Cross-account isolation test coverage
+### 5. Novel request and AI project ownership
+
+**Status: source review positive; deterministic Worker-level tests added in PR branch.**
+
+The authenticated `GET /api/requests` quota count filters by both `user_id=u.id` and the current week. The `POST /api/requests` insert binds the authenticated `u.id` as the owner, and both weekly cost subqueries are scoped to that same user. The API intentionally exposes only the submitting account's quota count; the public vote listing is a separate, intentionally public surface and does not expose private request ownership controls.
+
+The AI project collection filters by `owner_user_id=u.id`; creation assigns `owner_user_id=u.id` rather than accepting a client owner. Project detail, update, blueprint, run, and jobs handlers load the addressed project and reject non-admin users whose ID does not match its owner. Job listing is then selected by the verified project ID. Generation-run and job creation bind the authenticated user ID. The test harness now exercises two-author project list/read/update isolation, project job-feed authorization, and rejection of cross-account blueprint/run actions before provider invocation. It also checks that each account sees only its own novel-request quota count.
+
+These tests use the actual Worker request handler with a deterministic D1 test double. They do not execute live Cloudflare D1 transactions or prove all SQL semantics under concurrency.
+
+### 6. Cross-account isolation test coverage
 
 **Status: partial runtime coverage added in PR branch.**
 
 `scripts/test-api-user-bookmark-isolation-runtime.mjs` now calls the real Worker `fetch()` handler with two independently authenticated sessions and a deterministic D1 test double. The test exercises account-scoped reads and writes for bookmarks, reading history, and personal library membership; it also checks that a forged `user_id` is ignored, history/bookmark chapter relationships are validated, author novel listings are owner-filtered, and a second author cannot update another author's novel or chapter. It also verifies that follows, notifications, ticket-ledger reads, and the current author-application read return only the authenticated account's rows. The test is included in the normal `npm run build` gate.
 
-This is not a live Cloudflare D1 test. It does not yet cover novel requests or AI projects. Those remain explicit follow-up test targets.
+This is not a live Cloudflare D1 test. It now includes per-account novel-request quota reads and AI project list/read/update/job-feed isolation, plus cross-account rejection for blueprint and run actions. Novel-request creation/accounting still needs a transaction-level test, and AI job/run persistence still needs broader runtime coverage.
 
 ## Security boundary
 
 No confirmed cross-user data exposure was established by this first pass. The two findings above are validation/policy consistency issues. This audit does not certify CSRF protections, rate limits, method rejection, session rotation, or all delegated handlers.
 
-No production deployment, D1 mutation, or live API test was performed.
+No production deployment, D1 mutation, or live API test was performed. The expanded Worker-level test has been committed but must still pass the repository build/CI gate on the resulting exact commit before its assertions are treated as validated.
