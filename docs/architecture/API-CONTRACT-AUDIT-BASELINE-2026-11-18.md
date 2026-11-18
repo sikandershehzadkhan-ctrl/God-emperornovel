@@ -27,9 +27,9 @@ All 74 literal paths and all 21 dynamic families remain review-required. The 77 
 
 ## Concrete findings confirmed in source
 
-### 0. Inventory source fingerprint is stale
+### 0. Inventory source fingerprint and line evidence
 
-The inventory's recorded `source_blob` does not match the current Worker file blob on this branch. The route-count source check still compares literal paths and branch occurrences, but the stale fingerprint means the inventory is not cryptographically pinned to the current Worker revision. Regenerate the inventory from the exact audited source before relying on its source-line references.
+The inventory has been regenerated against Worker blob `d35630f02e392496ce8826c9f720b75672b099c8`. The build-gated audit test recomputes the Git blob SHA-1, verifies all literal route occurrence line numbers, and verifies each dynamic route source line. This closes the stale-fingerprint and shifted-line evidence issue for this audited revision.
 
 ### 1. Rating contract mismatch
 
