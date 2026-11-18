@@ -16,6 +16,20 @@ assert.match(adminUserRoute, /id===u\\.id&&role!=='admin'/, "An administrator mu
 assert.match(adminUserRoute, /b\\.verified===undefined\\?Number\\(current\\.verified\\)/, "Omitted verification state must be preserved");
 assert.match(adminUserRoute, /b\\.banned===undefined\\?Number\\(current\\.banned\\)/, "Omitted ban state must be preserved");
 
+const adminNovelPatchStart = worker.indexOf('let apn=p.match(/^\\/api\\/admin\\/publishing\\/novels\\/(\\d+)$/)');
+const adminChapterStart = worker.indexOf('let ach=p.match(/^\\/api\\/admin\\/publishing\\/chapters');
+const adminChapterPatchStart = worker.indexOf('let acm=p.match(/^\\/api\\/admin\\/publishing\\/chapters\\/(\\d+)$/)');
+const adminChapterDeleteStart = worker.indexOf('if(acm && m==="DELETE")');
+const adminChapterCreateStart = worker.indexOf('if(p==="/api/admin/publishing/chapters"&&m==="POST")');
+assert.ok(adminNovelPatchStart>=0 && adminChapterStart>adminNovelPatchStart);
+assert.match(worker.slice(adminNovelPatchStart,adminChapterStart), /Number\\.isSafeInteger\\(id\\)\\|\\|id<1/);
+assert.match(worker.slice(adminChapterStart,adminChapterPatchStart), /Number\\.isSafeInteger\\(nid\\)\\|\\|nid<1/);
+assert.match(worker.slice(adminChapterPatchStart,adminChapterDeleteStart), /Number\\.isSafeInteger\\(id\\)\\|\\|id<1/);
+assert.match(worker.slice(adminChapterPatchStart,adminChapterDeleteStart), /Number\\.isSafeInteger\\(num\\)\\|\\|num<1/);
+assert.match(worker.slice(adminChapterDeleteStart,adminChapterCreateStart), /Number\\.isSafeInteger\\(id\\)\\|\\|id<1/);
+assert.match(worker, /Number\\.isSafeInteger\\(id\\)\\|\\|id<1\\|\\|!\\['up','down'\\]\\.includes\\(direction\\)/);
+assert.match(worker.slice(adminChapterCreateStart), /Number\\.isSafeInteger\\(nid\\)\\|\\|nid<1\\|\\|!Number\\.isSafeInteger\\(num\\)/);
+
 const userLookup = worker.indexOf("const u=await getUser(req,env)");
 const health = worker.indexOf('if(p==="/api/health"&&m==="GET")');
 assert.ok(health >= 0 && userLookup > health, "Health route must bypass session lookup");
