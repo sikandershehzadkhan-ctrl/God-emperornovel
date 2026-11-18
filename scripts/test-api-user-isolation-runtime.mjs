@@ -215,8 +215,38 @@ assert.deepEqual(bFollows, [],
   "Account B must not read Account A's follows");
 
 await payload(await request("reader-b-token", "POST", { novel_id: 10, user_id: 101 }, "/api/follow"));
+
+const adminOnlyRoutes = [
+  ["GET", "/api/admin/agents"],
+  ["POST", "/api/admin/agents/run"],
+  ["GET", "/api/admin/taxonomy"],
+  ["POST", "/api/admin/taxonomy"],
+  ["GET", "/api/admin/community/comments"],
+  ["PATCH", "/api/admin/community/comments"],
+  ["GET", "/api/admin/community/reports"],
+  ["PATCH", "/api/admin/community/reports"],
+  ["GET", "/api/admin/author-applications"],
+  ["GET", "/api/admin/stats"],
+  ["GET", "/api/admin/users"],
+  ["GET", "/api/admin/publishing"],
+  ["POST", "/api/admin/publishing/chapters/reorder"],
+  ["POST", "/api/admin/publishing/chapters"],
+  ["GET", "/api/admin/donations"],
+  ["GET", "/api/admin/reports"],
+  ["POST", "/api/admin/tickets"],
+  ["GET", "/api/admin/connectors"],
+  ["POST", "/api/admin/omni/health"],
+  ["POST", "/api/admin/connectors/cleanup"],
+  ["GET", "/api/admin/requests"],
+  ["PATCH", "/api/admin/requests/1"],
+  ["GET", "/api/admin/connector-authorization-requests"],
+];
+for (const [method, path] of adminOnlyRoutes) {
+  const response = await request("reader-a-token", method, {}, path);
+  assert.equal(response.status, 403, "Ordinary reader accounts must be denied admin route " + method + " " + path);
+}
 assert.deepEqual(follows.sort((a, b) => a.user_id - b.user_id), [
   { user_id: 101, novel_id: 10 }, { user_id: 202, novel_id: 10 }
 ], "Follow ownership must use the authenticated session, not a forged user_id");
 
-console.log("PASS: Worker fetch two-account history, library, notification, follow, recommendations, weekly request usage, ticket-ledger, and author-application isolation; authenticated history/follow ownership; forged user_id rejection; and account-scoped notification mutation using a deterministic D1 test double. This is not a live Cloudflare D1 test.");
+console.log("PASS: Worker fetch two-account history, library, notification, follow, recommendations, weekly request usage, ticket-ledger, and author-application isolation; ordinary-reader denial across 23 admin read/write routes; authenticated history/follow ownership; forged user_id rejection; and account-scoped notification mutation using a deterministic D1 test double. This is not a live Cloudflare D1 test.");
