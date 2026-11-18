@@ -62,7 +62,7 @@ async function request(token, method, body) {
   return worker.fetch(new Request("https://imperial.test/api/history", init), env);
 }
 async function payload(response) {
-  assert.equal(response.status, 200, await response.text());
+  if (response.status !== 200) throw new Error("Unexpected API status " + response.status + ": " + await response.text());
   return response.json();
 }
 
