@@ -41,6 +41,19 @@ assert.doesNotMatch(connectorCreate, /VALUES\\(\\?,\\?,\\?,0,'authorized'\\)/, "
 const adminConnectors = worker.slice(worker.indexOf('if(p==="/api/admin/connectors"&&m==="GET")'), worker.indexOf('if(p==="/api/admin/connectors"&&m==="PATCH")'));
 assert.match(adminConnectors, /admin\(u\)/);
 assert.ok(adminConnectors.includes("seedOmni(env)"), "Only the authenticated admin connector listing should seed the registry");
+
+const adminChapterPatchStart = worker.indexOf('let acm=p.match(/^\\/api\\/admin\\/publishing\\/chapters(?:\\/(\\d+))?$/)');
+const adminChapterPostStart = worker.indexOf('if(p==="/api/admin/publishing/chapters"&&m==="POST")');
+const adminChapterRoutes = worker.slice(adminChapterPatchStart, adminChapterPostStart);
+assert.ok(adminChapterPatchStart >= 0 && adminChapterPostStart > adminChapterPatchStart, "Admin chapter update routes must remain explicit");
+assert.match(adminChapterRoutes, /SELECT publication_status,rights_status FROM novels WHERE id=\\?/);
+assert.match(adminChapterRoutes, /novel\\.publication_status!=='published'[\\s\\S]*rights_status/);
+assert.match(adminChapterRoutes, /Number\\.isSafeInteger\\(cost\\).*cost<0.*cost>1000000/);
+const adminChapterCreateEnd = worker.indexOf('if(p==="/api/admin/donations"&&m==="GET")', adminChapterPostStart);
+const adminChapterCreate = worker.slice(adminChapterPostStart, adminChapterCreateEnd);
+assert.match(adminChapterCreate, /chapterPublication==='published'[\\s\\S]*n\\.publication_status!=='published'/, "Admin chapter creation must not publish under an unpublished parent novel");
+assert.match(adminChapterCreate, /Number\\.isSafeInteger\\(ticketCost\\).*ticketCost<0.*ticketCost>1000000/);
+
 const novelsStart = worker.indexOf('if(p==="/api/novels"){');
 const novelsEnd = worker.indexOf("let nm=p.match", novelsStart);
 assert.ok(novelsStart >= 0 && novelsEnd > novelsStart && worker.slice(novelsStart, novelsEnd).includes("publication_status='published'"), "Public novel listing must filter to published content");
