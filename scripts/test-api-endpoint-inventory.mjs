@@ -8,7 +8,7 @@ const apiEnd = worker.indexOf("async function sitemap(", apiStart);
 assert.ok(apiStart >= 0 && apiEnd > apiStart, "Worker API dispatcher boundaries must exist");
 const api = worker.slice(apiStart, apiEnd);
 
-const literalPaths = new Set([...api.matchAll(/p\\s*===?\\s*["'`]([^"'`]+)["'`]/g)].map(match => match[1]));
+const literalPaths = new Set([...api.matchAll(/p\s*===?\s*["']([^"']+)["']/g)].map(match => match[1]));
 const manifestPaths = new Set(manifest.literal_endpoints.map(endpoint => endpoint.path));
 assert.deepEqual([...manifestPaths].sort(), [...literalPaths].sort(), "API literal path inventory must match Worker dispatcher");
 
