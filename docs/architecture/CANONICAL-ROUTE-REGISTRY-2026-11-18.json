@@ -10,7 +10,7 @@
     "worker_file": "src/index.js",
     "worker_blob": "3d04cb5ac2969dc1651c0708897a1987eddbd819",
     "client_file": "public/app.js",
-    "client_blob": "a640fbfed7221adac1a6fd7fd6d5f0524016004a",
+    "client_blob": "2b38dc3f3e4282064ac7f5acef7fbeb077db080a",
     "sitemap_file": "src/sitemap.mjs",
     "sitemap_blob": "502021167ebdb6fc5ce24ee77f3b7130beda81e4"
   },
