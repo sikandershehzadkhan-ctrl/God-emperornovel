@@ -31,7 +31,9 @@ assert.match(routeLine("/api/omni/status"), /seedOmni\(env\)/);
 assert.match(routeLine("/api/omni/search"), /rights_status='authorized'/);
 assert.match(routeLine("/api/omni/smart-unlock"), /need\(u\)/);
 assert.match(routeLine("/api/admin/stats"), /admin\(u\)/);
-assert.match(routeLine("/api/novels"), /publication_status='published'/);
+const novelsStart = worker.indexOf('if(p==="/api/novels"){');
+const novelsEnd = worker.indexOf("let nm=p.match", novelsStart);
+assert.ok(novelsStart >= 0 && novelsEnd > novelsStart && worker.slice(novelsStart, novelsEnd).includes("publication_status='published'"), "Public novel listing must filter to published content");
 assert.match(report, /Public Omni search exposure/);
 assert.match(report, /Full API authorization, resource ownership/);
 
