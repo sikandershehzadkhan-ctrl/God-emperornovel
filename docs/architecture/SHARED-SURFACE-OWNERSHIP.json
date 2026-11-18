@@ -210,7 +210,6 @@
     {
       "id": "architecture-contracts",
       "paths": [
-        "ARCHITECTURE.md",
         "docs/architecture/"
       ],
       "requiresAdr": true
