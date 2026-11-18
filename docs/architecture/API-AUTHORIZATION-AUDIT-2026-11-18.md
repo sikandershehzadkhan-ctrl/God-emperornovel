@@ -133,3 +133,10 @@ These are source-level validation safeguards. The regression assertions are adde
 A review of the admin novel creation route found that `owner_user_id` was converted with `Number(...)` and inserted without checking that the target account existed, was active, or had an author-capable role. The route now requires a positive safe-integer owner ID, resolves the account, and permits assignment only to an unbanned author or administrator. If no owner is supplied, the current administrator remains the default owner. This prevents malformed or arbitrary account IDs from silently becoming novel ownership assignments.
 
 Regression assertions cover the owner validation and role/ban checks. This is a source-level safeguard, not yet a live D1 authorization test.
+
+
+## Author chapter publication parent-state enforcement
+
+The author chapter publish route checked ownership and novel rights but did not check the parent novel's publication state. This allowed a chapter to be marked published while its parent novel was still a draft or awaiting review. The route now loads the parent novel publication status and rejects chapter publication until the parent novel is published. Moving a chapter back to draft remains allowed.
+
+Regression assertions cover the parent-state lookup and publication gate. This is a source-level safeguard; runtime behavior still requires the repository test suite and deployment validation.
