@@ -25,7 +25,7 @@ Replace the broad `src/` owner with explicit source-domain ownership roots:
 - Runtime feature schema.
 - Reader/community React components.
 
-Every source owner requires an ADR or feature contract for changes. Add a build-gated test that enumerates tracked source files with Git and proves each file matches exactly one expected domain owner. A new source file must receive an owner before it can pass the governance gate.
+Every source owner requires an ADR or feature contract for changes. Add a build-gated test that enumerates tracked source files with Git and proves each file matches exactly one expected domain owner. A new source file must receive an owner before it can pass the governance gate. A catch-all `src/` ownership rule must not be reintroduced to bypass domain assignment.
 
 ## Boundaries
 
