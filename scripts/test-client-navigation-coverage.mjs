@@ -15,14 +15,13 @@ for (const file of [appPath, releaseAppPath, workerPath, routeRegistryPath]) {
 const app = fs.readFileSync(appPath, "utf8");
 const releaseApp = fs.readFileSync(releaseAppPath, "utf8");
 const worker = fs.readFileSync(workerPath, "utf8");
-const { resolvePageShell } = await import("../src/route-registry.mjs");
+const { resolvePageShell, PAGE_ROUTE_SHELLS } = await import("../src/route-registry.mjs");
 
 // The Worker serves the versioned application bundle, so navigation evidence
 // must come from the same bytes that are shipped to readers.
 assert.equal(releaseApp, app, "Versioned application bundle is out of sync with public/app.js");
 
-const exactRoutes = new Set(Object.keys((await import("../src/route-registry.mjs")).PAGE_ROUTE_SHELLS));
-
+const exactRoutes = new Set(Object.keys(PAGE_ROUTE_SHELLS));
 
 function servedByWorker(route) {
   return exactRoutes.has(route) || resolvePageShell(route) !== "404.html";
