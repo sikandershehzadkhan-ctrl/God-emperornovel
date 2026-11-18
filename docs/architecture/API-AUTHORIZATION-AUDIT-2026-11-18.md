@@ -147,3 +147,10 @@ Regression assertions cover the parent-state lookup and publication gate. This i
 The author chapter creation route previously accepted any integer chapter number and only rejected negative ticket costs. Non-integer, non-finite, or excessively large ticket costs could reach the database layer, and chapter numbers were not constrained to safe integers. The route now validates a positive safe-integer novel ID and chapter number, plus a safe-integer ticket cost from 0 through 1,000,000, before database access or insertion.
 
 Regression assertions cover all three numeric boundaries. This is source-level validation and does not substitute for running the full Worker test suite.
+
+
+## Author chapter edit and list identifier validation
+
+The Author Studio chapter list route converted the supplied `novel_id` with `Number()` and queried D1 without first rejecting missing, fractional, non-finite, zero, negative, or unsafe identifiers. The chapter edit route likewise relied on its digit-only path matcher without checking that the converted chapter ID was a positive safe integer, and chapter-number edits used `Number.isInteger` rather than a safe-integer bound.
+
+The list route now rejects invalid novel IDs before database access. Chapter edits validate the path ID and require a positive safe-integer chapter number. Regression assertions cover each boundary. These are source-level safeguards; the full repository test suite, real-D1 behavior, and production deployment remain unverified.
