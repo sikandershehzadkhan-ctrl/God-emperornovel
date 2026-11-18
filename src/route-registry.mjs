@@ -94,6 +94,18 @@ export const NOINDEX_EXACT_PATHS = Object.freeze([
 ]);
 const noindexSet = new Set(NOINDEX_EXACT_PATHS);
 
+export const SITEMAP_ENDPOINTS = Object.freeze([
+  "/sitemap.xml",
+  "/sitemap-static.xml",
+  "/sitemap-novels.xml",
+  "/sitemap-chapters.xml"
+]);
+const sitemapEndpointSet = new Set(SITEMAP_ENDPOINTS);
+
+export function isSitemapEndpoint(path) {
+  return sitemapEndpointSet.has(path);
+}
+
 export const SITEMAP_STATIC_PATHS = Object.freeze([
   "/",
   "/catalog",
