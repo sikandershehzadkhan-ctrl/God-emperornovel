@@ -16,9 +16,9 @@ assert.match(app,/drawer\.setAttribute\('aria-hidden',String\(!open\)\)/,
   'The reader drawer must synchronize its accessibility-tree visibility.');
 assert.match(app,/id="chapterMenu"[^>]*aria-controls="chapterDrawer"/,
   'The chapter-list trigger must identify its controlled dialog.');
-assert.match(app,/chapterBtn\.setAttribute\('aria-expanded',String\(open\)\)/,
+assert.match(app,/chapterBtn\.setAttribute\('aria-expanded',String\(open&&drawerTrigger===chapterBtn\)\)/,
   'The chapter-list trigger must announce its expanded state.');
-assert.match(app,/settingsBtn\.setAttribute\('aria-expanded',String\(open\)\)/,
+assert.match(app,/settingsBtn\.setAttribute\('aria-expanded',String\(open&&drawerTrigger===settingsBtn\)\)/,
   'The settings trigger must announce its expanded state.');
 assert.match(app,/scrim\.addEventListener\('click',\(\)=>closeReaderDrawer\(\)\)/,
   'Tapping outside the drawer must close it.');
