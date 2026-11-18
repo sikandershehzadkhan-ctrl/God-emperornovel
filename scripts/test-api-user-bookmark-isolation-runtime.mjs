@@ -25,7 +25,10 @@ const aiProjects = [
   { id: 802, owner_user_id: 402, novel_id: null, name: "B private AI project", mode: "manual", status: "draft", genre: "fantasy", fandom: "", premise: "Private premise B", protagonist: "B", settings_json: "{}", bible_json: "{}" }
 ];
 const aiJobs = [{ id: 901, project_id: 801, owner_user_id: 301, chapter_number: 1, job_type: "draft", status: "complete" }];
-const novelRequests = [{ id: 1001, user_id: 301, week_key: Math.floor(now / 604800), url: "https://example.test/novel", status: "pending" }];
+const novelRequests = [{ id: 1001, user_id: 301, week_key: Math.floor(now / 604800), url: "https://example.test/novel", source_host: "fanqienovel.com", cost: 0, status: "pending" }];
+const accountBalances = new Map([[301, 1000], [402, 0]]);
+const requestLedger = [];
+let nextRequestId = 1002;
 
 class FakeStatement {
   constructor(sql) { this.sql = sql; this.values = []; }
@@ -37,6 +40,10 @@ class FakeStatement {
     if (this.sql.includes("SELECT c.id FROM novels n JOIN chapters c ON c.novel_id=n.id") ||
         this.sql.includes("SELECT c.id FROM chapters c JOIN novels n ON n.id=c.novel_id")) {
       return this.values[0] === 10 && this.values[1] === 7 ? { id: 700 } : null;
+    }
+    if (this.sql.includes("SELECT cost FROM novel_requests WHERE id=? AND user_id=?")) {
+      const row = novelRequests.find(item => item.id === this.values[0] && item.user_id === this.values[1]);
+      return row ? { cost: row.cost } : null;
     }
     if (this.sql.includes("SELECT COUNT(*) n FROM novel_requests WHERE user_id=? AND week_key=?")) {
       return { n: novelRequests.filter(row => row.user_id === this.values[0] && row.week_key === this.values[1]).length };
@@ -100,8 +107,9 @@ class FakeStatement {
       return { results: aiJobs.filter(row => row.project_id === this.values[0]).map(({ id, chapter_number, job_type, status }) => ({ id, chapter_number, job_type, status })) };
     }
     if (this.sql.includes("FROM ticket_ledger WHERE user_id=?")) {
-      return { results: ticketLedger.filter(row => row.user_id === this.values[0]) };
+      return { results: [...ticketLedger, ...requestLedger].filter(row => row.user_id === this.values[0]) };
     }
+
     return { results: [] };
   }
   async run() {
@@ -150,7 +158,60 @@ class FakeStatement {
   }
 }
 
-const env = { DB: { prepare: sql => new FakeStatement(sql) }, SITE_NAME: "Imperial Novel", OPENAI_API_KEY: "test-key" };
+const env = {
+  DB: {
+    prepare: sql => new FakeStatement(sql),
+    async batch(statements) {
+      // Model the exact ordered D1 batch used by POST /api/requests. Work on copies
+      // so an exception cannot leave partial request, balance, or ledger writes.
+      const requests = novelRequests.map(row => ({ ...row }));
+      const balances = new Map(accountBalances);
+      const ledger = requestLedger.map(row => ({ ...row }));
+      let lastInsertId = 0, priorChanges = 0;
+      const results = [];
+      for (const statement of statements) {
+        const sql = statement.sql, values = statement.values;
+        if (sql.includes("INSERT INTO novel_requests(")) {
+          const [user_id, url, source_host, week_key] = values;
+          const used = requests.filter(row => row.user_id === user_id && row.week_key === week_key).length;
+          const cost = used < 3 ? 0 : Math.min((used - 2) * 100, 100000);
+          const balance = balances.get(user_id);
+          const inserted = Number.isFinite(balance) && balance >= cost;
+          if (inserted) {
+            lastInsertId = nextRequestId++;
+            requests.push({ id: lastInsertId, user_id, url, source_host, week_key, cost, status: "pending" });
+          }
+          priorChanges = inserted ? 1 : 0;
+          results.push({ meta: { changes: priorChanges, last_row_id: inserted ? lastInsertId : 0 } });
+        } else if (sql.includes("UPDATE users SET tickets=tickets-(SELECT cost FROM novel_requests")) {
+          const request = requests.find(row => row.id === lastInsertId && row.user_id === values[0]);
+          const userId = values[1];
+          const valid = priorChanges === 1 && request && userId === request.user_id && values[2] === request.user_id;
+          const balance = balances.get(userId);
+          const changed = Boolean(valid && Number.isFinite(balance) && balance >= request.cost);
+          if (changed) balances.set(userId, balance - request.cost);
+          priorChanges = changed ? 1 : 0;
+          results.push({ meta: { changes: priorChanges } });
+        } else if (sql.includes("INSERT INTO ticket_ledger(user_id,delta,reason,reference) SELECT user_id,-cost")) {
+          const request = requests.find(row => row.id === lastInsertId);
+          const changed = Boolean(priorChanges === 1 && request && request.cost > 0);
+          if (changed) ledger.push({ id: ledger.length + 1, user_id: request.user_id, delta: -request.cost, reason: "novel_request", reference: request.url.slice(0, 180) });
+          priorChanges = changed ? 1 : 0;
+          results.push({ meta: { changes: priorChanges } });
+        } else {
+          throw new Error("Unexpected SQL in novel-request D1 batch: " + sql);
+        }
+      }
+      novelRequests.splice(0, novelRequests.length, ...requests);
+      accountBalances.clear();
+      for (const [id, balance] of balances) accountBalances.set(id, balance);
+      requestLedger.splice(0, requestLedger.length, ...ledger);
+      return results;
+    }
+  },
+  SITE_NAME: "Imperial Novel",
+  OPENAI_API_KEY: "test-key"
+};
 async function request(token, path, method, body) {
   const headers = { cookie: "session=" + token };
   const init = { method, headers };
@@ -232,8 +293,31 @@ await payload(await request("account-b-token", "/api/author/ai/projects/801/jobs
 await payload(await request("account-b-token", "/api/author/ai/projects/801/blueprint", "POST"), 403);
 await payload(await request("account-b-token", "/api/author/ai/projects/801/run", "POST"), 403);
 
-// Novel-request quota reads are scoped to the authenticated account.
+// Novel request creation exercises the ordered D1 request/debit/ledger transaction.
 assert.deepEqual(await payload(await request("account-a-token", "/api/requests", "GET")), { used: 1, limit: 3 });
 assert.deepEqual(await payload(await request("account-b-token", "/api/requests", "GET")), { used: 0, limit: 3 });
+const requestUrl = "https://fanqienovel.com/page/123";
+const freeRequestOne = await payload(await request("account-a-token", "/api/requests", "POST", { url: requestUrl, user_id: 402 }), 200);
+const freeRequestTwo = await payload(await request("account-a-token", "/api/requests", "POST", { url: requestUrl }), 200);
+assert.equal(freeRequestOne.cost, 0);
+assert.equal(freeRequestTwo.cost, 0);
+assert.equal(accountBalances.get(301), 1000, "Free requests must not debit Crowns");
+assert.equal(requestLedger.length, 0, "Free requests must not create zero-value ledger entries");
+const paidRequest = await payload(await request("account-a-token", "/api/requests", "POST", { url: requestUrl }), 200);
+assert.equal(paidRequest.cost, 100, "Fourth weekly request must use server-derived price");
+assert.equal(accountBalances.get(301), 900, "Paid request must debit the owning account exactly once");
+assert.deepEqual(requestLedger, [{ id: 1, user_id: 301, delta: -100, reason: "novel_request", reference: requestUrl }]);
+assert.equal(novelRequests.find(row => row.id === paidRequest.request_id).user_id, 301);
+assert.deepEqual(await payload(await request("account-a-token", "/api/requests", "GET")), { used: 4, limit: 3 });
+assert.deepEqual(await payload(await request("account-b-token", "/api/requests", "GET")), { used: 0, limit: 3 });
+const bFreeRequest = await payload(await request("account-b-token", "/api/requests", "POST", { url: requestUrl, user_id: 301 }), 200);
+assert.equal(bFreeRequest.cost, 0);
+assert.equal(accountBalances.get(402), 0, "B's free request must not change either account balance");
+assert.equal(accountBalances.get(301), 900, "B's request must not debit A");
+assert.equal(novelRequests.find(row => row.id === bFreeRequest.request_id).user_id, 402);
+await payload(await request("account-a-token", "/api/requests", "POST", { url: "http://fanqienovel.com/page/123" }), 400);
+await payload(await request("account-a-token", "/api/requests", "POST", { url: "https://unregistered.example/page/123" }), 400);
+assert.equal(novelRequests.length, 5, "Rejected URLs must not create request rows");
+assert.equal(requestLedger.length, 1, "Rejected URLs must not create ledger entries");
 
-console.log("PASS: Worker fetch two-account isolation for bookmarks, history, library, follows, notifications, ticket ledger, author applications, author novel listing/update, author chapter update, and AI project creation/listing/read/update/job access; forged identity and invalid chapter relationships rejected. Deterministic D1 test double only, not live Cloudflare D1.");
+console.log("PASS: Worker fetch two-account isolation for bookmarks, history, library, follows, notifications, ticket ledger, author applications, author novel listing/update, author chapter update, and AI project creation/listing/read/update/job access, novel-request free/paid transaction accounting, and per-account request isolation; forged identity and invalid chapter relationships rejected. Deterministic D1 test double only, not live Cloudflare D1.");
