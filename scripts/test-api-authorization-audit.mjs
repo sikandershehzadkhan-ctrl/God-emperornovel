@@ -44,5 +44,12 @@ for (const path of exactPaths) assert.ok(inventory.literal_endpoints.some(x => x
 const authorChapterPatch = worker.slice(worker.indexOf('if(/^\\/api\\/author\\/chapters\\/\\d+$/.test(p)&&m==="PATCH")'), worker.indexOf('if(/^\\/api\\/author\\/chapters\\/\\d+\\/publish$/.test(p)'));
 assert.match(authorChapterPatch, /b\.is_locked===undefined\?Number\(c\.is_locked\):b\.is_locked\?1:0/, "Partial chapter edits must preserve the existing lock state");
 assert.match(authorChapterPatch, /Number\.isSafeInteger\(cost\).*cost>1000000/, "Chapter ticket costs must be bounded whole numbers");
+const bookmarkStart = worker.indexOf('if(p==="/api/bookmark"&&m==="POST")');
+const bookmarkEnd = worker.indexOf('if(p==="/api/history"&&m==="GET")', bookmarkStart);
+const bookmarkHandler = worker.slice(bookmarkStart, bookmarkEnd);
+assert.match(bookmarkHandler, /Number\.isSafeInteger\(novelId\)/, "Bookmark writes must validate the novel ID");
+assert.match(bookmarkHandler, /c\.novel_id=\? AND c\.chapter_number=\?/);
+assert.match(bookmarkHandler, /c\.publication_status='published'.*n\.publication_status='published'/);
+assert.match(authorChapterPatch, /validateComicChapterContent\(content\)/, "Comic chapter edits must use the same content policy as creation");
 assert.ok(client.length > 0, "Client source must be available for literal call-site review");
 console.log("API authorization audit slice passed: 14 route classifications and taxonomy identity boundaries.");
