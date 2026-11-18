@@ -1,3 +1,4 @@
+// Worker-level integration test using a deterministic D1 test double; not a live Cloudflare D1 test.
 import assert from "node:assert/strict";
 import worker from "../src/index.js";
 
