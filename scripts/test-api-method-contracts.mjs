@@ -32,6 +32,7 @@ for (const match of table[1].matchAll(/["']([^"']+)["']\s*:\s*\[([^\]]*)\]/g)) {
 assert.deepEqual(actual, expected, "Centralized method contracts must match the reviewed allowlist");
 
 
+const schema = api.indexOf("await ensureCoreSchema(env)");
 const dynamicStart = api.indexOf("const dynamicMethodContracts=[");
 const dynamicEnd = api.indexOf("const dynamicAllowedMethods=", dynamicStart);
 assert.ok(dynamicStart >= 0 && dynamicEnd > dynamicStart, "Dynamic resource method contracts must exist");
@@ -43,7 +44,6 @@ const dynamicGate = api.indexOf("const dynamicAllowedMethods=dynamicMethodContra
 assert.ok(dynamicGate >= 0 && dynamicGate < schema, "Dynamic method contracts must reject unsupported methods before schema setup");
 
 const gate = api.indexOf("if(allowedMethods&&!allowedMethods.includes(m))");
-const schema = api.indexOf("await ensureCoreSchema(env)");
 const session = api.indexOf("await getUser(req,env)");
 const health = api.indexOf('if(p==="/api/health"&&m==="GET")');
 assert.ok(gate >= 0 && gate < schema && gate < session && gate < health, "Unsupported methods must be rejected before schema setup, session lookup, and route handling");
