@@ -769,7 +769,7 @@ async function api(req,env){
   await audit(env,u,'author_novel_updated',`novel=${id}`);if(requeueForRightsReview){await audit(env,u,'author_novel_paused_for_rights_review',`novel=${id};rights_or_asset_change=1`);await notifyAdmins(env,'Published novel requires renewed rights review',`Novel "${title}" was automatically paused after its rights declaration or cover/source asset details changed.`)}return json({ok:true,message:requeueForRightsReview?'Novel saved and paused for renewed rights review.':'Novel saved.'})
  }
  if(p==="/api/author/chapters"&&m==="GET"){
-  const e=author(u);if(e)return e;const nid=Number(url.searchParams.get('novel_id'));const n=await env.DB.prepare('SELECT id,owner_user_id FROM novels WHERE id=?').bind(nid).first();if(!n)return json({error:'Novel not found'},404);if(u.role!=="admin"&&Number(n.owner_user_id)!==Number(u.id))return json({error:'You do not own this novel'},403);
+  const e=author(u);if(e)return e;const nid=Number(url.searchParams.get('novel_id'));if(!Number.isSafeInteger(nid)||nid<1)return json({error:'A valid novel ID is required'},400);const n=await env.DB.prepare('SELECT id,owner_user_id FROM novels WHERE id=?').bind(nid).first();if(!n)return json({error:'Novel not found'},404);if(u.role!=="admin"&&Number(n.owner_user_id)!==Number(u.id))return json({error:'You do not own this novel'},403);
   return json((await env.DB.prepare(`SELECT id,novel_id,chapter_number,title,content,is_locked,ticket_cost,publication_status,created_at,updated_at FROM chapters WHERE novel_id=? ORDER BY chapter_number`).bind(nid).all()).results||[])
  }
  if(p==="/api/author/chapters"&&m==="POST"){
@@ -783,9 +783,9 @@ async function api(req,env){
   try{const r=await env.DB.prepare(`INSERT INTO chapters(novel_id,chapter_number,title,content,is_locked,ticket_cost,publication_status) VALUES(?,?,?,?,?,?, 'draft')`).bind(nid,num,title,content,locked?1:0,cost).run();await env.DB.prepare('UPDATE novels SET updated_at=CURRENT_TIMESTAMP WHERE id=?').bind(nid).run();await audit(env,u,'author_chapter_created',`novel=${nid};chapter=${num}`);return json({ok:true,id:Number(r.meta.last_row_id),message:'Chapter saved as draft.'},201)}catch(err){return json({error:'Chapter number already exists or could not be saved'},409)}
  }
  if(/^\/api\/author\/chapters\/\d+$/.test(p)&&m==="PATCH"){
-  const e=author(u);if(e)return e;const id=Number(p.split('/').pop()),b=await body(req);
+  const e=author(u);if(e)return e;const id=Number(p.split('/').pop()),b=await body(req);if(!Number.isSafeInteger(id)||id<1)return json({error:'A valid chapter ID is required'},400);
   const c=await env.DB.prepare(`SELECT c.*,n.owner_user_id,n.kind FROM chapters c JOIN novels n ON n.id=c.novel_id WHERE c.id=?`).bind(id).first();if(!c)return json({error:'Chapter not found'},404);if(u.role!=="admin"&&Number(c.owner_user_id)!==Number(u.id))return json({error:'You do not own this chapter'},403);
-  const num=Number(b.chapter_number??c.chapter_number),title=String(b.title??c.title).trim(),content=String(b.content??c.content);const cost=Number(b.ticket_cost??c.ticket_cost);if(!Number.isInteger(num)||num<1||!title||!content||!Number.isSafeInteger(cost)||cost<0||cost>1000000)return json({error:'Invalid chapter data'},400);
+  const num=Number(b.chapter_number??c.chapter_number),title=String(b.title??c.title).trim(),content=String(b.content??c.content);const cost=Number(b.ticket_cost??c.ticket_cost);if(!Number.isSafeInteger(num)||num<1||!title||!content||!Number.isSafeInteger(cost)||cost<0||cost>1000000)return json({error:'Invalid chapter data'},400);
   if(["manga","manhwa","manhua","webtoon","comic","graphic_novel"].includes(String(c.kind||"").toLowerCase())){const comicCheck=validateComicChapterContent(content);if(!comicCheck.ok)return json({error:comicCheck.error},400)}
   const dup=await env.DB.prepare('SELECT id FROM chapters WHERE novel_id=? AND chapter_number=? AND id<>?').bind(c.novel_id,num,id).first();if(dup)return json({error:'Another chapter already uses that chapter number.'},409);
   const locked=b.is_locked===undefined?Number(c.is_locked):b.is_locked?1:0;
