@@ -431,7 +431,12 @@ async function api(req,env){
   "/api/novels":["GET"],
   "/api/admin/stats":["GET"]
  };
- const allowedMethods=methodContracts[p];
+ const dynamicMethodContracts=[
+  [/^\\/api\\/novels\\/\\d+$/ ,["GET"]],
+  [/^\\/api\\/chapters\\/\\d+$/ ,["GET"]]
+ ];
+ const dynamicAllowedMethods=dynamicMethodContracts.find(([pattern])=>pattern.test(p))?.[1];
+ const allowedMethods=methodContracts[p]||dynamicAllowedMethods;
  if(allowedMethods&&!allowedMethods.includes(m))return json({error:"Method not allowed"},405,{allow:allowedMethods.join(", ")});
  // Health checks must not trigger schema bootstrap, rate-limit DDL, community setup,
  // or session reads. Keep this path fast and side-effect-free for platform probes.
