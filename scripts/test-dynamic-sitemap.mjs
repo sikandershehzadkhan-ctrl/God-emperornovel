@@ -21,6 +21,7 @@ for (const path of ["/", "/catalog", "/formats", "/genres", "/community", "/priv
   assert.ok(staticMap.includes(origin + path), "static sitemap includes " + path);
 }
 assert.ok(!staticMap.includes("/admin") && !staticMap.includes("/author"), "private account surfaces must not be indexed");
+for (const utility of ["/search", "/omniportal", "/trend-factory"]) assert.ok(!staticMap.includes(origin + utility), "utility route must not appear in the static sitemap: " + utility);
 const novels = renderNovelSitemap(origin, [
   { id: 7, updated_at: "2026-11-03 10:30:00" },
   { id: "<script>", updated_at: "bad" },
