@@ -55,11 +55,37 @@ const noindexMatch = worker.match(/const noindex=new Set\(\[([\s\S]*?)\]\)\.has\
 assert.ok(noindexMatch, "Worker exact noindex set must remain discoverable");
 const actualNoindex = [...noindexMatch[1].matchAll(/"([^"]+)"/g)].map(match => match[1]);
 assert.deepEqual(actualNoindex, manifest.noindex_exact_paths, "noindex route list must match source");
+const expectedPageGates = new Map([
+  ["/library", "authenticated"], ["/history", "authenticated"], ["/following", "authenticated"],
+  ["/tickets", "authenticated"], ["/requests", "authenticated"], ["/settings", "authenticated"],
+  ["/notifications", "authenticated"], ["/account", "authenticated"], ["/admin", "admin"], ["/author", "author"],
+]);
+const pageGateStart = worker.indexOf("const privatePage=new Set(");
+assert.ok(pageGateStart >= 0, "Worker must enforce private page access before loading the page shell");
+const pageGateEnd = worker.indexOf("const noindex=", pageGateStart);
+const pageGateSource = worker.slice(pageGateStart, pageGateEnd);
+assert.ok(pageGateSource.includes("await getUser(req,env)"), "Private page gate must resolve the server session");
+assert.ok(pageGateSource.includes("Response.redirect"), "Anonymous private-page requests must redirect to sign-in");
+assert.ok(pageGateSource.includes('user.role!=="admin"'), "Admin page must enforce administrator role");
+assert.ok(pageGateSource.includes('user.role!=="author"'), "Author Studio must enforce author role");
 for (const route of manifest.page_routes) {
-  if (manifest.noindex_exact_paths.includes(route.path)) {
-    const utilityNoindex = ["/search", "/omniportal", "/trend-factory", "/made-for-you", "/for-you"].includes(route.path);
-    assert.equal(route.access_policy, utilityNoindex ? "public-utility-noindex-not-an-access-control" : "noindex-route-authentication-still-requires-server-verification");
+  const expectedRole = expectedPageGates.get(route.path);
+  if (expectedRole) {
+    assert.equal(route.access_policy, expectedRole + "-server-gated", "Private route access policy mismatch: " + route.path);
+    assert.equal(route.server_access_gate, true, "Private route must declare its server gate: " + route.path);
+    assert.ok(pageGateSource.includes('"' + route.path + '"'), "Private route must be present in server gate: " + route.path);
+  } else if (route.path === "/login" || route.path === "/register") {
+    assert.equal(route.access_policy, "public-auth-entry-noindex");
+    assert.equal(route.server_access_gate, false);
+  } else if (["/search", "/omniportal", "/trend-factory", "/made-for-you", "/for-you"].includes(route.path)) {
+    assert.equal(route.access_policy, "public-utility-noindex-not-an-access-control");
+    assert.equal(route.server_access_gate, false);
   }
 }
-assert.ok(manifest.known_gaps.some(gap => gap.includes("A noindex directive is not authorization")));
+const authPageStart = client.indexOf("function authPage(");
+const authPageEnd = client.indexOf("\\nasync function account(", authPageStart);
+const authPageSource = client.slice(authPageStart, authPageEnd);
+assert.ok(authPageSource.includes("new URL(candidate,location.origin)"), "Login must safely resolve the requested return destination");
+assert.ok(authPageSource.includes("parsed.origin===location.origin"), "Login return destinations must be restricted to the same origin");
+assert.ok(manifest.known_gaps.some(gap => gap.includes("Screen completeness")));
 console.log("Route inventory baseline passed: " + manifest.page_routes.length + " exact HTML routes, " + manifest.dynamic_page_patterns.length + " dynamic patterns, " + manifest.api_route_literals.length + " API path literals, and " + manifest.sitemap_endpoints.length + " sitemap endpoints.");

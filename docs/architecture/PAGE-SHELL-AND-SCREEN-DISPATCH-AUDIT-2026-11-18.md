@@ -47,6 +47,34 @@ The Worker also serves standalone page documents that do not use the shared `app
 
 These routes need their own screen-level QA and should not be treated as shared-app screens.
 
+## Server-side page access controls
+
+The Worker page handler now checks the session before returning private page documents. This is separate from `noindex`, which is only an indexing directive.
+
+| Page route | Server requirement | Anonymous behavior |
+|---|---|---|
+| `/library`, `/history`, `/following`, `/tickets`, `/requests`, `/settings`, `/notifications`, `/account` | Active authenticated session | Redirect to `/login?next=...` |
+| `/author` | Active session with `author` or `admin` role | Redirect to sign-in; ordinary readers receive 403 |
+| `/admin` | Active session with `admin` role | Redirect to sign-in; non-admin users receive 403 |
+| `/author/:username` | Public author profile | Public |
+
+The shared page runtime also rewrites legacy shell asset references to the configured release version before returning HTML. That keeps older small shell documents pointed at the versioned application bundle selected by `APP_VERSION`.
+
+The Worker-fetch runtime test exercises anonymous redirects, reader access to private reader pages, reader denial for Author Studio and Admin, author/admin access, and public author profile access. It uses a deterministic D1 session test double, not production D1.
+
+## Renderer and asset capability inventory
+
+A separate machine-readable inventory now records the renderer and shell type for all 33 exact routes and all 6 dynamic route families in `PAGE-SCREEN-CAPABILITY-INVENTORY-2026-11-18.json`.
+
+- 28 exact routes use the shared application renderer.
+- 2 exact routes use standalone screens: Admin and Community Taxonomy.
+- 3 exact routes are static legal documents.
+- 6 dynamic families map to a renderer or explicit redirect.
+- The active `public/app-17.23.0.js` bundle is byte-identical to `public/app.js`.
+- `public/author.html` exists as an asset but is not the active `/author` route target. The Worker serves the shared application shell, which dispatches to `authorStudio()`.
+
+The build now checks shell-to-renderer dispatch, dynamic route expressions, standalone/static asset existence, and versioned bundle parity. This proves that a renderer is wired in source; it does not prove that the screen is visually complete or that its controls work end to end.
+
 ## Important route behavior: fandom
 
 The Worker recognizes `/fandom/{slug}` and serves `fandom.html`, but the client boot router does not render a dedicated fandom screen. It redirects the browser to `/catalog?tag={slug}`.
@@ -64,4 +92,4 @@ This document records dispatch and shell type only. The following remain unverif
 - Locale and RTL coverage.
 - Browser-level navigation and direct-load behavior on the deployed Worker.
 
-No production deployment or D1 mutation was performed.
+No production deployment or D1 mutation was performed. Page access-control tests are source/CI evidence only, not live browser verification.
