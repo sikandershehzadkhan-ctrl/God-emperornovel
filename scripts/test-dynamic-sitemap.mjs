@@ -41,7 +41,10 @@ const wrangler = await readFile(new URL("../wrangler.toml", import.meta.url), "u
 const robots = await readFile(new URL("../public/robots.txt", import.meta.url), "utf8");
 const fallback = await readFile(new URL("../public/sitemap.xml", import.meta.url), "utf8");
 assert.ok(worker.includes('import { SITEMAP_PAGE_SIZE, renderSitemapIndex, renderStaticSitemap, renderNovelSitemap, renderChapterSitemap } from "./sitemap.mjs";'), "Worker imports the sitemap renderer");
-assert.ok(worker.includes('if(p.startsWith("/sitemap")&&p.endsWith(".xml"))r=await sitemap(req,env);'), "Worker routes XML sitemap requests dynamically");
+assert.ok(worker.includes("isSitemapEndpoint(p)"), "Worker routes only registered XML sitemap endpoints");
+assert.deepEqual([...SITEMAP_ENDPOINTS], ["/sitemap.xml", "/sitemap-static.xml", "/sitemap-novels.xml", "/sitemap-chapters.xml"]);
+for (const endpoint of SITEMAP_ENDPOINTS) assert.equal(isSitemapEndpoint(endpoint), true, "registered sitemap endpoint: " + endpoint);
+assert.equal(isSitemapEndpoint("/sitemap-unknown.xml"), false, "unregistered sitemap paths must not reach the sitemap handler");
 assert.ok(worker.includes("SELECT COUNT(*) count FROM novels WHERE publication_status='published' AND rights_status IN ('original','public_domain','licensed','authorized')"), "novel sitemap count excludes ineligible works");
 assert.ok(worker.includes("c.publication_status='published' AND n.publication_status='published' AND n.rights_status IN ('original','public_domain','licensed','authorized')"), "chapter sitemap excludes unpublished or ineligible novels");
 assert.ok(worker.includes("ORDER BY id LIMIT ? OFFSET ?") && worker.includes("ORDER BY c.id LIMIT ? OFFSET ?"), "large sitemaps use bounded pagination");
