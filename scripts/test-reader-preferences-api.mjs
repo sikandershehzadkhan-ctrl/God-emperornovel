@@ -1,0 +1,16 @@
+import assert from "node:assert/strict";
+import { readFileSync } from "node:fs";
+const source = readFileSync("src/index.js", "utf8");
+const migration = readFileSync("migrations/0047_reader_preferences.sql", "utf8");
+const get = source.split("\n").find(line => line.includes('if(p==="/api/reader-preferences"&&m==="GET")'));
+const put = source.split("\n").find(line => line.includes('if(p==="/api/reader-preferences"&&m==="PUT")'));
+assert.ok(get && get.includes("WHERE user_id=?"), "reader preferences must be scoped to the authenticated account");
+assert.ok(put && put.includes('req.headers.get("origin")!==url.origin'), "reader preference writes must enforce same-origin requests");
+for (const value of ["light","dark","midnight","sepia","imperial","cosmic","system","arial","trebuchet","georgia","palatino","serif","start","justify"]) assert.ok(put.includes(value), "preference allowlist must include "+value);
+assert.ok(put.includes("size<15") && put.includes("size>32"), "font size must be bounded");
+assert.ok(put.includes("/^#[0-9a-f]{6}$/i"), "custom colours must be six-digit hex values");
+assert.ok(put.includes("length>2048"), "preference payload must be size-limited");
+assert.match(migration,/user_id INTEGER PRIMARY KEY/);
+assert.match(migration,/json_valid\(preferences_json\)/);
+assert.match(migration,/ON DELETE CASCADE/);
+console.log("Reader preference API and migration security checks passed.");
