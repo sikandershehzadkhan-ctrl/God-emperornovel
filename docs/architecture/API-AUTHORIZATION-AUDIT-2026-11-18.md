@@ -161,3 +161,14 @@ The list route now rejects invalid novel IDs before database access. Chapter edi
 The author novel submission, novel editing, and chapter publication handlers converted digit-only path captures to JavaScript numbers and proceeded to database lookups without confirming that the values were positive safe integers. These handlers now reject invalid IDs before database access. Regression assertions cover each route, complementing the prior chapter-list and chapter-edit checks.
 
 This remains a source-level validation result. It does not establish that the full repository test suite passed, that production D1 behaves identically, or that the changes are deployed.
+
+
+## Published Author Studio content review transitions
+
+The Author Studio edit paths previously allowed material changes to published novel metadata and published chapter content while retaining the published state. This created a review-bypass path: updated material could remain publicly visible without renewed moderation.
+
+The author novel PATCH path now detects changes to the novel's title, author attribution, alternate titles, description, series status, language, format, rights declaration/evidence/notes, and cover/source assets. A material edit to a published novel moves it to `review`, clears prior reviewer decision metadata, and notifies administrators. Rights verification metadata is cleared only when the rights declaration/evidence or rights-related assets/format changed; ordinary descriptive edits do not erase the rights verification record.
+
+The author chapter PATCH path now detects changes to chapter number, title, body, lock state, and ticket cost. A material edit to a published chapter moves it to `review`, records an audit event, and notifies administrators. The author chapter submission endpoint now routes a requested publication into `review` rather than directly publishing it, preventing an author from bypassing moderation after an edit. The admin chapter editor accepts the `review` state so administrators can inspect and then approve or return a chapter to draft.
+
+Source regression assertions cover the review transition, audit events, administrator notifications, author submission behavior, and admin review-state support. These are source-level protections only. The test script has not yet been executed in a verified repository runtime, and live D1 behavior, full CI, production deployment, and browser QA remain unverified.
