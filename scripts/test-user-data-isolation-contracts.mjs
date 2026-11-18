@@ -71,7 +71,6 @@ for (const marker of aiProjectRoutes) {
 const authorChapterRoutes = [
   'if(p==="/api/author/chapters"&&m==="GET")',
   'if(p==="/api/author/chapters"&&m==="POST")',
-  'chapters\\/\\d+$/.test(p)&&m==="PATCH")',
   'publish$/.test(p)&&m==="POST")',
 ];
 for (const marker of authorChapterRoutes) {
