@@ -14,6 +14,11 @@ const accounts = new Map([
 const sessions = new Map();
 for (const [token, user] of accounts) sessions.set(await hash(token), user);
 const history = [];
+const library = [{ user_id: 101, novel_id: 10 }];
+const notifications = [
+  { id: 1, user_id: 101, message: "Account A private notification", read_at: null },
+  { id: 2, user_id: 202, message: "Account B private notification", read_at: null },
+];
 
 class FakeStatement {
   constructor(sql) { this.sql = sql; this.values = []; }
@@ -37,6 +42,16 @@ class FakeStatement {
         cover_url: ""
       })) };
     }
+    if (this.sql.includes("FROM user_library l JOIN novels n")) {
+      const userId = this.values[0];
+      return { results: library.filter(row => row.user_id === userId).map(row => ({
+        novel_id: row.novel_id, title: "Test Novel", author: "Test Author"
+      })) };
+    }
+    if (this.sql.includes("FROM notifications WHERE user_id=?")) {
+      const userId = this.values[0];
+      return { results: notifications.filter(row => row.user_id === userId).map(row => ({ ...row })) };
+    }
     return { results: [] };
   }
   async run() {
@@ -47,19 +62,30 @@ class FakeStatement {
       else history.push({ user_id, novel_id, chapter_number });
       return { success: true, meta: { changes: 1 } };
     }
+    if (this.sql.includes("UPDATE notifications SET read_at=CURRENT_TIMESTAMP WHERE user_id=? AND read_at IS NULL")) {
+      const userId = this.values[0];
+      let changes = 0;
+      for (const row of notifications) {
+        if (row.user_id === userId && row.read_at === null) {
+          row.read_at = "2026-11-18 00:00:00";
+          changes++;
+        }
+      }
+      return { success: true, meta: { changes } };
+    }
     return { success: true, meta: { changes: 0 } };
   }
 }
 
 const env = { DB: { prepare: sql => new FakeStatement(sql) }, SITE_NAME: "Imperial Novel" };
-async function request(token, method, body) {
+async function request(token, method, body, path = "/api/history") {
   const headers = { cookie: "session=" + token };
   const init = { method, headers };
   if (body !== undefined) {
     headers["content-type"] = "application/json";
     init.body = JSON.stringify(body);
   }
-  return worker.fetch(new Request("https://imperial.test/api/history", init), env);
+  return worker.fetch(new Request("https://imperial.test" + path, init), env);
 }
 async function payload(response) {
   if (response.status !== 200) throw new Error("Unexpected API status " + response.status + ": " + await response.text());
@@ -86,4 +112,24 @@ assert.deepEqual(bHistoryAfterWrite.map(row => row.chapter_number), [2],
   "Account B must continue to see only its own history");
 assert.deepEqual(history.map(row => row.user_id).sort((a, b) => a - b), [101, 202]);
 
-console.log("PASS: Worker fetch two-account history isolation, authenticated ownership, and forged user_id rejection using a deterministic D1 test double. This is not a live Cloudflare D1 test.");
+const aLibrary = await payload(await request("reader-a-token", "GET", undefined, "/api/library"));
+const bLibrary = await payload(await request("reader-b-token", "GET", undefined, "/api/library"));
+assert.deepEqual(aLibrary.map(row => row.novel_id), [10],
+  "Account A must see its own library entry");
+assert.deepEqual(bLibrary, [],
+  "Account B must not read Account A's library");
+
+const aNotifications = await payload(await request("reader-a-token", "GET", undefined, "/api/notifications"));
+const bNotifications = await payload(await request("reader-b-token", "GET", undefined, "/api/notifications"));
+assert.deepEqual(aNotifications.map(row => row.id), [1],
+  "Account A must see only its own notifications");
+assert.deepEqual(bNotifications.map(row => row.id), [2],
+  "Account B must see only its own notifications");
+
+await payload(await request("reader-b-token", "POST", {}, "/api/notifications/read"));
+assert.equal(notifications.find(row => row.id === 1).read_at, null,
+  "Account B must not mark Account A's notifications as read");
+assert.notEqual(notifications.find(row => row.id === 2).read_at, null,
+  "Account B must be able to mark its own notifications as read");
+
+console.log("PASS: Worker fetch two-account history, library, and notification isolation; authenticated history ownership; forged user_id rejection; and account-scoped notification mutation using a deterministic D1 test double. This is not a live Cloudflare D1 test.");
