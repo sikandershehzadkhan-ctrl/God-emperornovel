@@ -72,6 +72,10 @@ The handler now preserves the stored lock state when `is_locked` is absent and v
 - No production D1 access, production deployment, or live-browser test was performed.
 
 
+## Rating scale integration dependency
+
+The 1–10 rating migration and full API/UI implementation are owned by PR #195 through governed migration 0035 (with baseline 0034). That branch includes legacy score conversion, integer-only constraints, canonical single rating POST handler, 1–10 API validation, catalog thresholds, reader controls, display formatting, and regression coverage. This audit branch does not include PR #195's reservation and must not create a competing migration. After PR #195 is integrated into the canonical base, rebase this audit branch and reconcile its route inventory, duplicate rating handler finding, and tests. Current 1–5 behavior in this branch remains unresolved until that integration.
+
 ## 2026-11-18 follow-up: public Omni endpoint abuse controls
 
 - Public `GET /api/omni/status` is now IP-rate-limited to 60 requests per 60-second window and no longer seeds/writes connector registry rows. Registry seeding happens from the authenticated admin connector listing instead.
