@@ -1,7 +1,7 @@
 # API Resource Ownership Review: First Pass
 
 **Audit date:** 2026-11-19  
-**Source:** `src/index.js` at foundation branch snapshot (`7ed42bdfc9282bc31155047ff5454103ad58cd14`)  
+**Source:** `src/index.js` at foundation branch snapshot (blob `deca24eb256f3805ad05a0b5eed7fd1cb600b141`; commit-specific review refreshed 2026-11-19)  
 **Scope:** User-scoped reader data, author-owned works, AI projects, and administrative mutations. Static source review only.
 
 ## Positive ownership controls observed
@@ -87,3 +87,15 @@ Static SQL inspection shows multiple user-id predicates, but it does not prove t
 No confirmed cross-user data exposure was established by this first pass. The two findings above are validation/policy consistency issues. This audit does not certify CSRF protections, rate limits, method rejection, session rotation, or all delegated handlers.
 
 No production deployment, D1 mutation, or live API test was performed.
+
+
+### 7. Public comment endpoints did not enforce novel publication and rights eligibility
+
+**Finding:** The public comment read and create handlers selected a novel by caller-supplied ID without requiring the novel to be published and rights-eligible. The read handler could therefore return visible comments associated with an unpublished or rights-ineligible novel if its ID was known. The create handler could accept comments against such a novel. Novel IDs and optional parent comment IDs were also not consistently constrained to positive safe integers.
+
+**Correction in the foundation branch:**
+- Comment reads now join the target novel and filter to `publication_status='published'` and rights statuses `original`, `public_domain`, `licensed`, or `authorized`.
+- Comment creation now validates positive safe-integer novel and parent IDs, checks the same publication/rights eligibility before insert, and retains the existing same-novel visible-parent check for replies.
+- Added `scripts/test-public-comment-eligibility.mjs` to the normal build gate. It is a source regression contract, not a live D1 or adversarial runtime test.
+
+**Status:** Source correction and build-gated regression check added. CI for the resulting commit is pending; two-user D1-backed isolation tests remain outstanding.
