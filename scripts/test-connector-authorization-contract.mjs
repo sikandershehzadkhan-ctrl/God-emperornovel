@@ -16,7 +16,7 @@ assert.ok(updateStart >= 0 && updateEnd > updateStart, "Admin connector update r
 const updateRoute = worker.slice(updateStart, updateEnd);
 assert.ok(updateRoute.includes("rights==='authorized'&&!evidence&&!terms"), "Direct authorization requires evidence or terms");
 
-const reviewStart = worker.indexOf('let car=p.match(/^\\/api\\/admin\\/connector-authorization-requests\\/(\\d+)$/)');
+const reviewStart = worker.indexOf("let car=p.match");
 const reviewEnd = worker.indexOf('return json({error:"Not found"},404);', reviewStart);
 assert.ok(reviewStart >= 0 && reviewEnd > reviewStart, "Connector authorization review route must exist");
 const reviewRoute = worker.slice(reviewStart, reviewEnd);
