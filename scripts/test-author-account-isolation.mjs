@@ -33,5 +33,5 @@ assert.equal(pa.status,200);assert.equal(pb.status,200);assert.deepEqual(pa.data
 const ca=await req("/api/author/chapters?novel_id=101",ta),cb=await req("/api/author/chapters?novel_id=202",tb);
 const xa=await req("/api/author/chapters?novel_id=202",ta),xb=await req("/api/author/chapters?novel_id=101",tb);
 assert.equal(ca.status,200);assert.equal(cb.status,200);assert.deepEqual(ca.data.map(x=>+x.id),[1001]);assert.deepEqual(cb.data.map(x=>+x.id),[2001]);assert.equal(xa.status,403);assert.equal(xb.status,403);
-assert.equal((await req("/api/author/novels",null)).status,401);
+assert.equal((await req("/api/author/novels",null)).status,403,"unauthenticated callers must be denied by the author-role guard");
 db.close();console.log("PASS: two-author Worker/SQLite isolation for novel lists, AI project lists, chapter workspaces, cross-owner denials, and unauthenticated access.");
