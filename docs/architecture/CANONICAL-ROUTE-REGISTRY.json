@@ -8,16 +8,16 @@
   "source_evidence": {
     "repository": "sikandershehzadkhan-ctrl/God-emperornovel",
     "branch": "architecture/phase-01-foundation-route-registry",
-    "commit": "2fe685c6d0bfba7d2de6f5a4fe24ee9cc28ccf8f",
+    "commit": "3bf535020afbbfa4bd482eaf57493024452635dc",
     "worker_file": "src/index.js",
-    "worker_blob": "3c335779b33c8fb482fa6ea75684855241449e73",
+    "worker_blob": "e09d16a56f018d1b98d857511551b2c59d330153",
     "client_file": "public/app.js",
     "client_blob": "a640fbfed7221adac1a6fd7fd6d5f0524016004a",
     "sitemap_file": "src/sitemap.mjs",
     "sitemap_blob": "3e6e885554751cbf6255fa0942e590573c574280",
     "method": "Runtime page shells, dynamic page families, noindex policy and static sitemap membership are sourced from src/route-registry.mjs. This JSON file is the reviewable evidence snapshot. API path inventory and authorization remain separately reviewed and are not certified by route resolution tests.",
     "runtime_registry_file": "src/route-registry.mjs",
-    "runtime_registry_blob": "797c77a9490eb63870ea491432d949af43237cb3"
+    "runtime_registry_blob": "288e10ac40b5f806080ac874f0dec1f27ebca0e4"
   },
   "pages": [
     {
