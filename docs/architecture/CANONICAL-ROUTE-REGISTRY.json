@@ -453,19 +453,19 @@
       "pattern": "^/fandom/",
       "shell": "fandom.html",
       "kind": "fandom-tag-redirect",
-      "status": "observed-worker-dispatch",
+      "status": "observed-server-redirect",
       "access_policy": "must-be-verified-per-resource",
       "sitemap_policy": "resource-specific-or-not-listed",
-      "screen_completeness": "not-a-dedicated-screen-redirect-only",
+      "screen_completeness": "redirect-not-a-page-screen",
       "source_expression": "/^\\/fandom\\//.test(p)",
       "samples": [
         "/fandom/example",
         "/fandom/abc/def"
       ],
-      "client_behavior": "client-side-redirect-to-catalog-tag",
+      "client_behavior": "server-308-redirect-to-catalog-tag",
       "client_source_expression": "else if(p.startsWith('/fandom/'))",
       "ownership": "page-shell-and-client-screen-dispatch",
-      "release_gate": "resource-policy-and-screen-qa-required"
+      "release_gate": "redirect-and-query-preservation-tests-required"
     },
     {
       "pattern": "^/author/[^/]+/?$",
