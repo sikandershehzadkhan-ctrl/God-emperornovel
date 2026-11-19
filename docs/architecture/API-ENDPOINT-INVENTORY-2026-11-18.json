@@ -1403,5 +1403,13 @@
     "resource ownership and cross-user isolation",
     "rate limits and abuse controls for every endpoint",
     "live deployed behavior"
-  ]
+  ],
+  "authorization_helper_regression": {
+    "test_file": "scripts/test-api-owner-scope-contract.mjs",
+    "literal_routes_with_observed_helpers": 51,
+    "dynamic_routes_with_observed_helpers": 19,
+    "literal_admin_routes": 20,
+    "dynamic_admin_routes": 9,
+    "scope": "Build-gated static regression checks preserve observed need(u), author(u), and admin(u) helper calls in inventoried route branches and verify all admin route guards. This does not certify resource ownership or replace runtime adversarial tests."
+  }
 }
