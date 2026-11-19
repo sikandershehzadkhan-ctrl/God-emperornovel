@@ -12,16 +12,21 @@ const checks = [
   ["AI project lists are account-scoped", "WHERE p.owner_user_id=?", ".bind(u.id).all()"],
   ["author novel lists are account-scoped", "WHERE n.owner_user_id=?", ".bind(u.id).all()"]
 ];
-for (const route of [
-  'if(p==="/api/history"&&m==="GET"){const e=need(u);',
-  'if(p==="/api/library"&&m==="GET"){const e=need(u);',
-  'if(p==="/api/bookmarks"&&m==="GET"){const e=need(u);',
-  'if(p==="/api/follows"&&m==="GET"){const e=need(u);',
-  'if(p==="/api/notifications"&&m==="GET"){const e=need(u);',
-  'if(p==="/api/requests"&&m==="GET"){const e=need(u);',
-  'if(p==="/api/author/ai/projects"&&m==="GET"){const e=author(u);',
-  'if(p==="/api/author/novels"&&m==="GET"){const e=author(u);'
-]) assert.ok(worker.includes(route), "private endpoint must require its session/role guard: " + route);
+const guardedRoutes = [
+  ['if(p==="/api/history"&&m==="GET")', "need(u)"],
+  ['if(p==="/api/library"&&m==="GET")', "need(u)"],
+  ['if(p==="/api/bookmarks"&&m==="GET")', "need(u)"],
+  ['if(p==="/api/follows"&&m==="GET")', "need(u)"],
+  ['if(p==="/api/notifications"&&m==="GET")', "need(u)"],
+  ['if(p==="/api/requests"&&m==="GET")', "need(u)"],
+  ['if(p==="/api/author/ai/projects"&&m==="GET")', "author(u)"],
+  ['if(p==="/api/author/novels"&&m==="GET")', "author(u)"]
+];
+for (const [route, guard] of guardedRoutes) {
+  const start = worker.indexOf(route);
+  assert.ok(start >= 0, "private endpoint must exist: " + route);
+  assert.ok(worker.slice(start, start + 500).includes(guard), "private endpoint must require its session/role guard: " + route);
+}
 
 for (const [label, query, binding] of checks) {
   assert.ok(worker.includes(query), label + ": missing owner predicate");
