@@ -1,6 +1,6 @@
 import assert from "node:assert/strict";
 import { readFile } from "node:fs/promises";
-import { SITEMAP_STATIC_PATHS, PAGE_SHELLS, DYNAMIC_PAGE_ROUTES, NOINDEX_EXACT_PATHS, resolvePageShell, canonicalizePagePath } from "../src/route-registry.mjs";
+import { SITEMAP_STATIC_PATHS, PAGE_SHELLS, DYNAMIC_PAGE_ROUTES, NOINDEX_EXACT_PATHS, resolvePageShell, canonicalizePagePath, resolveRouteRedirect } from "../src/route-registry.mjs";
 const registry=JSON.parse(await readFile(new URL("../docs/architecture/CANONICAL-ROUTE-REGISTRY.json",import.meta.url),"utf8"));
 const api=JSON.parse(await readFile(new URL("../docs/architecture/API-ENDPOINT-INVENTORY-2026-11-18.json",import.meta.url),"utf8"));
 const worker=await readFile(new URL("../src/index.js",import.meta.url),"utf8");
@@ -21,6 +21,12 @@ assert.ok(worker.includes("const canonicalPath=canonicalizePagePath(p)"),"Worker
 assert.equal(canonicalizePagePath("/catalog/"),"/catalog");
 assert.equal(canonicalizePagePath("/author/example.name/"),"/author/example.name");
 assert.equal(canonicalizePagePath("/assets/"),"/assets/");
+assert.deepEqual(resolveRouteRedirect("/fandom/dragon"),{path:"/catalog",tag:"dragon"});
+assert.deepEqual(resolveRouteRedirect("/fandom/series/dragon"),{path:"/catalog",tag:"dragon"});
+assert.deepEqual(resolveRouteRedirect("/fandom/"),{path:"/catalog",tag:null});
+assert.equal(resolveRouteRedirect("/fandom/%E0%A4%A").invalid,true);
+assert.ok(worker.includes("const routeRedirect=resolveRouteRedirect(p)"),"Legacy fandom routes must redirect server-side");
+assert.ok(worker.includes("canonicalLink+missingStyles"),"Indexable pages must receive a canonical link element");
 for(const route of registry.pages) { assert.equal(PAGE_SHELLS[route.path],route.shell,"Canonical route shell mismatch: "+route.path); assert.equal(resolvePageShell(route.path),route.shell,"Runtime route resolution mismatch: "+route.path); if(route.path!=="/") assert.equal(canonicalizePagePath(route.path+"/"),route.path,"Static route canonical slash mismatch: "+route.path); }
 assert.deepEqual(Object.keys(PAGE_SHELLS).sort(),registry.pages.map(route=>route.path).sort(),"Runtime page routes must match the canonical evidence registry");
 assert.deepEqual([...NOINDEX_EXACT_PATHS],registry.sitemap.noindex_exact_paths,"Noindex policy must match the canonical evidence registry");
