@@ -83,6 +83,16 @@ assert.ok(!routeLine("/api/omni/status").includes("seedOmni(env)"), "Public Omni
 assert.match(routeLine("/api/omni/search"), /rights_status='authorized'/);
 assert.ok(routeLine("/api/omni/search").includes('consumeAuthRateLimit(env,"omni-search-ip",ip,20,60)'));
 assert.ok(routeLine("/api/omni/search").includes("q.length>120"));
+const singleUnlockRoute = worker.split("\n").find(line => line.includes('if(/^\/api\/chapters\/\d+\/unlock$/.test(p)&&m==="POST")')) || "";
+assert.match(singleUnlockRoute, /c\.ticket_cost=\?/);
+assert.match(singleUnlockRoute, /c\.publication_status='published'/);
+assert.match(singleUnlockRoute, /n\.publication_status='published'/);
+assert.match(singleUnlockRoute, /n\.rights_status IN/, "Single unlock must revalidate novel rights inside the ticket debit");
+const batchUnlockRoute = worker.split("\n").find(line => line.includes('let bu=p.match(/^\/api\/novels\/')) || "";
+assert.match(batchUnlockRoute, /SELECT COUNT\(\*\) FROM chapters c JOIN novels n/);
+assert.match(batchUnlockRoute, /c\.ticket_cost=\?/);
+assert.match(batchUnlockRoute, /n\.rights_status IN/);
+assert.match(batchUnlockRoute, /locked\.length/, "Batch debit must verify every chapter and its observed price before charging");
 assert.match(routeLine("/api/omni/smart-unlock"), /need\(u\)/);
 assert.match(routeLine("/api/admin/stats"), /admin\(u\)/);
 const connectorCreate = worker.slice(worker.indexOf('if(p==="/api/admin/connectors"&&m==="POST")'), worker.indexOf('if(p==="/api/admin/requests"&&m==="GET")'));
