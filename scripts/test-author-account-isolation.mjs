@@ -111,6 +111,20 @@ assert.equal((await req("/api/admin/users",tc)).status,200,"admin can read user 
 for (const [token,label] of [[ta,"author"],[td,"reader"],[null,"unauthenticated caller"]]) assert.equal((await req("/api/admin/users",token)).status,403,label+" cannot read user administration list");
 assert.equal((await req("/api/admin/stats",tc)).status,200,"admin can read administrative dashboard statistics");
 for (const [token,label] of [[ta,"author"],[td,"reader"],[null,"unauthenticated caller"]]) assert.equal((await req("/api/admin/stats",token)).status,403,label+" cannot read administrative dashboard statistics");
+const originalNovelStatus=db.prepare("SELECT publication_status FROM novels WHERE id=101").get().publication_status;
+for (const [token,label] of [[ta,"author"],[td,"reader"],[null,"unauthenticated caller"]]) {
+  assert.equal((await req("/api/admin/publishing/novels/101",token,"PATCH",{publication_status:"published"})).status,403,label+" cannot approve or publish a novel");
+  assert.equal(db.prepare("SELECT publication_status FROM novels WHERE id=101").get().publication_status,originalNovelStatus,label+" denied publication review leaves the novel unchanged");
+  assert.equal((await req("/api/admin/publishing/chapters",token,"POST",{novel_id:101,chapter_number:9,title:"Unauthorized chapter",content:"Must not be inserted"})).status,403,label+" cannot create chapters through admin publishing");
+  assert.equal(db.prepare("SELECT COUNT(*) n FROM chapters WHERE novel_id=101 AND chapter_number=9").get().n,0,label+" denied chapter creation inserts no row");
+}
+const adminReview=await req("/api/admin/publishing/novels/101",tc,"PATCH",{publication_status:"review",review_feedback:"Rights and editorial review completed."});
+assert.equal(adminReview.status,200,"admin can move a novel into review");
+assert.equal(db.prepare("SELECT publication_status FROM novels WHERE id=101").get().publication_status,"review","admin publication review status is persisted");
+const adminChapter=await req("/api/admin/publishing/chapters",tc,"POST",{novel_id:101,chapter_number:9,title:"Admin Draft Chapter",content:"Administrator-created editorial draft.",publication_status:"draft"});
+assert.equal(adminChapter.status,200,"admin can create an editorial chapter draft");
+assert.equal(db.prepare("SELECT title,publication_status FROM chapters WHERE novel_id=101 AND chapter_number=9").get().title,"Admin Draft Chapter","admin chapter draft is persisted");
+assert.equal(db.prepare("SELECT publication_status FROM chapters WHERE novel_id=101 AND chapter_number=9").get().publication_status,"draft","admin chapter creation does not silently publish content");
 const adminApplicationList=await req("/api/admin/author-applications",tc);
 assert.equal(adminApplicationList.status,200,"admin can read the author application queue");
 assert.deepEqual(adminApplicationList.data.map(x=>+x.id).sort((x,y)=>x-y),[51,submittedA.data.id,submittedB.data.id].sort((x,y)=>x-y),"admin queue contains the submitted applications");
