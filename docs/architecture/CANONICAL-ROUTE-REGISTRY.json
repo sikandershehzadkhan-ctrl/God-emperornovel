@@ -8,7 +8,7 @@
   "source_evidence": {
     "repository": "sikandershehzadkhan-ctrl/God-emperornovel",
     "branch": "architecture/phase-01-foundation-route-registry",
-    "commit": "a21e2d3b3821507ac5bd97f2535ff3b073fd254a",
+    "commit": "290d28af632410705acae4575d6ca3b5eb7a490e",
     "worker_file": "src/index.js",
     "worker_blob": "deca24eb256f3805ad05a0b5eed7fd1cb600b141",
     "client_file": "public/app.js",
@@ -1873,10 +1873,10 @@
     "unowned_files": 0,
     "multiply_owned_files": 0,
     "stale_exact_file_rules": 0,
-    "tracked_files_on_audited_branch": 460,
+    "tracked_files_on_audited_branch": 464,
     "root_level_files": 149,
     "root_archives_and_trigger_artifacts_retained": true,
-    "validation": "Migration Governance workflow on the audited PR merge commit; all tracked paths matched exactly one owner."
+    "validation": "Migration Governance workflow on the PR's synthetic merge commit; all 464 tracked paths and all changed paths matched exactly one owner; ADR coverage passed."
   },
   "release_gates": [
     "all page shells and dynamic route families have screen-level responsive, empty, error, unauthorized and accessibility evidence",
@@ -1889,8 +1889,8 @@
   ],
   "known_blockers": [
     "API authorization and resource ownership are not certified by source method inventory",
-    "Issue #335 cross-account two-user tests remain outstanding",
-    "screen completeness, responsive behavior, empty/error/unauthorized states and accessibility remain unaudited",
+    "Cloudflare staging D1 two-user adversarial tests remain outstanding; build now runs two-user Worker-handler isolation tests against local SQLite through a D1-compatible adapter.",
+    "Full screen-level responsive, empty/error/unauthorized and visual accessibility QA remains unaudited; source-level accessibility foundation contracts pass.",
     "Locale-prefixed URLs are not implemented; RTL chapter direction and canonical slash/legacy redirects have source-level checks but still require deployed browser verification.",
     "POST /api/rating duplicate declaration and 1-10 rating integration remain a separate PR dependency",
     "Dynamic sitemap endpoint dispatch and Cloudflare route declarations remain explicit wiring; Worker page-shell resolution and static sitemap membership are sourced from src/route-registry.mjs."

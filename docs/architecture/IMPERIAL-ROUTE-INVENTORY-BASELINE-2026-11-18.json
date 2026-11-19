@@ -2,7 +2,7 @@
   "schema_version": "1.0.0",
   "registry": "imperial-novel-observed-route-inventory",
   "status": "source-inventory-baseline-not-release-certified",
-  "audit_date": "2026-11-18",
+  "audit_date": "2026-11-19",
   "product": "Imperial Novel",
   "source_evidence": {
     "repository": "sikandershehzadkhan-ctrl/God-emperornovel",
@@ -14,7 +14,7 @@
     "method": "Static source extraction from the PR branch: Worker dispatch, sitemap source, and client boot/navigation source. Does not prove live deployment, browser screen completeness, or authorization correctness.",
     "client_file": "public/app.js",
     "client_blob": "4f482c79101785300248910e1a9256d23923bd6e",
-    "commit": "a21e2d3b3821507ac5bd97f2535ff3b073fd254a"
+    "commit": "290d28af632410705acae4575d6ca3b5eb7a490e"
   },
   "page_routes": [
     {
