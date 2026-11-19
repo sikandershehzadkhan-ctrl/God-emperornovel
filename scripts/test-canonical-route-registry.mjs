@@ -7,6 +7,7 @@ const worker=await readFile(new URL("../src/index.js",import.meta.url),"utf8");
 const client=await readFile(new URL("../public/app.js",import.meta.url),"utf8");
 const sitemap=await readFile(new URL("../src/sitemap.mjs",import.meta.url),"utf8");
 assert.equal(registry.status,"canonical-source-contract-foundation-review-gated");
+assert.equal(registry.source_evidence.runtime_registry_file,"src/route-registry.mjs","runtime route registry source must be recorded");
 assert.equal(registry.pages.length,33);
 assert.equal(registry.dynamic_pages.length,6);
 assert.equal(registry.api_endpoints.length,api.literal_endpoints.length);
