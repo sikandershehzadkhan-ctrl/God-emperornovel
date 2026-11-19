@@ -30,6 +30,8 @@ assert.ok(taxonomy.includes("u?.id||null"), "Taxonomy submitter ID must come fro
 assert.ok(taxonomy.includes("u?.username||'Guest'"), "Taxonomy submitter name must come from the authenticated session");
 assert.ok(!taxonomy.includes("b.creator_id"), "Taxonomy handler must not trust client-supplied creator IDs");
 assert.ok(!taxonomy.includes("b.creator_name"), "Taxonomy handler must not trust client-supplied creator names");
+assert.ok(taxonomy.includes('consumeAuthRateLimit(env,"taxonomy-ip"'), "Anonymous taxonomy submissions must be rate-limited by source IP");
+assert.ok(taxonomy.includes('consumeAuthRateLimit(env,"taxonomy-user"'), "Authenticated taxonomy submissions must also be rate-limited per account");
 assert.ok(worker.includes('if(p==="/api/taxonomy")return communityTaxonomy(req,env,u);'), "Taxonomy handler must receive the server-resolved session user");
 
 
