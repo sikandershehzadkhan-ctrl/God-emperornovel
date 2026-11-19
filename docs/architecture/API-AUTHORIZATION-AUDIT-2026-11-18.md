@@ -227,3 +227,10 @@ The AI author-project detail, edit, Story Bible generation, chapter-run, and job
 - Author chapter submission now rejects duplicate review submissions and already-published chapters. Its state transition is conditional on the observed chapter state; the SQL also rechecks that the parent novel remains published and rights-eligible at write time.
 - Author novel edits now condition their write on the publication state read before editing and require one affected row, preventing a stale edit from silently crossing a concurrent publication-state transition.
 - These source-level safeguards require exact-head CI and live D1 concurrency validation; neither is claimed complete here.
+
+
+## Purchase-time chapter publication and price revalidation (2026-11-19)
+
+- Single-chapter unlock now repeats the chapter-to-novel ownership, published-state, locked-state, observed ticket-price, and parent rights checks inside the conditional ticket debit. If a chapter is unpublished, unlocked, repriced, moved, or its novel loses publication/rights eligibility after the initial read, the debit affects no row and the request returns a conflict.
+- Batch unlock now makes the debit conditional on every selected chapter still belonging to the requested novel, remaining published and locked, retaining its observed price, and having a published, rights-eligible parent. A count check ensures every selected chapter still matches before any ticket debit is accepted.
+- Regression assertions were added for both purchase paths. These changes are source-level only until exact-head CI and real D1 transaction/concurrency behavior are verified. No deployment or production database change is claimed.
