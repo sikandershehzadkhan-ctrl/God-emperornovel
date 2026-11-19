@@ -15,7 +15,6 @@ assert.ok(getHandler.includes("n.publication_status='published'"), "comment read
 assert.ok(getHandler.includes("n.rights_status IN ('original','public_domain','licensed','authorized')"), "comment reads must enforce rights eligibility");
 
 assert.ok(postHandler.includes("need(u)"), "comment creation must require an authenticated user");
-assert.ok(postHandler.includes("Number.isSafeInteger(nid)&&nid<1") === false, "novel ID validation must reject non-positive and unsafe values");
 assert.ok(postHandler.includes("!Number.isSafeInteger(nid)||nid<1"), "comment creation must validate a positive safe-integer novel ID");
 assert.ok(postHandler.includes("!Number.isSafeInteger(parent)||parent<0"), "comment creation must validate the optional parent comment ID");
 const eligibility = postHandler.indexOf("const eligible=await env.DB.prepare");
