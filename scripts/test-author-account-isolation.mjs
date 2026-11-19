@@ -155,6 +155,7 @@ assert.equal((await req("/api/me",te)).data.user,null,"pre-ban session remains i
 const freshToken="reader-b-fresh-token";
 db.prepare("INSERT INTO sessions(token_hash,user_id,expires_at) VALUES(?,?,?)").run(await digest(freshToken),5,Math.floor(Date.now()/1000)+3600);
 assert.equal((await req("/api/me",freshToken)).data.user.id,5,"a newly issued session works after unban");
+assert.equal((await req("/api/admin/users/5",tc,"PATCH",{role:"user"})).status,200,"restore test user role");
 assert.equal(db.prepare("SELECT action FROM audit_logs WHERE action='admin_user_updated' ORDER BY id DESC LIMIT 1").get().action,"admin_user_updated","administrator account changes are audited");
 
 
