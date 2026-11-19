@@ -910,14 +910,23 @@ async function api(req,env){
   const id=Number(acm[1]);if(!Number.isSafeInteger(id)||id<1)return json({error:"Invalid chapter ID"},400);
   const row=await env.DB.prepare("SELECT * FROM chapters WHERE id=?").bind(id).first();
   if(!row)return json({error:"Chapter not found"},404);
-  await env.DB.batch([
-   env.DB.prepare("DELETE FROM unlocks WHERE chapter_id=?").bind(id),
-   env.DB.prepare("DELETE FROM reports WHERE chapter_id=?").bind(id),
-   env.DB.prepare("DELETE FROM chapters WHERE id=?").bind(id),
-   env.DB.prepare("UPDATE novels SET updated_at=CURRENT_TIMESTAMP WHERE id=?").bind(row.novel_id)
-  ]);
-  await audit(env,u,"admin_chapter_deleted",`chapter=${id};novel=${row.novel_id};number=${row.chapter_number}`);
-  return json({ok:true,id,message:"Chapter deleted."});
+  const unlockRows=(await env.DB.prepare("SELECT user_id,cost FROM unlocks WHERE chapter_id=? ORDER BY user_id").bind(id).all()).results||[];
+  if(unlockRows.some(x=>!Number.isSafeInteger(Number(x.user_id))||Number(x.user_id)<1||!Number.isSafeInteger(Number(x.cost))||Number(x.cost)<0||Number(x.cost)>1000000))return json({error:"Chapter unlock records need accounting review before deletion."},409);
+  const stm=[];
+  for(const x of unlockRows){const cost=Number(x.cost),userId=Number(x.user_id),reference="chapter-delete:"+id+":"+userId;
+   if(cost>0)stm.push(env.DB.prepare("UPDATE users SET tickets=tickets+? WHERE id=? AND tickets>=0 AND tickets=CAST(tickets AS INTEGER) AND tickets<=9007199254740991-? AND EXISTS (SELECT 1 FROM unlocks WHERE chapter_id=? AND user_id=? AND cost=?) AND NOT EXISTS (SELECT 1 FROM ticket_ledger WHERE user_id=? AND reason='chapter_unlock_refund' AND reference=?)").bind(cost,userId,cost,id,userId,cost,userId,reference));
+   if(cost>0)stm.push(env.DB.prepare("INSERT INTO ticket_ledger(user_id,delta,reason,reference) SELECT ?,?,'chapter_unlock_refund',? WHERE changes()=1 AND EXISTS (SELECT 1 FROM unlocks WHERE chapter_id=? AND user_id=? AND cost=?)").bind(userId,cost,reference,id,userId,cost));
+  }
+  const unlockDeleteIndex=stm.length;
+  stm.push(env.DB.prepare("DELETE FROM unlocks WHERE chapter_id=? AND NOT EXISTS (SELECT 1 FROM unlocks x WHERE x.chapter_id=? AND x.cost>0 AND NOT EXISTS (SELECT 1 FROM ticket_ledger l WHERE l.user_id=x.user_id AND l.reason='chapter_unlock_refund' AND l.reference=('chapter-delete:'||x.chapter_id||':'||x.user_id)))").bind(id,id));
+  const chapterDeleteIndex=stm.length;
+  stm.push(env.DB.prepare("DELETE FROM chapters WHERE id=? AND NOT EXISTS (SELECT 1 FROM unlocks WHERE chapter_id=?)").bind(id,id));
+  stm.push(env.DB.prepare("DELETE FROM reports WHERE chapter_id=? AND NOT EXISTS (SELECT 1 FROM chapters WHERE id=?)").bind(id,id));
+  stm.push(env.DB.prepare("UPDATE novels SET updated_at=CURRENT_TIMESTAMP WHERE id=? AND NOT EXISTS (SELECT 1 FROM chapters WHERE id=?)").bind(row.novel_id,id));
+  const results=await env.DB.batch(stm),changed=r=>Number(r?.meta?.changes??r?.changes??0),chapterDeleted=changed(results[chapterDeleteIndex])===1;
+  if(!chapterDeleted)return json({error:"Chapter deletion was stopped because every paid unlock could not be refunded and recorded. Unlock records were retained for review."},409);
+  await audit(env,u,"admin_chapter_deleted",`chapter=${id};novel=${row.novel_id};number=${row.chapter_number};refunded_unlocks=${unlockRows.filter(x=>Number(x.cost)>0).length}`);
+  return json({ok:true,id,refunded_unlocks:unlockRows.filter(x=>Number(x.cost)>0).length,message:"Chapter deleted and paid unlocks refunded."});
  }
  if(p==="/api/admin/publishing/chapters"&&m==="POST"){const e=admin(u);if(e)return e;await ensurePublishingSchema(env);const b=await body(req),nid=Number(b.novel_id),num=Number(b.chapter_number);if(!Number.isSafeInteger(nid)||nid<1||!Number.isSafeInteger(num)||num<1)return json({error:'Novel and valid chapter number are required'},400);const n=await env.DB.prepare('SELECT id,publication_status,rights_status FROM novels WHERE id=?').bind(nid).first();if(!n)return json({error:'Novel not found'},404);const chapterPublication=String(b.publication_status||'draft').toLowerCase();if(chapterPublication!=='draft')return json({error:'New chapters must be created as drafts, then submitted for review before publication.'},409);const title=String(b.title||`Chapter ${num}`).trim(),content=String(b.content||'').trim(),ticketCost=Number(b.ticket_cost??1);if(!content)return json({error:'Chapter content is required'},400);if(!Number.isSafeInteger(ticketCost)||ticketCost<0||ticketCost>1000000)return json({error:'Ticket cost must be a whole number from 0 through 1,000,000'},400);try{const r=await env.DB.prepare(`INSERT INTO chapters(novel_id,chapter_number,title,content,is_locked,ticket_cost,publication_status) VALUES(?,?,?,?,?,?,?)`).bind(nid,num,title,content,b.is_locked===false?0:1,ticketCost,chapterPublication).run();await env.DB.prepare('UPDATE novels SET updated_at=CURRENT_TIMESTAMP WHERE id=?').bind(nid).run();await audit(env,u,'admin_chapter_created',`novel=${nid};chapter=${num}`);return json({ok:true,id:r.meta.last_row_id,message:'Chapter created.'})}catch{return json({error:'Chapter number already exists for this novel.'},409)}}
  if(p==="/api/admin/donations"&&m==="GET"){const e=admin(u);if(e)return e;return json((await env.DB.prepare(`SELECT d.*,u.username FROM donations d LEFT JOIN users u ON u.id=d.user_id ORDER BY d.created_at DESC LIMIT 100`).all()).results)}
