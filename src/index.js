@@ -917,7 +917,6 @@ async function api(req,env){
    if(cost>0)stm.push(env.DB.prepare("UPDATE users SET tickets=tickets+? WHERE id=? AND tickets>=0 AND tickets=CAST(tickets AS INTEGER) AND tickets<=9007199254740991-? AND EXISTS (SELECT 1 FROM unlocks WHERE chapter_id=? AND user_id=? AND cost=?) AND NOT EXISTS (SELECT 1 FROM ticket_ledger WHERE user_id=? AND reason='chapter_unlock_refund' AND reference=?)").bind(cost,userId,cost,id,userId,cost,userId,reference));
    if(cost>0)stm.push(env.DB.prepare("INSERT INTO ticket_ledger(user_id,delta,reason,reference) SELECT ?,?,'chapter_unlock_refund',? WHERE changes()=1 AND EXISTS (SELECT 1 FROM unlocks WHERE chapter_id=? AND user_id=? AND cost=?)").bind(userId,cost,reference,id,userId,cost));
   }
-  const unlockDeleteIndex=stm.length;
   stm.push(env.DB.prepare("DELETE FROM unlocks WHERE chapter_id=? AND NOT EXISTS (SELECT 1 FROM unlocks x WHERE x.chapter_id=? AND x.cost>0 AND NOT EXISTS (SELECT 1 FROM ticket_ledger l WHERE l.user_id=x.user_id AND l.reason='chapter_unlock_refund' AND l.reference=('chapter-delete:'||x.chapter_id||':'||x.user_id)))").bind(id,id));
   const chapterDeleteIndex=stm.length;
   stm.push(env.DB.prepare("DELETE FROM chapters WHERE id=? AND NOT EXISTS (SELECT 1 FROM unlocks WHERE chapter_id=?)").bind(id,id));
