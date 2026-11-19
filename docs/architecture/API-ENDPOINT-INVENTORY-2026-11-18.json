@@ -7,10 +7,10 @@
   "counts": {
     "literal_endpoint_paths": 74,
     "literal_route_branch_occurrences": 92,
-    "explicit_method_conditions": 112,
+    "explicit_method_conditions": 92,
     "dynamic_route_families": 21
   },
-  "method_semantics": "explicit_methods records directly enforced methods; delegated-method-contract records a helper whose GET/POST branches and unsupported-method fallthrough were inspected. Method evidence does not replace auth or resource ownership review.",
+  "method_semantics": "explicit_methods records directly enforced methods; delegated-method-contract records a helper whose GET/POST branches and unsupported-method fallthrough were inspected. explicit_method_conditions counts literal endpoint method contracts, including delegated GET/POST contracts, not every incidental method comparison in nested handler logic. Method evidence does not replace auth or resource ownership review.",
   "authorization_semantics": "observed_helper_signals records only visible need(u), admin(u), and author(u) calls in a nearby branch segment. It is not a security certification and does not establish resource-level ownership.",
   "literal_endpoints": [
     {
