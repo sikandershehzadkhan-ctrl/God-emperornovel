@@ -21,4 +21,15 @@ assert.ok(createRoute.includes("validateComicChapterContent(content)"), "Comic c
 assert.ok(updateRoute.includes("SELECT c.*,n.owner_user_id,n.kind FROM chapters c JOIN novels n"), "Comic update must load parent format");
 assert.ok(updateRoute.includes("validateComicChapterContent(content)"), "Comic update must use creation validator");
 assert.ok(updateRoute.includes("comicCheck.ok"), "Invalid comic edits must be rejected");
+
+const taxonomyStart = worker.indexOf("async function communityTaxonomy(req,env,u){");
+const taxonomyEnd = worker.indexOf("async function adminTaxonomy", taxonomyStart);
+assert.ok(taxonomyStart >= 0 && taxonomyEnd > taxonomyStart, "Community taxonomy handler must exist");
+const taxonomy = worker.slice(taxonomyStart, taxonomyEnd);
+assert.ok(taxonomy.includes("u?.id||null"), "Taxonomy submitter ID must come from the authenticated session");
+assert.ok(taxonomy.includes("u?.username||'Guest'"), "Taxonomy submitter name must come from the authenticated session");
+assert.ok(!taxonomy.includes("b.creator_id"), "Taxonomy handler must not trust client-supplied creator IDs");
+assert.ok(!taxonomy.includes("b.creator_name"), "Taxonomy handler must not trust client-supplied creator names");
+assert.ok(worker.includes('if(p==="/api/taxonomy")return communityTaxonomy(req,env,u);'), "Taxonomy handler must receive the server-resolved session user");
+
 console.log("API resource-validation contract tests passed.");
