@@ -1,14 +1,16 @@
 {
   "audit_date": "2026-11-18",
-  "branch": "architecture/phase-01-foundation-route-registry",
+  "branch": "architecture/api-contract-audit-baseline",
   "source_file": "src/index.js",
-  "source_blob": "6448ddfc5ae08694e67d57b4a8e52e0637be2383",
+  "source_blob": "253ce3ec8c127dac30a1b025e5abe48136c8451d",
   "scope": "First-pass static inventory of literal API path branches and dynamic path matchers inside async function api(req,env).",
   "counts": {
     "literal_endpoint_paths": 74,
-    "literal_route_branch_occurrences": 92,
+    "literal_route_branch_occurrences": 91,
     "explicit_method_conditions": 77,
-    "dynamic_route_families": 21
+    "dynamic_route_families": 21,
+    "centralized_method_contract_paths": 14,
+    "unresolved_method_paths": 0
   },
   "method_semantics": "explicit_methods lists only literal methods directly checked in source. Empty or mixed method evidence is not proof of allowed methods. Unsupported-method behavior and framework fallthrough must be verified separately.",
   "authorization_semantics": "observed_helper_signals records only visible need(u), admin(u), and author(u) calls in a nearby branch segment. It is not a security certification and does not establish resource-level ownership.",
@@ -18,14 +20,13 @@
       "explicit_methods": [
         "GET"
       ],
-      "method_evidence": "mixed-or-unconstrained-branches",
+      "method_evidence": "centralized-method-contract",
       "source_lines": [
-        413,
-        423
+        443
       ],
       "observed_helper_signals": [],
       "review_required": true,
-      "occurrences": 2
+      "occurrences": 1
     },
     {
       "path": "/api/agents",
@@ -34,7 +35,7 @@
       ],
       "method_evidence": "explicit-literal-conditions",
       "source_lines": [
-        417
+        447
       ],
       "observed_helper_signals": [],
       "review_required": true,
@@ -47,7 +48,7 @@
       ],
       "method_evidence": "explicit-literal-conditions",
       "source_lines": [
-        418
+        448
       ],
       "observed_helper_signals": [
         "admin"
@@ -62,7 +63,7 @@
       ],
       "method_evidence": "explicit-literal-conditions",
       "source_lines": [
-        419
+        449
       ],
       "observed_helper_signals": [
         "admin"
@@ -72,12 +73,17 @@
     },
     {
       "path": "/api/taxonomy",
-      "explicit_methods": [],
-      "method_evidence": "mixed-or-unconstrained-branches",
-      "source_lines": [
-        420
+      "explicit_methods": [
+        "GET",
+        "POST"
       ],
-      "observed_helper_signals": [],
+      "method_evidence": "centralized-method-contract",
+      "source_lines": [
+        450
+      ],
+      "observed_helper_signals": [
+        "need"
+      ],
       "review_required": true,
       "occurrences": 1
     },
@@ -89,8 +95,8 @@
       ],
       "method_evidence": "explicit-literal-conditions",
       "source_lines": [
-        421,
-        422
+        451,
+        452
       ],
       "observed_helper_signals": [
         "admin"
@@ -105,7 +111,7 @@
       ],
       "method_evidence": "explicit-literal-conditions",
       "source_lines": [
-        424
+        453
       ],
       "observed_helper_signals": [],
       "review_required": true,
@@ -118,7 +124,7 @@
       ],
       "method_evidence": "explicit-literal-conditions",
       "source_lines": [
-        425
+        454
       ],
       "observed_helper_signals": [],
       "review_required": true,
@@ -131,7 +137,7 @@
       ],
       "method_evidence": "explicit-literal-conditions",
       "source_lines": [
-        426
+        455
       ],
       "observed_helper_signals": [],
       "review_required": true,
@@ -139,10 +145,12 @@
     },
     {
       "path": "/api/me",
-      "explicit_methods": [],
-      "method_evidence": "mixed-or-unconstrained-branches",
+      "explicit_methods": [
+        "GET"
+      ],
+      "method_evidence": "centralized-method-contract",
       "source_lines": [
-        427
+        456
       ],
       "observed_helper_signals": [],
       "review_required": true,
@@ -150,10 +158,12 @@
     },
     {
       "path": "/api/config",
-      "explicit_methods": [],
-      "method_evidence": "mixed-or-unconstrained-branches",
+      "explicit_methods": [
+        "GET"
+      ],
+      "method_evidence": "centralized-method-contract",
       "source_lines": [
-        428
+        457
       ],
       "observed_helper_signals": [],
       "review_required": true,
@@ -161,10 +171,12 @@
     },
     {
       "path": "/api/genres",
-      "explicit_methods": [],
-      "method_evidence": "mixed-or-unconstrained-branches",
+      "explicit_methods": [
+        "GET"
+      ],
+      "method_evidence": "centralized-method-contract",
       "source_lines": [
-        429
+        458
       ],
       "observed_helper_signals": [],
       "review_required": true,
@@ -172,10 +184,12 @@
     },
     {
       "path": "/api/tags",
-      "explicit_methods": [],
-      "method_evidence": "mixed-or-unconstrained-branches",
+      "explicit_methods": [
+        "GET"
+      ],
+      "method_evidence": "centralized-method-contract",
       "source_lines": [
-        430
+        459
       ],
       "observed_helper_signals": [],
       "review_required": true,
@@ -183,10 +197,12 @@
     },
     {
       "path": "/api/public-authors",
-      "explicit_methods": [],
-      "method_evidence": "mixed-or-unconstrained-branches",
+      "explicit_methods": [
+        "GET"
+      ],
+      "method_evidence": "centralized-method-contract",
       "source_lines": [
-        431
+        460
       ],
       "observed_helper_signals": [],
       "review_required": true,
@@ -194,10 +210,12 @@
     },
     {
       "path": "/api/sources",
-      "explicit_methods": [],
-      "method_evidence": "mixed-or-unconstrained-branches",
+      "explicit_methods": [
+        "GET"
+      ],
+      "method_evidence": "centralized-method-contract",
       "source_lines": [
-        436
+        465
       ],
       "observed_helper_signals": [],
       "review_required": true,
@@ -205,10 +223,12 @@
     },
     {
       "path": "/api/omni/status",
-      "explicit_methods": [],
-      "method_evidence": "mixed-or-unconstrained-branches",
+      "explicit_methods": [
+        "GET"
+      ],
+      "method_evidence": "centralized-method-contract",
       "source_lines": [
-        437
+        466
       ],
       "observed_helper_signals": [],
       "review_required": true,
@@ -216,10 +236,12 @@
     },
     {
       "path": "/api/omni/search",
-      "explicit_methods": [],
-      "method_evidence": "mixed-or-unconstrained-branches",
+      "explicit_methods": [
+        "GET"
+      ],
+      "method_evidence": "centralized-method-contract",
       "source_lines": [
-        438
+        467
       ],
       "observed_helper_signals": [],
       "review_required": true,
@@ -227,10 +249,12 @@
     },
     {
       "path": "/api/omni/resolve",
-      "explicit_methods": [],
-      "method_evidence": "mixed-or-unconstrained-branches",
+      "explicit_methods": [
+        "GET"
+      ],
+      "method_evidence": "centralized-method-contract",
       "source_lines": [
-        439
+        468
       ],
       "observed_helper_signals": [],
       "review_required": true,
@@ -243,7 +267,7 @@
       ],
       "method_evidence": "explicit-literal-conditions",
       "source_lines": [
-        440
+        469
       ],
       "observed_helper_signals": [
         "need"
@@ -258,7 +282,7 @@
       ],
       "method_evidence": "explicit-literal-conditions",
       "source_lines": [
-        441
+        470
       ],
       "observed_helper_signals": [
         "need"
@@ -268,10 +292,12 @@
     },
     {
       "path": "/api/omni/smart-unlock",
-      "explicit_methods": [],
-      "method_evidence": "mixed-or-unconstrained-branches",
+      "explicit_methods": [
+        "GET"
+      ],
+      "method_evidence": "centralized-method-contract",
       "source_lines": [
-        442
+        471
       ],
       "observed_helper_signals": [
         "need"
@@ -286,7 +312,7 @@
       ],
       "method_evidence": "explicit-literal-conditions",
       "source_lines": [
-        444
+        473
       ],
       "observed_helper_signals": [],
       "review_required": true,
@@ -294,10 +320,12 @@
     },
     {
       "path": "/api/novels",
-      "explicit_methods": [],
-      "method_evidence": "mixed-or-unconstrained-branches",
+      "explicit_methods": [
+        "GET"
+      ],
+      "method_evidence": "centralized-method-contract",
       "source_lines": [
-        446
+        475
       ],
       "observed_helper_signals": [],
       "review_required": true,
@@ -310,7 +338,7 @@
       ],
       "method_evidence": "explicit-literal-conditions",
       "source_lines": [
-        463
+        492
       ],
       "observed_helper_signals": [
         "need"
@@ -326,8 +354,8 @@
       ],
       "method_evidence": "explicit-literal-conditions",
       "source_lines": [
-        464,
-        465
+        493,
+        494
       ],
       "observed_helper_signals": [
         "need"
@@ -343,8 +371,8 @@
       ],
       "method_evidence": "explicit-literal-conditions",
       "source_lines": [
-        466,
-        467
+        495,
+        496
       ],
       "observed_helper_signals": [
         "need"
@@ -359,7 +387,7 @@
       ],
       "method_evidence": "explicit-literal-conditions",
       "source_lines": [
-        468
+        497
       ],
       "observed_helper_signals": [
         "need"
@@ -375,8 +403,8 @@
       ],
       "method_evidence": "explicit-literal-conditions",
       "source_lines": [
-        469,
-        470
+        498,
+        499
       ],
       "observed_helper_signals": [
         "need"
@@ -392,8 +420,8 @@
       ],
       "method_evidence": "explicit-literal-conditions",
       "source_lines": [
-        471,
-        472
+        500,
+        501
       ],
       "observed_helper_signals": [
         "need"
@@ -408,7 +436,7 @@
       ],
       "method_evidence": "explicit-literal-conditions",
       "source_lines": [
-        473
+        502
       ],
       "observed_helper_signals": [
         "need"
@@ -423,7 +451,7 @@
       ],
       "method_evidence": "explicit-literal-conditions",
       "source_lines": [
-        474
+        503
       ],
       "observed_helper_signals": [
         "need"
@@ -439,9 +467,9 @@
       ],
       "method_evidence": "explicit-literal-conditions",
       "source_lines": [
-        475,
-        476,
-        503
+        504,
+        505,
+        532
       ],
       "observed_helper_signals": [
         "need"
@@ -457,8 +485,8 @@
       ],
       "method_evidence": "explicit-literal-conditions",
       "source_lines": [
-        477,
-        478
+        506,
+        507
       ],
       "observed_helper_signals": [
         "admin"
@@ -474,8 +502,8 @@
       ],
       "method_evidence": "explicit-literal-conditions",
       "source_lines": [
-        479,
-        480
+        508,
+        509
       ],
       "observed_helper_signals": [
         "admin"
@@ -490,7 +518,7 @@
       ],
       "method_evidence": "explicit-literal-conditions",
       "source_lines": [
-        482
+        511
       ],
       "observed_helper_signals": [
         "need"
@@ -505,7 +533,7 @@
       ],
       "method_evidence": "explicit-literal-conditions",
       "source_lines": [
-        499
+        528
       ],
       "observed_helper_signals": [],
       "review_required": true,
@@ -519,8 +547,8 @@
       ],
       "method_evidence": "explicit-literal-conditions",
       "source_lines": [
-        500,
-        501
+        529,
+        530
       ],
       "observed_helper_signals": [
         "need"
@@ -535,7 +563,7 @@
       ],
       "method_evidence": "explicit-literal-conditions",
       "source_lines": [
-        502
+        531
       ],
       "observed_helper_signals": [
         "need"
@@ -550,7 +578,7 @@
       ],
       "method_evidence": "explicit-literal-conditions",
       "source_lines": [
-        504
+        533
       ],
       "observed_helper_signals": [],
       "review_required": true,
@@ -563,7 +591,7 @@
       ],
       "method_evidence": "explicit-literal-conditions",
       "source_lines": [
-        516
+        545
       ],
       "observed_helper_signals": [],
       "review_required": true,
@@ -576,7 +604,7 @@
       ],
       "method_evidence": "explicit-literal-conditions",
       "source_lines": [
-        524
+        553
       ],
       "observed_helper_signals": [],
       "review_required": true,
@@ -589,7 +617,7 @@
       ],
       "method_evidence": "explicit-literal-conditions",
       "source_lines": [
-        529
+        558
       ],
       "observed_helper_signals": [],
       "review_required": true,
@@ -602,7 +630,7 @@
       ],
       "method_evidence": "explicit-literal-conditions",
       "source_lines": [
-        533
+        562
       ],
       "observed_helper_signals": [],
       "review_required": true,
@@ -616,8 +644,8 @@
       ],
       "method_evidence": "explicit-literal-conditions",
       "source_lines": [
-        541,
-        545
+        570,
+        574
       ],
       "observed_helper_signals": [
         "need"
@@ -632,7 +660,7 @@
       ],
       "method_evidence": "explicit-literal-conditions",
       "source_lines": [
-        552
+        581
       ],
       "observed_helper_signals": [
         "need"
@@ -647,7 +675,7 @@
       ],
       "method_evidence": "explicit-literal-conditions",
       "source_lines": [
-        553
+        582
       ],
       "observed_helper_signals": [
         "need"
@@ -662,7 +690,7 @@
       ],
       "method_evidence": "explicit-literal-conditions",
       "source_lines": [
-        554
+        583
       ],
       "observed_helper_signals": [
         "need"
@@ -677,7 +705,7 @@
       ],
       "method_evidence": "explicit-literal-conditions",
       "source_lines": [
-        555
+        584
       ],
       "observed_helper_signals": [
         "need"
@@ -692,7 +720,7 @@
       ],
       "method_evidence": "explicit-literal-conditions",
       "source_lines": [
-        556
+        585
       ],
       "observed_helper_signals": [
         "need"
@@ -707,7 +735,7 @@
       ],
       "method_evidence": "explicit-literal-conditions",
       "source_lines": [
-        557
+        586
       ],
       "observed_helper_signals": [
         "need"
@@ -722,7 +750,7 @@
       ],
       "method_evidence": "explicit-literal-conditions",
       "source_lines": [
-        558
+        587
       ],
       "observed_helper_signals": [
         "need"
@@ -737,7 +765,7 @@
       ],
       "method_evidence": "explicit-literal-conditions",
       "source_lines": [
-        559
+        588
       ],
       "observed_helper_signals": [
         "need"
@@ -752,7 +780,7 @@
       ],
       "method_evidence": "explicit-literal-conditions",
       "source_lines": [
-        565
+        594
       ],
       "observed_helper_signals": [
         "need"
@@ -767,7 +795,7 @@
       ],
       "method_evidence": "explicit-literal-conditions",
       "source_lines": [
-        581
+        610
       ],
       "observed_helper_signals": [
         "admin"
@@ -777,10 +805,12 @@
     },
     {
       "path": "/api/admin/stats",
-      "explicit_methods": [],
-      "method_evidence": "mixed-or-unconstrained-branches",
+      "explicit_methods": [
+        "GET"
+      ],
+      "method_evidence": "centralized-method-contract",
       "source_lines": [
-        610
+        639
       ],
       "observed_helper_signals": [
         "admin"
@@ -795,7 +825,7 @@
       ],
       "method_evidence": "explicit-literal-conditions",
       "source_lines": [
-        611
+        640
       ],
       "observed_helper_signals": [
         "admin"
@@ -810,7 +840,7 @@
       ],
       "method_evidence": "explicit-literal-conditions",
       "source_lines": [
-        615
+        644
       ],
       "observed_helper_signals": [
         "author"
@@ -826,8 +856,8 @@
       ],
       "method_evidence": "explicit-literal-conditions",
       "source_lines": [
-        619,
-        623
+        648,
+        652
       ],
       "observed_helper_signals": [
         "author"
@@ -843,8 +873,8 @@
       ],
       "method_evidence": "explicit-literal-conditions",
       "source_lines": [
-        690,
-        696
+        728,
+        734
       ],
       "observed_helper_signals": [
         "author",
@@ -861,8 +891,8 @@
       ],
       "method_evidence": "explicit-literal-conditions",
       "source_lines": [
-        701,
-        705
+        739,
+        743
       ],
       "observed_helper_signals": [
         "author"
@@ -878,8 +908,8 @@
       ],
       "method_evidence": "explicit-literal-conditions",
       "source_lines": [
-        733,
-        737
+        773,
+        777
       ],
       "observed_helper_signals": [
         "author"
@@ -894,7 +924,7 @@
       ],
       "method_evidence": "explicit-literal-conditions",
       "source_lines": [
-        757
+        805
       ],
       "observed_helper_signals": [
         "admin"
@@ -909,7 +939,7 @@
       ],
       "method_evidence": "explicit-literal-conditions",
       "source_lines": [
-        758
+        806
       ],
       "observed_helper_signals": [
         "admin"
@@ -924,7 +954,7 @@
       ],
       "method_evidence": "explicit-literal-conditions",
       "source_lines": [
-        805
+        907
       ],
       "observed_helper_signals": [
         "admin"
@@ -939,7 +969,7 @@
       ],
       "method_evidence": "explicit-literal-conditions",
       "source_lines": [
-        820
+        930
       ],
       "observed_helper_signals": [
         "admin"
@@ -954,7 +984,7 @@
       ],
       "method_evidence": "explicit-literal-conditions",
       "source_lines": [
-        821
+        931
       ],
       "observed_helper_signals": [
         "admin"
@@ -969,7 +999,7 @@
       ],
       "method_evidence": "explicit-literal-conditions",
       "source_lines": [
-        823
+        933
       ],
       "observed_helper_signals": [
         "admin"
@@ -984,7 +1014,7 @@
       ],
       "method_evidence": "explicit-literal-conditions",
       "source_lines": [
-        825
+        935
       ],
       "observed_helper_signals": [
         "admin"
@@ -1001,9 +1031,9 @@
       ],
       "method_evidence": "explicit-literal-conditions",
       "source_lines": [
-        826,
-        827,
-        831
+        936,
+        937,
+        941
       ],
       "observed_helper_signals": [
         "admin"
@@ -1018,7 +1048,7 @@
       ],
       "method_evidence": "explicit-literal-conditions",
       "source_lines": [
-        828
+        938
       ],
       "observed_helper_signals": [
         "admin"
@@ -1033,7 +1063,7 @@
       ],
       "method_evidence": "explicit-literal-conditions",
       "source_lines": [
-        829
+        939
       ],
       "observed_helper_signals": [
         "admin"
@@ -1048,7 +1078,7 @@
       ],
       "method_evidence": "explicit-literal-conditions",
       "source_lines": [
-        830
+        940
       ],
       "observed_helper_signals": [
         "need"
@@ -1063,7 +1093,7 @@
       ],
       "method_evidence": "explicit-literal-conditions",
       "source_lines": [
-        832
+        942
       ],
       "observed_helper_signals": [
         "admin"
@@ -1078,7 +1108,7 @@
       ],
       "method_evidence": "explicit-literal-conditions",
       "source_lines": [
-        834
+        944
       ],
       "observed_helper_signals": [
         "admin"
@@ -1091,7 +1121,7 @@
     {
       "pattern": "/api/novels/{id}",
       "source": "p.match(/^\\/api\\/novels\\/(\\d+)",
-      "source_line": 459,
+      "source_line": 488,
       "methods": [],
       "observed_helper_signals": [],
       "review_required": true
@@ -1099,7 +1129,7 @@
     {
       "pattern": "/api/chapters/{id}",
       "source": "p.match(/^\\/api\\/chapters\\/(\\d+)",
-      "source_line": 460,
+      "source_line": 489,
       "methods": [],
       "observed_helper_signals": [],
       "review_required": true
@@ -1107,7 +1137,7 @@
     {
       "pattern": "/api/chapters/{id}/unlock",
       "source": "/^\\/api\\/chapters\\/\\d+\\/unlock$/.test(p)",
-      "source_line": 461,
+      "source_line": 490,
       "methods": [
         "POST"
       ],
@@ -1119,7 +1149,7 @@
     {
       "pattern": "/api/novels/{id}/batch-unlock",
       "source": "p.match(/^\\/api\\/novels\\/(\\d+)",
-      "source_line": 462,
+      "source_line": 488,
       "methods": [
         "POST"
       ],
@@ -1131,7 +1161,7 @@
     {
       "pattern": "/api/admin/author-applications/{id}",
       "source": "p.startsWith(\"/api/admin/author-applications/\")",
-      "source_line": 588,
+      "source_line": 617,
       "methods": [
         "PATCH"
       ],
@@ -1143,7 +1173,7 @@
     {
       "pattern": "/api/admin/users/{id}",
       "source": "p.match(/^\\/api\\/admin\\/users\\/(\\d+)",
-      "source_line": 612,
+      "source_line": 641,
       "methods": [
         "PATCH"
       ],
@@ -1155,7 +1185,7 @@
     {
       "pattern": "/api/author/ai/projects/{id}",
       "source": "p.match(/^\\/api\\/author\\/ai\\/projects\\/(\\d+)",
-      "source_line": 633,
+      "source_line": 662,
       "methods": [
         "GET",
         "PATCH"
@@ -1168,7 +1198,7 @@
     {
       "pattern": "/api/admin/publishing/novels/{id}",
       "source": "p.match(/^\\/api\\/admin\\/publishing\\/novels\\/(\\d+)",
-      "source_line": 772,
+      "source_line": 825,
       "methods": [
         "PATCH"
       ],
@@ -1180,7 +1210,7 @@
     {
       "pattern": "/api/admin/publishing/chapters/{id}",
       "source": "p.match(/^\\/api\\/admin\\/publishing\\/chapters\\/(\\d+)",
-      "source_line": 781,
+      "source_line": 870,
       "methods": [
         "PATCH"
       ],
@@ -1192,7 +1222,7 @@
     {
       "pattern": "/api/admin/donations/{id}",
       "source": "p.match(/^\\/api\\/admin\\/donations\\/(\\d+)",
-      "source_line": 822,
+      "source_line": 932,
       "methods": [
         "PATCH"
       ],
@@ -1204,7 +1234,7 @@
     {
       "pattern": "/api/admin/reports/{id}",
       "source": "p.match(/^\\/api\\/admin\\/reports\\/(\\d+)",
-      "source_line": 824,
+      "source_line": 934,
       "methods": [
         "PATCH"
       ],
@@ -1216,7 +1246,7 @@
     {
       "pattern": "/api/admin/requests/{id}",
       "source": "p.startsWith(\"/api/admin/requests/\")",
-      "source_line": 833,
+      "source_line": 943,
       "methods": [
         "PATCH"
       ],
@@ -1228,7 +1258,7 @@
     {
       "pattern": "/api/admin/connector-authorization-requests/{id}",
       "source": "p.match(/^\\/api\\/admin\\/connector-authorization-requests\\/(\\d+)",
-      "source_line": 835,
+      "source_line": 945,
       "methods": [
         "PATCH"
       ],
@@ -1240,7 +1270,7 @@
     {
       "pattern": "/api/author/ai/projects/{id}/blueprint",
       "source": "/^\\/api\\/author\\/ai\\/projects\\/\\d+\\/blueprint$/.test(p)",
-      "source_line": 646,
+      "source_line": 675,
       "methods": [
         "POST"
       ],
@@ -1252,7 +1282,7 @@
     {
       "pattern": "/api/author/ai/projects/{id}/run",
       "source": "/^\\/api\\/author\\/ai\\/projects\\/\\d+\\/run$/.test(p)",
-      "source_line": 657,
+      "source_line": 686,
       "methods": [
         "POST"
       ],
@@ -1264,7 +1294,7 @@
     {
       "pattern": "/api/author/ai/projects/{id}/jobs",
       "source": "/^\\/api\\/author\\/ai\\/projects\\/\\d+\\/jobs$/.test(p)",
-      "source_line": 686,
+      "source_line": 724,
       "methods": [
         "GET"
       ],
@@ -1276,7 +1306,7 @@
     {
       "pattern": "/api/author/novels/{id}/submit",
       "source": "/^\\/api\\/author\\/novels\\/\\d+\\/submit$/.test(p)",
-      "source_line": 715,
+      "source_line": 753,
       "methods": [
         "POST"
       ],
@@ -1288,7 +1318,7 @@
     {
       "pattern": "/api/author/novels/{id}",
       "source": "/^\\/api\\/author\\/novels\\/\\d+$/.test(p)",
-      "source_line": 721,
+      "source_line": 759,
       "methods": [
         "PATCH"
       ],
@@ -1300,7 +1330,7 @@
     {
       "pattern": "/api/author/chapters/{id}",
       "source": "/^\\/api\\/author\\/chapters\\/\\d+$/.test(p)",
-      "source_line": 745,
+      "source_line": 787,
       "methods": [
         "PATCH"
       ],
@@ -1312,7 +1342,7 @@
     {
       "pattern": "/api/author/chapters/{id}/publish",
       "source": "/^\\/api\\/author\\/chapters\\/\\d+\\/publish$/.test(p)",
-      "source_line": 752,
+      "source_line": 798,
       "methods": [
         "POST"
       ],
@@ -1324,7 +1354,7 @@
     {
       "pattern": "/api/admin/publishing/chapters",
       "source": "p.match(/^\\/api\\/admin\\/publishing\\/chapters(?:\\/(\\d+)",
-      "source_line": 773,
+      "source_line": 862,
       "methods": [
         "GET"
       ],
@@ -1335,7 +1365,7 @@
     }
   ],
   "known_findings": [
-    "POST /api/rating is declared twice in the audited source snapshot; separate rating integration work is tracked in PR #318 and reserved migration dependency PR #195.",
+    "Rating API/client reconciliation remains dependent on canonical migration and ten-point integration PRs #329 and #331; this inventory branch still requires a rebase before claiming rating-scale parity.",
     "/api/taxonomy delegates to communityTaxonomy(req,env); /api/admin/taxonomy POST delegates to adminTaxonomy(req,env,u). Their internal method and permission logic needs separate inspection.",
     "Some endpoint branches have no explicit method predicate and therefore remain method-contract unresolved.",
     "Resource-level ownership must be reviewed at SQL predicates and mutation statements, not inferred from route-level authentication helpers.",
