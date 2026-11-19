@@ -18,13 +18,14 @@ CREATE TABLE ai_publish_policies(project_id INTEGER PRIMARY KEY,require_rights I
 CREATE TABLE ticket_ledger(id INTEGER PRIMARY KEY,user_id INTEGER NOT NULL,delta INTEGER NOT NULL,reason TEXT NOT NULL,reference TEXT DEFAULT '',created_at TEXT DEFAULT CURRENT_TIMESTAMP);
 CREATE TABLE novel_requests(id INTEGER PRIMARY KEY,user_id INTEGER NOT NULL,url TEXT NOT NULL,source_host TEXT DEFAULT '',week_key INTEGER NOT NULL,cost INTEGER DEFAULT 0,status TEXT DEFAULT 'pending',created_at TEXT DEFAULT CURRENT_TIMESTAMP);
 CREATE TABLE author_applications(id INTEGER PRIMARY KEY,user_id INTEGER NOT NULL,display_name TEXT NOT NULL,bio TEXT DEFAULT '',experience TEXT DEFAULT '',portfolio_url TEXT DEFAULT '',sample_work TEXT DEFAULT '',preferred_formats TEXT DEFAULT '[]',rights_confirmed INTEGER DEFAULT 0,status TEXT DEFAULT 'pending',review_notes TEXT DEFAULT '',reviewed_by INTEGER,created_at TEXT DEFAULT CURRENT_TIMESTAMP,reviewed_at TEXT,updated_at TEXT DEFAULT CURRENT_TIMESTAMP);
-CREATE TABLE donations(id INTEGER PRIMARY KEY,user_id INTEGER,status TEXT DEFAULT 'pending');
+CREATE TABLE donations(id INTEGER PRIMARY KEY,user_id INTEGER,amount REAL NOT NULL DEFAULT 0,reference_id TEXT NOT NULL DEFAULT '',status TEXT DEFAULT 'pending',created_at TEXT DEFAULT CURRENT_TIMESTAMP);
 CREATE TABLE taxonomy_submissions(id INTEGER PRIMARY KEY,status TEXT DEFAULT 'pending');
 CREATE TABLE reports(id INTEGER PRIMARY KEY,user_id INTEGER,novel_id INTEGER,status TEXT DEFAULT 'open');
 CREATE TABLE comments(id INTEGER PRIMARY KEY,user_id INTEGER NOT NULL,novel_id INTEGER NOT NULL,body TEXT NOT NULL,status TEXT DEFAULT 'visible',created_at TEXT DEFAULT CURRENT_TIMESTAMP,parent_id INTEGER,edited_at TEXT);
 CREATE TABLE comment_reports(id INTEGER PRIMARY KEY,user_id INTEGER NOT NULL,comment_id INTEGER NOT NULL,reason TEXT NOT NULL,details TEXT DEFAULT '',status TEXT DEFAULT 'open',created_at TEXT DEFAULT CURRENT_TIMESTAMP);
 CREATE TABLE audit_logs(id INTEGER PRIMARY KEY AUTOINCREMENT,user_id INTEGER,action TEXT NOT NULL,details TEXT DEFAULT '',created_at TEXT DEFAULT CURRENT_TIMESTAMP);
 INSERT INTO comments(id,user_id,novel_id,body,status) VALUES(301,4,101,'A reader comment','visible');
+INSERT INTO donations(id,user_id,amount,reference_id,status) VALUES(601,4,25,'reader-a-payment','pending'),(602,5,50,'reader-b-payment','pending');
 INSERT INTO comment_reports(id,user_id,comment_id,reason,details,status) VALUES(401,5,301,'spam','Suspicious link','open');
 
 INSERT INTO users(id,username,email,role) VALUES(1,'author-a','a@test','author'),(2,'author-b','b@test','author'),(3,'admin','admin@test','admin'),(4,'reader-a','reader-a@test','user'),(5,'reader-b','reader-b@test','user');
@@ -117,6 +118,22 @@ assert.equal((await req("/api/admin/users",tc)).status,200,"admin can read user 
 for (const [token,label] of [[ta,"author"],[td,"reader"],[null,"unauthenticated caller"]]) assert.equal((await req("/api/admin/users",token)).status,403,label+" cannot read user administration list");
 assert.equal((await req("/api/admin/stats",tc)).status,200,"admin can read administrative dashboard statistics");
 for (const [token,label] of [[ta,"author"],[td,"reader"],[null,"unauthenticated caller"]]) assert.equal((await req("/api/admin/stats",token)).status,403,label+" cannot read administrative dashboard statistics");
+const donationA=db.prepare("SELECT tickets FROM users WHERE id=4").get().tickets;
+const donationLedgerA=db.prepare("SELECT COUNT(*) n FROM ticket_ledger WHERE user_id=4").get().n;
+for (const [token,label] of [[ta,"author"],[td,"reader"],[null,"unauthenticated caller"]]) {
+  assert.equal((await req("/api/admin/donations/601",token,"PATCH",{status:"approved"})).status,403,label+" cannot approve donations");
+  assert.equal(db.prepare("SELECT status FROM donations WHERE id=601").get().status,"pending",label+" denied donation approval leaves payment pending");
+  assert.equal(db.prepare("SELECT tickets FROM users WHERE id=4").get().tickets,donationA,label+" denied donation approval does not credit Crown balance");
+  assert.equal(db.prepare("SELECT COUNT(*) n FROM ticket_ledger WHERE user_id=4").get().n,donationLedgerA,label+" denied donation approval creates no ledger row");
+}
+assert.equal((await req("/api/admin/donations/601",tc,"PATCH",{status:"approved"})).status,200,"admin can approve a pending donation");
+assert.equal(db.prepare("SELECT status FROM donations WHERE id=601").get().status,"approved","admin donation approval is persisted");
+assert.equal(db.prepare("SELECT tickets FROM users WHERE id=4").get().tickets,donationA+25,"approved donation credits the correct account");
+assert.equal(db.prepare("SELECT COUNT(*) n FROM ticket_ledger WHERE user_id=4 AND reason='payment' AND reference='601'").get().n,1,"approved donation writes its matching payment ledger row");
+assert.equal((await req("/api/admin/donations/602",tc,"PATCH",{status:"rejected"})).status,200,"admin can reject a pending donation");
+assert.equal(db.prepare("SELECT status FROM donations WHERE id=602").get().status,"rejected","admin donation rejection is persisted");
+assert.equal(db.prepare("SELECT tickets FROM users WHERE id=5").get().tickets,0,"rejected donation does not credit Crown balance");
+assert.equal((await req("/api/admin/donations/602",tc,"PATCH",{status:"approved"})).status,409,"processed donations cannot be approved a second time");
 assert.equal((await req("/api/admin/community/comments",tc)).status,200,"admin can read community moderation comments");
 assert.equal((await req("/api/admin/community/reports",tc)).status,200,"admin can read community moderation reports");
 const auditCountBeforeDeniedModeration=db.prepare("SELECT COUNT(*) n FROM audit_logs").get().n;
