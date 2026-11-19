@@ -112,6 +112,36 @@ jobs:
             exit 1
           fi
 
+      - name: Block production release until canonical migrations 0001–0046 have a reviewed apply and backup plan
+        shell: bash
+        run: |
+          set -euo pipefail
+          # Verify every canonical migration file and its reserved identity.
+          for number in $(seq 1 46); do
+            printf -v migration_number '%04d' "$number"
+            matches=(migrations/${migration_number}_*.sql)
+            if [ ! -s "${matches[0]}" ] || [ "${matches[0]}" = "migrations/${migration_number}_*.sql" ]; then
+              echo "::error::Deployment blocked: canonical migration ${migration_number} is missing."
+              exit 1
+            fi
+            if [ "$number" -ge 12 ] && [ ! -s "migrations/.reservations/${migration_number}.json" ]; then
+              echo "::error::Deployment blocked: migration reservation ${migration_number} is missing."
+              exit 1
+            fi
+          done
+
+          # Presence of SQL files is not evidence that production has received them.
+          # Until a separately reviewed, verified apply plan exists, deployment stays blocked.
+          if ! grep -Fq "Apply and verify canonical D1 migrations 0012-0046 before Worker deployment" .github/workflows/deploy.yml; then
+            echo "::error::Deployment blocked: no reviewed apply and postflight verification step exists for canonical migrations 0012–0046."
+            exit 1
+          fi
+          if ! grep -Fq "Export production D1 backup before schema mutation" .github/workflows/deploy.yml; then
+            echo "::error::Deployment blocked: a verified production D1 backup step is required before schema mutation."
+            exit 1
+          fi
+          echo "PASS: canonical migration files, reservations, reviewed apply step, and backup gate are present."
+
       - name: Validate Cloudflare bundle without deploying
         run: npx --yes wrangler@4 deploy --dry-run
 
