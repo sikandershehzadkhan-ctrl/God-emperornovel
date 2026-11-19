@@ -66,6 +66,15 @@ Static SQL inspection shows multiple user-id predicates, but it does not prove t
 
 **Status:** Corrected in the foundation branch; actual connector-provider behavior and evidence verification remain human-review responsibilities.
 
+
+### 5. Reader history accepted arbitrary chapter numbers
+
+- The authenticated history write previously verified only that the novel was published and rights-eligible; it did not validate the chapter number or prove that the chapter belonged to that novel and was published.
+- The handler now requires positive safe-integer novel/chapter values and verifies the published rights-eligible novel/chapter pair before writing progress.
+- A build-gated regression contract covers invalid IDs, unpublished chapters, and mismatched chapter targets at the source-contract level.
+
+**Status:** Corrected in the foundation branch; two-account runtime tests and live D1 verification remain outstanding.
+
 ## Security boundary
 
 No confirmed cross-user data exposure was established by this first pass. The two findings above are validation/policy consistency issues. This audit does not certify CSRF protections, rate limits, method rejection, session rotation, or all delegated handlers.
