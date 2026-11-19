@@ -1,6 +1,7 @@
 import assert from "node:assert/strict";
 import fs from "node:fs";
 import path from "node:path";
+import { PAGE_SHELLS, DYNAMIC_PAGE_ROUTES, canonicalizePagePath } from "../src/route-registry.mjs";
 
 const packageJson = JSON.parse(fs.readFileSync("package.json", "utf8"));
 const appPath = "public/app.js";
@@ -19,21 +20,8 @@ const worker = fs.readFileSync(workerPath, "utf8");
 // must come from the same bytes that are shipped to readers.
 assert.equal(releaseApp, app, "Versioned application bundle is out of sync with public/app.js");
 
-const mapMatch = worker.match(/const map=\{([\s\S]*?)\};if\(map\[p\]\)/);
-assert.ok(mapMatch, "Could not locate the Worker HTML page map");
-const exactRoutes = new Set([
-  "/",
-  ...[...mapMatch[1].matchAll(/["'](\/[^"']+)["']\s*:/g)].map(match => match[1])
-]);
-
-const dynamicPatterns = [
-  /^\/format\/[^/]+\/?$/,
-  /^\/novel\/[^/]+\/chapters\/?$/,
-  /^\/novel\/[^/]+\/?$/,
-  /^\/read\/[^/]+\/[^/]+\/?$/,
-  /^\/fandom\/.+$/,
-  /^\/author\/[^/]+$/
-];
+const exactRoutes = new Set(Object.keys(PAGE_SHELLS));
+const dynamicPatterns = DYNAMIC_PAGE_ROUTES.map(route => route.pattern);
 
 function servedByWorker(route) {
   if (exactRoutes.has(route)) return true;
@@ -48,7 +36,7 @@ const destinations = new Set();
 const unresolved = [];
 
 for (const raw of rawLinks) {
-  const route = raw.split(/[?#]/, 1)[0].replace(/\$\{[^}]+\}/g, "route-param");
+  const route = canonicalizePagePath(raw.split(/[?#]/, 1)[0].replace(/\$\{[^}]+\}/g, "route-param"));
   if (!route || route === "/") {
     destinations.add("/");
     continue;
