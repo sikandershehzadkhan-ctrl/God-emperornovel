@@ -8,7 +8,7 @@ const worker=await readFile(new URL("../src/index.js",import.meta.url),"utf8");
 const client=await readFile(new URL("../public/app.js",import.meta.url),"utf8");
 const sitemap=await readFile(new URL("../src/sitemap.mjs",import.meta.url),"utf8");
 const runtimeRegistry=await readFile(new URL("../src/route-registry.mjs",import.meta.url),"utf8");
-const gitBlobSha=content=>createHash("sha1").update(Buffer.concat([Buffer.from("blob "+Buffer.byteLength(content)+"\\0"),Buffer.from(content)])).digest("hex");
+const gitBlobSha=content=>createHash("sha1").update(Buffer.concat([Buffer.from("blob "+Buffer.byteLength(content)+"\0"),Buffer.from(content)])).digest("hex");
 assert.equal(registry.source_evidence.worker_blob,gitBlobSha(worker),"Canonical evidence must fingerprint the current Worker source");
 assert.equal(registry.source_evidence.client_blob,gitBlobSha(client),"Canonical evidence must fingerprint the current client source");
 assert.equal(registry.source_evidence.sitemap_blob,gitBlobSha(sitemap),"Canonical evidence must fingerprint the current sitemap source");
