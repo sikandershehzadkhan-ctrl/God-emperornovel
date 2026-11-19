@@ -10,7 +10,7 @@
     "branch": "architecture/phase-01-foundation-route-registry",
     "commit": "290d28af632410705acae4575d6ca3b5eb7a490e",
     "worker_file": "src/index.js",
-    "worker_blob": "deca24eb256f3805ad05a0b5eed7fd1cb600b141",
+    "worker_blob": "04e78460b5656f84261d644ae4c193c820dc064b",
     "client_file": "public/app.js",
     "client_blob": "4f482c79101785300248910e1a9256d23923bd6e",
     "sitemap_file": "src/sitemap.mjs",
