@@ -7,7 +7,7 @@ export const DYNAMIC_PAGE_ROUTES = Object.freeze([
   Object.freeze({ kind: "novel-detail", pattern: new RegExp("^/novel/[0-9]+/?$"), shell: "novel.html", source_expression: "/^\\/novel\\/\\d+\\/?$/.test(p)" }),
   Object.freeze({ kind: "chapter-reader", pattern: new RegExp("^/read/[0-9]+/[0-9]+/?$"), shell: "read.html", source_expression: "/^\\/read\\/\\d+\\/\\d+\\/?$/.test(p)" }),
   Object.freeze({ kind: "fandom-tag-redirect", pattern: new RegExp("^/fandom/"), shell: "fandom.html", source_expression: "/^\\/fandom\\//.test(p)" }),
-  Object.freeze({ kind: "public-author-profile", pattern: new RegExp("^/author/[^/]+$"), shell: "author-public.html", source_expression: "/^\\/author\\/[^/]+$/.test(p)" }),
+  Object.freeze({ kind: "public-author-profile", pattern: new RegExp("^/author/[^/]+/?$"), shell: "author-public.html", source_expression: "/^\\/author\\/[^/]+\\/?$/.test(p)" }),
 ]);
 export const NOINDEX_EXACT_PATHS = Object.freeze(new Set(["/admin","/account","/login","/register","/library","/history","/following","/tickets","/requests","/settings","/notifications","/author","/search","/omniportal","/trend-factory","/made-for-you","/for-you"]));
 export const SITEMAP_STATIC_PATHS = Object.freeze(["/","/catalog","/formats","/genres","/tags","/community","/leaderboard","/community-taxonomy","/privacy","/terms","/copyright"]);
@@ -18,4 +18,10 @@ export function resolvePageShell(pathname) {
     if (route.pattern.test(pathname)) return route.shell;
   }
   return null;
+}
+
+export function canonicalizePagePath(pathname) {
+  if (typeof pathname !== "string" || pathname === "/" || !pathname.endsWith("/")) return pathname;
+  const canonical = pathname.replace(/\\/+$/, "");
+  return resolvePageShell(canonical) ? canonical : pathname;
 }
