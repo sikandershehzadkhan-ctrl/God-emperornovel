@@ -355,17 +355,18 @@
       "client_source_expression": "else if(p.startsWith('/fandom/'))"
     },
     {
-      "pattern": "^/author/[^/]+$",
+      "pattern": "^/author/[^/]+/?$",
       "shell": "author-public.html",
       "kind": "public-author-profile",
       "status": "observed-worker-dispatch",
       "access_policy": "must-be-verified-per-resource",
       "sitemap_policy": "resource-specific-or-not-listed",
       "screen_completeness": "not-yet-audited",
-      "source_expression": "/^\\/author\\/[^/]+$/.test(p)",
+      "source_expression": "/^\\/author\\/[^/]+\\/?$/.test(p)",
       "samples": [
         "/author/example",
-        "/author/a"
+        "/author/a",
+        "/author/example.name/"
       ]
     }
   ],
