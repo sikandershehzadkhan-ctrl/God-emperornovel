@@ -15,6 +15,7 @@ assert.deepEqual(registry.api_endpoints.map(x=>x.path).sort(),api.literal_endpoi
 assert.deepEqual(registry.sitemap.static_paths,[...SITEMAP_STATIC_PATHS]);
 assert.ok(sitemap.includes("export { SITEMAP_STATIC_PATHS }"));
 assert.ok(worker.includes('import { NOINDEX_EXACT_PATHS, resolvePageShell } from "./route-registry.mjs";'),"Worker must consume the canonical runtime route registry");
+assert.ok(worker.includes('else if(resolvePageShell(p)||!p.includes("."))r=await html(req,env);'),"Worker fetch dispatch must route through the canonical page registry");
 for(const route of registry.pages) assert.equal(PAGE_SHELLS[route.path],route.shell,"Canonical route shell mismatch: "+route.path);
 assert.deepEqual(Object.keys(PAGE_SHELLS).sort(),registry.pages.map(route=>route.path).sort(),"Runtime page routes must match the canonical evidence registry");
 assert.deepEqual([...NOINDEX_EXACT_PATHS],registry.sitemap.noindex_exact_paths,"Noindex policy must match the canonical evidence registry");
