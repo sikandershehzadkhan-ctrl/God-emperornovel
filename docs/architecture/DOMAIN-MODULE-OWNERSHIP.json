@@ -1,0 +1,84 @@
+{
+  "version": 1,
+  "status": "enforced-source-boundary-contract",
+  "domains": {
+    "worker-composition": [
+      "src/index.js"
+    ],
+    "routing-and-seo": [
+      "src/route-registry.mjs",
+      "src/sitemap.mjs"
+    ],
+    "identity-and-authentication": [
+      "src/auth-password.mjs"
+    ],
+    "publishing-and-content-policy": [
+      "src/author-application-policy.mjs",
+      "src/comic-chapter-policy.mjs",
+      "src/content-formats.mjs",
+      "src/public-novel.mjs"
+    ],
+    "connector-and-rights-policy": [
+      "src/connector-url-policy.mjs"
+    ],
+    "billing-and-donation-policy": [
+      "src/donation-approval-policy.mjs",
+      "src/donation-reference-index.mjs",
+      "src/donation-reference-policy.mjs"
+    ],
+    "runtime-schema-adapters": [
+      "src/runtime-feature-schema.mjs"
+    ],
+    "reader-community-react-islands": [
+      "src/react/NovelComments.jsx",
+      "src/react/NovelRating.jsx",
+      "src/react/NovelReactions.jsx",
+      "src/react/index.jsx"
+    ]
+  },
+  "allowed_imports": {
+    "src/index.js": [
+      "./public-novel.mjs",
+      "./route-registry.mjs",
+      "./sitemap.mjs",
+      "./comic-chapter-policy.mjs",
+      "./auth-password.mjs",
+      "./connector-url-policy.mjs",
+      "./donation-approval-policy.mjs",
+      "./donation-reference-policy.mjs",
+      "./runtime-feature-schema.mjs",
+      "./donation-reference-index.mjs",
+      "./author-application-policy.mjs",
+      "./content-formats.mjs"
+    ],
+    "src/sitemap.mjs": [
+      "./route-registry.mjs"
+    ],
+    "src/react/NovelComments.jsx": [
+      "react",
+      "react-dom/client"
+    ],
+    "src/react/NovelRating.jsx": [
+      "react",
+      "react-dom/client"
+    ],
+    "src/react/NovelReactions.jsx": [
+      "react",
+      "react-dom/client"
+    ],
+    "src/react/index.jsx": [
+      "./NovelReactions.jsx",
+      "./NovelComments.jsx",
+      "./NovelRating.jsx"
+    ]
+  },
+  "direction_rules": [
+    "src/index.js is the Worker composition root and may depend on leaf policy, routing, schema and adapter modules.",
+    "Leaf policy modules must not import the Worker composition root or runtime adapters.",
+    "src/sitemap.mjs may depend on src/route-registry.mjs; the route registry must not depend on sitemap rendering.",
+    "React islands may import React, React DOM and sibling React islands only; they must not import Worker handlers, D1 adapters or secrets.",
+    "The Worker entrypoint must not import browser React islands.",
+    "Public browser bundles must not import files from src/.",
+    "Every tracked source module must have exactly one domain owner and an explicit import allowlist."
+  ]
+}
