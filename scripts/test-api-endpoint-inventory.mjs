@@ -29,6 +29,7 @@ for (const endpoint of manifest.literal_endpoints) {
 for (const endpoint of manifest.dynamic_endpoints) {
   assert.ok(api.includes(endpoint.source), "Dynamic API route expression must remain in source: " + endpoint.pattern);
   assert.ok(endpoint.review_required, "Dynamic API routes must remain flagged for contract review: " + endpoint.pattern);
+  if (endpoint.pattern === "/api/novels/{id}" || endpoint.pattern === "/api/chapters/{id}") assert.deepEqual(endpoint.methods, ["GET"], "Public dynamic detail routes must declare GET-only method contracts: " + endpoint.pattern);
 }
 const rating = manifest.literal_endpoints.find(endpoint => endpoint.path === "/api/rating");
 assert.ok(rating, "Rating endpoint must be inventoried");
