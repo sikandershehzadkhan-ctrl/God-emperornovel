@@ -200,6 +200,14 @@ async function callAuthorModel(env,systemPrompt,userPrompt,maxTokens=1800){
 }
 
 async function ensureCommunityModerationSchema(env){
+ await env.DB.prepare(`CREATE TABLE IF NOT EXISTS comments (
+  id INTEGER PRIMARY KEY AUTOINCREMENT,
+  user_id INTEGER NOT NULL,
+  novel_id INTEGER NOT NULL,
+  body TEXT NOT NULL,
+  status TEXT NOT NULL DEFAULT 'visible',
+  created_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP
+ )`).run();
  const columns=(await env.DB.prepare("PRAGMA table_info(comments)").all()).results||[];
  const names=new Set(columns.map(column=>String(column.name)));
  if(!names.has("parent_id"))await env.DB.prepare("ALTER TABLE comments ADD COLUMN parent_id INTEGER").run();
