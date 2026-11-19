@@ -55,6 +55,15 @@ assert.equal(db.prepare("SELECT COUNT(*) n FROM chapters WHERE novel_id=101 AND 
 assert.equal((await req("/api/author/chapters/1001",tb,"PATCH",{title:"Hijacked Chapter"})).status,403,"author B cannot mutate author A's existing chapter");
 assert.equal(db.prepare("SELECT title FROM chapters WHERE id=1001").get().title,"A Chapter","rejected chapter mutation leaves original content unchanged");
 
+assert.equal((await req("/api/author/novels/101",tb,"PATCH",{title:"Hijacked Novel"})).status,403,"author B cannot mutate author A's novel metadata");
+assert.equal(db.prepare("SELECT title FROM novels WHERE id=101").get().title,"A Novel","rejected cross-owner novel mutation leaves metadata unchanged");
+assert.equal((await req("/api/author/novels/101/submit",tb,"POST",{})).status,403,"author B cannot submit author A's novel for publication review");
+assert.equal(db.prepare("SELECT publication_status FROM novels WHERE id=101").get().publication_status,"draft","rejected cross-owner submission leaves publication state unchanged");
+assert.equal((await req("/api/author/novels/101",ta,"PATCH",{title:"A Novel Updated",description:"Owner-authored description"})).status,200,"novel owner can update their own metadata");
+assert.equal(db.prepare("SELECT title,description FROM novels WHERE id=101").get().title,"A Novel Updated","owner novel metadata update is persisted");
+assert.equal((await req("/api/author/novels/101/submit",ta,"POST",{})).status,200,"novel owner can submit their own rights-declared original work for review");
+assert.equal(db.prepare("SELECT publication_status FROM novels WHERE id=101").get().publication_status,"review","owner submission moves the novel into review, not public publication");
+
 assert.equal((await req("/api/author/novels",null)).status,403,"unauthenticated callers must be denied by the author-role guard");
 
 const validApplication=(display_name)=>({display_name,bio:"I write original stories with consistent characters, thoughtful worldbuilding, and a long-term commitment to readers.",experience:"Independent writing practice",sample_work:"Original sample. ".repeat(20),preferred_formats:["original","web_novel"],rights_confirmed:true});
