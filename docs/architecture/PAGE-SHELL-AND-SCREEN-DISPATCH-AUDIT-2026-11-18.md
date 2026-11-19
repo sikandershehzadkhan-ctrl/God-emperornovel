@@ -1,11 +1,11 @@
 # Page Shell and Client Screen Dispatch Audit
 
-**Audit date:** 2026-11-18  
-**Scope:** Static Worker page shells and the client boot dispatcher in `public/app.js`.
+**Audit date:** 2026-11-19  
+**Scope:** Canonical Worker page registry, HTML shell dispatch, client boot dispatcher, URL policy and source-level accessibility contracts.
 
 ## Shared application screens
 
-The following route families are dispatched by the shared `boot()` router in `public/app.js`:
+The shared boot router in `public/app.js` dispatches:
 
 | Route | Client screen / behavior |
 |---|---|
@@ -26,7 +26,7 @@ The following route families are dispatched by the shared `boot()` router in `pu
 | `/requests` | `requests()` |
 | `/omniportal` | `omni()` |
 | `/trend-factory` | `trendFactory()` |
-| `/community`, `/leaderboard`, `/tier-list`, `/random`, `/made-for-you`, `/for-you`, `/trending`, `/vote`, `/notifications` | `discoveryPage(kind)` with route-specific kind |
+| `/community`, `/leaderboard`, `/tier-list`, `/random`, `/made-for-you`, `/for-you`, `/trending`, `/vote`, `/notifications` | `discoveryPage(kind)` |
 | `/settings` | `settings()` |
 | `/author` | `authorStudio()` |
 | `/account` | `account()` |
@@ -37,31 +37,44 @@ These are observed dispatch calls, not a claim that every screen has complete or
 
 ## Standalone HTML screens
 
-The Worker also serves standalone page documents that do not use the shared `app.js` boot router:
+The Worker serves standalone documents outside the shared boot router:
 
-- `/admin` → `admin.html`, a dedicated dashboard document with inline application logic and a noindex directive.
-- `/community-taxonomy` → `community-taxonomy.html`, a standalone taxonomy page with inline script.
-- `/privacy` → `privacy.html`.
-- `/terms` → `terms.html`.
-- `/copyright` → `copyright.html`.
+- `/admin` → `admin.html`, a dedicated dashboard with inline application logic and noindex.
+- `/community-taxonomy` → `community-taxonomy.html`, a standalone taxonomy page.
+- `/privacy`, `/terms`, `/copyright` → standalone legal documents.
 
-These routes need their own screen-level QA and should not be treated as shared-app screens.
+Each standalone screen still needs its own browser and assistive-technology QA.
 
-## Important route behavior: fandom
+## Canonical route and URL behavior
 
-The Worker recognizes `/fandom/{slug}` and serves `fandom.html`, but the client boot router does not render a dedicated fandom screen. It redirects the browser to `/catalog?tag={slug}`.
+- `src/route-registry.mjs` is the runtime source for exact page shells, six dynamic page families, exact noindex utility paths and static sitemap membership.
+- The Worker uses the same resolver for outer fetch dispatch and HTML shell selection; `src/sitemap.mjs` imports static paths from that registry.
+- Known page paths with trailing slashes receive a 308 redirect to the slashless canonical path, preserving query parameters.
+- `/fandom/{path}` is now a server-side 308 redirect to `/catalog?tag={last-path-segment}`; query parameters are retained and the tag is URL-encoded. The old client redirect remains only as a fallback.
+- Indexable HTML responses receive a query-free canonical link. Exact private/utility paths and unknown routes receive noindex directives.
+- Unknown extensionless paths return the 404 shell with HTTP 404 rather than a soft 200.
+- Locale-prefixed URLs are not implemented. UI language is separate from chapter-body direction.
 
-Therefore this route is classified as a **client-side tag redirect**, not as a completed fandom landing page. If a dedicated fandom experience is required later, it needs an explicit product and route decision rather than being assumed from the Worker dispatch pattern.
+## Accessibility and RTL source contracts
+
+The build now checks:
+- Skip-to-main-content link and semantic header/navigation/main landmarks.
+- Visible keyboard focus, reduced-motion handling and forced-colors focus support in source and versioned stylesheets.
+- All 14 UI language options.
+- Urdu, Arabic and Persian UI direction as RTL.
+- Chapter content uses `dir="auto"`, independent of the UI locale.
+
+These are source-level checks. They do not certify actual screen-reader output, contrast in every state, keyboard focus order, touch targets or responsive layout.
 
 ## Remaining screen audit
 
-This document records dispatch and shell type only. The following remain unverified:
+Still unverified and release-gated:
 
-- Visual completeness and responsive behavior for each screen.
-- Whether each control is wired to a real backend action.
-- Loading, empty, error, and unauthorized states.
-- Keyboard and screen-reader behavior.
-- Locale and RTL coverage.
-- Browser-level navigation and direct-load behavior on the deployed Worker.
+- Visual completeness and responsive behavior for every exact and dynamic route.
+- Whether every visible control is wired to a real backend action.
+- Loading, empty, error, unauthorized and permission-denied states.
+- Keyboard navigation, focus trapping, screen-reader announcements and semantic form errors in a real browser.
+- RTL page layout and mixed-direction chapter typography on real devices.
+- Direct-load behavior and canonical redirects on the deployed Worker.
 
-No production deployment or D1 mutation was performed.
+No production deployment or D1 mutation was performed by this audit.
