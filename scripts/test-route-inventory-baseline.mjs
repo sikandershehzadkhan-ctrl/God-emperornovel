@@ -1,6 +1,6 @@
 import assert from "node:assert/strict";
 import { readFile } from "node:fs/promises";
-import { SITEMAP_STATIC_PATHS, PAGE_SHELLS, DYNAMIC_PAGE_ROUTES, NOINDEX_EXACT_PATHS, resolvePageShell } from "../src/route-registry.mjs";
+import { SITEMAP_STATIC_PATHS, PAGE_SHELLS, DYNAMIC_PAGE_ROUTES, NOINDEX_EXACT_PATHS, resolvePageShell, canonicalizePagePath } from "../src/route-registry.mjs";
 
 const manifest = JSON.parse(await readFile(new URL("../docs/architecture/IMPERIAL-ROUTE-INVENTORY-BASELINE-2026-11-18.json", import.meta.url), "utf8"));
 const worker = await readFile(new URL("../src/index.js", import.meta.url), "utf8");
@@ -13,7 +13,8 @@ assert.equal(manifest.source_evidence.worker_file, "src/index.js");
 assert.equal(manifest.source_evidence.sitemap_file, "src/sitemap.mjs");
 assert.equal(manifest.source_evidence.client_file, "public/app.js");
 
-assert.ok(worker.includes('import { NOINDEX_EXACT_PATHS, resolvePageShell } from "./route-registry.mjs";'), "Worker must use the canonical route registry");
+assert.ok(worker.includes('import { NOINDEX_EXACT_PATHS, resolvePageShell, canonicalizePagePath } from "./route-registry.mjs";'), "Worker must use the canonical route registry");
+assert.ok(worker.includes("const canonicalPath=canonicalizePagePath(p)"), "Worker must redirect known page paths to canonical URLs");
 const actualMap = new Map(Object.entries(PAGE_SHELLS));
 assert.equal(manifest.page_routes.length, actualMap.size, "manifest exact page route count must match Worker");
 assert.equal(new Set(manifest.page_routes.map(route => route.path)).size, manifest.page_routes.length, "exact page routes must be unique");
@@ -32,7 +33,7 @@ for (const route of manifest.dynamic_page_patterns) {
   assert.ok(runtimeRoute, "runtime dynamic route missing: " + route.kind);
   assert.equal(runtimeRoute.shell, route.shell, "dynamic route shell mismatch: " + route.kind);
   assert.equal(runtimeRoute.source_expression, route.source_expression, "dynamic route source evidence mismatch: " + route.kind);
-  for (const sample of route.samples) assert.equal(resolvePageShell(sample), route.shell, "runtime dynamic route resolution mismatch: " + sample);
+  for (const sample of route.samples) { assert.equal(resolvePageShell(sample), route.shell, "runtime dynamic route resolution mismatch: " + sample); if (!sample.endsWith("/")) assert.equal(canonicalizePagePath(sample + "/"), sample, "canonical dynamic route mismatch: " + sample); }
   if (route.client_source_expression) assert.ok(client.includes(route.client_source_expression), "Client route behavior expression missing: " + route.kind);
 }
 
