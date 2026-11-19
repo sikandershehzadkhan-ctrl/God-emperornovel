@@ -31,6 +31,7 @@ for (const route of manifest.dynamic_page_patterns) {
   const runtimeRoute = DYNAMIC_PAGE_ROUTES.find(item => item.kind === route.kind);
   assert.ok(runtimeRoute, "runtime dynamic route missing: " + route.kind);
   assert.equal(runtimeRoute.shell, route.shell, "dynamic route shell mismatch: " + route.kind);
+  assert.equal(runtimeRoute.source_expression, route.source_expression, "dynamic route source evidence mismatch: " + route.kind);
   for (const sample of route.samples) assert.equal(resolvePageShell(sample), route.shell, "runtime dynamic route resolution mismatch: " + sample);
   if (route.client_source_expression) assert.ok(client.includes(route.client_source_expression), "Client route behavior expression missing: " + route.kind);
 }
