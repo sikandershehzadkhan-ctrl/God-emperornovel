@@ -10,7 +10,7 @@
     "explicit_method_conditions": 77,
     "dynamic_route_families": 21
   },
-  "method_semantics": "explicit_methods lists only literal methods directly checked in source. Empty or mixed method evidence is not proof of allowed methods. Unsupported-method behavior and framework fallthrough must be verified separately.",
+  "method_semantics": "explicit_methods records directly enforced methods; delegated-method-contract records a helper whose GET/POST branches and unsupported-method fallthrough were inspected. Method evidence does not replace auth or resource ownership review.",
   "authorization_semantics": "observed_helper_signals records only visible need(u), admin(u), and author(u) calls in a nearby branch segment. It is not a security certification and does not establish resource-level ownership.",
   "literal_endpoints": [
     {
@@ -18,7 +18,7 @@
       "explicit_methods": [
         "GET"
       ],
-      "method_evidence": "mixed-or-unconstrained-branches",
+      "method_evidence": "explicit-literal-conditions",
       "source_lines": [
         413,
         423
@@ -72,8 +72,11 @@
     },
     {
       "path": "/api/taxonomy",
-      "explicit_methods": [],
-      "method_evidence": "mixed-or-unconstrained-branches",
+      "explicit_methods": [
+        "GET",
+        "POST"
+      ],
+      "method_evidence": "delegated-method-contract",
       "source_lines": [
         420
       ],
@@ -139,8 +142,10 @@
     },
     {
       "path": "/api/me",
-      "explicit_methods": [],
-      "method_evidence": "mixed-or-unconstrained-branches",
+      "explicit_methods": [
+        "GET"
+      ],
+      "method_evidence": "explicit-literal-conditions",
       "source_lines": [
         427
       ],
@@ -150,8 +155,10 @@
     },
     {
       "path": "/api/config",
-      "explicit_methods": [],
-      "method_evidence": "mixed-or-unconstrained-branches",
+      "explicit_methods": [
+        "GET"
+      ],
+      "method_evidence": "explicit-literal-conditions",
       "source_lines": [
         428
       ],
@@ -161,8 +168,10 @@
     },
     {
       "path": "/api/genres",
-      "explicit_methods": [],
-      "method_evidence": "mixed-or-unconstrained-branches",
+      "explicit_methods": [
+        "GET"
+      ],
+      "method_evidence": "explicit-literal-conditions",
       "source_lines": [
         429
       ],
@@ -172,8 +181,10 @@
     },
     {
       "path": "/api/tags",
-      "explicit_methods": [],
-      "method_evidence": "mixed-or-unconstrained-branches",
+      "explicit_methods": [
+        "GET"
+      ],
+      "method_evidence": "explicit-literal-conditions",
       "source_lines": [
         430
       ],
@@ -183,8 +194,10 @@
     },
     {
       "path": "/api/public-authors",
-      "explicit_methods": [],
-      "method_evidence": "mixed-or-unconstrained-branches",
+      "explicit_methods": [
+        "GET"
+      ],
+      "method_evidence": "explicit-literal-conditions",
       "source_lines": [
         431
       ],
@@ -194,8 +207,10 @@
     },
     {
       "path": "/api/sources",
-      "explicit_methods": [],
-      "method_evidence": "mixed-or-unconstrained-branches",
+      "explicit_methods": [
+        "GET"
+      ],
+      "method_evidence": "explicit-literal-conditions",
       "source_lines": [
         436
       ],
@@ -205,8 +220,10 @@
     },
     {
       "path": "/api/omni/status",
-      "explicit_methods": [],
-      "method_evidence": "mixed-or-unconstrained-branches",
+      "explicit_methods": [
+        "GET"
+      ],
+      "method_evidence": "explicit-literal-conditions",
       "source_lines": [
         437
       ],
@@ -216,8 +233,10 @@
     },
     {
       "path": "/api/omni/search",
-      "explicit_methods": [],
-      "method_evidence": "mixed-or-unconstrained-branches",
+      "explicit_methods": [
+        "GET"
+      ],
+      "method_evidence": "explicit-literal-conditions",
       "source_lines": [
         438
       ],
@@ -227,8 +246,10 @@
     },
     {
       "path": "/api/omni/resolve",
-      "explicit_methods": [],
-      "method_evidence": "mixed-or-unconstrained-branches",
+      "explicit_methods": [
+        "GET"
+      ],
+      "method_evidence": "explicit-literal-conditions",
       "source_lines": [
         439
       ],
@@ -268,8 +289,10 @@
     },
     {
       "path": "/api/omni/smart-unlock",
-      "explicit_methods": [],
-      "method_evidence": "mixed-or-unconstrained-branches",
+      "explicit_methods": [
+        "GET"
+      ],
+      "method_evidence": "explicit-literal-conditions",
       "source_lines": [
         442
       ],
@@ -294,8 +317,10 @@
     },
     {
       "path": "/api/novels",
-      "explicit_methods": [],
-      "method_evidence": "mixed-or-unconstrained-branches",
+      "explicit_methods": [
+        "GET"
+      ],
+      "method_evidence": "explicit-literal-conditions",
       "source_lines": [
         446
       ],
@@ -777,8 +802,10 @@
     },
     {
       "path": "/api/admin/stats",
-      "explicit_methods": [],
-      "method_evidence": "mixed-or-unconstrained-branches",
+      "explicit_methods": [
+        "GET"
+      ],
+      "method_evidence": "explicit-literal-conditions",
       "source_lines": [
         610
       ],
