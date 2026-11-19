@@ -75,6 +75,13 @@ Static SQL inspection shows multiple user-id predicates, but it does not prove t
 
 **Status:** Corrected in the foundation branch; two-account runtime tests and live D1 verification remain outstanding.
 
+
+### 6. Account-scoped source contract baseline
+
+- Reviewed the source-level ownership predicates for reader history, library, bookmarks, follows, notifications, request quotas, author novel lists, and AI project lists.
+- The build-gated `test-api-owner-scope-contract.mjs` asserts authenticated-user bindings, author guards, project/novel ownership checks, and admin-only guards for representative administrative routes.
+- This improves regression coverage but does not prove cross-account isolation under runtime conditions; issue #335 remains open for two-user adversarial tests.
+
 ## Security boundary
 
 No confirmed cross-user data exposure was established by this first pass. The two findings above are validation/policy consistency issues. This audit does not certify CSRF protections, rate limits, method rejection, session rotation, or all delegated handlers.
