@@ -48,3 +48,29 @@ for (const route of [
   assert.ok(worker.slice(start, start + 1200).includes("admin(u)"), "admin route must require the admin guard: " + route);
 }
 console.log("PASS: source-level account ownership predicates and admin route guards.");
+
+const inventory = JSON.parse(await readFile(new URL("../docs/architecture/API-ENDPOINT-INVENTORY-2026-11-18.json", import.meta.url), "utf8"));
+const adminEndpoints = inventory.literal_endpoints.filter(endpoint => endpoint.path.startsWith("/api/admin/"));
+for (const endpoint of adminEndpoints) {
+  for (const method of endpoint.explicit_methods) {
+    const escaped = endpoint.path.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+    const marker = new RegExp('if\\s*\\(\\s*p\\s*===?\\s*["\\\']' + escaped + '["\\\']\\s*&&\\s*m\\s*===?\\s*["\\\']' + method + '["\\\']\\s*\\)');
+    const match = marker.exec(worker);
+    assert.ok(match, "admin API method branch must exist: " + method + " " + endpoint.path);
+    const branch = worker.slice(match.index, match.index + 500);
+    if (endpoint.path === "/api/admin/taxonomy" && method === "POST") {
+      assert.ok(branch.includes("adminTaxonomy(req,env,u)"), "taxonomy moderation must delegate with the resolved user");
+      const helperStart = worker.indexOf("async function adminTaxonomy(");
+      const helperEnd = worker.indexOf("\\n", helperStart);
+      assert.ok(helperStart >= 0 && worker.slice(helperStart, helperEnd > helperStart ? helperEnd : helperStart + 1200).includes("admin(u)"), "delegated taxonomy moderation must require administrator role");
+    } else {
+      assert.ok(branch.includes("admin(u)"), "admin API method must enforce administrator authorization before work: " + method + " " + endpoint.path);
+    }
+  }
+}
+for (const endpoint of inventory.dynamic_endpoints.filter(endpoint => endpoint.pattern.startsWith("/api/admin/"))) {
+  const start = worker.indexOf(endpoint.source);
+  assert.ok(start >= 0, "dynamic admin API route expression must exist: " + endpoint.pattern);
+  assert.ok(worker.slice(start, start + 700).includes("admin(u)"), "dynamic admin API route must enforce administrator authorization: " + endpoint.pattern);
+}
+console.log("PASS: administrator authorization guards cover every inventoried literal and dynamic admin API route.");
