@@ -16,6 +16,13 @@ assert.equal(registry.source_evidence.runtime_registry_blob,gitBlobSha(runtimeRe
 assert.equal(registry.status,"canonical-source-contract-foundation-review-gated");
 assert.equal(registry.source_evidence.runtime_registry_file,"src/route-registry.mjs","runtime route registry source must be recorded");
 assert.equal(registry.pages.length,33);
+for(const route of registry.pages){
+ assert.ok(typeof route.sitemap_policy==="string"&&route.sitemap_policy.length>0,"Every exact page route must declare an explicit sitemap policy: "+route.path);
+ const included=SITEMAP_STATIC_PATHS.includes(route.path);
+ assert.equal(route.sitemap_policy==="included-in-static-sitemap",included,"Registry sitemap policy must match runtime static membership: "+route.path);
+ if(NOINDEX_EXACT_PATHS.has(route.path)) assert.ok(!included,"Noindex routes must never be included in the static sitemap: "+route.path);
+}
+for(const path of SITEMAP_STATIC_PATHS) assert.ok(registry.pages.some(route=>route.path===path&&route.sitemap_policy==="included-in-static-sitemap"),"Every static sitemap path must have an explicit indexable page record: "+path);
 assert.equal(registry.dynamic_pages.length,6);
 assert.equal(registry.api_endpoints.length,api.literal_endpoints.length);
 assert.equal(registry.dynamic_api_endpoints.length,api.dynamic_endpoints.length);
