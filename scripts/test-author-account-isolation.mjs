@@ -55,6 +55,12 @@ assert.equal(db.prepare("SELECT COUNT(*) n FROM chapters WHERE novel_id=101 AND 
 assert.equal((await req("/api/author/chapters/1001",tb,"PATCH",{title:"Hijacked Chapter"})).status,403,"author B cannot mutate author A's existing chapter");
 assert.equal(db.prepare("SELECT title FROM chapters WHERE id=1001").get().title,"A Chapter","rejected chapter mutation leaves original content unchanged");
 
+assert.equal((await req("/api/author/chapters/1001/publish",tb,"POST",{publication_status:"published"})).status,403,"author B cannot publish a chapter in author A's novel");
+assert.equal(db.prepare("SELECT publication_status FROM chapters WHERE id=1001").get().publication_status,"draft","rejected cross-owner chapter publication leaves status unchanged");
+assert.equal((await req("/api/author/chapters/1001/publish",ta,"POST",{publication_status:"published"})).status,200,"novel owner can publish their own eligible chapter");
+assert.equal(db.prepare("SELECT publication_status FROM chapters WHERE id=1001").get().publication_status,"published","owner publication updates the chapter status");
+assert.equal((await req("/api/author/chapters/1001/publish",ta,"POST",{publication_status:"draft"})).status,200,"novel owner can return their own chapter to draft");
+
 assert.equal((await req("/api/author/novels/101",tb,"PATCH",{title:"Hijacked Novel"})).status,403,"author B cannot mutate author A's novel metadata");
 assert.equal(db.prepare("SELECT title FROM novels WHERE id=101").get().title,"A Novel","rejected cross-owner novel mutation leaves metadata unchanged");
 assert.equal((await req("/api/author/novels/101/submit",tb,"POST",{})).status,403,"author B cannot submit author A's novel for publication review");
