@@ -1,10 +1,6 @@
 name: Imperial Novel Read-Only Production D1 Audit
 
 on:
-  push:
-    branches: [main]
-    paths:
-      - '.github/workflows/audit-production-d1.yml'
   workflow_dispatch:
     inputs:
       confirm_read_only_audit:
@@ -25,7 +21,7 @@ concurrency:
 
 jobs:
   audit:
-    if: ${{ github.event_name == 'push' || inputs.confirm_read_only_audit == 'yes' }}
+    if: ${{ inputs.confirm_read_only_audit == 'yes' }}
     runs-on: ubuntu-latest
     timeout-minutes: 5
     steps:
