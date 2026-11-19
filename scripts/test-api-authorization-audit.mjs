@@ -144,6 +144,16 @@ assert.match(aiRunHandler, /ai_chapter_jobs\(project_id,owner_user_id,chapter_nu
 assert.equal((aiRunHandler.match(/ai_generation_runs\(project_id,owner_user_id/g)||[]).length, 2, "Both failed and successful chapter attempts must write generation history");
 assert.match(aiRunHandler, /ai_generation_runs\(project_id,owner_user_id[\s\S]*row\.owner_user_id/, "Generation history must remain associated with the project owner");
 
+const donationApproval = worker.slice(worker.indexOf('let ad=p.match(/^\/api\/admin\/donations\/'), worker.indexOf('if(p==="/api/admin/reports"'));
+assert.match(donationApproval, /tickets<=9007199254740991-\\?/);
+assert.match(donationApproval, /tickets=CAST\\(tickets AS INTEGER\\)/);
+assert.match(donationApproval, /EXISTS\\(SELECT 1 FROM users WHERE id=donations\\.user_id/);
+const adminTicketCredit = worker.slice(worker.indexOf('if(p==="/api/admin/tickets"'), worker.indexOf('if(p==="/api/admin/connectors"'));
+assert.match(adminTicketCredit, /tickets<=9007199254740991-\\?/);
+assert.match(adminTicketCredit, /tickets=CAST\\(tickets AS INTEGER\\)/);
+const requestRefund = worker.slice(worker.indexOf('if(p.startsWith("/api/admin/requests/")'), worker.indexOf('let car=p.match'));
+assert.match(requestRefund, /tickets<=9007199254740991-\\?/);
+assert.match(requestRefund, /tickets=CAST\\(tickets AS INTEGER\\)/);
 const exactPaths = ["/api/health","/api/taxonomy","/api/me","/api/config","/api/genres","/api/tags","/api/public-authors","/api/sources","/api/omni/status","/api/omni/search","/api/omni/resolve","/api/omni/smart-unlock","/api/novels","/api/admin/stats"];
 assert.equal(exactPaths.length, 14);
 for (const path of exactPaths) assert.ok(inventory.literal_endpoints.some(x => x.path === path), "Authorization slice must stay in route inventory: " + path);
