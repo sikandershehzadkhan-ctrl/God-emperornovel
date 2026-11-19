@@ -32,4 +32,16 @@ assert.ok(!taxonomy.includes("b.creator_id"), "Taxonomy handler must not trust c
 assert.ok(!taxonomy.includes("b.creator_name"), "Taxonomy handler must not trust client-supplied creator names");
 assert.ok(worker.includes('if(p==="/api/taxonomy")return communityTaxonomy(req,env,u);'), "Taxonomy handler must receive the server-resolved session user");
 
+
+const historyStart = worker.indexOf('if(p==="/api/history"&&m==="POST")');
+const historyEnd = worker.indexOf('if(p==="/api/library"&&m==="GET")', historyStart);
+assert.ok(historyStart >= 0 && historyEnd > historyStart, "History write route must exist");
+const history = worker.slice(historyStart, historyEnd);
+for (const fragment of [
+  "Number.isSafeInteger(novelId)", "Number.isSafeInteger(chapterNumber)",
+  "JOIN chapters c ON c.novel_id=n.id", "n.publication_status='published'",
+  "n.rights_status IN ('original','public_domain','licensed','authorized')",
+  "c.publication_status='published'", ".bind(u.id,novelId,chapterNumber)"
+]) assert.ok(history.includes(fragment), "History validation contract missing: " + fragment);
+
 console.log("API resource-validation contract tests passed.");
