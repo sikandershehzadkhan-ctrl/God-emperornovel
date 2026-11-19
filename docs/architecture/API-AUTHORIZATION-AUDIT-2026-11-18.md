@@ -220,3 +220,10 @@ The AI author-project detail, edit, Story Bible generation, chapter-run, and job
 - Admin novel review updates now include the previously observed `publication_status` in the UPDATE predicate and require exactly one affected row. Stale or concurrent decisions return HTTP 409 and require the reviewer to refresh.
 - Admin chapter review updates use the same compare-and-set rule and affected-row check.
 - This closes the stale-read overwrite window for those admin review writes. It does not replace broader live D1 concurrency testing, and the regression checks still require exact-head CI execution.
+
+
+## Author submission transition protection (2026-11-19)
+- Author novel submission now permits only draft or archived records to enter review, uses the previously observed state in the UPDATE predicate, and returns HTTP 409 for duplicate or stale submissions.
+- Author chapter submission now rejects duplicate review submissions and already-published chapters. Its state transition is conditional on the observed chapter state; the SQL also rechecks that the parent novel remains published and rights-eligible at write time.
+- Author novel edits now condition their write on the publication state read before editing and require one affected row, preventing a stale edit from silently crossing a concurrent publication-state transition.
+- These source-level safeguards require exact-head CI and live D1 concurrency validation; neither is claimed complete here.
