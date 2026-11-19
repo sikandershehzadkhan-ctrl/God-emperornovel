@@ -189,11 +189,17 @@ assert.equal(connectorList.status,200,"admin can inspect connector authorization
 assert.equal(connectorList.data.find(x=>+x.id===701).rights_status,"pending","new connector starts pending");
 for(const [token,label] of [[ta,"author"],[td,"reader"],[null,"unauthenticated caller"]]) {
   assert.equal((await req("/api/admin/connectors",token)).status,403,label+" cannot inspect connector administration");
-  assert.equal((await req("/api/admin/connectors/701",token,"PATCH",{enabled:true,rights_status:"authorized",rights_evidence_url:"https://rights.example.test/license"})).status,404,label+" cannot use an unknown connector route");
   assert.equal((await req("/api/admin/connector-authorization-requests",token)).status,403,label+" cannot inspect private connector rights requests");
 }
 assert.equal((await req("/api/admin/connectors",tc,"PATCH",{id:702,enabled:true,rights_status:"pending"})).status,400,"pending connector cannot be enabled");
 assert.equal(db.prepare("SELECT enabled,rights_status FROM connectors WHERE id=702").get().enabled,0,"failed enable attempt leaves connector disabled");
+assert.equal((await req("/api/admin/connectors",tc,"PATCH",{id:702,enabled:false,rights_status:"authorized",rights_evidence_url:"",terms_url:""})).status,400,"admin cannot directly mark a connector authorized without rights evidence");
+assert.equal(db.prepare("SELECT rights_status FROM connectors WHERE id=702").get().rights_status,"pending","evidence-free authorization attempt leaves rights pending");
+const registered=await req("/api/admin/connectors",tc,"POST",{name:"New Registry",base_url:"https://new.registry.example.test"});
+assert.equal(registered.status,200,"admin can register a connector on an allowlisted host");
+const registeredRow=db.prepare("SELECT enabled,rights_status FROM connectors WHERE base_url=?").get("https://new.registry.example.test");
+assert.equal(registeredRow.enabled,0,"newly registered connector remains disabled");
+assert.equal(registeredRow.rights_status,"pending","newly registered connector remains pending rights review");
 const requestA=await req("/api/connector-authorization-requests",td,"POST",{connector_id:701,evidence_url:"https://rights.example.test/registry-license",notes:"Metadata-only permission; no chapter-body ingestion.",metadata_import_allowed:true,attribution_required:true});
 assert.equal(requestA.status,200,"reader can submit a connector rights request");
 const authorizationA=db.prepare("SELECT * FROM connector_authorization_requests WHERE id=?").get(requestA.data.request_id);
