@@ -2,7 +2,7 @@
   "audit_date": "2026-11-18",
   "branch": "architecture/api-contract-audit-baseline",
   "source_file": "src/index.js",
-  "source_blob": "bd6a292e176b8b9dfd3350caac78f7c5f0655050",
+  "source_blob": "253ce3ec8c127dac30a1b025e5abe48136c8451d",
   "scope": "First-pass static inventory of literal API path branches and dynamic path matchers inside async function api(req,env).",
   "counts": {
     "literal_endpoint_paths": 74,
@@ -908,8 +908,8 @@
       ],
       "method_evidence": "explicit-literal-conditions",
       "source_lines": [
-        771,
-        775
+        773,
+        777
       ],
       "observed_helper_signals": [
         "author"
@@ -924,7 +924,7 @@
       ],
       "method_evidence": "explicit-literal-conditions",
       "source_lines": [
-        797
+        805
       ],
       "observed_helper_signals": [
         "admin"
@@ -939,7 +939,7 @@
       ],
       "method_evidence": "explicit-literal-conditions",
       "source_lines": [
-        798
+        806
       ],
       "observed_helper_signals": [
         "admin"
@@ -954,7 +954,7 @@
       ],
       "method_evidence": "explicit-literal-conditions",
       "source_lines": [
-        845
+        907
       ],
       "observed_helper_signals": [
         "admin"
@@ -969,7 +969,7 @@
       ],
       "method_evidence": "explicit-literal-conditions",
       "source_lines": [
-        860
+        930
       ],
       "observed_helper_signals": [
         "admin"
@@ -984,7 +984,7 @@
       ],
       "method_evidence": "explicit-literal-conditions",
       "source_lines": [
-        861
+        931
       ],
       "observed_helper_signals": [
         "admin"
@@ -999,7 +999,7 @@
       ],
       "method_evidence": "explicit-literal-conditions",
       "source_lines": [
-        863
+        933
       ],
       "observed_helper_signals": [
         "admin"
@@ -1014,7 +1014,7 @@
       ],
       "method_evidence": "explicit-literal-conditions",
       "source_lines": [
-        865
+        935
       ],
       "observed_helper_signals": [
         "admin"
@@ -1031,9 +1031,9 @@
       ],
       "method_evidence": "explicit-literal-conditions",
       "source_lines": [
-        866,
-        867,
-        871
+        936,
+        937,
+        941
       ],
       "observed_helper_signals": [
         "admin"
@@ -1048,7 +1048,7 @@
       ],
       "method_evidence": "explicit-literal-conditions",
       "source_lines": [
-        868
+        938
       ],
       "observed_helper_signals": [
         "admin"
@@ -1063,7 +1063,7 @@
       ],
       "method_evidence": "explicit-literal-conditions",
       "source_lines": [
-        869
+        939
       ],
       "observed_helper_signals": [
         "admin"
@@ -1078,7 +1078,7 @@
       ],
       "method_evidence": "explicit-literal-conditions",
       "source_lines": [
-        870
+        940
       ],
       "observed_helper_signals": [
         "need"
@@ -1093,7 +1093,7 @@
       ],
       "method_evidence": "explicit-literal-conditions",
       "source_lines": [
-        872
+        942
       ],
       "observed_helper_signals": [
         "admin"
@@ -1108,7 +1108,7 @@
       ],
       "method_evidence": "explicit-literal-conditions",
       "source_lines": [
-        874
+        944
       ],
       "observed_helper_signals": [
         "admin"
@@ -1198,7 +1198,7 @@
     {
       "pattern": "/api/admin/publishing/novels/{id}",
       "source": "p.match(/^\\/api\\/admin\\/publishing\\/novels\\/(\\d+)",
-      "source_line": 812,
+      "source_line": 825,
       "methods": [
         "PATCH"
       ],
@@ -1210,7 +1210,7 @@
     {
       "pattern": "/api/admin/publishing/chapters/{id}",
       "source": "p.match(/^\\/api\\/admin\\/publishing\\/chapters\\/(\\d+)",
-      "source_line": 821,
+      "source_line": 870,
       "methods": [
         "PATCH"
       ],
@@ -1222,7 +1222,7 @@
     {
       "pattern": "/api/admin/donations/{id}",
       "source": "p.match(/^\\/api\\/admin\\/donations\\/(\\d+)",
-      "source_line": 862,
+      "source_line": 932,
       "methods": [
         "PATCH"
       ],
@@ -1234,7 +1234,7 @@
     {
       "pattern": "/api/admin/reports/{id}",
       "source": "p.match(/^\\/api\\/admin\\/reports\\/(\\d+)",
-      "source_line": 864,
+      "source_line": 934,
       "methods": [
         "PATCH"
       ],
@@ -1246,7 +1246,7 @@
     {
       "pattern": "/api/admin/requests/{id}",
       "source": "p.startsWith(\"/api/admin/requests/\")",
-      "source_line": 873,
+      "source_line": 943,
       "methods": [
         "PATCH"
       ],
@@ -1258,7 +1258,7 @@
     {
       "pattern": "/api/admin/connector-authorization-requests/{id}",
       "source": "p.match(/^\\/api\\/admin\\/connector-authorization-requests\\/(\\d+)",
-      "source_line": 875,
+      "source_line": 945,
       "methods": [
         "PATCH"
       ],
@@ -1330,7 +1330,7 @@
     {
       "pattern": "/api/author/chapters/{id}",
       "source": "/^\\/api\\/author\\/chapters\\/\\d+$/.test(p)",
-      "source_line": 783,
+      "source_line": 787,
       "methods": [
         "PATCH"
       ],
@@ -1342,7 +1342,7 @@
     {
       "pattern": "/api/author/chapters/{id}/publish",
       "source": "/^\\/api\\/author\\/chapters\\/\\d+\\/publish$/.test(p)",
-      "source_line": 792,
+      "source_line": 798,
       "methods": [
         "POST"
       ],
@@ -1354,7 +1354,7 @@
     {
       "pattern": "/api/admin/publishing/chapters",
       "source": "p.match(/^\\/api\\/admin\\/publishing\\/chapters(?:\\/(\\d+)",
-      "source_line": 813,
+      "source_line": 862,
       "methods": [
         "GET"
       ],
