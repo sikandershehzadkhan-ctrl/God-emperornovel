@@ -14,7 +14,7 @@ Sources inspected:
 
 Verified findings:
 
-- The release bundle `public/app-17.23.0.js` is byte-for-byte identical to `public/app.js`.
+- The release bundle `public/app-17.24.0.js` is byte-for-byte identical to `public/app.js`.
 - The client bundle contains 168 same-origin `href` occurrences.
 - After removing query strings and fragments and normalizing template parameters, those links represent 41 distinct route destinations or intentional route-construction prefixes.
 - All 41 destinations resolve to one of the canonical exact page routes or six observed dynamic route families. Legacy fandom shortcuts are server-redirected before page dispatch.
@@ -36,7 +36,7 @@ A source scan of explicit Worker branches using a literal path and method condit
 
 - **92** literal route branch occurrences.
 - **74** distinct literal API paths.
-- **92** explicit method conditions.
+- **77** distinct path/method pairs.
 - **1 duplicate path/method declaration:** `POST /api/rating` appears twice, at `src/index.js` lines 476 and 503. The earlier matching branch returns a response, so the later declaration appears unreachable for the same request. This requires a dedicated API-handler review before canonicalization.
 
 Observed helper signals in those branches:
