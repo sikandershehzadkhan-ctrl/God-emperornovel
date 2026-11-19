@@ -214,3 +214,9 @@ The admin user PATCH route now blocks an administrator from setting their own ac
 ## AI author-project resource identifiers
 
 The AI author-project detail, edit, Story Bible generation, chapter-run, and job-history routes now reject IDs that are not positive safe integers before database access. Existing owner checks remain in place after lookup. Regression coverage asserts all five dynamic resource handlers retain the guard. These are source-level assertions; live account-isolation and generation workflows remain unverified.
+
+
+## Concurrent publication review protection (2026-11-19)
+- Admin novel review updates now include the previously observed `publication_status` in the UPDATE predicate and require exactly one affected row. Stale or concurrent decisions return HTTP 409 and require the reviewer to refresh.
+- Admin chapter review updates use the same compare-and-set rule and affected-row check.
+- This closes the stale-read overwrite window for those admin review writes. It does not replace broader live D1 concurrency testing, and the regression checks still require exact-head CI execution.
