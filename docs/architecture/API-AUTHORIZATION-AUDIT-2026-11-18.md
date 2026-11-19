@@ -249,3 +249,12 @@ The AI author-project detail, edit, Story Bible generation, chapter-run, and job
 - Single and batch chapter unlock debits now require the account balance to be a non-negative whole number no greater than JavaScript's maximum safe integer, in addition to sufficient funds and the purchase-time chapter/rights checks.
 - Novel-request creation now applies the same whole-number and safe-integer constraints before inserting a paid request. Its conditional debit repeats those balance checks and verifies the newly inserted request cost is still affordable before subtracting tickets.
 - Source-level regression assertions cover all three spending paths. The test script has not yet been executed in a verified runtime, and live D1 batch/concurrency behavior remains unverified.
+
+
+## Chapter deletion refund integrity (2026-11-19)
+
+- Administrative chapter deletion now enumerates all unlock records and validates account IDs and original costs before any mutation.
+- Each positive-cost unlock is refunded to its original account only when its deterministic chapter/account refund reference is absent. A matching chapter_unlock_refund ledger entry is inserted as part of the same D1 batch.
+- Unlock rows are deleted only after every positive-cost unlock has a matching refund ledger entry. The chapter row is then deleted only when no unlock rows remain; otherwise deletion stops and retains unlock records for review.
+- Malformed unlock records, invalid account balances, or balances too close to the safe-integer ceiling prevent chapter deletion instead of silently discarding purchase history.
+- Source-level regression assertions were added. Runtime tests and live D1 transactional/concurrency behavior have not yet been executed or independently verified.
