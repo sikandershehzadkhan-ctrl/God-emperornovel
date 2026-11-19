@@ -8,13 +8,13 @@
   "source_evidence": {
     "repository": "sikandershehzadkhan-ctrl/God-emperornovel",
     "branch": "architecture/phase-01-foundation-route-registry",
-    "commit": "800a1c2253bd62a933b68d322380a49d4630c3dc",
+    "commit": "d14cba9bdf500f485d75e0bcda6df2e822e9a0a7",
     "worker_file": "src/index.js",
-    "worker_blob": "4f6bda3fc78211740db15deab32b9bc34283164f",
+    "worker_blob": "b5e509427963f57251034163925e5b4f2541362c",
     "client_file": "public/app.js",
     "client_blob": "a640fbfed7221adac1a6fd7fd6d5f0524016004a",
     "sitemap_file": "src/sitemap.mjs",
-    "sitemap_blob": "502021167ebdb6fc5ce24ee77f3b7130beda81e4",
+    "sitemap_blob": "3e6e885554751cbf6255fa0942e590573c574280",
     "method": "Consolidates source-observed page routes, dynamic page families, API literal endpoints and dynamic API families. It records explicit source contracts without claiming visual completeness, authorization certification, or deployed behavior."
   },
   "pages": [
