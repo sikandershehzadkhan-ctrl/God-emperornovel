@@ -1111,5 +1111,21 @@
       "size": 1201,
       "classification": "build-or-runtime-configuration"
     }
-  ]
+  ],
+  "ownership_audit": {
+    "registry_path": "docs/architecture/SHARED-SURFACE-OWNERSHIP.json",
+    "registry_blob_at_audit": "d9ac44b471d7921f83a85a14a80613dbbace045a",
+    "tracked_file_blobs": 418,
+    "root_level_tracked_files": 149,
+    "ownership_path_rules_before_stale_rule_removal": 176,
+    "owner_groups": 12,
+    "unowned_tracked_files": 0,
+    "multiply_owned_tracked_files": 0,
+    "stale_exact_rules_found": 1,
+    "stale_exact_rules": [
+      "ARCHITECTURE.md"
+    ],
+    "empty_directory_rules": 0,
+    "result": "all tracked files have exactly one owner; one stale exact-file rule was identified and removed in the same foundation change; validator now rejects stale exact rules and empty directory rules"
+  }
 }
