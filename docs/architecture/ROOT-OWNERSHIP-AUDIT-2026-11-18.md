@@ -1,6 +1,6 @@
 # Imperial Novel Root Ownership Audit
 
-**Audit date:** 2026-11-18  
+**Audit date:** 2026-11-19  
 **Audited base:** `main` at `f7d5879b500355d5834f3deb4be00f21a5baa4a1`  
 **Audit implementation branch:** `architecture/phase-01-foundation-route-registry`  
 **Scope:** Tracked-file ownership coverage and root-level repository hygiene.
@@ -9,7 +9,7 @@
 
 | Measure | Current main before this PR | PR branch after foundation changes |
 |---|---:|---:|
-| Tracked file blobs | 418 | 423 |
+| Tracked file blobs | 418 | 454 |
 | Root-level tracked files | 149 | 149 |
 | Ownership path rules | 176 | 175 |
 | Owner groups | 12 | 12 |
