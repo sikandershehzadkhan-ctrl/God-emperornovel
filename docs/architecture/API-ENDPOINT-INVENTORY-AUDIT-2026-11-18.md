@@ -2,7 +2,7 @@
 
 **Audit date:** 2026-11-19  
 **Source:** `src/index.js`, `async function api(req, env)`  
-**Source blob:** `ae13ded82676035b2414412ad3121d5ad0c95174`  
+**Source blob:** `7ed42bdfc9282bc31155047ff5454103ad58cd14`  
 **Status:** Static inventory baseline. Not a security or API contract certification.
 
 ## Inventory counts
