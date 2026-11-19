@@ -304,3 +304,9 @@ console.log("API authorization audit slice passed: report existence, connector r
 assert.match(worker, /UPDATE novels SET title=.*WHERE id=\? AND publication_status=\?/s);
 assert.match(worker, /UPDATE chapters SET chapter_number=.*WHERE id=\? AND publication_status=\?/s);
 assert.match(worker, /Novel review state changed[\s\S]*Chapter review state changed/);
+
+// Author publication transitions use compare-and-set and reject duplicate/stale submissions.
+assert.match(worker, /UPDATE novels SET publication_status='review'.*WHERE id=\? AND publication_status=\?/);
+assert.match(worker, /Chapter or parent novel state changed/);
+assert.match(worker, /already awaiting review/);
+assert.match(worker, /Novel state changed while saving/);
