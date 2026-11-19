@@ -234,3 +234,11 @@ The AI author-project detail, edit, Story Bible generation, chapter-run, and job
 - Single-chapter unlock now repeats the chapter-to-novel ownership, published-state, locked-state, observed ticket-price, and parent rights checks inside the conditional ticket debit. If a chapter is unpublished, unlocked, repriced, moved, or its novel loses publication/rights eligibility after the initial read, the debit affects no row and the request returns a conflict.
 - Batch unlock now makes the debit conditional on every selected chapter still belonging to the requested novel, remaining published and locked, retaining its observed price, and having a published, rights-eligible parent. A count check ensures every selected chapter still matches before any ticket debit is accepted.
 - Regression assertions were added for both purchase paths. These changes are source-level only until exact-head CI and real D1 transaction/concurrency behavior are verified. No deployment or production database change is claimed.
+
+
+## Ticket-credit balance integrity (2026-11-19)
+
+- Donation approval, administrator Crown credits, and novel-request refunds now require the existing account balance to be a non-negative whole number and leave room below JavaScript's maximum safe integer before crediting.
+- Donation and refund state transitions are now conditional on that balance precondition as well as the pending state. This prevents marking a transaction approved/rejected-for-refund when the account cannot safely receive its credit.
+- The subsequent account update repeats the bound, and the ledger insert remains dependent on exactly one successful balance update.
+- Regression assertions were added for all three credit paths. These are source-level safeguards; test execution, D1 batch semantics under live concurrency, and deployment remain unverified.
