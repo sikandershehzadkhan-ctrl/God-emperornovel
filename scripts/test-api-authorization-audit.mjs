@@ -299,3 +299,8 @@ assert.match(connectorReview, /changed!==1/, "Concurrent connector review attemp
 assert.match(connectorReview, /connectorChanged!==1/, "Failed connector rights updates must not be reported as success");
 
 console.log("API authorization audit slice passed: report existence, connector review concurrency, and publishing lifecycle.");
+
+// Admin publishing compare-and-set regression checks prevent stale review decisions.
+assert.match(worker, /UPDATE novels SET title=.*WHERE id=\? AND publication_status=\?/s);
+assert.match(worker, /UPDATE chapters SET chapter_number=.*WHERE id=\? AND publication_status=\?/s);
+assert.match(worker, /Novel review state changed[\s\S]*Chapter review state changed/);
