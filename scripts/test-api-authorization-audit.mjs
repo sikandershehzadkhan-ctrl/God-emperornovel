@@ -275,4 +275,22 @@ assert.match(authorChapterCreate, /publication_status.*'draft'/, "Author-created
 const aiChapterInsert = worker.slice(worker.indexOf('const draft=ai.text'), worker.indexOf('await env.DB.batch([', worker.indexOf('const draft=ai.text')));
 assert.match(aiChapterInsert, /publication_status\) VALUES\([^\n]*'draft'\)/, "AI-generated chapters must be saved as drafts, never auto-published");
 
-console.log("API authorization audit slice passed: 14 route classifications and taxonomy identity boundaries.");
+const reportStart = worker.indexOf('let ar=p.match(/^\\/api\\/admin\\/reports');
+const reportEnd = worker.indexOf('if(p==="/api/admin/tickets"', reportStart);
+const adminReportPatch = worker.slice(reportStart, reportEnd);
+assert.ok(reportStart>=0&&reportEnd>reportStart, "Admin report review route must remain explicit");
+assert.match(adminReportPatch, /Number\\(ar\\[1\\]\\)/, "Report IDs must be parsed and validated as numbers");
+assert.match(adminReportPatch, /Number\\.isSafeInteger\\(id\\)\\|\\|id<1/, "Report IDs must be positive safe integers");
+assert.match(adminReportPatch, /changed!==1/, "Unknown report IDs must not return success");
+assert.match(adminReportPatch, /admin_report_status/, "Report status decisions must be audited");
+const connectorReviewStart = worker.indexOf('let car=p.match(/^\\/api\\/admin\\/connector-authorization-requests');
+const connectorReviewEnd = worker.indexOf('return json({error:"Not found"}', connectorReviewStart);
+const connectorReview = worker.slice(connectorReviewStart, connectorReviewEnd);
+assert.ok(connectorReviewStart>=0&&connectorReviewEnd>connectorReviewStart, "Connector authorization review route must remain explicit");
+assert.match(connectorReview, /Number\\.isSafeInteger\\(id\\)\\|\\|id<1/, "Connector authorization IDs must be positive safe integers");
+assert.match(connectorReview, /WHERE id=\\? AND status='pending'/, "Connector authorization decisions must claim only pending requests");
+assert.match(connectorReview, /WHERE id=\\? AND changes\\(\\)=1/, "Connector rights updates must depend on a successful pending-state transition");
+assert.match(connectorReview, /changed!==1/, "Concurrent connector review attempts must conflict");
+assert.match(connectorReview, /connectorChanged!==1/, "Failed connector rights updates must not be reported as success");
+
+console.log("API authorization audit slice passed: report existence, connector review concurrency, and publishing lifecycle.");
