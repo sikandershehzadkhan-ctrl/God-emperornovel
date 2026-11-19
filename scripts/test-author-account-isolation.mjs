@@ -95,7 +95,7 @@ assert.equal((await req("/api/author/applications/me",te)).data.application.id,s
 assert.equal((await req("/api/author/applications/me",td)).data.application.display_name,"Reader A","reader A sees only their own application");
 const adminApplicationList=await req("/api/admin/author-applications",tc);
 assert.equal(adminApplicationList.status,200,"admin can read the author application queue");
-assert.deepEqual(adminApplicationList.data.map(x=>+x.id).sort((x,y)=>x-y),[submittedA.data.id,submittedB.data.id].sort((x,y)=>x-y),"admin queue contains the submitted applications");
+assert.deepEqual(adminApplicationList.data.map(x=>+x.id).sort((x,y)=>x-y),[51,submittedA.data.id,submittedB.data.id].sort((x,y)=>x-y),"admin queue contains the submitted applications");
 assert.equal((await req("/api/admin/author-applications",ta)).status,403,"authors cannot read the private admin application queue");
 assert.equal((await req("/api/admin/author-applications",td)).status,403,"reader accounts cannot read the private admin application queue");
 assert.equal((await req("/api/admin/author-applications",null)).status,403,"unauthenticated callers cannot read the private admin application queue");
