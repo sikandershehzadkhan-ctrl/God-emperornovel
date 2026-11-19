@@ -121,6 +121,8 @@ assert.match(report, /Public Omni search exposure/);
 assert.match(report, /Public Omni status side effects/);
 assert.match(report, /Full API authorization, resource ownership/);
 
+const aiProjectIdGuards = worker.match(/Invalid AI project id/g)||[];
+assert.equal(aiProjectIdGuards.length, 5, "AI project detail, edit, blueprint, run, and jobs routes must validate positive safe-integer IDs");
 const aiRunStart = worker.indexOf('if(/^\\/api\\/author\\/ai\\/projects\\/\\d+\\/run$/.test(p)&&m==="POST")');
 const aiJobsStart = worker.indexOf('if(/^\\/api\\/author\\/ai\\/projects\\/\\d+\\/jobs$/.test(p)&&m==="GET")');
 const aiRunHandler = worker.slice(aiRunStart, aiJobsStart);
