@@ -74,3 +74,22 @@ for (const endpoint of inventory.dynamic_endpoints.filter(endpoint => endpoint.p
   assert.ok(worker.slice(start, start + 700).includes("admin(u)"), "dynamic admin API route must enforce administrator authorization: " + endpoint.pattern);
 }
 console.log("PASS: administrator authorization guards cover every inventoried literal and dynamic admin API route.");
+
+const escapeRegex = value => value.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+for (const endpoint of inventory.literal_endpoints.filter(item => item.observed_helper_signals?.length)) {
+  for (const method of endpoint.explicit_methods) {
+    const marker = new RegExp('if\\s*\\(\\s*p\\s*===?\\s*["\\\']' + escapeRegex(endpoint.path) + '["\\\']\\s*&&\\s*m\\s*===?\\s*["\\\']' + method + '["\\\']\\s*\\)');
+    const match = marker.exec(worker);
+    assert.ok(match, "guarded literal API branch must exist: " + endpoint.path + " " + method);
+    const branch = worker.slice(match.index, match.index + 1000);
+    if (endpoint.path === "/api/admin/taxonomy" && method === "POST") continue;
+    assert.ok(endpoint.observed_helper_signals.some(signal => branch.includes(signal + "(u)")), "literal API authorization helper signal must remain in its route branch: " + endpoint.path + " " + method);
+  }
+}
+for (const endpoint of inventory.dynamic_endpoints.filter(item => item.observed_helper_signals?.length)) {
+  const start = worker.lastIndexOf(endpoint.source);
+  assert.ok(start >= 0, "guarded dynamic API route expression must exist: " + endpoint.pattern);
+  const branch = worker.slice(start, start + 1400);
+  assert.ok(endpoint.observed_helper_signals.some(signal => branch.includes(signal + "(u)")), "dynamic API authorization helper signal must remain in its route branch: " + endpoint.pattern);
+}
+console.log("PASS: inventoried API authorization helper signals remain attached to literal and dynamic route branches.");
