@@ -1,7 +1,7 @@
 # API Resource Ownership Review: First Pass
 
-**Audit date:** 2026-11-18  
-**Source:** `src/index.js` at foundation branch snapshot  
+**Audit date:** 2026-11-19  
+**Source:** `src/index.js` at foundation branch snapshot (`7ed42bdfc9282bc31155047ff5454103ad58cd14`)  
 **Scope:** User-scoped reader data, author-owned works, AI projects, and administrative mutations. Static source review only.
 
 ## Positive ownership controls observed
