@@ -1,8 +1,8 @@
 {
-  "audit_date": "2026-11-19",
+  "audit_date": "2026-11-20",
   "branch": "architecture/phase-01-foundation-route-registry",
   "source_file": "src/index.js",
-  "source_blob": "81330a1bac6108fecdcbda720cea97b75de748de",
+  "source_blob": "2f8c4b310ee7859933f752d337b91a353b0d487e",
   "scope": "First-pass static inventory of literal API path branches and dynamic path matchers inside async function api(req,env).",
   "counts": {
     "literal_endpoint_paths": 74,
@@ -870,8 +870,8 @@
       ],
       "method_evidence": "explicit-literal-conditions",
       "source_lines": [
-        690,
-        696
+        707,
+        713
       ],
       "observed_helper_signals": [
         "author",
@@ -888,8 +888,8 @@
       ],
       "method_evidence": "explicit-literal-conditions",
       "source_lines": [
-        701,
-        705
+        718,
+        722
       ],
       "observed_helper_signals": [
         "author"
@@ -905,8 +905,8 @@
       ],
       "method_evidence": "explicit-literal-conditions",
       "source_lines": [
-        733,
-        737
+        750,
+        754
       ],
       "observed_helper_signals": [
         "author"
@@ -921,7 +921,7 @@
       ],
       "method_evidence": "explicit-literal-conditions",
       "source_lines": [
-        757
+        774
       ],
       "observed_helper_signals": [
         "admin"
@@ -936,7 +936,7 @@
       ],
       "method_evidence": "explicit-literal-conditions",
       "source_lines": [
-        758
+        775
       ],
       "observed_helper_signals": [
         "admin"
@@ -951,7 +951,7 @@
       ],
       "method_evidence": "explicit-literal-conditions",
       "source_lines": [
-        805
+        822
       ],
       "observed_helper_signals": [
         "admin"
@@ -966,7 +966,7 @@
       ],
       "method_evidence": "explicit-literal-conditions",
       "source_lines": [
-        820
+        837
       ],
       "observed_helper_signals": [
         "admin"
@@ -981,7 +981,7 @@
       ],
       "method_evidence": "explicit-literal-conditions",
       "source_lines": [
-        821
+        838
       ],
       "observed_helper_signals": [
         "admin"
@@ -996,7 +996,7 @@
       ],
       "method_evidence": "explicit-literal-conditions",
       "source_lines": [
-        823
+        840
       ],
       "observed_helper_signals": [
         "admin"
@@ -1011,7 +1011,7 @@
       ],
       "method_evidence": "explicit-literal-conditions",
       "source_lines": [
-        825
+        842
       ],
       "observed_helper_signals": [
         "admin"
@@ -1028,9 +1028,9 @@
       ],
       "method_evidence": "explicit-literal-conditions",
       "source_lines": [
-        826,
-        827,
-        831
+        843,
+        844,
+        848
       ],
       "observed_helper_signals": [
         "admin"
@@ -1045,7 +1045,7 @@
       ],
       "method_evidence": "explicit-literal-conditions",
       "source_lines": [
-        828
+        845
       ],
       "observed_helper_signals": [
         "admin"
@@ -1060,7 +1060,7 @@
       ],
       "method_evidence": "explicit-literal-conditions",
       "source_lines": [
-        829
+        846
       ],
       "observed_helper_signals": [
         "admin"
@@ -1075,7 +1075,7 @@
       ],
       "method_evidence": "explicit-literal-conditions",
       "source_lines": [
-        830
+        847
       ],
       "observed_helper_signals": [
         "need"
@@ -1090,7 +1090,7 @@
       ],
       "method_evidence": "explicit-literal-conditions",
       "source_lines": [
-        832
+        849
       ],
       "observed_helper_signals": [
         "admin"
@@ -1105,7 +1105,7 @@
       ],
       "method_evidence": "explicit-literal-conditions",
       "source_lines": [
-        834
+        851
       ],
       "observed_helper_signals": [
         "admin"
