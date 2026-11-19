@@ -118,6 +118,18 @@ assert.equal(db.prepare("SELECT tickets FROM users WHERE id=4").get().tickets,in
 assert.equal(db.prepare("SELECT COUNT(*) n FROM ticket_ledger WHERE user_id=4 AND reason='admin_adjustment'").get().n,1,"admin credit creates its matching ledger entry");
 assert.equal((await req("/api/admin/users",tc)).status,200,"admin can read user administration list");
 for (const [token,label] of [[ta,"author"],[td,"reader"],[null,"unauthenticated caller"]]) assert.equal((await req("/api/admin/users",token)).status,403,label+" cannot read user administration list");
+const readerRoleBefore=db.prepare("SELECT role,verified,banned FROM users WHERE id=5").get();
+for (const [token,label] of [[ta,"author"],[td,"reader"],[null,"unauthenticated caller"]]) {
+  assert.equal((await req("/api/admin/users/5",token,"PATCH",{role:"admin",verified:true,banned:false})).status,403,label+" cannot change another account's role or security flags");
+  assert.deepEqual(db.prepare("SELECT role,verified,banned FROM users WHERE id=5").get(),readerRoleBefore,label+" denied user administration leaves account unchanged");
+}
+assert.equal((await req("/api/admin/users/3",tc,"PATCH",{role:"user"})).status,400,"administrator cannot remove their own administrator role through the user editor");
+assert.equal(db.prepare("SELECT role FROM users WHERE id=3").get().role,"admin","self-demotion denial preserves administrator access");
+assert.equal((await req("/api/admin/users/5",tc,"PATCH",{role:"author",verified:true,banned:false})).status,200,"administrator can grant the author role and update account security flags");
+assert.deepEqual(db.prepare("SELECT role,verified,banned FROM users WHERE id=5").get(),{role:"author",verified:1,banned:0},"administrator user update is persisted on the intended account");
+assert.equal((await req("/api/admin/users/5",tc,"PATCH",{role:"invalid-role"})).status,400,"administrator cannot assign an unsupported role");
+assert.equal(db.prepare("SELECT role FROM users WHERE id=5").get().role,"author","invalid role attempt leaves the existing role unchanged");
+
 assert.equal((await req("/api/admin/stats",tc)).status,200,"admin can read administrative dashboard statistics");
 for (const [token,label] of [[ta,"author"],[td,"reader"],[null,"unauthenticated caller"]]) assert.equal((await req("/api/admin/stats",token)).status,403,label+" cannot read administrative dashboard statistics");
 const donationA=db.prepare("SELECT tickets FROM users WHERE id=4").get().tickets;
