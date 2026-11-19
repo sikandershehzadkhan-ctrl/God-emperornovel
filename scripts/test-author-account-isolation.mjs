@@ -263,7 +263,7 @@ assert.equal(authorized.attribution_required,1,"approved attribution requirement
 const enabled=await req("/api/admin/connectors",tc,"PATCH",{id:701,enabled:true,rights_status:"authorized",rights_evidence_url:"https://rights.example.test/registry-license",search_url:"https://api.registry.example.test/search?q={q}",metadata_import_allowed:true,attribution_required:true});
 assert.equal(enabled.status,200,"admin can enable only the explicitly rights-authorized connector");
 assert.equal(db.prepare("SELECT enabled FROM connectors WHERE id=701").get().enabled,1,"authorized connector enablement is persisted");
-const requestB=await req("/api/connector-authorization-requests",te,"POST",{connector_id:702,terms_url:"https://unreviewed.example.test/terms",notes:"Second account request."});
+const requestB=await req("/api/connector-authorization-requests",freshToken,"POST",{connector_id:702,terms_url:"https://unreviewed.example.test/terms",notes:"Second account request."});
 assert.equal(requestB.status,200,"a second account can submit a separate connector rights request");
 assert.equal(db.prepare("SELECT user_id FROM connector_authorization_requests WHERE id=?").get(requestB.data.request_id).user_id,5,"second request is attributed to the second authenticated account");
 assert.equal((await req("/api/admin/connector-authorization-requests/"+requestB.data.request_id,tc,"PATCH",{status:"rejected",review_notes:"Insufficient rights for import."})).status,200,"admin can reject a connector rights request");
