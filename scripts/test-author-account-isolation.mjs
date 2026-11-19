@@ -5,7 +5,7 @@ const db=new DatabaseSync(":memory:");
 db.exec(`
 CREATE TABLE app_settings(key TEXT PRIMARY KEY,value TEXT NOT NULL);
 INSERT INTO app_settings VALUES('core_schema_version','16.64.0'),('runtime_feature_schema_version','1');
-CREATE TABLE users(id INTEGER PRIMARY KEY,username TEXT NOT NULL,email TEXT NOT NULL,role TEXT NOT NULL,tickets REAL DEFAULT 0,verified INTEGER DEFAULT 1,banned INTEGER DEFAULT 0);
+CREATE TABLE users(id INTEGER PRIMARY KEY,username TEXT NOT NULL,email TEXT NOT NULL,role TEXT NOT NULL,tickets REAL DEFAULT 0,verified INTEGER DEFAULT 1,banned INTEGER DEFAULT 0,created_at TEXT DEFAULT CURRENT_TIMESTAMP);
 CREATE TABLE sessions(token_hash TEXT PRIMARY KEY,user_id INTEGER NOT NULL,expires_at INTEGER NOT NULL);
 CREATE TABLE notifications(id INTEGER PRIMARY KEY AUTOINCREMENT,user_id INTEGER NOT NULL,title TEXT NOT NULL,body TEXT NOT NULL,read_at TEXT,created_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP);
 CREATE TABLE novels(id INTEGER PRIMARY KEY,title TEXT NOT NULL,alt_titles TEXT DEFAULT '',author TEXT NOT NULL,description TEXT DEFAULT '',status TEXT DEFAULT 'ongoing',kind TEXT DEFAULT 'original',language TEXT DEFAULT 'English',cover_url TEXT DEFAULT '',source_url TEXT DEFAULT '',rights_status TEXT DEFAULT 'original',rights_evidence TEXT DEFAULT '',rights_notes TEXT DEFAULT '',rights_verified_by INTEGER,rights_verified_at TEXT,review_feedback TEXT DEFAULT '',reviewed_by INTEGER,reviewed_at TEXT,publication_status TEXT DEFAULT 'draft',views INTEGER DEFAULT 0,rating REAL DEFAULT 0,created_at TEXT DEFAULT CURRENT_TIMESTAMP,updated_at TEXT DEFAULT CURRENT_TIMESTAMP,owner_user_id INTEGER NOT NULL);
@@ -18,6 +18,9 @@ CREATE TABLE ai_publish_policies(project_id INTEGER PRIMARY KEY,require_rights I
 CREATE TABLE ticket_ledger(id INTEGER PRIMARY KEY,user_id INTEGER NOT NULL,delta INTEGER NOT NULL,reason TEXT NOT NULL,reference TEXT DEFAULT '',created_at TEXT DEFAULT CURRENT_TIMESTAMP);
 CREATE TABLE novel_requests(id INTEGER PRIMARY KEY,user_id INTEGER NOT NULL,url TEXT NOT NULL,source_host TEXT DEFAULT '',week_key INTEGER NOT NULL,cost INTEGER DEFAULT 0,status TEXT DEFAULT 'pending',created_at TEXT DEFAULT CURRENT_TIMESTAMP);
 CREATE TABLE author_applications(id INTEGER PRIMARY KEY,user_id INTEGER NOT NULL,display_name TEXT NOT NULL,bio TEXT DEFAULT '',experience TEXT DEFAULT '',portfolio_url TEXT DEFAULT '',sample_work TEXT DEFAULT '',preferred_formats TEXT DEFAULT '[]',rights_confirmed INTEGER DEFAULT 0,status TEXT DEFAULT 'pending',review_notes TEXT DEFAULT '',reviewed_by INTEGER,created_at TEXT DEFAULT CURRENT_TIMESTAMP,reviewed_at TEXT,updated_at TEXT DEFAULT CURRENT_TIMESTAMP);
+CREATE TABLE donations(id INTEGER PRIMARY KEY,user_id INTEGER,status TEXT DEFAULT 'pending');
+CREATE TABLE taxonomy_submissions(id INTEGER PRIMARY KEY,status TEXT DEFAULT 'pending');
+CREATE TABLE reports(id INTEGER PRIMARY KEY,user_id INTEGER,novel_id INTEGER,status TEXT DEFAULT 'open');
 INSERT INTO users(id,username,email,role) VALUES(1,'author-a','a@test','author'),(2,'author-b','b@test','author'),(3,'admin','admin@test','admin'),(4,'reader-a','reader-a@test','user'),(5,'reader-b','reader-b@test','user');
 INSERT INTO novels(id,title,author,owner_user_id) VALUES(101,'A Novel','A',1),(202,'B Novel','B',2);
 INSERT INTO chapters(id,novel_id,chapter_number,title,content) VALUES(1001,101,1,'A Chapter','A content'),(2001,202,1,'B Chapter','B content');
@@ -93,6 +96,21 @@ assert.equal(submittedB.status,201,"reader B can submit an independent applicati
 assert.equal((await req("/api/author/applications/me",td)).data.application.id,submittedA.data.id,"applicant sees own newly submitted application");
 assert.equal((await req("/api/author/applications/me",te)).data.application.id,submittedB.data.id,"second applicant sees own newly submitted application");
 assert.equal((await req("/api/author/applications/me",td)).data.application.display_name,"Reader A","reader A sees only their own application");
+const initialReaderTickets=db.prepare("SELECT tickets FROM users WHERE id=4").get().tickets;
+const initialLedgerRows=db.prepare("SELECT COUNT(*) n FROM ticket_ledger WHERE user_id=4").get().n;
+for (const [token,label] of [[ta,"author"],[td,"reader"],[null,"unauthenticated caller"]]) {
+  assert.equal((await req("/api/admin/tickets",token,"POST",{user_id:4,amount:25})).status,403, label+" cannot credit Crown balances");
+  assert.equal(db.prepare("SELECT tickets FROM users WHERE id=4").get().tickets,initialReaderTickets,label+" denied credit leaves balance unchanged");
+  assert.equal(db.prepare("SELECT COUNT(*) n FROM ticket_ledger WHERE user_id=4").get().n,initialLedgerRows,label+" denied credit creates no ledger row");
+}
+const credited=await req("/api/admin/tickets",tc,"POST",{user_id:4,amount:25});
+assert.equal(credited.status,200,"admin can credit a valid account");
+assert.equal(db.prepare("SELECT tickets FROM users WHERE id=4").get().tickets,initialReaderTickets+25,"admin credit updates the intended account");
+assert.equal(db.prepare("SELECT COUNT(*) n FROM ticket_ledger WHERE user_id=4 AND reason='admin_adjustment'").get().n,1,"admin credit creates its matching ledger entry");
+assert.equal((await req("/api/admin/users",tc)).status,200,"admin can read user administration list");
+for (const [token,label] of [[ta,"author"],[td,"reader"],[null,"unauthenticated caller"]]) assert.equal((await req("/api/admin/users",token)).status,403,label+" cannot read user administration list");
+assert.equal((await req("/api/admin/stats",tc)).status,200,"admin can read administrative dashboard statistics");
+for (const [token,label] of [[ta,"author"],[td,"reader"],[null,"unauthenticated caller"]]) assert.equal((await req("/api/admin/stats",token)).status,403,label+" cannot read administrative dashboard statistics");
 const adminApplicationList=await req("/api/admin/author-applications",tc);
 assert.equal(adminApplicationList.status,200,"admin can read the author application queue");
 assert.deepEqual(adminApplicationList.data.map(x=>+x.id).sort((x,y)=>x-y),[51,submittedA.data.id,submittedB.data.id].sort((x,y)=>x-y),"admin queue contains the submitted applications");
