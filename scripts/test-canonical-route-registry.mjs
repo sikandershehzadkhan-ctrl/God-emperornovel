@@ -15,7 +15,7 @@ assert.equal(registry.dynamic_api_endpoints.length,api.dynamic_endpoints.length)
 assert.deepEqual(registry.api_endpoints.map(x=>x.path).sort(),api.literal_endpoints.map(x=>x.path).sort());
 assert.deepEqual(registry.sitemap.static_paths,[...SITEMAP_STATIC_PATHS]);
 assert.ok(sitemap.includes("export { SITEMAP_STATIC_PATHS }"));
-assert.ok(worker.includes('import { NOINDEX_EXACT_PATHS, resolvePageShell, canonicalizePagePath } from "./route-registry.mjs";'),"Worker must consume the canonical runtime route registry");
+assert.ok(worker.includes('import { NOINDEX_EXACT_PATHS, resolvePageShell, canonicalizePagePath, resolveRouteRedirect } from "./route-registry.mjs";'),"Worker must consume the canonical runtime route registry");
 assert.ok(worker.includes('else if(resolvePageShell(p)||!p.includes("."))r=await html(req,env);'),"Worker fetch dispatch must route through the canonical page registry");
 assert.ok(worker.includes("const canonicalPath=canonicalizePagePath(p)"),"Worker must enforce canonical page paths before dispatch");
 assert.equal(canonicalizePagePath("/catalog/"),"/catalog");
