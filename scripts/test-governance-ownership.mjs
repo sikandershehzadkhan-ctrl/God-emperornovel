@@ -26,7 +26,17 @@ export function validateOwnership(registry, changedPaths = [], trackedPaths = []
     }
   }
   const ownerFor = file => roots.filter(root => root.path.endsWith('/') ? file.startsWith(root.path) : file === root.path);
-  for (const file of new Set(trackedPaths)) {
+  const trackedSet = new Set(trackedPaths);
+  if (trackedSet.size) {
+    for (const root of roots) {
+      if (root.path.endsWith('/')) {
+        if (![...trackedSet].some(file => file.startsWith(root.path))) fail('directory ownership rule contains no tracked files: ' + root.path);
+      } else if (!trackedSet.has(root.path)) {
+        fail('exact ownership rule points to a missing tracked path: ' + root.path + '; remove the stale rule or restore the file');
+      }
+    }
+  }
+  for (const file of trackedSet) {
     const owners = ownerFor(file);
     if (owners.length === 0) fail('tracked repository path has no registered owner: ' + file + '; register an owner before integration');
     if (owners.length > 1) fail('tracked repository path has multiple owners: ' + file);
@@ -50,12 +60,10 @@ export function validateOwnership(registry, changedPaths = [], trackedPaths = []
 function selfTest() {
   const registry = { version: 1, owners: [
     { id: 'worker', paths: ['src/'], requiresAdr: true },
-    { id: 'migrations', paths: ['migrations/'], requiresAdr: true },
-    { id: 'ci', paths: ['.github/workflows/'], requiresAdr: true },
-    { id: 'architecture', paths: ['docs/architecture/'], requiresAdr: true },
+    { id: 'tooling', paths: ['scripts/'], requiresAdr: true },
     { id: 'archive', paths: ['DEPLOY-1.txt'], requiresAdr: false }
   ] };
-  assert.equal(validateOwnership(registry, ['src/index.js', 'docs/architecture/decisions/ADR-0001.md'], ['src/index.js', 'DEPLOY-1.txt']).ownedChanges.length, 2);
+  assert.equal(validateOwnership(registry, ['src/index.js', 'scripts/check.mjs'], ['src/index.js', 'scripts/check.mjs', 'DEPLOY-1.txt']).ownedChanges.length, 2);
   assert.throws(() => validateOwnership(registry, ['src/index.js']), /require an ADR or feature contract/);
   assert.throws(() => validateOwnership(registry, ['scripts/new-unguarded-file.mjs']), /no registered owner/);
   assert.throws(() => validateOwnership(registry, [], ['scripts/existing-unowned-file.mjs']), /tracked repository path has no registered owner/);
@@ -63,6 +71,8 @@ function selfTest() {
   assert.throws(() => validateOwnership({ version: 1, owners: [{ id: 'bad-separator', paths: ['src' + String.fromCharCode(92) + 'escape'], requiresAdr: false }] }), /invalid ownership path/);
   assert.throws(() => validateOwnership(registry, ['migrations/0009_new.sql']), /require an ADR or feature contract/);
   assert.equal(validateOwnership(registry, ['DEPLOY-1.txt']).decisionChanges.length, 0);
+  assert.throws(() => validateOwnership({ version: 1, owners: [{ id: 'stale', paths: ['ARCHITECTURE.md'], requiresAdr: false }] }, [], ['src/index.js']), /exact ownership rule points to a missing tracked path/);
+  assert.throws(() => validateOwnership({ version: 1, owners: [{ id: 'empty', paths: ['unused/'], requiresAdr: false }] }, [], ['src/index.js']), /directory ownership rule contains no tracked files/);
   console.log('PASS: ownership governance self-tests (exact ownership, tracked inventory coverage, unowned-path rejection, ADR requirements, and overlap rejection).');
 }
 if (process.argv.includes('--self-test')) selfTest();
