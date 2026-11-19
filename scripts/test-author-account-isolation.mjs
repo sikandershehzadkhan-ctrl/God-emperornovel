@@ -19,6 +19,8 @@ CREATE TABLE ticket_ledger(id INTEGER PRIMARY KEY,user_id INTEGER NOT NULL,delta
 CREATE TABLE novel_requests(id INTEGER PRIMARY KEY,user_id INTEGER NOT NULL,url TEXT NOT NULL,source_host TEXT DEFAULT '',week_key INTEGER NOT NULL,cost INTEGER DEFAULT 0,status TEXT DEFAULT 'pending',created_at TEXT DEFAULT CURRENT_TIMESTAMP);
 CREATE TABLE author_applications(id INTEGER PRIMARY KEY,user_id INTEGER NOT NULL,display_name TEXT NOT NULL,bio TEXT DEFAULT '',experience TEXT DEFAULT '',portfolio_url TEXT DEFAULT '',sample_work TEXT DEFAULT '',preferred_formats TEXT DEFAULT '[]',rights_confirmed INTEGER DEFAULT 0,status TEXT DEFAULT 'pending',review_notes TEXT DEFAULT '',reviewed_by INTEGER,created_at TEXT DEFAULT CURRENT_TIMESTAMP,reviewed_at TEXT,updated_at TEXT DEFAULT CURRENT_TIMESTAMP);
 CREATE TABLE donations(id INTEGER PRIMARY KEY,user_id INTEGER,amount REAL NOT NULL DEFAULT 0,reference_id TEXT NOT NULL DEFAULT '',status TEXT DEFAULT 'pending',created_at TEXT DEFAULT CURRENT_TIMESTAMP);
+CREATE TABLE connectors(id INTEGER PRIMARY KEY AUTOINCREMENT,name TEXT NOT NULL,base_url TEXT NOT NULL,type TEXT NOT NULL,enabled INTEGER NOT NULL DEFAULT 0,rights_status TEXT NOT NULL DEFAULT 'pending',last_status TEXT DEFAULT '',last_checked_at TEXT);
+INSERT INTO connectors(id,name,base_url,type,enabled,rights_status) VALUES(701,'Example Registry','https://registry.example.test','json',0,'pending'),(702,'Unreviewed Registry','https://unreviewed.example.test','json',0,'pending');
 CREATE TABLE taxonomy_submissions(id INTEGER PRIMARY KEY,status TEXT DEFAULT 'pending');
 CREATE TABLE reports(id INTEGER PRIMARY KEY,user_id INTEGER,novel_id INTEGER,status TEXT DEFAULT 'open');
 CREATE TABLE comments(id INTEGER PRIMARY KEY,user_id INTEGER NOT NULL,novel_id INTEGER NOT NULL,body TEXT NOT NULL,status TEXT DEFAULT 'visible',created_at TEXT DEFAULT CURRENT_TIMESTAMP,parent_id INTEGER,edited_at TEXT);
@@ -45,7 +47,7 @@ db.prepare("INSERT INTO sessions VALUES(?,?,?)").run(await digest(tc),3,Math.flo
 db.prepare("INSERT INTO sessions VALUES(?,?,?)").run(await digest(td),4,Math.floor(Date.now()/1000)+3600);
 db.prepare("INSERT INTO sessions VALUES(?,?,?)").run(await digest(te),5,Math.floor(Date.now()/1000)+3600);
 class Stmt{constructor(sql){this.sql=sql;this.v=[]}bind(...v){this.v=v;return this}first(){return db.prepare(this.sql).get(...this.v)??null}all(){return{results:db.prepare(this.sql).all(...this.v)}}run(){const r=db.prepare(this.sql).run(...this.v);return{success:true,meta:{changes:Number(r.changes),last_row_id:Number(r.lastInsertRowid||0)}}}}
-const env={DB:{prepare:s=>new Stmt(s),batch:async statements=>statements.map(statement=>statement.run())},SITE_NAME:"Imperial Novel",APP_VERSION:"test"};
+const env={DB:{prepare:s=>new Stmt(s),batch:async statements=>statements.map(statement=>statement.run())},SITE_NAME:"Imperial Novel",APP_VERSION:"test",CONNECTOR_HOST_ALLOWLIST:"registry.example.test,unreviewed.example.test"};
 async function req(path,token,method="GET",payload){const h=new Headers();if(token)h.set("cookie","session="+token);if(payload!==undefined)h.set("content-type","application/json");const r=await worker.fetch(new Request("https://test.invalid"+path,{method,headers:h,body:payload===undefined?undefined:JSON.stringify(payload)}),env);return{status:r.status,data:await r.json()}}
 const a=await req("/api/author/novels",ta),b=await req("/api/author/novels",tb);
 assert.equal(a.status,200);assert.equal(b.status,200);assert.deepEqual(a.data.map(x=>+x.id),[101]);assert.deepEqual(b.data.map(x=>+x.id),[202]);
@@ -180,5 +182,46 @@ assert.equal((await req("/api/admin/author-applications/"+submittedB.data.id,tc,
 assert.equal(db.prepare("SELECT role FROM users WHERE id=5").get().role,"user","rejection does not grant author role");
 assert.equal((await req("/api/admin/author-applications/"+submittedB.data.id,tc,"PATCH",{status:"approved",review_notes:"Second decision"})).status,409,"reviewed applications cannot be decided twice");
 assert.equal((await req("/api/admin/author-applications/99999",tc,"PATCH",{status:"approved",review_notes:"Valid note"})).status,404,"missing application returns not found");
+
+
+const connectorList=await req("/api/admin/connectors",tc);
+assert.equal(connectorList.status,200,"admin can inspect connector authorization state");
+assert.equal(connectorList.data.find(x=>+x.id===701).rights_status,"pending","new connector starts pending");
+for(const [token,label] of [[ta,"author"],[td,"reader"],[null,"unauthenticated caller"]]) {
+  assert.equal((await req("/api/admin/connectors",token)).status,403,label+" cannot inspect connector administration");
+  assert.equal((await req("/api/admin/connectors/701",token,"PATCH",{enabled:true,rights_status:"authorized",rights_evidence_url:"https://rights.example.test/license"})).status,404,label+" cannot use an unknown connector route");
+  assert.equal((await req("/api/admin/connector-authorization-requests",token)).status,403,label+" cannot inspect private connector rights requests");
+}
+assert.equal((await req("/api/admin/connectors",tc,"PATCH",{id:702,enabled:true,rights_status:"pending"})).status,400,"pending connector cannot be enabled");
+assert.equal(db.prepare("SELECT enabled,rights_status FROM connectors WHERE id=702").get().enabled,0,"failed enable attempt leaves connector disabled");
+const requestA=await req("/api/connector-authorization-requests",td,"POST",{connector_id:701,evidence_url:"https://rights.example.test/registry-license",notes:"Metadata-only permission; no chapter-body ingestion.",metadata_import_allowed:true,attribution_required:true});
+assert.equal(requestA.status,200,"reader can submit a connector rights request");
+const authorizationA=db.prepare("SELECT * FROM connector_authorization_requests WHERE id=?").get(requestA.data.request_id);
+assert.equal(authorizationA.user_id,4,"connector requester identity is derived from the authenticated session");
+assert.equal(authorizationA.status,"pending","submitted connector rights request remains pending");
+for(const [token,label] of [[ta,"author"],[td,"reader"],[null,"unauthenticated caller"]]) {
+  assert.equal((await req("/api/admin/connector-authorization-requests/"+requestA.data.request_id,token,"PATCH",{status:"approved"})).status,403,label+" cannot approve connector rights");
+  assert.equal(db.prepare("SELECT status FROM connector_authorization_requests WHERE id=?").get(requestA.data.request_id).status,"pending",label+" denied connector review leaves request pending");
+}
+assert.equal((await req("/api/admin/connectors",ta,"PATCH",{id:701,enabled:true,rights_status:"authorized",rights_evidence_url:"https://rights.example.test/license"})).status,403,"non-admin cannot directly authorize or enable a connector");
+assert.equal(db.prepare("SELECT enabled,rights_status FROM connectors WHERE id=701").get().enabled,0,"non-admin connector mutation leaves connector disabled");
+const reviewed=await req("/api/admin/connector-authorization-requests/"+requestA.data.request_id,tc,"PATCH",{status:"approved",review_notes:"Evidence reviewed; metadata-only access approved."});
+assert.equal(reviewed.status,200,"admin can approve a rights-evidenced connector request");
+const authorized=db.prepare("SELECT enabled,rights_status,rights_evidence_url,metadata_import_allowed,attribution_required FROM connectors WHERE id=701").get();
+assert.equal(authorized.rights_status,"authorized","approved request authorizes connector rights");
+assert.equal(authorized.enabled,0,"rights approval does not silently enable external access");
+assert.equal(authorized.rights_evidence_url,"https://rights.example.test/registry-license","reviewed evidence is attached to connector");
+assert.equal(authorized.metadata_import_allowed,1,"approved metadata-import permission is persisted");
+assert.equal(authorized.attribution_required,1,"approved attribution requirement is persisted");
+const enabled=await req("/api/admin/connectors",tc,"PATCH",{id:701,enabled:true,rights_status:"authorized",rights_evidence_url:"https://rights.example.test/registry-license",search_url:"https://api.registry.example.test/search?q={q}",metadata_import_allowed:true,attribution_required:true});
+assert.equal(enabled.status,200,"admin can enable only the explicitly rights-authorized connector");
+assert.equal(db.prepare("SELECT enabled FROM connectors WHERE id=701").get().enabled,1,"authorized connector enablement is persisted");
+const requestB=await req("/api/connector-authorization-requests",te,"POST",{connector_id:702,terms_url:"https://unreviewed.example.test/terms",notes:"Second account request."});
+assert.equal(requestB.status,200,"a second account can submit a separate connector rights request");
+assert.equal(db.prepare("SELECT user_id FROM connector_authorization_requests WHERE id=?").get(requestB.data.request_id).user_id,5,"second request is attributed to the second authenticated account");
+assert.equal((await req("/api/admin/connector-authorization-requests/"+requestB.data.request_id,tc,"PATCH",{status:"rejected",review_notes:"Insufficient rights for import."})).status,200,"admin can reject a connector rights request");
+assert.equal(db.prepare("SELECT status FROM connector_authorization_requests WHERE id=?").get(requestB.data.request_id).status,"rejected","rejection is persisted");
+assert.equal(db.prepare("SELECT rights_status,enabled FROM connectors WHERE id=702").get().rights_status,"rejected","rejected rights request leaves connector unauthorized");
+assert.equal(db.prepare("SELECT enabled FROM connectors WHERE id=702").get().enabled,0,"rejected connector remains disabled");
 
 db.close();console.log("PASS: two-author Worker/SQLite isolation for novel lists, AI project lists, chapter workspaces, cross-owner read and write denials, AI project update isolation, chapter creation and update ownership, ticket-ledger isolation, per-user request quotas, applicant-private application records, valid application submission, admin-only application review, approval/rejection role transitions, immutable final decisions, and unauthenticated access.");
