@@ -61,9 +61,10 @@ function selfTest() {
   const registry = { version: 1, owners: [
     { id: 'worker', paths: ['src/'], requiresAdr: true },
     { id: 'tooling', paths: ['scripts/'], requiresAdr: true },
+    { id: 'migrations', paths: ['migrations/'], requiresAdr: true },
     { id: 'archive', paths: ['DEPLOY-1.txt'], requiresAdr: false }
   ] };
-  assert.equal(validateOwnership(registry, ['src/index.js', 'scripts/check.mjs'], ['src/index.js', 'scripts/check.mjs', 'DEPLOY-1.txt']).ownedChanges.length, 2);
+  assert.equal(validateOwnership(registry, ['src/index.js', 'scripts/check.mjs'], ['src/index.js', 'scripts/check.mjs', 'migrations/0001.sql', 'DEPLOY-1.txt']).ownedChanges.length, 2);
   assert.throws(() => validateOwnership(registry, ['src/index.js']), /require an ADR or feature contract/);
   assert.throws(() => validateOwnership(registry, ['scripts/new-unguarded-file.mjs']), /no registered owner/);
   assert.throws(() => validateOwnership(registry, [], ['scripts/existing-unowned-file.mjs']), /tracked repository path has no registered owner/);
