@@ -15,6 +15,9 @@ assert.match(adminUserRoute, /b\\.role===undefined\\?String\\(current\\.role\\):
 assert.match(adminUserRoute, /id===u\\.id&&role!=='admin'/, "An administrator must not demote their own account");
 assert.match(adminUserRoute, /b\\.verified===undefined\\?Number\\(current\\.verified\\)/, "Omitted verification state must be preserved");
 assert.match(adminUserRoute, /b\\.banned===undefined\\?Number\\(current\\.banned\\)/, "Omitted ban state must be preserved");
+assert.match(adminUserRoute, /id===u\.id&&b\.banned!==undefined&&Boolean\(b\.banned\)/, "An administrator must not ban their own active account");
+assert.match(adminUserRoute, /admin_user_updated/, "Administrator account changes must be audited");
+assert.match(adminUserRoute, /result\?\.meta\?\.changes/, "Administrator account updates must confirm one affected user");
 
 const adminNovelPatchStart = worker.indexOf('let apn=p.match(/^\\/api\\/admin\\/publishing\\/novels\\/(\\d+)$/)');
 const adminChapterStart = worker.indexOf('let ach=p.match(/^\\/api\\/admin\\/publishing\\/chapters');
