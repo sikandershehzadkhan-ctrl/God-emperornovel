@@ -1119,17 +1119,23 @@
       "pattern": "/api/novels/{id}",
       "source": "p.match(/^\\/api\\/novels\\/(\\d+)",
       "source_line": 459,
-      "methods": [],
+      "methods": [
+        "GET"
+      ],
       "observed_helper_signals": [],
-      "review_required": true
+      "review_required": true,
+      "method_contract": "explicit-literal-method-guard"
     },
     {
       "pattern": "/api/chapters/{id}",
       "source": "p.match(/^\\/api\\/chapters\\/(\\d+)",
       "source_line": 460,
-      "methods": [],
+      "methods": [
+        "GET"
+      ],
       "observed_helper_signals": [],
-      "review_required": true
+      "review_required": true,
+      "method_contract": "explicit-literal-method-guard"
     },
     {
       "pattern": "/api/chapters/{id}/unlock",
