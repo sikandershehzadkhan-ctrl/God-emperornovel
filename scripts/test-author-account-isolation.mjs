@@ -16,17 +16,20 @@ CREATE TABLE ai_provider_benchmarks(id INTEGER PRIMARY KEY,provider TEXT NOT NUL
 CREATE TABLE ai_publish_policies(project_id INTEGER PRIMARY KEY,require_rights INTEGER DEFAULT 1,require_review INTEGER DEFAULT 1,max_chapters_per_day INTEGER DEFAULT 10,updated_at TEXT DEFAULT CURRENT_TIMESTAMP);
 CREATE TABLE ticket_ledger(id INTEGER PRIMARY KEY,user_id INTEGER NOT NULL,delta INTEGER NOT NULL,reason TEXT NOT NULL,reference TEXT DEFAULT '',created_at TEXT DEFAULT CURRENT_TIMESTAMP);
 CREATE TABLE novel_requests(id INTEGER PRIMARY KEY,user_id INTEGER NOT NULL,url TEXT NOT NULL,source_host TEXT DEFAULT '',week_key INTEGER NOT NULL,cost INTEGER DEFAULT 0,status TEXT DEFAULT 'pending',created_at TEXT DEFAULT CURRENT_TIMESTAMP);
-INSERT INTO users(id,username,email,role) VALUES(1,'author-a','a@test','author'),(2,'author-b','b@test','author');
+CREATE TABLE author_applications(id INTEGER PRIMARY KEY,user_id INTEGER NOT NULL,display_name TEXT NOT NULL,bio TEXT DEFAULT '',experience TEXT DEFAULT '',portfolio_url TEXT DEFAULT '',sample_work TEXT DEFAULT '',preferred_formats TEXT DEFAULT '[]',rights_confirmed INTEGER DEFAULT 0,status TEXT DEFAULT 'pending',review_notes TEXT DEFAULT '',reviewed_by INTEGER,created_at TEXT DEFAULT CURRENT_TIMESTAMP,reviewed_at TEXT,updated_at TEXT DEFAULT CURRENT_TIMESTAMP);
+INSERT INTO users(id,username,email,role) VALUES(1,'author-a','a@test','author'),(2,'author-b','b@test','author'),(3,'admin','admin@test','admin');
 INSERT INTO novels(id,title,author,owner_user_id) VALUES(101,'A Novel','A',1),(202,'B Novel','B',2);
 INSERT INTO chapters(id,novel_id,chapter_number,title,content) VALUES(1001,101,1,'A Chapter','A content'),(2001,202,1,'B Chapter','B content');
 INSERT INTO ai_author_projects(id,owner_user_id,name) VALUES(11,1,'A Project'),(22,2,'B Project');
+INSERT INTO author_applications(id,user_id,display_name,bio,experience,preferred_formats,rights_confirmed,status,review_notes) VALUES(51,1,'Author A','A bio','A experience','["novel"]',1,'pending','A private review'),(52,2,'Author B','B bio','B experience','["comic"]',1,'rejected','B private review');
 INSERT INTO ticket_ledger(id,user_id,delta,reason,reference) VALUES(31,1,-10,'unlock','A ledger'),(32,2,-20,'unlock','B ledger');
 INSERT INTO novel_requests(id,user_id,url,source_host,week_key) VALUES(41,1,'https://example.test/a','example.test',2968),(42,1,'https://example.test/b','example.test',2968),(43,2,'https://example.test/c','example.test',2968);
 `);
 const digest=async v=>{const b=new Uint8Array(await crypto.subtle.digest("SHA-256",new TextEncoder().encode(v)));return btoa(String.fromCharCode(...b)).replaceAll("+","-").replaceAll("/","_").replaceAll("=","")};
-const ta="author-a-token",tb="author-b-token";
+const ta="author-a-token",tb="author-b-token",tc="admin-token";
 db.prepare("INSERT INTO sessions VALUES(?,?,?)").run(await digest(ta),1,Math.floor(Date.now()/1000)+3600);
 db.prepare("INSERT INTO sessions VALUES(?,?,?)").run(await digest(tb),2,Math.floor(Date.now()/1000)+3600);
+db.prepare("INSERT INTO sessions VALUES(?,?,?)").run(await digest(tc),3,Math.floor(Date.now()/1000)+3600);
 class Stmt{constructor(sql){this.sql=sql;this.v=[]}bind(...v){this.v=v;return this}first(){return db.prepare(this.sql).get(...this.v)??null}all(){return{results:db.prepare(this.sql).all(...this.v)}}run(){const r=db.prepare(this.sql).run(...this.v);return{success:true,meta:{changes:Number(r.changes),last_row_id:Number(r.lastInsertRowid||0)}}}}
 const env={DB:{prepare:s=>new Stmt(s)},SITE_NAME:"Imperial Novel",APP_VERSION:"test"};
 async function req(path,token){const h=new Headers();if(token)h.set("cookie","session="+token);const r=await worker.fetch(new Request("https://test.invalid"+path,{headers:h}),env);return{status:r.status,data:await r.json()}}
@@ -38,4 +41,4 @@ const ca=await req("/api/author/chapters?novel_id=101",ta),cb=await req("/api/au
 const xa=await req("/api/author/chapters?novel_id=202",ta),xb=await req("/api/author/chapters?novel_id=101",tb);
 assert.equal(ca.status,200);assert.equal(cb.status,200);assert.deepEqual(ca.data.map(x=>+x.id),[1001]);assert.deepEqual(cb.data.map(x=>+x.id),[2001]);assert.equal(xa.status,403);assert.equal(xb.status,403);
 assert.equal((await req("/api/author/novels",null)).status,403,"unauthenticated callers must be denied by the author-role guard");
-db.close();console.log("PASS: two-author Worker/SQLite isolation for novel lists, AI project lists, chapter workspaces, cross-owner denials, ticket-ledger isolation, per-user request quotas, and unauthenticated access.");
+db.close();console.log("PASS: two-author Worker/SQLite isolation for novel lists, AI project lists, chapter workspaces, cross-owner denials, ticket-ledger isolation, per-user request quotas, applicant-private application records, admin-only application listing, and unauthenticated access.");
