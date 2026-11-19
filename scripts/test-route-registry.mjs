@@ -23,7 +23,7 @@ const sitemapSource = await readFile(new URL("../src/sitemap.mjs", import.meta.u
 assert.equal(registry.status, "runtime-source-contract-foundation-review-gated");
 assert.equal(registry.pages.length, Object.keys(PAGE_SHELLS).length);
 assert.deepEqual(registry.pages.map(route => [route.path, route.shell]), Object.entries(PAGE_SHELLS));
-assert.deepEqual(registry.dynamic_pages.map(route => [route.kind, route.pattern, route.shell]),
+assert.deepEqual(registry.dynamic_pages.map(route => [route.kind, new RegExp(route.pattern).source, route.shell]),
   DYNAMIC_PAGE_ROUTES.map(route => [route.kind, route.pattern.source, route.shell]));
 assert.deepEqual(registry.sitemap.static_paths, SITEMAP_STATIC_PATHS);
 assert.deepEqual(registry.crawler_policy.noindex_exact_paths, [...NOINDEX_EXACT_PATHS]);
