@@ -2,6 +2,8 @@ import assert from "node:assert/strict";
 import { readFile } from "node:fs/promises";
 import {
   SITEMAP_PAGE_SIZE,
+  SITEMAP_STATIC_PATHS,
+  NOINDEX_EXACT_PATHS,
   renderSitemapIndex,
   renderStaticSitemap,
   renderNovelSitemap,
@@ -50,7 +52,9 @@ for (const path of ["/sitemap.xml", "/sitemap-static.xml", "/sitemap-novels.xml"
   assert.ok(wrangler.includes('"' + path + '"'), "Cloudflare routes " + path + " through the Worker");
 }
 assert.ok(robots.includes("Sitemap: " + origin.replace("https://stories.example", "https://god-emperornovel.sikandershehzadkhan.workers.dev") + "/sitemap.xml"), "robots.txt advertises the canonical sitemap");
-assert.ok(fallback.includes("/catalog") && fallback.includes("/copyright"), "static fallback sitemap contains core public pages");
+const fallbackPaths=[...fallback.matchAll(/<loc>([^<]+)<\\/loc>/g)].map(match=>new URL(match[1]).pathname);
+assert.deepEqual(fallbackPaths,[...SITEMAP_STATIC_PATHS],"static fallback sitemap must exactly match canonical static route membership");
+assert.ok(fallbackPaths.every(path=>!NOINDEX_EXACT_PATHS.includes(path)),"static fallback sitemap must exclude every noindex route");
 for (const utility of ["/search", "/omniportal", "/trend-factory"]) assert.ok(!fallback.includes("workers.dev" + utility + "</loc>"), "static fallback sitemap excludes utility route: " + utility);
 assert.equal(SITEMAP_PAGE_SIZE, 10000, "sitemap chunks stay bounded");
 console.log("Dynamic sitemap index, static routes, rights-filtered novels/chapters, pagination and robots.txt tests passed.");
