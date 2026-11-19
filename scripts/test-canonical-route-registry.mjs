@@ -26,6 +26,8 @@ assert.deepEqual(resolveRouteRedirect("/fandom/series/dragon"),{path:"/catalog",
 assert.deepEqual(resolveRouteRedirect("/fandom/"),{path:"/catalog",tag:null});
 assert.equal(resolveRouteRedirect("/fandom/%E0%A4%A").invalid,true);
 assert.ok(worker.includes("const routeRedirect=resolveRouteRedirect(p)"),"Legacy fandom routes must redirect server-side");
+assert.ok(worker.includes("canonicalUrl.pathname=canonicalPath"),"Trailing-slash redirects must preserve the original query string");
+assert.ok(worker.includes('destination.searchParams.set("tag",routeRedirect.tag)'),"Fandom redirects must safely encode the tag query parameter");
 assert.ok(worker.includes("canonicalLink+missingStyles"),"Indexable pages must receive a canonical link element");
 for(const route of registry.pages) { assert.equal(PAGE_SHELLS[route.path],route.shell,"Canonical route shell mismatch: "+route.path); assert.equal(resolvePageShell(route.path),route.shell,"Runtime route resolution mismatch: "+route.path); if(route.path!=="/") assert.equal(canonicalizePagePath(route.path+"/"),route.path,"Static route canonical slash mismatch: "+route.path); }
 assert.deepEqual(Object.keys(PAGE_SHELLS).sort(),registry.pages.map(route=>route.path).sort(),"Runtime page routes must match the canonical evidence registry");
