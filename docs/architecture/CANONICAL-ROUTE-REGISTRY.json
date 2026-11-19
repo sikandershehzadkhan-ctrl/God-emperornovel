@@ -8,9 +8,9 @@
   "source_evidence": {
     "repository": "sikandershehzadkhan-ctrl/God-emperornovel",
     "branch": "architecture/phase-01-foundation-route-registry",
-    "commit": "150625dbb0de36f566074a5489fea74556ddc60a",
+    "commit": "800a1c2253bd62a933b68d322380a49d4630c3dc",
     "worker_file": "src/index.js",
-    "worker_blob": "aaff86444197cfc74ef7ad371dd1695d7d33ca44",
+    "worker_blob": "4f6bda3fc78211740db15deab32b9bc34283164f",
     "client_file": "public/app.js",
     "client_blob": "a640fbfed7221adac1a6fd7fd6d5f0524016004a",
     "sitemap_file": "src/sitemap.mjs",
