@@ -56,3 +56,5 @@ No live API calls, production deployment, or D1 mutation were performed. Static 
 - Reader history writes validate positive safe-integer identifiers and the exact published, rights-eligible novel/chapter pair.
 - New connector registrations start disabled and pending until explicit rights evidence and review.
 - Build-gated source contracts now check account-scoped predicates, selected author/admin guards, and these resource-validation behaviors. These tests do not replace D1-backed two-user adversarial tests.
+
+- Public taxonomy submissions are now rate-limited by IP and authenticated account; the regression contract is build-gated.
