@@ -17,7 +17,7 @@ CREATE TABLE ai_publish_policies(project_id INTEGER PRIMARY KEY,require_rights I
 CREATE TABLE ticket_ledger(id INTEGER PRIMARY KEY,user_id INTEGER NOT NULL,delta INTEGER NOT NULL,reason TEXT NOT NULL,reference TEXT DEFAULT '',created_at TEXT DEFAULT CURRENT_TIMESTAMP);
 CREATE TABLE novel_requests(id INTEGER PRIMARY KEY,user_id INTEGER NOT NULL,url TEXT NOT NULL,source_host TEXT DEFAULT '',week_key INTEGER NOT NULL,cost INTEGER DEFAULT 0,status TEXT DEFAULT 'pending',created_at TEXT DEFAULT CURRENT_TIMESTAMP);
 CREATE TABLE author_applications(id INTEGER PRIMARY KEY,user_id INTEGER NOT NULL,display_name TEXT NOT NULL,bio TEXT DEFAULT '',experience TEXT DEFAULT '',portfolio_url TEXT DEFAULT '',sample_work TEXT DEFAULT '',preferred_formats TEXT DEFAULT '[]',rights_confirmed INTEGER DEFAULT 0,status TEXT DEFAULT 'pending',review_notes TEXT DEFAULT '',reviewed_by INTEGER,created_at TEXT DEFAULT CURRENT_TIMESTAMP,reviewed_at TEXT,updated_at TEXT DEFAULT CURRENT_TIMESTAMP);
-INSERT INTO users(id,username,email,role) VALUES(1,'author-a','a@test','author'),(2,'author-b','b@test','author'),(3,'admin','admin@test','admin');
+INSERT INTO users(id,username,email,role) VALUES(1,'author-a','a@test','author'),(2,'author-b','b@test','author'),(3,'admin','admin@test','admin'),(4,'reader-a','reader-a@test','user'),(5,'reader-b','reader-b@test','user');
 INSERT INTO novels(id,title,author,owner_user_id) VALUES(101,'A Novel','A',1),(202,'B Novel','B',2);
 INSERT INTO chapters(id,novel_id,chapter_number,title,content) VALUES(1001,101,1,'A Chapter','A content'),(2001,202,1,'B Chapter','B content');
 INSERT INTO ai_author_projects(id,owner_user_id,name) VALUES(11,1,'A Project'),(22,2,'B Project');
@@ -26,13 +26,15 @@ INSERT INTO ticket_ledger(id,user_id,delta,reason,reference) VALUES(31,1,-10,'un
 INSERT INTO novel_requests(id,user_id,url,source_host,week_key) VALUES(41,1,'https://example.test/a','example.test',2968),(42,1,'https://example.test/b','example.test',2968),(43,2,'https://example.test/c','example.test',2968);
 `);
 const digest=async v=>{const b=new Uint8Array(await crypto.subtle.digest("SHA-256",new TextEncoder().encode(v)));return btoa(String.fromCharCode(...b)).replaceAll("+","-").replaceAll("/","_").replaceAll("=","")};
-const ta="author-a-token",tb="author-b-token",tc="admin-token";
+const ta="author-a-token",tb="author-b-token",tc="admin-token",td="reader-a-token",te="reader-b-token";
 db.prepare("INSERT INTO sessions VALUES(?,?,?)").run(await digest(ta),1,Math.floor(Date.now()/1000)+3600);
 db.prepare("INSERT INTO sessions VALUES(?,?,?)").run(await digest(tb),2,Math.floor(Date.now()/1000)+3600);
 db.prepare("INSERT INTO sessions VALUES(?,?,?)").run(await digest(tc),3,Math.floor(Date.now()/1000)+3600);
+db.prepare("INSERT INTO sessions VALUES(?,?,?)").run(await digest(td),4,Math.floor(Date.now()/1000)+3600);
+db.prepare("INSERT INTO sessions VALUES(?,?,?)").run(await digest(te),5,Math.floor(Date.now()/1000)+3600);
 class Stmt{constructor(sql){this.sql=sql;this.v=[]}bind(...v){this.v=v;return this}first(){return db.prepare(this.sql).get(...this.v)??null}all(){return{results:db.prepare(this.sql).all(...this.v)}}run(){const r=db.prepare(this.sql).run(...this.v);return{success:true,meta:{changes:Number(r.changes),last_row_id:Number(r.lastInsertRowid||0)}}}}
-const env={DB:{prepare:s=>new Stmt(s)},SITE_NAME:"Imperial Novel",APP_VERSION:"test"};
-async function req(path,token){const h=new Headers();if(token)h.set("cookie","session="+token);const r=await worker.fetch(new Request("https://test.invalid"+path,{headers:h}),env);return{status:r.status,data:await r.json()}}
+const env={DB:{prepare:s=>new Stmt(s),batch:async statements=>statements.map(statement=>statement.run())},SITE_NAME:"Imperial Novel",APP_VERSION:"test"};
+async function req(path,token,method="GET",payload){const h=new Headers();if(token)h.set("cookie","session="+token);if(payload!==undefined)h.set("content-type","application/json");const r=await worker.fetch(new Request("https://test.invalid"+path,{method,headers:h,body:payload===undefined?undefined:JSON.stringify(payload)}),env);return{status:r.status,data:await r.json()}}
 const a=await req("/api/author/novels",ta),b=await req("/api/author/novels",tb);
 assert.equal(a.status,200);assert.equal(b.status,200);assert.deepEqual(a.data.map(x=>+x.id),[101]);assert.deepEqual(b.data.map(x=>+x.id),[202]);
 const pa=await req("/api/author/ai/projects",ta),pb=await req("/api/author/ai/projects",tb);
@@ -41,4 +43,23 @@ const ca=await req("/api/author/chapters?novel_id=101",ta),cb=await req("/api/au
 const xa=await req("/api/author/chapters?novel_id=202",ta),xb=await req("/api/author/chapters?novel_id=101",tb);
 assert.equal(ca.status,200);assert.equal(cb.status,200);assert.deepEqual(ca.data.map(x=>+x.id),[1001]);assert.deepEqual(cb.data.map(x=>+x.id),[2001]);assert.equal(xa.status,403);assert.equal(xb.status,403);
 assert.equal((await req("/api/author/novels",null)).status,403,"unauthenticated callers must be denied by the author-role guard");
-db.close();console.log("PASS: two-author Worker/SQLite isolation for novel lists, AI project lists, chapter workspaces, cross-owner denials, ticket-ledger isolation, per-user request quotas, applicant-private application records, admin-only application listing, and unauthenticated access.");
+
+const validApplication=(display_name)=>({display_name,bio:"I write original stories with consistent characters, thoughtful worldbuilding, and a long-term commitment to readers.",experience:"Independent writing practice",sample_work:"Original sample. ".repeat(20),preferred_formats:["original","web_novel"],rights_confirmed:true});
+const submittedA=await req("/api/author/applications",td,"POST",validApplication("Reader A"));
+const submittedB=await req("/api/author/applications",te,"POST",validApplication("Reader B"));
+assert.equal(submittedA.status,201,"reader A can submit a valid rights-confirmed application");
+assert.equal(submittedB.status,201,"reader B can submit an independent application");
+assert.equal((await req("/api/author/applications/me",td)).data.application.id,submittedA.data.id,"applicant sees own newly submitted application");
+assert.equal((await req("/api/author/applications/me",te)).data.application.id,submittedB.data.id,"second applicant sees own newly submitted application");
+assert.equal((await req("/api/author/applications/me",td)).data.application.display_name,"Reader A","reader A sees only their own application");
+assert.equal((await req("/api/admin/author-applications/"+submittedA.data.id,ta,"PATCH",{status:"approved",review_notes:"Approved by a non-admin"})).status,403,"authors cannot review applications");
+assert.equal((await req("/api/admin/author-applications/"+submittedA.data.id,tc,"PATCH",{status:"approved",review_notes:"Application reviewed and approved."})).status,200,"admin can approve a pending application");
+assert.equal(db.prepare("SELECT role FROM users WHERE id=4").get().role,"author","approval grants author role to the correct applicant");
+assert.equal(db.prepare("SELECT status FROM author_applications WHERE id=?").get(submittedA.data.id).status,"approved","approval changes application status");
+assert.equal((await req("/api/author/applications/me",td)).data.application.review_notes,"Application reviewed and approved.","applicant can read own admin review notes");
+assert.equal((await req("/api/admin/author-applications/"+submittedB.data.id,tc,"PATCH",{status:"rejected",review_notes:"Please provide a clearer original sample."})).status,200,"admin can reject with feedback");
+assert.equal(db.prepare("SELECT role FROM users WHERE id=5").get().role,"user","rejection does not grant author role");
+assert.equal((await req("/api/admin/author-applications/"+submittedB.data.id,tc,"PATCH",{status:"approved",review_notes:"Second decision"})).status,409,"reviewed applications cannot be decided twice");
+assert.equal((await req("/api/admin/author-applications/99999",tc,"PATCH",{status:"approved",review_notes:"Valid note"})).status,404,"missing application returns not found");
+
+db.close();console.log("PASS: two-author Worker/SQLite isolation for novel lists, AI project lists, chapter workspaces, cross-owner denials, ticket-ledger isolation, per-user request quotas, applicant-private application records, valid application submission, admin-only application review, approval/rejection role transitions, immutable final decisions, and unauthenticated access.");
