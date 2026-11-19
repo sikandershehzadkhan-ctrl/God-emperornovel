@@ -13,7 +13,7 @@ assert.equal(registry.api_endpoints.length,api.literal_endpoints.length);
 assert.equal(registry.dynamic_api_endpoints.length,api.dynamic_endpoints.length);
 assert.deepEqual(registry.api_endpoints.map(x=>x.path).sort(),api.literal_endpoints.map(x=>x.path).sort());
 assert.deepEqual(registry.sitemap.static_paths,[...SITEMAP_STATIC_PATHS]);
-assert.ok(sitemap.includes("export const SITEMAP_STATIC_PATHS"));
+assert.ok(sitemap.includes("export { SITEMAP_STATIC_PATHS }"));
 assert.ok(worker.includes('import { NOINDEX_EXACT_PATHS, resolvePageShell } from "./route-registry.mjs";'),"Worker must consume the canonical runtime route registry");
 for(const route of registry.pages) assert.equal(PAGE_SHELLS[route.path],route.shell,"Canonical route shell mismatch: "+route.path);
 assert.deepEqual(Object.keys(PAGE_SHELLS).sort(),registry.pages.map(route=>route.path).sort(),"Runtime page routes must match the canonical evidence registry");
