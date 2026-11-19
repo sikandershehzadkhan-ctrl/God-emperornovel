@@ -1,0 +1,37 @@
+import assert from "node:assert/strict";
+import { DatabaseSync } from "node:sqlite";
+import worker from "../src/index.js";
+const db=new DatabaseSync(":memory:");
+db.exec(`
+CREATE TABLE app_settings(key TEXT PRIMARY KEY,value TEXT NOT NULL);
+INSERT INTO app_settings VALUES('core_schema_version','16.64.0'),('runtime_feature_schema_version','1');
+CREATE TABLE users(id INTEGER PRIMARY KEY,username TEXT NOT NULL,email TEXT NOT NULL,role TEXT NOT NULL,tickets REAL DEFAULT 0,verified INTEGER DEFAULT 1,banned INTEGER DEFAULT 0);
+CREATE TABLE sessions(token_hash TEXT PRIMARY KEY,user_id INTEGER NOT NULL,expires_at INTEGER NOT NULL);
+CREATE TABLE novels(id INTEGER PRIMARY KEY,title TEXT NOT NULL,alt_titles TEXT DEFAULT '',author TEXT NOT NULL,description TEXT DEFAULT '',status TEXT DEFAULT 'ongoing',kind TEXT DEFAULT 'original',language TEXT DEFAULT 'English',cover_url TEXT DEFAULT '',source_url TEXT DEFAULT '',rights_status TEXT DEFAULT 'original',rights_evidence TEXT DEFAULT '',rights_notes TEXT DEFAULT '',review_feedback TEXT DEFAULT '',reviewed_by INTEGER,reviewed_at TEXT,publication_status TEXT DEFAULT 'draft',views INTEGER DEFAULT 0,rating REAL DEFAULT 0,created_at TEXT DEFAULT CURRENT_TIMESTAMP,updated_at TEXT DEFAULT CURRENT_TIMESTAMP,owner_user_id INTEGER NOT NULL);
+CREATE TABLE chapters(id INTEGER PRIMARY KEY,novel_id INTEGER NOT NULL,chapter_number INTEGER NOT NULL,title TEXT NOT NULL,content TEXT NOT NULL,is_locked INTEGER DEFAULT 0,ticket_cost INTEGER DEFAULT 0,publication_status TEXT DEFAULT 'draft',created_at TEXT DEFAULT CURRENT_TIMESTAMP,updated_at TEXT DEFAULT CURRENT_TIMESTAMP);
+CREATE TABLE ai_author_projects(id INTEGER PRIMARY KEY,owner_user_id INTEGER NOT NULL,novel_id INTEGER,name TEXT NOT NULL,mode TEXT DEFAULT 'manual',status TEXT DEFAULT 'draft',genre TEXT DEFAULT '',fandom TEXT DEFAULT '',premise TEXT DEFAULT '',protagonist TEXT DEFAULT '',settings_json TEXT DEFAULT '{}',bible_json TEXT DEFAULT '{}',auto_publish INTEGER DEFAULT 0,chapters_target INTEGER DEFAULT 0,chapters_generated INTEGER DEFAULT 0,created_at TEXT DEFAULT CURRENT_TIMESTAMP,updated_at TEXT DEFAULT CURRENT_TIMESTAMP);
+CREATE TABLE ai_chapter_jobs(id INTEGER PRIMARY KEY,project_id INTEGER NOT NULL,owner_user_id INTEGER NOT NULL,chapter_number INTEGER NOT NULL,job_type TEXT DEFAULT 'draft',status TEXT DEFAULT 'queued',prompt TEXT DEFAULT '',result TEXT DEFAULT '',error TEXT DEFAULT '',attempts INTEGER DEFAULT 0,created_at TEXT DEFAULT CURRENT_TIMESTAMP,started_at TEXT,finished_at TEXT);
+CREATE TABLE ai_generation_runs(id INTEGER PRIMARY KEY,project_id INTEGER NOT NULL,owner_user_id INTEGER NOT NULL,agent TEXT NOT NULL,mode TEXT NOT NULL,status TEXT DEFAULT 'ok',input_summary TEXT DEFAULT '',output_summary TEXT DEFAULT '',provider TEXT DEFAULT 'local',created_at TEXT DEFAULT CURRENT_TIMESTAMP);
+CREATE TABLE ai_provider_benchmarks(id INTEGER PRIMARY KEY,provider TEXT NOT NULL,observed_at TEXT DEFAULT CURRENT_TIMESTAMP,chapters_delta INTEGER DEFAULT 0,interval_seconds INTEGER DEFAULT 0,source_url TEXT DEFAULT '',access_mode TEXT DEFAULT 'public-metadata',confidence TEXT DEFAULT 'unknown');
+CREATE TABLE ai_publish_policies(project_id INTEGER PRIMARY KEY,require_rights INTEGER DEFAULT 1,require_review INTEGER DEFAULT 1,max_chapters_per_day INTEGER DEFAULT 10,updated_at TEXT DEFAULT CURRENT_TIMESTAMP);
+INSERT INTO users(id,username,email,role) VALUES(1,'author-a','a@test','author'),(2,'author-b','b@test','author');
+INSERT INTO novels(id,title,author,owner_user_id) VALUES(101,'A Novel','A',1),(202,'B Novel','B',2);
+INSERT INTO chapters(id,novel_id,chapter_number,title,content) VALUES(1001,101,1,'A Chapter','A content'),(2001,202,1,'B Chapter','B content');
+INSERT INTO ai_author_projects(id,owner_user_id,name) VALUES(11,1,'A Project'),(22,2,'B Project');
+`);
+const digest=async v=>{const b=new Uint8Array(await crypto.subtle.digest("SHA-256",new TextEncoder().encode(v)));return btoa(String.fromCharCode(...b)).replaceAll("+","-").replaceAll("/","_").replaceAll("=","")};
+const ta="author-a-token",tb="author-b-token";
+db.prepare("INSERT INTO sessions VALUES(?,?,?)").run(await digest(ta),1,Math.floor(Date.now()/1000)+3600);
+db.prepare("INSERT INTO sessions VALUES(?,?,?)").run(await digest(tb),2,Math.floor(Date.now()/1000)+3600);
+class Stmt{constructor(sql){this.sql=sql;this.v=[]}bind(...v){this.v=v;return this}first(){return db.prepare(this.sql).get(...this.v)??null}all(){return{results:db.prepare(this.sql).all(...this.v)}}run(){const r=db.prepare(this.sql).run(...this.v);return{success:true,meta:{changes:Number(r.changes),last_row_id:Number(r.lastInsertRowid||0)}}}}
+const env={DB:{prepare:s=>new Stmt(s)},SITE_NAME:"Imperial Novel",APP_VERSION:"test"};
+async function req(path,token){const h=new Headers();if(token)h.set("cookie","session="+token);const r=await worker.fetch(new Request("https://test.invalid"+path,{headers:h}),env);return{status:r.status,data:await r.json()}}
+const a=await req("/api/author/novels",ta),b=await req("/api/author/novels",tb);
+assert.equal(a.status,200);assert.equal(b.status,200);assert.deepEqual(a.data.map(x=>+x.id),[101]);assert.deepEqual(b.data.map(x=>+x.id),[202]);
+const pa=await req("/api/author/ai/projects",ta),pb=await req("/api/author/ai/projects",tb);
+assert.equal(pa.status,200);assert.equal(pb.status,200);assert.deepEqual(pa.data.map(x=>+x.id),[11]);assert.deepEqual(pb.data.map(x=>+x.id),[22]);
+const ca=await req("/api/author/chapters?novel_id=101",ta),cb=await req("/api/author/chapters?novel_id=202",tb);
+const xa=await req("/api/author/chapters?novel_id=202",ta),xb=await req("/api/author/chapters?novel_id=101",tb);
+assert.equal(ca.status,200);assert.equal(cb.status,200);assert.deepEqual(ca.data.map(x=>+x.id),[1001]);assert.deepEqual(cb.data.map(x=>+x.id),[2001]);assert.equal(xa.status,403);assert.equal(xb.status,403);
+assert.equal((await req("/api/author/novels",null)).status,401);
+db.close();console.log("PASS: two-author Worker/SQLite isolation for novel lists, AI project lists, chapter workspaces, cross-owner denials, and unauthenticated access.");
