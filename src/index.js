@@ -661,11 +661,11 @@ async function api(req,env){
  }
  let aip=p.match(/^\/api\/author\/ai\/projects\/(\d+)$/);
  if(aip&&m==="GET"){
-  const e=author(u);if(e)return e;await ensureAuthorAISchema(env);const row=await env.DB.prepare('SELECT * FROM ai_author_projects WHERE id=?').bind(Number(aip[1])).first();if(!row)return json({error:'AI project not found'},404);if(u.role!=='admin'&&Number(row.owner_user_id)!==Number(u.id))return json({error:'You do not own this project'},403);
+  const e=author(u);if(e)return e;await ensureAuthorAISchema(env);const id=Number(aip[1]);if(!Number.isSafeInteger(id)||id<1)return json({error:'Invalid AI project id'},400);const row=await env.DB.prepare('SELECT * FROM ai_author_projects WHERE id=?').bind(id).first();if(!row)return json({error:'AI project not found'},404);if(u.role!=='admin'&&Number(row.owner_user_id)!==Number(u.id))return json({error:'You do not own this project'},403);
   return json({...row,bible:aiJson(row.bible_json),settings:aiJson(row.settings_json)});
  }
  if(aip&&m==="PATCH"){
-  const e=author(u);if(e)return e;await ensureAuthorAISchema(env);const row=await env.DB.prepare('SELECT * FROM ai_author_projects WHERE id=?').bind(Number(aip[1])).first();if(!row)return json({error:'AI project not found'},404);if(u.role!=='admin'&&Number(row.owner_user_id)!==Number(u.id))return json({error:'You do not own this project'},403);
+  const e=author(u);if(e)return e;await ensureAuthorAISchema(env);const id=Number(aip[1]);if(!Number.isSafeInteger(id)||id<1)return json({error:'Invalid AI project id'},400);const row=await env.DB.prepare('SELECT * FROM ai_author_projects WHERE id=?').bind(id).first();if(!row)return json({error:'AI project not found'},404);if(u.role!=='admin'&&Number(row.owner_user_id)!==Number(u.id))return json({error:'You do not own this project'},403);
   const b=await body(req);const mode=['manual','auto','hybrid'].includes(String(b.mode||row.mode))?String(b.mode||row.mode):row.mode;
   const status=['draft','running','paused','complete'].includes(String(b.status||row.status))?String(b.status||row.status):row.status;
   const settings={...aiJson(row.settings_json),...('settings' in b?b.settings:{})};
@@ -673,7 +673,7 @@ async function api(req,env){
   return json({ok:true});
  }
  if(/^\/api\/author\/ai\/projects\/\d+\/blueprint$/.test(p)&&m==="POST"){
-  const e=author(u);if(e)return e;if(!String(env.OPENAI_API_KEY||'').trim())return json({error:'AI generation is not configured. Manual Chapter Studio remains available.'},503);await ensureAuthorAISchema(env);const id=Number(p.split('/')[5]);const row=await env.DB.prepare('SELECT * FROM ai_author_projects WHERE id=?').bind(id).first();if(!row)return json({error:'AI project not found'},404);if(u.role!=='admin'&&Number(row.owner_user_id)!==Number(u.id))return json({error:'You do not own this project'},403);
+  const e=author(u);if(e)return e;if(!String(env.OPENAI_API_KEY||'').trim())return json({error:'AI generation is not configured. Manual Chapter Studio remains available.'},503);await ensureAuthorAISchema(env);const id=Number(p.split('/')[5]);if(!Number.isSafeInteger(id)||id<1)return json({error:'Invalid AI project id'},400);const row=await env.DB.prepare('SELECT * FROM ai_author_projects WHERE id=?').bind(id).first();if(!row)return json({error:'AI project not found'},404);if(u.role!=='admin'&&Number(row.owner_user_id)!==Number(u.id))return json({error:'You do not own this project'},403);
   const blueprint=localStoryBlueprint({...row,...aiJson(row.settings_json),title:row.name});
   const ai=await callAuthorModel(env,'You are the planning agent for a rights-aware novel platform. Create an original story bible from the supplied project fields. Never copy protected text or claim access to external sites. Return valid JSON with premise, characters, world, arcs and continuity rules.',JSON.stringify({name:row.name,genre:row.genre,fandom:row.fandom,premise:row.premise,protagonist:row.protagonist,settings:aiJson(row.settings_json)}),2200);
   if(ai.error||!ai.text)return json({error:ai.error||'The AI provider returned no Story Bible. Nothing was saved.'},502);
@@ -684,7 +684,7 @@ async function api(req,env){
   return json({ok:true,provider,blueprint:output});
  }
  if(/^\/api\/author\/ai\/projects\/\d+\/run$/.test(p)&&m==="POST"){
-  const e=author(u);if(e)return e;if(!String(env.OPENAI_API_KEY||'').trim())return json({error:"AI generation is not configured. Manual Chapter Studio remains available."},503);await ensureAuthorAISchema(env);const id=Number(p.split('/')[5]);const row=await env.DB.prepare('SELECT * FROM ai_author_projects WHERE id=?').bind(id).first();if(!row)return json({error:'AI project not found'},404);if(u.role!=='admin'&&Number(row.owner_user_id)!==Number(u.id))return json({error:'You do not own this project'},403);
+  const e=author(u);if(e)return e;if(!String(env.OPENAI_API_KEY||'').trim())return json({error:"AI generation is not configured. Manual Chapter Studio remains available."},503);await ensureAuthorAISchema(env);const id=Number(p.split('/')[5]);if(!Number.isSafeInteger(id)||id<1)return json({error:'Invalid AI project id'},400);const row=await env.DB.prepare('SELECT * FROM ai_author_projects WHERE id=?').bind(id).first();if(!row)return json({error:'AI project not found'},404);if(u.role!=='admin'&&Number(row.owner_user_id)!==Number(u.id))return json({error:'You do not own this project'},403);
   if(row.status==='running')return json({error:'Project is already running'},409);
   const claimed=await env.DB.prepare("UPDATE ai_author_projects SET status='running',updated_at=CURRENT_TIMESTAMP WHERE id=? AND status<>'running'").bind(id).run();
   if(Number(claimed.meta?.changes||0)!==1)return json({error:'Project is already running'},409);
@@ -722,7 +722,7 @@ async function api(req,env){
   return json({ok:true,project_id:id,chapter_number:next,chapter_id:createdChapter,provider,draft,status:target&&next>=target?'complete':'paused',message:createdChapter?'Draft chapter created in Chapter Studio.':'Draft generated. Link a novel to store it automatically.'});
  }
  if(/^\/api\/author\/ai\/projects\/\d+\/jobs$/.test(p)&&m==="GET"){
-  const e=author(u);if(e)return e;await ensureAuthorAISchema(env);const id=Number(p.split('/')[5]);const row=await env.DB.prepare('SELECT owner_user_id FROM ai_author_projects WHERE id=?').bind(id).first();if(!row)return json({error:'AI project not found'},404);if(u.role!=='admin'&&Number(row.owner_user_id)!==Number(u.id))return json({error:'You do not own this project'},403);
+  const e=author(u);if(e)return e;await ensureAuthorAISchema(env);const id=Number(p.split('/')[5]);if(!Number.isSafeInteger(id)||id<1)return json({error:'Invalid AI project id'},400);const row=await env.DB.prepare('SELECT owner_user_id FROM ai_author_projects WHERE id=?').bind(id).first();if(!row)return json({error:'AI project not found'},404);if(u.role!=='admin'&&Number(row.owner_user_id)!==Number(u.id))return json({error:'You do not own this project'},403);
   return json((await env.DB.prepare('SELECT id,chapter_number,job_type,status,attempts,created_at,finished_at FROM ai_chapter_jobs WHERE project_id=? ORDER BY id DESC LIMIT 100').bind(id).all()).results||[]);
  }
  if(p==="/api/author/ai/benchmarks"&&m==="GET"){
