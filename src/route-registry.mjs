@@ -27,11 +27,11 @@ export function canonicalizePagePath(pathname) {
 }
 
 export function resolveRouteRedirect(pathname) {
-  const match = pathname.match(/^\\/fandom\\/(.+)$/);
+  const match = pathname.match(/^\/fandom\/(.*)$/);
   if (!match) return null;
   const rawSlug = match[1].split("/").pop();
   try {
-    return Object.freeze({ path: "/catalog", tag: decodeURIComponent(rawSlug) });
+    return Object.freeze({ path: "/catalog", tag: rawSlug ? decodeURIComponent(rawSlug) : null });
   } catch {
     return Object.freeze({ invalid: true });
   }
