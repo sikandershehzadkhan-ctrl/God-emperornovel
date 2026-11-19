@@ -3,6 +3,8 @@ import { readFile } from "node:fs/promises";
 
 const worker = await readFile(new URL("../src/index.js", import.meta.url), "utf8");
 const manifest = JSON.parse(await readFile(new URL("../docs/architecture/API-ENDPOINT-INVENTORY-2026-11-18.json", import.meta.url), "utf8"));
+const canonicalRoutes = JSON.parse(await readFile(new URL("../docs/architecture/CANONICAL-ROUTE-REGISTRY.json", import.meta.url), "utf8"));
+assert.equal(manifest.source_blob, canonicalRoutes.source_evidence.worker_blob, "API endpoint inventory and canonical route registry must fingerprint the same Worker source");
 const apiStart = worker.indexOf("async function api(");
 const apiEnd = worker.indexOf("async function sitemap(", apiStart);
 assert.ok(apiStart >= 0 && apiEnd > apiStart, "Worker API dispatcher boundaries must exist");
