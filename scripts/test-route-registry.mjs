@@ -16,7 +16,7 @@ const robots = await readFile(new URL("../public/robots.txt", import.meta.url), 
 const sitemapFallback = await readFile(new URL("../public/sitemap.xml", import.meta.url), "utf8");
 const wrangler = await readFile(new URL("../wrangler.toml", import.meta.url), "utf8");
 const registry = JSON.parse(await readFile(new URL("../docs/architecture/CANONICAL-ROUTE-REGISTRY.json", import.meta.url), "utf8"));
-const gitBlobSha = content => createHash("sha1").update(Buffer.concat([Buffer.from("blob " + Buffer.byteLength(content) + "\\0"), Buffer.from(content)])).digest("hex");
+const gitBlobSha = content => createHash("sha1").update(Buffer.concat([Buffer.from("blob " + Buffer.byteLength(content) + "\0"), Buffer.from(content)])).digest("hex");
 const runtimeRegistry = await readFile(new URL("../src/route-registry.mjs", import.meta.url), "utf8");
 const sitemapSource = await readFile(new URL("../src/sitemap.mjs", import.meta.url), "utf8");
 
