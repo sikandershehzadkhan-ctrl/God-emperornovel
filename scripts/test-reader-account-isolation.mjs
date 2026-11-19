@@ -17,7 +17,8 @@ CREATE TABLE follows (user_id INTEGER NOT NULL, novel_id INTEGER NOT NULL, creat
 CREATE TABLE notifications (id INTEGER PRIMARY KEY, user_id INTEGER NOT NULL, title TEXT NOT NULL, body TEXT NOT NULL, read_at TEXT, created_at TEXT DEFAULT CURRENT_TIMESTAMP);
 INSERT INTO users(id,username,email,role) VALUES (1,'reader-a','a@example.test','user'),(2,'reader-b','b@example.test','user');
 INSERT INTO novels(id,title,author) VALUES (101,'Novel A','Author A'),(202,'Novel B','Author B');
-INSERT INTO chapters(id,novel_id,chapter_number) VALUES (1001,101,1),(2001,202,2);
+INSERT INTO novels(id,title,author,publication_status,rights_status) VALUES (303,'Draft Novel','Author C','draft','original'),(404,'Uncleared Novel','Author D','published','pending');
+INSERT INTO chapters(id,novel_id,chapter_number) VALUES (1001,101,1),(2001,202,2),(3001,303,1),(4001,404,1);
 INSERT INTO user_library(user_id,novel_id) VALUES (1,101),(2,202);
 INSERT INTO history(user_id,novel_id,chapter_number) VALUES (1,101,1),(2,202,2);
 INSERT INTO bookmarks(user_id,novel_id,chapter_number) VALUES (1,101,1),(2,202,2);
@@ -52,13 +53,33 @@ async function request(path, token, method="GET", body) {
   if(token) headers.set("cookie","session="+encodeURIComponent(token));
   if(body!==undefined) headers.set("content-type","application/json");
   const response=await worker.fetch(new Request("https://imperial.test"+path,{method,headers,body:body===undefined?undefined:JSON.stringify(body)}),env);
-  return { response, data:await response.json().catch(()=>null) };
+  const text=await response.text();
+  let data=null; try { data=JSON.parse(text); } catch {}
+  return { response, data, text };
 }
 async function ids(path,token) {
   const {response,data}=await request(path,token);
   assert.equal(response.status,200,path+" should be available to an authenticated reader");
   return data.map(row=>Number(row.id??row.novel_id));
 }
+
+// The real Worker sitemap handler queries this same D1-compatible database.
+let sitemap=await request("/sitemap.xml",null);
+assert.equal(sitemap.response.status,200);
+assert.match(sitemap.response.headers.get("content-type")||"",/application\\/xml/);
+assert.ok(sitemap.text.includes("/sitemap-static.xml"));
+assert.ok(sitemap.text.includes("/sitemap-novels.xml?page=0"));
+assert.ok(sitemap.text.includes("/sitemap-chapters.xml?page=0"));
+sitemap=await request("/sitemap-novels.xml?page=0",null);
+assert.equal(sitemap.response.status,200);
+assert.ok(sitemap.text.includes("/novel/101")&&sitemap.text.includes("/novel/202"));
+assert.ok(!sitemap.text.includes("/novel/303")&&!sitemap.text.includes("/novel/404"),"draft and rights-pending novels must never enter the sitemap");
+sitemap=await request("/sitemap-chapters.xml?page=0",null);
+assert.equal(sitemap.response.status,200);
+assert.ok(sitemap.text.includes("/read/101/1")&&sitemap.text.includes("/read/202/2"));
+assert.ok(!sitemap.text.includes("/read/303/1")&&!sitemap.text.includes("/read/404/1"),"chapters of draft or rights-pending novels must never enter the sitemap");
+sitemap=await request("/sitemap-novels.xml?page=-1",null);
+assert.equal(sitemap.response.status,400,"invalid sitemap page numbers must be rejected");
 
 // Each reader can see only their own library, progress, bookmarks, follows and notifications.
 assert.deepEqual(await ids("/api/library",tokenA),[101]);
