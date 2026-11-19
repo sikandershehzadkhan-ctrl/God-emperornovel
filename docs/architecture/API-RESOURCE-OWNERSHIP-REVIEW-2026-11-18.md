@@ -47,6 +47,16 @@ These are source-level positive signals. They do not replace adversarial cross-a
 
 Static SQL inspection shows multiple user-id predicates, but it does not prove that no alternate code path leaks data. Add tests with two independent users for library, history, bookmarks, follows, notifications, ticket ledger, novel requests, author applications, AI projects, novels, and chapters.
 
+
+### 3. Taxonomy submission identity could be spoofed
+
+- The public `POST /api/taxonomy` handler accepted `creator_id` and `creator_name` directly from the request body.
+- This allowed a caller to attribute a pending proposal to another account or arbitrary display name. It did not grant moderation privileges, but it weakened attribution and audit integrity.
+- The handler now receives the server-resolved session user and derives submitter ID/name from that session; anonymous submissions are recorded as `Guest`. Client-supplied identity fields are ignored.
+- A build-gated regression contract asserts that the handler does not read `b.creator_id` or `b.creator_name`.
+
+**Status:** Corrected in the foundation branch; runtime integration and abuse-rate testing remain outstanding.
+
 ## Security boundary
 
 No confirmed cross-user data exposure was established by this first pass. The two findings above are validation/policy consistency issues. This audit does not certify CSRF protections, rate limits, method rejection, session rotation, or all delegated handlers.
