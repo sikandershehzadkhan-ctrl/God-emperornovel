@@ -121,12 +121,18 @@ for (const [token,label] of [[ta,"author"],[td,"reader"],[null,"unauthenticated 
 const readerRoleBefore=db.prepare("SELECT role,verified,banned FROM users WHERE id=5").get();
 for (const [token,label] of [[ta,"author"],[td,"reader"],[null,"unauthenticated caller"]]) {
   assert.equal((await req("/api/admin/users/5",token,"PATCH",{role:"admin",verified:true,banned:false})).status,403,label+" cannot change another account's role or security flags");
-  assert.deepEqual(db.prepare("SELECT role,verified,banned FROM users WHERE id=5").get(),readerRoleBefore,label+" denied user administration leaves account unchanged");
+  const unchangedUser=db.prepare("SELECT role,verified,banned FROM users WHERE id=5").get();
+  assert.equal(unchangedUser.role,readerRoleBefore.role,label+" denied user administration preserves role");
+  assert.equal(unchangedUser.verified,readerRoleBefore.verified,label+" denied user administration preserves verification");
+  assert.equal(unchangedUser.banned,readerRoleBefore.banned,label+" denied user administration preserves ban state");
 }
 assert.equal((await req("/api/admin/users/3",tc,"PATCH",{role:"user"})).status,400,"administrator cannot remove their own administrator role through the user editor");
 assert.equal(db.prepare("SELECT role FROM users WHERE id=3").get().role,"admin","self-demotion denial preserves administrator access");
 assert.equal((await req("/api/admin/users/5",tc,"PATCH",{role:"author",verified:true,banned:false})).status,200,"administrator can grant the author role and update account security flags");
-assert.deepEqual(db.prepare("SELECT role,verified,banned FROM users WHERE id=5").get(),{role:"author",verified:1,banned:0},"administrator user update is persisted on the intended account");
+const updatedUser=db.prepare("SELECT role,verified,banned FROM users WHERE id=5").get();
+assert.equal(updatedUser.role,"author","administrator role update is persisted on the intended account");
+assert.equal(updatedUser.verified,1,"administrator verification update is persisted");
+assert.equal(updatedUser.banned,0,"administrator ban flag update is persisted");
 assert.equal((await req("/api/admin/users/5",tc,"PATCH",{role:"invalid-role"})).status,400,"administrator cannot assign an unsupported role");
 assert.equal(db.prepare("SELECT role FROM users WHERE id=5").get().role,"author","invalid role attempt leaves the existing role unchanged");
 
