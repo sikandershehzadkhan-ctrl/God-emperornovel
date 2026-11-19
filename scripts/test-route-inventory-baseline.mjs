@@ -1,6 +1,6 @@
 import assert from "node:assert/strict";
 import { readFile } from "node:fs/promises";
-import { SITEMAP_STATIC_PATHS } from "../src/sitemap.mjs";
+import { SITEMAP_STATIC_PATHS, PAGE_SHELLS, DYNAMIC_PAGE_ROUTES, NOINDEX_EXACT_PATHS, resolvePageShell } from "../src/route-registry.mjs";
 
 const manifest = JSON.parse(await readFile(new URL("../docs/architecture/IMPERIAL-ROUTE-INVENTORY-BASELINE-2026-11-18.json", import.meta.url), "utf8"));
 const worker = await readFile(new URL("../src/index.js", import.meta.url), "utf8");
@@ -13,9 +13,8 @@ assert.equal(manifest.source_evidence.worker_file, "src/index.js");
 assert.equal(manifest.source_evidence.sitemap_file, "src/sitemap.mjs");
 assert.equal(manifest.source_evidence.client_file, "public/app.js");
 
-const mapMatch = worker.match(/const map=\{([\s\S]*?)\};if\(map\[p\]\)/);
-assert.ok(mapMatch, "Worker exact HTML route map must remain discoverable");
-const actualMap = new Map([...mapMatch[1].matchAll(/"([^"]+)":"([^"]+)"/g)].map(match => [match[1], match[2]]));
+assert.ok(worker.includes('import { NOINDEX_EXACT_PATHS, resolvePageShell } from "./route-registry.mjs";'), "Worker must use the canonical route registry");
+const actualMap = new Map(Object.entries(PAGE_SHELLS));
 assert.equal(manifest.page_routes.length, actualMap.size, "manifest exact page route count must match Worker");
 assert.equal(new Set(manifest.page_routes.map(route => route.path)).size, manifest.page_routes.length, "exact page routes must be unique");
 for (const route of manifest.page_routes) {
@@ -29,7 +28,10 @@ for (const route of manifest.dynamic_page_patterns) {
   const pattern = new RegExp(route.pattern);
   assert.ok(route.samples?.length, "dynamic route must include representative samples: " + route.kind);
   for (const sample of route.samples) assert.ok(pattern.test(sample), "dynamic route sample mismatch: " + sample);
-  assert.ok(worker.includes(route.source_expression), "Worker dynamic route expression missing: " + route.kind);
+  const runtimeRoute = DYNAMIC_PAGE_ROUTES.find(item => item.kind === route.kind);
+  assert.ok(runtimeRoute, "runtime dynamic route missing: " + route.kind);
+  assert.equal(runtimeRoute.shell, route.shell, "dynamic route shell mismatch: " + route.kind);
+  for (const sample of route.samples) assert.equal(resolvePageShell(sample), route.shell, "runtime dynamic route resolution mismatch: " + sample);
   if (route.client_source_expression) assert.ok(client.includes(route.client_source_expression), "Client route behavior expression missing: " + route.kind);
 }
 
@@ -45,16 +47,14 @@ for (const route of manifest.api_route_literals) {
 }
 
 assert.deepEqual([...SITEMAP_STATIC_PATHS], manifest.sitemap_static_paths, "static sitemap list must match the inventory");
-assert.ok(sitemapSource.includes("export const SITEMAP_STATIC_PATHS"), "sitemap source must expose its canonical static path list");
+assert.ok(sitemapSource.includes("export { SITEMAP_STATIC_PATHS }"), "sitemap must re-export the canonical static path list");
 for (const endpoint of manifest.sitemap_endpoints) {
   assert.ok(worker.includes('path === "' + endpoint + '"') || worker.includes('path !== "' + endpoint + '"') || worker.includes('path==="' + endpoint + '"') || worker.includes('path!=="' + endpoint + '"'), "Worker sitemap endpoint missing: " + endpoint);
   assert.ok(wrangler.includes('"' + endpoint + '"'), "Cloudflare route missing for " + endpoint);
 }
 
-const noindexMatch = worker.match(/const noindex=new Set\(\[([\s\S]*?)\]\)\.has\(p\)/);
-assert.ok(noindexMatch, "Worker exact noindex set must remain discoverable");
-const actualNoindex = [...noindexMatch[1].matchAll(/"([^"]+)"/g)].map(match => match[1]);
-assert.deepEqual(actualNoindex, manifest.noindex_exact_paths, "noindex route list must match source");
+const actualNoindex = [...NOINDEX_EXACT_PATHS];
+assert.deepEqual(actualNoindex, manifest.noindex_exact_paths, "noindex route list must match the canonical runtime registry");
 for (const route of manifest.page_routes) {
   if (manifest.noindex_exact_paths.includes(route.path)) {
     const utilityNoindex = ["/search", "/omniportal", "/trend-factory", "/made-for-you", "/for-you"].includes(route.path);
