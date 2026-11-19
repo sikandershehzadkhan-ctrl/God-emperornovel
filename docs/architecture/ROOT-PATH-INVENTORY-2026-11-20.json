@@ -4,7 +4,7 @@
   "target_ref": "main",
   "target_commit": "25aa2667a6a714a72578a35baac2a113f256f738",
   "source": "GitHub Contents API root listing",
-  "scope": "Root-level paths only. This is an evidence snapshot, not the canonical ownership registry.",
+  "scope": "Root-level paths only. Evidence snapshot, not canonical ownership registry.",
   "totals": {
     "paths": 156,
     "directories": 7,
@@ -13,8 +13,7 @@
   "classification_counts": {
     "directory": 7,
     "build-or-runtime-configuration": 4,
-    "historical-deployment-instructions": 65,
-    "unclassified-root-file": 1,
+    "historical-deployment-instructions": 66,
     "historical-binary-archive": 76,
     "repository-documentation": 2,
     "root-html-entrypoint": 1
@@ -410,7 +409,7 @@
       "type": "file",
       "sha": "8b137891791fe96927ad78e64b0aad7bded08bdc",
       "size": 1,
-      "classification": "unclassified-root-file"
+      "classification": "historical-deployment-instructions"
     },
     {
       "path": "God-Emperor-Novel-10.1-Imperial-UI.zip",
