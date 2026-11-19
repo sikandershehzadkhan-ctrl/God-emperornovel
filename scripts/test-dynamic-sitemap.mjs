@@ -3,12 +3,12 @@ import { readFile } from "node:fs/promises";
 import {
   SITEMAP_PAGE_SIZE,
   SITEMAP_STATIC_PATHS,
-  NOINDEX_EXACT_PATHS,
   renderSitemapIndex,
   renderStaticSitemap,
   renderNovelSitemap,
   renderChapterSitemap
 } from "../src/sitemap.mjs";
+import { NOINDEX_EXACT_PATHS } from "../src/route-registry.mjs";
 
 const origin = "https://stories.example";
 const index = renderSitemapIndex(origin, 3, 2);
@@ -52,7 +52,7 @@ for (const path of ["/sitemap.xml", "/sitemap-static.xml", "/sitemap-novels.xml"
   assert.ok(wrangler.includes('"' + path + '"'), "Cloudflare routes " + path + " through the Worker");
 }
 assert.ok(robots.includes("Sitemap: " + origin.replace("https://stories.example", "https://god-emperornovel.sikandershehzadkhan.workers.dev") + "/sitemap.xml"), "robots.txt advertises the canonical sitemap");
-const fallbackPaths=[...fallback.matchAll(/<loc>([^<]+)<\\/loc>/g)].map(match=>new URL(match[1]).pathname);
+const fallbackPaths=[...fallback.matchAll(/<loc>([^<]+)<\/loc>/g)].map(match=>new URL(match[1]).pathname);
 assert.deepEqual(fallbackPaths,[...SITEMAP_STATIC_PATHS],"static fallback sitemap must exactly match canonical static route membership");
 assert.ok(fallbackPaths.every(path=>!NOINDEX_EXACT_PATHS.includes(path)),"static fallback sitemap must exclude every noindex route");
 for (const utility of ["/search", "/omniportal", "/trend-factory"]) assert.ok(!fallback.includes("workers.dev" + utility + "</loc>"), "static fallback sitemap excludes utility route: " + utility);
