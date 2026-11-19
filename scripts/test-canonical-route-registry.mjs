@@ -23,6 +23,7 @@ assert.equal(canonicalizePagePath("/author/example.name/"),"/author/example.name
 assert.equal(canonicalizePagePath("/assets/"),"/assets/");
 assert.deepEqual(resolveRouteRedirect("/fandom/dragon"),{path:"/catalog",tag:"dragon"});
 assert.deepEqual(resolveRouteRedirect("/fandom/series/dragon"),{path:"/catalog",tag:"dragon"});
+assert.deepEqual(resolveRouteRedirect("/fandom/series/dragon/"),{path:"/catalog",tag:"dragon"});
 assert.deepEqual(resolveRouteRedirect("/fandom/"),{path:"/catalog",tag:null});
 assert.equal(resolveRouteRedirect("/fandom/%E0%A4%A").invalid,true);
 assert.ok(worker.includes("const routeRedirect=resolveRouteRedirect(p)"),"Legacy fandom routes must redirect server-side");
