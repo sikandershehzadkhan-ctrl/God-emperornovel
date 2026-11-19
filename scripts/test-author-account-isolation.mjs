@@ -42,6 +42,19 @@ assert.equal(pa.status,200);assert.equal(pb.status,200);assert.deepEqual(pa.data
 const ca=await req("/api/author/chapters?novel_id=101",ta),cb=await req("/api/author/chapters?novel_id=202",tb);
 const xa=await req("/api/author/chapters?novel_id=202",ta),xb=await req("/api/author/chapters?novel_id=101",tb);
 assert.equal(ca.status,200);assert.equal(cb.status,200);assert.deepEqual(ca.data.map(x=>+x.id),[1001]);assert.deepEqual(cb.data.map(x=>+x.id),[2001]);assert.equal(xa.status,403);assert.equal(xb.status,403);
+
+assert.equal((await req("/api/author/ai/projects/11",tb,"PATCH",{name:"Compromised Project"})).status,403,"author B cannot mutate author A's AI project");
+assert.equal(db.prepare("SELECT name FROM ai_author_projects WHERE id=11").get().name,"A Project","cross-owner AI project mutation leaves the record unchanged");
+assert.equal((await req("/api/author/ai/projects/11",ta,"PATCH",{name:"A Updated Project"})).status,200,"project owner can update their own AI project");
+assert.equal(db.prepare("SELECT name FROM ai_author_projects WHERE id=11").get().name,"A Updated Project","owner update is persisted");
+assert.equal((await req("/api/author/chapters",tb,"POST",{novel_id:101,chapter_number:2,title:"Unauthorized Chapter",content:"This must not be written."})).status,403,"author B cannot create a chapter in author A's novel");
+assert.equal(db.prepare("SELECT COUNT(*) n FROM chapters WHERE novel_id=101 AND chapter_number=2").get().n,0,"rejected cross-owner chapter creation writes no row");
+const createdChapter=await req("/api/author/chapters",ta,"POST",{novel_id:101,chapter_number:2,title:"Owner Chapter",content:"An original chapter draft."});
+assert.equal(createdChapter.status,201,"novel owner can create a chapter draft");
+assert.equal(db.prepare("SELECT COUNT(*) n FROM chapters WHERE novel_id=101 AND chapter_number=2").get().n,1,"owner chapter draft is persisted");
+assert.equal((await req("/api/author/chapters/1001",tb,"PATCH",{title:"Hijacked Chapter"})).status,403,"author B cannot mutate author A's existing chapter");
+assert.equal(db.prepare("SELECT title FROM chapters WHERE id=1001").get().title,"A Chapter","rejected chapter mutation leaves original content unchanged");
+
 assert.equal((await req("/api/author/novels",null)).status,403,"unauthenticated callers must be denied by the author-role guard");
 
 const validApplication=(display_name)=>({display_name,bio:"I write original stories with consistent characters, thoughtful worldbuilding, and a long-term commitment to readers.",experience:"Independent writing practice",sample_work:"Original sample. ".repeat(20),preferred_formats:["original","web_novel"],rights_confirmed:true});
@@ -62,4 +75,4 @@ assert.equal(db.prepare("SELECT role FROM users WHERE id=5").get().role,"user","
 assert.equal((await req("/api/admin/author-applications/"+submittedB.data.id,tc,"PATCH",{status:"approved",review_notes:"Second decision"})).status,409,"reviewed applications cannot be decided twice");
 assert.equal((await req("/api/admin/author-applications/99999",tc,"PATCH",{status:"approved",review_notes:"Valid note"})).status,404,"missing application returns not found");
 
-db.close();console.log("PASS: two-author Worker/SQLite isolation for novel lists, AI project lists, chapter workspaces, cross-owner denials, ticket-ledger isolation, per-user request quotas, applicant-private application records, valid application submission, admin-only application review, approval/rejection role transitions, immutable final decisions, and unauthenticated access.");
+db.close();console.log("PASS: two-author Worker/SQLite isolation for novel lists, AI project lists, chapter workspaces, cross-owner read and write denials, AI project update isolation, chapter creation and update ownership, ticket-ledger isolation, per-user request quotas, applicant-private application records, valid application submission, admin-only application review, approval/rejection role transitions, immutable final decisions, and unauthenticated access.");
