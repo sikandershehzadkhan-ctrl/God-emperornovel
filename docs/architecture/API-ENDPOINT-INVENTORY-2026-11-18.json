@@ -1147,7 +1147,8 @@
       "observed_helper_signals": [
         "need"
       ],
-      "review_required": true
+      "review_required": true,
+      "method_contract": "explicit-literal-method-guard"
     },
     {
       "pattern": "/api/novels/{id}/batch-unlock",
@@ -1159,7 +1160,8 @@
       "observed_helper_signals": [
         "need"
       ],
-      "review_required": true
+      "review_required": true,
+      "method_contract": "explicit-literal-method-guard"
     },
     {
       "pattern": "/api/admin/author-applications/{id}",
@@ -1171,7 +1173,8 @@
       "observed_helper_signals": [
         "admin"
       ],
-      "review_required": true
+      "review_required": true,
+      "method_contract": "explicit-literal-method-guard"
     },
     {
       "pattern": "/api/admin/users/{id}",
@@ -1183,7 +1186,8 @@
       "observed_helper_signals": [
         "admin"
       ],
-      "review_required": true
+      "review_required": true,
+      "method_contract": "explicit-literal-method-guard"
     },
     {
       "pattern": "/api/author/ai/projects/{id}",
@@ -1196,7 +1200,8 @@
       "observed_helper_signals": [
         "author"
       ],
-      "review_required": true
+      "review_required": true,
+      "method_contract": "explicit-literal-method-guard"
     },
     {
       "pattern": "/api/admin/publishing/novels/{id}",
@@ -1208,7 +1213,8 @@
       "observed_helper_signals": [
         "admin"
       ],
-      "review_required": true
+      "review_required": true,
+      "method_contract": "explicit-literal-method-guard"
     },
     {
       "pattern": "/api/admin/publishing/chapters/{id}",
@@ -1220,7 +1226,8 @@
       "observed_helper_signals": [
         "admin"
       ],
-      "review_required": true
+      "review_required": true,
+      "method_contract": "explicit-literal-method-guard"
     },
     {
       "pattern": "/api/admin/donations/{id}",
@@ -1232,7 +1239,8 @@
       "observed_helper_signals": [
         "admin"
       ],
-      "review_required": true
+      "review_required": true,
+      "method_contract": "explicit-literal-method-guard"
     },
     {
       "pattern": "/api/admin/reports/{id}",
@@ -1244,7 +1252,8 @@
       "observed_helper_signals": [
         "admin"
       ],
-      "review_required": true
+      "review_required": true,
+      "method_contract": "explicit-literal-method-guard"
     },
     {
       "pattern": "/api/admin/requests/{id}",
@@ -1256,7 +1265,8 @@
       "observed_helper_signals": [
         "admin"
       ],
-      "review_required": true
+      "review_required": true,
+      "method_contract": "explicit-literal-method-guard"
     },
     {
       "pattern": "/api/admin/connector-authorization-requests/{id}",
@@ -1268,7 +1278,8 @@
       "observed_helper_signals": [
         "admin"
       ],
-      "review_required": true
+      "review_required": true,
+      "method_contract": "explicit-literal-method-guard"
     },
     {
       "pattern": "/api/author/ai/projects/{id}/blueprint",
@@ -1280,7 +1291,8 @@
       "observed_helper_signals": [
         "author"
       ],
-      "review_required": true
+      "review_required": true,
+      "method_contract": "explicit-literal-method-guard"
     },
     {
       "pattern": "/api/author/ai/projects/{id}/run",
@@ -1292,7 +1304,8 @@
       "observed_helper_signals": [
         "author"
       ],
-      "review_required": true
+      "review_required": true,
+      "method_contract": "explicit-literal-method-guard"
     },
     {
       "pattern": "/api/author/ai/projects/{id}/jobs",
@@ -1304,7 +1317,8 @@
       "observed_helper_signals": [
         "author"
       ],
-      "review_required": true
+      "review_required": true,
+      "method_contract": "explicit-literal-method-guard"
     },
     {
       "pattern": "/api/author/novels/{id}/submit",
@@ -1316,7 +1330,8 @@
       "observed_helper_signals": [
         "author"
       ],
-      "review_required": true
+      "review_required": true,
+      "method_contract": "explicit-literal-method-guard"
     },
     {
       "pattern": "/api/author/novels/{id}",
@@ -1328,7 +1343,8 @@
       "observed_helper_signals": [
         "author"
       ],
-      "review_required": true
+      "review_required": true,
+      "method_contract": "explicit-literal-method-guard"
     },
     {
       "pattern": "/api/author/chapters/{id}",
@@ -1340,7 +1356,8 @@
       "observed_helper_signals": [
         "author"
       ],
-      "review_required": true
+      "review_required": true,
+      "method_contract": "explicit-literal-method-guard"
     },
     {
       "pattern": "/api/author/chapters/{id}/publish",
@@ -1352,7 +1369,8 @@
       "observed_helper_signals": [
         "author"
       ],
-      "review_required": true
+      "review_required": true,
+      "method_contract": "explicit-literal-method-guard"
     },
     {
       "pattern": "/api/admin/publishing/chapters",
@@ -1364,7 +1382,8 @@
       "observed_helper_signals": [
         "admin"
       ],
-      "review_required": true
+      "review_required": true,
+      "method_contract": "explicit-literal-method-guard"
     }
   ],
   "known_findings": [
