@@ -24,7 +24,15 @@ These are source-level positive signals. They do not replace adversarial cross-a
 
 ## Findings requiring follow-up
 
-### 1. Comic chapter policy is not applied consistently on edit
+### 1. Comic chapter policy consistency on edit
+
+**Original finding:** The chapter edit route did not apply the same format-aware validator as creation.
+
+**Current status:** The edit route now loads the parent novel format and applies `validateComicChapterContent(content)` before saving. `scripts/test-api-resource-validation-contract.mjs` checks the validator remains on both create and edit paths, and the full build passes. This is source regression coverage, not a live author workflow browser test.
+
+<!-- Historical finding retained below for traceability. -->
+
+### 1a. Original comic chapter finding (historical)
 
 - `POST /api/author/chapters` calls `validateComicChapterContent(content)` when the parent novel uses a comic format.
 - `PATCH /api/author/chapters/{id}` checks the chapter's parent novel ownership, but does not call the same comic-content validator before saving.
@@ -34,7 +42,15 @@ These are source-level positive signals. They do not replace adversarial cross-a
 
 **Recommended correction:** Apply the same format-aware validator to chapter edits, and add a regression test that proves invalid comic content is rejected by both create and update paths. Do not silently rewrite existing chapter data.
 
-### 2. Bookmark write validation is weaker than neighboring reader endpoints
+### 2. Bookmark write validation
+
+**Original finding:** The bookmark route previously accepted caller-supplied IDs without validating the published novel/chapter relationship.
+
+**Current status:** The handler now requires positive safe-integer IDs and verifies that the exact chapter belongs to a published, rights-eligible novel and is itself published. `scripts/test-api-resource-validation-contract.mjs` checks this contract; the two-user Worker-handler integration suite also exercises account-scoped bookmark reads/writes. Invalid chapter/novel pairs are covered by the integration suite.
+
+<!-- Historical finding retained below for traceability. -->
+
+### 2a. Original bookmark finding (historical)
 
 - `POST /api/bookmark` requires authentication and scopes the write to `u.id`.
 - It directly accepts `novel_id` and `chapter_number` from the request body without first checking that the novel/chapter exists, is published, and is rights-eligible, or that the chapter belongs to the supplied novel.

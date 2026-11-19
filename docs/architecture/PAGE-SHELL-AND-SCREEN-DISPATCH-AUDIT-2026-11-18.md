@@ -68,6 +68,8 @@ These are source-level checks. They do not certify actual screen-reader output, 
 
 ## Remaining screen audit
 
+The build-gated integration suite now executes the real Worker fetch handler against an in-memory SQLite database through a D1-compatible adapter. It verifies two-user isolation for library, history, bookmarks, follows and notifications, and exercises `/sitemap.xml`, `/sitemap-novels.xml` and `/sitemap-chapters.xml` with eligible, draft and rights-pending content. These checks pass in CI but are not production D1 or browser verification.
+
 Still unverified and release-gated:
 
 - Visual completeness and responsive behavior for every exact and dynamic route.
