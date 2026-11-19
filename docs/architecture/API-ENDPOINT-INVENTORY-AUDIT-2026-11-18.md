@@ -28,9 +28,9 @@ The machine-readable inventory is `docs/architecture/API-ENDPOINT-INVENTORY-2026
 
 ## Important limitations found
 
-Fourteen literal paths have at least one branch without an explicit method predicate. Those are recorded as method-unresolved rather than guessing their intended methods. A handler accepting a path without checking `m` is not automatically a deliberate GET contract.
+Every literal path now has a recorded explicit method contract or a specifically reviewed delegated method contract. The build test rejects unresolved method-evidence classifications. Full request/response schemas, error semantics, and live unsupported-method behavior remain outside this first-pass inventory.
 
-The dynamic route inventory includes reader novel/chapter lookups, chapter unlock and batch unlock, author AI project actions, author novel/chapter operations, and administrator review/publishing/payment/connector operations.
+The dynamic route inventory includes reader novel/chapter lookups, chapter unlock and batch unlock, author AI project actions, author novel/chapter operations, and administrator review/publishing/payment/connector operations. The build-gated inventory now rejects any literal route lacking an explicit method contract or an explicitly reviewed delegated contract; this is method evidence, not a complete response/error contract.
 
 The `/api/author/ai/projects/{id}` source explicitly checks the project's `owner_user_id` against the signed-in user (admins are exempt). This is a useful positive source signal, but it does not establish that all other author-owned resources use equally strong checks.
 

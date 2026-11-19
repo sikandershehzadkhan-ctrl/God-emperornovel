@@ -45,7 +45,7 @@ These are source-level positive signals. They do not replace adversarial cross-a
 
 ### 3. Cross-account isolation still needs executable tests
 
-Static SQL inspection shows multiple user-id predicates, but it does not prove that no alternate code path leaks data. Add tests with two independent users for library, history, bookmarks, follows, notifications, ticket ledger, novel requests, author applications, AI projects, novels, and chapters.
+Static SQL inspection alone does not prove that no alternate code path leaks data. The build now executes the real Worker handler with two independent session tokens against local SQLite and verifies isolated reads/writes for library, history, bookmarks, follows and notifications. Broader tests remain required for ticket ledger, novel requests, author applications, AI projects, author novels and chapters, followed by adversarial verification against a Cloudflare staging D1 binding.
 
 
 ### 3. Taxonomy submission identity could be spoofed
@@ -80,7 +80,7 @@ Static SQL inspection shows multiple user-id predicates, but it does not prove t
 
 - Reviewed the source-level ownership predicates for reader history, library, bookmarks, follows, notifications, request quotas, author novel lists, and AI project lists.
 - The build-gated `test-api-owner-scope-contract.mjs` asserts authenticated-user bindings, author guards, project/novel ownership checks, and admin-only guards for representative administrative routes.
-- This improves regression coverage but does not prove cross-account isolation under runtime conditions; issue #335 remains open for two-user adversarial tests.
+- This improves regression coverage but does not prove cross-account isolation under runtime conditions; issue #335 remains open for broader two-user adversarial coverage and Cloudflare staging D1 verification. The current local integration test covers five reader collections only.
 
 ## Security boundary
 
@@ -98,4 +98,4 @@ No production deployment, D1 mutation, or live API test was performed.
 - Comment creation now validates positive safe-integer novel and parent IDs, checks the same publication/rights eligibility before insert, and retains the existing same-novel visible-parent check for replies.
 - Added `scripts/test-public-comment-eligibility.mjs` to the normal build gate. It is a source regression contract, not a live D1 or adversarial runtime test.
 
-**Status:** Source correction and build-gated regression check added. CI for the resulting commit is pending; two-user D1-backed isolation tests remain outstanding.
+**Status:** Source correction and build-gated regression check pass in the latest Cloudflare Source Validation workflow. The current Worker-handler integration suite also verifies reader collection isolation, but this comment-specific correction still lacks a dedicated two-user live-D1 adversarial test.
