@@ -242,3 +242,10 @@ The AI author-project detail, edit, Story Bible generation, chapter-run, and job
 - Donation and refund state transitions are now conditional on that balance precondition as well as the pending state. This prevents marking a transaction approved/rejected-for-refund when the account cannot safely receive its credit.
 - The subsequent account update repeats the bound, and the ledger insert remains dependent on exactly one successful balance update.
 - Regression assertions were added for all three credit paths. These are source-level safeguards; test execution, D1 batch semantics under live concurrency, and deployment remain unverified.
+
+
+## Ticket-debit balance integrity (2026-11-19)
+
+- Single and batch chapter unlock debits now require the account balance to be a non-negative whole number no greater than JavaScript's maximum safe integer, in addition to sufficient funds and the purchase-time chapter/rights checks.
+- Novel-request creation now applies the same whole-number and safe-integer constraints before inserting a paid request. Its conditional debit repeats those balance checks and verifies the newly inserted request cost is still affordable before subtracting tickets.
+- Source-level regression assertions cover all three spending paths. The test script has not yet been executed in a verified runtime, and live D1 batch/concurrency behavior remains unverified.
