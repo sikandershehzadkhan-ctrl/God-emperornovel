@@ -57,6 +57,15 @@ Static SQL inspection shows multiple user-id predicates, but it does not prove t
 
 **Status:** Corrected in the foundation branch; runtime integration and abuse-rate testing remain outstanding.
 
+
+### 4. Connector registration could bypass the evidence-first workflow
+
+- The admin connector creation endpoint inserted new connectors with `rights_status='authorized'`, even though the record had no rights evidence or terms URL.
+- The admin UI's separate authorization workflow explicitly asks for evidence and requires a review decision before a connector can be enabled.
+- New connector registrations now start `pending` and disabled. The response states that rights review is required. The build-gated contract checks that only the explicit evidence-backed review flow can set the authorized state.
+
+**Status:** Corrected in the foundation branch; actual connector-provider behavior and evidence verification remain human-review responsibilities.
+
 ## Security boundary
 
 No confirmed cross-user data exposure was established by this first pass. The two findings above are validation/policy consistency issues. This audit does not certify CSRF protections, rate limits, method rejection, session rotation, or all delegated handlers.
