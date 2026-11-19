@@ -22,7 +22,7 @@ for (const endpoint of manifest.literal_endpoints) {
     assert.ok(worker.includes("if(method==='GET')") && worker.includes("if(method==='POST')") && worker.includes("return json({error:'Method not allowed'},405)"), "Delegated taxonomy handler must explicitly allow GET/POST and reject other methods");
   } else {
     for (const method of endpoint.explicit_methods) {
-      assert.ok(api.includes('m===\\"'+method+'\\"') || api.includes('m === \\"'+method+'\\"') || api.includes("m==="+"'"+method+"'") || api.includes("m === '"+method+"'"), "Explicit method evidence must remain in source: " + endpoint.path + " " + method);
+      assert.ok(api.includes('m==="'+method+'"') || api.includes('m === "'+method+'"') || api.includes("m==='"+method+"'") || api.includes("m === '"+method+"'"), "Explicit method evidence must remain in source: " + endpoint.path + " " + method);
     }
   }
 }
