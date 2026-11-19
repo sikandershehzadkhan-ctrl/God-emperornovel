@@ -61,7 +61,7 @@ for (const endpoint of adminEndpoints) {
     if (endpoint.path === "/api/admin/taxonomy" && method === "POST") {
       assert.ok(branch.includes("adminTaxonomy(req,env,u)"), "taxonomy moderation must delegate with the resolved user");
       const helperStart = worker.indexOf("async function adminTaxonomy(");
-      const helperEnd = worker.indexOf("\\n", helperStart);
+      const helperEnd = worker.indexOf("\n", helperStart);
       assert.ok(helperStart >= 0 && worker.slice(helperStart, helperEnd > helperStart ? helperEnd : helperStart + 1200).includes("admin(u)"), "delegated taxonomy moderation must require administrator role");
     } else {
       assert.ok(branch.includes("admin(u)"), "admin API method must enforce administrator authorization before work: " + method + " " + endpoint.path);
