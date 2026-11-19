@@ -24,6 +24,12 @@ assert.ok(worker.includes("const noindex=isNoindexPath(p);"),
 assert.ok(worker.includes("else if(resolvePageShell(p)||!p.includes(\".\"))r=await html(req,env);"),
   "Worker page dispatch must use the canonical route registry");
 
+for (const path of Object.keys(PAGE_SHELLS)) {
+  assert.ok(wrangler.includes('"' + path + '"'), "Cloudflare must route exact page through the Worker: " + path);
+}
+for (const prefix of ["/format/*", "/novel/*", "/read/*", "/fandom/*", "/author/*"]) {
+  assert.ok(wrangler.includes('"' + prefix + '"'), "Cloudflare must route dynamic page family through the Worker: " + prefix);
+}
 for (const [path, shell] of Object.entries(PAGE_SHELLS)) {
   assert.equal(resolvePageShell(path), shell, "Exact route resolves to its declared shell: " + path);
   assert.ok(existsSync(new URL("../public/" + shell, import.meta.url)),
