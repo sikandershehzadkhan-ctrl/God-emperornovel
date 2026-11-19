@@ -25,3 +25,14 @@ export function canonicalizePagePath(pathname) {
   const canonical = pathname.replace(/\/+$/, "");
   return resolvePageShell(canonical) ? canonical : pathname;
 }
+
+export function resolveRouteRedirect(pathname) {
+  const match = pathname.match(/^\\/fandom\\/(.+)$/);
+  if (!match) return null;
+  const rawSlug = match[1].split("/").pop();
+  try {
+    return Object.freeze({ path: "/catalog", tag: decodeURIComponent(rawSlug) });
+  } catch {
+    return Object.freeze({ invalid: true });
+  }
+}
