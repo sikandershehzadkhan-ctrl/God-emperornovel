@@ -18,7 +18,7 @@ for (const endpoint of manifest.literal_endpoints) {
   assert.ok(endpoint.source_lines.length > 0, "Every literal API endpoint needs source line evidence: " + endpoint.path);
   assert.ok(endpoint.occurrences >= 1, "Every literal API endpoint needs at least one occurrence: " + endpoint.path);
   if (endpoint.method_evidence === "delegated-method-contract") {
-    assert.ok(worker.includes("async function communityTaxonomy(req,env)"), "Delegated taxonomy handler must exist");
+    assert.ok(worker.includes("async function communityTaxonomy(req,env,u)"), "Delegated taxonomy handler must exist");
     assert.ok(worker.includes("if(method==='GET')") && worker.includes("if(method==='POST')") && worker.includes("return json({error:'Method not allowed'},405)"), "Delegated taxonomy handler must explicitly allow GET/POST and reject other methods");
   } else {
     for (const method of endpoint.explicit_methods) {
@@ -44,7 +44,7 @@ assert.equal(manifest.literal_endpoints.filter(endpoint => endpoint.method_evide
 for (const path of ["/api/health","/api/me","/api/config","/api/genres","/api/tags","/api/public-authors","/api/sources","/api/omni/status","/api/omni/search","/api/omni/resolve","/api/omni/smart-unlock","/api/novels","/api/admin/stats"]) {
   assert.ok(api.includes(`if(p==="${path}"&&m==="GET")`), "Read-only API endpoint must reject non-GET methods: " + path);
 }
-assert.ok(api.includes('if(p==="/api/taxonomy")return communityTaxonomy(req,env)'), "Taxonomy route must delegate to its method-aware handler");
+assert.ok(api.includes('if(p==="/api/taxonomy")return communityTaxonomy(req,env,u)'), "Taxonomy route must delegate to its method-aware handler");
 assert.ok(api.includes('let nm=p.match(/^\\/api\\/novels\\/(\\d+)$/);if(nm&&m==="GET")'), "Public novel detail route must be GET-only");
 assert.ok(api.includes('let cm=p.match(/^\\/api\\/chapters\\/(\\d+)$/);if(cm&&m==="GET")'), "Public chapter detail route must be GET-only");
 
