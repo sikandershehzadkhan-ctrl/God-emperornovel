@@ -638,7 +638,24 @@ async function api(req,env){
  }
  if(p==="/api/admin/stats"&&m==="GET"){const e=admin(u);if(e)return e;const [a,b,c,d,r,t,rep,authorApps]=await Promise.all([env.DB.prepare("SELECT COUNT(*) n FROM users").first(),env.DB.prepare("SELECT COUNT(*) n FROM novels").first(),env.DB.prepare("SELECT COUNT(*) n FROM chapters").first(),env.DB.prepare("SELECT COUNT(*) n FROM donations WHERE status='pending'").first(),env.DB.prepare("SELECT COUNT(*) n FROM novel_requests WHERE status='pending'").first(),env.DB.prepare("SELECT COUNT(*) n FROM taxonomy_submissions WHERE status='pending'").first(),env.DB.prepare("SELECT COUNT(*) n FROM reports WHERE status IN ('open','reviewing')").first(),env.DB.prepare("SELECT COUNT(*) n FROM author_applications WHERE status='pending'").first()]);return json({users:a.n,novels:b.n,chapters:c.n,pendingDonations:d.n,pendingRequests:r.n,pendingTaxonomy:t.n,openReports:rep.n,pendingAuthorApplications:authorApps.n})}
  if(p==="/api/admin/users"&&m==="GET"){const e=admin(u);if(e)return e;return json((await env.DB.prepare("SELECT id,username,email,role,tickets,verified,banned,created_at FROM users ORDER BY id LIMIT 500").all()).results)}
- let au=p.match(/^\/api\/admin\/users\/(\d+)$/);if(au&&m==="PATCH"){const e=admin(u);if(e)return e;const b=await body(req),id=Number(au[1]);if(id===u.id&&String(b.role||u.role)!=='admin')return json({error:"You cannot remove your own administrator role"},400);const role=String(b.role||'user');if(!['user','author','moderator','admin'].includes(role))return json({error:"Invalid role"},400);await env.DB.prepare("UPDATE users SET role=?,verified=?,banned=? WHERE id=?").bind(role,b.verified?1:0,b.banned?1:0,id).run();return json({ok:true})}
+ let au=p.match(/^\/api\/admin\/users\/(\d+)$/);if(au&&m==="PATCH"){
+  const e=admin(u);if(e)return e;
+  const b=await body(req),id=Number(au[1]),current=await env.DB.prepare("SELECT id,role,verified,banned FROM users WHERE id=?").bind(id).first();
+  if(!current)return json({error:"User not found"},404);
+  const role=b.role===undefined?String(current.role):String(b.role);
+  const verified=b.verified===undefined?Number(current.verified):b.verified?1:0;
+  const banned=b.banned===undefined?Number(current.banned):b.banned?1:0;
+  if(!['user','author','moderator','admin'].includes(role))return json({error:"Invalid role"},400);
+  if(id===u.id&&(role!=='admin'||banned===1))return json({error:"You cannot demote or ban your own administrator account"},400);
+  const statements=[
+   env.DB.prepare("UPDATE users SET role=?,verified=?,banned=? WHERE id=? AND (NOT (role='admin' AND banned=0 AND (?!='admin' OR ?=1)) OR EXISTS (SELECT 1 FROM users WHERE role='admin' AND banned=0 AND id!=?))").bind(role,verified,banned,id,role,banned,id)
+  ];
+  if(banned===1)statements.push(env.DB.prepare("DELETE FROM sessions WHERE user_id=? AND changes()=1").bind(id));
+  const results=await env.DB.batch(statements),changed=Number(results?.[0]?.meta?.changes??results?.[0]?.changes??0);
+  if(changed!==1)return json({error:"This change would remove the last active administrator. Keep at least one active administrator."},409);
+  await audit(env,u,"admin_user_updated",`target=${id};role=${role};verified=${verified};banned=${banned};sessions_revoked=${banned===1}`);
+  return json({ok:true,sessions_revoked:banned===1});
+ }
 
 
  if(p==="/api/author/ai/status"&&m==="GET"){
