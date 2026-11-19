@@ -32,14 +32,14 @@ assert.match(worker.slice(adminChapterPatchStart,adminChapterDeleteStart), /Numb
 assert.match(worker.slice(adminChapterDeleteStart,adminChapterCreateStart), /Number\\.isSafeInteger\\(id\\)\\|\\|id<1/);
 
 const adminChapterDelete = worker.slice(adminChapterDeleteStart,adminChapterCreateStart);
-assert.match(adminChapterDelete, /SELECT user_id,cost FROM unlocks WHERE chapter_id/ , "Chapter deletion must enumerate every paid unlock before removing records");
-assert.match(adminChapterDelete, /Number\\.isSafeInteger\\(Number\\(x\\.cost\\)\\).*Number\\(x\\.cost\\)>1000000/, "Chapter deletion must stop on malformed unlock costs");
-assert.match(adminChapterDelete, /UPDATE users SET tickets=tickets\\+\\?/ , "Chapter deletion must refund the original unlock cost");
-assert.match(adminChapterDelete, /chapter_unlock_refund/, "Chapter deletion refunds must be recorded in the ticket ledger");
-assert.match(adminChapterDelete, /chapter-delete:/, "Chapter refund ledger references must be idempotent per chapter and account");
-assert.match(adminChapterDelete, /DELETE FROM unlocks WHERE chapter_id=\\? AND NOT EXISTS/, "Unlock records must be retained until every paid refund has a ledger entry");
-assert.match(adminChapterDelete, /DELETE FROM chapters WHERE id=\\? AND NOT EXISTS \\(SELECT 1 FROM unlocks/, "Chapter deletion must be blocked while any unlock record remains");
-assert.match(adminChapterDelete, /chapterDeleted!==1/, "Chapter deletion must confirm the guarded delete succeeded");
+assert.ok(adminChapterDelete.includes("SELECT user_id,cost FROM unlocks WHERE chapter_id"), "Chapter deletion must enumerate every paid unlock before removing records");
+assert.ok(adminChapterDelete.includes("Number.isSafeInteger(Number(x.cost))") && adminChapterDelete.includes("Number(x.cost)>1000000"), "Chapter deletion must stop on malformed unlock costs");
+assert.ok(adminChapterDelete.includes("UPDATE users SET tickets=tickets+?"), "Chapter deletion must refund the original unlock cost");
+assert.ok(adminChapterDelete.includes("chapter_unlock_refund"), "Chapter deletion refunds must be recorded in the ticket ledger");
+assert.ok(adminChapterDelete.includes("chapter-delete:"), "Chapter refund ledger references must be idempotent per chapter and account");
+assert.ok(adminChapterDelete.includes("DELETE FROM unlocks WHERE chapter_id=? AND NOT EXISTS"), "Unlock records must be retained until every paid refund has a ledger entry");
+assert.ok(adminChapterDelete.includes("DELETE FROM chapters WHERE id=? AND NOT EXISTS (SELECT 1 FROM unlocks"), "Chapter deletion must be blocked while any unlock record remains");
+assert.ok(adminChapterDelete.includes("chapterDeleted!==1"), "Chapter deletion must confirm the guarded delete succeeded");
 assert.match(worker, /Number\\.isSafeInteger\\(id\\)\\|\\|id<1\\|\\|!\\['up','down'\\]\\.includes\\(direction\\)/);
 assert.match(worker.slice(adminChapterCreateStart), /Number\\.isSafeInteger\\(nid\\)\\|\\|nid<1\\|\\|!Number\\.isSafeInteger\\(num\\)/);
 
