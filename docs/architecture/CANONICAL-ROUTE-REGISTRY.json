@@ -1,0 +1,489 @@
+{
+  "schema_version": "1.0.0",
+  "registry": "imperial-novel-canonical-page-route-registry",
+  "status": "runtime-source-contract-foundation-review-gated",
+  "product": "Imperial Novel",
+  "motto": "Read • Create • Conquer",
+  "generated_at": "2026-11-20",
+  "source_evidence": {
+    "repository": "sikandershehzadkhan-ctrl/God-emperornovel",
+    "branch": "foundation/mainline-root-inventory-2026-11-20",
+    "commit": "3d1523b1821c067b3c6c6efd8c65fa53e60d93e4",
+    "runtime_registry_file": "src/route-registry.mjs",
+    "runtime_registry_blob": "eeff35a9af1d06cc69ed93918c82f45f5008d039",
+    "worker_file": "src/index.js",
+    "worker_blob": "bc210f2b439d44572bf24384158e465bf55ded87",
+    "sitemap_file": "src/sitemap.mjs",
+    "sitemap_blob": "c868fb87931be08f132b83232f379fd5fd63e2d3",
+    "cloudflare_config_file": "wrangler.toml",
+    "cloudflare_config_blob": "8059d772d136d67b610f0505d51f8baba551b46e",
+    "method": "Runtime route declarations are read from src/route-registry.mjs; Worker dispatch imports the resolver; static sitemap membership is read from src/sitemap.mjs; Cloudflare run_worker_first coverage is checked by scripts/test-route-registry.mjs."
+  },
+  "pages": [
+    {
+      "path": "/",
+      "shell": "index.html",
+      "status": "worker-page-shell-dispatch-observed",
+      "crawler_policy": "index-default",
+      "access_policy": "not-certified",
+      "sitemap_policy": "included-in-static-sitemap",
+      "screen_completeness": "not-yet-audited"
+    },
+    {
+      "path": "/catalog",
+      "shell": "catalog.html",
+      "status": "worker-page-shell-dispatch-observed",
+      "crawler_policy": "index-default",
+      "access_policy": "not-certified",
+      "sitemap_policy": "included-in-static-sitemap",
+      "screen_completeness": "not-yet-audited"
+    },
+    {
+      "path": "/discover",
+      "shell": "catalog.html",
+      "status": "worker-page-shell-dispatch-observed",
+      "crawler_policy": "index-default",
+      "access_policy": "not-certified",
+      "sitemap_policy": "not-in-static-sitemap",
+      "screen_completeness": "not-yet-audited"
+    },
+    {
+      "path": "/formats",
+      "shell": "index.html",
+      "status": "worker-page-shell-dispatch-observed",
+      "crawler_policy": "index-default",
+      "access_policy": "not-certified",
+      "sitemap_policy": "included-in-static-sitemap",
+      "screen_completeness": "not-yet-audited"
+    },
+    {
+      "path": "/genres",
+      "shell": "genres.html",
+      "status": "worker-page-shell-dispatch-observed",
+      "crawler_policy": "index-default",
+      "access_policy": "not-certified",
+      "sitemap_policy": "included-in-static-sitemap",
+      "screen_completeness": "not-yet-audited"
+    },
+    {
+      "path": "/tags",
+      "shell": "tags.html",
+      "status": "worker-page-shell-dispatch-observed",
+      "crawler_policy": "index-default",
+      "access_policy": "not-certified",
+      "sitemap_policy": "included-in-static-sitemap",
+      "screen_completeness": "not-yet-audited"
+    },
+    {
+      "path": "/search",
+      "shell": "search.html",
+      "status": "worker-page-shell-dispatch-observed",
+      "crawler_policy": "index-default",
+      "access_policy": "not-certified",
+      "sitemap_policy": "included-in-static-sitemap",
+      "screen_completeness": "not-yet-audited"
+    },
+    {
+      "path": "/library",
+      "shell": "library.html",
+      "status": "worker-page-shell-dispatch-observed",
+      "crawler_policy": "noindex",
+      "access_policy": "not-certified; noindex is not access control",
+      "sitemap_policy": "not-in-static-sitemap",
+      "screen_completeness": "not-yet-audited"
+    },
+    {
+      "path": "/history",
+      "shell": "history.html",
+      "status": "worker-page-shell-dispatch-observed",
+      "crawler_policy": "noindex",
+      "access_policy": "not-certified; noindex is not access control",
+      "sitemap_policy": "not-in-static-sitemap",
+      "screen_completeness": "not-yet-audited"
+    },
+    {
+      "path": "/following",
+      "shell": "following.html",
+      "status": "worker-page-shell-dispatch-observed",
+      "crawler_policy": "noindex",
+      "access_policy": "not-certified; noindex is not access control",
+      "sitemap_policy": "not-in-static-sitemap",
+      "screen_completeness": "not-yet-audited"
+    },
+    {
+      "path": "/tickets",
+      "shell": "tickets.html",
+      "status": "worker-page-shell-dispatch-observed",
+      "crawler_policy": "noindex",
+      "access_policy": "not-certified; noindex is not access control",
+      "sitemap_policy": "not-in-static-sitemap",
+      "screen_completeness": "not-yet-audited"
+    },
+    {
+      "path": "/requests",
+      "shell": "requests.html",
+      "status": "worker-page-shell-dispatch-observed",
+      "crawler_policy": "noindex",
+      "access_policy": "not-certified; noindex is not access control",
+      "sitemap_policy": "not-in-static-sitemap",
+      "screen_completeness": "not-yet-audited"
+    },
+    {
+      "path": "/omniportal",
+      "shell": "omniportal.html",
+      "status": "worker-page-shell-dispatch-observed",
+      "crawler_policy": "index-default",
+      "access_policy": "not-certified",
+      "sitemap_policy": "included-in-static-sitemap",
+      "screen_completeness": "not-yet-audited"
+    },
+    {
+      "path": "/community",
+      "shell": "index.html",
+      "status": "worker-page-shell-dispatch-observed",
+      "crawler_policy": "index-default",
+      "access_policy": "not-certified",
+      "sitemap_policy": "included-in-static-sitemap",
+      "screen_completeness": "not-yet-audited"
+    },
+    {
+      "path": "/leaderboard",
+      "shell": "index.html",
+      "status": "worker-page-shell-dispatch-observed",
+      "crawler_policy": "index-default",
+      "access_policy": "not-certified",
+      "sitemap_policy": "included-in-static-sitemap",
+      "screen_completeness": "not-yet-audited"
+    },
+    {
+      "path": "/tier-list",
+      "shell": "index.html",
+      "status": "worker-page-shell-dispatch-observed",
+      "crawler_policy": "index-default",
+      "access_policy": "not-certified",
+      "sitemap_policy": "not-in-static-sitemap",
+      "screen_completeness": "not-yet-audited"
+    },
+    {
+      "path": "/random",
+      "shell": "index.html",
+      "status": "worker-page-shell-dispatch-observed",
+      "crawler_policy": "index-default",
+      "access_policy": "not-certified",
+      "sitemap_policy": "not-in-static-sitemap",
+      "screen_completeness": "not-yet-audited"
+    },
+    {
+      "path": "/made-for-you",
+      "shell": "index.html",
+      "status": "worker-page-shell-dispatch-observed",
+      "crawler_policy": "index-default",
+      "access_policy": "not-certified",
+      "sitemap_policy": "not-in-static-sitemap",
+      "screen_completeness": "not-yet-audited"
+    },
+    {
+      "path": "/settings",
+      "shell": "index.html",
+      "status": "worker-page-shell-dispatch-observed",
+      "crawler_policy": "noindex",
+      "access_policy": "not-certified; noindex is not access control",
+      "sitemap_policy": "not-in-static-sitemap",
+      "screen_completeness": "not-yet-audited"
+    },
+    {
+      "path": "/for-you",
+      "shell": "index.html",
+      "status": "worker-page-shell-dispatch-observed",
+      "crawler_policy": "index-default",
+      "access_policy": "not-certified",
+      "sitemap_policy": "not-in-static-sitemap",
+      "screen_completeness": "not-yet-audited"
+    },
+    {
+      "path": "/trending",
+      "shell": "index.html",
+      "status": "worker-page-shell-dispatch-observed",
+      "crawler_policy": "index-default",
+      "access_policy": "not-certified",
+      "sitemap_policy": "not-in-static-sitemap",
+      "screen_completeness": "not-yet-audited"
+    },
+    {
+      "path": "/vote",
+      "shell": "index.html",
+      "status": "worker-page-shell-dispatch-observed",
+      "crawler_policy": "index-default",
+      "access_policy": "not-certified",
+      "sitemap_policy": "not-in-static-sitemap",
+      "screen_completeness": "not-yet-audited"
+    },
+    {
+      "path": "/notifications",
+      "shell": "index.html",
+      "status": "worker-page-shell-dispatch-observed",
+      "crawler_policy": "noindex",
+      "access_policy": "not-certified; noindex is not access control",
+      "sitemap_policy": "not-in-static-sitemap",
+      "screen_completeness": "not-yet-audited"
+    },
+    {
+      "path": "/trend-factory",
+      "shell": "index.html",
+      "status": "worker-page-shell-dispatch-observed",
+      "crawler_policy": "index-default",
+      "access_policy": "not-certified",
+      "sitemap_policy": "included-in-static-sitemap",
+      "screen_completeness": "not-yet-audited"
+    },
+    {
+      "path": "/community-taxonomy",
+      "shell": "community-taxonomy.html",
+      "status": "worker-page-shell-dispatch-observed",
+      "crawler_policy": "index-default",
+      "access_policy": "not-certified",
+      "sitemap_policy": "included-in-static-sitemap",
+      "screen_completeness": "not-yet-audited"
+    },
+    {
+      "path": "/privacy",
+      "shell": "privacy.html",
+      "status": "worker-page-shell-dispatch-observed",
+      "crawler_policy": "index-default",
+      "access_policy": "not-certified",
+      "sitemap_policy": "included-in-static-sitemap",
+      "screen_completeness": "not-yet-audited"
+    },
+    {
+      "path": "/terms",
+      "shell": "terms.html",
+      "status": "worker-page-shell-dispatch-observed",
+      "crawler_policy": "index-default",
+      "access_policy": "not-certified",
+      "sitemap_policy": "included-in-static-sitemap",
+      "screen_completeness": "not-yet-audited"
+    },
+    {
+      "path": "/copyright",
+      "shell": "copyright.html",
+      "status": "worker-page-shell-dispatch-observed",
+      "crawler_policy": "index-default",
+      "access_policy": "not-certified",
+      "sitemap_policy": "included-in-static-sitemap",
+      "screen_completeness": "not-yet-audited"
+    },
+    {
+      "path": "/account",
+      "shell": "account.html",
+      "status": "worker-page-shell-dispatch-observed",
+      "crawler_policy": "noindex",
+      "access_policy": "not-certified; noindex is not access control",
+      "sitemap_policy": "not-in-static-sitemap",
+      "screen_completeness": "not-yet-audited"
+    },
+    {
+      "path": "/login",
+      "shell": "login.html",
+      "status": "worker-page-shell-dispatch-observed",
+      "crawler_policy": "noindex",
+      "access_policy": "not-certified; noindex is not access control",
+      "sitemap_policy": "not-in-static-sitemap",
+      "screen_completeness": "not-yet-audited"
+    },
+    {
+      "path": "/register",
+      "shell": "register.html",
+      "status": "worker-page-shell-dispatch-observed",
+      "crawler_policy": "noindex",
+      "access_policy": "not-certified; noindex is not access control",
+      "sitemap_policy": "not-in-static-sitemap",
+      "screen_completeness": "not-yet-audited"
+    },
+    {
+      "path": "/admin",
+      "shell": "admin.html",
+      "status": "worker-page-shell-dispatch-observed",
+      "crawler_policy": "noindex",
+      "access_policy": "not-certified; noindex is not access control",
+      "sitemap_policy": "not-in-static-sitemap",
+      "screen_completeness": "not-yet-audited"
+    },
+    {
+      "path": "/author",
+      "shell": "index.html",
+      "status": "worker-page-shell-dispatch-observed",
+      "crawler_policy": "noindex",
+      "access_policy": "not-certified; noindex is not access control",
+      "sitemap_policy": "not-in-static-sitemap",
+      "screen_completeness": "not-yet-audited"
+    }
+  ],
+  "dynamic_pages": [
+    {
+      "kind": "format-landing",
+      "pattern": "^/format/[^/]+/?$",
+      "shell": "index.html",
+      "samples": [
+        "/format/manga",
+        "/format/webtoon"
+      ]
+    },
+    {
+      "kind": "novel-chapter-directory",
+      "pattern": "^/novel/\\d+/chapters/?$",
+      "shell": "novel.html",
+      "samples": [
+        "/novel/42/chapters"
+      ]
+    },
+    {
+      "kind": "novel-detail",
+      "pattern": "^/novel/\\d+/?$",
+      "shell": "novel.html",
+      "samples": [
+        "/novel/42"
+      ]
+    },
+    {
+      "kind": "chapter-reader",
+      "pattern": "^/read/\\d+/\\d+/?$",
+      "shell": "read.html",
+      "samples": [
+        "/read/42/7"
+      ]
+    },
+    {
+      "kind": "fandom-tag-landing",
+      "pattern": "^/fandom/",
+      "shell": "fandom.html",
+      "samples": [
+        "/fandom/dragon",
+        "/fandom/series/dragon"
+      ]
+    },
+    {
+      "kind": "public-author-profile",
+      "pattern": "^/author/[^/]+$",
+      "shell": "author-public.html",
+      "samples": [
+        "/author/example"
+      ]
+    }
+  ],
+  "sitemap": {
+    "static_paths": [
+      "/",
+      "/catalog",
+      "/formats",
+      "/genres",
+      "/tags",
+      "/search",
+      "/community",
+      "/leaderboard",
+      "/omniportal",
+      "/trend-factory",
+      "/community-taxonomy",
+      "/privacy",
+      "/terms",
+      "/copyright"
+    ],
+    "dynamic_families": [
+      {
+        "kind": "published-rights-eligible-novels",
+        "path": "/sitemap-novels.xml?page={page}",
+        "page_size": 10000,
+        "eligibility": "publication_status=published and rights_status in original, public_domain, licensed, authorized"
+      },
+      {
+        "kind": "published-rights-eligible-chapters",
+        "path": "/sitemap-chapters.xml?page={page}",
+        "page_size": 10000,
+        "eligibility": "chapter and parent novel published; parent novel rights_status in original, public_domain, licensed, authorized"
+      }
+    ],
+    "index_path": "/sitemap.xml",
+    "static_path": "/sitemap-static.xml",
+    "origin_policy": "Derived from the incoming request origin by the Worker"
+  },
+  "crawler_policy": {
+    "noindex_exact_paths": [
+      "/admin",
+      "/account",
+      "/login",
+      "/register",
+      "/library",
+      "/history",
+      "/following",
+      "/tickets",
+      "/requests",
+      "/settings",
+      "/notifications",
+      "/author"
+    ],
+    "warning": "Crawler directives are not authentication, authorization, or resource ownership controls."
+  },
+  "cloudflare_worker_first": {
+    "exact_page_routes": [
+      "/",
+      "/catalog",
+      "/discover",
+      "/formats",
+      "/genres",
+      "/tags",
+      "/search",
+      "/library",
+      "/history",
+      "/following",
+      "/tickets",
+      "/requests",
+      "/omniportal",
+      "/community",
+      "/leaderboard",
+      "/tier-list",
+      "/random",
+      "/made-for-you",
+      "/settings",
+      "/for-you",
+      "/trending",
+      "/vote",
+      "/notifications",
+      "/trend-factory",
+      "/community-taxonomy",
+      "/privacy",
+      "/terms",
+      "/copyright",
+      "/account",
+      "/login",
+      "/register",
+      "/admin",
+      "/author"
+    ],
+    "dynamic_prefixes": [
+      "/format/*",
+      "/novel/*",
+      "/read/*",
+      "/fandom/*",
+      "/author/*"
+    ],
+    "sitemap_paths": [
+      "/sitemap.xml",
+      "/sitemap-static.xml",
+      "/sitemap-novels.xml",
+      "/sitemap-chapters.xml"
+    ]
+  },
+  "governance": {
+    "api_inventory": "not-certified-by-this-page-registry",
+    "api_authorization": "not-certified",
+    "resource_ownership": "not-certified",
+    "browser_visual_qa": "not-yet-audited",
+    "mobile_responsive_qa": "not-yet-audited",
+    "locale_prefixed_urls": "not-implemented"
+  },
+  "known_blockers": [
+    "API endpoint inventory and authorization/resource ownership are separate work and are not certified by page-shell routing.",
+    "Full screen-level responsive, empty/error/unauthorized and visual accessibility QA remains unaudited.",
+    "Locale-prefixed URLs are not implemented.",
+    "Deployed browser verification and staging D1 adversarial testing remain outstanding."
+  ]
+}

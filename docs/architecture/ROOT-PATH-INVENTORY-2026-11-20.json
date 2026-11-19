@@ -1,0 +1,1131 @@
+{
+  "schema_version": 1,
+  "generated_at": "2026-11-20",
+  "target_ref": "main",
+  "target_commit": "25aa2667a6a714a72578a35baac2a113f256f738",
+  "source": "GitHub Contents API root listing",
+  "scope": "Root-level paths only. Evidence snapshot, not canonical ownership registry.",
+  "totals": {
+    "paths": 156,
+    "directories": 7,
+    "files": 149
+  },
+  "classification_counts": {
+    "directory": 7,
+    "build-or-runtime-configuration": 4,
+    "historical-deployment-instructions": 66,
+    "historical-binary-archive": 76,
+    "repository-documentation": 2,
+    "root-html-entrypoint": 1
+  },
+  "paths": [
+    {
+      "path": ".github",
+      "type": "dir",
+      "sha": "2079bd9d1b984c292355a68220b04bd6be7324d7",
+      "size": 0,
+      "classification": "directory"
+    },
+    {
+      "path": ".graphifyignore",
+      "type": "file",
+      "sha": "37f592b7e9cdc99ed4ae153b57d330f6803e4d4a",
+      "size": 172,
+      "classification": "build-or-runtime-configuration"
+    },
+    {
+      "path": "DEPLOY-10.1.txt",
+      "type": "file",
+      "sha": "f57d464ffa804d1782c14addff3a57f5ee23af91",
+      "size": 31,
+      "classification": "historical-deployment-instructions"
+    },
+    {
+      "path": "DEPLOY-10.2.txt",
+      "type": "file",
+      "sha": "4f1d45e301f33bede8fcd9f8118465e2adc4db5f",
+      "size": 31,
+      "classification": "historical-deployment-instructions"
+    },
+    {
+      "path": "DEPLOY-11.0.txt",
+      "type": "file",
+      "sha": "26303bc138b6acb48a492213bb5f09a683a1a24e",
+      "size": 31,
+      "classification": "historical-deployment-instructions"
+    },
+    {
+      "path": "DEPLOY-12.0.txt",
+      "type": "file",
+      "sha": "6f01fbbab519bb1f9aaa600f1e9d7326e0d5a540",
+      "size": 27,
+      "classification": "historical-deployment-instructions"
+    },
+    {
+      "path": "DEPLOY-13.0.txt",
+      "type": "file",
+      "sha": "31f6ba75d05fda2685fc3acddcbd7667cb25f8ea",
+      "size": 27,
+      "classification": "historical-deployment-instructions"
+    },
+    {
+      "path": "DEPLOY-14.0.txt",
+      "type": "file",
+      "sha": "1d8a70b6161ddaa7d8649d60b697d4bf23623fed",
+      "size": 27,
+      "classification": "historical-deployment-instructions"
+    },
+    {
+      "path": "DEPLOY-15.0.txt",
+      "type": "file",
+      "sha": "50b4085762764d0f10c06bbb1aeb70cf60f537a1",
+      "size": 55,
+      "classification": "historical-deployment-instructions"
+    },
+    {
+      "path": "DEPLOY-16.0.txt",
+      "type": "file",
+      "sha": "f0cc792f4d5cd40974c530a9e7f54aeee181c3e4",
+      "size": 81,
+      "classification": "historical-deployment-instructions"
+    },
+    {
+      "path": "DEPLOY-16.1.1-FINAL.txt",
+      "type": "file",
+      "sha": "8b137891791fe96927ad78e64b0aad7bded08bdc",
+      "size": 1,
+      "classification": "historical-deployment-instructions"
+    },
+    {
+      "path": "DEPLOY-16.1.txt",
+      "type": "file",
+      "sha": "6df68077bd5d7bb0d0192d1e9f07d265cbd62ae8",
+      "size": 73,
+      "classification": "historical-deployment-instructions"
+    },
+    {
+      "path": "DEPLOY-16.10.0-AUTHOR-STUDIO-TRIGGER.txt",
+      "type": "file",
+      "sha": "4625339fc1d0ef0f5a01c9205dd24fd9b7c866c4",
+      "size": 343,
+      "classification": "historical-deployment-instructions"
+    },
+    {
+      "path": "DEPLOY-16.11.0-AUTHOR-CHAPTER-STUDIO-TRIGGER.txt",
+      "type": "file",
+      "sha": "0102bb1a58a4cadb858086d2deda8084865204c1",
+      "size": 359,
+      "classification": "historical-deployment-instructions"
+    },
+    {
+      "path": "DEPLOY-16.12.0-AUTHOR-REVIEW.txt",
+      "type": "file",
+      "sha": "8a536b7ac54f431c292430c6b57d2ff159af8202",
+      "size": 79,
+      "classification": "historical-deployment-instructions"
+    },
+    {
+      "path": "DEPLOY-16.12.1-AUTHOR-LOADING-FIX.txt",
+      "type": "file",
+      "sha": "82e3262d103f692933031d761fe1f987346c64f4",
+      "size": 82,
+      "classification": "historical-deployment-instructions"
+    },
+    {
+      "path": "DEPLOY-16.12.2-CHAPTER-STUDIO-FIX.txt",
+      "type": "file",
+      "sha": "7d818515b180e5298dbaeff38e9ba0e76fb3339e",
+      "size": 81,
+      "classification": "historical-deployment-instructions"
+    },
+    {
+      "path": "DEPLOY-16.13.0-AUTHOR-REVIEW-DECISIONS.txt",
+      "type": "file",
+      "sha": "d414db353b64ab4712e8d28e24c8dd24d2599047",
+      "size": 80,
+      "classification": "historical-deployment-instructions"
+    },
+    {
+      "path": "DEPLOY-16.14.0-PLATFORM-DISCOVERY-TRIGGER.txt",
+      "type": "file",
+      "sha": "5decb188d50863a72293f5097d38eccba3960086",
+      "size": 137,
+      "classification": "historical-deployment-instructions"
+    },
+    {
+      "path": "DEPLOY-16.14.1-CATALOG-CARD-FIX.txt",
+      "type": "file",
+      "sha": "5f980533d81c25e718ea3c6ea44cf489779c4f9a",
+      "size": 126,
+      "classification": "historical-deployment-instructions"
+    },
+    {
+      "path": "DEPLOY-16.15.0-COMMUNITY-TRIGGER.txt",
+      "type": "file",
+      "sha": "428ed15ab7a784007e9a5d203eab56f540a0be52",
+      "size": 97,
+      "classification": "historical-deployment-instructions"
+    },
+    {
+      "path": "DEPLOY-16.15.1-CHAPTER-ROW-FIX.txt",
+      "type": "file",
+      "sha": "59a9fa118aa912a9f616dbb1e88cf3ec79449ab6",
+      "size": 361,
+      "classification": "historical-deployment-instructions"
+    },
+    {
+      "path": "DEPLOY-16.2.1-FINAL.txt",
+      "type": "file",
+      "sha": "f5cf3c2927a81325ddea2d48aaf8ea9659cf7e26",
+      "size": 28,
+      "classification": "historical-deployment-instructions"
+    },
+    {
+      "path": "DEPLOY-16.2.1.txt",
+      "type": "file",
+      "sha": "28cea29539742cbdee055f08d1ae689090dfe8b5",
+      "size": 45,
+      "classification": "historical-deployment-instructions"
+    },
+    {
+      "path": "DEPLOY-16.2.2.txt",
+      "type": "file",
+      "sha": "8652c8cf3c7a58341dd082aa9cff8019843dd60b",
+      "size": 35,
+      "classification": "historical-deployment-instructions"
+    },
+    {
+      "path": "DEPLOY-16.2.3-FINAL.txt",
+      "type": "file",
+      "sha": "06bc68f8e892ad5727feb488e3a80aae4edb3fdc",
+      "size": 39,
+      "classification": "historical-deployment-instructions"
+    },
+    {
+      "path": "DEPLOY-16.2.3.txt",
+      "type": "file",
+      "sha": "8e716cc627d8d45492b5a1c7acd548a067138a9d",
+      "size": 45,
+      "classification": "historical-deployment-instructions"
+    },
+    {
+      "path": "DEPLOY-16.2.4-ADMIN-FIX.txt",
+      "type": "file",
+      "sha": "1b2f18a63e456cfaa11770c66f362468bc7b8652",
+      "size": 42,
+      "classification": "historical-deployment-instructions"
+    },
+    {
+      "path": "DEPLOY-16.2.5-FIX.txt",
+      "type": "file",
+      "sha": "c708e9b52254346b8681b12756747297b9f882f8",
+      "size": 43,
+      "classification": "historical-deployment-instructions"
+    },
+    {
+      "path": "DEPLOY-16.2.6-TRIGGERS.txt",
+      "type": "file",
+      "sha": "c5d48bd03d84c84d98b73feef48089022cf05e85",
+      "size": 537,
+      "classification": "historical-deployment-instructions"
+    },
+    {
+      "path": "DEPLOY-16.2.7-TRIGGERS.txt",
+      "type": "file",
+      "sha": "0475ab239b9393e9826ae232f8a70857e545f63c",
+      "size": 442,
+      "classification": "historical-deployment-instructions"
+    },
+    {
+      "path": "DEPLOY-16.2.8-TRIGGERS.txt",
+      "type": "file",
+      "sha": "f42faf120e173e6096bc12f04cd50cb27b8fb480",
+      "size": 448,
+      "classification": "historical-deployment-instructions"
+    },
+    {
+      "path": "DEPLOY-16.2.txt",
+      "type": "file",
+      "sha": "8b137891791fe96927ad78e64b0aad7bded08bdc",
+      "size": 1,
+      "classification": "historical-deployment-instructions"
+    },
+    {
+      "path": "DEPLOY-16.20.0-DISCOVERY-COMMUNITY.txt",
+      "type": "file",
+      "sha": "5c0e53f7118f8d04e70da3f1fcbb893718aca58a",
+      "size": 25,
+      "classification": "historical-deployment-instructions"
+    },
+    {
+      "path": "DEPLOY-16.21.0-CORE-UX-ROUTE-FIX.txt",
+      "type": "file",
+      "sha": "855b460ced4ebbc1fc10ef1b716febf5a018a5e3",
+      "size": 2012,
+      "classification": "historical-deployment-instructions"
+    },
+    {
+      "path": "DEPLOY-16.3.1-TRIGGERS.txt",
+      "type": "file",
+      "sha": "5207f91b0397e584f056bef5ead61b84a44f831b",
+      "size": 439,
+      "classification": "historical-deployment-instructions"
+    },
+    {
+      "path": "DEPLOY-16.3.2-TRIGGERS.txt",
+      "type": "file",
+      "sha": "6f4c9d8f8e584a1967970b288b7d75a37c2b2cd3",
+      "size": 436,
+      "classification": "historical-deployment-instructions"
+    },
+    {
+      "path": "DEPLOY-16.3.3-TRIGGERS.txt",
+      "type": "file",
+      "sha": "6613024e4dbf6581bf925ef8e5b753d19a7d9322",
+      "size": 435,
+      "classification": "historical-deployment-instructions"
+    },
+    {
+      "path": "DEPLOY-16.3.4-TRIGGERS.txt",
+      "type": "file",
+      "sha": "21fd0a7ff690ef5427823607334f3dd2cc08a8e1",
+      "size": 434,
+      "classification": "historical-deployment-instructions"
+    },
+    {
+      "path": "DEPLOY-16.3.5-TRIGGERS.txt",
+      "type": "file",
+      "sha": "17497a9f21f61fd8f2a41755db1a939b7e7f099c",
+      "size": 446,
+      "classification": "historical-deployment-instructions"
+    },
+    {
+      "path": "DEPLOY-16.3.6-TRIGGERS.txt",
+      "type": "file",
+      "sha": "171a802f21fcdd04a023b64ec503182e3ccfff23",
+      "size": 443,
+      "classification": "historical-deployment-instructions"
+    },
+    {
+      "path": "DEPLOY-16.3.7-TRIGGERS.txt",
+      "type": "file",
+      "sha": "c6ac5db3690ae265e47caef774f8e4a81a06af2f",
+      "size": 471,
+      "classification": "historical-deployment-instructions"
+    },
+    {
+      "path": "DEPLOY-16.3.8-TRIGGERS.txt",
+      "type": "file",
+      "sha": "03213b613260c9f88d9d7aa3360f17d39bbc3e5b",
+      "size": 577,
+      "classification": "historical-deployment-instructions"
+    },
+    {
+      "path": "DEPLOY-16.3.9-TRIGGERS.txt",
+      "type": "file",
+      "sha": "3ad049444cb6b2086576d23ae2f6dca293ae2b76",
+      "size": 601,
+      "classification": "historical-deployment-instructions"
+    },
+    {
+      "path": "DEPLOY-16.5.0-EDIT-REPAIR-TRIGGERS.txt",
+      "type": "file",
+      "sha": "3d44d6e43081b748a108eca95b6a003f75a0ed54",
+      "size": 348,
+      "classification": "historical-deployment-instructions"
+    },
+    {
+      "path": "DEPLOY-16.5.1-EDIT-FIX-TRIGGER.txt",
+      "type": "file",
+      "sha": "598c2d9d04ffe7dc0562ce60ebf8f0b758b9607b",
+      "size": 330,
+      "classification": "historical-deployment-instructions"
+    },
+    {
+      "path": "DEPLOY-16.5.2-EDIT-FUNCTIONAL-FIX-TRIGGER.txt",
+      "type": "file",
+      "sha": "6335ed2c58430d1d6abeb8fd773d331f3b0f39a8",
+      "size": 352,
+      "classification": "historical-deployment-instructions"
+    },
+    {
+      "path": "DEPLOY-16.6.0-CHAPTER-PREVIEW-TRIGGER.txt",
+      "type": "file",
+      "sha": "4ae1d96c88e34e0a5b39ba77e3defa85a9917c6b",
+      "size": 368,
+      "classification": "historical-deployment-instructions"
+    },
+    {
+      "path": "DEPLOY-16.7.0-CHAPTER-PUBLISHING-TRIGGER.txt",
+      "type": "file",
+      "sha": "0b3dae15db10f6dc3fef8b92ede42bd3bd20b22a",
+      "size": 385,
+      "classification": "historical-deployment-instructions"
+    },
+    {
+      "path": "DEPLOY-16.7.0-TRIGGER.txt",
+      "type": "file",
+      "sha": "0b3dae15db10f6dc3fef8b92ede42bd3bd20b22a",
+      "size": 385,
+      "classification": "historical-deployment-instructions"
+    },
+    {
+      "path": "DEPLOY-16.8.0-READER-EXPERIENCE-TRIGGER.txt",
+      "type": "file",
+      "sha": "99b8cb503cc7630a85f843dcf7585595ebf6c6ff",
+      "size": 348,
+      "classification": "historical-deployment-instructions"
+    },
+    {
+      "path": "DEPLOY-16.9.0-READER-ACCOUNT-LIBRARY-TRIGGER.txt",
+      "type": "file",
+      "sha": "e3b438ba76872c109f9b544b433d83d616b50192",
+      "size": 360,
+      "classification": "historical-deployment-instructions"
+    },
+    {
+      "path": "DEPLOY-9.0.txt",
+      "type": "file",
+      "sha": "9001712b7d947a5caef2ca78715ca375f7147308",
+      "size": 41,
+      "classification": "historical-deployment-instructions"
+    },
+    {
+      "path": "DEPLOY-9.1.txt",
+      "type": "file",
+      "sha": "11dc17eeb3dd9e460b98a028d5b0fd74961623d9",
+      "size": 29,
+      "classification": "historical-deployment-instructions"
+    },
+    {
+      "path": "DEPLOY-9.2.txt",
+      "type": "file",
+      "sha": "98240a7bc72f071a4695f4083890375000a94498",
+      "size": 29,
+      "classification": "historical-deployment-instructions"
+    },
+    {
+      "path": "Deploy - 16.1.1.txt",
+      "type": "file",
+      "sha": "8b137891791fe96927ad78e64b0aad7bded08bdc",
+      "size": 1,
+      "classification": "historical-deployment-instructions"
+    },
+    {
+      "path": "God-Emperor-Novel-10.1-Imperial-UI.zip",
+      "type": "file",
+      "sha": "452205bb83638164d65a6fcab33aef077d4eeb14",
+      "size": 733864,
+      "classification": "historical-binary-archive"
+    },
+    {
+      "path": "God-Emperor-Novel-10.2-Imperial-UI.zip",
+      "type": "file",
+      "sha": "9dbe3c976a00eedbdc1814b065ee9a0017daec0e",
+      "size": 734336,
+      "classification": "historical-binary-archive"
+    },
+    {
+      "path": "God-Emperor-Novel-11.0-Imperial-UI.zip",
+      "type": "file",
+      "sha": "381e6af0c1889317e4fe85882ff8afdcf0cccde0",
+      "size": 738688,
+      "classification": "historical-binary-archive"
+    },
+    {
+      "path": "God-Emperor-Novel-12.0-Imperial-UI.zip",
+      "type": "file",
+      "sha": "60ac0a7915b3a53ed3273cde5482d49322dc26bc",
+      "size": 738324,
+      "classification": "historical-binary-archive"
+    },
+    {
+      "path": "God-Emperor-Novel-13.0-Imperial-UI.zip",
+      "type": "file",
+      "sha": "76594e701042576d285566581f967195750e2c78",
+      "size": 739444,
+      "classification": "historical-binary-archive"
+    },
+    {
+      "path": "God-Emperor-Novel-14.0-Imperial-Luxury-MultiPage.zip",
+      "type": "file",
+      "sha": "01ea098f85b2ddb7f53ba66aa7aa5e327b80554f",
+      "size": 725237,
+      "classification": "historical-binary-archive"
+    },
+    {
+      "path": "God-Emperor-Novel-15.0-Imperial-Fixes.zip",
+      "type": "file",
+      "sha": "c11810e50559fbd1b0b7a43c7dd9a4c869d15c4c",
+      "size": 1644538,
+      "classification": "historical-binary-archive"
+    },
+    {
+      "path": "God-Emperor-Novel-16.0-Imperial-Taxonomy.zip",
+      "type": "file",
+      "sha": "30452b3f5de79ca98003703799b0669bb1336824",
+      "size": 1634671,
+      "classification": "historical-binary-archive"
+    },
+    {
+      "path": "God-Emperor-Novel-6.0-Final-Complete-Bundle.zip",
+      "type": "file",
+      "sha": "6fe15bebe955b20f454e15cfb072c9e773803ffa",
+      "size": 144904,
+      "classification": "historical-binary-archive"
+    },
+    {
+      "path": "God-Emperor-Novel-6.1-Fixed-Bundle.zip",
+      "type": "file",
+      "sha": "60d7130a7c3323180b66e6f5255012ef9c463669",
+      "size": 145646,
+      "classification": "historical-binary-archive"
+    },
+    {
+      "path": "God-Emperor-Novel-8.0-NovelVerse-Agent-Fleet.zip",
+      "type": "file",
+      "sha": "87f378d23f4537d33b34626a0d2dcaa094ec78ee",
+      "size": 149472,
+      "classification": "historical-binary-archive"
+    },
+    {
+      "path": "God-Emperor-Novel-8.1-Corrected.zip",
+      "type": "file",
+      "sha": "2904a4b3dd3bf56bb08f9d6fe090c1d8ae146548",
+      "size": 149829,
+      "classification": "historical-binary-archive"
+    },
+    {
+      "path": "God-Emperor-Novel-9.0-Complete-UI.zip",
+      "type": "file",
+      "sha": "985a2f08bb0f6b983d8977f9f42d3ec2ffa0bd1c",
+      "size": 139126,
+      "classification": "historical-binary-archive"
+    },
+    {
+      "path": "God-Emperor-Novel-9.1-Functional-Dashboard.zip",
+      "type": "file",
+      "sha": "3ec6e674a4492c03b51e4e505c1d495645d5fb68",
+      "size": 138793,
+      "classification": "historical-binary-archive"
+    },
+    {
+      "path": "God-Emperor-Novel-9.2-SignIn-Fix.zip",
+      "type": "file",
+      "sha": "b565cd7e35a368fa6cd06fbee3492d42c87c59ec",
+      "size": 152559,
+      "classification": "historical-binary-archive"
+    },
+    {
+      "path": "God-Emperor-Novel-GitHub-Ready-Corrected.zip",
+      "type": "file",
+      "sha": "36bb852a38026898eeee756ab2a642dda6b1c28e",
+      "size": 14670,
+      "classification": "historical-binary-archive"
+    },
+    {
+      "path": "God-Emperor-Novel-GitHub-Ready.zip",
+      "type": "file",
+      "sha": "0545047035130c2bd4716fe3396ac5848ca2435e",
+      "size": 15430,
+      "classification": "historical-binary-archive"
+    },
+    {
+      "path": "Imperial-Novel-16.1-Taxonomy-Seed-Fix.zip",
+      "type": "file",
+      "sha": "5b07844064ddbba8b50c2bc73785073c9d51570c",
+      "size": 1646562,
+      "classification": "historical-binary-archive"
+    },
+    {
+      "path": "Imperial-Novel-16.1.1-Taxonomy-Seed-Fix.zip",
+      "type": "file",
+      "sha": "5b8a842eed6909c0d780774830b6e95b5b3c778d",
+      "size": 1631727,
+      "classification": "historical-binary-archive"
+    },
+    {
+      "path": "Imperial-Novel-16.10.0-Author-Studio.zip",
+      "type": "file",
+      "sha": "0f1fbb21bfa13e81bce5411167db956062a10d8d",
+      "size": 2774437,
+      "classification": "historical-binary-archive"
+    },
+    {
+      "path": "Imperial-Novel-16.11.0-Author-Chapter-Studio.zip",
+      "type": "file",
+      "sha": "dc028898cf77ea25a66015d12ddddd1bf241448c",
+      "size": 2781004,
+      "classification": "historical-binary-archive"
+    },
+    {
+      "path": "Imperial-Novel-16.12.0-Author-Review-Workflow.zip",
+      "type": "file",
+      "sha": "7a24b59db549fdfe1afbbc67fca7d023db229093",
+      "size": 2782227,
+      "classification": "historical-binary-archive"
+    },
+    {
+      "path": "Imperial-Novel-16.12.1-Author-Loading-Fix.zip",
+      "type": "file",
+      "sha": "63ab0cb3e93f2220398ba7c39a523c4dc57dabc8",
+      "size": 2783288,
+      "classification": "historical-binary-archive"
+    },
+    {
+      "path": "Imperial-Novel-16.12.2-Author-Chapter-Studio-Fix.zip",
+      "type": "file",
+      "sha": "5938154fd8b4cf25eee187e576962b37d260e44e",
+      "size": 2784312,
+      "classification": "historical-binary-archive"
+    },
+    {
+      "path": "Imperial-Novel-16.13.0-Author-Review-Decisions.zip",
+      "type": "file",
+      "sha": "13c5e59cb3c0cb194fda316c45a57650b605003f",
+      "size": 2785532,
+      "classification": "historical-binary-archive"
+    },
+    {
+      "path": "Imperial-Novel-16.14.0-Platform-Discovery-Catalog.zip",
+      "type": "file",
+      "sha": "ae8d86c6d0bf77bbdac372917f1e0119bc200550",
+      "size": 2787720,
+      "classification": "historical-binary-archive"
+    },
+    {
+      "path": "Imperial-Novel-16.14.1-CatalogCard-Fix.zip",
+      "type": "file",
+      "sha": "d79ac87b062751997ce932027da4249ad80ae02b",
+      "size": 2788262,
+      "classification": "historical-binary-archive"
+    },
+    {
+      "path": "Imperial-Novel-16.15.0-Comments-Ratings-Community.zip",
+      "type": "file",
+      "sha": "5b52ecfca84b4a64539470e364232cfeed30c60e",
+      "size": 2791767,
+      "classification": "historical-binary-archive"
+    },
+    {
+      "path": "Imperial-Novel-16.15.1-ChapterRow-Fix.zip",
+      "type": "file",
+      "sha": "aee491637951a7c83a8aebbfe5e9bf1a102aa35b",
+      "size": 2792671,
+      "classification": "historical-binary-archive"
+    },
+    {
+      "path": "Imperial-Novel-16.16.0-OmniPortal-Rights-First.zip",
+      "type": "file",
+      "sha": "fa83c3bc01e575a2a23e25bf2de881ac4effc904",
+      "size": 2793896,
+      "classification": "historical-binary-archive"
+    },
+    {
+      "path": "Imperial-Novel-16.16.1-Rights-OmniPortal-Security.zip",
+      "type": "file",
+      "sha": "4cc40fcc808f0d6b895de36d6c92019759c6252e",
+      "size": 2795736,
+      "classification": "historical-binary-archive"
+    },
+    {
+      "path": "Imperial-Novel-16.16.2-OpenAI-AI-Agents.zip",
+      "type": "file",
+      "sha": "020ba09e43517951b22f3034c8734d965c0ca688",
+      "size": 2797791,
+      "classification": "historical-binary-archive"
+    },
+    {
+      "path": "Imperial-Novel-16.16.3-Local-Agents.zip",
+      "type": "file",
+      "sha": "5a1f153f6ad2c3c45a3066a6967a07735ef30ba9",
+      "size": 2798678,
+      "classification": "historical-binary-archive"
+    },
+    {
+      "path": "Imperial-Novel-16.17.0-Autonomous-Agent-Fleet.zip",
+      "type": "file",
+      "sha": "2ca636275e4400585c5a89b17f1f19d496ab1081",
+      "size": 2798695,
+      "classification": "historical-binary-archive"
+    },
+    {
+      "path": "Imperial-Novel-16.18.0-OmniPortal-Authorization.zip",
+      "type": "file",
+      "sha": "7b349b3b447e97968a589a3d74fb051dfeb1d1b5",
+      "size": 2800545,
+      "classification": "historical-binary-archive"
+    },
+    {
+      "path": "Imperial-Novel-16.19.0-AI-Author-Studio.zip",
+      "type": "file",
+      "sha": "fd2ffe974d6f65efd98e75e7a472196a3e3feb04",
+      "size": 2802884,
+      "classification": "historical-binary-archive"
+    },
+    {
+      "path": "Imperial-Novel-16.2-Community-Taxonomy.zip",
+      "type": "file",
+      "sha": "37240a6a0930c73ef0d8ced5dc1c77749488276f",
+      "size": 1633667,
+      "classification": "historical-binary-archive"
+    },
+    {
+      "path": "Imperial-Novel-16.2.1-Community-Taxonomy-Fix.zip",
+      "type": "file",
+      "sha": "2faeb289cf02e161f84184ef1b3305c22e6fb3fa",
+      "size": 1649344,
+      "classification": "historical-binary-archive"
+    },
+    {
+      "path": "Imperial-Novel-16.2.1-FINAL.zip",
+      "type": "file",
+      "sha": "9ebcfa88233922cb4d3c81dfd87fb542750fc440",
+      "size": 1634357,
+      "classification": "historical-binary-archive"
+    },
+    {
+      "path": "Imperial-Novel-16.2.2-Taxonomy-Fix.zip",
+      "type": "file",
+      "sha": "2f4d3a2b89ac7f0ea37b415660b008c5b3358db5",
+      "size": 1634731,
+      "classification": "historical-binary-archive"
+    },
+    {
+      "path": "Imperial-Novel-16.2.3-FINAL.zip",
+      "type": "file",
+      "sha": "adf4bb91cf875d54335fd6aa329502e620d7588c",
+      "size": 1635018,
+      "classification": "historical-binary-archive"
+    },
+    {
+      "path": "Imperial-Novel-16.2.3-Taxonomy-Parameter-Fix.zip",
+      "type": "file",
+      "sha": "fa6db7fa34de3077a3d6299d6e322ed37c4351cf",
+      "size": 1650107,
+      "classification": "historical-binary-archive"
+    },
+    {
+      "path": "Imperial-Novel-16.2.4-Admin-Promotion-Fix.zip",
+      "type": "file",
+      "sha": "6d1992d30370252b65c64dfb1fd956b1e639c517",
+      "size": 1650163,
+      "classification": "historical-binary-archive"
+    },
+    {
+      "path": "Imperial-Novel-16.2.5-Setup-Secret-Fix.zip",
+      "type": "file",
+      "sha": "15982f4a19c2a95bd6eff0257dc14321921a565c",
+      "size": 1650551,
+      "classification": "historical-binary-archive"
+    },
+    {
+      "path": "Imperial-Novel-16.2.6-Admin-Bootstrap-Fix.zip",
+      "type": "file",
+      "sha": "74782891f0004d7daaa3a1225d744779af058f02",
+      "size": 1651010,
+      "classification": "historical-binary-archive"
+    },
+    {
+      "path": "Imperial-Novel-16.2.7-Admin-Dashboard.zip",
+      "type": "file",
+      "sha": "92ea0af4053e15bc7a05726fed32de8636fd422c",
+      "size": 1657383,
+      "classification": "historical-binary-archive"
+    },
+    {
+      "path": "Imperial-Novel-16.2.8-Admin-Request-Management-Fix.zip",
+      "type": "file",
+      "sha": "1a5a4818fba0f7d95b4cd39efe168ed748e1d81d",
+      "size": 1658303,
+      "classification": "historical-binary-archive"
+    },
+    {
+      "path": "Imperial-Novel-16.20.0-Discovery-Community.zip",
+      "type": "file",
+      "sha": "b4c52a3bcea064b15d4a51a4682c80fc2510f861",
+      "size": 2807588,
+      "classification": "historical-binary-archive"
+    },
+    {
+      "path": "Imperial-Novel-16.21.0-Core-UX-Route-Fix.zip",
+      "type": "file",
+      "sha": "32d441dbb8c3c35f1a391f3c9657ef43ab0915cd",
+      "size": 2815540,
+      "classification": "historical-binary-archive"
+    },
+    {
+      "path": "Imperial-Novel-16.22.0-Imperial-Luxury-UX.zip",
+      "type": "file",
+      "sha": "8def158eaa366250df64d285ca0487dc006def55",
+      "size": 2820825,
+      "classification": "historical-binary-archive"
+    },
+    {
+      "path": "Imperial-Novel-16.23.0-QA-Repair-UX-Hardening.zip",
+      "type": "file",
+      "sha": "ac99997813275bda2c94d5358142df845723496a",
+      "size": 3351385,
+      "classification": "historical-binary-archive"
+    },
+    {
+      "path": "Imperial-Novel-16.24.0-HOME-MOBILE-UX-CATALOG-POLISH.zip",
+      "type": "file",
+      "sha": "90e166b0bf627bad08428c2ced45c3084c25f892",
+      "size": 3353687,
+      "classification": "historical-binary-archive"
+    },
+    {
+      "path": "Imperial-Novel-16.3.1-Combined-UI-Backend.zip",
+      "type": "file",
+      "sha": "aa7ce145ef50b4b7115157447fd00d6f8e69a84d",
+      "size": 1660425,
+      "classification": "historical-binary-archive"
+    },
+    {
+      "path": "Imperial-Novel-16.3.2-Mobile-UI-Polish.zip",
+      "type": "file",
+      "sha": "02a2488ccb5228c0de1f0bffd5d81bee27aa4e02",
+      "size": 1661704,
+      "classification": "historical-binary-archive"
+    },
+    {
+      "path": "Imperial-Novel-16.3.3-Clean-Mobile-UI.zip",
+      "type": "file",
+      "sha": "7790e15ffabe5f417da6ce3eabf9b4236b540df4",
+      "size": 2867050,
+      "classification": "historical-binary-archive"
+    },
+    {
+      "path": "Imperial-Novel-16.3.4-Catalog-Reader.zip",
+      "type": "file",
+      "sha": "243c04f8dc74f90ddae67575baf1882c8f95f5f3",
+      "size": 2870773,
+      "classification": "historical-binary-archive"
+    },
+    {
+      "path": "Imperial-Novel-16.3.5-Catalog-Polish-Rights-Safe.zip",
+      "type": "file",
+      "sha": "481ca9d7476f651de5ff183608ef80061fbd6577",
+      "size": 2873118,
+      "classification": "historical-binary-archive"
+    },
+    {
+      "path": "Imperial-Novel-16.3.6-Legal-Publishing-Reader.zip",
+      "type": "file",
+      "sha": "34f6b05ccb4431edd0ee72d9075f4c83d9eab420",
+      "size": 2879142,
+      "classification": "historical-binary-archive"
+    },
+    {
+      "path": "Imperial-Novel-16.3.7-Stability-Publishing-Fix.zip",
+      "type": "file",
+      "sha": "cf1f822ee4cce9c21a7e5aa501e31c495ea084cb",
+      "size": 2765768,
+      "classification": "historical-binary-archive"
+    },
+    {
+      "path": "Imperial-Novel-16.3.8-Publishing-Repair.zip",
+      "type": "file",
+      "sha": "2da6401a6a58cf96abd8e194a342936ff03d34d1",
+      "size": 2763394,
+      "classification": "historical-binary-archive"
+    },
+    {
+      "path": "Imperial-Novel-16.3.9-Publishing-UI-Fix.zip",
+      "type": "file",
+      "sha": "307a3362194f4f640c81f1885b902cb7778809fb",
+      "size": 2763518,
+      "classification": "historical-binary-archive"
+    },
+    {
+      "path": "Imperial-Novel-16.4.0-Chapter-Creation-Repair.zip",
+      "type": "file",
+      "sha": "199216c52462b37cbfb46513e523e46d73d6a924",
+      "size": 2764123,
+      "classification": "historical-binary-archive"
+    },
+    {
+      "path": "Imperial-Novel-16.5.0-Chapter-Management.zip",
+      "type": "file",
+      "sha": "8d7d5008ab87339726d306428109a4dd7b28bca3",
+      "size": 2762935,
+      "classification": "historical-binary-archive"
+    },
+    {
+      "path": "Imperial-Novel-16.5.0-Edit-Repair-WITH-TRIGGER.zip",
+      "type": "file",
+      "sha": "c8a9fb64a2c56fe9c6ac80d88b41afee8a82db89",
+      "size": 2763475,
+      "classification": "historical-binary-archive"
+    },
+    {
+      "path": "Imperial-Novel-16.5.1-Edit-Fix.zip",
+      "type": "file",
+      "sha": "16ae1d78cd48191aa918fb272b0e6da2b043241b",
+      "size": 2768835,
+      "classification": "historical-binary-archive"
+    },
+    {
+      "path": "Imperial-Novel-16.5.2-Edit-Functional-Fix.zip",
+      "type": "file",
+      "sha": "dff00c110c50e7410cb7132618779a0ead96c363",
+      "size": 2769388,
+      "classification": "historical-binary-archive"
+    },
+    {
+      "path": "Imperial-Novel-16.54.0-SIMPLE-BUILD-UPDATE.zip",
+      "type": "file",
+      "sha": "8cfe8976306af8315d5366b87d125b65ac6c331a",
+      "size": 11062033,
+      "classification": "historical-binary-archive"
+    },
+    {
+      "path": "Imperial-Novel-16.54.0-UPDATE-1.zip",
+      "type": "file",
+      "sha": "388c1bcd252c3bea78dc34d05b903ad2bd5f4c28",
+      "size": 11058695,
+      "classification": "historical-binary-archive"
+    },
+    {
+      "path": "Imperial-Novel-16.54.1-WEBSITE-CONTINUATION-UPDATE.zip",
+      "type": "file",
+      "sha": "314fb1fea298c1e45bc9d4b638e2bdfec4fdd5c7",
+      "size": 11031106,
+      "classification": "historical-binary-archive"
+    },
+    {
+      "path": "Imperial-Novel-16.56.0-DIRECT-BUILD-UPDATE.zip",
+      "type": "file",
+      "sha": "253fbf4047757e7f112f366d82db47199d93e23f",
+      "size": 11063174,
+      "classification": "historical-binary-archive"
+    },
+    {
+      "path": "Imperial-Novel-16.6.0-Chapter-Preview-Navigation.zip",
+      "type": "file",
+      "sha": "8c8262d85da2c5198ce92861a1b30aedc6306078",
+      "size": 2770177,
+      "classification": "historical-binary-archive"
+    },
+    {
+      "path": "Imperial-Novel-16.60.0-IMPERIAL-ASSETS-AND-CATALOG-UPDATE-1.zip",
+      "type": "file",
+      "sha": "cd68d1b2a69db916f1c32c312f9f719d213aa1a5",
+      "size": 23502591,
+      "classification": "historical-binary-archive"
+    },
+    {
+      "path": "Imperial-Novel-16.64.0-THREE-LINE-MENU-DESIGN-UPDATE.zip",
+      "type": "file",
+      "sha": "f57e548f04c0a106ebb21f30ea4db02612bb3078",
+      "size": 25485191,
+      "classification": "historical-binary-archive"
+    },
+    {
+      "path": "Imperial-Novel-16.7.0-Chapter-Publishing-Navigation-Management.zip",
+      "type": "file",
+      "sha": "ffe9d8fbfd2ece733a7cae6af5be4d7dc9e87f6a",
+      "size": 2772317,
+      "classification": "historical-binary-archive"
+    },
+    {
+      "path": "Imperial-Novel-16.8.0-Reader-Experience.zip",
+      "type": "file",
+      "sha": "8bd2860db560bdd61627005590d4534fd4287006",
+      "size": 2769070,
+      "classification": "historical-binary-archive"
+    },
+    {
+      "path": "Imperial-Novel-16.9.0-Reader-Account-Library.zip",
+      "type": "file",
+      "sha": "2c65f87d22fc4db5e16a44eae98b24f0fe5aba94",
+      "size": 2775053,
+      "classification": "historical-binary-archive"
+    },
+    {
+      "path": "README.md",
+      "type": "file",
+      "sha": "cd4c9fac3d15b90a8b476aa723e141892fea8968",
+      "size": 3777,
+      "classification": "repository-documentation"
+    },
+    {
+      "path": "THIRD-PARTY-NOTICES.txt",
+      "type": "file",
+      "sha": "5d4b96a6fd4a6d28f1207ec1be7d78a2645c5e8c",
+      "size": 1183,
+      "classification": "repository-documentation"
+    },
+    {
+      "path": "TRIGGER-DEPLOY-16.19.0.txt",
+      "type": "file",
+      "sha": "d33b06915b3adf7f78371c36f7bdfbcb711508ce",
+      "size": 130,
+      "classification": "historical-deployment-instructions"
+    },
+    {
+      "path": "TRIGGER-DEPLOY-16.22.0.txt",
+      "type": "file",
+      "sha": "c18e1af3353c18a179045ecb037f53b1f93990ae",
+      "size": 1194,
+      "classification": "historical-deployment-instructions"
+    },
+    {
+      "path": "TRIGGER-DEPLOY-16.23.0.txt",
+      "type": "file",
+      "sha": "682864187d3ba69185fe23105a8dff0a9f8c74d7",
+      "size": 1907,
+      "classification": "historical-deployment-instructions"
+    },
+    {
+      "path": "TRIGGER-DEPLOY-16.24.0.txt",
+      "type": "file",
+      "sha": "a536d355aa2c3de97ceae75f11c3d10e41533517",
+      "size": 1068,
+      "classification": "historical-deployment-instructions"
+    },
+    {
+      "path": "TRIGGER-DEPLOY-16.54.0-SIMPLE.txt",
+      "type": "file",
+      "sha": "c2c9fb525ca9e2bf9a385a70d63d3dd4be8dd32c",
+      "size": 377,
+      "classification": "historical-deployment-instructions"
+    },
+    {
+      "path": "TRIGGER-DEPLOY-16.54.0.txt",
+      "type": "file",
+      "sha": "f4785316b6c91c451500c714afdd283062e91a49",
+      "size": 378,
+      "classification": "historical-deployment-instructions"
+    },
+    {
+      "path": "TRIGGER-DEPLOY-16.54.1.txt",
+      "type": "file",
+      "sha": "8b137891791fe96927ad78e64b0aad7bded08bdc",
+      "size": 1,
+      "classification": "historical-deployment-instructions"
+    },
+    {
+      "path": "TRIGGER-DEPLOY-16.56.0.txt",
+      "type": "file",
+      "sha": "c35b43cff5ac25237463c450073debb6f6fd3a7a",
+      "size": 1037,
+      "classification": "historical-deployment-instructions"
+    },
+    {
+      "path": "TRIGGER-DEPLOY-16.60.0.txt",
+      "type": "file",
+      "sha": "be022a36b8c48002c18372f457cd1cd8596c503c",
+      "size": 726,
+      "classification": "historical-deployment-instructions"
+    },
+    {
+      "path": "TRIGGER-DEPLOY-16.64.0.txt",
+      "type": "file",
+      "sha": "11045ac9c9cdfbde7b14519a417b3386d66938ce",
+      "size": 755,
+      "classification": "historical-deployment-instructions"
+    },
+    {
+      "path": "design-system",
+      "type": "dir",
+      "sha": "498888f63712c84c93bc64486e821f32cfb68cc4",
+      "size": 0,
+      "classification": "directory"
+    },
+    {
+      "path": "docs",
+      "type": "dir",
+      "sha": "1231b15034cb472b0b8f3b01715e60703e788fdf",
+      "size": 0,
+      "classification": "directory"
+    },
+    {
+      "path": "index.html",
+      "type": "file",
+      "sha": "5bc157b0b8101a5ea833e77bf64811a6347279b8",
+      "size": 680,
+      "classification": "root-html-entrypoint"
+    },
+    {
+      "path": "migrations",
+      "type": "dir",
+      "sha": "cf0f55ae8c559f3abb5e18614a41e62f4547a86d",
+      "size": 0,
+      "classification": "directory"
+    },
+    {
+      "path": "package-lock.json",
+      "type": "file",
+      "sha": "3c1e5fa6dd515493aafb9f487823745b7683dea8",
+      "size": 15602,
+      "classification": "build-or-runtime-configuration"
+    },
+    {
+      "path": "package.json",
+      "type": "file",
+      "sha": "a62d282f5047c2f03ad368d71731e02c86e22bfa",
+      "size": 2816,
+      "classification": "build-or-runtime-configuration"
+    },
+    {
+      "path": "public",
+      "type": "dir",
+      "sha": "5459f44b737e683a9a17a61c236d0da9a1511e1f",
+      "size": 0,
+      "classification": "directory"
+    },
+    {
+      "path": "scripts",
+      "type": "dir",
+      "sha": "72008cf6246a0fffb394da11703917bbfe18aa0a",
+      "size": 0,
+      "classification": "directory"
+    },
+    {
+      "path": "src",
+      "type": "dir",
+      "sha": "54bce93090afcb54a28e25d084ed804a3722e64c",
+      "size": 0,
+      "classification": "directory"
+    },
+    {
+      "path": "trigger-6.0.txt",
+      "type": "file",
+      "sha": "f2b14093a3250d9451d72314380e0ba3a1ff8f7a",
+      "size": 154,
+      "classification": "historical-deployment-instructions"
+    },
+    {
+      "path": "trigger.txt",
+      "type": "file",
+      "sha": "72de41c910296922a7ba13da2bc37374841d69a8",
+      "size": 30,
+      "classification": "historical-deployment-instructions"
+    },
+    {
+      "path": "wrangler.toml",
+      "type": "file",
+      "sha": "8059d772d136d67b610f0505d51f8baba551b46e",
+      "size": 1201,
+      "classification": "build-or-runtime-configuration"
+    }
+  ],
+  "ownership_audit": {
+    "registry_path": "docs/architecture/SHARED-SURFACE-OWNERSHIP.json",
+    "registry_blob_at_audit": "d9ac44b471d7921f83a85a14a80613dbbace045a",
+    "tracked_file_blobs": 418,
+    "root_level_tracked_files": 149,
+    "ownership_path_rules_before_stale_rule_removal": 176,
+    "owner_groups": 12,
+    "unowned_tracked_files": 0,
+    "multiply_owned_tracked_files": 0,
+    "stale_exact_rules_found": 1,
+    "stale_exact_rules": [
+      "ARCHITECTURE.md"
+    ],
+    "empty_directory_rules": 0,
+    "result": "all tracked files have exactly one owner; one stale exact-file rule was identified and removed in the same foundation change; validator now rejects stale exact rules and empty directory rules"
+  }
+}
