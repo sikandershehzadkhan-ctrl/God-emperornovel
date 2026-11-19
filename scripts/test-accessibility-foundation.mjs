@@ -1,11 +1,13 @@
 import assert from "node:assert/strict";
 import { readFile } from "node:fs/promises";
 
+const pkg = JSON.parse(await readFile(new URL("../package.json", import.meta.url), "utf8"));
+const version = pkg.version;
 const [app, versionedApp, style, versionedStyle, appCss, versionedAppCss] = await Promise.all([
   readFile(new URL("../public/app.js", import.meta.url), "utf8"),
-  readFile(new URL("../public/app-17.23.0.js", import.meta.url), "utf8"),
+  readFile(new URL(`../public/app-${version}.js`, import.meta.url), "utf8"),
   readFile(new URL("../public/style.css", import.meta.url), "utf8"),
-  readFile(new URL("../public/style-17.23.0.css", import.meta.url), "utf8"),
+  readFile(new URL(`../public/style-${version}.css`, import.meta.url), "utf8"),
   readFile(new URL("../public/app.css", import.meta.url), "utf8"),
   readFile(new URL("../public/app-17.23.0.css", import.meta.url), "utf8")
 ]);
