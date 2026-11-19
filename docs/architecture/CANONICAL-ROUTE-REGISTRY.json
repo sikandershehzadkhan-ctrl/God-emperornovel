@@ -476,7 +476,8 @@
       "source_expression": "/^\\/author\\/[^/]+$/.test(p)",
       "samples": [
         "/author/example",
-        "/author/a"
+        "/author/a",
+        "/author/example.name"
       ],
       "ownership": "page-shell-and-client-screen-dispatch",
       "release_gate": "resource-policy-and-screen-qa-required"
