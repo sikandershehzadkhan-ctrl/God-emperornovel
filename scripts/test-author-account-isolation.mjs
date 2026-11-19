@@ -21,6 +21,12 @@ CREATE TABLE author_applications(id INTEGER PRIMARY KEY,user_id INTEGER NOT NULL
 CREATE TABLE donations(id INTEGER PRIMARY KEY,user_id INTEGER,status TEXT DEFAULT 'pending');
 CREATE TABLE taxonomy_submissions(id INTEGER PRIMARY KEY,status TEXT DEFAULT 'pending');
 CREATE TABLE reports(id INTEGER PRIMARY KEY,user_id INTEGER,novel_id INTEGER,status TEXT DEFAULT 'open');
+CREATE TABLE comments(id INTEGER PRIMARY KEY,user_id INTEGER NOT NULL,novel_id INTEGER NOT NULL,body TEXT NOT NULL,status TEXT DEFAULT 'visible',created_at TEXT DEFAULT CURRENT_TIMESTAMP,parent_id INTEGER,edited_at TEXT);
+CREATE TABLE comment_reports(id INTEGER PRIMARY KEY,user_id INTEGER NOT NULL,comment_id INTEGER NOT NULL,reason TEXT NOT NULL,details TEXT DEFAULT '',status TEXT DEFAULT 'open',created_at TEXT DEFAULT CURRENT_TIMESTAMP);
+CREATE TABLE audit_logs(id INTEGER PRIMARY KEY AUTOINCREMENT,user_id INTEGER,action TEXT NOT NULL,details TEXT DEFAULT '',created_at TEXT DEFAULT CURRENT_TIMESTAMP);
+INSERT INTO comments(id,user_id,novel_id,body,status) VALUES(301,4,101,'A reader comment','visible');
+INSERT INTO comment_reports(id,user_id,comment_id,reason,details,status) VALUES(401,5,301,'spam','Suspicious link','open');
+
 INSERT INTO users(id,username,email,role) VALUES(1,'author-a','a@test','author'),(2,'author-b','b@test','author'),(3,'admin','admin@test','admin'),(4,'reader-a','reader-a@test','user'),(5,'reader-b','reader-b@test','user');
 INSERT INTO novels(id,title,author,owner_user_id) VALUES(101,'A Novel','A',1),(202,'B Novel','B',2);
 INSERT INTO chapters(id,novel_id,chapter_number,title,content) VALUES(1001,101,1,'A Chapter','A content'),(2001,202,1,'B Chapter','B content');
@@ -111,6 +117,22 @@ assert.equal((await req("/api/admin/users",tc)).status,200,"admin can read user 
 for (const [token,label] of [[ta,"author"],[td,"reader"],[null,"unauthenticated caller"]]) assert.equal((await req("/api/admin/users",token)).status,403,label+" cannot read user administration list");
 assert.equal((await req("/api/admin/stats",tc)).status,200,"admin can read administrative dashboard statistics");
 for (const [token,label] of [[ta,"author"],[td,"reader"],[null,"unauthenticated caller"]]) assert.equal((await req("/api/admin/stats",token)).status,403,label+" cannot read administrative dashboard statistics");
+assert.equal((await req("/api/admin/community/comments",tc)).status,200,"admin can read community moderation comments");
+assert.equal((await req("/api/admin/community/reports",tc)).status,200,"admin can read community moderation reports");
+for (const [token,label] of [[ta,"author"],[td,"reader"],[null,"unauthenticated caller"]]) {
+  assert.equal((await req("/api/admin/community/comments",token)).status,403,label+" cannot read private moderation comments");
+  assert.equal((await req("/api/admin/community/reports",token)).status,403,label+" cannot read private moderation reports");
+  assert.equal((await req("/api/admin/community/comments",token,"PATCH",{comment_id:301,status:"hidden"})).status,403,label+" cannot moderate comments");
+  assert.equal(db.prepare("SELECT status FROM comments WHERE id=301").get().status,"visible",label+" denied comment moderation leaves comment unchanged");
+  assert.equal((await req("/api/admin/community/reports",token,"PATCH",{report_id:401,status:"resolved"})).status,403,label+" cannot resolve community reports");
+  assert.equal(db.prepare("SELECT status FROM comment_reports WHERE id=401").get().status,"open",label+" denied report review leaves report unchanged");
+  assert.equal(db.prepare("SELECT COUNT(*) n FROM audit_logs").get().n,0,label+" denied moderation creates no audit entry");
+}
+assert.equal((await req("/api/admin/community/comments",tc,"PATCH",{comment_id:301,status:"hidden"})).status,200,"admin can hide a reported comment");
+assert.equal(db.prepare("SELECT status FROM comments WHERE id=301").get().status,"hidden","admin comment moderation is persisted");
+assert.equal((await req("/api/admin/community/reports",tc,"PATCH",{report_id:401,status:"resolved"})).status,200,"admin can resolve a community report");
+assert.equal(db.prepare("SELECT status FROM comment_reports WHERE id=401").get().status,"resolved","admin report decision is persisted");
+assert.equal(db.prepare("SELECT action FROM audit_logs ORDER BY id DESC LIMIT 1").get().action,"community_report_resolved","report decision is recorded in audit log");
 const originalNovelStatus=db.prepare("SELECT publication_status FROM novels WHERE id=101").get().publication_status;
 for (const [token,label] of [[ta,"author"],[td,"reader"],[null,"unauthenticated caller"]]) {
   assert.equal((await req("/api/admin/publishing/novels/101",token,"PATCH",{publication_status:"published"})).status,403,label+" cannot approve or publish a novel");

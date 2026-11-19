@@ -199,6 +199,23 @@ async function callAuthorModel(env,systemPrompt,userPrompt,maxTokens=1800){
  }catch{return {provider:'openai',text:'',error:'The configured AI provider could not be reached. No generated content was saved.'}}
 }
 
+async function ensureCommunityModerationSchema(env){
+ const columns=(await env.DB.prepare("PRAGMA table_info(comments)").all()).results||[];
+ const names=new Set(columns.map(column=>String(column.name)));
+ if(!names.has("parent_id"))await env.DB.prepare("ALTER TABLE comments ADD COLUMN parent_id INTEGER").run();
+ if(!names.has("edited_at"))await env.DB.prepare("ALTER TABLE comments ADD COLUMN edited_at TEXT").run();
+ await env.DB.prepare(`CREATE TABLE IF NOT EXISTS comment_reports (
+  id INTEGER PRIMARY KEY AUTOINCREMENT,
+  user_id INTEGER NOT NULL,
+  comment_id INTEGER NOT NULL,
+  reason TEXT NOT NULL,
+  details TEXT NOT NULL DEFAULT '',
+  status TEXT NOT NULL DEFAULT 'open',
+  created_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP
+ )`).run();
+ await env.DB.prepare("CREATE INDEX IF NOT EXISTS idx_comment_reports_comment_status ON comment_reports(comment_id,status)").run();
+ await env.DB.prepare("CREATE INDEX IF NOT EXISTS idx_comment_reports_user_created ON comment_reports(user_id,created_at)").run();
+}
 async function ensureCoreSchema(env){
  if(coreSchemaReady)return coreSchemaReady;
  coreSchemaReady=(async()=>{
@@ -206,7 +223,7 @@ async function ensureCoreSchema(env){
   // hundreds of CREATE/INSERT/INDEX statements on every new Worker isolate.
   try{
    const marker=await env.DB.prepare("SELECT value FROM app_settings WHERE key='core_schema_version' LIMIT 1").first();
-   if(marker?.value === '16.64.0'){return;}
+   if(marker?.value === '16.64.0'){await ensureCommunityModerationSchema(env);return;}
   }catch(e){/* First installation or pre-marker database, continue bootstrap. */}
   const qs=[
 `CREATE TABLE IF NOT EXISTS users (id INTEGER PRIMARY KEY AUTOINCREMENT,username TEXT NOT NULL UNIQUE,email TEXT NOT NULL UNIQUE,password_hash TEXT NOT NULL,role TEXT NOT NULL DEFAULT 'user',tickets REAL NOT NULL DEFAULT 0,verified INTEGER NOT NULL DEFAULT 0,banned INTEGER NOT NULL DEFAULT 0,created_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP)`,
@@ -237,6 +254,7 @@ async function ensureCoreSchema(env){
 `CREATE INDEX IF NOT EXISTS idx_novels_updated ON novels(updated_at)`,`CREATE INDEX IF NOT EXISTS idx_unlocks_time ON unlocks(unlocked_at)`,`CREATE INDEX IF NOT EXISTS idx_history_user ON history(user_id,updated_at)`,`CREATE INDEX IF NOT EXISTS idx_notifications_user ON notifications(user_id,created_at)`];
   for(const q of qs){try{await env.DB.prepare(q).run()}catch(e){console.error('core schema statement failed; aborting bootstrap',e);throw e}}
   await ensurePublishingSchema(env);
+  await ensureCommunityModerationSchema(env);
   await env.DB.prepare(`INSERT OR IGNORE INTO app_settings(key,value) VALUES('ticket_packs','[]')`).run()
   await seedTaxonomy(env);
   await ensureCommunityTaxonomySchema(env);
