@@ -20,6 +20,7 @@ for(const route of registry.pages) { assert.equal(PAGE_SHELLS[route.path],route.
 assert.deepEqual(Object.keys(PAGE_SHELLS).sort(),registry.pages.map(route=>route.path).sort(),"Runtime page routes must match the canonical evidence registry");
 assert.deepEqual([...NOINDEX_EXACT_PATHS],registry.sitemap.noindex_exact_paths,"Noindex policy must match the canonical evidence registry");
 assert.deepEqual([...SITEMAP_STATIC_PATHS],registry.sitemap.static_paths,"Sitemap membership must match the canonical evidence registry");
+assert.ok(registry.sitemap.noindex_exact_paths.every(path=>!SITEMAP_STATIC_PATHS.includes(path)),"Noindex utility routes must not enter the static sitemap");
 for(const route of registry.dynamic_pages) {
  const runtime=DYNAMIC_PAGE_ROUTES.find(item=>item.kind===route.kind);
  assert.ok(runtime,"Dynamic route family missing from runtime registry: "+route.kind);
