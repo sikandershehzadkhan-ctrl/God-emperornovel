@@ -209,3 +209,8 @@ The report-status PATCH route now validates a positive safe-integer report ID, c
 ## Administrator account self-protection
 
 The admin user PATCH route now blocks an administrator from setting their own account to banned, preventing an accidental self-lockout. It retains the existing self-demotion guard, validates that exactly one user row was updated, and records role, verification, ban-state changes, target account, and acting administrator in the audit log. Regression assertions cover the self-ban guard, audit event, and affected-row check. This is source-level protection; authentication/session behavior has not been tested against a live deployment.
+
+
+## AI author-project resource identifiers
+
+The AI author-project detail, edit, Story Bible generation, chapter-run, and job-history routes now reject IDs that are not positive safe integers before database access. Existing owner checks remain in place after lookup. Regression coverage asserts all five dynamic resource handlers retain the guard. These are source-level assertions; live account-isolation and generation workflows remain unverified.
