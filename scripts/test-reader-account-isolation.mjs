@@ -8,7 +8,7 @@ CREATE TABLE app_settings (key TEXT PRIMARY KEY, value TEXT NOT NULL);
 INSERT INTO app_settings(key,value) VALUES ('core_schema_version','16.64.0'),('runtime_feature_schema_version','1');
 CREATE TABLE users (id INTEGER PRIMARY KEY, username TEXT NOT NULL, email TEXT NOT NULL, role TEXT NOT NULL DEFAULT 'user', tickets REAL NOT NULL DEFAULT 0, verified INTEGER NOT NULL DEFAULT 1, banned INTEGER NOT NULL DEFAULT 0);
 CREATE TABLE sessions (token_hash TEXT PRIMARY KEY, user_id INTEGER NOT NULL, expires_at INTEGER NOT NULL);
-CREATE TABLE novels (id INTEGER PRIMARY KEY, title TEXT NOT NULL, author TEXT NOT NULL, cover_url TEXT DEFAULT '', rating REAL DEFAULT 0, status TEXT DEFAULT 'ongoing', publication_status TEXT NOT NULL DEFAULT 'published', rights_status TEXT NOT NULL DEFAULT 'original');
+CREATE TABLE novels (id INTEGER PRIMARY KEY, title TEXT NOT NULL, author TEXT NOT NULL, cover_url TEXT DEFAULT '', rating REAL DEFAULT 0, status TEXT DEFAULT 'ongoing', publication_status TEXT NOT NULL DEFAULT 'published', rights_status TEXT NOT NULL DEFAULT 'original', updated_at TEXT DEFAULT CURRENT_TIMESTAMP);
 CREATE TABLE chapters (id INTEGER PRIMARY KEY, novel_id INTEGER NOT NULL, chapter_number INTEGER NOT NULL, publication_status TEXT NOT NULL DEFAULT 'published');
 CREATE TABLE user_library (user_id INTEGER NOT NULL, novel_id INTEGER NOT NULL, created_at TEXT DEFAULT CURRENT_TIMESTAMP, PRIMARY KEY(user_id,novel_id));
 CREATE TABLE history (user_id INTEGER NOT NULL, novel_id INTEGER NOT NULL, chapter_number INTEGER NOT NULL, updated_at TEXT DEFAULT CURRENT_TIMESTAMP, PRIMARY KEY(user_id,novel_id));
