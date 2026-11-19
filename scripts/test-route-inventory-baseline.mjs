@@ -13,7 +13,7 @@ assert.equal(manifest.source_evidence.worker_file, "src/index.js");
 assert.equal(manifest.source_evidence.sitemap_file, "src/sitemap.mjs");
 assert.equal(manifest.source_evidence.client_file, "public/app.js");
 
-assert.ok(worker.includes('import { NOINDEX_EXACT_PATHS, resolvePageShell, canonicalizePagePath } from "./route-registry.mjs";'), "Worker must use the canonical route registry");
+assert.ok(worker.includes('import { NOINDEX_EXACT_PATHS, resolvePageShell, canonicalizePagePath, resolveRouteRedirect } from "./route-registry.mjs";'), "Worker must use the canonical route registry");
 assert.ok(worker.includes("const canonicalPath=canonicalizePagePath(p)"), "Worker must redirect known page paths to canonical URLs");
 const actualMap = new Map(Object.entries(PAGE_SHELLS));
 assert.equal(manifest.page_routes.length, actualMap.size, "manifest exact page route count must match Worker");
