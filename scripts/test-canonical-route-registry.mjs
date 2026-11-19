@@ -1,11 +1,18 @@
 import assert from "node:assert/strict";
 import { readFile } from "node:fs/promises";
+import { createHash } from "node:crypto";
 import { SITEMAP_STATIC_PATHS, PAGE_SHELLS, DYNAMIC_PAGE_ROUTES, NOINDEX_EXACT_PATHS, resolvePageShell, canonicalizePagePath, resolveRouteRedirect } from "../src/route-registry.mjs";
 const registry=JSON.parse(await readFile(new URL("../docs/architecture/CANONICAL-ROUTE-REGISTRY.json",import.meta.url),"utf8"));
 const api=JSON.parse(await readFile(new URL("../docs/architecture/API-ENDPOINT-INVENTORY-2026-11-18.json",import.meta.url),"utf8"));
 const worker=await readFile(new URL("../src/index.js",import.meta.url),"utf8");
 const client=await readFile(new URL("../public/app.js",import.meta.url),"utf8");
 const sitemap=await readFile(new URL("../src/sitemap.mjs",import.meta.url),"utf8");
+const runtimeRegistry=await readFile(new URL("../src/route-registry.mjs",import.meta.url),"utf8");
+const gitBlobSha=content=>createHash("sha1").update(Buffer.concat([Buffer.from("blob "+Buffer.byteLength(content)+"\\0"),Buffer.from(content)])).digest("hex");
+assert.equal(registry.source_evidence.worker_blob,gitBlobSha(worker),"Canonical evidence must fingerprint the current Worker source");
+assert.equal(registry.source_evidence.client_blob,gitBlobSha(client),"Canonical evidence must fingerprint the current client source");
+assert.equal(registry.source_evidence.sitemap_blob,gitBlobSha(sitemap),"Canonical evidence must fingerprint the current sitemap source");
+assert.equal(registry.source_evidence.runtime_registry_blob,gitBlobSha(runtimeRegistry),"Canonical evidence must fingerprint the current runtime route registry");
 assert.equal(registry.status,"canonical-source-contract-foundation-review-gated");
 assert.equal(registry.source_evidence.runtime_registry_file,"src/route-registry.mjs","runtime route registry source must be recorded");
 assert.equal(registry.pages.length,33);
