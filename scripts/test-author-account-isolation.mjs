@@ -135,6 +135,28 @@ assert.equal(updatedUser.verified,1,"administrator verification update is persis
 assert.equal(updatedUser.banned,0,"administrator ban flag update is persisted");
 assert.equal((await req("/api/admin/users/5",tc,"PATCH",{role:"invalid-role"})).status,400,"administrator cannot assign an unsupported role");
 assert.equal(db.prepare("SELECT role FROM users WHERE id=5").get().role,"author","invalid role attempt leaves the existing role unchanged");
+assert.equal((await req("/api/admin/users/3",tc,"PATCH",{banned:true})).status,400,"administrator cannot ban their own active administrator account");
+assert.equal(db.prepare("SELECT banned FROM users WHERE id=3").get().banned,0,"self-ban denial preserves the active administrator account");
+assert.equal((await req("/api/admin/users/99999",tc,"PATCH",{role:"user"})).status,404,"missing user administration target returns not found");
+assert.equal((await req("/api/me",te)).data.user.id,5,"reader session is valid before account ban");
+assert.equal(db.prepare("SELECT COUNT(*) n FROM sessions WHERE user_id=5").get().n,1,"reader has one active test session before ban");
+const banned=await req("/api/admin/users/5",tc,"PATCH",{banned:true});
+assert.equal(banned.status,200,"administrator can ban another account");
+assert.equal(banned.data.sessions_revoked,true,"ban response confirms session revocation");
+assert.equal(db.prepare("SELECT banned FROM users WHERE id=5").get().banned,1,"ban state is persisted");
+assert.equal(db.prepare("SELECT COUNT(*) n FROM sessions WHERE user_id=5").get().n,0,"all existing sessions are revoked in the ban operation");
+assert.equal((await req("/api/me",te)).data.user,null,"banned account's old session is rejected");
+const unbanned=await req("/api/admin/users/5",tc,"PATCH",{banned:false});
+assert.equal(unbanned.status,200,"administrator can unban the account");
+assert.equal(db.prepare("SELECT role,verified,banned FROM users WHERE id=5").get().role,"author","partial unban preserves the account role");
+assert.equal(db.prepare("SELECT banned FROM users WHERE id=5").get().banned,0,"unban state is persisted");
+assert.equal(db.prepare("SELECT COUNT(*) n FROM sessions WHERE user_id=5").get().n,0,"unbanning does not restore revoked sessions");
+assert.equal((await req("/api/me",te)).data.user,null,"pre-ban session remains invalid after unban");
+const freshToken="reader-b-fresh-token";
+db.prepare("INSERT INTO sessions(token_hash,user_id,expires_at) VALUES(?,?,?)").run(await digest(freshToken),5,Math.floor(Date.now()/1000)+3600);
+assert.equal((await req("/api/me",freshToken)).data.user.id,5,"a newly issued session works after unban");
+assert.equal(db.prepare("SELECT action FROM audit_logs WHERE action='admin_user_updated' ORDER BY id DESC LIMIT 1").get().action,"admin_user_updated","administrator account changes are audited");
+
 
 assert.equal((await req("/api/admin/stats",tc)).status,200,"admin can read administrative dashboard statistics");
 for (const [token,label] of [[ta,"author"],[td,"reader"],[null,"unauthenticated caller"]]) assert.equal((await req("/api/admin/stats",token)).status,403,label+" cannot read administrative dashboard statistics");
