@@ -15,7 +15,9 @@
     "client_blob": "a640fbfed7221adac1a6fd7fd6d5f0524016004a",
     "sitemap_file": "src/sitemap.mjs",
     "sitemap_blob": "3e6e885554751cbf6255fa0942e590573c574280",
-    "method": "Consolidates source-observed page routes, dynamic page families, API literal endpoints and dynamic API families. It records explicit source contracts without claiming visual completeness, authorization certification, or deployed behavior."
+    "method": "Runtime page shells, dynamic page families, noindex policy and static sitemap membership are sourced from src/route-registry.mjs. This JSON file is the reviewable evidence snapshot. API path inventory and authorization remain separately reviewed and are not certified by route resolution tests.",
+    "runtime_registry_file": "src/route-registry.mjs",
+    "runtime_registry_blob": "fc9de23bf66f514c5a2b0784ded00776d71de7af"
   },
   "pages": [
     {
