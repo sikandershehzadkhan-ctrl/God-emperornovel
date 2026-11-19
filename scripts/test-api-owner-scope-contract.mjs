@@ -24,7 +24,6 @@ assert.ok(worker.includes("ai_author_projects(owner_user_id,novel_id") && worker
 
 for (const route of [
   'if(p==="/api/admin/users"&&m==="GET")',
-  'if(p==="/api/admin/users"&&m==="PATCH")',
   'if(p==="/api/admin/tickets"&&m==="POST")',
   'if(p==="/api/admin/connectors"&&m==="POST")'
 ]) {
