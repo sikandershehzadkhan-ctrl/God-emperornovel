@@ -8,7 +8,7 @@
   "source_evidence": {
     "repository": "sikandershehzadkhan-ctrl/God-emperornovel",
     "branch": "architecture/phase-01-foundation-route-registry",
-    "commit": "ff1c2f1ffbeadd15323f5220a7405650313236f0",
+    "commit": "a21e2d3b3821507ac5bd97f2535ff3b073fd254a",
     "worker_file": "src/index.js",
     "worker_blob": "deca24eb256f3805ad05a0b5eed7fd1cb600b141",
     "client_file": "public/app.js",
@@ -1868,14 +1868,15 @@
   },
   "governance": {
     "ownership_registry": "docs/architecture/SHARED-SURFACE-OWNERSHIP.json",
-    "owner_groups": 12,
-    "ownership_rules": 175,
+    "owner_groups": 27,
+    "ownership_rules": 349,
     "unowned_files": 0,
     "multiply_owned_files": 0,
     "stale_exact_file_rules": 0,
-    "tracked_files_on_audited_branch": 423,
+    "tracked_files_on_audited_branch": 460,
     "root_level_files": 149,
-    "root_archives_and_trigger_artifacts_retained": true
+    "root_archives_and_trigger_artifacts_retained": true,
+    "validation": "Migration Governance workflow on the audited PR merge commit; all tracked paths matched exactly one owner."
   },
   "release_gates": [
     "all page shells and dynamic route families have screen-level responsive, empty, error, unauthorized and accessibility evidence",
@@ -1890,9 +1891,9 @@
     "API authorization and resource ownership are not certified by source method inventory",
     "Issue #335 cross-account two-user tests remain outstanding",
     "screen completeness, responsive behavior, empty/error/unauthorized states and accessibility remain unaudited",
-    "locale, RTL, redirects and canonical URL behavior require review",
+    "Locale-prefixed URLs are not implemented; RTL chapter direction and canonical slash/legacy redirects have source-level checks but still require deployed browser verification.",
     "POST /api/rating duplicate declaration and 1-10 rating integration remain a separate PR dependency",
-    "registry is not yet the sole source from which Worker routes and sitemap are generated"
+    "Dynamic sitemap endpoint dispatch and Cloudflare route declarations remain explicit wiring; Worker page-shell resolution and static sitemap membership are sourced from src/route-registry.mjs."
   ],
   "not_certified": [
     "live deployment state",

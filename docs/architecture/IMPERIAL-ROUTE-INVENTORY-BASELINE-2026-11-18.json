@@ -8,13 +8,13 @@
     "repository": "sikandershehzadkhan-ctrl/God-emperornovel",
     "branch": "architecture/phase-01-foundation-route-registry",
     "worker_file": "src/index.js",
-    "worker_blob": "7ed42bdfc9282bc31155047ff5454103ad58cd14",
+    "worker_blob": "deca24eb256f3805ad05a0b5eed7fd1cb600b141",
     "sitemap_file": "src/sitemap.mjs",
     "sitemap_blob": "3e6e885554751cbf6255fa0942e590573c574280",
     "method": "Static source extraction from the PR branch: Worker dispatch, sitemap source, and client boot/navigation source. Does not prove live deployment, browser screen completeness, or authorization correctness.",
     "client_file": "public/app.js",
     "client_blob": "4f482c79101785300248910e1a9256d23923bd6e",
-    "commit": "7f34b0ec7914038afd536d9dd33e21c2704271c0"
+    "commit": "a21e2d3b3821507ac5bd97f2535ff3b073fd254a"
   },
   "page_routes": [
     {
@@ -1010,7 +1010,7 @@
     "Several exact page routes share index.html. Route existence does not prove a dedicated screen or complete interactions.",
     "Dynamic novel/chapter sitemap inclusion is rights-filtered in the Worker; this must remain a mandatory invariant.",
     "Observed source is not proof of deployed Worker behavior.",
-    "Client href destinations have a separate static coverage test; event-driven navigation, redirect behavior, and locale alternates still require review.",
+    "Static client href destinations are covered by a build-gated test; event-driven navigation and locale alternates remain unreviewed, and redirects still require deployed browser verification.",
     "Personalized recommendation routes are noindex utilities; this does not enforce account authentication or user-data isolation."
   ]
 }
