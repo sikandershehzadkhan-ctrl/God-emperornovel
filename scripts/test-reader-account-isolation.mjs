@@ -66,7 +66,7 @@ async function ids(path,token) {
 // The real Worker sitemap handler queries this same D1-compatible database.
 let sitemap=await request("/sitemap.xml",null);
 assert.equal(sitemap.response.status,200);
-assert.match(sitemap.response.headers.get("content-type")||"",/application\\/xml/);
+assert.match(sitemap.response.headers.get("content-type")||"",/application\/xml/);
 assert.ok(sitemap.text.includes("/sitemap-static.xml"));
 assert.ok(sitemap.text.includes("/sitemap-novels.xml?page=0"));
 assert.ok(sitemap.text.includes("/sitemap-chapters.xml?page=0"));
