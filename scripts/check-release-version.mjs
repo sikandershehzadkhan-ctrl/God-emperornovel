@@ -36,8 +36,9 @@ for (const asset of coreAssets) {
   const relative = asset === '/' ? 'public/index.html' : path.join('public', asset.replace(/^\/+/, ''));
   assert.ok(fs.existsSync(relative), `Service-worker precache asset is missing: ${asset}`);
 }
+const designSystem = fs.readFileSync('public/imperial-design-system.css', 'utf8');
 for (const asset of coreAssets.filter(asset => /\.(?:css|js)$/.test(asset))) {
-  assert.ok(entry.includes(asset), `Versioned CSS/JS asset is not referenced by the HTML entry point: ${asset}`);
+  assert.ok(entry.includes(asset) || designSystem.includes(asset), `Precached CSS/JS asset is not referenced by the HTML entry point or unified design system: ${asset}`);
 }
 for (const icon of manifest.icons || []) {
   const url = new URL(icon.src, 'https://imperial-novel.invalid');

@@ -115,6 +115,25 @@ jobs:
       - name: Validate Cloudflare bundle without deploying
         run: npx --yes wrangler@4 deploy --dry-run
 
+      - name: Export production D1 backup before schema mutation
+        shell: bash
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+        run: |
+          set -euo pipefail
+          mkdir -p backups
+          npx --yes wrangler@4 d1 export god-emperornovel-db --remote --output=backups/imperial-novel-pre-release.sql
+          test -s backups/imperial-novel-pre-release.sql
+
+      - name: Retain production D1 backup artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: imperial-novel-d1-pre-release-backup-${{ github.run_id }}
+          path: backups/imperial-novel-pre-release.sql
+          if-no-files-found: error
+          retention-days: 14
+
       - name: Apply and verify additive D1 migrations before Worker deployment
         shell: bash
         env:
