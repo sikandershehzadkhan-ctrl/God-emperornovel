@@ -119,6 +119,7 @@ assert.equal((await req("/api/admin/stats",tc)).status,200,"admin can read admin
 for (const [token,label] of [[ta,"author"],[td,"reader"],[null,"unauthenticated caller"]]) assert.equal((await req("/api/admin/stats",token)).status,403,label+" cannot read administrative dashboard statistics");
 assert.equal((await req("/api/admin/community/comments",tc)).status,200,"admin can read community moderation comments");
 assert.equal((await req("/api/admin/community/reports",tc)).status,200,"admin can read community moderation reports");
+const auditCountBeforeDeniedModeration=db.prepare("SELECT COUNT(*) n FROM audit_logs").get().n;
 for (const [token,label] of [[ta,"author"],[td,"reader"],[null,"unauthenticated caller"]]) {
   assert.equal((await req("/api/admin/community/comments",token)).status,403,label+" cannot read private moderation comments");
   assert.equal((await req("/api/admin/community/reports",token)).status,403,label+" cannot read private moderation reports");
@@ -126,7 +127,7 @@ for (const [token,label] of [[ta,"author"],[td,"reader"],[null,"unauthenticated 
   assert.equal(db.prepare("SELECT status FROM comments WHERE id=301").get().status,"visible",label+" denied comment moderation leaves comment unchanged");
   assert.equal((await req("/api/admin/community/reports",token,"PATCH",{report_id:401,status:"resolved"})).status,403,label+" cannot resolve community reports");
   assert.equal(db.prepare("SELECT status FROM comment_reports WHERE id=401").get().status,"open",label+" denied report review leaves report unchanged");
-  assert.equal(db.prepare("SELECT COUNT(*) n FROM audit_logs").get().n,0,label+" denied moderation creates no audit entry");
+  assert.equal(db.prepare("SELECT COUNT(*) n FROM audit_logs").get().n,auditCountBeforeDeniedModeration,label+" denied moderation creates no audit entry");
 }
 assert.equal((await req("/api/admin/community/comments",tc,"PATCH",{comment_id:301,status:"hidden"})).status,200,"admin can hide a reported comment");
 assert.equal(db.prepare("SELECT status FROM comments WHERE id=301").get().status,"hidden","admin comment moderation is persisted");
