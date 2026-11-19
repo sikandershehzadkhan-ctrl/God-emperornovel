@@ -93,6 +93,12 @@ assert.equal(submittedB.status,201,"reader B can submit an independent applicati
 assert.equal((await req("/api/author/applications/me",td)).data.application.id,submittedA.data.id,"applicant sees own newly submitted application");
 assert.equal((await req("/api/author/applications/me",te)).data.application.id,submittedB.data.id,"second applicant sees own newly submitted application");
 assert.equal((await req("/api/author/applications/me",td)).data.application.display_name,"Reader A","reader A sees only their own application");
+const adminApplicationList=await req("/api/admin/author-applications",tc);
+assert.equal(adminApplicationList.status,200,"admin can read the author application queue");
+assert.deepEqual(adminApplicationList.data.map(x=>+x.id).sort((x,y)=>x-y),[submittedA.data.id,submittedB.data.id].sort((x,y)=>x-y),"admin queue contains the submitted applications");
+assert.equal((await req("/api/admin/author-applications",ta)).status,403,"authors cannot read the private admin application queue");
+assert.equal((await req("/api/admin/author-applications",td)).status,403,"reader accounts cannot read the private admin application queue");
+assert.equal((await req("/api/admin/author-applications",null)).status,403,"unauthenticated callers cannot read the private admin application queue");
 assert.equal((await req("/api/admin/author-applications/"+submittedA.data.id,ta,"PATCH",{status:"approved",review_notes:"Approved by a non-admin"})).status,403,"authors cannot review applications");
 assert.equal((await req("/api/admin/author-applications/"+submittedA.data.id,tc,"PATCH",{status:"approved",review_notes:"Application reviewed and approved."})).status,200,"admin can approve a pending application");
 assert.equal(db.prepare("SELECT role FROM users WHERE id=4").get().role,"author","approval grants author role to the correct applicant");
