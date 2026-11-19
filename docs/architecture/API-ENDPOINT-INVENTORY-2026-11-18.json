@@ -7,7 +7,7 @@
   "counts": {
     "literal_endpoint_paths": 74,
     "literal_route_branch_occurrences": 92,
-    "explicit_method_conditions": 77,
+    "explicit_method_conditions": 112,
     "dynamic_route_families": 21
   },
   "method_semantics": "explicit_methods records directly enforced methods; delegated-method-contract records a helper whose GET/POST branches and unsupported-method fallthrough were inspected. Method evidence does not replace auth or resource ownership review.",
