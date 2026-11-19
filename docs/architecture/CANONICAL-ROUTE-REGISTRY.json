@@ -8,7 +8,7 @@
   "source_evidence": {
     "repository": "sikandershehzadkhan-ctrl/God-emperornovel",
     "branch": "architecture/phase-01-foundation-route-registry",
-    "commit": "c2820ed1a544883805acb931e26b8d88787917e5",
+    "commit": "ff1c2f1ffbeadd15323f5220a7405650313236f0",
     "worker_file": "src/index.js",
     "worker_blob": "deca24eb256f3805ad05a0b5eed7fd1cb600b141",
     "client_file": "public/app.js",
@@ -17,7 +17,7 @@
     "sitemap_blob": "3e6e885554751cbf6255fa0942e590573c574280",
     "method": "Runtime page shells, dynamic page families, noindex policy and static sitemap membership are sourced from src/route-registry.mjs. This JSON file is the reviewable evidence snapshot. API path inventory and authorization remain separately reviewed and are not certified by route resolution tests.",
     "runtime_registry_file": "src/route-registry.mjs",
-    "runtime_registry_blob": "f89b7a844946aff6e6bfdeb275c1e35878a97f14",
+    "runtime_registry_blob": "c0741fd783bd829e5a72fce6bbea1abb51e4b699",
     "url_policy_file": "docs/architecture/URL-AND-LOCALE-POLICY.md"
   },
   "pages": [
