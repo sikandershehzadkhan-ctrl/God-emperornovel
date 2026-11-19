@@ -36,7 +36,7 @@ const destinations = new Set();
 const unresolved = [];
 
 for (const raw of rawLinks) {
-  const route = canonicalizePagePath(raw.split(/[?#]/, 1)[0].replace(/\$\{[^}]+\}/g, "route-param"));
+  const route = canonicalizePagePath(raw.split(/[?#]/, 1)[0].replace(/\$\{[^}]+\}/g, "12"));
   if (!route || route === "/") {
     destinations.add("/");
     continue;
@@ -46,7 +46,7 @@ for (const raw of rawLinks) {
   // destinations. Their corresponding parameterized Worker route is checked.
   if (route === "/novel/" || route === "/read/") {
     destinations.add(route);
-    const completedPattern = route === "/read/" ? route + "novel-id/chapter-number" : route + "novel-id";
+    const completedPattern = route === "/read/" ? route + "12/12" : route + "12";
     if (!dynamicPatterns.some(pattern => pattern.test(completedPattern))) {
       unresolved.push({ source: raw, normalized: route, reason: "unmatched dynamic route prefix" });
     }
