@@ -2,7 +2,7 @@
   "audit_date": "2026-11-19",
   "branch": "architecture/phase-01-foundation-route-registry",
   "source_file": "src/index.js",
-  "source_blob": "7ed42bdfc9282bc31155047ff5454103ad58cd14",
+  "source_blob": "60f89f6c341e3945c5996cc96ebcdc88905b79a0",
   "scope": "First-pass static inventory of literal API path branches and dynamic path matchers inside async function api(req,env).",
   "counts": {
     "literal_endpoint_paths": 74,
@@ -1394,7 +1394,8 @@
     "Dynamic reader routes include public GET lookups for published/rights-eligible novels and chapters, plus authenticated POST chapter unlock and batch-unlock operations.",
     "POST /api/history now validates positive safe-integer identifiers and requires the exact chapter to belong to the supplied published, rights-eligible novel and itself be published; source-level regression coverage is build-gated.",
     "POST /api/taxonomy now derives submitter identity from the resolved session and ignores client-supplied creator IDs/names.",
-    "POST /api/admin/connectors now creates connectors disabled with rights_status='pending'; explicit evidence-backed review is required before authorization."
+    "POST /api/admin/connectors now creates connectors disabled with rights_status='pending'; explicit evidence-backed review is required before authorization.",
+    "POST /api/taxonomy is rate-limited by source IP and authenticated account before accepting a pending proposal."
   ],
   "not_certified": [
     "complete API coverage outside the api() dispatcher",
