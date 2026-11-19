@@ -1,5 +1,6 @@
 import assert from "node:assert/strict";
 import { readFile } from "node:fs/promises";
+import { resolvePageShell } from "../src/route-registry.mjs";
 
 const app = await readFile("public/app.js", "utf8");
 const worker = await readFile("src/index.js", "utf8");
@@ -28,12 +29,12 @@ assert.match(catalogLoad, /catch\(error\)/);
 
 assert.match(app, /else if\(p==='\/discover'\|\|p==='\/catalog'\)await catalog\(\)/);
 assert.match(app, /x==='\/catalog'&&path==='\/discover'/);
-assert.match(worker, /"\/discover":"catalog\.html"/);
+assert.equal(resolvePageShell("/discover"), "catalog.html");
 assert.ok(wrangler.includes('"/catalog", "/discover", "/formats"'), "Wrangler routes /discover through the Worker");
 const catalogTemplate = await readFile("public/catalog.html", "utf8");
 assert.match(catalogTemplate, /<title>Catalog \| Imperial Novel<\/title>/);
 const fetchDispatch = worker.slice(worker.indexOf("export default"));
-assert.match(fetchDispatch, /else if\(!p\.includes\("\."\)\)r=await html\(req,env\)/, "Extensionless public routes, including /discover, must reach the HTML router");
-assert.ok(worker.includes('"/discover":"catalog.html"'), "The HTML router must map the direct Discover route to the catalog shell");
+assert.match(fetchDispatch, /else if\(resolvePageShell\(p\)\|\|!p\.includes\("\."\)\)r=await html\(req,env\)/, "Extensionless public routes, including /discover, must reach the HTML router");
+assert.ok(worker.includes('const file=resolvePageShell(p)||"404.html";'), "The HTML router must use the canonical route registry for the Discover catalog shell");
 
 console.log("PASS: homepage/catalog API requests time out safely, render retry states, and /discover resolves to the catalog.");
