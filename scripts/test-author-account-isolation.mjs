@@ -22,6 +22,7 @@ INSERT INTO users(id,username,email,role) VALUES(1,'author-a','a@test','author')
 INSERT INTO novels(id,title,author,owner_user_id) VALUES(101,'A Novel','A',1),(202,'B Novel','B',2);
 INSERT INTO chapters(id,novel_id,chapter_number,title,content) VALUES(1001,101,1,'A Chapter','A content'),(2001,202,1,'B Chapter','B content');
 INSERT INTO ai_author_projects(id,owner_user_id,name) VALUES(11,1,'A Project'),(22,2,'B Project');
+INSERT INTO ai_chapter_jobs(id,project_id,owner_user_id,chapter_number,status) VALUES(71,11,1,1,'complete'),(72,22,2,1,'complete');
 INSERT INTO author_applications(id,user_id,display_name,bio,experience,preferred_formats,rights_confirmed,status,review_notes) VALUES(51,1,'Author A','A bio','A experience','["novel"]',1,'pending','A private review'),(52,2,'Author B','B bio','B experience','["comic"]',1,'rejected','B private review');
 INSERT INTO ticket_ledger(id,user_id,delta,reason,reference) VALUES(31,1,-10,'unlock','A ledger'),(32,2,-20,'unlock','B ledger');
 INSERT INTO novel_requests(id,user_id,url,source_host,week_key) VALUES(41,1,'https://example.test/a','example.test',2968),(42,1,'https://example.test/b','example.test',2968),(43,2,'https://example.test/c','example.test',2968);
@@ -48,6 +49,17 @@ assert.equal((await req("/api/author/ai/projects/11",tb,"PATCH",{name:"Compromis
 assert.equal(db.prepare("SELECT name FROM ai_author_projects WHERE id=11").get().name,"A Project","cross-owner AI project mutation leaves the record unchanged");
 assert.equal((await req("/api/author/ai/projects/11",ta,"PATCH",{name:"A Updated Project"})).status,200,"project owner can update their own AI project");
 assert.equal(db.prepare("SELECT name FROM ai_author_projects WHERE id=11").get().name,"A Updated Project","owner update is persisted");
+assert.equal((await req("/api/author/ai/projects/11/jobs",tb)).status,403,"author B cannot read author A's AI job history");
+const ownerJobs=await req("/api/author/ai/projects/11/jobs",ta);
+assert.equal(ownerJobs.status,200,"project owner can read their own AI job history");
+assert.deepEqual(ownerJobs.data.map(x=>+x.id),[71],"job history is scoped to the owned project");
+assert.equal((await req("/api/author/ai/projects/11/blueprint",tb,"POST",{})).status,403,"cross-owner blueprint requests are denied before provider availability is disclosed");
+assert.equal((await req("/api/author/ai/projects/11/run",tb,"POST",{})).status,403,"cross-owner generation runs are denied before provider availability is disclosed");
+assert.equal((await req("/api/author/ai/projects/11/blueprint",ta,"POST",{})).status,503,"owner receives the expected unconfigured-provider response");
+assert.equal((await req("/api/author/ai/projects/11/run",ta,"POST",{})).status,503,"owner receives the expected unconfigured-provider response");
+assert.equal(db.prepare("SELECT status FROM ai_author_projects WHERE id=11").get().status,"draft","unconfigured generation attempts do not mutate project status");
+assert.equal(db.prepare("SELECT COUNT(*) n FROM ai_chapter_jobs WHERE project_id=11").get().n,1,"unconfigured generation attempts do not create jobs");
+
 assert.equal((await req("/api/author/chapters",tb,"POST",{novel_id:101,chapter_number:2,title:"Unauthorized Chapter",content:"This must not be written."})).status,403,"author B cannot create a chapter in author A's novel");
 assert.equal(db.prepare("SELECT COUNT(*) n FROM chapters WHERE novel_id=101 AND chapter_number=2").get().n,0,"rejected cross-owner chapter creation writes no row");
 const createdChapter=await req("/api/author/chapters",ta,"POST",{novel_id:101,chapter_number:2,title:"Owner Chapter",content:"An original chapter draft."});
