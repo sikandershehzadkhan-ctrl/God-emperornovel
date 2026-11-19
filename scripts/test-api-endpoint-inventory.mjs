@@ -32,6 +32,12 @@ assert.ok(rating.explicit_methods.includes("GET") && rating.explicit_methods.inc
 
 assert.equal(manifest.counts.literal_endpoint_paths, manifest.literal_endpoints.length);
 assert.equal(manifest.counts.dynamic_route_families, manifest.dynamic_endpoints.length);
-assert.equal(manifest.literal_endpoints.filter(endpoint => endpoint.method_evidence !== "explicit-literal-conditions").length, 14, "Method-unresolved literal paths must remain visible until reviewed");
+assert.equal(manifest.literal_endpoints.filter(endpoint => endpoint.method_evidence === "mixed-or-unconstrained-branches").length, 0, "Every literal route must have a method contract or an explicitly reviewed delegated method contract");
+for (const path of ["/api/health","/api/me","/api/config","/api/genres","/api/tags","/api/public-authors","/api/sources","/api/omni/status","/api/omni/search","/api/omni/resolve","/api/omni/smart-unlock","/api/novels","/api/admin/stats"]) {
+  const escaped = path.replace(/[.*+?^${}()|[\]\\]/g, "\\assert.equal(manifest.literal_endpoints.filter(endpoint => endpoint.method_evidence !== "explicit-literal-conditions").length, 14, "Method-unresolved literal paths must remain visible until reviewed");");
+  assert.match(api, new RegExp('p===["\\\\\\']'+escaped+'["\\\\\\']&&m===["\\\\\\']GET["\\\\\\']'), "Read-only API endpoint must reject non-GET methods: "+path);
+}
+assert.ok(api.includes('if(p==="/api/taxonomy")return communityTaxonomy(req,env)'), "Taxonomy route must delegate to its method-aware handler");
+
 assert.ok(manifest.literal_endpoints.every(endpoint => endpoint.review_required), "All API endpoints stay review-gated until auth and resource ownership are audited");
 console.log(`API inventory source checks passed: ${manifest.literal_endpoints.length} literal paths, ${manifest.counts.literal_route_branch_occurrences} branch occurrences, ${manifest.dynamic_endpoints.length} dynamic route families.`);
