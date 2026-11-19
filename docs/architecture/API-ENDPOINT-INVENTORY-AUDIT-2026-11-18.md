@@ -1,8 +1,8 @@
 # API Endpoint Inventory Audit
 
-**Audit date:** 2026-11-18  
+**Audit date:** 2026-11-19  
 **Source:** `src/index.js`, `async function api(req, env)`  
-**Source blob:** `6448ddfc5ae08694e67d57b4a8e52e0637be2383`  
+**Source blob:** `ae13ded82676035b2414412ad3121d5ad0c95174`  
 **Status:** Static inventory baseline. Not a security or API contract certification.
 
 ## Inventory counts
@@ -49,3 +49,10 @@ The current source snapshot has three `/api/rating` path-condition occurrences: 
 7. Refresh this inventory after the rating integration is merged.
 
 No live API calls, production deployment, or D1 mutation were performed. Static source inspection cannot certify deployed behavior.
+
+## Additional source hardening in the foundation branch
+
+- Taxonomy submitter identity is derived from the server-resolved session; client-provided identity fields are ignored.
+- Reader history writes validate positive safe-integer identifiers and the exact published, rights-eligible novel/chapter pair.
+- New connector registrations start disabled and pending until explicit rights evidence and review.
+- Build-gated source contracts now check account-scoped predicates, selected author/admin guards, and these resource-validation behaviors. These tests do not replace D1-backed two-user adversarial tests.
