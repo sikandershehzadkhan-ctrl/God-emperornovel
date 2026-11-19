@@ -204,3 +204,8 @@ The admin novel review route now requires a non-empty reason (up to the existing
 ## Administrative report and connector review safeguards
 
 The report-status PATCH route now validates a positive safe-integer report ID, checks the database update affected exactly one row, returns 404 for a missing report, and records the acting administrator and new status in the audit log. Connector authorization review now validates its request ID and performs a conditional `pending` to decision transition. The connector rights/disabled-state update is gated on that transition succeeding; competing review attempts return a conflict instead of both applying decisions. Review notes are bounded to 3,000 characters. Regression assertions cover the ID checks, missing-report behavior, audit event, pending-state compare-and-set, and dependent connector update. Source-level checks only; runtime concurrency and production D1 behavior remain unverified.
+
+
+## Administrator account self-protection
+
+The admin user PATCH route now blocks an administrator from setting their own account to banned, preventing an accidental self-lockout. It retains the existing self-demotion guard, validates that exactly one user row was updated, and records role, verification, ban-state changes, target account, and acting administrator in the audit log. Regression assertions cover the self-ban guard, audit event, and affected-row check. This is source-level protection; authentication/session behavior has not been tested against a live deployment.
