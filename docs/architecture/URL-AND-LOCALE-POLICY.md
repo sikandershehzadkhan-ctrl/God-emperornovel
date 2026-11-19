@@ -10,7 +10,7 @@
 - Query parameters are preserved during trailing-slash normalization.
 - Public indexable HTML pages receive a canonical link using the request origin and canonical pathname. Query parameters are excluded from that canonical link.
 - Exact private and utility paths retain both the HTML `noindex,nofollow` meta tag and the `X-Robots-Tag` response header. Noindex is not an authorization control.
-- Unknown extensionless paths continue to use the HTML 404 shell. File-like paths continue to the asset handler unless explicitly registered as page routes.
+- Unknown extensionless paths return the HTML 404 shell with HTTP 404 and noindex headers. File-like paths continue to the asset handler unless explicitly registered as page routes.
 
 ## Legacy fandom route
 
