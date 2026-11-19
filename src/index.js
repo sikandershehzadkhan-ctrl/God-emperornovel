@@ -846,7 +846,8 @@ async function api(req,env){
   const storedFeedback=pub==='review'?'':pub==='published'?'':(pub==='archived'?feedback:(feedback||String(row.review_feedback||'')));
   const rightsVerified=pub==='published';
   const verified=rightsVerified?u.id:null,verifiedAt=rightsVerified?new Date().toISOString():null;
-  await env.DB.prepare(`UPDATE novels SET title=?,author=?,description=?,status=?,kind=?,language=?,cover_url=?,source_url=?,rights_status=?,publication_status=?,rights_evidence=?,rights_notes=?,review_feedback=?,rights_verified_by=?,rights_verified_at=?,reviewed_by=?,reviewed_at=?,updated_at=CURRENT_TIMESTAMP WHERE id=?`).bind(String(b.title??row.title),String(b.author??row.author),String(b.description??row.description),['ongoing','completed'].includes(String(b.status??row.status))?String(b.status??row.status):row.status,String(b.kind??row.kind),String(b.language??row.language),String(b.cover_url??row.cover_url),String(b.source_url??row.source_url),rights,pub,String(b.rights_evidence??row.rights_evidence),String(b.rights_notes??row.rights_notes),storedFeedback,verified,verifiedAt,reviewedBy,reviewedAt,id).run();
+  const result=await env.DB.prepare(`UPDATE novels SET title=?,author=?,description=?,status=?,kind=?,language=?,cover_url=?,source_url=?,rights_status=?,publication_status=?,rights_evidence=?,rights_notes=?,review_feedback=?,rights_verified_by=?,rights_verified_at=?,reviewed_by=?,reviewed_at=?,updated_at=CURRENT_TIMESTAMP WHERE id=? AND publication_status=?`).bind(String(b.title??row.title),String(b.author??row.author),String(b.description??row.description),['ongoing','completed'].includes(String(b.status??row.status))?String(b.status??row.status):row.status,String(b.kind??row.kind),String(b.language??row.language),String(b.cover_url??row.cover_url),String(b.source_url??row.source_url),rights,pub,String(b.rights_evidence??row.rights_evidence),String(b.rights_notes??row.rights_notes),storedFeedback,verified,verifiedAt,reviewedBy,reviewedAt,id,previous).run();
+   if(Number(result?.meta?.changes??result?.changes??0)!==1)return json({error:'Novel review state changed. Refresh the queue and review again.'},409);
   await audit(env,u,'admin_novel_review_decision',`novel=${id};from=${previous};to=${pub};rights=${rights};feedback=${feedback}`);
   if(pub==='review'&&previous!=='review')await notifyAdmins(env,'Novel awaiting publication review',`Novel "${String(row.title||'Untitled')}" (ID ${id}) is in the review queue.`);
   if(row.owner_user_id&&Number(row.owner_user_id)!==Number(u.id)){
@@ -889,7 +890,8 @@ async function api(req,env){
   }
   const duplicate=await env.DB.prepare("SELECT id FROM chapters WHERE novel_id=? AND chapter_number=? AND id<>?").bind(row.novel_id,num,id).first();
   if(duplicate)return json({error:"Chapter number already exists for this novel."},409);
-  await env.DB.prepare("UPDATE chapters SET chapter_number=?,title=?,content=?,is_locked=?,ticket_cost=?,publication_status=? WHERE id=?").bind(num,title,content,locked,cost,pub,id).run();
+  const result=await env.DB.prepare("UPDATE chapters SET chapter_number=?,title=?,content=?,is_locked=?,ticket_cost=?,publication_status=? WHERE id=? AND publication_status=?").bind(num,title,content,locked,cost,pub,id,previous).run();
+   if(Number(result?.meta?.changes??result?.changes??0)!==1)return json({error:"Chapter review state changed. Refresh the queue and review again."},409);
   await env.DB.prepare("UPDATE novels SET updated_at=CURRENT_TIMESTAMP WHERE id=?").bind(row.novel_id).run();
   await audit(env,u,'admin_chapter_review_decision',`chapter=${id};novel=${row.novel_id};from=${previous};to=${pub};feedback=${feedback}`);
   const parent=await env.DB.prepare('SELECT owner_user_id FROM novels WHERE id=?').bind(row.novel_id).first();
