@@ -17,8 +17,13 @@ assert.deepEqual([...manifestPaths].sort(), [...literalPaths].sort(), "API liter
 for (const endpoint of manifest.literal_endpoints) {
   assert.ok(endpoint.source_lines.length > 0, "Every literal API endpoint needs source line evidence: " + endpoint.path);
   assert.ok(endpoint.occurrences >= 1, "Every literal API endpoint needs at least one occurrence: " + endpoint.path);
-  for (const method of endpoint.explicit_methods) {
-    assert.ok(api.includes(`m===\"${method}\"`) || api.includes(`m === \"${method}\"`) || api.includes(`m==='${method}'`) || api.includes(`m === '${method}'`), "Explicit method evidence must remain in source: " + endpoint.path + " " + method);
+  if (endpoint.method_evidence === "delegated-method-contract") {
+    assert.ok(worker.includes("async function communityTaxonomy(req,env)"), "Delegated taxonomy handler must exist");
+    assert.ok(worker.includes("if(method==='GET')") && worker.includes("if(method==='POST')") && worker.includes("return json({error:'Method not allowed'},405)"), "Delegated taxonomy handler must explicitly allow GET/POST and reject other methods");
+  } else {
+    for (const method of endpoint.explicit_methods) {
+      assert.ok(api.includes('m===\\"'+method+'\\"') || api.includes('m === \\"'+method+'\\"') || api.includes("m==="+"'"+method+"'") || api.includes("m === '"+method+"'"), "Explicit method evidence must remain in source: " + endpoint.path + " " + method);
+    }
   }
 }
 for (const endpoint of manifest.dynamic_endpoints) {
