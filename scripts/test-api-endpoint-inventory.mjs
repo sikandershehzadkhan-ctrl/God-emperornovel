@@ -42,6 +42,8 @@ for (const path of ["/api/health","/api/me","/api/config","/api/genres","/api/ta
   assert.ok(api.includes(`if(p==="${path}"&&m==="GET")`), "Read-only API endpoint must reject non-GET methods: " + path);
 }
 assert.ok(api.includes('if(p==="/api/taxonomy")return communityTaxonomy(req,env)'), "Taxonomy route must delegate to its method-aware handler");
+assert.ok(api.includes('let nm=p.match(/^\\/api\\/novels\\/(\\d+)$/);if(nm&&m==="GET")'), "Public novel detail route must be GET-only");
+assert.ok(api.includes('let cm=p.match(/^\\/api\\/chapters\\/(\\d+)$/);if(cm&&m==="GET")'), "Public chapter detail route must be GET-only");
 
 assert.ok(manifest.literal_endpoints.every(endpoint => endpoint.review_required), "All API endpoints stay review-gated until auth and resource ownership are audited");
 console.log(`API inventory source checks passed: ${manifest.literal_endpoints.length} literal paths, ${manifest.counts.literal_route_branch_occurrences} branch occurrences, ${manifest.dynamic_endpoints.length} dynamic route families.`);
