@@ -3,12 +3,14 @@ import { readFile } from "node:fs/promises";
 import { SITEMAP_STATIC_PATHS, PAGE_SHELLS, DYNAMIC_PAGE_ROUTES, NOINDEX_EXACT_PATHS, resolvePageShell, canonicalizePagePath } from "../src/route-registry.mjs";
 
 const manifest = JSON.parse(await readFile(new URL("../docs/architecture/IMPERIAL-ROUTE-INVENTORY-BASELINE-2026-11-18.json", import.meta.url), "utf8"));
+const apiInventory = JSON.parse(await readFile(new URL("../docs/architecture/API-ENDPOINT-INVENTORY-2026-11-18.json", import.meta.url), "utf8"));
 const worker = await readFile(new URL("../src/index.js", import.meta.url), "utf8");
 const client = await readFile(new URL("../public/app.js", import.meta.url), "utf8");
 const sitemapSource = await readFile(new URL("../src/sitemap.mjs", import.meta.url), "utf8");
 const wrangler = await readFile(new URL("../wrangler.toml", import.meta.url), "utf8");
 
 assert.equal(manifest.status, "source-inventory-baseline-not-release-certified");
+assert.deepEqual(manifest.api_route_literals.map(route => route.path).sort(), apiInventory.literal_endpoints.map(route => route.path).sort(), "route baseline literal API paths must match the dedicated API inventory; dynamic prefixes belong only in dynamic endpoint families");
 assert.equal(manifest.source_evidence.worker_file, "src/index.js");
 assert.equal(manifest.source_evidence.sitemap_file, "src/sitemap.mjs");
 assert.equal(manifest.source_evidence.client_file, "public/app.js");

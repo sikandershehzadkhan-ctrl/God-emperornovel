@@ -397,14 +397,6 @@
       "response_contract": "not-yet-normalized"
     },
     {
-      "path": "/api/admin/author-applications/",
-      "status": "observed-literal-in-api-handler",
-      "methods": "not-yet-normalized",
-      "authentication": "not-yet-normalized",
-      "resource_ownership": "not-yet-normalized",
-      "response_contract": "not-yet-normalized"
-    },
-    {
       "path": "/api/admin/community/comments",
       "status": "observed-literal-in-api-handler",
       "methods": "not-yet-normalized",
@@ -502,14 +494,6 @@
     },
     {
       "path": "/api/admin/requests",
-      "status": "observed-literal-in-api-handler",
-      "methods": "not-yet-normalized",
-      "authentication": "not-yet-normalized",
-      "resource_ownership": "not-yet-normalized",
-      "response_contract": "not-yet-normalized"
-    },
-    {
-      "path": "/api/admin/requests/",
       "status": "observed-literal-in-api-handler",
       "methods": "not-yet-normalized",
       "authentication": "not-yet-normalized",
