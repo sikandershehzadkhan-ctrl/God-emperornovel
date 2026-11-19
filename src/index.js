@@ -378,6 +378,8 @@ async function communityTaxonomy(req,env,u){
   return json(r.results||[]);
  }
  if(method==='POST'){
+  const ipLimit=await consumeAuthRateLimit(env,"taxonomy-ip",req.headers.get("CF-Connecting-IP")||"unknown",10,3600);if(ipLimit)return ipLimit;
+  if(u){const userLimit=await consumeAuthRateLimit(env,"taxonomy-user",String(u.id),5,3600);if(userLimit)return userLimit;}
   const b=await body(req),type=String(b.type||'').toLowerCase(),name=String(b.name||'').trim().replace(/\s+/g,' ');
   if(!['genre','tag'].includes(type)) return json({error:'type must be genre or tag'},400);
   if(name.length<2||name.length>80)return json({error:'Name must be 2-80 characters'},400);
