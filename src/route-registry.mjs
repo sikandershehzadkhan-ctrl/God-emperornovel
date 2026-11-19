@@ -22,6 +22,6 @@ export function resolvePageShell(pathname) {
 
 export function canonicalizePagePath(pathname) {
   if (typeof pathname !== "string" || pathname === "/" || !pathname.endsWith("/")) return pathname;
-  const canonical = pathname.replace(/\\/+$/, "");
+  const canonical = pathname.replace(/\/+$/, "");
   return resolvePageShell(canonical) ? canonical : pathname;
 }
