@@ -3,7 +3,7 @@
   "registryName": "Imperial Novel API authorization and object-ownership registry",
   "sourceFile": "src/index.js",
   "sourceCommit": "main",
-  "sourceBlob": "src/index.js@2cb77da4f44566740c07731327c3d47b8666572e",
+  "sourceBlob": "src/index.js@ddb7429ac4809c733f8a44ef9c3c48c89bc4b2d3",
   "coverage": "All exact API path/method declarations plus dynamic API patterns are inventoried; critical admin, user-owned, author-owned, public-rights and payment paths have explicit source guards and scope assertions.",
   "exactInventory": [
     {
@@ -1044,7 +1044,7 @@
   },
   "knownOpenQuestions": [
     "This registry and its tests are source-level; object-level authorization still needs adversarial runtime tests against a seeded D1 fixture.",
-    "The public rating UI and all display surfaces must be verified against the 1-10 API/database scale.",
+    "The main catalog formatter, minimum-rating filters, and tier thresholds now use the 1-10 scale; any separately mounted rating-entry control still needs runtime verification.",
     "Optional-session routes such as /api/me and /api/made-for-you have mixed public/personalized behavior and require runtime response-shape tests."
   ]
 }
