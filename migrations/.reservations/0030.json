@@ -1,0 +1,6 @@
+{
+  "version": 1,
+  "number": 30,
+  "migration": "migrations/0030_daily_view_analytics.sql",
+  "pullRequest": 195
+}
