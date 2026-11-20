@@ -697,7 +697,7 @@
         ]
       },
       {
-        "pattern": "^/novel/\\\\d+/chapters/?$",
+        "pattern": "^/novel/\\d+/chapters/?$",
         "contentAccess": "public chapter archive for eligible published work",
         "actionAccess": "chapter actions require their own API authorization/entitlement checks",
         "clientGate": "none at shell; per-chapter API authorization audit pending",
@@ -707,7 +707,7 @@
         ]
       },
       {
-        "pattern": "^/novel/\\\\d+/?$",
+        "pattern": "^/novel/\\d+/?$",
         "contentAccess": "public novel detail for eligible published work",
         "actionAccess": "user actions require their own API authorization/entitlement checks",
         "clientGate": "none at shell; per-object detail API audit pending",
@@ -717,7 +717,7 @@
         ]
       },
       {
-        "pattern": "^/read/\\\\d+/\\\\d+/?$",
+        "pattern": "^/read/\\d+/\\d+/?$",
         "contentAccess": "public reader shell; chapter content and paid/unlocked access policy not yet certified",
         "actionAccess": "reading progress and unlock operations require separate API authorization checks",
         "clientGate": "none at shell; reader content API audit pending",
