@@ -214,9 +214,12 @@ const uiLanguages = Object.keys(JSON.parse(languageMatch[1]));
 assert.deepEqual(uiLanguages, manifest.localePolicy.uiLanguages, "UI language choices differ from the route locale registry");
 assert.equal(uiLanguages.length, 14, "expected 14 supported UI language choices");
 
-const languageSelect = client.match(/<select id="imperialLanguageSelect"[^>]*>([\\s\\S]*?)<\\/select>/);
-assert.ok(languageSelect, "language selector not found");
-const optionCodes = [...languageSelect[1].matchAll(/<option value="([^"]+)"/g)].map(match => match[1]);
+const languageSelectStart = client.indexOf('<select id="imperialLanguageSelect"');
+const languageSelectEnd = client.indexOf("</select>", languageSelectStart);
+assert.ok(languageSelectStart >= 0 && languageSelectEnd > languageSelectStart,
+  "language selector not found");
+const languageSelectMarkup = client.slice(languageSelectStart, languageSelectEnd);
+const optionCodes = [...languageSelectMarkup.matchAll(/<option value="([^"]+)"/g)].map(match => match[1]);
 assert.equal(optionCodes.length, 14, "language selector must expose 14 choices");
 assert.deepEqual([...optionCodes].sort(), [...manifest.localePolicy.uiLanguages].sort(),
   "language selector choices differ from the locale registry");
