@@ -104,6 +104,45 @@ assert.ok(chapterSitemapSql.some(sql => sql.includes("ORDER BY c.id LIMIT ? OFFS
   "chapter sitemap pages must use deterministic bounded pagination");
 
 
+
+assert.equal(manifest.accessPolicy?.shellAccess?.startsWith("public-shell"), true,
+  "route shell access boundary must be explicit");
+assert.equal(manifest.accessPolicy?.status, "source-audited-initial; not a complete authorization certification");
+assert.deepEqual(Object.keys(manifest.accessPolicy.exact).sort(), [...paths].sort(),
+  "every exact route must have exactly one access policy");
+assert.equal(manifest.accessPolicy.patterns.length, manifest.patterns.length,
+  "every dynamic route pattern must have an access policy");
+for (const route of manifest.patterns) {
+  assert.ok(manifest.accessPolicy.patterns.some(policy => policy.pattern === route.pattern),
+    "dynamic route access policy missing: " + route.pattern);
+}
+assert.ok(!htmlDispatcher.includes("getUser(") && !htmlDispatcher.includes("need("),
+  "Worker HTML dispatcher unexpectedly changed its public-shell boundary");
+
+const adminHtml = fs.readFileSync(path.join(root, "public/admin.html"), "utf8");
+assert.ok(adminHtml.includes("me.user?.role!=='admin'"),
+  "admin client must verify the administrator role before loading its workspace");
+assert.ok(worker.includes("const admin=u=>u?.role===\"admin\"?null:"),
+  "Worker administrator API guard missing");
+for (const endpoint of ["/api/library", "/api/history", "/api/follows", "/api/bookmarks",
+  "/api/profile", "/api/tickets/ledger", "/api/notifications", "/api/requests"]) {
+  const at = worker.indexOf('if(p==="' + endpoint + '"');
+  assert.ok(at >= 0, "account endpoint missing: " + endpoint);
+  assert.ok(worker.slice(at, at + 900).includes("need(u)"),
+    "account endpoint must require an authenticated session: " + endpoint);
+}
+assert.ok(worker.includes("WHERE user_id=?") && worker.includes("bind(u.id)"),
+  "account data endpoints must retain user-scoped query bindings");
+assert.ok(client.includes("me.user.role!=='author'&&me.user.role!=='admin'"),
+  "Author Studio client role branch missing");
+assert.ok(worker.includes("rights_status='authorized' LIMIT 30"),
+  "OmniPortal external search must filter authorized connectors");
+const omniImportAt = worker.indexOf('if(p==="/api/omni/import"');
+assert.ok(omniImportAt >= 0 && worker.slice(omniImportAt, omniImportAt + 1100).includes("need(u)"),
+  "OmniPortal import must require an authenticated user");
+assert.ok(worker.slice(omniImportAt, omniImportAt + 1100).includes("c.enabled||c.rights_status!=='authorized'"),
+  "OmniPortal import must require an enabled authorized connector");
+
 console.log("Worker route registry validated: " + manifest.routes.length +
   " exact routes, " + manifest.patterns.length + " dynamic patterns, " +
   manifest.sitemaps.length + " sitemap endpoints, " +
