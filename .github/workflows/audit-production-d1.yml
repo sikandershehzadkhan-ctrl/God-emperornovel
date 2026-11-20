@@ -173,16 +173,18 @@ jobs:
           run_query "Comment schema (columns only)" "PRAGMA table_info(comments);"
           run_query "Notification schema (columns only)" "PRAGMA table_info(notifications);"
           run_query "Agent schema (columns only)" "PRAGMA table_info(agents);"
+          run_query "Agent run history schema (columns only)" "PRAGMA table_info(agent_runs);"
+          run_query "Taxonomy submission schema (columns only)" "PRAGMA table_info(taxonomy_submissions);"
           critical_columns_sql="$(cat <<'SQL'
           WITH expected(table_name,column_name) AS (
             VALUES
               ('users','id'),('users','username'),('users','email'),('users','password_hash'),('users','role'),('users','tickets'),('users','verified'),('users','banned'),
               ('sessions','token_hash'),('sessions','user_id'),('sessions','expires_at'),
-              ('novels','id'),('novels','title'),('novels','author'),('novels','description'),('novels','status'),('novels','kind'),('novels','rights_status'),('novels','views'),('novels','rating'),('novels','publication_status'),('novels','owner_user_id'),('novels','rights_evidence'),
+              ('novels','id'),('novels','title'),('novels','author'),('novels','description'),('novels','status'),('novels','kind'),('novels','rights_status'),('novels','views'),('novels','rating'),('novels','publication_status'),('novels','owner_user_id'),('novels','rights_evidence'),('novels','review_feedback'),('novels','reviewed_by'),('novels','reviewed_at'),
               ('chapters','id'),('chapters','novel_id'),('chapters','chapter_number'),('chapters','title'),('chapters','content'),('chapters','is_locked'),('chapters','ticket_cost'),('chapters','publication_status'),
               ('app_settings','key'),('app_settings','value'),
               ('donations','id'),('donations','user_id'),('donations','amount'),('donations','reference_id'),('donations','status'),
-              ('novel_requests','id'),('novel_requests','user_id'),('novel_requests','status')
+              ('comments','parent_id'),('comments','edited_at'),('connectors','search_url'),('connectors','auth_header'),('connectors','secret_name'),('connectors','rights_evidence_url'),('connectors','terms_url'),('connectors','rights_notes'),('connectors','metadata_import_allowed'),('connectors','attribution_required'),('novel_requests','id'),('novel_requests','user_id'),('novel_requests','status')
           )
           SELECT e.table_name,e.column_name,
                  CASE WHEN EXISTS (SELECT 1 FROM pragma_table_info(e.table_name) p WHERE p.name=e.column_name)
