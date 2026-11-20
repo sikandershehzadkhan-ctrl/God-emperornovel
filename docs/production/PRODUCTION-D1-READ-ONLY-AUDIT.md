@@ -67,3 +67,9 @@ Only after a recoverable backup has been restored successfully, the migration le
 - Production D1 mutated: **No**.
 - Worker deployed: **No**.
 - Deployment workflow re-enabled: **No**.
+
+## Optional GitHub Actions operator path
+
+The repository includes the manually dispatched workflow **Imperial Novel Read-Only Production D1 Audit**. It has no push or pull-request trigger, and its confirmation input defaults to **no**. An authorized operator must explicitly choose **yes** before the job can access the Cloudflare credentials. The workflow checks the configured account/database identity, reports the live Worker health and recovery-bookmark status, and runs only SELECT/PRAGMA inventory queries. A failed optional health or Time Travel check does not suppress the remaining schema inventory; failed individual queries are reported as unverified evidence.
+
+Do not add automatic triggers to this workflow. Do not use it to apply migrations, export data, create a migration ledger, restore backups, or deploy a Worker. A successful audit workflow run is not a backup/restore rehearsal or production migration approval.
