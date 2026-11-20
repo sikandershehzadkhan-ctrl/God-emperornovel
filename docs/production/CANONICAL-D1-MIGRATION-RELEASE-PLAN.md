@@ -79,3 +79,7 @@ At minimum, the reviewed release runner must verify these structures before depl
 ## Required integration CI evidence
 
 Before this pull request is considered ready for review, its current head must have fresh successful pull-request checks for both **Imperial Novel Cloudflare Source Validation** and **Graphify architecture map**. Confirm the checks belong to the exact current head SHA, not an earlier commit. A mergeable GitHub status and a successful fresh-SQLite replay are not substitutes for those checks. If either workflow is skipped or does not start, treat validation as pending and investigate the workflow trigger; do not mark this release plan complete.
+
+## Donation review and posting ownership
+
+Migration 0024's approval trigger is the sole authority for Crown balance credit and payment-ledger posting. The Worker must insert the attributable `donation_reviews` row and transition the pending donation, but must not also update the user's balance or insert a second payment-ledger row. Migration 0026 enforces independent review at the database boundary. The admin UI must collect a required review note. The candidate integration includes source and SQLite regression tests for these invariants; this does not replace production-shaped rehearsal or remote D1 inspection.
