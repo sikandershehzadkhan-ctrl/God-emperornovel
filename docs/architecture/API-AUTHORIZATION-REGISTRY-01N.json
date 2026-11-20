@@ -604,7 +604,7 @@
       "accessClass": "author-owner",
       "guard": "author(u)",
       "scope": "project.owner_user_id equals u.id unless admin",
-      "sourceMarker": "if(/^\\/api\\/author\\/ai\\/projects\\/\\d+\\/blueprint$/.test(p))"
+      "sourceMarker": "if(/^\\/api\\/author\\/ai\\/projects\\/\\d+\\/blueprint$/.test(p)"
     }
   ],
   "policies": {
