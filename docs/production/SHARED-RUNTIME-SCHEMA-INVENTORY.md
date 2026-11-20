@@ -30,8 +30,9 @@ Do not remove either shared initializer until the remote production schema and a
 These are concrete DDL operations still present in the runtime initializers and not yet represented by a verified, production-reconciled canonical migration:
 
 1. **Comments columns:** `comments.parent_id INTEGER` and `comments.edited_at TEXT`, added by `createRuntimeFeatureSchemaEnsurer()` in `src/runtime-feature-schema.mjs`.
-2. **Community taxonomy proposals:** `taxonomy_submissions`, created by `ensureCommunityTaxonomySchema()` in `src/index.js`.
-3. **Optional connector configuration columns:** `connectors.search_url`, `connectors.auth_header`, `connectors.secret_name`, `connectors.rights_evidence_url`, `connectors.terms_url`, `connectors.rights_notes`, `connectors.metadata_import_allowed`, and `connectors.attribution_required`, added by `ensureOmniTables()` in `src/index.js`.
+2. **Novel review columns:** `novels.review_feedback TEXT`, `novels.reviewed_by INTEGER`, and `novels.reviewed_at TEXT`, added by `ensurePublishingSchema()` in `src/index.js`. Migration 0004 covers the other publication/rights columns but not these three review fields.
+3. **Community taxonomy proposals:** `taxonomy_submissions`, created by `ensureCommunityTaxonomySchema()` in `src/index.js`.
+4. **Optional connector configuration columns:** `connectors.search_url`, `connectors.auth_header`, `connectors.secret_name`, `connectors.rights_evidence_url`, `connectors.terms_url`, `connectors.rights_notes`, `connectors.metadata_import_allowed`, and `connectors.attribution_required`, added by `ensureOmniTables()` in `src/index.js`.
 
 Migration 0048 intentionally provisions the four OmniPortal support tables but does not claim to provision these optional connector columns. Do not infer that they exist in production merely because the runtime initializer attempts to add them.
 
