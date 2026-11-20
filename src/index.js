@@ -362,7 +362,7 @@ async function ensureCommunityTaxonomySchema(env){
  created_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,reviewed_at TEXT,reviewer_id INTEGER,
  UNIQUE(type,slug))`).run();
 }
-async function communityTaxonomy(req,env,u){
+async function communityTaxonomy(req,env,principal){
  const u=new URL(req.url), method=req.method;
  if(method==='GET'){
   const type=String(u.searchParams.get('type')||'').toLowerCase();
@@ -377,8 +377,8 @@ async function communityTaxonomy(req,env,u){
   return json(r.results||[]);
  }
  if(method==='POST'){
-  const e=need(u);if(e)return e;
-  const limited=await consumeAuthRateLimit(env,'taxonomy-user',String(u.id),5,86400);if(limited)return limited;
+  const e=need(principal);if(e)return e;
+  const limited=await consumeAuthRateLimit(env,'taxonomy-user',String(principal.id),5,86400);if(limited)return limited;
   const b=await body(req),type=String(b.type||'').toLowerCase(),name=String(b.name||'').trim().replace(/\s+/g,' ');
   if(!['genre','tag'].includes(type)) return json({error:'type must be genre or tag'},400);
   if(name.length<2||name.length>80)return json({error:'Name must be 2-80 characters'},400);
@@ -386,7 +386,7 @@ async function communityTaxonomy(req,env,u){
   if(await env.DB.prepare(`SELECT id FROM ${table} WHERE slug=? LIMIT 1`).bind(s).first())return json({error:'Already exists in official taxonomy'},409);
   const existing=await env.DB.prepare('SELECT id,status FROM taxonomy_submissions WHERE type=? AND slug=? LIMIT 1').bind(type,s).first();
   if(existing) return json({error:'Already submitted',id:existing.id,status:existing.status},409);
-  try{const r=await env.DB.prepare(`INSERT INTO taxonomy_submissions(type,name,slug,description,creator_id,creator_name,status) VALUES(?,?,?,?,?,?,?)`).bind(type,name,s,String(b.description||'').slice(0,500),u.id,String(u.username||'').slice(0,80),'pending').run();return json({ok:true,id:r.meta.last_row_id,status:'pending'})}catch(e){console.error('taxonomy submission write failed',e);return json({error:'Unable to save submission. Please try again later.'},500)}
+  try{const r=await env.DB.prepare(`INSERT INTO taxonomy_submissions(type,name,slug,description,creator_id,creator_name,status) VALUES(?,?,?,?,?,?,?)`).bind(type,name,s,String(b.description||'').slice(0,500),principal.id,String(principal.username||'').slice(0,80),'pending').run();return json({ok:true,id:r.meta.last_row_id,status:'pending'})}catch(e){console.error('taxonomy submission write failed',e);return json({error:'Unable to save submission. Please try again later.'},500)}
  }
  return json({error:'Method not allowed'},405);
 }
