@@ -167,7 +167,7 @@ function selfTest() {
   const registry = { version:2, pathPolicy:{
     unregisteredTrackedPaths:"fail",unregisteredChangedPaths:"fail",multipleOwners:"fail",
     staleExactEntries:"fail",emptyDirectoryRoots:"fail",missingOwnerMetadata:"fail",
-    unauthorizedCrossDomainImports:"fail",unresolvedRelativeImports:"fail"
+    unauthorizedCrossDomainImports:"fail",unresolvedRelativeImports:"fail",adrRequiredForSharedSurfaceChanges:true,rootArchivesAreNotWorkerServed:true
   }, owners:[
     owner("worker",["src/"],true),
     owner("migrations",["migrations/"],true),
@@ -189,6 +189,10 @@ function selfTest() {
   assert.equal(validateDependencyDirection(registry,[{from:".github/workflows/test.yml",to:"src/index.js"}]).crossDomainImports,1);
   assert.throws(()=>validateDependencyDirection(registry,[{from:"src/index.js",to:".github/workflows/test.yml"}]),/unauthorized cross-domain import/);
   assert.throws(()=>validateDependencyDirection(registry,[{from:"src/index.js",to:"scripts/missing.mjs"}]),/no registered owner/);
+  const cyclicRegistry={...registry,owners:registry.owners.map(item=>item.id==="worker"?{...item,allowedDependencies:["ci"]}:item)};
+  assert.throws(()=>validateOwnership(cyclicRegistry),/cyclic cross-domain dependency contract/);
+  assert.equal(collectRelativeImports(["scripts/test.mjs","src/index.js"],file=>file==="scripts/test.mjs"?'import worker from "../src/index.js";':"").length,1);
+  assert.throws(()=>collectRelativeImports(["scripts/test.mjs"],()=>'import "../missing.js";'),/unresolved relative import/);
   assert.throws(()=>validateOwnership({...registry,owners:[{...registry.owners[0],allowedDependencies:["unknown-owner"]},...registry.owners.slice(1)]}),/unknown allowed dependency/);
   console.log("PASS: ownership governance self-tests (complete path coverage, owner contracts, ADR requirements, and cross-domain import direction).");
 }
