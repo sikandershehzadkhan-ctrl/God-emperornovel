@@ -1,5 +1,6 @@
 import assert from "node:assert/strict";
 import { readFile } from "node:fs/promises";
+import { resolvePageRoute } from "../src/route-registry.mjs";
 
 const app = await readFile("public/app.js", "utf8");
 const worker = await readFile("src/index.js", "utf8");
