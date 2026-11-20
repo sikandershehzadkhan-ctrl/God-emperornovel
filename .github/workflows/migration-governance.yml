@@ -38,7 +38,7 @@ jobs:
       - name: Test concurrent migration allocation fixtures
         run: node scripts/test-governance-migration-collisions.mjs --self-test
 
-      - name: Enforce complete path ownership and ADR requirements
+      - name: Enforce root ownership contracts, import direction and ADR requirements
         if: github.event_name == 'pull_request'
         env:
           GOVERNANCE_BASE_SHA: ${{ github.event.pull_request.base.sha }}
