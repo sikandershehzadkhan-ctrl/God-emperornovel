@@ -73,7 +73,7 @@ function selfTest() {
   assert.throws(() => validateOwnership(registry, ['scripts/new-unguarded-file.mjs']), /no registered owner/);
   assert.throws(() => validateOwnership(registry, [], ['scripts/existing-unowned-file.mjs']), /tracked repository path has no registered owner/);
   assert.throws(() => validateOwnership({ version: 1, owners: [...registry.owners, { id: 'stale-exact', paths: ['DOES-NOT-EXIST.md'], requiresAdr: false }] }, [], trackedFixture), /exact ownership entry is not a tracked repository path/);
-  assert.throws(() => validateOwnership({ version: 1, owners: [...registry.owners, { id: 'empty-directory', paths: ['src/empty-domain/'], requiresAdr: false }] }, [], trackedFixture), /directory ownership root contains no tracked repository paths/);
+  assert.throws(() => validateOwnership({ version: 1, owners: [...registry.owners, { id: 'empty-directory', paths: ['empty-domain/'], requiresAdr: false }] }, [], trackedFixture), /directory ownership root contains no tracked repository paths/);
   assert.throws(() => validateOwnership({ version: 1, owners: [...registry.owners, { id: 'overlap', paths: ['src/'], requiresAdr: true }] }), /overlapping ownership roots/);
   assert.throws(() => validateOwnership({ version: 1, owners: [{ id: 'bad-separator', paths: ['src' + String.fromCharCode(92) + 'escape'], requiresAdr: false }] }), /invalid ownership path/);
   assert.throws(() => validateOwnership(registry, ['migrations/0009_new.sql']), /require an ADR or feature contract/);
