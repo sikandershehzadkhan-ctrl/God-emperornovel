@@ -17,6 +17,8 @@ export function validateOwnership(registry, changedPaths = [], trackedPaths = []
   for (const policy of ["unregisteredTrackedPaths","unregisteredChangedPaths","multipleOwners","staleExactEntries","emptyDirectoryRoots","missingOwnerMetadata","unauthorizedCrossDomainImports","unresolvedRelativeImports"]) {
     if (registry.pathPolicy?.[policy] !== "fail") fail("path policy must fail closed: " + policy);
   }
+  if (registry.pathPolicy.adrRequiredForSharedSurfaceChanges !== true ||
+    registry.pathPolicy.rootArchivesAreNotWorkerServed !== true) fail("shared-surface ADR and root-archive policies must be explicit");
   const roots = [];
   const ids = new Set();
   const requiredText = ["accountableRole","changeOwner","integrationOwner","pathClass","dependencyDirection","sharedSurfacePolicy"];
@@ -35,11 +37,15 @@ export function validateOwnership(registry, changedPaths = [], trackedPaths = []
     for (const field of ["allowedDependencies","invokes","runtimeContracts"]) {
       if (!Array.isArray(owner[field])) fail("owner must declare " + field + ": " + owner.id);
     }
-    for (const dependency of owner.allowedDependencies) {
-      if (!ids.has(dependency) && !registry.owners.some(candidate => candidate.id === dependency)) {
-        fail("unknown allowed dependency " + dependency + " for owner " + owner.id);
+    for (const field of ["allowedDependencies","invokes","runtimeContracts"]) {
+      for (const dependency of owner[field]) {
+        if (!registry.owners.some(candidate => candidate.id === dependency)) {
+          fail("unknown " + field + " reference " + dependency + " for owner " + owner.id);
+        }
+        if (field === "allowedDependencies" && dependency === owner.id) {
+          fail("self dependency must be represented as same-owner import: " + owner.id);
+        }
       }
-      if (dependency === owner.id) fail("self dependency must be represented as same-owner import: " + owner.id);
     }
     for (const pathRule of owner.paths) {
       if (typeof pathRule !== "string" || !pathRule || pathRule.startsWith("/") || pathRule.includes("..") || pathRule.includes(String.fromCharCode(92)) || pathRule.includes("//")) {
@@ -56,6 +62,17 @@ export function validateOwnership(registry, changedPaths = [], trackedPaths = []
       fail("overlapping ownership roots: " + a.path + " (" + a.owner + ") and " + b.path + " (" + b.owner + ")");
     }
   }
+  const dependencyState = new Map();
+  function visitDependency(ownerId) {
+    const state = dependencyState.get(ownerId) || 0;
+    if (state === 1) fail("cyclic cross-domain dependency contract includes: " + ownerId);
+    if (state === 2) return;
+    dependencyState.set(ownerId, 1);
+    const owner = registry.owners.find(candidate => candidate.id === ownerId);
+    for (const dependency of owner.allowedDependencies) visitDependency(dependency);
+    dependencyState.set(ownerId, 2);
+  }
+  for (const owner of registry.owners) visitDependency(owner.id);
   const ownerFor = file => roots.filter(root => root.path.endsWith("/") ? file.startsWith(root.path) : file === root.path);
   for (const file of new Set(trackedPaths)) {
     const owners = ownerFor(file);
@@ -182,6 +199,10 @@ else {
   const registry = JSON.parse(fs.readFileSync("docs/architecture/SHARED-SURFACE-OWNERSHIP.json", "utf8"));
   const changedPaths = execFileSync("git", ["diff", "--name-only", baseSha + "...HEAD"], { encoding:"utf8" }).split("\n").filter(Boolean);
   const trackedPaths = execFileSync("git", ["ls-files", "-z"], { encoding:"utf8" }).split("\0").filter(Boolean);
+  if (registry.pathPolicy.rootArchivesAreNotWorkerServed) {
+    const wrangler = fs.readFileSync("wrangler.toml", "utf8");
+    if (!wrangler.includes('directory = "./public"')) fail("root archives must remain outside the Wrangler-served public asset directory");
+  }
   const result = validateOwnership(registry, changedPaths, trackedPaths);
   const importEdges = collectRelativeImports(trackedPaths);
   const dependencyResult = validateDependencyDirection(registry, importEdges);
