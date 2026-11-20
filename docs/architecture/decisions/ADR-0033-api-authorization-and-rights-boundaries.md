@@ -26,8 +26,8 @@ A build-gated test compares the complete exact API path/method inventory to the 
 
 ## Validation
 
-The API authorization test runs in the normal build sequence alongside route-registry, SEO, and Worker sitemap integration tests. Existing Cloudflare source validation and migration governance remain required.
+The API authorization source test and a Worker-level mock-D1 runtime test run in the normal build sequence alongside route-registry, SEO, and sitemap integration tests. The runtime test exercises admin denial, author object ownership, authenticated user scoping, rights-gated chapter visibility, fractional rating rejection, and bookmark eligibility. Existing Cloudflare source validation and migration governance remain required.
 
 ## Evidence boundary
 
-The checks are source-level and use mock-D1 Worker integration only for sitemap behavior. Adversarial API authorization tests against a seeded D1 fixture, live provider/webhook tests, and deployed response-shape verification remain open. No production D1 mutation or deployment is included.
+The checks are source-level and use mock-D1 Worker integration only for sitemap behavior. The mock-D1 test does not prove actual SQLite/D1 query execution or live database contents. Seeded SQLite/D1 adversarial tests, live provider/webhook tests, and deployed response-shape verification remain open. No production D1 mutation or deployment is included.
