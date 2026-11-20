@@ -210,7 +210,6 @@
     {
       "id": "architecture-contracts",
       "paths": [
-        "ARCHITECTURE.md",
         "docs/architecture/"
       ],
       "requiresAdr": true
@@ -249,6 +248,13 @@
         "src/"
       ],
       "requiresAdr": true
+    },
+    {
+      "id": "security-audit-documentation",
+      "paths": [
+        "docs/security/"
+      ],
+      "requiresAdr": false
     }
   ],
   "sharedSurfaceRule": "Every changed path must match exactly one owner. Paths whose owner requiresAdr=true require an ADR under docs/architecture/decisions/ or a feature contract under docs/architecture/feature-contracts/ in the same PR. Every tracked path is also checked for exactly one owner so unregistered baseline files cannot hide until changed."
