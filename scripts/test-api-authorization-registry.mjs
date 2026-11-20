@@ -38,7 +38,7 @@ function handler(path, method = "ANY") {
     : new RegExp("if\\(p===['\"]" + escaped + "['\"]&&m===['\"]" + method + "['\"]\\)");
   const match = expression.exec(worker);
   assert.ok(match, "Worker handler missing: " + method + " " + path);
-  return worker.slice(match.index, match.index + 2200);
+  return worker.slice(match.index, match.index + 4200);
 }
 for (const route of actualInventory.filter(item => item.path.startsWith("/api/admin/"))) {
   for (const method of route.methods) {
@@ -49,6 +49,10 @@ for (const route of actualInventory.filter(item => item.path.startsWith("/api/ad
       assert.ok(snippet.includes("admin(u)"), "admin route lacks server-side admin guard: " + method + " " + route.path);
     }
   }
+}
+for (const override of registry.policies.adminOnly.methodOverrides) {
+  const snippet = handler(override.path, override.methods[0]);
+  assert.ok(snippet.includes("admin(u)"), "method-specific admin override lacks admin guard: " + override.path);
 }
 for (const route of registry.dynamicInventory) {
   assert.ok(new RegExp(route.pattern).test(route.sample), "dynamic API sample does not match: " + route.pattern);
@@ -71,23 +75,29 @@ for (const route of registry.dynamicInventory) {
 }
 
 for (const route of registry.policies.userOwned.routes) {
-  const snippet = handler(route.path, route.methods[0]);
-  assert.ok(snippet.includes("need(u)"), "user-owned route must require a session: " + route.path);
-  assert.ok(snippet.includes("u.id"), "user-owned route must derive scope from session u.id: " + route.path);
+  for (const method of route.methods) {
+    const snippet = handler(route.path, method);
+    assert.ok(snippet.includes("need(u)"), "user-owned route must require a session: " + method + " " + route.path);
+    assert.ok(snippet.includes("u.id"), "user-owned route must derive scope from session u.id: " + method + " " + route.path);
+  }
 }
 for (const route of registry.policies.authorOwned.routes) {
-  const snippet = handler(route.path, route.methods[0]);
-  assert.ok(snippet.includes("author(u)"), "author route must require author/admin role: " + route.path);
-  if (route.path === "/api/author/ai/projects" || route.path === "/api/author/novels" || route.path === "/api/author/chapters") {
-    assert.ok(snippet.includes("owner_user_id") && snippet.includes("u.id"),
-      "author route must enforce resource ownership: " + route.path);
+  for (const method of route.methods) {
+    const snippet = handler(route.path, method);
+    assert.ok(snippet.includes("author(u)"), "author route must require author/admin role: " + method + " " + route.path);
+    if (route.path === "/api/author/ai/projects" || route.path === "/api/author/novels" || route.path === "/api/author/chapters") {
+      assert.ok(snippet.includes("owner_user_id") && snippet.includes("u.id"),
+        "author route must enforce resource ownership: " + method + " " + route.path);
+    }
   }
 }
 for (const route of registry.policies.publicRightsFiltered.routes) {
-  const snippet = handler(route.path, route.methods[0]);
-  assert.ok(snippet.includes("publication_status='published'") &&
-    snippet.includes("rights_status IN ('original','public_domain','licensed','authorized')"),
-    "public content route lacks publication/rights eligibility filter: " + route.path);
+  for (const method of route.methods) {
+    const snippet = handler(route.path, method);
+    assert.ok(snippet.includes("publication_status='published'") &&
+      snippet.includes("rights_status IN ('original','public_domain','licensed','authorized')"),
+      "public content route lacks publication/rights eligibility filter: " + method + " " + route.path);
+  }
 }
 
 const omniSearch = handler("/api/omni/search");
