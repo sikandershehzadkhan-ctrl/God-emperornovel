@@ -17,10 +17,10 @@ db.execute("""CREATE TABLE ticket_ledger (
 db.executescript((root / "migrations/0024_donation_review_audit.sql").read_text(encoding="utf-8"))
 db.executescript((root / "migrations/0026_donation_independent_review.sql").read_text(encoding="utf-8"))
 
-def user(name, email):
+def user(name, email, role="user"):
     cur = db.execute(
-        "INSERT INTO users(username,email,password_hash,role) VALUES(?,?,?,'user')",
-        (name, email, "test-hash")
+        "INSERT INTO users(username,email,password_hash,role) VALUES(?,?,?,?)",
+        (name, email, "test-hash", role)
     )
     return cur.lastrowid
 
