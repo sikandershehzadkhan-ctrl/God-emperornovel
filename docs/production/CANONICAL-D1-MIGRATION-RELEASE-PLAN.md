@@ -95,3 +95,8 @@ Migration 0048 provisions the four support tables queried by side-effect-free Om
 
 ## Shared runtime schema bootstrap remains a separate blocker
 The OmniPortal route changes remove route-local ensureOmniTables calls and add method guards, but the Worker API dispatcher still invokes ensureCoreSchema and ensureRuntimeFeatureSchema before route dispatch. Therefore the complete HTTP GET request is not yet guaranteed to be read-only. Do not remove these shared initializers until a complete table/column inventory, migration coverage map, production read-only audit, and production-shaped rehearsal prove that all required schema is supplied by canonical migrations.
+
+
+## Shared runtime initializer inventory (2026-11-20)
+
+A source-level inventory of the remaining runtime DDL and migration coverage is maintained in [SHARED-RUNTIME-SCHEMA-INVENTORY.md](./SHARED-RUNTIME-SCHEMA-INVENTORY.md). It records the still-unmigrated `comments.parent_id` and `comments.edited_at` columns, `taxonomy_submissions`, and eight optional `connectors` columns, plus the initializer's marker, cleanup, taxonomy/agent seeding, and scheduled-handler responsibilities. The inventory test is part of the Cloudflare build. This is source evidence only; it does not establish the remote D1 state and does not authorize removal of the runtime initializers.
