@@ -1082,5 +1082,5 @@
   "runtimeRegistrySourceBlob": "src/route-registry.mjs@67ea3926ba32cf0bd2535f40250da5a9e1c9bb13",
   "apiAuthorizationRegistry": "docs/architecture/API-AUTHORIZATION-REGISTRY-01N.json",
   "apiAuthorizationStatus": "All 74 exact API paths/methods and 13 dynamic patterns are inventoried; critical admin, user-owned, author-owned, public-rights, Omni connector, and payment-webhook policies are source-tested. Adversarial D1-backed runtime tests remain open.",
-  "apiAuthorizationRegistrySourceBlob": "docs/architecture/API-AUTHORIZATION-REGISTRY-01N.json@9535400e99c3e06d61241696bd10262327f76196"
+  "apiAuthorizationRegistrySourceBlob": "docs/architecture/API-AUTHORIZATION-REGISTRY-01N.json@62280cd3b3d0fd3b865076edac22618187ebb9cf"
 }
