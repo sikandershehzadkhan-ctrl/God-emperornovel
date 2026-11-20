@@ -2,6 +2,7 @@ import assert from "node:assert/strict";
 import fs from "node:fs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
+import { canonicalPathForRoute } from "../src/route-canonical.mjs";
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const manifest = JSON.parse(fs.readFileSync(path.join(root, "docs/architecture/IMPERIAL-ROUTE-REGISTRY-01N.json"), "utf8"));
@@ -177,6 +178,35 @@ assert.ok(batchUnlockHandler.includes("need(u)") &&
   batchUnlockHandler.includes("is_locked=1") &&
   batchUnlockHandler.includes("unlocks") && batchUnlockHandler.includes("ticket_ledger"),
   "batch unlock must authenticate and restrict purchases to eligible published chapters");
+
+
+assert.deepEqual(manifest.canonicalPolicy.aliases, {
+  "/discover": "/catalog",
+  "/for-you": "/made-for-you"
+}, "canonical alias policy mismatch");
+assert.deepEqual(manifest.noindexPatterns, ["^/fandom/"],
+  "dynamic noindex patterns mismatch");
+for (const route of manifest.routes) {
+  assert.equal(route.canonicalPath, route.aliasOf || route.path,
+    "exact route canonical target mismatch: " + route.path);
+}
+for (const route of manifest.patterns) {
+  assert.ok(route.canonicalPathPolicy,
+    "dynamic route canonical policy missing: " + route.pattern);
+}
+assert.equal(canonicalPathForRoute("/"), "/");
+assert.equal(canonicalPathForRoute("/discover"), "/catalog");
+assert.equal(canonicalPathForRoute("/for-you/"), "/made-for-you");
+assert.equal(canonicalPathForRoute("/novel/42/"), "/novel/42");
+assert.equal(canonicalPathForRoute("/read/42/7?utm_source=test"), "/read/42/7");
+assert.equal(canonicalPathForRoute("/fandom/example"), null,
+  "compatibility redirect must not emit a canonical URL");
+assert.ok(worker.includes('canonicalPathForRoute(p)'),
+  "Worker must use the canonical path resolver");
+assert.ok(worker.includes('rel="canonical"') && worker.includes('property="og:url"'),
+  "Worker must emit canonical and Open Graph URL metadata");
+assert.ok(worker.includes('const noindexPattern=/^\\/fandom\\//.test(p)'),
+  "fandom compatibility routes must be noindex");
 
 console.log("Worker route registry validated: " + manifest.routes.length +
   " exact routes, " + manifest.patterns.length + " dynamic patterns, " +
