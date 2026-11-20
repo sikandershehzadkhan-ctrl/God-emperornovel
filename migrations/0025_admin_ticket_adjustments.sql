@@ -24,6 +24,7 @@ WHEN NOT EXISTS (
   SELECT 1 FROM users
   WHERE id = NEW.admin_user_id
     AND role = 'admin'
+    AND banned = 0
     AND id <> NEW.target_user_id
 )
 BEGIN
