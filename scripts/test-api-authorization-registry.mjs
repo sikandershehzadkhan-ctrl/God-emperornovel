@@ -19,10 +19,12 @@ assert.equal(routeManifest.apiAuthorizationRegistrySourceBlob,
   "page route manifest must pin the API authorization registry blob");
 
 const discovered = new Map();
-for (const match of worker.matchAll(/if\(p===["']([^"']+)["'](?:&&m===["']([^"']+)["'])?/g)) {
+for (const match of worker.matchAll(/if\(p===["']([^"']+)["'](?:(&&m===|&&m!==)["']([^"']+)["'])?/g)) {
   if (!match[1].startsWith("/api/")) continue;
+  // Negative method guards reject unsupported verbs; they are not handlers.
+  if (match[2] === "&&m!==") continue;
   const methods = discovered.get(match[1]) || new Set();
-  methods.add(match[2] || "ANY");
+  methods.add(match[3] || "ANY");
   discovered.set(match[1], methods);
 }
 const actualInventory = [...discovered.entries()]
@@ -110,7 +112,7 @@ for (const route of registry.policies.publicRightsFiltered.routes) {
   }
 }
 
-const omniSearch = handler("/api/omni/search");
+const omniSearch = handler("/api/omni/search", "GET");
 assert.ok(omniSearch.includes("enabled=1 AND rights_status='authorized'"),
   "OmniPortal search must query only enabled, rights-authorized connectors");
 const omniImport = handler("/api/omni/import", "POST");
