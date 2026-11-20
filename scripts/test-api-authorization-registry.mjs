@@ -112,7 +112,7 @@ for (const route of registry.policies.publicRightsFiltered.routes) {
   }
 }
 
-const omniSearch = handler("/api/omni/search");
+const omniSearch = handler("/api/omni/search", "GET");
 assert.ok(omniSearch.includes("enabled=1 AND rights_status='authorized'"),
   "OmniPortal search must query only enabled, rights-authorized connectors");
 const omniImport = handler("/api/omni/import", "POST");
