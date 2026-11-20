@@ -87,3 +87,7 @@ Migration 0024's approval trigger is the sole authority for Crown balance credit
 ## Administrator Crown adjustments and novel-request refunds
 
 Migrations 0025 and 0027 are the single posting authorities for administrator credits and paid-request refunds. The Worker inserts the corresponding immutable financial record and must not also update user balances or insert payment-ledger rows. Administrator adjustments require an independent admin, bounded reason, and stable idempotency key. Paid-request refunds require a pending-to-rejected transition, active independent admin, a bounded note, and an amount exactly matching the original request cost. Build-gated SQLite tests exercise the database triggers. These migrations and the corresponding Worker changes must be rehearsed together before release.
+
+## OmniPortal read-route schema dependency
+
+Migration 0047 provisions the four support tables queried by side-effect-free OmniPortal GET routes. The migration is replay-safe for tables already created by the former lazy initializer. It intentionally does not add optional connector configuration columns; their remote presence is an explicit read-only audit finding and must be reconciled before any later column migration.
