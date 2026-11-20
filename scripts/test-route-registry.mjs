@@ -4,8 +4,7 @@ import path from "node:path";
 import { fileURLToPath } from "node:url";
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
-const manifestPath = path.join(root, "docs/architecture/IMPERIAL-ROUTE-REGISTRY-01N.json");
-const manifest = JSON.parse(fs.readFileSync(manifestPath, "utf8"));
+const manifest = JSON.parse(fs.readFileSync(path.join(root, "docs/architecture/IMPERIAL-ROUTE-REGISTRY-01N.json"), "utf8"));
 const worker = fs.readFileSync(path.join(root, "src/index.js"), "utf8");
 const sitemap = fs.readFileSync(path.join(root, "src/sitemap.mjs"), "utf8");
 
@@ -19,17 +18,14 @@ const htmlStart = worker.indexOf("async function html(");
 const htmlEnd = worker.indexOf("\nconst escapeHtml", htmlStart);
 assert.ok(htmlStart >= 0 && htmlEnd > htmlStart, "Worker HTML dispatcher not found");
 const htmlDispatcher = worker.slice(htmlStart, htmlEnd);
-const mapMatch = htmlDispatcher.match(/const map=(\\{[\\s\\S]*?\\});if\\(map\\[p\\]\\)/);
+const mapMatch = htmlDispatcher.match(/const map=(\{[\s\S]*?\});if\(map\[p\]\)/);
 assert.ok(mapMatch, "Worker exact page-shell map not found");
 const dispatchMap = JSON.parse(mapMatch[1]);
 
 const paths = manifest.routes.map(route => route.path);
 assert.equal(new Set(paths).size, paths.length, "duplicate exact route path");
-assert.deepEqual(
-  Object.keys(dispatchMap).sort(),
-  [...paths].sort(),
-  "manifest exact paths differ from Worker dispatcher"
-);
+assert.deepEqual(Object.keys(dispatchMap).sort(), [...paths].sort(),
+  "manifest exact paths differ from Worker dispatcher");
 
 for (const route of manifest.routes) {
   assert.ok(route.path.startsWith("/") && route.shell && route.screen && route.renderer,
@@ -40,10 +36,9 @@ for (const route of manifest.routes) {
     "noindex list mismatch: " + route.path);
 }
 
-const noindexMatch = htmlDispatcher.match(/const noindex=new Set\\((\\[[\\s\\S]*?\\])\\)\\.has\\(p\\)/);
+const noindexMatch = htmlDispatcher.match(/const noindex=new Set\((\[[\s\S]*?\])\)\.has\(p\)/);
 assert.ok(noindexMatch, "Worker noindex policy not found");
-const workerNoindex = JSON.parse(noindexMatch[1]);
-assert.deepEqual([...workerNoindex].sort(), [...manifest.noindexExact].sort(),
+assert.deepEqual(JSON.parse(noindexMatch[1]).sort(), [...manifest.noindexExact].sort(),
   "manifest noindex paths differ from Worker policy");
 
 for (const route of manifest.patterns) {
