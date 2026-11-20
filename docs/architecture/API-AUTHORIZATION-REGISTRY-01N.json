@@ -1005,13 +1005,6 @@
             "GET"
           ],
           "policy": "published/right-cleared novels only; personalized results exclude followed titles"
-        },
-        {
-          "path": "/api/omni/search",
-          "methods": [
-            "ANY"
-          ],
-          "policy": "external connectors must be enabled and rights_status authorized"
         }
       ],
       "scope": "Public story and community surfaces must exclude unpublished or rights-ineligible works."
@@ -1021,6 +1014,32 @@
       "method": "POST",
       "status": 503,
       "policy": "Automated payment confirmation remains disabled until provider-specific signatures, amount/currency, event identity and replay protections are verified."
+    },
+    "omniConnectorRights": {
+      "routes": [
+        {
+          "path": "/api/omni/search",
+          "methods": [
+            "ANY"
+          ],
+          "policy": "public search is limited to enabled connectors with rights_status authorized"
+        },
+        {
+          "path": "/api/omni/import",
+          "methods": [
+            "POST"
+          ],
+          "policy": "authenticated user; connector enabled and rights_status authorized; import job user_id bound to u.id"
+        },
+        {
+          "path": "/api/omni/jobs",
+          "methods": [
+            "GET"
+          ],
+          "policy": "jobs visible only to requesting user via j.user_id=u.id"
+        }
+      ],
+      "scope": "Connector discovery and import are constrained by explicit provider authorization; import records and job status remain user-scoped."
     }
   },
   "knownOpenQuestions": [
