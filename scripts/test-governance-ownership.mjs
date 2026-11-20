@@ -31,14 +31,16 @@ export function validateOwnership(registry, changedPaths = [], trackedPaths = []
     if (owners.length === 0) fail('tracked repository path has no registered owner: ' + file + '; register an owner before integration');
     if (owners.length > 1) fail('tracked repository path has multiple owners: ' + file);
   }
-  // Validate the registry in both directions: coverage alone does not catch stale roots.
-  for (const root of roots) {
-    if (root.path.endsWith('/')) {
-      if (!trackedPaths.some(file => file.startsWith(root.path))) {
-        fail('directory ownership root contains no tracked repository paths: ' + root.path);
+  // Reverse validation requires a complete tracked-path inventory; pure unit callers may omit it.
+  if (trackedPaths.length > 0) {
+    for (const root of roots) {
+      if (root.path.endsWith('/')) {
+        if (!trackedPaths.some(file => file.startsWith(root.path))) {
+          fail('directory ownership root contains no tracked repository paths: ' + root.path);
+        }
+      } else if (!trackedPaths.includes(root.path)) {
+        fail('exact ownership entry is not a tracked repository path: ' + root.path);
       }
-    } else if (!trackedPaths.includes(root.path)) {
-      fail('exact ownership entry is not a tracked repository path: ' + root.path);
     }
   }
   const ownedChanges = [];
