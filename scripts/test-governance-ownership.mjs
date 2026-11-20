@@ -14,6 +14,7 @@ function ownerForPath(registry, file) {
 }
 export function validateOwnership(registry, changedPaths = [], trackedPaths = []) {
   if (registry.version !== 2 || !Array.isArray(registry.owners)) fail("unsupported or malformed ownership registry");
+  if (registry.registryName !== "Imperial Novel canonical root-path ownership registry" || typeof registry.purpose !== "string" || !registry.purpose.trim()) fail("canonical root-path ownership registry identity and purpose must be explicit");
   for (const policy of ["unregisteredTrackedPaths","unregisteredChangedPaths","multipleOwners","staleExactEntries","emptyDirectoryRoots","missingOwnerMetadata","unauthorizedCrossDomainImports","unresolvedRelativeImports"]) {
     if (registry.pathPolicy?.[policy] !== "fail") fail("path policy must fail closed: " + policy);
   }
@@ -164,7 +165,7 @@ function selfTest() {
   const owner = (id, paths, requiresAdr, allowedDependencies = []) => ({
     id, paths, requiresAdr, ...metadata(allowedDependencies)
   });
-  const registry = { version:2, pathPolicy:{
+  const registry = { version:2, registryName:"Imperial Novel canonical root-path ownership registry", purpose:"Fixture ownership registry.", pathPolicy:{
     unregisteredTrackedPaths:"fail",unregisteredChangedPaths:"fail",multipleOwners:"fail",
     staleExactEntries:"fail",emptyDirectoryRoots:"fail",missingOwnerMetadata:"fail",
     unauthorizedCrossDomainImports:"fail",unresolvedRelativeImports:"fail",adrRequiredForSharedSurfaceChanges:true,rootArchivesAreNotWorkerServed:true
