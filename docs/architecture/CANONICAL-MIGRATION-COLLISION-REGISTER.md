@@ -252,3 +252,7 @@ The current-main candidate now:
 - Includes SQLite trigger tests for duplicate/idempotent posting, authorization, amount matching, and immutable financial history.
 
 Do not deploy the updated Worker before migrations 0025 and 0027 are applied. Do not restore the former direct balance/ledger writes alongside these triggers.
+
+## OmniPortal read-schema provisioning (migration 0047)
+
+The OmniPortal GET handlers are being made side-effect-free. Their required connector_events, import_jobs, recommendations, and connector_authorization_requests tables are now provisioned by migration 0047 using CREATE TABLE/INDEX IF NOT EXISTS, matching the former lazy initializer. This avoids a hidden dependency on an administrator visiting the connector page before ordinary read routes work. Optional connector configuration columns are intentionally not altered by 0047; their actual remote presence must be established by the read-only D1 audit before any further schema change.
