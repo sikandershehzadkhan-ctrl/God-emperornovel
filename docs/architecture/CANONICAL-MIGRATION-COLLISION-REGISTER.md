@@ -239,3 +239,16 @@ The current-main integration candidate resolves the collision by making the data
 - The SQLite regression suite verifies missing-review rejection, self-review rejection, immutable review history, exactly-once approval credit/ledger posting, and zero credit on rejection.
 
 Do not merge the migration trigger and the old application-side posting logic together. Do not remove the trigger without an explicit, tested change of posting authority. Production D1 still requires its independent read-only schema audit, verified backup/restore rehearsal, and reviewed release plan.
+
+## Current-main administrator credits and paid-request refunds (2026-11-20)
+
+Migrations 0025 and 0027 each define a database-owned financial posting path. The previous Worker code directly changed user ticket balances and wrote ledger rows, so the new records must be used as the sole posting authority rather than added alongside the old writes.
+
+The current-main candidate now:
+- Inserts admin_ticket_adjustments for administrator Crown credits, with a required reason, independent administrator, target account, and stable idempotency key. The database trigger validates administrator role and posts balance plus ledger atomically.
+- Transitions a paid novel request to rejected and inserts novel_request_refunds in one D1 batch. The database validates the independent administrator, rejected request state, and exact cost match before posting.
+- Removes application-side duplicate balance and ledger writes for both operations.
+- Collects notes in the admin UI and retains an adjustment operation key across retries.
+- Includes SQLite trigger tests for duplicate/idempotent posting, authorization, amount matching, and immutable financial history.
+
+Do not deploy the updated Worker before migrations 0025 and 0027 are applied. Do not restore the former direct balance/ledger writes alongside these triggers.
