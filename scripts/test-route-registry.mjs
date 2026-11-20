@@ -7,10 +7,12 @@ const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const manifest = JSON.parse(fs.readFileSync(path.join(root, "docs/architecture/IMPERIAL-ROUTE-REGISTRY-01N.json"), "utf8"));
 const worker = fs.readFileSync(path.join(root, "src/index.js"), "utf8");
 const sitemap = fs.readFileSync(path.join(root, "src/sitemap.mjs"), "utf8");
+const client = fs.readFileSync(path.join(root, "public/app.js"), "utf8");
 
 assert.equal(manifest.schemaVersion, 1);
 assert.equal(manifest.sourceBranch, "main");
 assert.match(manifest.sourceBlob, /^src\/index\.js@[a-f0-9]{40}$/);
+assert.match(manifest.sitemapSourceBlob, /^src\/sitemap\.mjs@[a-f0-9]{40}$/);
 assert.ok(manifest.routes.length >= 30, "exact route inventory unexpectedly small");
 assert.ok(manifest.patterns.length >= 5, "dynamic route inventory unexpectedly small");
 
@@ -34,6 +36,10 @@ for (const route of manifest.routes) {
   if (route.aliasOf) assert.ok(paths.includes(route.aliasOf), "missing alias target: " + route.path);
   if (route.robots === "noindex") assert.ok(manifest.noindexExact.includes(route.path),
     "noindex list mismatch: " + route.path);
+  if (route.renderer !== "standalone-html") {
+    const renderer = route.renderer.split(":")[0];
+    assert.ok(client.includes(renderer + "("), "client renderer missing: " + renderer + " at " + route.path);
+  }
 }
 
 const noindexMatch = htmlDispatcher.match(/const noindex=new Set\((\[[\s\S]*?\])\)\.has\(p\)/);
@@ -47,6 +53,17 @@ for (const route of manifest.patterns) {
   for (const sample of route.samples) assert.ok(pattern.test(sample),
     "dynamic pattern sample mismatch: " + sample);
   assert.ok(htmlDispatcher.includes(route.shell), "dynamic shell missing from Worker: " + route.shell);
+  if (route.renderer !== "redirect-to-catalog-tag") {
+    assert.ok(client.includes(route.renderer + "("), "dynamic client renderer missing: " + route.renderer);
+  }
+}
+const staticMatch = sitemap.match(/const STATIC_PATHS = (\[[\s\S]*?\]);/);
+assert.ok(staticMatch, "static sitemap path list not found");
+const staticPaths = JSON.parse(staticMatch[1]);
+assert.deepEqual(staticPaths, manifest.staticSitemapPaths,
+  "manifest static sitemap paths differ from sitemap renderer");
+for (const path of manifest.noindexExact) {
+  assert.ok(!staticPaths.includes(path), "noindex route leaked into static sitemap: " + path);
 }
 for (const endpoint of manifest.sitemaps) {
   assert.ok(worker.includes(JSON.stringify(endpoint)), "Worker sitemap endpoint missing: " + endpoint);
@@ -57,4 +74,5 @@ assert.ok(sitemap.includes("renderChapterSitemap"), "chapter sitemap renderer mi
 
 console.log("Worker route registry validated: " + manifest.routes.length +
   " exact routes, " + manifest.patterns.length + " dynamic patterns, " +
-  manifest.sitemaps.length + " sitemap endpoints.");
+  manifest.sitemaps.length + " sitemap endpoints, " +
+  manifest.staticSitemapPaths.length + " static sitemap paths.");
