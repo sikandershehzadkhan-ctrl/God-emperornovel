@@ -2,9 +2,9 @@ name: Imperial Novel Cloudflare Source Validation
 
 on:
   pull_request:
-    branches: [main]
+    branches: [main, "safety/**", "production/**"]
   push:
-    branches: [main]
+    branches: [main, "safety/**", "production/**"]
     paths:
       - 'src/**'
       - 'scripts/**'
