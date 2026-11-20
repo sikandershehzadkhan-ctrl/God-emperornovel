@@ -213,6 +213,14 @@ assert.ok(languageMatch, "UI language dictionary not found");
 const uiLanguages = Object.keys(JSON.parse(languageMatch[1]));
 assert.deepEqual(uiLanguages, manifest.localePolicy.uiLanguages, "UI language choices differ from the route locale registry");
 assert.equal(uiLanguages.length, 14, "expected 14 supported UI language choices");
+
+const languageSelect = client.match(/<select id="imperialLanguageSelect"[^>]*>([\\s\\S]*?)<\\/select>/);
+assert.ok(languageSelect, "language selector not found");
+const optionCodes = [...languageSelect[1].matchAll(/<option value="([^"]+)"/g)].map(match => match[1]);
+assert.equal(optionCodes.length, 14, "language selector must expose 14 choices");
+assert.deepEqual([...optionCodes].sort(), [...manifest.localePolicy.uiLanguages].sort(),
+  "language selector choices differ from the locale registry");
+
 assert.deepEqual(manifest.localePolicy.rtlLanguageCodes, ["ar", "fa", "ur"]);
 assert.ok(client.includes("function isRtlLanguage(language)"), "RTL language resolver missing");
 assert.ok(client.includes('document.documentElement.dir=isRtlLanguage(c)?"rtl":"ltr"'), "UI direction must follow the selected interface language");
