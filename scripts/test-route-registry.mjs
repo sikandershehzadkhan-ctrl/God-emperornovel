@@ -15,6 +15,7 @@ assert.equal(manifest.schemaVersion, 1);
 assert.equal(manifest.sourceBranch, "main");
 assert.match(manifest.sourceBlob, /^src\/index\.js@[a-f0-9]{40}$/);
 assert.match(manifest.sitemapSourceBlob, /^src\/sitemap\.mjs@[a-f0-9]{40}$/);
+assert.match(manifest.runtimeRegistrySourceBlob, /^src\/route-registry\.mjs@[a-f0-9]{40}$/);
 assert.ok(manifest.routes.length >= 30, "exact route inventory unexpectedly small");
 assert.ok(manifest.patterns.length >= 5, "dynamic route inventory unexpectedly small");
 
@@ -33,9 +34,9 @@ assert.deepEqual(CANONICAL_ALIASES, manifest.canonicalPolicy.aliases,
 assert.ok(htmlDispatcher.includes("const route=resolvePageRoute(p)"),
   "Worker must resolve page shells from the runtime route registry");
 assert.ok(htmlDispatcher.includes('const noindex=!route||route.robots==="noindex"'),
+  "Worker robots policy must come from the runtime route registry");
 assert.ok(htmlDispatcher.includes("const pageStatus=route?200:404") && htmlDispatcher.includes("status:pageStatus"),
   "unknown routes must return an actual 404 status");
-  "Worker robots policy must come from the runtime route registry");
 assert.ok(sitemap.includes('import { STATIC_SITEMAP_PATHS } from "./route-registry.mjs";'),
   "sitemap renderer must import paths from the runtime route registry");
 assert.ok(!sitemap.includes("const STATIC_PATHS"),
