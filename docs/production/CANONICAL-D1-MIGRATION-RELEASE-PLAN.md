@@ -83,3 +83,7 @@ Before this pull request is considered ready for review, its current head must h
 ## Donation review and posting ownership
 
 Migration 0024's approval trigger is the sole authority for Crown balance credit and payment-ledger posting. The Worker must insert the attributable `donation_reviews` row and transition the pending donation, but must not also update the user's balance or insert a second payment-ledger row. Migration 0026 enforces independent review at the database boundary. The admin UI must collect a required review note. The candidate integration includes source and SQLite regression tests for these invariants; this does not replace production-shaped rehearsal or remote D1 inspection.
+
+## Administrator Crown adjustments and novel-request refunds
+
+Migrations 0025 and 0027 are the single posting authorities for administrator credits and paid-request refunds. The Worker inserts the corresponding immutable financial record and must not also update user balances or insert payment-ledger rows. Administrator adjustments require an independent admin, bounded reason, and stable idempotency key. Paid-request refunds require a pending-to-rejected transition, independent admin, a bounded note, and an amount exactly matching the original request cost. Build-gated SQLite tests exercise the database triggers. These migrations and the corresponding Worker changes must be rehearsed together before release.
