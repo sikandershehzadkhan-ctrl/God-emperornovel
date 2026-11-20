@@ -53,3 +53,4 @@ export function renderChapterSitemap(originValue, rows = []) {
 }
 
 export { STATIC_SITEMAP_PATHS };
+export const SITEMAP_STATIC_PATHS = STATIC_SITEMAP_PATHS;
