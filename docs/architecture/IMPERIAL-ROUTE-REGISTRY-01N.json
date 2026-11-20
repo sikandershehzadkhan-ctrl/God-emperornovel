@@ -2,7 +2,7 @@
   "schemaVersion": 1,
   "name": "Imperial Novel route registry",
   "sourceBranch": "main",
-  "sourceCommit": "bd5572374721ccb12e42b49f8a4d1770ce42273a",
+  "sourceCommit": "f1172a25a4bf4d3d6d20a906502261090cb9d110",
   "auditDate": "2026-11-20",
   "scope": "Source-audited Worker page-shell inventory. This registry certifies dispatcher-to-shell mapping only; it does not certify client rendering completeness, authorization, ownership isolation, locale/RTL behavior, canonical metadata, live HTTP status, or production deployment.",
   "routes": [
@@ -361,7 +361,8 @@
     "Per-route canonical URL, locale, RTL, and navigation exposure policies are not yet fully registered.",
     "Dynamic novel/chapter sitemap eligibility is rights- and publication-filtered in the Worker; runtime sitemap output still needs integration tests.",
     "Live Worker behavior, HTTP status codes, browser navigation, and deployed asset versions require runtime verification.",
-    "/omniportal is publicly linked and included in the static sitemap; external search is limited to enabled authorized connectors and imports require authentication plus an enabled authorized connector. Confirm whether a global product-level disable switch is required before treating the portal as fully off."
+    "/omniportal is publicly linked and included in the static sitemap; external search is limited to enabled authorized connectors and imports require authentication plus an enabled authorized connector. Confirm whether a global product-level disable switch is required before treating the portal as fully off.",
+    "The route access policy is an initial source audit, not a full API/object authorization certification. In particular, reader chapter-content and unlock endpoints need a dedicated resource-ownership and entitlement review."
   ],
   "sourceBlob": "src/index.js@237f4461135eb77258b7184e361ce9dfd9a140e9",
   "staticSitemapPaths": [
@@ -380,5 +381,376 @@
     "/terms",
     "/copyright"
   ],
-  "sitemapSourceBlob": "src/sitemap.mjs@c868fb87931be08f132b83232f379fd5fd63e2d3"
+  "sitemapSourceBlob": "src/sitemap.mjs@c868fb87931be08f132b83232f379fd5fd63e2d3",
+  "accessPolicy": {
+    "status": "source-audited-initial; not a complete authorization certification",
+    "shellAccess": "public-shell: Worker html() dispatches static assets without a session or role gate; protected data/actions must be enforced by client and API layers",
+    "exact": {
+      "/": {
+        "contentAccess": "public",
+        "actionAccess": "public unless separately guarded API action",
+        "clientGate": "none",
+        "evidence": [
+          "public/app.js:boot renderer",
+          "src/index.js:public route data"
+        ]
+      },
+      "/catalog": {
+        "contentAccess": "public",
+        "actionAccess": "public unless separately guarded API action",
+        "clientGate": "none",
+        "evidence": [
+          "public/app.js:boot renderer",
+          "src/index.js:public route data"
+        ]
+      },
+      "/discover": {
+        "contentAccess": "public",
+        "actionAccess": "public unless separately guarded API action",
+        "clientGate": "none",
+        "evidence": [
+          "public/app.js:boot renderer",
+          "src/index.js:public route data"
+        ]
+      },
+      "/formats": {
+        "contentAccess": "public",
+        "actionAccess": "public unless separately guarded API action",
+        "clientGate": "none",
+        "evidence": [
+          "public/app.js:boot renderer",
+          "src/index.js:public route data"
+        ]
+      },
+      "/genres": {
+        "contentAccess": "public",
+        "actionAccess": "public unless separately guarded API action",
+        "clientGate": "none",
+        "evidence": [
+          "public/app.js:boot renderer",
+          "src/index.js:public route data"
+        ]
+      },
+      "/tags": {
+        "contentAccess": "public",
+        "actionAccess": "public unless separately guarded API action",
+        "clientGate": "none",
+        "evidence": [
+          "public/app.js:boot renderer",
+          "src/index.js:public route data"
+        ]
+      },
+      "/search": {
+        "contentAccess": "public",
+        "actionAccess": "public unless separately guarded API action",
+        "clientGate": "none",
+        "evidence": [
+          "public/app.js:boot renderer",
+          "src/index.js:public route data"
+        ]
+      },
+      "/leaderboard": {
+        "contentAccess": "public",
+        "actionAccess": "public unless separately guarded API action",
+        "clientGate": "none",
+        "evidence": [
+          "public/app.js:boot renderer",
+          "src/index.js:public route data"
+        ]
+      },
+      "/tier-list": {
+        "contentAccess": "public",
+        "actionAccess": "public unless separately guarded API action",
+        "clientGate": "none",
+        "evidence": [
+          "public/app.js:boot renderer",
+          "src/index.js:public route data"
+        ]
+      },
+      "/random": {
+        "contentAccess": "public",
+        "actionAccess": "public unless separately guarded API action",
+        "clientGate": "none",
+        "evidence": [
+          "public/app.js:boot renderer",
+          "src/index.js:public route data"
+        ]
+      },
+      "/trending": {
+        "contentAccess": "public",
+        "actionAccess": "public unless separately guarded API action",
+        "clientGate": "none",
+        "evidence": [
+          "public/app.js:boot renderer",
+          "src/index.js:public route data"
+        ]
+      },
+      "/trend-factory": {
+        "contentAccess": "public",
+        "actionAccess": "public unless separately guarded API action",
+        "clientGate": "none",
+        "evidence": [
+          "public/app.js:boot renderer",
+          "src/index.js:public route data"
+        ]
+      },
+      "/community-taxonomy": {
+        "contentAccess": "public",
+        "actionAccess": "public unless separately guarded API action",
+        "clientGate": "none",
+        "evidence": [
+          "public/app.js:boot renderer",
+          "src/index.js:public route data"
+        ]
+      },
+      "/privacy": {
+        "contentAccess": "public",
+        "actionAccess": "public unless separately guarded API action",
+        "clientGate": "none",
+        "evidence": [
+          "public/app.js:boot renderer",
+          "src/index.js:public route data"
+        ]
+      },
+      "/terms": {
+        "contentAccess": "public",
+        "actionAccess": "public unless separately guarded API action",
+        "clientGate": "none",
+        "evidence": [
+          "public/app.js:boot renderer",
+          "src/index.js:public route data"
+        ]
+      },
+      "/copyright": {
+        "contentAccess": "public",
+        "actionAccess": "public unless separately guarded API action",
+        "clientGate": "none",
+        "evidence": [
+          "public/app.js:boot renderer",
+          "src/index.js:public route data"
+        ]
+      },
+      "/community": {
+        "contentAccess": "public",
+        "actionAccess": "public reading; user-generated writes must pass their individual authenticated API guards",
+        "clientGate": "none",
+        "evidence": [
+          "public/app.js:discoveryPage community renderer",
+          "src/index.js:public discussion read route"
+        ]
+      },
+      "/made-for-you": {
+        "contentAccess": "public catalog recommendations with optional account personalization",
+        "actionAccess": "read-only discovery",
+        "clientGate": "none",
+        "evidence": [
+          "public/app.js:discoveryPage made-for-you renderer",
+          "src/index.js:/api/made-for-you"
+        ]
+      },
+      "/for-you": {
+        "contentAccess": "public catalog recommendations with optional account personalization",
+        "actionAccess": "read-only discovery",
+        "clientGate": "none",
+        "evidence": [
+          "public/app.js:discoveryPage made-for-you renderer",
+          "src/index.js:/api/made-for-you"
+        ],
+        "aliasOf": "/made-for-you"
+      },
+      "/vote": {
+        "contentAccess": "public",
+        "actionAccess": "public request list; voting mutation is separately API-guarded",
+        "clientGate": "none",
+        "evidence": [
+          "public/app.js:discoveryPage vote renderer",
+          "src/index.js:/api/vote-novels"
+        ]
+      },
+      "/library": {
+        "contentAccess": "account-owned data",
+        "actionAccess": "authenticated user; data queries scoped to session user",
+        "clientGate": "client session check; API authentication required",
+        "evidence": [
+          "public/app.js:library/history renderer checks session",
+          "src/index.js:/api/library, /api/history, /api/follows, /api/bookmarks require need(u) and scope rows to u.id"
+        ]
+      },
+      "/history": {
+        "contentAccess": "account-owned data",
+        "actionAccess": "authenticated user; data queries scoped to session user",
+        "clientGate": "client session check; API authentication required",
+        "evidence": [
+          "public/app.js:library/history renderer checks session",
+          "src/index.js:/api/library, /api/history, /api/follows, /api/bookmarks require need(u) and scope rows to u.id"
+        ]
+      },
+      "/following": {
+        "contentAccess": "account-owned data",
+        "actionAccess": "authenticated user; data queries scoped to session user",
+        "clientGate": "client session check; API authentication required",
+        "evidence": [
+          "public/app.js:library/history renderer checks session",
+          "src/index.js:/api/library, /api/history, /api/follows, /api/bookmarks require need(u) and scope rows to u.id"
+        ]
+      },
+      "/tickets": {
+        "contentAccess": "account-owned data",
+        "actionAccess": "authenticated user; data queries scoped to session user",
+        "clientGate": "client session check; API authentication required",
+        "evidence": [
+          "public/app.js:tickets renderer",
+          "src/index.js:/api/profile and /api/tickets/ledger require need(u); ledger query is scoped to u.id"
+        ]
+      },
+      "/requests": {
+        "contentAccess": "account-owned data",
+        "actionAccess": "authenticated user; data queries scoped to session user",
+        "clientGate": "client session check; API authentication required",
+        "evidence": [
+          "public/app.js:requests renderer",
+          "src/index.js:/api/requests POST requires need(u) and stores user_id=u.id"
+        ]
+      },
+      "/notifications": {
+        "contentAccess": "account-owned data",
+        "actionAccess": "authenticated user; data queries scoped to session user",
+        "clientGate": "client session check; API authentication required",
+        "evidence": [
+          "public/app.js:discoveryPage notifications renderer",
+          "src/index.js:/api/notifications GET and /read POST require need(u) and scope updates/reads to u.id"
+        ]
+      },
+      "/account": {
+        "contentAccess": "account-owned data",
+        "actionAccess": "authenticated user; data queries scoped to session user",
+        "clientGate": "client session check; API authentication required",
+        "evidence": [
+          "public/app.js:account renderer",
+          "src/index.js:/api/profile requires need(u) and returns session user data"
+        ]
+      },
+      "/settings": {
+        "contentAccess": "device-local preferences",
+        "actionAccess": "localStorage only; no account authorization implied",
+        "clientGate": "none",
+        "evidence": [
+          "public/app.js:settings renderer persists preferences to localStorage"
+        ]
+      },
+      "/login": {
+        "contentAccess": "guest authentication entry",
+        "actionAccess": "public login endpoint with rate limiting",
+        "clientGate": "guest flow",
+        "evidence": [
+          "public/app.js:authPage login renderer",
+          "src/index.js:/api/auth/login"
+        ]
+      },
+      "/register": {
+        "contentAccess": "guest account creation entry",
+        "actionAccess": "public registration endpoint with validation and rate limiting",
+        "clientGate": "guest flow",
+        "evidence": [
+          "public/app.js:authPage register renderer",
+          "src/index.js:/api/auth/register"
+        ]
+      },
+      "/admin": {
+        "contentAccess": "administrator workspace data",
+        "actionAccess": "admin-only API operations",
+        "clientGate": "client verifies /api/me role === admin; API endpoints independently call admin(u)",
+        "evidence": [
+          "public/admin.html:boot checks me.user.role",
+          "src/index.js:admin(u) guard on /api/admin/* endpoints"
+        ]
+      },
+      "/author": {
+        "contentAccess": "author workspace; reader accounts may submit an application",
+        "actionAccess": "author/admin role for publishing; authenticated reader role for application submission",
+        "clientGate": "client requires session and branches on user/author/admin role; API role checks remain authoritative",
+        "evidence": [
+          "public/app.js:authorStudio role branches",
+          "src/index.js:/api/author/applications and author publishing endpoints"
+        ]
+      },
+      "/omniportal": {
+        "contentAccess": "public local catalog search plus authorized connector discovery",
+        "actionAccess": "external search only queries enabled authorized connectors; metadata import requires authenticated user and enabled authorized connector",
+        "clientGate": "none for search; authenticated for import",
+        "evidence": [
+          "public/app.js:omni renderer states rights-first mode",
+          "src/index.js:/api/omni/search filters enabled authorized connectors",
+          "src/index.js:/api/omni/import calls need(u) and checks enabled plus authorized"
+        ]
+      }
+    },
+    "patterns": [
+      {
+        "pattern": "^/format/[^/]+/?$",
+        "contentAccess": "public format catalog",
+        "actionAccess": "read-only discovery",
+        "clientGate": "none",
+        "evidence": [
+          "public/app.js:formatLanding",
+          "src/index.js:/api/novels published and rights_status filter"
+        ]
+      },
+      {
+        "pattern": "^/novel/\\\\d+/chapters/?$",
+        "contentAccess": "public chapter archive for eligible published work",
+        "actionAccess": "chapter actions require their own API authorization/entitlement checks",
+        "clientGate": "none at shell; per-chapter API authorization audit pending",
+        "evidence": [
+          "src/index.js:/api/novels published and rights_status filter",
+          "src/index.js:dynamic sitemap parent publication and rights filters"
+        ]
+      },
+      {
+        "pattern": "^/novel/\\\\d+/?$",
+        "contentAccess": "public novel detail for eligible published work",
+        "actionAccess": "user actions require their own API authorization/entitlement checks",
+        "clientGate": "none at shell; per-object detail API audit pending",
+        "evidence": [
+          "src/index.js:/api/novels published and rights_status filter",
+          "src/index.js:Worker SEO lookup filters publication and rights"
+        ]
+      },
+      {
+        "pattern": "^/read/\\\\d+/\\\\d+/?$",
+        "contentAccess": "public reader shell; chapter content and paid/unlocked access policy not yet certified",
+        "actionAccess": "reading progress and unlock operations require separate API authorization checks",
+        "clientGate": "none at shell; reader content API audit pending",
+        "evidence": [
+          "src/index.js:Worker read shell dispatch",
+          "src/index.js:account-scoped history and bookmark APIs"
+        ]
+      },
+      {
+        "pattern": "^/fandom/",
+        "contentAccess": "public compatibility redirect to catalog tag",
+        "actionAccess": "redirect only",
+        "clientGate": "none",
+        "evidence": [
+          "public/app.js:boot redirects /fandom/:slug to /catalog?tag="
+        ]
+      },
+      {
+        "pattern": "^/author/[^/]+$",
+        "contentAccess": "public author profile and published catalog stories",
+        "actionAccess": "read-only public profile",
+        "clientGate": "none",
+        "evidence": [
+          "public/app.js:authorPublic",
+          "src/index.js:/api/novels author filter with publication and rights eligibility"
+        ]
+      }
+    ],
+    "limitations": [
+      "The Worker page shell is public even for routes whose client renderer later shows a sign-in or role-gated state.",
+      "Client checks improve navigation UX but are not security boundaries; API authorization and object ownership are authoritative.",
+      "The reader chapter-content, unlock, and per-object authorization path still needs a dedicated endpoint-to-resource audit.",
+      "Canonical URLs, locale negotiation, per-chapter RTL behavior, navigation exposure, and deployed runtime behavior remain separate unfinished registry dimensions."
+    ]
+  }
 }
