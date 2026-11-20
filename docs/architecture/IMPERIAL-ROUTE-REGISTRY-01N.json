@@ -2,7 +2,7 @@
   "schemaVersion": 1,
   "name": "Imperial Novel route registry",
   "sourceBranch": "main",
-  "sourceCommit": "f8f388b0c4afb10a884e310296813174d9404fac",
+  "sourceCommit": "fc927689766803a8fb9753fb7d002171b1d84d95",
   "auditDate": "2026-11-20",
   "scope": "Source-audited route inventory with one runtime registry driving Worker page-shell dispatch, canonical aliases, noindex policy, and static sitemap paths. The registry also records initial source-backed access, locale/RTL, and navigation policies. It does not certify every API method/object-ownership rule, mixed-language per-chapter locale behavior, live HTTP/browser behavior, or global rights-gated product switches.",
   "routes": [
@@ -404,9 +404,10 @@
     "Reader chapter-content and single/batch unlock source guards are now inventoried and regression-tested; runtime integration and concurrency tests remain open.",
     "Reader direction is based on the novel-level language field. If a single novel may contain chapters in different languages, a chapter-level language override and corresponding API field will be needed.",
     "OmniPortal currently appears in both the desktop top navigation and main navigation drawer and remains in the static sitemap. The required global disable state pending rights approval still needs an explicit product-level decision and implementation.",
-    "Unknown page paths now resolve to a real HTTP 404 and noindex response in source; deployed HTTP status verification remains open."
+    "Unknown page paths now resolve to a real HTTP 404 and noindex response in source; deployed HTTP status verification remains open.",
+    "API authorization registry and source tests now cover all exact API declarations plus dynamic API patterns; seeded-D1 adversarial tests and optional-session response-shape tests remain open."
   ],
-  "sourceBlob": "src/index.js@2b1d01a7a13175eb4df08ea3ca3ab6a59b93981c",
+  "sourceBlob": "src/index.js@ddb7429ac4809c733f8a44ef9c3c48c89bc4b2d3",
   "staticSitemapPaths": [
     "/",
     "/catalog",
@@ -1078,5 +1079,8 @@
       "conditional-admin": "inserted only after /api/me confirms administrator role"
     }
   },
-  "runtimeRegistrySourceBlob": "src/route-registry.mjs@67ea3926ba32cf0bd2535f40250da5a9e1c9bb13"
+  "runtimeRegistrySourceBlob": "src/route-registry.mjs@67ea3926ba32cf0bd2535f40250da5a9e1c9bb13",
+  "apiAuthorizationRegistry": "docs/architecture/API-AUTHORIZATION-REGISTRY-01N.json",
+  "apiAuthorizationStatus": "All 74 exact API paths/methods and 13 dynamic patterns are inventoried; critical admin, user-owned, author-owned, public-rights, Omni connector, and payment-webhook policies are source-tested. Adversarial D1-backed runtime tests remain open.",
+  "apiAuthorizationRegistrySourceBlob": "docs/architecture/API-AUTHORIZATION-REGISTRY-01N.json@dadface6dfec2cb7325710c7c58c03277960d85c"
 }

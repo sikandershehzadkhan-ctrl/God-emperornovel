@@ -1,0 +1,1050 @@
+{
+  "version": 1,
+  "registryName": "Imperial Novel API authorization and object-ownership registry",
+  "sourceFile": "src/index.js",
+  "sourceCommit": "fc927689766803a8fb9753fb7d002171b1d84d95",
+  "sourceBlob": "src/index.js@ddb7429ac4809c733f8a44ef9c3c48c89bc4b2d3",
+  "coverage": "All exact API path/method declarations plus dynamic API patterns are inventoried; critical admin, user-owned, author-owned, public-rights and payment paths have explicit source guards and scope assertions.",
+  "exactInventory": [
+    {
+      "path": "/api/admin/agents",
+      "methods": [
+        "GET"
+      ]
+    },
+    {
+      "path": "/api/admin/agents/run",
+      "methods": [
+        "POST"
+      ]
+    },
+    {
+      "path": "/api/admin/author-applications",
+      "methods": [
+        "GET"
+      ]
+    },
+    {
+      "path": "/api/admin/community/comments",
+      "methods": [
+        "GET",
+        "PATCH"
+      ]
+    },
+    {
+      "path": "/api/admin/community/reports",
+      "methods": [
+        "GET",
+        "PATCH"
+      ]
+    },
+    {
+      "path": "/api/admin/connector-authorization-requests",
+      "methods": [
+        "GET"
+      ]
+    },
+    {
+      "path": "/api/admin/connectors",
+      "methods": [
+        "GET",
+        "PATCH",
+        "POST"
+      ]
+    },
+    {
+      "path": "/api/admin/connectors/cleanup",
+      "methods": [
+        "POST"
+      ]
+    },
+    {
+      "path": "/api/admin/donations",
+      "methods": [
+        "GET"
+      ]
+    },
+    {
+      "path": "/api/admin/omni/health",
+      "methods": [
+        "POST"
+      ]
+    },
+    {
+      "path": "/api/admin/publishing",
+      "methods": [
+        "GET"
+      ]
+    },
+    {
+      "path": "/api/admin/publishing/chapters",
+      "methods": [
+        "POST"
+      ]
+    },
+    {
+      "path": "/api/admin/publishing/chapters/reorder",
+      "methods": [
+        "POST"
+      ]
+    },
+    {
+      "path": "/api/admin/publishing/novels",
+      "methods": [
+        "POST"
+      ]
+    },
+    {
+      "path": "/api/admin/reports",
+      "methods": [
+        "GET"
+      ]
+    },
+    {
+      "path": "/api/admin/requests",
+      "methods": [
+        "GET"
+      ]
+    },
+    {
+      "path": "/api/admin/stats",
+      "methods": [
+        "ANY"
+      ]
+    },
+    {
+      "path": "/api/admin/taxonomy",
+      "methods": [
+        "GET",
+        "POST"
+      ]
+    },
+    {
+      "path": "/api/admin/tickets",
+      "methods": [
+        "POST"
+      ]
+    },
+    {
+      "path": "/api/admin/users",
+      "methods": [
+        "GET"
+      ]
+    },
+    {
+      "path": "/api/agents",
+      "methods": [
+        "GET"
+      ]
+    },
+    {
+      "path": "/api/auth/login",
+      "methods": [
+        "POST"
+      ]
+    },
+    {
+      "path": "/api/auth/logout",
+      "methods": [
+        "POST"
+      ]
+    },
+    {
+      "path": "/api/auth/register",
+      "methods": [
+        "POST"
+      ]
+    },
+    {
+      "path": "/api/author/ai/benchmarks",
+      "methods": [
+        "GET",
+        "POST"
+      ]
+    },
+    {
+      "path": "/api/author/ai/projects",
+      "methods": [
+        "GET",
+        "POST"
+      ]
+    },
+    {
+      "path": "/api/author/ai/status",
+      "methods": [
+        "GET"
+      ]
+    },
+    {
+      "path": "/api/author/applications",
+      "methods": [
+        "POST"
+      ]
+    },
+    {
+      "path": "/api/author/applications/me",
+      "methods": [
+        "GET"
+      ]
+    },
+    {
+      "path": "/api/author/chapters",
+      "methods": [
+        "GET",
+        "POST"
+      ]
+    },
+    {
+      "path": "/api/author/novels",
+      "methods": [
+        "GET",
+        "POST"
+      ]
+    },
+    {
+      "path": "/api/bookmark",
+      "methods": [
+        "POST"
+      ]
+    },
+    {
+      "path": "/api/bookmarks",
+      "methods": [
+        "GET"
+      ]
+    },
+    {
+      "path": "/api/comments",
+      "methods": [
+        "GET",
+        "POST"
+      ]
+    },
+    {
+      "path": "/api/comments/like",
+      "methods": [
+        "POST"
+      ]
+    },
+    {
+      "path": "/api/comments/report",
+      "methods": [
+        "POST"
+      ]
+    },
+    {
+      "path": "/api/community/discussions",
+      "methods": [
+        "GET"
+      ]
+    },
+    {
+      "path": "/api/config",
+      "methods": [
+        "ANY"
+      ]
+    },
+    {
+      "path": "/api/connector-authorization-requests",
+      "methods": [
+        "POST"
+      ]
+    },
+    {
+      "path": "/api/donations",
+      "methods": [
+        "POST"
+      ]
+    },
+    {
+      "path": "/api/follow",
+      "methods": [
+        "POST"
+      ]
+    },
+    {
+      "path": "/api/follows",
+      "methods": [
+        "GET"
+      ]
+    },
+    {
+      "path": "/api/formats",
+      "methods": [
+        "GET"
+      ]
+    },
+    {
+      "path": "/api/genres",
+      "methods": [
+        "ANY"
+      ]
+    },
+    {
+      "path": "/api/health",
+      "methods": [
+        "ANY",
+        "GET"
+      ]
+    },
+    {
+      "path": "/api/history",
+      "methods": [
+        "GET",
+        "POST"
+      ]
+    },
+    {
+      "path": "/api/leaderboard",
+      "methods": [
+        "GET"
+      ]
+    },
+    {
+      "path": "/api/library",
+      "methods": [
+        "GET",
+        "POST"
+      ]
+    },
+    {
+      "path": "/api/made-for-you",
+      "methods": [
+        "GET"
+      ]
+    },
+    {
+      "path": "/api/me",
+      "methods": [
+        "ANY"
+      ]
+    },
+    {
+      "path": "/api/notifications",
+      "methods": [
+        "GET"
+      ]
+    },
+    {
+      "path": "/api/notifications/read",
+      "methods": [
+        "POST"
+      ]
+    },
+    {
+      "path": "/api/novel-reactions",
+      "methods": [
+        "GET",
+        "POST"
+      ]
+    },
+    {
+      "path": "/api/novels",
+      "methods": [
+        "ANY"
+      ]
+    },
+    {
+      "path": "/api/omni/import",
+      "methods": [
+        "POST"
+      ]
+    },
+    {
+      "path": "/api/omni/jobs",
+      "methods": [
+        "GET"
+      ]
+    },
+    {
+      "path": "/api/omni/resolve",
+      "methods": [
+        "ANY"
+      ]
+    },
+    {
+      "path": "/api/omni/search",
+      "methods": [
+        "ANY"
+      ]
+    },
+    {
+      "path": "/api/omni/smart-unlock",
+      "methods": [
+        "ANY"
+      ]
+    },
+    {
+      "path": "/api/omni/status",
+      "methods": [
+        "ANY"
+      ]
+    },
+    {
+      "path": "/api/payment/webhook",
+      "methods": [
+        "POST"
+      ]
+    },
+    {
+      "path": "/api/profile",
+      "methods": [
+        "GET"
+      ]
+    },
+    {
+      "path": "/api/public-authors",
+      "methods": [
+        "ANY"
+      ]
+    },
+    {
+      "path": "/api/random",
+      "methods": [
+        "GET"
+      ]
+    },
+    {
+      "path": "/api/rating",
+      "methods": [
+        "GET",
+        "POST"
+      ]
+    },
+    {
+      "path": "/api/recommendations",
+      "methods": [
+        "GET"
+      ]
+    },
+    {
+      "path": "/api/report",
+      "methods": [
+        "POST"
+      ]
+    },
+    {
+      "path": "/api/requests",
+      "methods": [
+        "GET",
+        "POST"
+      ]
+    },
+    {
+      "path": "/api/sources",
+      "methods": [
+        "ANY"
+      ]
+    },
+    {
+      "path": "/api/tags",
+      "methods": [
+        "ANY"
+      ]
+    },
+    {
+      "path": "/api/taxonomy",
+      "methods": [
+        "ANY"
+      ]
+    },
+    {
+      "path": "/api/tickets/ledger",
+      "methods": [
+        "GET"
+      ]
+    },
+    {
+      "path": "/api/tier-list",
+      "methods": [
+        "GET"
+      ]
+    },
+    {
+      "path": "/api/vote-novels",
+      "methods": [
+        "GET",
+        "POST"
+      ]
+    }
+  ],
+  "dynamicInventory": [
+    {
+      "pattern": "^/api/novels/([0-9]+)$",
+      "sample": "/api/novels/42",
+      "methods": [
+        "GET"
+      ],
+      "accessClass": "public-rights-filtered",
+      "guard": "published and rights_status allowlist",
+      "sourceMarker": "let nm=p.match(/^\\/api\\/novels\\/"
+    },
+    {
+      "pattern": "^/api/chapters/([0-9]+)$",
+      "sample": "/api/chapters/42",
+      "methods": [
+        "GET"
+      ],
+      "accessClass": "public-rights-and-unlock-gated",
+      "guard": "published parent novel, rights allowlist, chapter publication and entitlement",
+      "sourceMarker": "let cm=p.match(/^\\/api\\/chapters\\/"
+    },
+    {
+      "pattern": "^/api/novels/([0-9]+)/batch-unlock$",
+      "sample": "/api/novels/42/batch-unlock",
+      "methods": [
+        "POST"
+      ],
+      "accessClass": "authenticated-user",
+      "guard": "need(u)",
+      "scope": "all unlock rows and ticket debit bound to u.id",
+      "sourceMarker": "let bu=p.match(/^\\/api\\/novels\\/"
+    },
+    {
+      "pattern": "^/api/admin/users/([0-9]+)$",
+      "sample": "/api/admin/users/42",
+      "methods": [
+        "PATCH"
+      ],
+      "accessClass": "admin-only",
+      "guard": "admin(u)",
+      "sourceMarker": "let au=p.match(/^\\/api\\/admin\\/users\\/"
+    },
+    {
+      "pattern": "^/api/author/ai/projects/([0-9]+)$",
+      "sample": "/api/author/ai/projects/42",
+      "methods": [
+        "GET",
+        "PATCH"
+      ],
+      "accessClass": "author-owner",
+      "guard": "author(u)",
+      "scope": "project.owner_user_id equals u.id unless admin",
+      "sourceMarker": "let aip=p.match(/^\\/api\\/author\\/ai\\/projects\\/(\\d+)$/);"
+    },
+    {
+      "pattern": "^/api/admin/publishing/novels/([0-9]+)$",
+      "sample": "/api/admin/publishing/novels/42",
+      "methods": [
+        "PATCH"
+      ],
+      "accessClass": "admin-only",
+      "guard": "admin(u)",
+      "sourceMarker": "let apn=p.match(/^\\/api\\/admin\\/publishing\\/novels\\/"
+    },
+    {
+      "pattern": "^/api/admin/publishing/chapters(?:/([0-9]+))?$",
+      "sample": "/api/admin/publishing/chapters/42",
+      "methods": [
+        "GET",
+        "PATCH"
+      ],
+      "accessClass": "admin-only",
+      "guard": "admin(u)",
+      "sourceMarker": "let ach=p.match(/^\\/api\\/admin\\/publishing\\/chapters"
+    },
+    {
+      "pattern": "^/api/admin/donations/([0-9]+)$",
+      "sample": "/api/admin/donations/42",
+      "methods": [
+        "PATCH"
+      ],
+      "accessClass": "admin-only",
+      "guard": "admin(u)",
+      "sourceMarker": "let ad=p.match(/^\\/api\\/admin\\/donations\\/"
+    },
+    {
+      "pattern": "^/api/admin/reports/([0-9]+)$",
+      "sample": "/api/admin/reports/42",
+      "methods": [
+        "PATCH"
+      ],
+      "accessClass": "admin-only",
+      "guard": "admin(u)",
+      "sourceMarker": "let ar=p.match(/^\\/api\\/admin\\/reports\\/"
+    },
+    {
+      "pattern": "^/api/admin/connector-authorization-requests/([0-9]+)$",
+      "sample": "/api/admin/connector-authorization-requests/42",
+      "methods": [
+        "PATCH"
+      ],
+      "accessClass": "admin-only",
+      "guard": "admin(u)",
+      "sourceMarker": "let car=p.match(/^\\/api\\/admin\\/connector-authorization-requests\\/"
+    },
+    {
+      "pattern": "^/api/admin/author-applications/([0-9]+)$",
+      "sample": "/api/admin/author-applications/42",
+      "methods": [
+        "PATCH"
+      ],
+      "accessClass": "admin-only",
+      "guard": "admin(u)",
+      "sourceMechanism": "prefix dispatch",
+      "sourceMarker": "const authorApplicationReviewId=p.startsWith(\"/api/admin/author-applications/\")"
+    },
+    {
+      "pattern": "^/api/admin/requests/([0-9]+)$",
+      "sample": "/api/admin/requests/42",
+      "methods": [
+        "PATCH"
+      ],
+      "accessClass": "admin-only",
+      "guard": "admin(u)",
+      "sourceMechanism": "prefix dispatch",
+      "sourceMarker": "if(p.startsWith(\"/api/admin/requests/\")&&m===\"PATCH\")"
+    },
+    {
+      "pattern": "^/api/author/ai/projects/[0-9]+/blueprint$",
+      "sample": "/api/author/ai/projects/42/blueprint",
+      "methods": [
+        "POST"
+      ],
+      "accessClass": "author-owner",
+      "guard": "author(u)",
+      "scope": "project.owner_user_id equals u.id unless admin",
+      "sourceMarker": "if(/^\\/api\\/author\\/ai\\/projects\\/\\d+\\/blueprint$/.test(p)"
+    }
+  ],
+  "policies": {
+    "adminOnly": {
+      "guard": "admin(u)",
+      "exactPaths": [
+        "/api/admin/agents",
+        "/api/admin/agents/run",
+        "/api/admin/author-applications",
+        "/api/admin/community/comments",
+        "/api/admin/community/reports",
+        "/api/admin/connector-authorization-requests",
+        "/api/admin/connectors",
+        "/api/admin/connectors/cleanup",
+        "/api/admin/donations",
+        "/api/admin/omni/health",
+        "/api/admin/publishing",
+        "/api/admin/publishing/chapters",
+        "/api/admin/publishing/chapters/reorder",
+        "/api/admin/publishing/novels",
+        "/api/admin/reports",
+        "/api/admin/requests",
+        "/api/admin/stats",
+        "/api/admin/taxonomy",
+        "/api/admin/tickets",
+        "/api/admin/users"
+      ],
+      "dynamicPatterns": [
+        "^/api/admin/users/(\\\\d+)$",
+        "^/api/admin/publishing/novels/(\\\\d+)$",
+        "^/api/admin/publishing/chapters(?:/(\\\\d+))?$",
+        "^/api/admin/donations/(\\\\d+)$",
+        "^/api/admin/reports/(\\\\d+)$",
+        "^/api/admin/connector-authorization-requests/(\\\\d+)$",
+        "^/api/admin/author-applications/(\\\\d+)$",
+        "^/api/admin/requests/(\\\\d+)$"
+      ],
+      "scope": "Administrator role is checked server-side; client-provided roles are not trusted.",
+      "methodOverrides": [
+        {
+          "path": "/api/author/ai/benchmarks",
+          "methods": [
+            "POST"
+          ],
+          "guard": "admin(u)"
+        }
+      ]
+    },
+    "userOwned": {
+      "guard": "need(u)",
+      "routes": [
+        {
+          "path": "/api/bookmark",
+          "methods": [
+            "POST"
+          ],
+          "guard": "need(u)",
+          "scope": "authenticated user id; published/right-cleared novel and published chapter validation"
+        },
+        {
+          "path": "/api/bookmarks",
+          "methods": [
+            "GET"
+          ],
+          "guard": "need(u)",
+          "scope": "WHERE b.user_id=? bound to u.id"
+        },
+        {
+          "path": "/api/history",
+          "methods": [
+            "GET",
+            "POST"
+          ],
+          "guard": "need(u)",
+          "scope": "WHERE h.user_id=? and insert user_id=u.id; published/right-cleared novels"
+        },
+        {
+          "path": "/api/library",
+          "methods": [
+            "GET",
+            "POST"
+          ],
+          "guard": "need(u)",
+          "scope": "WHERE l.user_id=? and insert user_id=u.id; published/right-cleared novels"
+        },
+        {
+          "path": "/api/follow",
+          "methods": [
+            "POST"
+          ],
+          "guard": "need(u)",
+          "scope": "follows.user_id bound to u.id; published/right-cleared novel"
+        },
+        {
+          "path": "/api/follows",
+          "methods": [
+            "GET"
+          ],
+          "guard": "need(u)",
+          "scope": "WHERE f.user_id=? bound to u.id"
+        },
+        {
+          "path": "/api/profile",
+          "methods": [
+            "GET"
+          ],
+          "guard": "need(u)",
+          "scope": "all aggregates bound to u.id"
+        },
+        {
+          "path": "/api/notifications",
+          "methods": [
+            "GET"
+          ],
+          "guard": "need(u)",
+          "scope": "WHERE user_id=? bound to u.id"
+        },
+        {
+          "path": "/api/notifications/read",
+          "methods": [
+            "POST"
+          ],
+          "guard": "need(u)",
+          "scope": "notification user_id bound to u.id"
+        },
+        {
+          "path": "/api/tickets/ledger",
+          "methods": [
+            "GET"
+          ],
+          "guard": "need(u)",
+          "scope": "WHERE user_id=? bound to u.id"
+        },
+        {
+          "path": "/api/recommendations",
+          "methods": [
+            "GET"
+          ],
+          "guard": "need(u)",
+          "scope": "WHERE r.user_id=? bound to u.id"
+        },
+        {
+          "path": "/api/report",
+          "methods": [
+            "POST"
+          ],
+          "guard": "need(u)",
+          "scope": "reports.user_id bound to u.id"
+        },
+        {
+          "path": "/api/donations",
+          "methods": [
+            "POST"
+          ],
+          "guard": "need(u)",
+          "scope": "donations.user_id bound to u.id; duplicate reference protection"
+        },
+        {
+          "path": "/api/requests",
+          "methods": [
+            "GET",
+            "POST"
+          ],
+          "guard": "need(u)",
+          "scope": "novel_requests.user_id bound to u.id"
+        },
+        {
+          "path": "/api/vote-novels",
+          "methods": [
+            "POST"
+          ],
+          "guard": "need(u)",
+          "scope": "request_votes.user_id bound to u.id"
+        },
+        {
+          "path": "/api/novel-reactions",
+          "methods": [
+            "POST"
+          ],
+          "guard": "need(u)",
+          "scope": "novel_reactions.user_id bound to u.id; published/right-cleared novel"
+        },
+        {
+          "path": "/api/comments",
+          "methods": [
+            "POST"
+          ],
+          "guard": "need(u)",
+          "scope": "comments.user_id bound to u.id; published/right-cleared novel"
+        },
+        {
+          "path": "/api/comments/like",
+          "methods": [
+            "POST"
+          ],
+          "guard": "need(u)",
+          "scope": "comment_likes.user_id bound to u.id; visible comment on published/right-cleared novel"
+        },
+        {
+          "path": "/api/comments/report",
+          "methods": [
+            "POST"
+          ],
+          "guard": "need(u)",
+          "scope": "comment_reports.user_id bound to u.id; visible comment on published/right-cleared novel"
+        },
+        {
+          "path": "/api/rating",
+          "methods": [
+            "POST"
+          ],
+          "guard": "need(u)",
+          "scope": "ratings.user_id bound to u.id; whole-number 1-10 and published/right-cleared novel"
+        },
+        {
+          "path": "/api/omni/import",
+          "methods": [
+            "POST"
+          ],
+          "guard": "need(u)",
+          "scope": "import_jobs.user_id bound to u.id; connector must be enabled and rights_status authorized"
+        },
+        {
+          "path": "/api/omni/jobs",
+          "methods": [
+            "GET"
+          ],
+          "guard": "need(u)",
+          "scope": "WHERE j.user_id=? bound to u.id"
+        },
+        {
+          "path": "/api/omni/smart-unlock",
+          "methods": [
+            "ANY"
+          ],
+          "guard": "need(u)",
+          "scope": "unlock queries and balance bound to u.id; published/right-cleared novel"
+        },
+        {
+          "path": "/api/author/applications/me",
+          "methods": [
+            "GET"
+          ],
+          "guard": "need(u)",
+          "scope": "author_applications.user_id bound to u.id"
+        },
+        {
+          "path": "/api/author/applications",
+          "methods": [
+            "POST"
+          ],
+          "guard": "need(u)",
+          "scope": "author_applications.user_id bound to u.id; reader role only"
+        },
+        {
+          "path": "/api/connector-authorization-requests",
+          "methods": [
+            "POST"
+          ],
+          "guard": "need(u)",
+          "scope": "request user_id bound to u.id"
+        }
+      ],
+      "scope": "User-owned rows are scoped with authenticated u.id, not a client-supplied user id."
+    },
+    "authorOwned": {
+      "routes": [
+        {
+          "path": "/api/author/ai/status",
+          "methods": [
+            "GET"
+          ],
+          "guard": "author(u)",
+          "scope": "author or admin role"
+        },
+        {
+          "path": "/api/author/ai/projects",
+          "methods": [
+            "GET",
+            "POST"
+          ],
+          "guard": "author(u)",
+          "scope": "owner_user_id bound to u.id; admin bypass is explicit"
+        },
+        {
+          "path": "/api/author/ai/benchmarks",
+          "methods": [
+            "GET"
+          ],
+          "guard": "author(u)",
+          "scope": "author or admin role; external data limited to public/authorized observations"
+        },
+        {
+          "path": "/api/author/novels",
+          "methods": [
+            "GET",
+            "POST"
+          ],
+          "guard": "author(u)",
+          "scope": "novels.owner_user_id bound to u.id; admin bypass is explicit"
+        },
+        {
+          "path": "/api/author/chapters",
+          "methods": [
+            "GET",
+            "POST"
+          ],
+          "guard": "author(u)",
+          "scope": "parent novel owner_user_id checked against u.id; admin bypass is explicit"
+        }
+      ],
+      "scope": "Author-only handlers use author(u) and owner_user_id checks; admin bypass is explicit."
+    },
+    "publicRightsFiltered": {
+      "routes": [
+        {
+          "path": "/api/novels",
+          "methods": [
+            "ANY"
+          ],
+          "policy": "published and rights_status in original/public_domain/licensed/authorized"
+        },
+        {
+          "path": "/api/comments",
+          "methods": [
+            "GET"
+          ],
+          "policy": "visible comments only on published/right-cleared novels"
+        },
+        {
+          "path": "/api/comments",
+          "methods": [
+            "POST"
+          ],
+          "policy": "authenticated comment creation only on published/right-cleared novels"
+        },
+        {
+          "path": "/api/comments/like",
+          "methods": [
+            "POST"
+          ],
+          "policy": "visible comment and parent novel must be published/right-cleared"
+        },
+        {
+          "path": "/api/comments/report",
+          "methods": [
+            "POST"
+          ],
+          "policy": "visible comment and parent novel must be published/right-cleared"
+        },
+        {
+          "path": "/api/rating",
+          "methods": [
+            "GET",
+            "POST"
+          ],
+          "policy": "rating stats/writes only for published/right-cleared novels"
+        },
+        {
+          "path": "/api/novel-reactions",
+          "methods": [
+            "GET",
+            "POST"
+          ],
+          "policy": "reactions only for published/right-cleared novels"
+        },
+        {
+          "path": "/api/community/discussions",
+          "methods": [
+            "GET"
+          ],
+          "policy": "visible comments joined to published/right-cleared novels"
+        },
+        {
+          "path": "/api/leaderboard",
+          "methods": [
+            "GET"
+          ],
+          "policy": "published/right-cleared novels only"
+        },
+        {
+          "path": "/api/tier-list",
+          "methods": [
+            "GET"
+          ],
+          "policy": "published/right-cleared novels only"
+        },
+        {
+          "path": "/api/random",
+          "methods": [
+            "GET"
+          ],
+          "policy": "published/right-cleared novels only"
+        },
+        {
+          "path": "/api/made-for-you",
+          "methods": [
+            "GET"
+          ],
+          "policy": "published/right-cleared novels only; personalized results exclude followed titles"
+        }
+      ],
+      "scope": "Public story and community surfaces must exclude unpublished or rights-ineligible works."
+    },
+    "paymentWebhook": {
+      "path": "/api/payment/webhook",
+      "method": "POST",
+      "status": 503,
+      "policy": "Automated payment confirmation remains disabled until provider-specific signatures, amount/currency, event identity and replay protections are verified."
+    },
+    "omniConnectorRights": {
+      "routes": [
+        {
+          "path": "/api/omni/search",
+          "methods": [
+            "ANY"
+          ],
+          "policy": "public search is limited to enabled connectors with rights_status authorized"
+        },
+        {
+          "path": "/api/omni/import",
+          "methods": [
+            "POST"
+          ],
+          "policy": "authenticated user; connector enabled and rights_status authorized; import job user_id bound to u.id"
+        },
+        {
+          "path": "/api/omni/jobs",
+          "methods": [
+            "GET"
+          ],
+          "policy": "jobs visible only to requesting user via j.user_id=u.id"
+        }
+      ],
+      "scope": "Connector discovery and import are constrained by explicit provider authorization; import records and job status remain user-scoped."
+    }
+  },
+  "knownOpenQuestions": [
+    "This registry and its tests are source-level; object-level authorization still needs adversarial runtime tests against a seeded D1 fixture.",
+    "The main catalog formatter, minimum-rating filters, and tier thresholds now use the 1-10 scale; any separately mounted rating-entry control still needs runtime verification.",
+    "Optional-session routes such as /api/me and /api/made-for-you have mixed public/personalized behavior and require runtime response-shape tests."
+  ]
+}
