@@ -2,7 +2,7 @@
   "schemaVersion": 1,
   "name": "Global D1 migration allocation register",
   "sequencePattern": "^([0-9]{4})_",
-  "lastObservedSequence": 47,
+  "lastObservedSequence": 48,
   "canonicalSource": "migrations/",
   "policy": {
     "reserveBeforeAuthoring": true,
@@ -95,6 +95,12 @@
     {
       "from": 47,
       "to": 47,
+      "owner": "community",
+      "status": "retired allocation from archived PR #334; never reuse"
+    },
+    {
+      "from": 48,
+      "to": 48,
       "owner": "platform-data",
       "status": "OmniPortal runtime support tables for side-effect-free read endpoints"
     }
