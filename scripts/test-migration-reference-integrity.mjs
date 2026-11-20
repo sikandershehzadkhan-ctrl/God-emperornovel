@@ -30,6 +30,9 @@ assert.equal([...actualReference.matchAll(referencePattern)].length, 1);
 const missing = [];
 let references = 0;
 for (const file of files) {
+  // This file contains an intentional readFileSync example as a scanner
+  // self-test. It is a string fixture, not a runtime migration dependency.
+  if (relative(root, file) === "scripts/test-migration-reference-integrity.mjs") continue;
   const source = readFileSync(file, "utf8");
   for (const match of source.matchAll(referencePattern)) {
     references += 1;
