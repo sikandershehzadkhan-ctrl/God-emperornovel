@@ -143,6 +143,41 @@ assert.ok(omniImportAt >= 0 && worker.slice(omniImportAt, omniImportAt + 1100).i
 assert.ok(worker.slice(omniImportAt, omniImportAt + 1100).includes("c.enabled||c.rights_status!=='authorized'"),
   "OmniPortal import must require an enabled authorized connector");
 
+
+const novelDetailAt = worker.indexOf("let nm=p.match(");
+const chapterContentAt = worker.indexOf("let cm=p.match(");
+const chapterUnlockAt = worker.indexOf("unlock$/.test(p)");
+const batchUnlockAt = worker.indexOf("let bu=p.match(");
+const bookmarkAt = worker.indexOf('if(p==="/api/bookmark"');
+assert.ok(novelDetailAt >= 0 && chapterContentAt > novelDetailAt &&
+  chapterUnlockAt > chapterContentAt && batchUnlockAt > chapterUnlockAt &&
+  bookmarkAt > batchUnlockAt, "reader detail/content/unlock handlers not found");
+const novelDetailHandler = worker.slice(novelDetailAt, chapterContentAt);
+const chapterContentHandler = worker.slice(chapterContentAt, chapterUnlockAt);
+const chapterUnlockHandler = worker.slice(chapterUnlockAt, batchUnlockAt);
+const batchUnlockHandler = worker.slice(batchUnlockAt, bookmarkAt);
+assert.ok(novelDetailHandler.includes("publication_status=") &&
+  novelDetailHandler.includes("published") && novelDetailHandler.includes("rights_status IN"),
+  "novel detail API must require published and rights-eligible work");
+assert.ok(chapterContentHandler.includes("n.publication_status='published'") &&
+  chapterContentHandler.includes("c.publication_status='published'") &&
+  chapterContentHandler.includes("rights_status IN"),
+  "reader content API must require published chapter and eligible parent work");
+assert.ok(chapterContentHandler.includes("open=!c.is_locked") &&
+  chapterContentHandler.includes("unlocks WHERE user_id=? AND chapter_id=?") &&
+  chapterContentHandler.includes("content:open?c.content:null"),
+  "locked chapter body must be withheld unless unlocked or administrator");
+assert.ok(chapterUnlockHandler.includes("need(u)") &&
+  chapterUnlockHandler.includes("u.id") && chapterUnlockHandler.includes("unlocks") &&
+  chapterUnlockHandler.includes("ticket_ledger"),
+  "single chapter unlock must authenticate, debit, and record user-scoped entitlement");
+assert.ok(batchUnlockHandler.includes("need(u)") &&
+  batchUnlockHandler.includes("rights_status IN") &&
+  batchUnlockHandler.includes("publication_status='published'") &&
+  batchUnlockHandler.includes("is_locked=1") &&
+  batchUnlockHandler.includes("unlocks") && batchUnlockHandler.includes("ticket_ledger"),
+  "batch unlock must authenticate and restrict purchases to eligible published chapters");
+
 console.log("Worker route registry validated: " + manifest.routes.length +
   " exact routes, " + manifest.patterns.length + " dynamic patterns, " +
   manifest.sitemaps.length + " sitemap endpoints, " +
