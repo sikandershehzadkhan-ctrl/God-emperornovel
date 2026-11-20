@@ -12,7 +12,7 @@ Migrations 0025 and 0027 introduce append-only financial records whose database 
 
 Use the database triggers as the only posting authority for these two operations.
 
-For administrator Crown credits, the API requires an administrator session, a distinct target account, a whole-number amount, a bounded reason, and a stable idempotency key. It inserts one admin_ticket_adjustments row. The database validates the administrator role, uniqueness, and immutable history, then posts the balance and ledger changes atomically.
+For administrator Crown credits, the API requires an administrator session, a distinct target account, a whole-number amount, a bounded reason, and a stable idempotency key. It inserts one admin_ticket_adjustments row. The database validates the active administrator role, uniqueness, and immutable history, then posts the balance and ledger changes atomically.
 
 For paid novel-request refunds, the API requires a pending request, a valid amount, and a bounded review note. It transitions the request to rejected and inserts one novel_request_refunds row in the same D1 batch. The database validates that the request is rejected, the amount matches the original cost, and the reviewer is an independent administrator. The trigger posts the balance and ledger changes atomically.
 
