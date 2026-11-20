@@ -72,6 +72,38 @@ assert.ok(sitemap.includes("renderStaticSitemap"), "static sitemap renderer miss
 assert.ok(sitemap.includes("renderNovelSitemap"), "novel sitemap renderer missing");
 assert.ok(sitemap.includes("renderChapterSitemap"), "chapter sitemap renderer missing");
 
+const sitemapHandlerStart = worker.indexOf("async function sitemap(req,env){");
+const sitemapHandlerEnd = worker.indexOf("\nasync function html(", sitemapHandlerStart);
+assert.ok(sitemapHandlerStart >= 0 && sitemapHandlerEnd > sitemapHandlerStart,
+  "Worker sitemap handler not found");
+const sitemapHandler = worker.slice(sitemapHandlerStart, sitemapHandlerEnd);
+const sitemapSql = sitemapHandler.split('env.DB.prepare("').slice(1)
+  .map(statement => statement.split('")')[0].replaceAll("\n", " ").replaceAll("  ", " ").trim());
+const novelSitemapSql = sitemapSql.filter(sql => /FROM novels(?: |$)/.test(sql));
+const chapterSitemapSql = sitemapSql.filter(sql => /FROM chapters c JOIN novels n/.test(sql));
+const rightsEligibility = "rights_status IN ('original','public_domain','licensed','authorized')";
+assert.equal(novelSitemapSql.length, 2, "expected novel sitemap count and page queries");
+assert.equal(chapterSitemapSql.length, 2, "expected chapter sitemap count and page queries");
+for (const sql of novelSitemapSql) {
+  assert.ok(sql.includes("publication_status='published'"),
+    "novel sitemap query must exclude unpublished works");
+  assert.ok(sql.includes(rightsEligibility),
+    "novel sitemap query must exclude works without eligible rights");
+}
+for (const sql of chapterSitemapSql) {
+  assert.ok(sql.includes("c.publication_status='published'"),
+    "chapter sitemap query must exclude unpublished chapters");
+  assert.ok(sql.includes("n.publication_status='published'"),
+    "chapter sitemap query must exclude chapters of unpublished novels");
+  assert.ok(sql.includes(rightsEligibility),
+    "chapter sitemap query must exclude chapters without eligible parent-work rights");
+}
+assert.ok(novelSitemapSql.some(sql => sql.includes("ORDER BY id LIMIT ? OFFSET ?")),
+  "novel sitemap pages must use deterministic bounded pagination");
+assert.ok(chapterSitemapSql.some(sql => sql.includes("ORDER BY c.id LIMIT ? OFFSET ?")),
+  "chapter sitemap pages must use deterministic bounded pagination");
+
+
 console.log("Worker route registry validated: " + manifest.routes.length +
   " exact routes, " + manifest.patterns.length + " dynamic patterns, " +
   manifest.sitemaps.length + " sitemap endpoints, " +

@@ -2,7 +2,7 @@
   "schemaVersion": 1,
   "name": "Imperial Novel route registry",
   "sourceBranch": "main",
-  "sourceCommit": "b9f1d9b2a703be4fd1e9b5291237986eefa66a5a",
+  "sourceCommit": "bd5572374721ccb12e42b49f8a4d1770ce42273a",
   "auditDate": "2026-11-20",
   "scope": "Source-audited Worker page-shell inventory. This registry certifies dispatcher-to-shell mapping only; it does not certify client rendering completeness, authorization, ownership isolation, locale/RTL behavior, canonical metadata, live HTTP status, or production deployment.",
   "routes": [
@@ -360,7 +360,8 @@
     "Route-level authentication and role requirements must be reconciled against client navigation guards and API method/object authorization; this shell map does not certify them.",
     "Per-route canonical URL, locale, RTL, and navigation exposure policies are not yet fully registered.",
     "Dynamic novel/chapter sitemap eligibility is rights- and publication-filtered in the Worker; runtime sitemap output still needs integration tests.",
-    "Live Worker behavior, HTTP status codes, browser navigation, and deployed asset versions require runtime verification."
+    "Live Worker behavior, HTTP status codes, browser navigation, and deployed asset versions require runtime verification.",
+    "/omniportal is publicly linked and included in the static sitemap; external search is limited to enabled authorized connectors and imports require authentication plus an enabled authorized connector. Confirm whether a global product-level disable switch is required before treating the portal as fully off."
   ],
   "sourceBlob": "src/index.js@237f4461135eb77258b7184e361ce9dfd9a140e9",
   "staticSitemapPaths": [
