@@ -234,7 +234,7 @@ assert.deepEqual(Object.keys(manifest.navigationExposure.exact).sort(), [...path
 assert.equal(manifest.navigationExposure.patterns.length, manifest.patterns.length,
   "every dynamic route pattern must have navigation exposure classification");
 const shellStart = client.indexOf("function shell(){");
-const shellEnd = client.indexOf("\\nfunction ", shellStart + 20);
+const shellEnd = client.indexOf("\nfunction ", shellStart + 20);
 assert.ok(shellStart >= 0 && shellEnd > shellStart, "application shell renderer not found");
 const shell = client.slice(shellStart, shellEnd);
 function navRegion(startMarker) {
