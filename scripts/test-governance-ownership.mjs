@@ -31,6 +31,18 @@ export function validateOwnership(registry, changedPaths = [], trackedPaths = []
     if (owners.length === 0) fail('tracked repository path has no registered owner: ' + file + '; register an owner before integration');
     if (owners.length > 1) fail('tracked repository path has multiple owners: ' + file);
   }
+  // Reverse validation requires a complete tracked-path inventory; pure unit callers may omit it.
+  if (trackedPaths.length > 0) {
+    for (const root of roots) {
+      if (root.path.endsWith('/')) {
+        if (!trackedPaths.some(file => file.startsWith(root.path))) {
+          fail('directory ownership root contains no tracked repository paths: ' + root.path);
+        }
+      } else if (!trackedPaths.includes(root.path)) {
+        fail('exact ownership entry is not a tracked repository path: ' + root.path);
+      }
+    }
+  }
   const ownedChanges = [];
   const decisionChanges = [];
   for (const file of new Set(changedPaths)) {
@@ -55,10 +67,13 @@ function selfTest() {
     { id: 'architecture', paths: ['docs/architecture/'], requiresAdr: true },
     { id: 'archive', paths: ['DEPLOY-1.txt'], requiresAdr: false }
   ] };
-  assert.equal(validateOwnership(registry, ['src/index.js', 'docs/architecture/decisions/ADR-0001.md'], ['src/index.js', 'DEPLOY-1.txt']).ownedChanges.length, 2);
+  const trackedFixture = ['src/index.js', 'migrations/0001_init.sql', '.github/workflows/test.yml', 'docs/architecture/README.md', 'DEPLOY-1.txt'];
+  assert.equal(validateOwnership(registry, ['src/index.js', 'docs/architecture/decisions/ADR-0001.md'], trackedFixture).ownedChanges.length, 2);
   assert.throws(() => validateOwnership(registry, ['src/index.js']), /require an ADR or feature contract/);
   assert.throws(() => validateOwnership(registry, ['scripts/new-unguarded-file.mjs']), /no registered owner/);
   assert.throws(() => validateOwnership(registry, [], ['scripts/existing-unowned-file.mjs']), /tracked repository path has no registered owner/);
+  assert.throws(() => validateOwnership({ version: 1, owners: [...registry.owners, { id: 'stale-exact', paths: ['DOES-NOT-EXIST.md'], requiresAdr: false }] }, [], trackedFixture), /exact ownership entry is not a tracked repository path/);
+  assert.throws(() => validateOwnership({ version: 1, owners: [...registry.owners, { id: 'empty-directory', paths: ['empty-domain/'], requiresAdr: false }] }, [], trackedFixture), /directory ownership root contains no tracked repository paths/);
   assert.throws(() => validateOwnership({ version: 1, owners: [...registry.owners, { id: 'overlap', paths: ['src/'], requiresAdr: true }] }), /overlapping ownership roots/);
   assert.throws(() => validateOwnership({ version: 1, owners: [{ id: 'bad-separator', paths: ['src' + String.fromCharCode(92) + 'escape'], requiresAdr: false }] }), /invalid ownership path/);
   assert.throws(() => validateOwnership(registry, ['migrations/0009_new.sql']), /require an ADR or feature contract/);
