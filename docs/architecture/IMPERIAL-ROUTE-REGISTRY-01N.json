@@ -2,7 +2,7 @@
   "schemaVersion": 1,
   "name": "Imperial Novel route registry",
   "sourceBranch": "main",
-  "sourceCommit": "903808b5e6f54dd1830b729efdf071f0ae00148a",
+  "sourceCommit": "4a218a3ebb303175b898c0374d4e03628d2dc482",
   "auditDate": "2026-11-20",
   "scope": "Source-audited Worker page-shell inventory. This registry certifies dispatcher-to-shell mapping only; it does not certify client rendering completeness, authorization, ownership isolation, locale/RTL behavior, canonical metadata, live HTTP status, or production deployment.",
   "routes": [
@@ -12,7 +12,8 @@
       "shell": "index.html",
       "screen": "home",
       "renderer": "home",
-      "robots": "index"
+      "robots": "index",
+      "canonicalPath": "/"
     },
     {
       "path": "/catalog",
@@ -20,7 +21,8 @@
       "shell": "catalog.html",
       "screen": "catalog",
       "renderer": "catalog",
-      "robots": "index"
+      "robots": "index",
+      "canonicalPath": "/catalog"
     },
     {
       "path": "/discover",
@@ -29,7 +31,8 @@
       "screen": "catalog",
       "renderer": "catalog",
       "robots": "index",
-      "aliasOf": "/catalog"
+      "aliasOf": "/catalog",
+      "canonicalPath": "/catalog"
     },
     {
       "path": "/formats",
@@ -37,7 +40,8 @@
       "shell": "index.html",
       "screen": "format-directory",
       "renderer": "formatDirectory",
-      "robots": "index"
+      "robots": "index",
+      "canonicalPath": "/formats"
     },
     {
       "path": "/genres",
@@ -45,7 +49,8 @@
       "shell": "genres.html",
       "screen": "genres",
       "renderer": "genres",
-      "robots": "index"
+      "robots": "index",
+      "canonicalPath": "/genres"
     },
     {
       "path": "/tags",
@@ -53,7 +58,8 @@
       "shell": "tags.html",
       "screen": "tags",
       "renderer": "tags",
-      "robots": "index"
+      "robots": "index",
+      "canonicalPath": "/tags"
     },
     {
       "path": "/search",
@@ -61,7 +67,8 @@
       "shell": "search.html",
       "screen": "search",
       "renderer": "search",
-      "robots": "index"
+      "robots": "index",
+      "canonicalPath": "/search"
     },
     {
       "path": "/library",
@@ -69,7 +76,8 @@
       "shell": "library.html",
       "screen": "library",
       "renderer": "library",
-      "robots": "noindex"
+      "robots": "noindex",
+      "canonicalPath": "/library"
     },
     {
       "path": "/history",
@@ -77,7 +85,8 @@
       "shell": "history.html",
       "screen": "history",
       "renderer": "history",
-      "robots": "noindex"
+      "robots": "noindex",
+      "canonicalPath": "/history"
     },
     {
       "path": "/following",
@@ -85,7 +94,8 @@
       "shell": "following.html",
       "screen": "following",
       "renderer": "following",
-      "robots": "noindex"
+      "robots": "noindex",
+      "canonicalPath": "/following"
     },
     {
       "path": "/tickets",
@@ -93,7 +103,8 @@
       "shell": "tickets.html",
       "screen": "tickets",
       "renderer": "tickets",
-      "robots": "noindex"
+      "robots": "noindex",
+      "canonicalPath": "/tickets"
     },
     {
       "path": "/requests",
@@ -101,7 +112,8 @@
       "shell": "requests.html",
       "screen": "requests",
       "renderer": "requests",
-      "robots": "noindex"
+      "robots": "noindex",
+      "canonicalPath": "/requests"
     },
     {
       "path": "/omniportal",
@@ -109,7 +121,8 @@
       "shell": "omniportal.html",
       "screen": "omniportal",
       "renderer": "omni",
-      "robots": "index"
+      "robots": "index",
+      "canonicalPath": "/omniportal"
     },
     {
       "path": "/community",
@@ -117,7 +130,8 @@
       "shell": "index.html",
       "screen": "community",
       "renderer": "discoveryPage:community",
-      "robots": "index"
+      "robots": "index",
+      "canonicalPath": "/community"
     },
     {
       "path": "/leaderboard",
@@ -125,7 +139,8 @@
       "shell": "index.html",
       "screen": "leaderboard",
       "renderer": "discoveryPage:leaderboard",
-      "robots": "index"
+      "robots": "index",
+      "canonicalPath": "/leaderboard"
     },
     {
       "path": "/tier-list",
@@ -133,7 +148,8 @@
       "shell": "index.html",
       "screen": "tier-list",
       "renderer": "discoveryPage:tier-list",
-      "robots": "index"
+      "robots": "index",
+      "canonicalPath": "/tier-list"
     },
     {
       "path": "/random",
@@ -141,7 +157,8 @@
       "shell": "index.html",
       "screen": "random",
       "renderer": "discoveryPage:random",
-      "robots": "index"
+      "robots": "index",
+      "canonicalPath": "/random"
     },
     {
       "path": "/made-for-you",
@@ -149,7 +166,8 @@
       "shell": "index.html",
       "screen": "made-for-you",
       "renderer": "discoveryPage:made-for-you",
-      "robots": "index"
+      "robots": "index",
+      "canonicalPath": "/made-for-you"
     },
     {
       "path": "/settings",
@@ -157,7 +175,8 @@
       "shell": "index.html",
       "screen": "settings",
       "renderer": "settings",
-      "robots": "noindex"
+      "robots": "noindex",
+      "canonicalPath": "/settings"
     },
     {
       "path": "/for-you",
@@ -166,7 +185,8 @@
       "screen": "made-for-you",
       "renderer": "discoveryPage:made-for-you",
       "robots": "index",
-      "aliasOf": "/made-for-you"
+      "aliasOf": "/made-for-you",
+      "canonicalPath": "/made-for-you"
     },
     {
       "path": "/trending",
@@ -174,7 +194,8 @@
       "shell": "index.html",
       "screen": "trending",
       "renderer": "discoveryPage:trending",
-      "robots": "index"
+      "robots": "index",
+      "canonicalPath": "/trending"
     },
     {
       "path": "/vote",
@@ -182,7 +203,8 @@
       "shell": "index.html",
       "screen": "vote",
       "renderer": "discoveryPage:vote",
-      "robots": "index"
+      "robots": "index",
+      "canonicalPath": "/vote"
     },
     {
       "path": "/notifications",
@@ -190,7 +212,8 @@
       "shell": "index.html",
       "screen": "notifications",
       "renderer": "discoveryPage:notifications",
-      "robots": "noindex"
+      "robots": "noindex",
+      "canonicalPath": "/notifications"
     },
     {
       "path": "/trend-factory",
@@ -198,7 +221,8 @@
       "shell": "index.html",
       "screen": "trend-factory",
       "renderer": "trendFactory",
-      "robots": "index"
+      "robots": "index",
+      "canonicalPath": "/trend-factory"
     },
     {
       "path": "/community-taxonomy",
@@ -206,7 +230,8 @@
       "shell": "community-taxonomy.html",
       "screen": "community-taxonomy",
       "renderer": "standalone-html",
-      "robots": "index"
+      "robots": "index",
+      "canonicalPath": "/community-taxonomy"
     },
     {
       "path": "/privacy",
@@ -214,7 +239,8 @@
       "shell": "privacy.html",
       "screen": "privacy-policy",
       "renderer": "standalone-html",
-      "robots": "index"
+      "robots": "index",
+      "canonicalPath": "/privacy"
     },
     {
       "path": "/terms",
@@ -222,7 +248,8 @@
       "shell": "terms.html",
       "screen": "terms",
       "renderer": "standalone-html",
-      "robots": "index"
+      "robots": "index",
+      "canonicalPath": "/terms"
     },
     {
       "path": "/copyright",
@@ -230,7 +257,8 @@
       "shell": "copyright.html",
       "screen": "copyright",
       "renderer": "standalone-html",
-      "robots": "index"
+      "robots": "index",
+      "canonicalPath": "/copyright"
     },
     {
       "path": "/account",
@@ -238,7 +266,8 @@
       "shell": "account.html",
       "screen": "account",
       "renderer": "account",
-      "robots": "noindex"
+      "robots": "noindex",
+      "canonicalPath": "/account"
     },
     {
       "path": "/login",
@@ -246,7 +275,8 @@
       "shell": "login.html",
       "screen": "login",
       "renderer": "authPage:login",
-      "robots": "noindex"
+      "robots": "noindex",
+      "canonicalPath": "/login"
     },
     {
       "path": "/register",
@@ -254,7 +284,8 @@
       "shell": "register.html",
       "screen": "register",
       "renderer": "authPage:register",
-      "robots": "noindex"
+      "robots": "noindex",
+      "canonicalPath": "/register"
     },
     {
       "path": "/admin",
@@ -262,7 +293,8 @@
       "shell": "admin.html",
       "screen": "admin-dashboard",
       "renderer": "standalone-html",
-      "robots": "noindex"
+      "robots": "noindex",
+      "canonicalPath": "/admin"
     },
     {
       "path": "/author",
@@ -270,7 +302,8 @@
       "shell": "index.html",
       "screen": "author-studio",
       "renderer": "authorStudio",
-      "robots": "noindex"
+      "robots": "noindex",
+      "canonicalPath": "/author"
     }
   ],
   "patterns": [
@@ -282,7 +315,8 @@
       ],
       "shell": "index.html",
       "renderer": "formatLanding",
-      "screen": "format-landing"
+      "screen": "format-landing",
+      "canonicalPathPolicy": "self-normalized"
     },
     {
       "pattern": "^/novel/\\d+/chapters/?$",
@@ -291,7 +325,8 @@
       ],
       "shell": "novel.html",
       "renderer": "chapters",
-      "screen": "chapter-archive"
+      "screen": "chapter-archive",
+      "canonicalPathPolicy": "self-normalized"
     },
     {
       "pattern": "^/novel/\\d+/?$",
@@ -300,7 +335,8 @@
       ],
       "shell": "novel.html",
       "renderer": "novel",
-      "screen": "novel-detail"
+      "screen": "novel-detail",
+      "canonicalPathPolicy": "self-normalized"
     },
     {
       "pattern": "^/read/\\d+/\\d+/?$",
@@ -309,7 +345,8 @@
       ],
       "shell": "read.html",
       "renderer": "reader",
-      "screen": "reader"
+      "screen": "reader",
+      "canonicalPathPolicy": "self-normalized"
     },
     {
       "pattern": "^/fandom/",
@@ -318,7 +355,8 @@
       ],
       "shell": "fandom.html",
       "renderer": "redirect-to-catalog-tag",
-      "screen": "compatibility-redirect"
+      "screen": "compatibility-redirect",
+      "canonicalPathPolicy": "omitted-compatibility-redirect"
     },
     {
       "pattern": "^/author/[^/]+$",
@@ -327,7 +365,8 @@
       ],
       "shell": "author-public.html",
       "renderer": "authorPublic",
-      "screen": "public-author-profile"
+      "screen": "public-author-profile",
+      "canonicalPathPolicy": "self-normalized"
     }
   ],
   "sitemaps": [
@@ -364,7 +403,7 @@
     "/omniportal is publicly linked and included in the static sitemap; external search is limited to enabled authorized connectors and imports require authentication plus an enabled authorized connector. Confirm whether a global product-level disable switch is required before treating the portal as fully off.",
     "Reader chapter-content and single/batch unlock source guards are now inventoried and regression-tested; runtime integration and concurrency tests remain open."
   ],
-  "sourceBlob": "src/index.js@237f4461135eb77258b7184e361ce9dfd9a140e9",
+  "sourceBlob": "src/index.js@cb1ecb0191cc14aa22c0095b0527649664489d83",
   "staticSitemapPaths": [
     "/",
     "/catalog",
@@ -754,5 +793,25 @@
       "Source checks now cover the reader chapter-content and unlock handlers; production D1 integration, cache behavior, concurrency under real traffic, and live runtime behavior still require verification.",
       "Canonical URLs, locale negotiation, per-chapter RTL behavior, navigation exposure, and deployed runtime behavior remain separate unfinished registry dimensions."
     ]
-  }
+  },
+  "canonicalPolicy": {
+    "origin": "incoming request origin",
+    "queryParameters": "excluded from canonical URLs",
+    "trailingSlash": "removed except for root",
+    "aliases": {
+      "/discover": "/catalog",
+      "/for-you": "/made-for-you"
+    },
+    "omittedPatterns": [
+      "^/fandom/"
+    ],
+    "noindexPatterns": [
+      "^/fandom/"
+    ],
+    "implementation": "src/route-canonical.mjs plus Worker html() metadata injection"
+  },
+  "noindexPatterns": [
+    "^/fandom/"
+  ],
+  "canonicalSourceBlob": "src/route-canonical.mjs@57be091478aee74e99b42f73b3132081233bf562"
 }
