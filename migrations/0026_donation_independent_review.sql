@@ -8,6 +8,9 @@ WHEN OLD.status = 'pending'
  AND NEW.status IN ('approved','rejected')
  AND NOT EXISTS (
    SELECT 1 FROM donation_reviews r
+   JOIN users reviewer ON reviewer.id = r.reviewer_user_id
+     AND reviewer.role = 'admin'
+     AND reviewer.banned = 0
    WHERE r.donation_id = OLD.id
      AND r.reviewer_user_id IS NOT NULL
      AND r.reviewer_user_id <> NEW.user_id
