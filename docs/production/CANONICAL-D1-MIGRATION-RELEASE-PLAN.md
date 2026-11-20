@@ -91,3 +91,7 @@ Migrations 0025 and 0027 are the single posting authorities for administrator cr
 ## OmniPortal read-route schema dependency
 
 Migration 0048 provisions the four support tables queried by side-effect-free OmniPortal GET routes. The migration is replay-safe for tables already created by the former lazy initializer. It intentionally does not add optional connector configuration columns; their remote presence is an explicit read-only audit finding and must be reconciled before any later column migration.
+
+
+## Shared runtime schema bootstrap remains a separate blocker
+The OmniPortal route changes remove route-local ensureOmniTables calls and add method guards, but the Worker API dispatcher still invokes ensureCoreSchema and ensureRuntimeFeatureSchema before route dispatch. Therefore the complete HTTP GET request is not yet guaranteed to be read-only. Do not remove these shared initializers until a complete table/column inventory, migration coverage map, production read-only audit, and production-shaped rehearsal prove that all required schema is supplied by canonical migrations.
