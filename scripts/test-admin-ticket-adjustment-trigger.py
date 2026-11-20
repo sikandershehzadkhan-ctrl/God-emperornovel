@@ -25,6 +25,7 @@ def user(name, email, role="user"):
 
 admin = user("credit-admin", "credit-admin@example.test", "admin")
 target = user("credit-target", "credit-target@example.test")
+nonadmin = user("credit-nonadmin", "credit-nonadmin@example.test")
 db.commit()
 
 # One immutable adjustment insert posts one balance credit and one ledger row.
@@ -55,6 +56,7 @@ assert db.execute("SELECT COUNT(*) FROM ticket_ledger WHERE reason='admin_adjust
 for values in [
     ("operation-key-0002", admin, admin, 10, "Self credit"),
     ("operation-key-0003", admin, target, 10, "   "),
+    ("operation-key-0004", nonadmin, target, 10, "Unauthorized actor"),
 ]:
     try:
         db.execute(
