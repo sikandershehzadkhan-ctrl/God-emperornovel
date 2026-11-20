@@ -6,7 +6,8 @@ export const EXACT_ROUTE_REGISTRY = Object.freeze([
     "renderer": "home",
     "robots": "index",
     "canonicalPath": "/",
-    "sitemap": true
+    "sitemap": true,
+    "sitemapOrder": 0
   },
   {
     "path": "/catalog",
@@ -15,7 +16,8 @@ export const EXACT_ROUTE_REGISTRY = Object.freeze([
     "renderer": "catalog",
     "robots": "index",
     "canonicalPath": "/catalog",
-    "sitemap": true
+    "sitemap": true,
+    "sitemapOrder": 1
   },
   {
     "path": "/discover",
@@ -34,7 +36,8 @@ export const EXACT_ROUTE_REGISTRY = Object.freeze([
     "renderer": "formatDirectory",
     "robots": "index",
     "canonicalPath": "/formats",
-    "sitemap": true
+    "sitemap": true,
+    "sitemapOrder": 2
   },
   {
     "path": "/genres",
@@ -43,7 +46,8 @@ export const EXACT_ROUTE_REGISTRY = Object.freeze([
     "renderer": "genres",
     "robots": "index",
     "canonicalPath": "/genres",
-    "sitemap": true
+    "sitemap": true,
+    "sitemapOrder": 3
   },
   {
     "path": "/tags",
@@ -52,7 +56,8 @@ export const EXACT_ROUTE_REGISTRY = Object.freeze([
     "renderer": "tags",
     "robots": "index",
     "canonicalPath": "/tags",
-    "sitemap": true
+    "sitemap": true,
+    "sitemapOrder": 4
   },
   {
     "path": "/search",
@@ -61,7 +66,8 @@ export const EXACT_ROUTE_REGISTRY = Object.freeze([
     "renderer": "search",
     "robots": "index",
     "canonicalPath": "/search",
-    "sitemap": true
+    "sitemap": true,
+    "sitemapOrder": 5
   },
   {
     "path": "/library",
@@ -115,7 +121,8 @@ export const EXACT_ROUTE_REGISTRY = Object.freeze([
     "renderer": "omni",
     "robots": "index",
     "canonicalPath": "/omniportal",
-    "sitemap": true
+    "sitemap": true,
+    "sitemapOrder": 8
   },
   {
     "path": "/community",
@@ -124,7 +131,8 @@ export const EXACT_ROUTE_REGISTRY = Object.freeze([
     "renderer": "discoveryPage:community",
     "robots": "index",
     "canonicalPath": "/community",
-    "sitemap": true
+    "sitemap": true,
+    "sitemapOrder": 6
   },
   {
     "path": "/leaderboard",
@@ -133,7 +141,8 @@ export const EXACT_ROUTE_REGISTRY = Object.freeze([
     "renderer": "discoveryPage:leaderboard",
     "robots": "index",
     "canonicalPath": "/leaderboard",
-    "sitemap": true
+    "sitemap": true,
+    "sitemapOrder": 7
   },
   {
     "path": "/tier-list",
@@ -215,7 +224,8 @@ export const EXACT_ROUTE_REGISTRY = Object.freeze([
     "renderer": "trendFactory",
     "robots": "index",
     "canonicalPath": "/trend-factory",
-    "sitemap": true
+    "sitemap": true,
+    "sitemapOrder": 9
   },
   {
     "path": "/community-taxonomy",
@@ -224,7 +234,8 @@ export const EXACT_ROUTE_REGISTRY = Object.freeze([
     "renderer": "standalone-html",
     "robots": "index",
     "canonicalPath": "/community-taxonomy",
-    "sitemap": true
+    "sitemap": true,
+    "sitemapOrder": 10
   },
   {
     "path": "/privacy",
@@ -233,7 +244,8 @@ export const EXACT_ROUTE_REGISTRY = Object.freeze([
     "renderer": "standalone-html",
     "robots": "index",
     "canonicalPath": "/privacy",
-    "sitemap": true
+    "sitemap": true,
+    "sitemapOrder": 11
   },
   {
     "path": "/terms",
@@ -242,7 +254,8 @@ export const EXACT_ROUTE_REGISTRY = Object.freeze([
     "renderer": "standalone-html",
     "robots": "index",
     "canonicalPath": "/terms",
-    "sitemap": true
+    "sitemap": true,
+    "sitemapOrder": 12
   },
   {
     "path": "/copyright",
@@ -251,7 +264,8 @@ export const EXACT_ROUTE_REGISTRY = Object.freeze([
     "renderer": "standalone-html",
     "robots": "index",
     "canonicalPath": "/copyright",
-    "sitemap": true
+    "sitemap": true,
+    "sitemapOrder": 13
   },
   {
     "path": "/account",
@@ -374,7 +388,9 @@ export const DYNAMIC_ROUTE_REGISTRY = Object.freeze(DYNAMIC_ROUTE_DEFINITIONS.ma
 ));
 
 export const STATIC_SITEMAP_PATHS = Object.freeze(
-  EXACT_ROUTE_REGISTRY.filter(route => route.sitemap).map(route => route.path)
+  EXACT_ROUTE_REGISTRY.filter(route => route.sitemap)
+    .sort((a, b) => a.sitemapOrder - b.sitemapOrder)
+    .map(route => route.path)
 );
 
 export const CANONICAL_ALIASES = Object.freeze(Object.fromEntries(
