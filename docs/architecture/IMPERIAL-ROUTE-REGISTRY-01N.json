@@ -398,7 +398,7 @@
     "Production status, active assets, cache behavior and browser navigation remain unverified.",
     "Route-level authentication and role requirements must be reconciled against client navigation guards and API method/object authorization; this shell map does not certify them.",
     "Canonical, locale/RTL, and navigation exposure policies are now registered and source-tested; deployed browser verification remains open.",
-    "Dynamic novel/chapter sitemap eligibility is rights- and publication-filtered in the Worker; live sitemap response integration tests remain open.",
+    "Worker sitemap routes and XML output now have mock-D1 integration coverage for static paths, publication/rights query filters, pagination and output URLs; live D1 and deployed sitemap verification remain open.",
     "Live Worker behavior, HTTP status codes, browser navigation, and deployed asset versions require runtime verification.",
     "/omniportal is publicly linked and included in the static sitemap; external search is limited to enabled authorized connectors and imports require authentication plus an enabled authorized connector. Confirm whether a global product-level disable switch is required before treating the portal as fully off.",
     "Reader chapter-content and single/batch unlock source guards are now inventoried and regression-tested; runtime integration and concurrency tests remain open.",
