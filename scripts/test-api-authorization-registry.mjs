@@ -77,8 +77,9 @@ for (const route of registry.dynamicInventory) {
     assert.ok(snippet.includes("need(u)") && snippet.includes("u.id"),
       "dynamic user route lacks session-user scope: " + route.pattern);
   } else {
-    assert.ok(snippet.includes("publication_status='published'") &&
-      snippet.includes("rights_status IN ('original','public_domain','licensed','authorized')"),
+    const normalized = snippet.replace(/\\'/g, "'");
+    assert.ok(normalized.includes("publication_status='published'") &&
+      normalized.includes("rights_status IN ('original','public_domain','licensed','authorized')"),
       "dynamic public content route lacks publication/rights filtering: " + route.pattern);
   }
 }
