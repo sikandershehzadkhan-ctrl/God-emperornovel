@@ -1043,8 +1043,17 @@
     }
   },
   "knownOpenQuestions": [
-    "This registry and its tests are source-level; object-level authorization still needs adversarial runtime tests against a seeded D1 fixture.",
+    "Mock-D1 Worker runtime tests now cover admin denial, author object ownership, user-scoped jobs, rights-gated chapters, fractional rating rejection, and bookmark eligibility; seeded SQLite/D1 adversarial coverage and deployed response verification remain open.",
     "The main catalog formatter, minimum-rating filters, and tier thresholds now use the 1-10 scale; any separately mounted rating-entry control still needs runtime verification.",
     "Optional-session routes such as /api/me and /api/made-for-you have mixed public/personalized behavior and require runtime response-shape tests."
+  ],
+  "runtimeTestFile": "scripts/test-api-authorization-runtime.mjs",
+  "runtimeTestCoverage": [
+    "admin role denial",
+    "author project object ownership denial",
+    "authenticated user scope against forged user_id query parameter",
+    "published and rights-eligible chapter filtering",
+    "fractional rating rejection",
+    "bookmark target eligibility"
   ]
 }
