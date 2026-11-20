@@ -45,8 +45,8 @@ for (const [table, column] of [
 ]) {
   assert.ok(workflow.includes(`('${table}','${column}')`), `production audit must inspect ${table}.${column}`);
 }
-assert.match(workflow, /PRAGMA table_info\\(agent_runs\\)/, 'audit must inspect agent run history columns');
-assert.match(workflow, /PRAGMA table_info\\(taxonomy_submissions\\)/, 'audit must inspect taxonomy proposal columns');
+assert.ok(workflow.includes('PRAGMA table_info(agent_runs);'), 'audit must inspect agent run history columns');
+assert.ok(workflow.includes('PRAGMA table_info(taxonomy_submissions);'), 'audit must inspect taxonomy proposal columns');
 
 
 console.log(`PASS: ${statements.length} production D1 audit statements are SELECT-only.`);
