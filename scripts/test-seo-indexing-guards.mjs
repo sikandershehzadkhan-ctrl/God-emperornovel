@@ -4,7 +4,7 @@ import { readFile } from "node:fs/promises";
 const worker=await readFile(new URL("../src/index.js",import.meta.url),"utf8");
 const robots=await readFile(new URL("../public/robots.txt",import.meta.url),"utf8");
 const privatePaths=EXACT_ROUTE_REGISTRY.filter(route=>route.robots==="noindex").map(route=>route.path);
-assert.ok(worker.includes('const noindex=route?.robots==="noindex"'),"Worker must read noindex policy from the runtime route registry");
+assert.ok(worker.includes('const noindex=!route||route.robots==="noindex"'),"Worker must read noindex policy from the runtime route registry");
 for(const path of privatePaths)assert.equal(resolvePageRoute(path)?.robots,"noindex","route registry noindex policy includes "+path);
 assert.ok(DYNAMIC_ROUTE_REGISTRY.some(route=>route.pattern==="^/fandom/"&&route.robots==="noindex"),"fandom compatibility routes remain noindex");
 assert.ok(worker.includes('<meta name="robots" content="noindex,nofollow">'),"private HTML pages must receive a noindex meta tag");
