@@ -31,7 +31,7 @@ These are concrete DDL operations still present in the runtime initializers and 
 
 1. **Comments columns:** `comments.parent_id INTEGER` and `comments.edited_at TEXT`, added by `createRuntimeFeatureSchemaEnsurer()` in `src/runtime-feature-schema.mjs`.
 2. **Community taxonomy proposals:** `taxonomy_submissions`, created by `ensureCommunityTaxonomySchema()` in `src/index.js`.
-3. **Optional connector configuration columns:** `connectors.search_url`, `auth_header`, `secret_name`, `rights_evidence_url`, `terms_url`, `rights_notes`, `metadata_import_allowed`, and `attribution_required`, added by `ensureOmniTables()` in `src/index.js`.
+3. **Optional connector configuration columns:** `connectors.search_url`, `connectors.auth_header`, `connectors.secret_name`, `connectors.rights_evidence_url`, `connectors.terms_url`, `connectors.rights_notes`, `connectors.metadata_import_allowed`, and `connectors.attribution_required`, added by `ensureOmniTables()` in `src/index.js`.
 
 Migration 0048 intentionally provisions the four OmniPortal support tables but does not claim to provision these optional connector columns. Do not infer that they exist in production merely because the runtime initializer attempts to add them.
 
