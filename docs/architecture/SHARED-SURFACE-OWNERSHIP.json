@@ -435,9 +435,9 @@
     {
       "id": "route-and-sitemap",
       "paths": [
+        "src/route-canonical.mjs",
         "src/route-registry.mjs",
-        "src/sitemap.mjs",
-        "src/route-canonical.mjs"
+        "src/sitemap.mjs"
       ],
       "requiresAdr": true,
       "accountableRole": "Route and crawl-policy owner",
