@@ -476,7 +476,8 @@
         "GET"
       ],
       "accessClass": "public-rights-filtered",
-      "guard": "published and rights_status allowlist"
+      "guard": "published and rights_status allowlist",
+      "sourceMarker": "let nm=p.match(/^\\/api\\/novels\\/"
     },
     {
       "pattern": "^/api/chapters/([0-9]+)$",
@@ -485,7 +486,8 @@
         "GET"
       ],
       "accessClass": "public-rights-and-unlock-gated",
-      "guard": "published parent novel, rights allowlist, chapter publication and entitlement"
+      "guard": "published parent novel, rights allowlist, chapter publication and entitlement",
+      "sourceMarker": "let cm=p.match(/^\\/api\\/chapters\\/"
     },
     {
       "pattern": "^/api/novels/([0-9]+)/batch-unlock$",
@@ -495,7 +497,8 @@
       ],
       "accessClass": "authenticated-user",
       "guard": "need(u)",
-      "scope": "all unlock rows and ticket debit bound to u.id"
+      "scope": "all unlock rows and ticket debit bound to u.id",
+      "sourceMarker": "let bu=p.match(/^\\/api\\/novels\\/"
     },
     {
       "pattern": "^/api/admin/users/([0-9]+)$",
@@ -504,7 +507,8 @@
         "PATCH"
       ],
       "accessClass": "admin-only",
-      "guard": "admin(u)"
+      "guard": "admin(u)",
+      "sourceMarker": "let au=p.match(/^\\/api\\/admin\\/users\\/"
     },
     {
       "pattern": "^/api/author/ai/projects/([0-9]+)$",
@@ -516,7 +520,8 @@
       ],
       "accessClass": "author-owner",
       "guard": "author(u)",
-      "scope": "project.owner_user_id equals u.id unless admin"
+      "scope": "project.owner_user_id equals u.id unless admin",
+      "sourceMarker": "let aip=p.match(/^\\/api\\/author\\/ai\\/projects\\/"
     },
     {
       "pattern": "^/api/admin/publishing/novels/([0-9]+)$",
@@ -525,7 +530,8 @@
         "PATCH"
       ],
       "accessClass": "admin-only",
-      "guard": "admin(u)"
+      "guard": "admin(u)",
+      "sourceMarker": "let apn=p.match(/^\\/api\\/admin\\/publishing\\/novels\\/"
     },
     {
       "pattern": "^/api/admin/publishing/chapters(?:/([0-9]+))?$",
@@ -535,7 +541,8 @@
         "PATCH"
       ],
       "accessClass": "admin-only",
-      "guard": "admin(u)"
+      "guard": "admin(u)",
+      "sourceMarker": "let ach=p.match(/^\\/api\\/admin\\/publishing\\/chapters"
     },
     {
       "pattern": "^/api/admin/donations/([0-9]+)$",
@@ -544,7 +551,8 @@
         "PATCH"
       ],
       "accessClass": "admin-only",
-      "guard": "admin(u)"
+      "guard": "admin(u)",
+      "sourceMarker": "let ad=p.match(/^\\/api\\/admin\\/donations\\/"
     },
     {
       "pattern": "^/api/admin/reports/([0-9]+)$",
@@ -553,7 +561,8 @@
         "PATCH"
       ],
       "accessClass": "admin-only",
-      "guard": "admin(u)"
+      "guard": "admin(u)",
+      "sourceMarker": "let ar=p.match(/^\\/api\\/admin\\/reports\\/"
     },
     {
       "pattern": "^/api/admin/connector-authorization-requests/([0-9]+)$",
@@ -562,7 +571,8 @@
         "PATCH"
       ],
       "accessClass": "admin-only",
-      "guard": "admin(u)"
+      "guard": "admin(u)",
+      "sourceMarker": "let car=p.match(/^\\/api\\/admin\\/connector-authorization-requests\\/"
     },
     {
       "pattern": "^/api/admin/author-applications/([0-9]+)$",
@@ -572,7 +582,8 @@
       ],
       "accessClass": "admin-only",
       "guard": "admin(u)",
-      "sourceMechanism": "prefix dispatch"
+      "sourceMechanism": "prefix dispatch",
+      "sourceMarker": "const authorApplicationReviewId=p.startsWith(\"/api/admin/author-applications/\")"
     },
     {
       "pattern": "^/api/admin/requests/([0-9]+)$",
@@ -582,7 +593,8 @@
       ],
       "accessClass": "admin-only",
       "guard": "admin(u)",
-      "sourceMechanism": "prefix dispatch"
+      "sourceMechanism": "prefix dispatch",
+      "sourceMarker": "if(p.startsWith(\"/api/admin/requests/\")&&m===\"PATCH\")"
     }
   ],
   "policies": {
