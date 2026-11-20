@@ -73,6 +73,13 @@ The first handler validates that the novel is published and rights-eligible, the
 
 These observations are source-level only. They do not replace adversarial tests.
 
+
+## Route inventory evidence
+
+A companion mechanical inventory, `API-ROUTE-SOURCE-INVENTORY-2026-11-20.json`, records 98 path-comparison occurrences across 80 unique path patterns in the reviewed Worker source blob. It includes source line numbers and bounded excerpts, plus heuristic observations of method and authentication-helper tokens. The method/auth observations are intentionally not treated as a complete parser result: route branches can call helpers, share paths across methods, or contain nested conditions. The inventory is a navigation aid for the next route-by-route review, not a claim that all 80 patterns are independently authorized or correctly method-restricted.
+
+The security documentation folder is registered to the `security-audit-documentation` owner in `docs/architecture/SHARED-SURFACE-OWNERSHIP.json`, with ADR-0033 recording that documentation boundary.
+
 ## Certification gaps
 
 The following remain **not certified**:
