@@ -10,7 +10,7 @@ The former GET handlers called ensureOmniTables, which lazily created tables and
 
 ## Decision
 
-Provision connector_events, import_jobs, recommendations, and connector_authorization_requests through migration 0047. Use CREATE TABLE IF NOT EXISTS and CREATE INDEX IF NOT EXISTS so the migration safely handles databases where the previous lazy initializer already created these exact tables. Do not add connector columns in this migration because their presence in existing D1 environments must be verified by the read-only production audit before any column migration is designed.
+Provision connector_events, import_jobs, recommendations, and connector_authorization_requests through migration 0048. Use CREATE TABLE IF NOT EXISTS and CREATE INDEX IF NOT EXISTS so the migration safely handles databases where the previous lazy initializer already created these exact tables. Do not add connector columns in this migration because their presence in existing D1 environments must be verified by the read-only production audit before any column migration is designed.
 
 The public OmniPortal status/search routes and authenticated jobs/recommendation routes remain read-only. Admin connector management may continue to initialize optional connector configuration columns and seed the connector registry behind its admin authorization boundary.
 
