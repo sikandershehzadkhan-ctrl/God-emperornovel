@@ -15,7 +15,7 @@ for (const [fragment, description] of [
   ["note.length<1||note.length>500", "paid refund must require a bounded review note"],
   ["UPDATE novel_requests SET status='rejected' WHERE id=? AND status='pending'", "refund must transition only a pending request"],
   ["INSERT INTO novel_request_refunds(request_id,admin_user_id,user_id,amount,note)", "refund must create an attributable immutable refund record"],
-  ["reviewer="+ "u.id", "audit must identify the reviewing administrator"],
+  ["reviewer=\"+u.id", "audit must identify the reviewing administrator"],
   ["transitioned!==1||posted!==1", "request transition and refund record must both succeed"]
 ]) assert.ok(route.includes(fragment), description);
 
