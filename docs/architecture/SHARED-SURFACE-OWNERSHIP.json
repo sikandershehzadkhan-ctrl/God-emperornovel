@@ -1,5 +1,5 @@
 {
-  "version": 1,
+  "version": 2,
   "purpose": "Fail-closed ownership map covering every tracked repository path. Directory-level owners are intentionally coarse initial domain boundaries; owners must be refined before the affected domain is split into independently governed modules.",
   "owners": [
     {
@@ -152,7 +152,23 @@
         "trigger-6.0.txt",
         "trigger.txt"
       ],
-      "requiresAdr": false
+      "requiresAdr": false,
+      "accountableRole": "Repository owner and architecture maintainer",
+      "changeOwner": "Repository owner or delegated maintainer for archival/root-reference files",
+      "integrationOwner": "Platform architecture and release owner",
+      "pathClass": "historical-root-artifacts",
+      "allowedContents": [
+        "Historical DEPLOY and TRIGGER-DEPLOY text records",
+        "Historical source ZIP archives",
+        "Root README and third-party notices",
+        "Graphify ignore configuration",
+        "Legacy root index.html snapshot; not a Worker-served asset"
+      ],
+      "dependencyDirection": "No runtime imports. These paths are archival/reference material and must not become runtime or build inputs without an explicit ownership transfer.",
+      "allowedDependencies": [],
+      "invokes": [],
+      "runtimeContracts": [],
+      "sharedSurfacePolicy": "Archive-only. New active application source, deployment configuration, and build inputs must live under their dedicated owned roots. Changes to legal notices require repository-owner review."
     },
     {
       "id": "build-toolchain",
@@ -160,28 +176,90 @@
         "package.json",
         "package-lock.json"
       ],
-      "requiresAdr": true
+      "requiresAdr": true,
+      "accountableRole": "Build and release engineering owner",
+      "changeOwner": "Build/toolchain maintainer",
+      "integrationOwner": "Platform release owner",
+      "pathClass": "build-configuration",
+      "allowedContents": [
+        "package.json scripts and dependency declarations",
+        "package-lock.json dependency lock"
+      ],
+      "dependencyDirection": "Build orchestration invokes registered engineering tooling; production runtime must never import scripts or package-management configuration.",
+      "allowedDependencies": [],
+      "invokes": [
+        "engineering-tooling"
+      ],
+      "runtimeContracts": [],
+      "sharedSurfacePolicy": "Dependency changes require lockfile consistency, supply-chain review, and the full Cloudflare build/readiness gate."
     },
     {
       "id": "cloudflare-runtime",
       "paths": [
         "wrangler.toml"
       ],
-      "requiresAdr": true
+      "requiresAdr": true,
+      "accountableRole": "Cloudflare platform owner",
+      "changeOwner": "Platform runtime and deployment maintainer",
+      "integrationOwner": "Platform release owner",
+      "pathClass": "deployment-configuration",
+      "allowedContents": [
+        "wrangler.toml Worker entrypoint, D1 binding, asset binding, compatibility and environment configuration"
+      ],
+      "dependencyDirection": "Deployment configuration points to the Worker runtime, public asset root, and D1 schema contract; it does not import application source.",
+      "allowedDependencies": [],
+      "invokes": [],
+      "runtimeContracts": [
+        "worker-runtime",
+        "frontend-runtime-and-assets",
+        "database-schema"
+      ],
+      "sharedSurfacePolicy": "No credentials or secrets in tracked config. Production bindings and migrations require explicit environment review; deployment is a separate release action."
     },
     {
       "id": "github-automation",
       "paths": [
         ".github/"
       ],
-      "requiresAdr": true
+      "requiresAdr": true,
+      "accountableRole": "Repository automation owner",
+      "changeOwner": "CI/workflow maintainer",
+      "integrationOwner": "Platform release owner",
+      "pathClass": "ci-automation",
+      "allowedContents": [
+        "GitHub Actions workflow definitions and repository automation configuration"
+      ],
+      "dependencyDirection": "Workflows invoke registered build and engineering commands; application runtime must not depend on GitHub workflow files.",
+      "allowedDependencies": [],
+      "invokes": [
+        "build-toolchain",
+        "engineering-tooling"
+      ],
+      "runtimeContracts": [],
+      "sharedSurfacePolicy": "Use least-privilege permissions, deterministic triggers, and required validation gates. Workflow changes must not bypass governance, migration, route, or Cloudflare checks."
     },
     {
       "id": "design-system",
       "paths": [
         "design-system/"
       ],
-      "requiresAdr": true
+      "requiresAdr": true,
+      "accountableRole": "Design-system owner",
+      "changeOwner": "Design-system maintainer",
+      "integrationOwner": "Frontend platform integration owner",
+      "pathClass": "design-source",
+      "allowedContents": [
+        "Design tokens",
+        "Component and accessibility specifications",
+        "Theme and RTL design references"
+      ],
+      "dependencyDirection": "Design source is upstream of frontend implementation; runtime components must consume approved/generated assets rather than importing governance documents.",
+      "allowedDependencies": [],
+      "invokes": [],
+      "runtimeContracts": [
+        "frontend-runtime-and-assets"
+      ],
+      "sharedSurfacePolicy": "Token and component changes require contrast, accessibility, responsive, and RTL review before frontend integration."
     },
     {
       "id": "documentation-reference",
@@ -205,50 +283,183 @@
         "docs/SOURCE-RECOVERY-REPORT.md",
         "docs/SUSTAINABLE-REVENUE-MODEL.md"
       ],
-      "requiresAdr": false
+      "requiresAdr": false,
+      "accountableRole": "Documentation owner",
+      "changeOwner": "Documentation maintainer",
+      "integrationOwner": "Architecture/release documentation integrator",
+      "pathClass": "reference-documentation",
+      "allowedContents": [
+        "Product, operations, legal, competitive, media, release and source-recovery reference documents"
+      ],
+      "dependencyDirection": "Documentation may describe implementation but must not be imported by production runtime or build scripts as executable policy.",
+      "allowedDependencies": [],
+      "invokes": [],
+      "runtimeContracts": [],
+      "sharedSurfacePolicy": "Keep evidence dates and implementation status explicit; do not describe planned or historical features as live."
     },
     {
       "id": "architecture-contracts",
       "paths": [
         "docs/architecture/"
       ],
-      "requiresAdr": true
+      "requiresAdr": true,
+      "accountableRole": "Platform architecture owner",
+      "changeOwner": "Architecture contract and ADR maintainer",
+      "integrationOwner": "Platform architecture/release owner",
+      "pathClass": "architecture-contracts",
+      "allowedContents": [
+        "Canonical route and ownership registries",
+        "Architecture decision records",
+        "Feature contracts and dependency maps"
+      ],
+      "dependencyDirection": "Architecture contracts describe and validate runtime boundaries; runtime code must not import documentation files. Tests may read these contracts.",
+      "allowedDependencies": [],
+      "invokes": [],
+      "runtimeContracts": [
+        "worker-runtime",
+        "frontend-runtime-and-assets",
+        "database-schema"
+      ],
+      "sharedSurfacePolicy": "Changes to canonical registries or shared contracts require an ADR and matching executable validation in the same PR."
     },
     {
       "id": "governance-documentation",
       "paths": [
         "docs/governance/"
       ],
-      "requiresAdr": false
+      "requiresAdr": false,
+      "accountableRole": "Engineering governance owner",
+      "changeOwner": "Governance policy maintainer",
+      "integrationOwner": "Platform architecture/release owner",
+      "pathClass": "governance-policy",
+      "allowedContents": [
+        "Engineering policy, ownership, migration and release governance documentation"
+      ],
+      "dependencyDirection": "Policy documentation is enforced by tooling; runtime modules must not import governance documents.",
+      "allowedDependencies": [],
+      "invokes": [
+        "engineering-tooling"
+      ],
+      "runtimeContracts": [],
+      "sharedSurfacePolicy": "Policy changes require an explicit owner, enforceable validation, and migration path for existing repositories."
     },
     {
       "id": "database-schema",
       "paths": [
         "migrations/"
       ],
-      "requiresAdr": true
+      "requiresAdr": true,
+      "accountableRole": "Database and data-integrity owner",
+      "changeOwner": "D1 schema/migration maintainer",
+      "integrationOwner": "Platform data and release owner",
+      "pathClass": "database-migrations",
+      "allowedContents": [
+        "Append-only D1 SQL migrations",
+        "Indexes, constraints, schema evolution and data backfills"
+      ],
+      "dependencyDirection": "Worker runtime consumes the schema through SQL and D1 bindings; migrations must not import application code or frontend assets.",
+      "allowedDependencies": [],
+      "invokes": [],
+      "runtimeContracts": [
+        "worker-runtime"
+      ],
+      "sharedSurfacePolicy": "Forward-only migrations, explicit rollback/recovery strategy, migration governance and no production D1 mutation during architecture-foundation work."
     },
     {
       "id": "frontend-runtime-and-assets",
       "paths": [
         "public/"
       ],
-      "requiresAdr": true
+      "requiresAdr": true,
+      "accountableRole": "Frontend platform owner",
+      "changeOwner": "Frontend experience and accessibility maintainer",
+      "integrationOwner": "Frontend/platform integration owner",
+      "pathClass": "browser-runtime-assets",
+      "allowedContents": [
+        "HTML page shells",
+        "Browser JavaScript and versioned bundles",
+        "CSS, fonts, icons and public media assets"
+      ],
+      "dependencyDirection": "Browser code communicates with Worker APIs through documented HTTP contracts; it must not import Worker internals, D1 migrations, scripts, or secrets.",
+      "allowedDependencies": [],
+      "invokes": [],
+      "runtimeContracts": [
+        "worker-runtime",
+        "design-system"
+      ],
+      "sharedSurfacePolicy": "No server secrets or direct database access. Source and served/versioned bundles must remain synchronized; accessibility, responsive and RTL checks are required."
     },
     {
       "id": "engineering-tooling",
       "paths": [
         "scripts/"
       ],
-      "requiresAdr": true
+      "requiresAdr": true,
+      "accountableRole": "Engineering productivity and quality owner",
+      "changeOwner": "Build/test tooling maintainer",
+      "integrationOwner": "Platform architecture and release owner",
+      "pathClass": "engineering-tooling",
+      "allowedContents": [
+        "Build scripts",
+        "Static and integration tests",
+        "Governance validators",
+        "Code generation and QA tooling"
+      ],
+      "dependencyDirection": "Tooling may import the runtime modules it validates; production Worker and browser code must never import scripts.",
+      "allowedDependencies": [
+        "worker-runtime"
+      ],
+      "invokes": [],
+      "runtimeContracts": [
+        "frontend-runtime-and-assets",
+        "database-schema",
+        "architecture-contracts"
+      ],
+      "sharedSurfacePolicy": "Tests must be deterministic and fail closed on missing evidence. Tooling must not perform production deployment or D1 mutation unless a separately authorized release workflow invokes it."
     },
     {
       "id": "worker-runtime",
       "paths": [
         "src/"
       ],
-      "requiresAdr": true
+      "requiresAdr": true,
+      "accountableRole": "Backend and Cloudflare Worker owner",
+      "changeOwner": "Worker API, security and runtime maintainer",
+      "integrationOwner": "Platform architecture and release owner",
+      "pathClass": "production-worker-runtime",
+      "allowedContents": [
+        "Worker request routing",
+        "API handlers and authorization",
+        "Domain services and query modules",
+        "Runtime response and security policy"
+      ],
+      "dependencyDirection": "Worker modules import only other Worker modules. D1 schema and public assets are runtime bindings/contracts, not static code imports. Worker code must not import scripts, docs, workflows, or browser bundles.",
+      "allowedDependencies": [],
+      "invokes": [],
+      "runtimeContracts": [
+        "database-schema",
+        "frontend-runtime-and-assets"
+      ],
+      "sharedSurfacePolicy": "All user-owned data requires session and object-level ownership checks; rights/publishing gates must be enforced server-side; secrets remain in environment bindings."
     }
   ],
-  "sharedSurfaceRule": "Every changed path must match exactly one owner. Paths whose owner requiresAdr=true require an ADR under docs/architecture/decisions/ or a feature contract under docs/architecture/feature-contracts/ in the same PR. Every tracked path is also checked for exactly one owner so unregistered baseline files cannot hide until changed."
+  "sharedSurfaceRule": "Every changed path must match exactly one owner. Paths whose owner requiresAdr=true require an ADR under docs/architecture/decisions/ or a feature contract under docs/architecture/feature-contracts/ in the same PR. Every tracked path is also checked for exactly one owner so unregistered baseline files cannot hide until changed.",
+  "pathPolicy": {
+    "unregisteredTrackedPaths": "fail",
+    "unregisteredChangedPaths": "fail",
+    "multipleOwners": "fail",
+    "staleExactEntries": "fail",
+    "emptyDirectoryRoots": "fail",
+    "missingOwnerMetadata": "fail",
+    "unauthorizedCrossDomainImports": "fail",
+    "unresolvedRelativeImports": "fail",
+    "adrRequiredForSharedSurfaceChanges": true,
+    "rootArchivesAreNotWorkerServed": true
+  },
+  "dependencyPolicy": {
+    "staticImportRule": "Same-owner imports are allowed. Cross-owner relative imports are allowed only when the source owner's allowedDependencies lists the target owner.",
+    "runtimeContractRule": "HTTP API, D1 schema, asset binding, design token and CI invocation relationships are declared separately as runtimeContracts/invokes and are not static import permissions.",
+    "unresolvedRelativeImportRule": "Every relative static/dynamic import must resolve to a tracked file or the governance gate fails.",
+    "noReverseDependencies": "Frontend, Worker, migrations, docs, and scripts may not import from a lower-level or unrelated domain unless explicitly allowed."
+  }
 }
