@@ -228,6 +228,41 @@ assert.deepEqual(manifest.localePolicy.rtlLanguageCodes, ["ar", "fa", "ur"]);
 assert.ok(client.includes("function isRtlLanguage(language)"), "RTL language resolver missing");
 assert.ok(client.includes('document.documentElement.dir=isRtlLanguage(c)?"rtl":"ltr"'), "UI direction must follow the selected interface language");
 assert.ok(client.includes("isRtlLanguage(n.language)") && client.includes('id="readerContent"'), "reader content direction must follow the work language independently");
+
+assert.deepEqual(Object.keys(manifest.navigationExposure.exact).sort(), [...paths].sort(),
+  "every exact route must have navigation exposure classification");
+assert.equal(manifest.navigationExposure.patterns.length, manifest.patterns.length,
+  "every dynamic route pattern must have navigation exposure classification");
+const shellStart = client.indexOf("function shell(){");
+const shellEnd = client.indexOf("\nfunction ", shellStart + 20);
+assert.ok(shellStart >= 0 && shellEnd > shellStart, "application shell renderer not found");
+const shell = client.slice(shellStart, shellEnd);
+function navRegion(startMarker) {
+  const start = shell.indexOf(startMarker);
+  const end = start >= 0 ? shell.indexOf("</nav>", start) : -1;
+  return start >= 0 && end > start ? shell.slice(start, end) : "";
+}
+const topNav = navRegion('<nav class="navlinks">');
+const mobileNav = navRegion('<nav class="mobileNav"');
+const footerNav = navRegion('<nav class="footerLinks"');
+const drawerStart = shell.indexOf('<aside class="menuDrawer"');
+const drawerEnd = shell.indexOf("</aside>", drawerStart);
+const drawer = drawerStart >= 0 && drawerEnd > drawerStart ? shell.slice(drawerStart, drawerEnd) : "";
+const utilityStart = shell.indexOf('<div class="navright">');
+const utilityEnd = shell.indexOf("</div></div></header>", utilityStart);
+const utility = utilityStart >= 0 && utilityEnd > utilityStart ? shell.slice(utilityStart, utilityEnd) : "";
+for (const [path, policy] of Object.entries(manifest.navigationExposure.exact)) {
+  for (const surface of policy.surfaces) {
+    if (surface === "top") assert.ok(topNav.includes('href="' + path + '"'), "top navigation missing " + path);
+    if (surface === "drawer") assert.ok(drawer.includes('href="' + path + '"'), "drawer navigation missing " + path);
+    if (surface === "mobile") assert.ok(mobileNav.includes('href="' + path + '"'), "mobile navigation missing " + path);
+    if (surface === "footer") assert.ok(footerNav.includes('href="' + path + '"'), "footer navigation missing " + path);
+    if (surface === "utility") assert.ok(utility.includes('href="' + path + '"'), "utility navigation missing " + path);
+    if (surface === "conditional-utility") assert.ok(shell.includes("if(d.user){document.querySelector('.navright')") && shell.includes('href="' + path + '"'), "conditional utility link missing " + path);
+    if (surface === "conditional-admin") assert.ok(shell.includes("if(d.user?.role==='admin')") && shell.includes('href="' + path + '"'), "admin navigation must be role-conditional");
+  }
+}
+
 console.log("Worker route registry validated: " + manifest.routes.length +
   " exact routes, " + manifest.patterns.length + " dynamic patterns, " +
   manifest.sitemaps.length + " sitemap endpoints, " +
