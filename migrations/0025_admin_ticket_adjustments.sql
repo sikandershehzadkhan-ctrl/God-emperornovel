@@ -17,6 +17,19 @@ CREATE INDEX IF NOT EXISTS idx_admin_ticket_adjustments_created
 CREATE INDEX IF NOT EXISTS idx_admin_ticket_adjustments_target
   ON admin_ticket_adjustments(target_user_id, created_at DESC);
 
+CREATE TRIGGER IF NOT EXISTS trg_admin_ticket_adjustment_authorized
+BEFORE INSERT ON admin_ticket_adjustments
+FOR EACH ROW
+WHEN NOT EXISTS (
+  SELECT 1 FROM users
+  WHERE id = NEW.admin_user_id
+    AND role = 'admin'
+    AND id <> NEW.target_user_id
+)
+BEGIN
+  SELECT RAISE(ABORT, 'Crown adjustment requires an independent administrator');
+END;
+
 -- The balance change and ledger row are inseparable from the adjustment insert.
 CREATE TRIGGER IF NOT EXISTS trg_admin_ticket_adjustment_post
 AFTER INSERT ON admin_ticket_adjustments
