@@ -16,7 +16,7 @@ assert.ok(manifest.routes.length >= 30, "exact route inventory unexpectedly smal
 assert.ok(manifest.patterns.length >= 5, "dynamic route inventory unexpectedly small");
 
 const htmlStart = worker.indexOf("async function html(");
-const htmlEnd = worker.indexOf("\\nconst escapeHtml", htmlStart);
+const htmlEnd = worker.indexOf("\nconst escapeHtml", htmlStart);
 assert.ok(htmlStart >= 0 && htmlEnd > htmlStart, "Worker HTML dispatcher not found");
 const htmlDispatcher = worker.slice(htmlStart, htmlEnd);
 const mapMatch = htmlDispatcher.match(/const map=(\\{[\\s\\S]*?\\});if\\(map\\[p\\]\\)/);
