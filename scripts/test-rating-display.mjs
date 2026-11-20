@@ -18,4 +18,7 @@ for (const [value, expected] of cases) assert.equal(ratingText(value), expected,
 
 assert.equal((source.match(/ratingText\(n\.rating\)/g) || []).length, 6, 'All six public rating surfaces must use the shared formatter');
 assert.ok(!source.includes('Number(n.rating||0).toFixed(1)'), 'Missing ratings must never be rendered as fabricated 0.0 values');
+assert.ok(source.includes('<option value="8">8+ / 10</option><option value="6">6+ / 10</option><option value="4">4+ / 10</option>'),
+  'Minimum-rating filters must use the 1-10 scale');
+
 console.log('Rating display regression passed: 1–10 scale, whole-number labels, missing/invalid ratings, and source/served parity.');
