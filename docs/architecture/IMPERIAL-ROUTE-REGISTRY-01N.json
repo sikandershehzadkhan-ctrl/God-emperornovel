@@ -2,7 +2,7 @@
   "schemaVersion": 1,
   "name": "Imperial Novel route registry",
   "sourceBranch": "main",
-  "sourceCommit": "a7a83ee780e6f785713b8e3bf8aa2821a0ada97b",
+  "sourceCommit": "b9f1d9b2a703be4fd1e9b5291237986eefa66a5a",
   "auditDate": "2026-11-20",
   "scope": "Source-audited Worker page-shell inventory. This registry certifies dispatcher-to-shell mapping only; it does not certify client rendering completeness, authorization, ownership isolation, locale/RTL behavior, canonical metadata, live HTTP status, or production deployment.",
   "routes": [
@@ -362,5 +362,22 @@
     "Dynamic novel/chapter sitemap eligibility is rights- and publication-filtered in the Worker; runtime sitemap output still needs integration tests.",
     "Live Worker behavior, HTTP status codes, browser navigation, and deployed asset versions require runtime verification."
   ],
-  "sourceBlob": "src/index.js@237f4461135eb77258b7184e361ce9dfd9a140e9"
+  "sourceBlob": "src/index.js@237f4461135eb77258b7184e361ce9dfd9a140e9",
+  "staticSitemapPaths": [
+    "/",
+    "/catalog",
+    "/formats",
+    "/genres",
+    "/tags",
+    "/search",
+    "/community",
+    "/leaderboard",
+    "/omniportal",
+    "/trend-factory",
+    "/community-taxonomy",
+    "/privacy",
+    "/terms",
+    "/copyright"
+  ],
+  "sitemapSourceBlob": "src/sitemap.mjs@c868fb87931be08f132b83232f379fd5fd63e2d3"
 }
