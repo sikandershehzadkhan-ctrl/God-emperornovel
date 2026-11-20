@@ -9,7 +9,7 @@ for(const path of privatePaths)assert.equal(resolvePageRoute(path)?.robots,"noin
 assert.ok(DYNAMIC_ROUTE_REGISTRY.some(route=>route.pattern==="^/fandom/"&&route.robots==="noindex"),"fandom compatibility routes remain noindex");
 assert.ok(worker.includes('<meta name="robots" content="noindex,nofollow">'),"private HTML pages must receive a noindex meta tag");
 assert.ok(worker.includes('"x-robots-tag":noindex?"noindex, nofollow":"index, follow"'),"private route indexing policy must be sent in the HTTP response headers");
-for(const path of privatePaths)assert.ok(worker.includes('"'+path+'"'),"noindex policy includes "+path);
+for(const path of privatePaths)assert.equal(resolvePageRoute(path)?.robots,"noindex","runtime noindex route missing "+path);
 assert.ok(!worker.includes('new Set(["/author/'),"public author profile paths must not be blocked by the private author-studio rule");
 assert.ok(robots.includes("Disallow: /api/"),"robots.txt discourages crawling API endpoints");
 assert.ok(robots.includes("Allow: /")&&robots.includes("/sitemap.xml"),"robots.txt retains public indexing and the dynamic sitemap");
