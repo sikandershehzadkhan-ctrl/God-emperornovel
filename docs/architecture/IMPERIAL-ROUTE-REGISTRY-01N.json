@@ -2,7 +2,7 @@
   "schemaVersion": 1,
   "name": "Imperial Novel route registry",
   "sourceBranch": "main",
-  "sourceCommit": "5db03a3c34afe97c744c4d44c67f9471adbd8f96",
+  "sourceCommit": "f8f388b0c4afb10a884e310296813174d9404fac",
   "auditDate": "2026-11-20",
   "scope": "Source-audited route inventory with one runtime registry driving Worker page-shell dispatch, canonical aliases, noindex policy, and static sitemap paths. The registry also records initial source-backed access, locale/RTL, and navigation policies. It does not certify every API method/object-ownership rule, mixed-language per-chapter locale behavior, live HTTP/browser behavior, or global rights-gated product switches.",
   "routes": [
@@ -1078,5 +1078,5 @@
       "conditional-admin": "inserted only after /api/me confirms administrator role"
     }
   },
-  "runtimeRegistrySourceBlob": "src/route-registry.mjs@086e57ba0dd5e3c053e83f9a3adabd710e36c88a"
+  "runtimeRegistrySourceBlob": "src/route-registry.mjs@67ea3926ba32cf0bd2535f40250da5a9e1c9bb13"
 }
