@@ -103,11 +103,12 @@ export function validateDependencyDirection(registry, edges) {
 export function collectRelativeImports(trackedPaths, readFile = file => fs.readFileSync(file, "utf8")) {
   const tracked = new Set(trackedPaths);
   const edges = [];
-  const sourceExtensions = /\\.(?:[cm]?js|jsx|ts|tsx)$/i;
+  const sourceExtensions = /\.(?:[cm]?js|jsx|ts|tsx)$/i;
   const patterns = [
-    /\\b(?:import|export)\\s+(?:[\\s\\S]*?\\s+from\\s*)?["']([^"']+)["']/g,
-    /\\bimport\\s*\\(\\s*["']([^"']+)["']\\s*\\)/g,
-    /\\brequire\\s*\\(\\s*["']([^"']+)["']\\s*\\)/g
+    /\b(?:import|export)\s+(?:[\s\S]*?\s+from\s*)?["']([^"']+)["']/g,
+    /\bimport\s*\(\s*["']([^"']+)["']\s*\)/g,
+    /\brequire\s*\(\s*["']([^"']+)["']\s*\)/g
+  ];
   ];
   for (const file of trackedPaths) {
     if (!sourceExtensions.test(file)) continue;
