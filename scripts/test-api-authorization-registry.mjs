@@ -19,7 +19,7 @@ assert.equal(routeManifest.apiAuthorizationRegistrySourceBlob,
   "page route manifest must pin the API authorization registry blob");
 
 const discovered = new Map();
-for (const match of worker.matchAll(/if\\(p===["']([^"']+)["'](?:(&&m===|&&m!==)["']([^"']+)["'])?/g)) {
+for (const match of worker.matchAll(/if\(p===["']([^"']+)["'](?:(&&m===|&&m!==)["']([^"']+)["'])?/g)) {
   if (!match[1].startsWith("/api/")) continue;
   // Negative method guards reject unsupported verbs; they are not handlers.
   if (match[2] === "&&m!==") continue;
