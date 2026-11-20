@@ -1,0 +1,115 @@
+{
+  "featureId": "same-origin-novel-cover-destinations",
+  "domainOwner": "media",
+  "technicalIntegrator": "platform-integrator",
+  "ownedPaths": [
+    "src/cover-url-policy.mjs",
+    "src/index.js",
+    "public/app.js",
+    "public/app-17.23.0.js",
+    "public/author.html",
+    "scripts/test-cover-url-policy.mjs",
+    "package.json",
+    "docs/architecture/IMPERIAL-AUTHORIZATION-OWNERSHIP-MATRIX-01N-38.json",
+    "docs/architecture/IMPERIAL-API-ROUTE-METHOD-MATRIX-01N-37.json",
+    "docs/architecture/IMPERIAL-FEATURE-OWNERSHIP.json",
+    "docs/architecture/FEATURE-OWNERSHIP-MAP.json"
+  ],
+  "sharedSurfaces": [
+    "src/index.js",
+    "public/app.js",
+    "public/app-17.23.0.js",
+    "public/author.html",
+    "package.json"
+  ],
+  "dependencies": [
+    "platform-kernel",
+    "platform-quality",
+    "experience-shell",
+    "repository-operations",
+    "platform-architecture"
+  ],
+  "routes": [],
+  "apiContracts": [
+    "Author novel create/update and administrator novel create/update reject explicitly supplied cover destinations outside the bundled same-origin allowlist.",
+    "Missing cover values resolve to the built-in same-origin placeholder."
+  ],
+  "dataEntities": [
+    "No new database entities or migrations."
+  ],
+  "migrationPlan": {
+    "required": false,
+    "proposedNumbers": [],
+    "canonicalEntityReuse": "No database changes; existing novels.cover_url remains the canonical field.",
+    "backwardCompatibility": "Legacy remote cover values fail closed to the local placeholder in client rendering; new writes must use an allowlisted local path.",
+    "rollbackOrForwardRepair": "Revert the code-only policy and restore prior UI behavior only through a separately reviewed decision; no data repair is required."
+  },
+  "uiLifecycle": {
+    "shellOwner": "experience-shell",
+    "ssrBehavior": "HTML response CSP allows HTTPS image sources only on comic reader routes.",
+    "clientBootBehavior": "Novel cover rendering falls back to the local placeholder unless the value is allowlisted.",
+    "servedBundleParity": "Both public/app.js and public/app-17.23.0.js are kept in sync."
+  },
+  "privacySecurity": {
+    "authentication": "No authentication changes.",
+    "authorization": "Existing author ownership and administrator gates remain unchanged; all four write routes validate cover values server-side.",
+    "ownerScoping": "No change to novel ownership predicates.",
+    "csrf": "No CSRF behavior changes.",
+    "rateAndSizeLimits": "Cover destinations are restricted to a finite set of same-origin paths; arbitrary remote URLs, unsafe schemes, traversal, query and fragment suffixes are rejected."
+  },
+  "tests": {
+    "unit": [
+      "scripts/test-cover-url-policy.mjs"
+    ],
+    "integration": [
+      "All four Worker publishing write paths are statically guarded."
+    ],
+    "isolation": [],
+    "buildCommands": [
+      "npm run build",
+      "npm run check:cloudflare-readiness"
+    ]
+  },
+  "rollout": {
+    "flags": [
+      "No feature flag required; invalid cover writes fail closed."
+    ],
+    "stagingSteps": [
+      "Pass all exact-head CI workflows",
+      "Review cover UI and comic reader CSP behavior",
+      "Deploy only through the separately approved production release process"
+    ]
+  },
+  "rollback": {
+    "codeRollback": "Revert the cover policy module, Worker integration, client fallback, Author Studio choices and associated test.",
+    "dataRollbackOrForwardRepair": "No database changes; existing values remain stored and can be reselected through approved bundled artwork.",
+    "monitoringSignals": [
+      "Cover URL policy test",
+      "Worker build and CSP validation",
+      "Reader image loading on comic and novel routes"
+    ]
+  },
+  "collisionReview": {
+    "duplicateRoutes": "None introduced.",
+    "duplicateEntities": "No new database entities.",
+    "migrationAllocation": "No migration added.",
+    "sharedSurfaceOwners": "Worker, public bundles, Author Studio, build script and architecture fingerprints retain their canonical owners."
+  },
+  "affectedDomains": [
+    "media",
+    "platform-kernel",
+    "platform-quality",
+    "experience-shell",
+    "repository-operations",
+    "platform-architecture"
+  ],
+  "changeSummary": "Restricts novel cover destinations to bundled same-origin artwork, applies server-side validation to all author/admin publishing writes, and narrows image CSP to preserve HTTPS comic page images only on reader routes.",
+  "acceptanceCriteria": [
+    "All four author/admin cover write routes validate on the server.",
+    "Remote and malformed cover URLs fail closed.",
+    "The general page CSP does not permit remote image hosts.",
+    "Comic reader routes retain their separately scoped HTTPS image allowance.",
+    "Author Studio exposes only bundled cover choices.",
+    "The exact PR head passes architecture, route, schema, build and Graphify validation."
+  ]
+}

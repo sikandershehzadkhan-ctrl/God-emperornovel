@@ -1,0 +1,55 @@
+{
+  "featureId": "replace-with-stable-kebab-case-id",
+  "domainOwner": "must-match-FEATURE-OWNERSHIP-MAP",
+  "technicalIntegrator": "named-integration-owner",
+  "ownedPaths": [
+    "src/features/<feature-id>/"
+  ],
+  "sharedSurfaces": [],
+  "dependencies": [],
+  "routes": [],
+  "apiContracts": [],
+  "dataEntities": [],
+  "migrationPlan": {
+    "required": false,
+    "proposedNumbers": [],
+    "canonicalEntityReuse": "explain",
+    "backwardCompatibility": "explain",
+    "rollbackOrForwardRepair": "explain"
+  },
+  "uiLifecycle": {
+    "shellOwner": "",
+    "ssrBehavior": "not-applicable-with-reason",
+    "clientBootBehavior": "not-applicable-with-reason",
+    "servedBundleParity": "not-applicable-with-reason"
+  },
+  "privacySecurity": {
+    "authentication": "",
+    "authorization": "",
+    "ownerScoping": "",
+    "csrf": "not-applicable-with-reason",
+    "rateAndSizeLimits": "",
+    "rightsAndPrivacy": ""
+  },
+  "tests": {
+    "unit": [],
+    "integration": [],
+    "isolation": [],
+    "buildCommands": []
+  },
+  "rollout": {
+    "flags": [],
+    "stagingSteps": []
+  },
+  "rollback": {
+    "codeRollback": "",
+    "dataRollbackOrForwardRepair": "",
+    "monitoringSignals": []
+  },
+  "collisionReview": {
+    "duplicateRoutes": "checked",
+    "duplicateEntities": "checked",
+    "migrationAllocation": "checked",
+    "sharedSurfaceOwners": "approved-or-not-applicable"
+  }
+}

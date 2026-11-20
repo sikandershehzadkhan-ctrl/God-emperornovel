@@ -1,0 +1,99 @@
+const HASH_PATTERN = /^[A-Za-z0-9_-]{43}$/;
+const PASSWORD_HASH_PATTERN = /^pbkdf2-sha256\$\d+\$[A-Za-z0-9_-]{20,32}\$[A-Za-z0-9_-]{40,64}$/;
+
+export const PASSWORD_RESET_COMPLETION_SQL = [
+  `UPDATE password_reset_tokens
+    SET consumed_at=?, consumption_id=?
+    WHERE token_hash=? AND purpose='password_reset'
+      AND consumed_at IS NULL AND invalidated_at IS NULL AND expires_at>?
+      AND EXISTS (SELECT 1 FROM users WHERE id=password_reset_tokens.user_id
+        AND lower(trim(email))=lower(trim(password_reset_tokens.email_snapshot)))
+    RETURNING user_id`,
+  `UPDATE users SET password_hash=?
+    WHERE id=(SELECT user_id FROM password_reset_tokens
+      WHERE token_hash=? AND purpose='password_reset' AND consumption_id=?)`,
+  `DELETE FROM sessions
+    WHERE user_id=(SELECT user_id FROM password_reset_tokens
+      WHERE token_hash=? AND purpose='password_reset' AND consumption_id=?)`,
+  `UPDATE password_reset_tokens SET invalidated_at=?
+    WHERE user_id=(SELECT user_id FROM password_reset_tokens
+      WHERE token_hash=? AND purpose='password_reset' AND consumption_id=?)
+      AND token_hash<>? AND consumed_at IS NULL AND invalidated_at IS NULL`
+];
+
+/**
+ * Consumes one reset token and changes only its account's password.
+ * D1 batch provides the transaction boundary. A fresh UUID binds every
+ * subsequent statement to this exact successful consumption, avoiding
+ * timestamp-collision replay across concurrent or repeated requests.
+ */
+export async function completePasswordReset(db, { tokenHash, passwordHash, now }) {
+  if (!db || typeof db.prepare !== "function" || typeof db.batch !== "function") {
+    throw new Error("A D1 database binding is required");
+  }
+  if (typeof tokenHash !== "string" || !HASH_PATTERN.test(tokenHash)) {
+    throw new Error("Invalid password-reset token digest");
+  }
+  if (typeof passwordHash !== "string" || !PASSWORD_HASH_PATTERN.test(passwordHash)) {
+    throw new Error("Invalid password hash");
+  }
+  if (typeof now !== "string" || !/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.\d{3}Z$/.test(now)) {
+    throw new Error("A normalized UTC timestamp is required");
+  }
+
+  const consumptionId = crypto.randomUUID();
+  const bindings = [
+    [now, consumptionId, tokenHash, now],
+    [passwordHash, tokenHash, consumptionId],
+    [tokenHash, consumptionId],
+    [now, tokenHash, consumptionId, tokenHash]
+  ];
+  const results = await db.batch(PASSWORD_RESET_COMPLETION_SQL.map((sql, index) =>
+    db.prepare(sql).bind(...bindings[index])
+  ));
+  const consumed = results?.[0]?.results?.[0];
+  if (!consumed || !Number.isSafeInteger(Number(consumed.user_id))) return { ok: false };
+  return { ok: true, userId: Number(consumed.user_id) };
+}
+
+
+const ISO_UTC = /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.\d{3}Z$/;
+
+export const PASSWORD_RESET_ISSUANCE_SQL = [
+  `UPDATE password_reset_tokens SET invalidated_at=?
+    WHERE user_id=? AND consumed_at IS NULL AND invalidated_at IS NULL
+      AND EXISTS (SELECT 1 FROM users WHERE id=? AND lower(trim(email))=lower(trim(?)))`,
+  `INSERT INTO password_reset_tokens(user_id,email_snapshot,token_hash,purpose,created_at,expires_at)
+    SELECT ?,?,?,'password_reset',?,?
+    WHERE EXISTS (SELECT 1 FROM users WHERE id=? AND lower(trim(email))=lower(trim(?)))`
+];
+export const PASSWORD_RESET_INVALIDATION_SQL = `UPDATE password_reset_tokens
+  SET invalidated_at=?
+  WHERE token_hash=? AND purpose='password_reset'
+    AND consumed_at IS NULL AND invalidated_at IS NULL`;
+
+/** Atomically replace active reset links and issue a new digest for an existing account. */
+export async function issuePasswordResetToken(db, { userId, emailSnapshot, tokenHash, now, expiresAt } = {}) {
+  if (!db || typeof db.prepare !== "function" || typeof db.batch !== "function") throw new Error("A D1 database binding is required");
+  if (!Number.isSafeInteger(userId) || userId <= 0) throw new Error("A valid user id is required");
+  const email=typeof emailSnapshot==="string"?emailSnapshot.trim().toLowerCase():"";
+  if(email.length>254||!/^\S+@\S+\.\S+$/.test(email))throw new Error("A valid email snapshot is required");
+  if (typeof tokenHash !== "string" || !HASH_PATTERN.test(tokenHash)) throw new Error("Invalid password-reset token digest");
+  if (typeof now !== "string" || !ISO_UTC.test(now) || typeof expiresAt !== "string" || !ISO_UTC.test(expiresAt)) throw new Error("Normalized UTC timestamps are required");
+  const start=Date.parse(now), expiry=Date.parse(expiresAt);
+  if (!Number.isFinite(start) || !Number.isFinite(expiry) || expiry<=start || expiry-start>60*60*1000) throw new Error("Password-reset expiry must be within one hour");
+  const results=await db.batch([
+    db.prepare(PASSWORD_RESET_ISSUANCE_SQL[0]).bind(now,userId,userId,email),
+    db.prepare(PASSWORD_RESET_ISSUANCE_SQL[1]).bind(userId,email,tokenHash,now,expiresAt,userId,email)
+  ]);
+  return {ok:Number(results?.[1]?.meta?.changes||0)===1};
+}
+
+/** Revoke a specific undelivered token without affecting a newer request. */
+export async function invalidatePasswordResetToken(db,{tokenHash,now}={}) {
+  if(!db||typeof db.prepare!=="function")throw new Error("A D1 database binding is required");
+  if(typeof tokenHash!=="string"||!HASH_PATTERN.test(tokenHash))throw new Error("Invalid password-reset token digest");
+  if(typeof now!=="string"||!ISO_UTC.test(now))throw new Error("A normalized UTC timestamp is required");
+  const result=await db.prepare(PASSWORD_RESET_INVALIDATION_SQL).bind(now,tokenHash).run();
+  return {ok:Number(result?.meta?.changes||0)===1};
+}

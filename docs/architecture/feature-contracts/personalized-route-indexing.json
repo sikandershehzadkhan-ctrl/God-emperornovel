@@ -1,0 +1,105 @@
+{
+  "featureId": "personalized-route-indexing",
+  "domainOwner": "discovery",
+  "technicalIntegrator": "platform-integrator",
+  "ownedPaths": [
+    "src/index.js",
+    "scripts/test-seo-indexing-guards.mjs",
+    "docs/architecture/decisions/ADR-0019-personalized-route-indexing.md",
+    "docs/architecture/feature-contracts/personalized-route-indexing.json",
+    "docs/architecture/IMPERIAL-API-ROUTE-METHOD-MATRIX-01N-37.json",
+    "docs/architecture/IMPERIAL-AUTHORIZATION-OWNERSHIP-MATRIX-01N-38.json"
+  ],
+  "sharedSurfaces": [
+    "src/index.js",
+    "docs/architecture/IMPERIAL-API-ROUTE-METHOD-MATRIX-01N-37.json",
+    "docs/architecture/IMPERIAL-AUTHORIZATION-OWNERSHIP-MATRIX-01N-38.json"
+  ],
+  "dependencies": [
+    "platform-kernel",
+    "discovery",
+    "platform-architecture"
+  ],
+  "routes": [
+    "/for-you",
+    "/made-for-you"
+  ],
+  "apiContracts": [
+    "Personalized recommendation HTML routes are marked noindex in the Worker response.",
+    "Existing authentication and owner-scoping requirements remain authoritative and are not replaced by crawler directives."
+  ],
+  "dataEntities": [
+    "No database entities or migrations."
+  ],
+  "migrationPlan": {
+    "required": false,
+    "proposedNumbers": [],
+    "canonicalEntityReuse": "No database changes.",
+    "backwardCompatibility": "The routes remain available to their existing authorized users; only search-index directives change.",
+    "rollbackOrForwardRepair": "A code-only rollback would restore the prior noindex set. No data repair is required."
+  },
+  "uiLifecycle": {
+    "shellOwner": "experience-shell",
+    "ssrBehavior": "Worker HTML responses for both personalized paths include noindex meta and X-Robots-Tag headers.",
+    "clientBootBehavior": "No client-side behavior change.",
+    "servedBundleParity": "No browser bundle changes."
+  },
+  "privacySecurity": {
+    "authentication": "Unchanged; robots directives are not authorization.",
+    "authorization": "Existing Worker and API access controls remain unchanged.",
+    "ownerScoping": "No change to account-specific recommendation query predicates.",
+    "csrf": "No mutation endpoints added or changed.",
+    "rateAndSizeLimits": "No change."
+  },
+  "tests": {
+    "unit": [
+      "scripts/test-seo-indexing-guards.mjs"
+    ],
+    "integration": [
+      "Worker private-route noindex policy includes both personalized routes."
+    ],
+    "isolation": [],
+    "buildCommands": [
+      "npm run build",
+      "npm run check:cloudflare-readiness"
+    ]
+  },
+  "rollout": {
+    "flags": [
+      "No feature flag required."
+    ],
+    "stagingSteps": [
+      "Pass all exact-head CI workflows.",
+      "Verify both route responses include noindex meta and X-Robots-Tag headers in staging.",
+      "Deploy only through the separately approved release process."
+    ]
+  },
+  "rollback": {
+    "codeRollback": "Revert the two route additions and their regression assertions as one reviewed change.",
+    "dataRollbackOrForwardRepair": "No database changes.",
+    "monitoringSignals": [
+      "SEO indexing guard regression",
+      "HTML response metadata for both personalized routes"
+    ]
+  },
+  "collisionReview": {
+    "duplicateRoutes": "No routes introduced or renamed.",
+    "duplicateEntities": "No new entities.",
+    "migrationAllocation": "No migration added.",
+    "sharedSurfaceOwners": "Worker and route/authorization evidence registries retain their canonical owners and exact source fingerprints."
+  },
+  "affectedDomains": [
+    "discovery",
+    "platform-kernel",
+    "platform-architecture",
+    "platform-quality"
+  ],
+  "changeSummary": "Mark personalized recommendation HTML routes as noindex without changing authentication, authorization, data access, or browser bundles.",
+  "acceptanceCriteria": [
+    "Both /for-you and /made-for-you are in the exact Worker noindex route set.",
+    "The SEO regression test asserts both routes.",
+    "Both route responses retain noindex meta and X-Robots-Tag behavior.",
+    "The current Worker source fingerprint matches both architecture evidence matrices.",
+    "The exact PR head passes architecture, route, schema, build, migration governance and Graphify validation."
+  ]
+}

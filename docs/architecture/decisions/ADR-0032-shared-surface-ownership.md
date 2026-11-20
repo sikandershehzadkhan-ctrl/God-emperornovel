@@ -1,4 +1,4 @@
-# ADR-0008: Initial ownership for shared platform surfaces
+# ADR-0032: Initial ownership for shared platform surfaces
 
 - **Status:** Proposed
 - **Date:** 2026-11-04

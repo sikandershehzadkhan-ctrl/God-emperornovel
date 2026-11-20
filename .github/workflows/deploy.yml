@@ -66,6 +66,26 @@ jobs:
           print(f'Fresh SQLite migration check passed for {len(paths)} files.')
           PY
 
+      - name: Block deployment when canonical migrations exceed the reviewed release set
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          import glob, os, sys
+          unsupported = []
+          for path in sorted(glob.glob('migrations/[0-9][0-9][0-9][0-9]_*.sql')):
+              number = int(os.path.basename(path)[:4])
+              if number > 11:
+                  unsupported.append(path)
+          if unsupported:
+              print('::error::Production deployment blocked: this workflow only applies and verifies migrations 0009-0011. The canonical migration chain now contains additional migrations that have no reviewed production rollout plan:')
+              for path in unsupported:
+                  print('::error::Unapplied migration candidate: ' + path)
+              print('::error::Do not bypass this gate. Reconcile live schema state, migration order, legacy compatibility, and per-migration preflight/postflight before enabling deployment.')
+              sys.exit(1)
+          print('PASS: no migration beyond the reviewed 0009-0011 release set is present.')
+          PY
+
       - name: Verify Cloudflare credentials
         shell: bash
         env:

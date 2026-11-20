@@ -1,0 +1,122 @@
+{
+  "featureId": "omniportal-bounded-json-response",
+  "domainOwner": "platform-kernel",
+  "technicalIntegrator": "platform-integrator",
+  "ownedPaths": [
+    "src/platform/bounded-json-response.mjs",
+    "src/index.js",
+    "scripts/test-bounded-json-response.mjs",
+    "package.json",
+    "docs/architecture/decisions/ADR-0028-bounded-omniportal-responses.md",
+    "docs/architecture/feature-contracts/omniportal-bounded-json-response.json",
+    "docs/architecture/IMPERIAL-API-ROUTE-METHOD-MATRIX-01N-37.json",
+    "docs/architecture/IMPERIAL-AUTHORIZATION-OWNERSHIP-MATRIX-01N-38.json",
+    "docs/architecture/IMPERIAL-ROUTE-REGISTRY-01N.json",
+    "docs/architecture/feature-contracts/platform-integration-governance.json",
+    "docs/architecture/INTEGRATION-COLLISION-REGISTER-2026-11-05.md"
+  ],
+  "sharedSurfaces": [
+    "src/index.js",
+    "package.json",
+    "docs/architecture/IMPERIAL-ROUTE-REGISTRY-01N.json",
+    "docs/architecture/IMPERIAL-API-ROUTE-METHOD-MATRIX-01N-37.json",
+    "docs/architecture/IMPERIAL-AUTHORIZATION-OWNERSHIP-MATRIX-01N-38.json"
+  ],
+  "dependencies": [
+    "platform-kernel",
+    "rights",
+    "platform-quality",
+    "platform-architecture",
+    "repository-operations"
+  ],
+  "routes": [
+    "GET /api/omni/search"
+  ],
+  "apiContracts": [
+    "Search query text is trimmed and capped at 120 characters.",
+    "External search fan-out includes at most eight enabled connectors with rights_status='authorized'.",
+    "Each external connector response must be successful JSON and is limited to 1 MiB while streaming.",
+    "Malformed, non-JSON, failed or oversized provider responses are treated as unavailable; local catalog results remain available.",
+    "Existing response shape, result normalization, rights filters and deduplication remain unchanged."
+  ],
+  "dataEntities": [
+    "Reuses the existing connectors registry; no new entity or persisted provider response."
+  ],
+  "migrationPlan": {
+    "required": false,
+    "proposedNumbers": [],
+    "canonicalEntityReuse": "The existing connectors table remains the sole connector registry.",
+    "backwardCompatibility": "The public search response shape is unchanged. Oversized or non-JSON provider responses now fail closed for that provider while local results remain available.",
+    "rollbackOrForwardRepair": "Revert the Worker helper, route integration, regression test and build registration. No database repair is required."
+  },
+  "uiLifecycle": {
+    "shellOwner": "experience-shell",
+    "ssrBehavior": "No SSR behavior changes.",
+    "clientBootBehavior": "No browser boot behavior changes.",
+    "servedBundleParity": "No browser bundle changes."
+  },
+  "privacySecurity": {
+    "authentication": "GET /api/omni/search remains public and read-only.",
+    "authorization": "Only enabled connectors with rights_status='authorized' are queried; the existing HTTPS host allowlist remains mandatory.",
+    "ownerScoping": "No user-owned records are read or modified by the external response parser.",
+    "csrf": "No state-changing route is added.",
+    "rateAndSizeLimits": "120-character query limit, eight-provider fan-out limit, seven-second existing timeout and 1 MiB streamed body limit per provider.",
+    "rightsAndPrivacy": "Only provider metadata already permitted by the connector authorization policy is normalized; no chapter body is fetched or stored."
+  },
+  "tests": {
+    "unit": [
+      "scripts/test-bounded-json-response.mjs"
+    ],
+    "integration": [
+      "Source-level route assertions confirm GET /api/omni/search uses the bounded parser, retains local catalog fallback and preserves the authorized-connector filter.",
+      "Exact-head Cloudflare Source Validation exercises the mandatory build; no live provider or production D1 call is part of this change."
+    ],
+    "isolation": [],
+    "buildCommands": [
+      "npm run build",
+      "npm run check:cloudflare-readiness",
+      "npm run build:cloudflare"
+    ]
+  },
+  "rollout": {
+    "flags": [
+      "No feature flag required."
+    ],
+    "stagingSteps": [
+      "Pass exact-head Cloudflare Source Validation.",
+      "Pass Architecture Governance, Route Registry, Runtime Schema Parity, Migration Governance and Graphify.",
+      "Review connector failure behavior and local-result fallback before separately approved deployment."
+    ]
+  },
+  "rollback": {
+    "codeRollback": "Revert the bounded parser and OmniPortal route changes.",
+    "dataRollbackOrForwardRepair": "No schema or production data change.",
+    "monitoringSignals": [
+      "Oversized and non-JSON provider responses are rejected.",
+      "Local catalog results remain available when external providers fail.",
+      "Provider fan-out never exceeds eight authorized connectors."
+    ]
+  },
+  "collisionReview": {
+    "duplicateRoutes": "No route is added or removed; existing GET /api/omni/search behavior receives bounded input and response parsing.",
+    "duplicateEntities": "No new entity.",
+    "migrationAllocation": "No migration.",
+    "sharedSurfaceOwners": "Worker changes require platform-kernel review; tests are owned by platform-quality; package script by repository-operations; architecture records by platform-architecture."
+  },
+  "affectedDomains": [
+    "platform-kernel",
+    "rights",
+    "platform-quality",
+    "platform-architecture",
+    "repository-operations"
+  ],
+  "changeSummary": "Bounds OmniPortal search inputs, provider fan-out and external JSON bodies while preserving rights gates, local catalog results and the existing response contract.",
+  "acceptanceCriteria": [
+    "External JSON bodies are streamed and capped at 1 MiB per provider.",
+    "Non-JSON, malformed and failed provider responses are rejected without breaking local search.",
+    "Search query length is capped at 120 characters.",
+    "Only the first eight enabled rights-authorized connectors are queried.",
+    "Regression tests are registered in the mandatory build.",
+    "The exact PR head passes all required governance and Cloudflare validation workflows."
+  ]
+}

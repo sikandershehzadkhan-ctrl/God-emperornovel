@@ -1,0 +1,103 @@
+{
+  "featureId": "admin-tab-accessibility",
+  "domainOwner": "experience-shell",
+  "technicalIntegrator": "platform-integrator",
+  "ownedPaths": [
+    "public/admin.html",
+    "scripts/test-navigation-accessibility-localization.mjs"
+  ],
+  "sharedSurfaces": [
+    "public/admin.html",
+    "docs/architecture/feature-contracts/platform-integration-governance.json"
+  ],
+  "dependencies": [
+    "experience-shell",
+    "administration",
+    "platform-quality",
+    "platform-architecture"
+  ],
+  "routes": [
+    "/admin (existing; no route changes)"
+  ],
+  "apiContracts": [
+    "No API methods or authorization behavior change. Existing administrator-only server authorization remains authoritative."
+  ],
+  "dataEntities": [
+    "No database entity, field, migration or persistent preference is introduced."
+  ],
+  "migrationPlan": {
+    "required": false,
+    "proposedNumbers": [],
+    "canonicalEntityReuse": "No data storage required.",
+    "backwardCompatibility": "The existing admin tab IDs and showTab data-tab contract are preserved.",
+    "rollbackOrForwardRepair": "Revert the markup and showTab keyboard behavior together; no data repair is required."
+  },
+  "uiLifecycle": {
+    "shellOwner": "experience-shell",
+    "ssrBehavior": "The static admin document contains the skip link, tablist semantics and initial visible panel; no SSR behavior changes.",
+    "clientBootBehavior": "Click, ArrowLeft, ArrowRight, Home and End update the selected tab, roving tabindex, panel visibility and ARIA state together.",
+    "servedBundleParity": "No browser JavaScript bundle or release asset changes."
+  },
+  "privacySecurity": {
+    "authentication": "No authentication changes.",
+    "authorization": "All admin API authorization remains server-enforced and unchanged.",
+    "ownerScoping": "No data access or owner scoping changes.",
+    "csrf": "No mutation endpoints are introduced.",
+    "rateAndSizeLimits": "No API input or rate limits change.",
+    "rightsAndPrivacy": "No user content or personal data handling changes."
+  },
+  "tests": {
+    "unit": [
+      "test-navigation-accessibility-localization.mjs validates one tab per panel, selected/hidden state, and keyboard navigation keys."
+    ],
+    "integration": [
+      "Admin dashboard skip link reaches the tablist; selection synchronizes aria-selected, roving tabindex and panel hidden state."
+    ],
+    "isolation": [
+      "Existing administrator-only API authorization and session boundaries remain unchanged."
+    ],
+    "buildCommands": [
+      "npm run build"
+    ]
+  },
+  "rollout": {
+    "flags": [],
+    "stagingSteps": [
+      "Run all six exact-head integration workflows.",
+      "Verify skip link visibility on keyboard focus.",
+      "Verify arrow-key wrapping and Home/End navigation across all 12 admin sections.",
+      "Verify inactive panels are hidden from assistive technology and exactly one tab is in the tab order."
+    ]
+  },
+  "rollback": {
+    "codeRollback": "Revert public/admin.html and its regression assertions together.",
+    "dataRollbackOrForwardRepair": "No persistent data or database changes.",
+    "monitoringSignals": [
+      "Admin tab selection and focus behavior",
+      "Keyboard-only admin navigation",
+      "Screen-reader tab/panel association"
+    ]
+  },
+  "collisionReview": {
+    "duplicateRoutes": "No new route; existing /admin is reused.",
+    "duplicateEntities": "No data entity added.",
+    "migrationAllocation": "No migration required.",
+    "sharedSurfaceOwners": "experience-shell owns admin markup; platform-quality owns regression assertions; platform-architecture owns ADR and feature contract; platform-integrator serializes the shared-surface change."
+  },
+  "affectedDomains": [
+    "experience-shell",
+    "administration",
+    "platform-quality",
+    "platform-architecture"
+  ],
+  "changeSummary": "Adds a visible-on-focus skip link and WAI-ARIA tab semantics to the 12-section admin dashboard. Keyboard navigation supports ArrowLeft, ArrowRight, Home and End with wrapping and keeps selected state, roving tabindex and hidden tab panels synchronized.",
+  "acceptanceCriteria": [
+    "The admin dashboard exposes a skip link to its section navigation.",
+    "The 12 section buttons form one named tablist with one selected tab and roving tabindex.",
+    "Each tab references exactly one tabpanel and each tabpanel references its controlling tab.",
+    "ArrowLeft and ArrowRight wrap through tabs; Home and End move to the first and last tab.",
+    "Only the selected panel is exposed; inactive panels carry hidden state.",
+    "Existing admin API calls and authorization remain unchanged.",
+    "No migrations, data writes, deployment or served bundle changes are introduced."
+  ]
+}

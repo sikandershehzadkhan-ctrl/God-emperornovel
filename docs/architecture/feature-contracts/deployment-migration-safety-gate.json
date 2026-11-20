@@ -1,0 +1,103 @@
+{
+  "featureId": "deployment-migration-safety-gate",
+  "domainOwner": "delivery-platform",
+  "technicalIntegrator": "platform-integrator",
+  "ownedPaths": [
+    ".github/workflows/deploy.yml",
+    "scripts/test-production-deploy-gates.mjs",
+    "docs/architecture/feature-contracts/platform-integration-governance.json",
+    "docs/architecture/decisions/ADR-0013-fail-closed-migration-deployment.md"
+  ],
+  "sharedSurfaces": [
+    ".github/workflows/deploy.yml",
+    "package.json",
+    "migrations/"
+  ],
+  "dependencies": [
+    "delivery-platform",
+    "platform-data",
+    "platform-quality",
+    "platform-architecture",
+    "platform-kernel"
+  ],
+  "routes": [],
+  "apiContracts": [
+    "No API changes. This is a production deployment safety gate."
+  ],
+  "dataEntities": [
+    "No D1 schema mutation. The gate only inventories repository migration filenames."
+  ],
+  "migrationPlan": {
+    "required": false,
+    "proposedNumbers": [],
+    "canonicalEntityReuse": "No database change. The workflow checks the repository migration directory and refuses deployment when it contains migrations beyond the currently reviewed 0009-0011 release set.",
+    "backwardCompatibility": "Existing production data and schema are untouched.",
+    "rollbackOrForwardRepair": "Remove the gate only after a reviewed deterministic rollout plan for the complete canonical migration chain is implemented and tested."
+  },
+  "uiLifecycle": {
+    "shellOwner": "experience-shell",
+    "ssrBehavior": "No SSR changes.",
+    "clientBootBehavior": "No browser changes.",
+    "servedBundleParity": "No asset changes."
+  },
+  "privacySecurity": {
+    "authentication": "No user-facing authentication changes.",
+    "authorization": "No user-facing authorization changes.",
+    "ownerScoping": "No user data is read or changed.",
+    "csrf": "Not applicable.",
+    "rateAndSizeLimits": "Not applicable.",
+    "productionSafety": "Manual deployment remains explicit; unsupported migration sets are blocked before Cloudflare credentials or any remote D1 mutation."
+  },
+  "tests": {
+    "unit": [
+      "test-production-deploy-gates.mjs"
+    ],
+    "integration": [
+      "Production workflow source validation",
+      "Exact gate assertion against migration numbers greater than 0011"
+    ],
+    "isolation": [
+      "Gate reads repository files only; it does not connect to production D1."
+    ],
+    "buildCommands": [
+      "npm run build"
+    ]
+  },
+  "rollout": {
+    "flags": [
+      "No runtime flag. The manual production deploy workflow remains disabled unless the user explicitly confirms."
+    ],
+    "stagingSteps": [
+      "Verify workflow blocks this canonical migration set before any Cloudflare credential check.",
+      "Do not run remote D1 or Worker deployment until migration rollout plan is reviewed."
+    ]
+  },
+  "rollback": {
+    "codeRollback": "Revert the gate only after replacement release controls are in place.",
+    "dataRollbackOrForwardRepair": "No data changes are made.",
+    "monitoringSignals": [
+      "Deployment blocked due to unsupported migration sequence",
+      "Migration inventory and approved rollout manifest"
+    ]
+  },
+  "collisionReview": {
+    "duplicateRoutes": "No routes changed.",
+    "duplicateEntities": "No data entities changed.",
+    "migrationAllocation": "No migration is added or applied.",
+    "sharedSurfaceOwners": "Deployment workflow owned by delivery-platform; regression test by platform-quality; architecture docs by platform-architecture."
+  },
+  "affectedDomains": [
+    "delivery-platform",
+    "platform-data",
+    "platform-quality",
+    "platform-architecture",
+    "platform-kernel"
+  ],
+  "changeSummary": "Prevents the current manual production deploy workflow from publishing code while numbered migrations after 0011 remain unsupported by its migration application and verification steps.",
+  "acceptanceCriteria": [
+    "Manual deploy remains opt-in only.",
+    "Any numbered migration above 0011 causes the deploy job to fail before credentials or remote D1 actions.",
+    "The build includes a regression assertion for the gate.",
+    "No production D1 or Worker mutation is performed."
+  ]
+}

@@ -2,7 +2,7 @@ name: Imperial Novel Cloudflare Source Validation
 
 on:
   pull_request:
-    branches: [main]
+    branches: [main, "integration/**"]
   push:
     branches: [main]
     paths:
@@ -30,6 +30,8 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
 
       - name: Require Cloudflare Worker source
         shell: bash
@@ -92,13 +94,19 @@ jobs:
               raise SystemExit(1)
           PY
 
-      - name: Validate D1 migrations against SQLite
+      - name: Validate canonical migration sequence and duplicate payloads
+        run: node scripts/test-migration-sequence-uniqueness.mjs
+      - name: Reject stale migration references in test scripts
+        run: node scripts/test-migration-reference-integrity.mjs
+
+      - name: Validate D1 migrations against fresh SQLite
         shell: bash
         run: |
           set -euo pipefail
           python3 - <<'PY'
           import glob, sqlite3, sys
           db = sqlite3.connect(':memory:')
+          db.execute('PRAGMA foreign_keys=ON')
           paths = sorted(glob.glob('migrations/*.sql'))
           if not paths:
               print('::error::No SQL migrations found.')
@@ -111,8 +119,100 @@ jobs:
               except Exception as exc:
                   print(f'::error::Migration failed: {path}: {exc}')
                   sys.exit(1)
-          print(f'PASS: {len(paths)} migrations applied to fresh SQLite.')
+          integrity = db.execute('PRAGMA integrity_check').fetchone()[0]
+          if integrity != 'ok':
+              print(f'::error::SQLite integrity_check failed: {integrity}')
+              sys.exit(1)
+          violations = db.execute('PRAGMA foreign_key_check').fetchall()
+          if violations:
+              print(f'::error::SQLite foreign_key_check failed: {violations[:10]}')
+              sys.exit(1)
+          print(f'PASS: {len(paths)} migrations; integrity_check and foreign_key_check are clean.')
           PY
+
+      - name: Test fresh and legacy ten-point rating migration
+        run: python3 scripts/test-rating-migration.py
+
+      - name: Test legacy community schema integrity migration
+        run: python3 scripts/test-community-schema-integrity.py
+
+      - name: Test canonical account closure request migration
+        run: node scripts/test-account-deletion-migration.mjs
+
+      - name: Test account deletion review-store migration
+        run: node scripts/test-account-deletion-review-migration.mjs
+
+      - name: Test immutable account deletion disposition migration
+        run: node scripts/test-account-deletion-disposition-migration.mjs
+
+      - name: Test independent account deletion disposition approvals
+        run: node scripts/test-account-deletion-disposition-approval-migration.mjs
+
+      - name: Test specialist-scoped account deletion findings
+        run: node scripts/test-account-deletion-specialist-findings-migration.mjs
+
+      - name: Test consent-based novel ownership transfer migration
+        run: node scripts/test-ownership-transfer-migration.mjs
+
+      - name: Test independent email ownership verification migration
+        run: node scripts/test-email-verification-migration.mjs
+
+      - name: Test purpose-bound password recovery token migration
+        run: node scripts/test-password-reset-migration-policy.mjs
+
+      - name: Test password reset link policy
+        run: node scripts/test-password-reset-link.mjs
+
+      - name: Test password reset request policy
+        run: node scripts/test-password-reset-request.mjs
+
+      - name: Test password reset token policy
+        run: node scripts/test-password-reset-token.mjs
+
+      - name: Test password reset storage policy
+        run: node scripts/test-password-reset-store.mjs
+
+      - name: Test security email delivery policy
+        run: node scripts/test-security-email-delivery.mjs
+
+      - name: Test email verification request policy
+        run: node scripts/test-email-verification-request.mjs
+
+      - name: Test email verification storage policy
+        run: node scripts/test-email-verification-store.mjs
+
+      - name: Test atomic password reset token issuance
+        run: node scripts/test-password-reset-issuance.mjs
+
+      - name: Test atomic email verification token issuance
+        run: node scripts/test-email-verification-issuance.mjs
+
+      - name: Test account deletion review authorization policy
+        run: node scripts/test-account-deletion-review-policy.mjs
+
+      - name: Test account deletion disposition policy
+        run: node scripts/test-account-deletion-disposition-policy.mjs
+
+      - name: Test independent disposition approval policy
+        run: node scripts/test-account-deletion-disposition-approval-policy.mjs
+
+      - name: Test creator ownership policy
+        run: node scripts/test-creator-ownership-policy.mjs
+
+      - name: Test runtime bootstrap and migration schema parity
+        run: python3 scripts/test-runtime-schema-parity.py
+
+      - name: Test read-only legacy core schema auditor
+        run: python3 scripts/audit-legacy-core-schema.py --self-test
+
+      - name: Test reader progress target integrity
+        run: python3 scripts/test-reader-progress-targets.py
+
+      - name: Test atomic community rate limits using runtime trigger SQL
+        run: python3 scripts/test-community-rate-limits-atomic.py
+
+      - name: Test published comment engagement boundaries
+        run: python3 scripts/test-published-comment-engagement.py
 
       - name: Test catalog query aggregation parity
         run: python3 scripts/test-catalog-query.py

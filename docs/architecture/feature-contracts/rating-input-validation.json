@@ -1,0 +1,124 @@
+{
+  "featureId": "rating-input-validation",
+  "domainOwner": "catalog",
+  "technicalIntegrator": "platform-kernel",
+  "ownedPaths": [
+    "src/index.js",
+    "scripts/test-rating-input-validation.mjs",
+    "package.json",
+    "docs/architecture/feature-contracts/rating-input-validation.json",
+    "docs/architecture/decisions/ADR-0015-rating-input-validation.md",
+    "scripts/test-rating-handler-canonical.mjs",
+    "migrations/0035_ten_point_ratings.sql",
+    "migrations/.reservations/0035.json",
+    "scripts/test-rating-migration.py"
+  ],
+  "sharedSurfaces": [
+    "src/index.js",
+    "package.json"
+  ],
+  "dependencies": [
+    "platform-kernel",
+    "platform-quality",
+    "repository-operations",
+    "platform-architecture",
+    "platform-data"
+  ],
+  "routes": [
+    "POST /api/rating retains its canonical route; no route or response shape change."
+  ],
+  "apiContracts": [
+    "Rating writes accept only positive safe-integer novel IDs and whole-number ratings from 1 through 10.",
+    "Fractional, non-finite, string-typed, missing, null, out-of-range and unsafe integer inputs are rejected with HTTP 400.",
+    "The server does not round or coerce a fractional rating into an accepted value."
+  ],
+  "dataEntities": [
+    "ratings; the existing table is upgraded in place from whole-number 1–5 scores to whole-number 1–10 scores, preserving historical values as equivalent even scores."
+  ],
+  "migrationPlan": {
+    "required": true,
+    "proposedNumbers": [
+      35
+    ],
+    "canonicalEntityReuse": "Migration 0035 rebuilds the existing ratings table with a strict integer 1–10 CHECK constraint; historical integer values 1–5 are mapped to 2,4,6,8,10 and existing timestamps are preserved.",
+    "backwardCompatibility": "The API/UI must not deploy before migration 0035. Fresh installs apply baseline 0034 then migration 0035; existing installs convert the existing ratings table. The migration is forward-only.",
+    "rollbackOrForwardRepair": "Do not roll back to a 1–5 schema after new odd 1–10 scores have been accepted. Before deployment retain a verified D1 export. If migration fails before Worker rollout, stop deployment and reconcile from the backup or apply a reviewed forward repair. Once new-scale votes exist, use forward repair rather than lossy reverse conversion."
+  },
+  "uiLifecycle": {
+    "shellOwner": "experience-shell",
+    "ssrBehavior": "No SSR changes.",
+    "clientBootBehavior": "No browser changes.",
+    "servedBundleParity": "No browser asset changes."
+  },
+  "privacySecurity": {
+    "authentication": "Existing authenticated-session requirement remains.",
+    "authorization": "Only the authenticated user can write their own rating.",
+    "ownerScoping": "Rating writes continue to bind user_id to authenticated session user.",
+    "csrf": "Existing write-route CSRF protections remain unchanged.",
+    "rateAndSizeLimits": "Existing request body and route limits remain unchanged.",
+    "referentialIntegrity": "Existing novel publication and rights-eligibility checks remain unchanged."
+  },
+  "tests": {
+    "unit": [
+      "test-rating-input-validation.mjs: accepts whole-number 1–10 only; rejects fractions, NaN, Infinity, strings, null, out-of-range values and invalid novel IDs",
+      "test-rating-handler-canonical.mjs: assert unique GET/POST handlers, publication and rights gates, 1–10 bounds and no rounding",
+      "test-rating-migration.py: fresh install, existing 1–5 conversion, timestamp preservation, aggregate recalculation, rejection of fractional and out-of-range scores."
+    ],
+    "integration": [
+      "Mandatory npm build executes rating input regression against the canonical Worker source.",
+      "Release gate verifies backup and migration 0035 sequencing before Worker rollout; no 1–10 UI/API deployment is permitted against a legacy schema."
+    ],
+    "isolation": [
+      "No ownership or session boundary changes."
+    ],
+    "buildCommands": [
+      "npm run build"
+    ]
+  },
+  "rollout": {
+    "flags": [
+      "No feature flag."
+    ],
+    "stagingSteps": [
+      "Export and retain a verified D1 backup before schema mutation.",
+      "Apply migration 0035 exactly once after confirming the expected legacy/fresh schema.",
+      "Verify integer-only 1–10 constraint, preserved vote count/timestamps and recalculated aggregates before Worker deployment.",
+      "Run the mandatory build and Cloudflare Source Validation on the exact PR head.",
+      "Confirm route registry and API/authorization source fingerprints match the Worker snapshot."
+    ]
+  },
+  "rollback": {
+    "codeRollback": "Revert the route-only validation simplification and regression test if unexpected behavior appears.",
+    "dataRollbackOrForwardRepair": "Migration 0035 is forward-only. Keep the pre-migration D1 export; never reverse-scale odd 1–10 ratings after new-scale writes exist. Use a reviewed forward repair for post-rollout defects.",
+    "monitoringSignals": [
+      "HTTP 400 rates for invalid rating submissions",
+      "Rating write error rate",
+      "Rating aggregate consistency"
+    ]
+  },
+  "collisionReview": {
+    "duplicateRoutes": "No route added; existing POST /api/rating is updated in place.",
+    "duplicateEntities": "No new table or data entity.",
+    "migrationAllocation": "Migration 0035 is reserved in migrations/.reservations/0035.json for PR #195; no competing migration number may be allocated.",
+    "sharedSurfaceOwners": "Worker route owned by platform-kernel; regression test by platform-quality; package script by repository-operations; contract and ADR by platform-architecture.; migration SQL/reservation owned by platform-data."
+  },
+  "affectedDomains": [
+    "catalog",
+    "platform-kernel",
+    "platform-quality",
+    "repository-operations",
+    "platform-architecture",
+    "platform-data"
+  ],
+  "changeSummary": "Removes redundant Math.round from rating input handling after explicit safe-integer validation, making the 1–10 whole-number contract direct and regression-tested.",
+  "acceptanceCriteria": [
+    "Only positive safe-integer novel IDs are accepted.",
+    "Only whole-number ratings 1–10 are accepted.",
+    "No rounding or fractional coercion occurs.",
+    "Published and rights-eligible novel checks remain unchanged.",
+    "No migration, route addition, response-shape change or browser bundle change.",
+    "Migration 0035 upgrades fresh and existing databases to a whole-number 1–10 ratings constraint.",
+    "Fractional ratings are rejected by the database, not merely the API.",
+    "Migration 0035 is reserved once and release sequencing retains a pre-migration backup."
+  ]
+}

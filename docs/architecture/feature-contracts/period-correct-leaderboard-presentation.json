@@ -1,0 +1,111 @@
+{
+  "featureId": "period-correct-leaderboard-presentation",
+  "domainOwner": "discovery",
+  "technicalIntegrator": "platform-integrator",
+  "ownedPaths": [
+    "scripts/test-period-correct-leaderboard.mjs"
+  ],
+  "sharedSurfaces": [
+    "src/index.js",
+    "public/app.js",
+    "public/app-17.23.0.js",
+    "package.json",
+    "docs/architecture/feature-contracts/platform-integration-governance.json"
+  ],
+  "dependencies": [
+    "discovery",
+    "reader",
+    "platform-quality",
+    "platform-architecture"
+  ],
+  "routes": [
+    "/leaderboard",
+    "GET /api/leaderboard (existing)"
+  ],
+  "apiContracts": [
+    "The existing leaderboard API accepts weekly, monthly and all periods and safely normalizes unsupported periods to all-time.",
+    "Novel and author rankings use chapter-unlock events in the selected period, with all-time when no bounded window is selected.",
+    "Only published novels with original, public-domain, licensed or authorized rights status and published chapters contribute to rankings.",
+    "The API identifies rankingMetric as chapter_unlocks; zero-unlock novels are not padded into the ranked novel list.",
+    "No route signature or response ownership rule is changed by this UI and query-index slice."
+  ],
+  "dataEntities": [
+    "Existing novels, chapters and unlocks tables only; no new persistent entity."
+  ],
+  "migrationPlan": {
+    "required": false,
+    "proposedNumbers": [],
+    "canonicalEntityReuse": "Reuses existing unlocks and chapters tables; runtime bootstrap adds an idempotent non-destructive composite index.",
+    "backwardCompatibility": "No API shape or numbered migration change. Existing unlock records remain intact.",
+    "rollbackOrForwardRepair": "Code rollback removes the UI presentation and bootstrap index declaration; no data rewrite is required."
+  },
+  "uiLifecycle": {
+    "shellOwner": "experience-shell",
+    "ssrBehavior": "No SSR changes.",
+    "clientBootBehavior": "Leaderboard cards state the selected-period chapter-unlock metric and display the returned unlock counts.",
+    "servedBundleParity": "public/app.js and public/app-17.23.0.js are byte-identical."
+  },
+  "privacySecurity": {
+    "authentication": "Existing public leaderboard read behavior is unchanged.",
+    "authorization": "No new route or write operation.",
+    "ownerScoping": "Only aggregate public rankings of published rights-cleared works are returned.",
+    "csrf": "No mutation.",
+    "rateAndSizeLimits": "Existing read limits and query behavior remain unchanged.",
+    "rightsAndPrivacy": "Unpublished and rights-ineligible works remain excluded."
+  },
+  "tests": {
+    "unit": [
+      "test-period-correct-leaderboard.mjs"
+    ],
+    "integration": [
+      "Existing leaderboard API regression plus visible metric/count assertions, runtime index presence and served bundle parity."
+    ],
+    "isolation": [
+      "No new user-owned data access or writes."
+    ],
+    "buildCommands": [
+      "npm run build",
+      "npm run check:cloudflare-readiness"
+    ]
+  },
+  "rollout": {
+    "flags": [],
+    "stagingSteps": [
+      "Run all exact-head integration workflows.",
+      "Verify weekly, monthly and all-time labels and counts against API unlock totals.",
+      "Confirm zero-unlock works are not presented as ranked results.",
+      "Verify source and versioned browser bundles are byte-identical."
+    ]
+  },
+  "rollback": {
+    "codeRollback": "Revert the leaderboard UI, test additions and bootstrap index declaration together.",
+    "dataRollbackOrForwardRepair": "No numbered migration or data mutation; an unused SQLite index may safely remain if already created.",
+    "monitoringSignals": [
+      "Leaderboard API latency",
+      "Leaderboard regression suite",
+      "Source/served bundle parity"
+    ]
+  },
+  "collisionReview": {
+    "duplicateRoutes": "No route added; existing leaderboard page and API are reused.",
+    "duplicateEntities": "No entity added.",
+    "migrationAllocation": "No migration required.",
+    "sharedSurfaceOwners": "Discovery owns ranking semantics; experience shell owns presentation; platform quality owns regression tests; architecture contract records shared-surface impact."
+  },
+  "affectedDomains": [
+    "discovery",
+    "reader",
+    "experience-shell",
+    "platform-quality",
+    "platform-architecture"
+  ],
+  "changeSummary": "Align leaderboard UI with its existing period-scoped chapter-unlock ranking, display returned unlock counts, and add an idempotent chapter/time lookup index.",
+  "acceptanceCriteria": [
+    "Weekly, monthly and all-time tabs explain that ordering is based on chapter unlocks in the selected period.",
+    "Novel and author cards display the API-returned period unlock counts.",
+    "Canonical ten-point rating formatting is preserved.",
+    "The runtime bootstrap creates idx_unlocks_chapter_time on unlocks(chapter_id,unlocked_at).",
+    "The regression checks API eligibility, period boundaries, zero-unlock suppression, metric labels, unlock counts, index presence and byte-identical browser bundles.",
+    "No numbered migration, route signature change, production data mutation or deployment is introduced."
+  ]
+}

@@ -1,0 +1,141 @@
+{
+  "featureId": "community-atomic-rate-limits",
+  "domainOwner": "community",
+  "technicalIntegrator": "platform-kernel",
+  "ownedPaths": [
+    "src/published-engagement-policy.mjs",
+    "scripts/test-published-engagement-policy.mjs",
+    "scripts/test-published-comment-engagement.mjs",
+    "scripts/test-published-comment-engagement.py",
+    "scripts/test-community-rate-limits-atomic.mjs",
+    "scripts/test-community-rate-limits-atomic.py"
+  ],
+  "sharedSurfaces": [
+    "src/index.js",
+    "src/runtime-feature-schema.mjs",
+    "package.json",
+    ".github/workflows/validate-cloudflare-source.yml",
+    "docs/architecture/IMPERIAL-FEATURE-OWNERSHIP.json",
+    "docs/architecture/feature-contracts/platform-integration-governance.json",
+    "docs/architecture/IMPERIAL-AUTHORIZATION-OWNERSHIP-MATRIX-01N-38.json"
+  ],
+  "dependencies": [
+    "community-profiles",
+    "platform-data",
+    "platform-quality",
+    "delivery-platform",
+    "platform-kernel",
+    "platform-architecture"
+  ],
+  "routes": [
+    "GET /api/comments",
+    "POST /api/comments",
+    "POST /api/comments/like",
+    "POST /api/comments/report",
+    "POST /api/follow"
+  ],
+  "apiContracts": [
+    "All engagement IDs must be positive safe integers; only digit-only strings are accepted as string IDs.",
+    "Comment reads, likes and reports require the target novel to be published and rights-eligible.",
+    "Comment and report quotas are enforced by SQLite BEFORE INSERT triggers with a 10-per-user rolling-hour ceiling.",
+    "Duplicate report claims are serialized by a primary key on (user_id, comment_id); legacy reports are backfilled before triggers are enabled."
+  ],
+  "dataEntities": [
+    "comments",
+    "comment_reports",
+    "comment_likes",
+    "follows",
+    "community_rate_limit_events",
+    "comment_report_claims"
+  ],
+  "migrationPlan": {
+    "required": false,
+    "proposedNumbers": [],
+    "canonicalEntityReuse": "Reuses existing comments, comment_reports, comment_likes and follows tables; adds only runtime-feature tables community_rate_limit_events and comment_report_claims.",
+    "runtimeSchemaVersion": 3,
+    "backwardCompatibility": "Monotonic runtime schema upgrade from v1 or v2 to v3. Existing comments and reports remain; valid legacy report claims are backfilled with INSERT OR IGNORE after joining existing users and comments. Orphan legacy reports are excluded from claims and remain subject to the existing integrity migration.",
+    "rollbackOrForwardRepair": "The additive v3 tables and triggers are retained on code rollback. Do not decrement the runtime schema marker or drop event/claim tables."
+  },
+  "uiLifecycle": {
+    "shellOwner": "experience-shell",
+    "ssrBehavior": "No SSR changes.",
+    "clientBootBehavior": "No browser boot changes.",
+    "servedBundleParity": "No served browser bundle changes."
+  },
+  "privacySecurity": {
+    "authentication": "Comment creation, likes, reports and follows require the existing authenticated session.",
+    "authorization": "All writes bind the actor exclusively to session u.id.",
+    "ownerScoping": "No client-supplied user identifier is accepted. Rate-limit events and report claims cascade on user deletion; report claims also cascade on comment deletion.",
+    "csrf": "Existing write-route CSRF/origin policy remains in force.",
+    "rateAndSizeLimits": "Comment text remains capped at 1000 characters; report details remain capped at 500 characters; SQLite triggers enforce rolling-hour quotas atomically.",
+    "rightsAndPrivacy": "Public engagement targets are restricted to published novels with original, public-domain, licensed or authorized rights status."
+  },
+  "tests": {
+    "unit": [
+      "test-published-engagement-policy.mjs",
+      "test-published-comment-engagement.mjs",
+      "test-community-rate-limits-atomic.mjs",
+      "test-runtime-feature-schema.mjs"
+    ],
+    "integration": [
+      "test-community-rate-limits-atomic.py",
+      "test-published-comment-engagement.py"
+    ],
+    "isolation": [
+      "24 concurrent comment attempts yield exactly 10 accepted and 14 limited",
+      "24 concurrent report attempts yield exactly 10 accepted and 14 limited",
+      "Concurrent duplicate report attempts yield exactly one accepted and one duplicate"
+    ],
+    "buildCommands": [
+      "npm run build",
+      "python3 scripts/test-community-rate-limits-atomic.py",
+      "python3 scripts/test-published-comment-engagement.py"
+    ]
+  },
+  "rollout": {
+    "flags": [],
+    "stagingSteps": [
+      "Run all six integration workflows on the exact PR head.",
+      "Verify v2-to-v3 runtime schema upgrade.",
+      "Verify concurrent quotas, duplicate report fencing, legacy backfill and expired-event pruning.",
+      "Verify all public engagement targets remain published and rights-eligible."
+    ]
+  },
+  "rollback": {
+    "codeRollback": "Revert route and schema initializer code only if regressions occur; do not drop additive v3 tables or triggers.",
+    "dataRollbackOrForwardRepair": "No numbered migration or production data rewrite; v3 creates additive runtime tables and backfills unique report claims.",
+    "monitoringSignals": [
+      "comment_hourly_limit responses",
+      "comment_report_hourly_limit responses",
+      "duplicate report conflicts",
+      "runtime schema bootstrap failures",
+      "community_rate_limit_events row growth"
+    ]
+  },
+  "collisionReview": {
+    "duplicateRoutes": "No new routes; existing comment, like, report and follow handlers are hardened.",
+    "duplicateEntities": "Reuses existing community entities and introduces one event table plus one unique claim table.",
+    "migrationAllocation": "No numbered migration; runtime schema marker advances monotonically from v2 to v3.",
+    "sharedSurfaceOwners": "Community owns identifier policy; platform kernel owns Worker handlers; platform data owns runtime DDL; platform quality owns tests; delivery platform owns CI; architecture owns inventories."
+  },
+  "affectedDomains": [
+    "community",
+    "platform-kernel",
+    "platform-data",
+    "platform-quality",
+    "delivery-platform",
+    "platform-architecture",
+    "rights"
+  ],
+  "changeSummary": "Enforces atomic per-user rolling-hour comment/report quotas and duplicate report claims at the SQLite layer while hardening published-content engagement boundaries.",
+  "acceptanceCriteria": [
+    "The runtime schema upgrades v2 to v3 without an empty trigger or partial marker update.",
+    "Concurrent comments and reports cannot exceed 10 per user per rolling hour.",
+    "Concurrent duplicate reports cannot create more than one claim.",
+    "Legacy duplicate reports are backfilled without aborting the upgrade.",
+    "Expired rate-limit events are pruned after both comment and report inserts.",
+    "Published engagement routes reject malformed identifiers and unpublished or rights-ineligible targets.",
+    "Rate-limit events and report claims cascade when their user is deleted; report claims cascade when their comment is deleted.",
+    "Orphan legacy reports do not cause the v2-to-v3 claim backfill to fail."
+  ]
+}

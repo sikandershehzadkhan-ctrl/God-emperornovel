@@ -1,0 +1,83 @@
+{
+  "featureId": "reader-progress-schema",
+  "domainOwner": "platform-data",
+  "technicalIntegrator": "reader",
+  "ownedPaths": [
+    "src/runtime-feature-schema.mjs"
+  ],
+  "sharedSurfaces": [],
+  "dependencies": [
+    "platform-data",
+    "reader"
+  ],
+  "routes": [],
+  "apiContracts": [
+    "No direct routes; runtime schema only."
+  ],
+  "dataEntities": [
+    "reading_positions"
+  ],
+  "migrationPlan": {
+    "required": false,
+    "proposedNumbers": [],
+    "canonicalEntityReuse": "Runtime feature schema v2 adds reading_positions idempotently; no numbered migration.",
+    "backwardCompatibility": "Advances runtime schema marker from v1 to v2.",
+    "rollbackOrForwardRepair": "Retain additive table; revert bootstrap only if no clients use it."
+  },
+  "uiLifecycle": {
+    "shellOwner": "experience-shell",
+    "ssrBehavior": "No SSR changes.",
+    "clientBootBehavior": "No client boot changes.",
+    "servedBundleParity": "No browser bundle changes."
+  },
+  "privacySecurity": {
+    "authentication": "No direct handler.",
+    "authorization": "Foreign keys scope to existing account and novel records.",
+    "ownerScoping": "API layer binds user_id to session u.id.",
+    "csrf": "Not applicable.",
+    "rateAndSizeLimits": "Database bounds chapter, percent and revision."
+  },
+  "tests": {
+    "unit": [
+      "test-reading-position-api.mjs"
+    ],
+    "integration": [
+      "runtime schema bootstrap v2"
+    ],
+    "isolation": [],
+    "buildCommands": [
+      "npm run build"
+    ]
+  },
+  "rollout": {
+    "flags": [],
+    "stagingSteps": [
+      "Run source validation and D1-compatible schema tests."
+    ]
+  },
+  "rollback": {
+    "codeRollback": "Revert schema bootstrap change.",
+    "dataRollbackOrForwardRepair": "Keep additive table unused.",
+    "monitoringSignals": [
+      "Runtime schema bootstrap errors"
+    ]
+  },
+  "collisionReview": {
+    "duplicateRoutes": "None.",
+    "duplicateEntities": "No prior reading_positions table.",
+    "migrationAllocation": "No numbered migration.",
+    "sharedSurfaceOwners": "platform-data owns src/runtime-feature-schema.mjs."
+  },
+  "affectedDomains": [
+    "reader",
+    "platform-data",
+    "platform-quality",
+    "platform-architecture"
+  ],
+  "changeSummary": "Adds reading_positions to the runtime-managed schema v2 without a duplicate migration.",
+  "acceptanceCriteria": [
+    "Schema v2 is idempotent.",
+    "No numbered migration is introduced.",
+    "No production schema mutation occurs in CI."
+  ]
+}

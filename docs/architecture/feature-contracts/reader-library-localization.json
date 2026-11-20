@@ -1,0 +1,112 @@
+{
+  "featureId": "reader-library-localization",
+  "domainOwner": "reader",
+  "technicalIntegrator": "platform-integrator",
+  "ownedPaths": [
+    "scripts/test-library-localization.mjs"
+  ],
+  "sharedSurfaces": [
+    "public/app.js",
+    "public/app-17.23.0.js",
+    "package.json",
+    "docs/architecture/feature-contracts/platform-integration-governance.json"
+  ],
+  "dependencies": [
+    "reader",
+    "experience-shell",
+    "platform-quality",
+    "platform-architecture"
+  ],
+  "routes": [
+    "/library",
+    "/history",
+    "/following",
+    "DELETE /api/bookmark (existing)"
+  ],
+  "apiContracts": [
+    "Library, history and following views localize their static interface text using a 14-locale dictionary.",
+    "Library uses the existing authenticated /api/library, /api/history, /api/bookmarks and /api/follows APIs.",
+    "Removing a bookmarked chapter uses the existing owner-scoped DELETE /api/bookmark operation; no client-supplied owner identity.",
+    "Continue Reading displays the saved within-chapter progress percentage.",
+    "Library ratings use the canonical whole-number ten-point rating formatter; no legacy five-point conversion or fabricated decimal score."
+  ],
+  "dataEntities": [
+    "Existing bookmarks, history, library and follows entities only."
+  ],
+  "migrationPlan": {
+    "required": false,
+    "proposedNumbers": [],
+    "canonicalEntityReuse": "Reuses existing library, history, bookmarks and follows records; no new persistent entity.",
+    "backwardCompatibility": "No API or schema change. Existing saved stories, bookmarks and reading positions remain intact.",
+    "rollbackOrForwardRepair": "Code-only rollback; no data repair required."
+  },
+  "uiLifecycle": {
+    "shellOwner": "experience-shell",
+    "ssrBehavior": "No SSR changes.",
+    "clientBootBehavior": "Library, following and history pages mark translatable leaf labels and apply the selected locale; removal actions re-localize updated empty states.",
+    "servedBundleParity": "public/app.js and public/app-17.23.0.js are byte-identical."
+  },
+  "privacySecurity": {
+    "authentication": "Existing session authentication is unchanged.",
+    "authorization": "Existing library/history/follow APIs remain authenticated; bookmark deletion reuses the already-reviewed session-owner-scoped DELETE endpoint.",
+    "ownerScoping": "No owner identifier is accepted from the client; existing Worker APIs bind user_id to session u.id.",
+    "csrf": "Existing same-origin mutation policy remains in force for bookmark deletion.",
+    "rateAndSizeLimits": "No new inputs or payloads.",
+    "rightsAndPrivacy": "Existing rights-eligible public story projection and private account scoping remain unchanged."
+  },
+  "tests": {
+    "unit": [
+      "test-library-localization.mjs"
+    ],
+    "integration": [
+      "Fourteen locale dictionary completeness; library/history/following rendering; explicit bookmark removal; progress display; source/served bundle parity."
+    ],
+    "isolation": [
+      "Bookmark removal continues to use the session-owner-scoped Worker DELETE endpoint."
+    ],
+    "buildCommands": [
+      "npm run build"
+    ]
+  },
+  "rollout": {
+    "flags": [],
+    "stagingSteps": [
+      "Run all exact-head integration workflows.",
+      "Verify the 14 locale labels on Library, History and Following pages.",
+      "Verify removal of one bookmark leaves other bookmarks visible and removing the last bookmark displays the empty state.",
+      "Verify whole-number ten-point ratings and reading progress display."
+    ]
+  },
+  "rollback": {
+    "codeRollback": "Revert the library localization dictionary, helper and page integration together.",
+    "dataRollbackOrForwardRepair": "No database changes.",
+    "monitoringSignals": [
+      "Library localization regression suite",
+      "Source/served bundle parity",
+      "Bookmark removal UI errors"
+    ]
+  },
+  "collisionReview": {
+    "duplicateRoutes": "No route added; existing library/history/following routes and bookmark DELETE are reused.",
+    "duplicateEntities": "No data entities added.",
+    "migrationAllocation": "No migration required.",
+    "sharedSurfaceOwners": "Reader and experience shell own the UI; platform quality owns the regression test; architecture contract updated."
+  },
+  "affectedDomains": [
+    "reader",
+    "experience-shell",
+    "platform-quality",
+    "platform-architecture"
+  ],
+  "changeSummary": "Adds 14-language Library/History/Following localization, reading-progress visibility and bookmark removal controls while preserving the canonical ten-point rating model.",
+  "acceptanceCriteria": [
+    "All 14 locale dictionaries contain all 25 required Library/History strings.",
+    "Library, History and Following pages apply the selected language.",
+    "Users can remove a saved bookmark without affecting other bookmark rows.",
+    "Removing the last bookmark displays the empty state.",
+    "Continue Reading displays within-chapter progress.",
+    "Ratings continue using the canonical ten-point formatter.",
+    "Served bundle matches source.",
+    "No migration or production data mutation."
+  ]
+}

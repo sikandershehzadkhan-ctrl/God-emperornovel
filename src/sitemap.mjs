@@ -1,7 +1,7 @@
 export const SITEMAP_PAGE_SIZE = 10000;
 
 const STATIC_PATHS = [
-  "/", "/catalog", "/formats", "/genres", "/tags", "/search",
+  "/", "/catalog", "/authors", "/formats", "/genres", "/tags", "/search",
   "/community", "/leaderboard", "/omniportal", "/trend-factory",
   "/community-taxonomy", "/privacy", "/terms", "/copyright"
 ];

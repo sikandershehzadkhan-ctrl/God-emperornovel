@@ -1,0 +1,135 @@
+{
+  "featureId": "runtime-schema-bootstrap-parity",
+  "domainOwner": "platform-data",
+  "technicalIntegrator": "platform-kernel",
+  "ownedPaths": [
+    "src/index.js",
+    "scripts/test-runtime-schema-parity.mjs",
+    "scripts/test-runtime-schema-parity.py",
+    ".github/workflows/runtime-schema-parity.yml",
+    "docs/architecture/feature-contracts/runtime-schema-bootstrap-parity.json",
+    "docs/architecture/decisions/ADR-0014-runtime-schema-bootstrap-parity.md"
+  ],
+  "sharedSurfaces": [
+    "src/index.js",
+    "migrations/0001_initial.sql",
+    "package.json",
+    ".github/workflows/validate-cloudflare-source.yml",
+    ".github/workflows/production-schema-preflight.yml",
+    ".github/workflows/runtime-schema-parity.yml"
+  ],
+  "dependencies": [
+    "platform-data",
+    "platform-kernel",
+    "platform-quality",
+    "delivery-platform",
+    "platform-architecture",
+    "repository-operations",
+    "identity",
+    "reader",
+    "payments",
+    "community",
+    "publishing"
+  ],
+  "routes": [],
+  "apiContracts": [
+    "No HTTP route or response changes. The change aligns first-install runtime DDL with the canonical core migration."
+  ],
+  "dataEntities": [
+    "users",
+    "sessions",
+    "chapters",
+    "novel_genres",
+    "novel_tags",
+    "unlocks",
+    "unlock_batches",
+    "bookmarks",
+    "history",
+    "donations",
+    "comments",
+    "novel_requests"
+  ],
+  "migrationPlan": {
+    "required": false,
+    "proposedNumbers": [],
+    "canonicalEntityReuse": "No new migration and no historical SQL edits. Runtime ensureCoreSchema DDL is aligned byte-for-byte at the constraint/default/column level with migrations/0001_initial.sql for the audited core tables.",
+    "backwardCompatibility": "The existing 16.64.0 schema-marker fast path is unchanged. This affects fresh and pre-marker bootstrap paths; it does not rebuild existing production tables.",
+    "rollbackOrForwardRepair": "Revert the runtime DDL change if a fresh-install regression is detected. Existing production data is untouched; schema upgrades require a separately reviewed forward migration."
+  },
+  "uiLifecycle": {
+    "shellOwner": "experience-shell",
+    "ssrBehavior": "No SSR changes.",
+    "clientBootBehavior": "No browser changes.",
+    "servedBundleParity": "No client assets changed."
+  },
+  "privacySecurity": {
+    "authentication": "No authentication route changes.",
+    "authorization": "The users role CHECK constraint rejects unsupported role values at the database boundary.",
+    "ownerScoping": "Foreign keys enforce owner/reference integrity and explicit deletion semantics for core user-owned records.",
+    "csrf": "Not applicable.",
+    "rateAndSizeLimits": "Not applicable.",
+    "referentialIntegrity": "Fresh runtime initialization must match canonical migration foreign keys, including CASCADE for dependent user/novel records and SET NULL for donation user references."
+  },
+  "tests": {
+    "unit": [
+      "test-runtime-schema-parity.mjs: source-level role, foreign-key and default assertions"
+    ],
+    "integration": [
+      "test-runtime-schema-parity.py: compare columns, defaults, primary keys and foreign keys for 17 core tables in independent SQLite databases",
+      "fresh canonical migration replay"
+    ],
+    "isolation": [
+      "invalid role values are rejected by both initialization paths"
+    ],
+    "buildCommands": [
+      "node scripts/test-runtime-schema-parity.mjs",
+      "python3 scripts/test-runtime-schema-parity.py"
+    ]
+  },
+  "rollout": {
+    "flags": [
+      "No runtime flag."
+    ],
+    "stagingSteps": [
+      "Run the dedicated Runtime Schema Parity workflow on the exact integration head.",
+      "Verify the full Cloudflare source validation and fresh SQLite migration replay.",
+      "Keep production schema preflight read-only; do not rebuild or mutate live tables as part of this feature."
+    ]
+  },
+  "rollback": {
+    "codeRollback": "Revert only the runtime DDL changes and associated tests/workflow if a verified regression appears.",
+    "dataRollbackOrForwardRepair": "No D1 data or schema mutation is performed by this PR.",
+    "monitoringSignals": [
+      "Fresh installation D1 constraint errors",
+      "Runtime schema parity workflow",
+      "Foreign-key integrity check results"
+    ]
+  },
+  "collisionReview": {
+    "duplicateRoutes": "No routes changed.",
+    "duplicateEntities": "No entities or migrations added.",
+    "migrationAllocation": "No migration number allocated; migration 0001 remains immutable.",
+    "sharedSurfaceOwners": "Worker runtime DDL owned by platform-kernel; canonical schema by platform-data; regression tests by platform-quality; workflow by delivery-platform; contract/ADR by platform-architecture."
+  },
+  "affectedDomains": [
+    "platform-data",
+    "platform-kernel",
+    "platform-quality",
+    "delivery-platform",
+    "platform-architecture",
+    "repository-operations",
+    "identity",
+    "reader",
+    "payments",
+    "community",
+    "publishing"
+  ],
+  "changeSummary": "Aligns the first-install runtime core schema with canonical migration 0001, adding the missing role CHECK and foreign keys while preserving existing runtime fast-path behavior.",
+  "acceptanceCriteria": [
+    "Runtime bootstrap and migration 0001 have matching columns, defaults, primary keys and foreign keys for all 17 audited core tables.",
+    "Both schema paths reject invalid user roles.",
+    "All new tests pass on the exact feature head.",
+    "No historical migration is modified and no new migration is allocated.",
+    "No production D1 or Worker mutation is performed."
+  ]
+}

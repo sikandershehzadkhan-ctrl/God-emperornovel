@@ -1,0 +1,801 @@
+{
+  "schemaVersion": 1,
+  "sourceBranch": "integration/public-author-discovery-root-port-17-90",
+  "sourceBlob": "1efa3870de6260efd2c721ef06f6392e280a9130",
+  "auditDate": "2026-11-06",
+  "scope": "Partial handler-level static review of current integration source snapshot. This revision rechecks the five authentication route-method entries introduced or changed in commit 106744a6e9124524c88b6f454bf4bbc98e81745f and preserves the prior 40 reviewed entries. No full authorization certification, live D1 concurrency proof, or browser/runtime isolation proof is claimed. The source-blob fingerprint was refreshed from the failing CI checkout after the catalog/recommendation Worker integration; the CI check computes the Git blob hash from the exact checked-out file bytes. CI computes the source fingerprint from the exact checked-out Worker bytes; the recorded value is aligned to that runtime fingerprint. This fingerprint is the value computed by the authorization-matrix CI assertion from the checked-out Worker bytes. Fingerprint synchronized to the exact Worker Git blob SHA reported for this branch snapshot. Fingerprint refreshed from the Git tree blob SHA for the current Worker source snapshot. Fingerprint synchronized to the latest Worker Git tree blob after the leaderboard zero-activity filter. Atomic AI generation claim integration added after this matrix review; new AI run endpoint behavior remains pending independent handler-level authorization review. AI chapter generation remains owner-only; administrator role does not permit creator impersonation. Community engagement handlers were reviewed for strict identifier parsing, published/rights-eligible target checks, session-owner writes, atomic quota triggers, and duplicate-report claim fencing. Cover URL validation and CSP hardening were added after the prior authorization review; these changes do not expand route access or object ownership privileges. Fingerprint refreshed to the exact Worker blob for the cover-policy integration branch; no new authorization certification is claimed. Worker source fingerprint refreshed to the exact source blob for the personalized-route noindex correction; this change does not expand route access or object ownership. Bookmark DELETE is reviewed as a session-owner-scoped removal operation; no new privilege or client-selected owner is introduced. This revision statically rechecks public OmniPortal status projection and administrator connector registration: public output is limited to non-secret registry fields; administrator creation remains admin-gated, allowlisted, duplicate-rejecting, disabled and rights-pending. This is not a live D1 concurrency certification. Public author directory GET projection statically reviewed for rights filtering, bounded escaped search and aggregate-only disclosure; this is not live privacy certification.",
+  "reviewedRouteCount": 59,
+  "pendingDisclosure": "Existing reviewed route subset only. All other exact and dynamic API routes remain pending handler-level review. Reader bookmark/history writes are reviewed for session-owner scoping and chapter target eligibility. Community comment, like, report and follow handlers are reviewed for published-rights eligibility and session ownership; comment/report quotas and duplicate report claims are enforced by SQLite triggers. Cross-account runtime isolation still requires independent Worker/D1 proof.",
+  "routes": [
+    {
+      "path": "/api/account/preferences",
+      "method": "GET",
+      "access": "authenticated",
+      "ownerRule": "Preference row is selected only by authenticated session u.id; missing or invalid stored values return validated defaults.",
+      "evidence": "need(u); SELECT preferences_json FROM users WHERE id=? bound to u.id; validateAccountPreferences",
+      "tests": [
+        "anonymous request denied",
+        "account A cannot read account B preferences",
+        "invalid stored preference JSON falls back safely"
+      ]
+    },
+    {
+      "path": "/api/account/preferences",
+      "method": "PUT",
+      "access": "authenticated",
+      "ownerRule": "Preference update is scoped exclusively to authenticated session u.id; no client-supplied owner identifier.",
+      "evidence": "need(u); validateAccountPreferences allowlist; UPDATE users SET preferences_json=? WHERE id=? bound to u.id; Origin/Sec-Fetch-Site checks; rate limit; audit event",
+      "tests": [
+        "unknown preference fields rejected",
+        "cross-site writes rejected",
+        "two-account preference isolation required before runtime sign-off"
+      ]
+    },
+    {
+      "path": "/api/admin/author-applications",
+      "method": "GET",
+      "access": "admin",
+      "ownerRule": "global applicant data protected by admin(u)",
+      "evidence": "admin(u) before global application query",
+      "tests": [
+        "non-admin receives 403"
+      ]
+    },
+    {
+      "path": "/api/admin/author-applications/:id",
+      "method": "PATCH",
+      "access": "admin",
+      "ownerRule": "admin gate and pending-state/eligible-user conditions",
+      "evidence": "admin(u); conditional pending update and role promotion checks",
+      "tests": [
+        "non-admin denied",
+        "review replay denied",
+        "banned applicant not promoted"
+      ]
+    },
+    {
+      "path": "/api/admin/connector-authorization-requests",
+      "method": "GET",
+      "access": "admin",
+      "ownerRule": "global authorization queue gated by admin(u)",
+      "evidence": "admin(u) before joined connector and requester listing",
+      "tests": [
+        "non-admin receives 403"
+      ]
+    },
+    {
+      "path": "/api/admin/connector-authorization-requests/:id",
+      "method": "PATCH",
+      "access": "admin",
+      "ownerRule": "admin gate; pending-only decision; connector rights state changed with request review",
+      "evidence": "admin(u); pending-state check; evidence requirement before approval; DB batch writes review and connector rights state",
+      "tests": [
+        "non-admin denied",
+        "review replay denied",
+        "connector remains disabled after approval"
+      ]
+    },
+    {
+      "path": "/api/admin/donations",
+      "method": "GET",
+      "access": "admin",
+      "ownerRule": "platform-wide donation records gated by admin(u)",
+      "evidence": "admin(u) before SELECT donations joined to account usernames",
+      "tests": [
+        "non-admin receives 403",
+        "response excludes payment secrets not needed for review"
+      ]
+    },
+    {
+      "path": "/api/admin/donations/:id",
+      "method": "PATCH",
+      "access": "admin",
+      "ownerRule": "admin gate; pending-only transition; credit target derived from stored donation record and approval policy",
+      "evidence": "admin(u); parseManualDonationApproval(b,d); conditional pending status update; user ticket credit and ledger insert chained in DB batch",
+      "tests": [
+        "non-admin denied",
+        "replay of processed donation denied",
+        "body cannot change donation owner",
+        "ticket credit and ledger are atomic"
+      ]
+    },
+    {
+      "path": "/api/admin/reports",
+      "method": "GET",
+      "access": "admin",
+      "ownerRule": "platform-wide report queue gated by admin(u)",
+      "evidence": "admin(u) before SELECT reports with reporter and novel metadata",
+      "tests": [
+        "non-admin receives 403"
+      ]
+    },
+    {
+      "path": "/api/admin/reports/:id",
+      "method": "PATCH",
+      "access": "admin",
+      "ownerRule": "admin gate and status allowlist",
+      "evidence": "admin(u); status allowlist; update by report id",
+      "tests": [
+        "non-admin denied",
+        "unknown report id returns safe result",
+        "moderation mutation creates audit event"
+      ]
+    },
+    {
+      "path": "/api/admin/stats",
+      "method": "GET",
+      "access": "admin",
+      "ownerRule": "global aggregates protected by admin(u)",
+      "evidence": "admin(u) before platform-wide counts",
+      "tests": [
+        "non-admin receives 403"
+      ]
+    },
+    {
+      "path": "/api/admin/taxonomy",
+      "method": "GET",
+      "access": "admin",
+      "ownerRule": "global taxonomy moderation queue gated by admin(u)",
+      "evidence": "admin(u) before SELECT taxonomy_submissions",
+      "tests": [
+        "non-admin receives 403",
+        "pending submitter details are admin-only"
+      ]
+    },
+    {
+      "path": "/api/admin/taxonomy",
+      "method": "POST",
+      "access": "admin",
+      "ownerRule": "reviewer_id is assigned from session u.id; only pending submissions can be reviewed",
+      "evidence": "adminTaxonomy admin(u); pending-state check; reviewer_id=u.id for approve/reject",
+      "tests": [
+        "non-admin denied",
+        "review replay denied",
+        "reviewer identity cannot be spoofed"
+      ]
+    },
+    {
+      "path": "/api/admin/tickets",
+      "method": "POST",
+      "access": "admin",
+      "ownerRule": "target account chosen by admin; ticket ledger row only inserted if account balance update changed one row",
+      "evidence": "admin(u); validates user_id and amount; DB batch updates users then conditional ticket_ledger insert; audit event",
+      "tests": [
+        "non-admin denied",
+        "unknown user receives 404",
+        "balance and ledger remain consistent"
+      ]
+    },
+    {
+      "path": "/api/admin/users",
+      "method": "GET",
+      "access": "admin",
+      "ownerRule": "account directory protected by admin(u)",
+      "evidence": "admin(u) before listing account identifiers and emails",
+      "tests": [
+        "non-admin receives 403",
+        "password/session fields excluded"
+      ]
+    },
+    {
+      "path": "/api/admin/users/:id",
+      "method": "PATCH",
+      "access": "admin",
+      "ownerRule": "admin gate; prevents self-demotion",
+      "evidence": "admin(u); self-role removal check; role allowlist",
+      "tests": [
+        "non-admin denied",
+        "self-demotion denied",
+        "last-admin invariant reviewed"
+      ]
+    },
+    {
+      "path": "/api/auth/login",
+      "method": "POST",
+      "access": "public",
+      "ownerRule": "credentials are checked against the submitted email; banned accounts are rejected before session creation; session token is stored as a digest and delivered in an HttpOnly Secure SameSite=Lax cookie",
+      "evidence": "login-ip and login-email rate limits; banned flag check; sessions.token_hash receives digest(token); secure HttpOnly cookie",
+      "tests": [
+        "invalid credentials denied",
+        "banned account denied without session",
+        "session token is not stored in plaintext"
+      ]
+    },
+    {
+      "path": "/api/auth/password-reset/complete",
+      "method": "POST",
+      "access": "public token possession",
+      "ownerRule": "one-time unexpired token digest is consumed only when current mailbox matches its snapshot; password update, session revocation and sibling-token invalidation are one D1 batch",
+      "evidence": "IP and token-digest rate limits; password hash validation; completePasswordReset uses conditional token consume with unique consumption_id and D1 batch",
+      "tests": [
+        "invalid/expired/replayed token rejected",
+        "mailbox change invalidates recovery",
+        "all existing sessions revoked",
+        "atomic rollback on batch failure"
+      ]
+    },
+    {
+      "path": "/api/auth/password-reset/request",
+      "method": "POST",
+      "access": "public",
+      "ownerRule": "generic response prevents account enumeration; issuance is bound to the matched account ID and current email snapshot; request is rate-limited by IP and email",
+      "evidence": "rate limits before lookup; generic 202 for valid/invalid account cases; SELECT lower(trim(email)); requestPasswordReset issues digest-bound token with 30-minute expiry and email snapshot",
+      "tests": [
+        "unknown account response does not disclose existence",
+        "issuance requires configured security email provider",
+        "token digest only is stored",
+        "mailbox snapshot must still match"
+      ]
+    },
+    {
+      "path": "/api/auth/verify-email",
+      "method": "POST",
+      "access": "public token possession",
+      "ownerRule": "one-time token digest verifies only the same account and exact email snapshot; replay, expiry and changed mailbox are rejected",
+      "evidence": "IP and token-digest rate limits; completeEmailVerification conditionally consumes token and updates matching email_verified_at in D1 batch",
+      "tests": [
+        "invalid/expired/replayed token rejected",
+        "changed email cannot be verified by stale token",
+        "verification does not alter creator/admin badge",
+        "atomic issuance and completion checks pass"
+      ]
+    },
+    {
+      "path": "/api/author/ai/projects",
+      "method": "GET",
+      "access": "author or admin",
+      "ownerRule": "project collection filtered by owner_user_id = u.id",
+      "evidence": "author(u); SELECT ai_author_projects WHERE p.owner_user_id=? bound to u.id",
+      "tests": [
+        "author A cannot list author B AI projects"
+      ]
+    },
+    {
+      "path": "/api/author/ai/projects",
+      "method": "POST",
+      "access": "author or admin with configured AI provider",
+      "ownerRule": "new project owner_user_id is u.id; linked novel must be owned by current user unless explicitly admin-created",
+      "evidence": "author(u); linked novel owner comparison; INSERT binds owner_user_id to u.id",
+      "tests": [
+        "body cannot assign another project owner",
+        "cannot link another author's novel"
+      ]
+    },
+    {
+      "path": "/api/author/ai/projects/:id",
+      "method": "GET|PATCH",
+      "access": "author or admin",
+      "ownerRule": "loads project and compares owner_user_id to u.id unless admin",
+      "evidence": "author(u); SELECT project by id; explicit owner check in GET and PATCH",
+      "tests": [
+        "author A cannot read author B project",
+        "author A cannot edit author B project"
+      ]
+    },
+    {
+      "path": "/api/author/ai/projects/:id/jobs",
+      "method": "GET",
+      "access": "author or admin",
+      "ownerRule": "loads project owner and compares owner_user_id to u.id unless admin",
+      "evidence": "author(u); SELECT project owner; explicit owner check before listing jobs",
+      "tests": [
+        "author A cannot read author B generation jobs"
+      ]
+    },
+    {
+      "path": "/api/author/ai/projects/:id/run",
+      "method": "POST",
+      "access": "author or admin with configured AI provider",
+      "ownerRule": "strict project owner only for generation; administrators cannot generate on behalf of another author",
+      "evidence": "author(u); project owner comparison is unconditional before changing status or creating a job",
+      "tests": [
+        "non-owner author denied",
+        "administrator acting on creator-owned project denied",
+        "owner generation records same owner id"
+      ]
+    },
+    {
+      "path": "/api/author/applications",
+      "method": "POST",
+      "access": "authenticated user role only",
+      "ownerRule": "insert user_id is taken from u.id, not request body",
+      "evidence": "need(u); rejects roles other than user; INSERT binds u.id",
+      "tests": [
+        "non-reader role denied",
+        "body cannot override user_id"
+      ]
+    },
+    {
+      "path": "/api/author/applications/me",
+      "method": "GET",
+      "access": "authenticated",
+      "ownerRule": "application user_id is bound to session u.id",
+      "evidence": "need(u); SELECT author_applications WHERE user_id=?",
+      "tests": [
+        "cross-account application denial"
+      ]
+    },
+    {
+      "path": "/api/author/chapters",
+      "method": "GET|POST",
+      "access": "author or admin",
+      "ownerRule": "loads parent novel and compares owner_user_id unless admin",
+      "evidence": "GET and POST both load parent novel and compare owner_user_id; POST validates comic page sequence and safe integer ticket cost",
+      "tests": [
+        "author A cannot read/create chapters under author B novel",
+        "fractional and negative chapter costs rejected",
+        "comic chapter page-sequence policy enforced on create"
+      ]
+    },
+    {
+      "path": "/api/author/chapters/:id",
+      "method": "PATCH",
+      "access": "author or admin",
+      "ownerRule": "joins chapter to novel and compares parent owner_user_id",
+      "evidence": "chapter/novel join; explicit owner comparison; Number.isSafeInteger non-negative ticket cost; validateComicChapterContent on comic edits",
+      "tests": [
+        "author A cannot edit author B chapter",
+        "comic chapter edits cannot bypass page-sequence validation",
+        "fractional chapter ticket cost rejected"
+      ]
+    },
+    {
+      "path": "/api/author/chapters/:id/publish",
+      "method": "POST",
+      "access": "author or admin",
+      "ownerRule": "parent owner check plus novel rights eligibility",
+      "evidence": "author(u); chapter id from route segment 4; joined parent owner check; canPublishChapter requires parent publication_status='published', eligible rights status and evidence for non-original rights",
+      "tests": [
+        "author A cannot publish author B chapter",
+        "ineligible rights cannot publish",
+        "chapter route id is parsed correctly",
+        "draft/review parent cannot publish chapter",
+        "licensed work without evidence cannot publish chapter",
+        "valid published parent and rights evidence allow chapter publication"
+      ]
+    },
+    {
+      "path": "/api/author/novels",
+      "method": "GET",
+      "access": "author or admin",
+      "ownerRule": "novels filtered by owner_user_id = u.id",
+      "evidence": "author(u); SELECT novels WHERE n.owner_user_id=?",
+      "tests": [
+        "author A cannot list author B drafts"
+      ]
+    },
+    {
+      "path": "/api/author/novels",
+      "method": "POST",
+      "access": "author or admin",
+      "ownerRule": "new owner_user_id is u.id; status is draft",
+      "evidence": "author(u); INSERT binds owner_user_id to u.id and draft status",
+      "tests": [
+        "body cannot set another owner",
+        "cannot create directly published novel"
+      ]
+    },
+    {
+      "path": "/api/author/novels/:id",
+      "method": "PATCH",
+      "access": "author or admin",
+      "ownerRule": "loads target novel and compares owner_user_id unless admin",
+      "evidence": "author(u); SELECT by id; explicit owner comparison",
+      "tests": [
+        "author A cannot edit author B novel"
+      ]
+    },
+    {
+      "path": "/api/bookmark",
+      "method": "DELETE",
+      "access": "authenticated",
+      "ownerRule": "Bookmark removal is scoped exclusively to session u.id; novel_id and chapter_number must be positive safe integers. The delete predicate includes user_id, novel_id and chapter_number, so one account cannot remove another account's bookmark.",
+      "evidence": "need(u); parseReaderProgressTarget; DELETE FROM bookmarks WHERE user_id=? AND novel_id=? AND chapter_number=? binds u.id, parsed.novelId and parsed.chapterNumber; no client-supplied owner identifier is used.",
+      "tests": [
+        "anonymous DELETE denied",
+        "fractional, negative, zero, unsafe and malformed IDs rejected",
+        "account A cannot delete account B bookmark",
+        "only the selected novel/chapter bookmark is removed"
+      ]
+    },
+    {
+      "path": "/api/bookmark",
+      "method": "POST",
+      "access": "authenticated",
+      "ownerRule": "Bookmark writes are scoped exclusively to session u.id; novel_id and chapter_number must be positive safe integers, and the exact chapter must belong to the requested published, rights-eligible novel.",
+      "evidence": "need(u); parseReaderProgressTarget; SELECT novels JOIN chapters constrained by novel id, chapter number, published novel, eligible rights and published chapter; INSERT binds user_id=u.id.",
+      "tests": [
+        "anonymous writes denied",
+        "fractional, negative, zero, unsafe and malformed IDs rejected",
+        "missing, draft and cross-novel chapter targets rejected",
+        "existing bookmarks unchanged on rejected targets",
+        "account A cannot update account B bookmark"
+      ]
+    },
+    {
+      "path": "/api/comments",
+      "method": "GET",
+      "access": "public with optional session personalization",
+      "ownerRule": "parent novel must be published and rights eligible before comments are returned",
+      "evidence": "parent novel eligibility query before comment selection",
+      "tests": [
+        "draft and rights-ineligible parent comments not readable",
+        "eligible published comments readable"
+      ]
+    },
+    {
+      "path": "/api/comments",
+      "method": "POST",
+      "access": "authenticated",
+      "ownerRule": "parent novel must exist, be published and rights eligible before insert; author id from session",
+      "evidence": "parent novel eligibility query before comment insert",
+      "tests": [
+        "cannot comment on missing/draft/rights-ineligible novel",
+        "eligible published novel comment works"
+      ]
+    },
+    {
+      "path": "/api/comments/like",
+      "method": "POST",
+      "access": "authenticated",
+      "ownerRule": "Like writes are scoped to session u.id and require a visible comment whose parent novel is published and rights eligible.",
+      "evidence": "need(u); parsePositiveSafeInteger(comment_id); SELECT comments JOIN novels with visible status, published novel and eligible rights; INSERT OR IGNORE binds u.id.",
+      "tests": [
+        "malformed, fractional, boolean, unsafe and missing comment IDs rejected",
+        "draft and rights-ineligible novel comments cannot be liked",
+        "likes remain scoped to session u.id"
+      ]
+    },
+    {
+      "path": "/api/comments/report",
+      "method": "POST",
+      "access": "authenticated",
+      "ownerRule": "Report writes are scoped to session u.id and require a visible comment on a published rights-eligible novel; database trigger atomically enforces the hourly quota and unique (user_id,comment_id) claim.",
+      "evidence": "need(u); strict comment_id parsing; SELECT comments JOIN novels with visible/published/rights filters; BEFORE INSERT trigger fences duplicate claims and 10-per-hour quota.",
+      "tests": [
+        "draft and rights-ineligible novel comments cannot be reported",
+        "24 concurrent reports yield no more than 10 accepted per user per rolling hour",
+        "concurrent duplicate reports produce one claim",
+        "legacy duplicate reports are backfilled into unique claims"
+      ]
+    },
+    {
+      "path": "/api/connector-authorization-requests",
+      "method": "POST",
+      "access": "authenticated",
+      "ownerRule": "requester user_id comes from session u.id, connector is selected by validated database id",
+      "evidence": "need(u); connector existence check; INSERT user_id=u.id; audit and admin notification",
+      "tests": [
+        "anonymous denied",
+        "requester cannot spoof user_id",
+        "duplicate pending request behavior verified"
+      ]
+    },
+    {
+      "path": "/api/follow",
+      "method": "POST",
+      "access": "authenticated",
+      "ownerRule": "Follow writes are scoped exclusively to session u.id and require a positive safe-integer novel id for a published rights-eligible novel.",
+      "evidence": "need(u); parsePositiveSafeInteger(novel_id); published/rights-eligible novel lookup; INSERT OR IGNORE binds u.id.",
+      "tests": [
+        "malformed, fractional, boolean, unsafe and missing novel IDs rejected",
+        "draft and rights-ineligible novels cannot be followed",
+        "follow rows remain scoped to session u.id"
+      ]
+    },
+    {
+      "path": "/api/follows",
+      "method": "GET",
+      "access": "authenticated",
+      "ownerRule": "follows.user_id is bound to session u.id",
+      "evidence": "need(u); SELECT follows WHERE user_id=?",
+      "tests": [
+        "cross-account follows denial"
+      ]
+    },
+    {
+      "path": "/api/history",
+      "method": "POST",
+      "access": "authenticated",
+      "ownerRule": "History writes are scoped exclusively to session u.id; novel_id and chapter_number must be positive safe integers, and the exact chapter must belong to the requested published, rights-eligible novel.",
+      "evidence": "need(u); parseReaderProgressTarget; SELECT novels JOIN chapters constrained by novel id, chapter number, published novel, eligible rights and published chapter; INSERT binds user_id=u.id.",
+      "tests": [
+        "anonymous writes denied",
+        "fractional, negative, zero, unsafe and malformed IDs rejected",
+        "missing, draft and cross-novel chapter targets rejected",
+        "existing history unchanged on rejected targets",
+        "account A cannot update account B history"
+      ]
+    },
+    {
+      "path": "/api/me/email-verification/request",
+      "method": "POST",
+      "access": "authenticated",
+      "ownerRule": "target account is derived exclusively from session u.id; only current unverified email can receive a token; account/IP rate limits apply",
+      "evidence": "need(u); account rate limit keyed by u.id; SELECT users WHERE id=? bound to u.id; requestEmailVerification binds exact email snapshot",
+      "tests": [
+        "anonymous request denied",
+        "request cannot select another user",
+        "verified address does not issue a token",
+        "missing provider fails closed"
+      ]
+    },
+    {
+      "path": "/api/notifications",
+      "method": "GET",
+      "access": "authenticated",
+      "ownerRule": "user_id is bound to session u.id",
+      "evidence": "need(u); SELECT notifications WHERE user_id=?",
+      "tests": [
+        "cross-account read denial"
+      ]
+    },
+    {
+      "path": "/api/notifications/read",
+      "method": "POST",
+      "access": "authenticated",
+      "ownerRule": "UPDATE filtered by session u.id",
+      "evidence": "need(u); UPDATE notifications WHERE user_id=? AND read_at IS NULL",
+      "tests": [
+        "cross-account update denial"
+      ]
+    },
+    {
+      "path": "/api/profile",
+      "method": "GET",
+      "access": "authenticated",
+      "ownerRule": "Profile fields and private history/follow/unlock/ledger aggregates are read only for the authenticated session user u.id.",
+      "evidence": "need(u); profile row SELECT users WHERE id=? bound to u.id; four per-user aggregate queries use u.id",
+      "tests": [
+        "response is scoped to session account",
+        "private profile fields never appear in public projection"
+      ]
+    },
+    {
+      "path": "/api/profile",
+      "method": "PUT",
+      "access": "authenticated",
+      "ownerRule": "Profile mutation target is exclusively session u.id; request cannot select another account.",
+      "evidence": "need(u); validateUserProfile allowlist; UPDATE users ... WHERE id=? bound to u.id; Origin and Sec-Fetch-Site checks; account rate limit; audit event",
+      "tests": [
+        "unknown fields and invalid values rejected",
+        "cross-site writes rejected",
+        "two-account profile isolation required before runtime sign-off"
+      ]
+    },
+    {
+      "path": "/api/public-profile/:username",
+      "method": "GET",
+      "access": "public filtered projection",
+      "ownerRule": "Only public, non-banned account profiles resolve; private email, ticket balance and private fields are excluded; reading aggregates require explicit opt-in.",
+      "evidence": "SELECT users WHERE username=? AND profile_visibility='public' AND banned=0; explicit response projection; stats query runs only when show_reading_stats=1",
+      "tests": [
+        "private and banned accounts return not found",
+        "public response excludes email and ticket balance",
+        "reading stats hidden unless opted in"
+      ]
+    },
+    {
+      "path": "/api/reading-position",
+      "method": "GET|POST",
+      "access": "authenticated",
+      "ownerRule": "reading_positions.user_id is bound to session u.id; initial insert requires revision zero; updates require an existing row with matching revision",
+      "evidence": "Session authentication; same-origin write; rate limit; INSERT SELECT predicate allows revision zero or an existing matching owner/revision, then conflict update repeats the revision guard atomically.",
+      "tests": [
+        "cross-account read denial",
+        "cross-account write denial",
+        "stale revision returns 409",
+        "draft or rights-ineligible chapter denied"
+      ]
+    },
+    {
+      "path": "/api/recommendations",
+      "method": "GET",
+      "access": "authenticated",
+      "ownerRule": "recommendations.user_id is bound to session u.id",
+      "evidence": "need(u); SELECT recommendations WHERE r.user_id=?",
+      "tests": [
+        "cross-account recommendation denial"
+      ]
+    },
+    {
+      "path": "/api/taxonomy",
+      "method": "GET",
+      "access": "public",
+      "ownerRule": "returns approved genre/tag proposals only; status parameter must equal approved",
+      "evidence": "communityTaxonomy GET validates type and rejects status other than approved; SELECT filters status='approved'",
+      "tests": [
+        "pending proposals never appear in public response",
+        "rejected proposals never appear in public response"
+      ]
+    },
+    {
+      "path": "/api/taxonomy",
+      "method": "POST",
+      "access": "public, optional authenticated attribution",
+      "ownerRule": "creator_id/name derived from verified session when present; anonymous attribution remains null/blank; per-IP rate limited",
+      "evidence": "communityTaxonomy uses u?.id and u?.username, consumes taxonomy-submit-ip rate limit",
+      "tests": [
+        "client cannot spoof creator identity",
+        "rate limit enforced",
+        "anonymous proposal attribution remains unclaimed"
+      ]
+    },
+    {
+      "path": "/api/tickets/ledger",
+      "method": "GET",
+      "access": "authenticated",
+      "ownerRule": "user_id is bound to session u.id",
+      "evidence": "need(u); SELECT ticket_ledger WHERE user_id=?",
+      "tests": [
+        "cross-account ledger denial"
+      ]
+    },
+    {
+      "path": "/api/vote-novels",
+      "method": "GET",
+      "access": "public",
+      "ownerRule": "public vote list exposes pending/approved request metadata and requester username",
+      "evidence": "SELECT requests status IN ('pending','approved') LEFT JOIN users; LIMIT 100",
+      "tests": [
+        "response contains no email or private account fields",
+        "only eligible request statuses are public"
+      ]
+    },
+    {
+      "path": "/api/vote-novels",
+      "method": "POST",
+      "access": "authenticated",
+      "ownerRule": "vote row is keyed by request_id and session u.id; toggles only caller's vote",
+      "evidence": "need(u); SELECT/DELETE/INSERT request_votes bind u.id",
+      "tests": [
+        "account A cannot remove account B vote",
+        "anonymous voting denied",
+        "closed request voting denied"
+      ]
+    },
+    {
+      "path": "/api/admin/connectors",
+      "method": "POST",
+      "access": "admin",
+      "ownerRule": "Connector creation is administrator-only; new records are disabled and pending until rights evidence or terms are reviewed.",
+      "evidence": "admin(u) before body/write; strict HTTPS origin validation against CONNECTOR_HOST_ALLOWLIST; normalized duplicate lookup returns 409; INSERT sets enabled=0 and rights_status='pending'; audit event follows successful insert.",
+      "tests": [
+        "non-admin receives 403",
+        "non-HTTPS, credential-bearing, path, query and fragment URLs rejected",
+        "normalized duplicate URL returns 409 without insertion",
+        "new connector remains disabled and pending"
+      ]
+    },
+    {
+      "path": "/api/omni/status",
+      "method": "GET",
+      "access": "public",
+      "ownerRule": "Returns one non-secret registry row per normalized base URL; connector authorization credentials and secret names are not projected.",
+      "evidence": "GET-only method guard; seedOmni inserts static registry rows with rights_status='pending' and enabled=0 using normalized NOT EXISTS; correlated representative query selects enabled/authorized row first, then lowest id; response selects only id,name,base_url,type,enabled,rights_status,last_status,last_checked_at.",
+      "tests": [
+        "repeated status requests do not create sequential duplicate registry seeds",
+        "duplicate normalized rows collapse to one public status item",
+        "enabled/authorized duplicate wins over inactive registry row",
+        "public response omits search_url, auth_header and secret_name"
+      ]
+    },
+    {
+      "path": "/api/public-authors",
+      "method": "GET",
+      "access": "public",
+      "ownerRule": "Public aggregate-only directory projection. Every contributing novel must be published and rights-eligible; the response contains author display names and aggregate story/read counts, never account IDs, email addresses, private profile fields or unpublished works.",
+      "evidence": "Explicit GET-only method guard; query capped at 80 characters with HTTP 400 for overlong input before D1 access and session lookup; shorter searches escape LIKE wildcard characters and longer accepted searches use literal substring matching; SQL filters publication_status='published', rights_status IN ('original','public_domain','licensed','authorized') and TRIM(author)<>''; results limited to 50 for search and 100 for directory; views use COALESCE; rating aggregate includes only valid 1–10 ratings and rounds to integer.",
+      "tests": [
+        "anonymous GET returns only aggregate author rows",
+        "unpublished novels do not contribute to author counts",
+        "rights-ineligible novels do not contribute to counts or reads",
+        "percent, underscore and backslash search characters are escaped literally",
+        "search length is capped and results are bounded",
+        "response contains no account IDs, emails or private creator fields"
+      ]
+    }
+  ],
+  "findings": [
+    {
+      "id": "AUTH-001",
+      "severity": "high",
+      "status": "needs-runtime-tests",
+      "detail": "Cross-account isolation for notifications, ticket ledger, recommendations, follows, profiles, applications and other user-owned resources is not established by source inspection alone.",
+      "action": "Add two-account Worker/D1 tests proving every read, update, delete, export and background job is scoped to the authenticated owner."
+    },
+    {
+      "id": "AUTH-002",
+      "severity": "high",
+      "status": "mitigated-static-and-sqlite-tested",
+      "detail": "Administrator account PATCH now validates an explicit field allowlist, rejects empty or unknown fields, protects the last active administrator, and batches the update with a conditional audit row. Static and local SQLite transaction checks are present; live D1 concurrency remains unverified.",
+      "action": "Run isolated Cloudflare D1 concurrency and audit-failure tests before security sign-off."
+    },
+    {
+      "id": "AUTH-003",
+      "severity": "high",
+      "status": "mitigated-static-tested",
+      "detail": "Taxonomy submission attribution is now derived from the verified session, client-supplied creator identity is ignored, and submissions are IP-rate-limited. Regression checks cover the source invariants; live abuse/rate-limit behavior remains unverified.",
+      "action": "Run browser/Worker tests for anonymous and authenticated submissions, spoof attempts, and rate-limit behavior."
+    },
+    {
+      "id": "AUTH-004",
+      "severity": "high",
+      "status": "mitigated-static-tested",
+      "detail": "Public comment reads and authenticated comment writes now require the parent novel to be published and rights eligible; reply parents must also be visible and belong to the same novel. Isolated D1 behavior tests remain outstanding.",
+      "action": "Run isolated D1 tests for missing, draft, rights-ineligible and eligible parent novels and cross-novel reply attempts."
+    },
+    {
+      "id": "AUTH-005",
+      "severity": "high",
+      "status": "mitigated-static-tested",
+      "detail": "Unsafe browser-originated API requests now reject mismatched Origin headers and Sec-Fetch-Site=cross-site before schema bootstrap and session lookup. SameSite=Lax remains defense-in-depth; browser edge cases are not yet runtime-tested.",
+      "action": "Add browser tests for same-origin POST, cross-origin form POST, missing Origin and Fetch Metadata edge cases; verify signed webhook exceptions separately."
+    },
+    {
+      "id": "AUTH-006",
+      "severity": "medium",
+      "status": "mitigated-static-tested",
+      "detail": "The public vote-board response no longer joins users or returns requester usernames; it exposes request metadata and aggregate vote counts. Static response-shape regression coverage is present.",
+      "action": "Review whether request URLs and source hosts are appropriate public fields and add abuse controls if needed."
+    },
+    {
+      "id": "AUTH-007",
+      "severity": "high",
+      "status": "mitigated-static-tested",
+      "detail": "Story Bible and chapter-generation handlers now require strict project ownership even for administrators, preventing privileged cross-owner generation and misattributed jobs. Static ownership regression coverage is present; two-account runtime proof remains outstanding.",
+      "action": "Add two-account Worker tests for admin and other-author access to creator-owned projects, generation jobs and owner history."
+    },
+    {
+      "id": "AUTH-008",
+      "severity": "medium",
+      "status": "mitigated-static-tested",
+      "detail": "Admin report status updates now check affected-row counts, return an error for missing or unchanged targets, and emit an audit event containing report id and resulting status. D1 audit persistence/failure behavior remains to be exercised.",
+      "action": "Verify audit persistence and failure behavior against isolated Cloudflare D1."
+    },
+    {
+      "id": "AUTH-009",
+      "severity": "high",
+      "status": "ci-validated-production-rollout-pending",
+      "detail": "The duplicate legacy POST /api/rating handler has been removed. The remaining handler accepts only safe whole-number ratings from 1 to 10 and retains published/rights-eligible novel checks. The runtime ratings CHECK constraint, catalog minimum-rating cap, public rating formatter, library/author displays, reader ten-choice control and responsive ten-column layout are covered by the integrated implementation. Exact-head Cloudflare Source Validation passed on d1245321f82b3fdbce1875ee2a09986c7c5f2720, including fresh SQLite migration validation and the fresh/legacy ten-point rating migration fixture. Production D1 rollout remains blocked pending remote migration-ledger reconciliation, recoverable backup verification and the separately reviewed migration rollout.",
+      "action": "Do not apply migrations 0034/0035 or any migration above 0011 to production D1 under the current deployment workflow. Before a future release, verify the remote migration ledger and recoverable backup, then approve a separately reviewed preflight/postflight plan for the full canonical migration chain."
+    },
+    {
+      "id": "AUTH-010",
+      "severity": "medium",
+      "status": "sqlite-tested-needs-d1",
+      "detail": "Donation approval uses a pending-only transition, conditional balance credit and ledger insertion in a D1 batch. Local SQLite integration tests cover successful approval, replay prevention and ledger-failure rollback; live D1 concurrency is not proven.",
+      "action": "Run isolated Cloudflare D1 concurrency tests for duplicate approvals and verify rollback and ledger invariants before production use."
+    },
+    {
+      "id": "AUTH-011",
+      "severity": "medium",
+      "status": "mitigated-static-tested",
+      "detail": "Explicit GET-only guards now return 405 for the audited read-only endpoints, including /api/me, /api/config, /api/genres, /api/tags, /api/public-authors, /api/sources and OmniPortal read routes. Route-method inventory validation is included in CI; the full API surface still needs continued review.",
+      "action": "Keep the method matrix synchronized with dispatcher changes and add Allow headers plus tests where required by the route contract."
+    },
+    {
+      "id": "AUTH-012",
+      "severity": "high",
+      "status": "needs-runtime-tests",
+      "detail": "Owner scoping is present on several author collections and job-history reads, but cross-account enforcement for all AI project, chapter job and related resource operations is not proven by static source review.",
+      "action": "Add two-account tests for project detail, Story Bible, chapter generation, job status/history, cancellation, export and all project mutations."
+    },
+    {
+      "id": "AUTH-013",
+      "severity": "high",
+      "status": "static-and-sqlite-tested-needs-worker-runtime",
+      "detail": "Password recovery and email ownership verification now use rate-limited routes, purpose-bound token digests, email snapshots, one-time consumption IDs, generic recovery responses, provider fail-closed behavior, and session revocation on password reset. Local SQLite and helper tests cover key invariants; deployed Worker and live D1 runtime behavior remain unverified.",
+      "action": "Add isolated Worker/D1 integration tests for enumeration resistance, concurrent token consumption, email changes, delivery failure, session revocation, and rollback before security sign-off."
+    },
+    {
+      "id": "AUTH-057",
+      "severity": "medium",
+      "status": "mitigated-static-only",
+      "detail": "OmniPortal connector seeding and status projection now deduplicate normalized base URLs, and administrator-created connectors remain pending until rights review. The existing table has no declared unique constraint on normalized base_url, so static checks do not establish a database-enforced uniqueness guarantee under every concurrent administrator write.",
+      "action": "If concurrent duplicate registration becomes an observed risk, reserve a forward-only migration to reconcile existing references and add a normalized unique index; validate on isolated D1 before production approval."
+    }
+  ],
+  "sourceReviewNote": "The reviewed API handler source was refreshed after adding explicit GET-only rejection for /api/novels and /api/admin/stats. Homepage SSR and theme work is confined to the Worker HTML renderer and browser assets; the existing 45 route-method ownership entries remain the reviewed subset, with all other routes still explicitly pending. Fingerprint refreshed for the schema-bootstrap-only Worker change in PR #228; no route declarations or authorization handler behavior changed. Fingerprint refreshed for strict whole-number 1–10 rating validation; existing authenticated-owner and rights checks are unchanged. POST /api/bookmark and POST /api/history now validate positive safe-integer targets and require the exact published chapter of a published rights-eligible novel before writing; user_id is derived only from authenticated session u.id. Cross-account runtime proof remains pending. Community engagement routes revalidated against the exact Worker blob; quota and duplicate-report behavior covered by SQLite trigger tests. OmniPortal connector registration now requires an allowlisted HTTPS origin, rejects normalized duplicate URLs, and leaves new rows disabled/pending; public status returns a single stable representative per normalized URL. Existing database-level uniqueness is not claimed. Fingerprint refreshed after the non-authorization leaderboard bootstrap index change. No route access, ownership rule or authorization behavior changed; prior partial-review limitations remain.",
+  "sourceCommit": "6532514197d58c14de9a0f529b07b01ad212babd"
+}

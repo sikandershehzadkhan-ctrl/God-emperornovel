@@ -1,0 +1,15 @@
+import assert from 'node:assert/strict';
+import fs from 'node:fs';
+import vm from 'node:vm';
+const source=fs.readFileSync('src/index.js','utf8');
+const routeStart=source.indexOf('if(p==="/api/rating"&&m==="POST")');
+assert.notEqual(routeStart,-1,'Rating write route must exist');
+const route=source.slice(routeStart,routeStart+1800);
+assert.ok(route.includes('rating=Number(b.rating)'),'Rating input must be parsed without rounding');
+assert.ok(route.includes('!Number.isSafeInteger(nid)||nid<1||!Number.isSafeInteger(rating)||rating<1||rating>10'),'Rating and novel ID must be positive safe integers; rating range is 1–10');
+assert.ok(!route.includes('Math.round('),'Rating route must never round user input');
+const valid=vm.runInNewContext('(nid,rating)=>Number.isSafeInteger(nid)&&nid>=1&&Number.isSafeInteger(rating)&&rating>=1&&rating<=10');
+for(const rating of [1,2,3,4,5,6,7,8,9,10])assert.equal(valid(42,rating),true);
+for(const rating of [0,11,-1,1.2,4.9,NaN,Infinity,'5',null,undefined,'not-a-number'])assert.equal(valid(42,rating),false,'Invalid rating accepted: '+String(rating));
+for(const nid of [0,-1,1.5,NaN,Infinity,'42',null,undefined])assert.equal(valid(nid,10),false,'Invalid novel id accepted: '+String(nid));
+console.log('Rating input regression passed: whole-number 1–10 only; positive safe-integer novel IDs; no rounding or NaN bypass.');

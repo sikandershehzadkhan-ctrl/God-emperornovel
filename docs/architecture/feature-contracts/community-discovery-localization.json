@@ -1,0 +1,112 @@
+{
+  "featureId": "community-discovery-localization",
+  "domainOwner": "community",
+  "technicalIntegrator": "platform-integrator",
+  "ownedPaths": [
+    "scripts/test-community-localization.mjs"
+  ],
+  "sharedSurfaces": [
+    "public/app.js",
+    "public/app-17.23.0.js",
+    "package.json",
+    "docs/architecture/feature-contracts/platform-integration-governance.json"
+  ],
+  "dependencies": [
+    "community",
+    "experience-shell",
+    "discovery",
+    "platform-quality",
+    "platform-architecture"
+  ],
+  "routes": [
+    "/community (existing)",
+    "GET /api/community/discussions (existing)",
+    "GET /api/novels?sort=trending&limit=12 (existing)"
+  ],
+  "apiContracts": [
+    "No API route, request or response shape changes.",
+    "Existing discussion and trending catalog reads retain their current rights, publication and access policies."
+  ],
+  "dataEntities": [
+    "No new database entity, column or migration; existing public discussion projection and novel catalog are reused."
+  ],
+  "migrationPlan": {
+    "required": false,
+    "proposedNumbers": [],
+    "canonicalEntityReuse": "Uses existing Community discussion and trending novel API responses plus the browser-local imperial_language preference.",
+    "backwardCompatibility": "English remains fallback; discussion and catalog APIs remain unchanged.",
+    "rollbackOrForwardRepair": "Revert community dictionary and rendering labels; no data repair is required."
+  },
+  "uiLifecycle": {
+    "shellOwner": "experience-shell",
+    "ssrBehavior": "No SSR changes.",
+    "clientBootBehavior": "Community static labels are translated after initial render and after catalog empty-state updates; dynamic discussion text and story metadata remain untouched.",
+    "servedBundleParity": "public/app.js and public/app-17.23.0.js remain byte-identical."
+  },
+  "privacySecurity": {
+    "authentication": "Existing public Community landing-page reads remain unchanged.",
+    "authorization": "No new route or write operation.",
+    "ownerScoping": "Discussion author and story data are rendered through the existing public projection; no client-selected owner is added.",
+    "csrf": "No mutation.",
+    "rateAndSizeLimits": "No API limit changes.",
+    "rightsAndPrivacy": "Only interface labels are translated; story titles, usernames and discussion bodies are not translated or rewritten."
+  },
+  "tests": {
+    "unit": [
+      "test-community-localization.mjs"
+    ],
+    "integration": [
+      "Fourteen-locale Community labels, post-render locale application, trending/discussion empty states and bundle parity."
+    ],
+    "isolation": [
+      "Creator-authored story metadata and community-authored discussion text remain unchanged."
+    ],
+    "buildCommands": [
+      "npm run build"
+    ]
+  },
+  "rollout": {
+    "flags": [],
+    "stagingSteps": [
+      "Run all six exact-head workflows.",
+      "Verify all 24 Community strings in fourteen locales.",
+      "Verify recent discussion and trending empty/loading states.",
+      "Verify dynamic story titles, usernames and discussion bodies remain unmodified.",
+      "Verify source and served browser bundles are byte-identical.",
+      "Validate the bundle-only canonical port on the exact pull-request head with all six required integration workflows."
+    ]
+  },
+  "rollback": {
+    "codeRollback": "Revert the Community locale dictionary, rendering labels, helper and regression together; preserve canonical Community discussion and trending behavior.",
+    "dataRollbackOrForwardRepair": "No database or content mutation.",
+    "monitoringSignals": [
+      "Community locale completeness",
+      "Discussion feed rendering",
+      "Dynamic content preservation",
+      "Source/served bundle parity"
+    ]
+  },
+  "collisionReview": {
+    "duplicateRoutes": "No route added; existing Community and discussion endpoints reused.",
+    "duplicateEntities": "No entity added.",
+    "migrationAllocation": "No migration required.",
+    "sharedSurfaceOwners": "Community owns feed semantics; experience shell owns localized presentation; platform quality owns regression; architecture records shared surfaces."
+  },
+  "affectedDomains": [
+    "community",
+    "experience-shell",
+    "discovery",
+    "platform-quality",
+    "platform-architecture"
+  ],
+  "changeSummary": "Adds fourteen-locale Community landing-page localization. This canonical integration changes only synchronized browser bundles while retaining the existing regression, governance and build registration.",
+  "acceptanceCriteria": [
+    "All 24 Community interface strings exist in fourteen locales.",
+    "The active locale is applied after Community page rendering and after dynamic catalog results load.",
+    "Recent-discussion and trending empty/loading states are localized.",
+    "Creator-authored novel titles, usernames, discussion bodies and story content remain unchanged.",
+    "Existing Community and trending API routes, rights filters and behavior remain unchanged.",
+    "Canonical and served 17.23 browser bundles are byte-identical.",
+    "No database entity, migration, production data or deployment changes are introduced."
+  ]
+}

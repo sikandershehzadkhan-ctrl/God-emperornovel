@@ -1,0 +1,106 @@
+{
+  "schemaVersion": 1,
+  "featureId": "protected-route-verification-retry",
+  "domainOwner": "delivery-platform",
+  "technicalIntegrator": "platform-architecture",
+  "contractId": "PR-299-protected-route-verification-retry",
+  "pullRequest": 299,
+  "status": "proposed",
+  "owner": "github-automation",
+  "decision": "Make the manual production deployment's unauthenticated author-application route verification resilient to transient edge/network failures while retaining an exact HTTP 401 security requirement.",
+  "affectedDomains": [
+    "delivery-platform",
+    "platform-quality",
+    "platform-architecture"
+  ],
+  "ownedPaths": [
+    ".github/workflows/deploy.yml",
+    "scripts/test-production-deploy-gates.mjs",
+    "docs/architecture/feature-contracts/pr-299-protected-route-verification-retry.json"
+  ],
+  "sharedSurfaces": [
+    ".github/workflows/deploy.yml",
+    "scripts/test-production-deploy-gates.mjs"
+  ],
+  "dependencies": [
+    "delivery-platform",
+    "platform-quality",
+    "platform-architecture"
+  ],
+  "routes": [
+    "Production deploy workflow remains manual and requires explicit confirm_production_deploy=true."
+  ],
+  "apiContracts": [
+    "The unauthenticated author-application endpoint must return exactly HTTP 401; retries never treat another status as success."
+  ],
+  "dataEntities": [
+    "No database entity or schema changes."
+  ],
+  "scope": [
+    ".github/workflows/deploy.yml",
+    "scripts/test-production-deploy-gates.mjs",
+    "docs/architecture/feature-contracts/pr-299-protected-route-verification-retry.json"
+  ],
+  "invariants": [
+    "Production deployment remains manual and requires confirm_production_deploy=true.",
+    "The protected author-application endpoint must return exactly HTTP 401 when no session is supplied.",
+    "Retries are bounded to five attempts and do not treat any non-401 response as success.",
+    "No Cloudflare credentials, secrets, D1 schema, migration, Worker runtime, user data or production state is changed.",
+    "This change does not dispatch or trigger a production deployment."
+  ],
+  "migrationPlan": {
+    "required": false,
+    "proposedNumbers": [],
+    "canonicalEntityReuse": "No database entity is used or changed.",
+    "backwardCompatibility": "Existing manual deploy workflow and authorization policy remain unchanged.",
+    "rollbackOrForwardRepair": "Revert the bounded retry loop and associated regression assertions; no data repair is required."
+  },
+  "tests": {
+    "unit": [
+      "test-production-deploy-gates.mjs: require bounded five-attempt retry loop and exact HTTP 401 condition."
+    ],
+    "integration": [
+      "Cloudflare source validation and migration governance pass on the exact pull-request head."
+    ],
+    "isolation": [
+      "No session, user, role, database or production state is mutated."
+    ],
+    "buildCommands": [
+      "npm run build"
+    ]
+  },
+  "privacySecurity": {
+    "authentication": "The check remains unauthenticated by design and verifies the endpoint's protected response.",
+    "authorization": "Only exact HTTP 401 is accepted as evidence that the route is protected.",
+    "ownerScoping": "No user data is accessed.",
+    "csrf": "No mutation.",
+    "rateAndSizeLimits": "No API limit changes.",
+    "secrets": "No secret values are emitted or modified."
+  },
+  "rollout": {
+    "flags": [
+      "No feature flag; production deployment remains manual."
+    ],
+    "stagingSteps": [
+      "Run the deploy-gate regression test.",
+      "Verify five bounded attempts and exact HTTP 401 response.",
+      "Run Cloudflare source validation and migration governance.",
+      "Do not dispatch a production deployment as part of this change."
+    ]
+  },
+  "rollback": {
+    "codeRollback": "Revert the retry loop and corresponding test update together.",
+    "dataRollbackOrForwardRepair": "No database or data changes.",
+    "monitoringSignals": [
+      "Attempt count and observed HTTP status.",
+      "Protected endpoint verification result."
+    ]
+  },
+  "acceptance": [
+    "The unauthenticated author-application endpoint must return exactly HTTP 401.",
+    "Retries are bounded to five attempts and only HTTP 401 is success.",
+    "Production deployment remains manual with explicit confirmation.",
+    "No credentials, secrets, schema, user data or production state changes."
+  ],
+  "releaseBoundary": "CI reliability only; no production deployment or authorization-policy change."
+}

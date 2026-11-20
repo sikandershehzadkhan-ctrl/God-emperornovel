@@ -1,0 +1,109 @@
+{
+  "featureId": "reader-progress-api",
+  "domainOwner": "platform-kernel",
+  "technicalIntegrator": "platform-kernel",
+  "ownedPaths": [
+    "src/index.js"
+  ],
+  "sharedSurfaces": [
+    "src/runtime-feature-schema.mjs",
+    "docs/architecture/IMPERIAL-API-ROUTE-METHOD-MATRIX-01N-37.json",
+    "docs/architecture/IMPERIAL-AUTHORIZATION-OWNERSHIP-MATRIX-01N-38.json",
+    "package.json"
+  ],
+  "dependencies": [
+    "platform-kernel",
+    "platform-data",
+    "identity",
+    "publishing"
+  ],
+  "routes": [
+    "GET /api/reading-position",
+    "POST /api/reading-position"
+  ],
+  "apiContracts": [
+    "Authenticated read and write; user_id is session-derived; POST uses expected_revision optimistic concurrency."
+  ],
+  "dataEntities": [
+    "reading_positions (runtime feature schema v2)"
+  ],
+  "migrationPlan": {
+    "required": false,
+    "proposedNumbers": [],
+    "canonicalEntityReuse": "Runtime feature schema v2 creates reading_positions idempotently; no numbered D1 migration is introduced.",
+    "backwardCompatibility": "Schema bootstrap advances from marker v1 to v2 and creates the new table without changing existing tables.",
+    "rollbackOrForwardRepair": "Disable the new API handlers only after confirming no clients depend on them; retain the additive table."
+  },
+  "uiLifecycle": {
+    "shellOwner": "experience-shell",
+    "ssrBehavior": "No SSR changes.",
+    "clientBootBehavior": "Reader UI autosave is not yet connected; this slice exposes the API only.",
+    "servedBundleParity": "No browser bundle changes."
+  },
+  "privacySecurity": {
+    "authentication": "Both methods require an authenticated session.",
+    "authorization": "Every read/write is bound to session u.id; no request-supplied owner field is accepted.",
+    "ownerScoping": "WHERE rp.user_id=? and insert binds u.id.",
+    "csrf": "POST requires same-origin Origin.",
+    "rateAndSizeLimits": "Per-account 120 writes/hour; numeric bounds and optimistic revision validation.",
+    "optimisticConcurrency": "Initial creation requires expected_revision=0; updates require an existing row with the same owner, novel and revision in the INSERT SELECT predicate, then repeat the revision predicate in ON CONFLICT DO UPDATE."
+  },
+  "tests": {
+    "unit": [
+      "test-reading-position-api.mjs"
+    ],
+    "integration": [
+      "runtime schema bootstrap v2",
+      "owner-scoped Worker GET/POST route",
+      "test-reading-position-sql.py"
+    ],
+    "isolation": [
+      "Cross-account owner binding and stale revision source invariants"
+    ],
+    "buildCommands": [
+      "npm run build",
+      "npm run check:cloudflare-readiness"
+    ]
+  },
+  "rollout": {
+    "flags": [
+      "No feature flag; endpoint is additive and requires auth."
+    ],
+    "stagingSteps": [
+      "Run all required CI workflows on exact head",
+      "Connect reader autosave only after browser-level tests"
+    ]
+  },
+  "rollback": {
+    "codeRollback": "Revert API handler and schema bootstrap change; retain the additive table until data-retention review.",
+    "dataRollbackOrForwardRepair": "No destructive rollback; the table can remain unused.",
+    "monitoringSignals": [
+      "409 stale revision rate",
+      "429 rate-limit rate",
+      "D1 schema bootstrap errors"
+    ]
+  },
+  "collisionReview": {
+    "duplicateRoutes": "No prior reading-position route existed in canonical Worker.",
+    "duplicateEntities": "No reading_positions table existed in canonical runtime schema v1.",
+    "migrationAllocation": "No numbered migration added.",
+    "sharedSurfaceOwners": "Worker is platform-kernel-owned; API and authorization matrices are refreshed to the exact Worker blob."
+  },
+  "affectedDomains": [
+    "reader",
+    "platform-kernel",
+    "platform-data",
+    "platform-quality",
+    "platform-architecture",
+    "repository-operations"
+  ],
+  "changeSummary": "Adds owner-scoped reader progress GET/POST API with optimistic concurrency and runtime schema v2; does not yet connect browser reader UI.",
+  "acceptanceCriteria": [
+    "All required workflows pass on exact head.",
+    "API and authorization matrices match exact Worker blob.",
+    "Every request is authenticated and owner-scoped.",
+    "Published and rights-eligible chapter gate is enforced.",
+    "No production D1 or deployment action is performed.",
+    "A nonzero revision cannot create a missing position; only a matching existing revision can update."
+  ]
+}
