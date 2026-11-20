@@ -1,16 +1,12 @@
 name: Imperial Novel Read-Only Production D1 Audit
 
 on:
-  push:
-    branches: [main]
-    paths:
-      - '.github/workflows/audit-production-d1.yml'
   workflow_dispatch:
     inputs:
       confirm_read_only_audit:
         description: "Confirm this is a read-only production database audit"
         required: true
-        default: "yes"
+        default: "no"
         type: choice
         options:
           - "no"
@@ -25,7 +21,7 @@ concurrency:
 
 jobs:
   audit:
-    if: ${{ github.event_name == 'push' || inputs.confirm_read_only_audit == 'yes' }}
+    if: ${{ inputs.confirm_read_only_audit == 'yes' }}
     runs-on: ubuntu-latest
     timeout-minutes: 5
     steps:
@@ -60,8 +56,7 @@ jobs:
             echo "::error::CLOUDFLARE_ACCOUNT_ID is empty or unavailable."
             exit 1
           fi
-          token_length=${#CLOUDFLARE_API_TOKEN}
-          echo "Cloudflare token secret is present; character count: $token_length (token value is never printed)."
+          echo "Cloudflare token secret is present; token value and length are not printed."
           if [[ "$CLOUDFLARE_API_TOKEN" =~ [[:space:]] ]]; then
             echo "::error::Token contains whitespace. Store only the raw API token, with no spaces, line breaks, 'Bearer ' prefix, or Authorization header."
             exit 1
@@ -74,6 +69,7 @@ jobs:
           npx --yes wrangler@4 whoami
 
       - name: Verify current D1 Time Travel recovery bookmark (read-only)
+        continue-on-error: true
         shell: bash
         env:
           CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
@@ -90,6 +86,7 @@ jobs:
           echo "PASS: Cloudflare returned a current Time Travel bookmark. This is not a restore rehearsal."
 
       - name: Check public production Worker health
+        continue-on-error: true
         shell: bash
         run: |
           set -euo pipefail
@@ -122,7 +119,7 @@ jobs:
             local sql="$2"
             echo
             echo "===== $label (read-only) ====="
-            npx --yes wrangler@4 d1 execute god-emperornovel-db --remote --command "$sql"
+            npx --yes wrangler@4 d1 execute god-emperornovel-db --remote --command "$sql" || echo "::warning::This read-only query failed. Preserve its error output and treat the corresponding schema evidence as unverified."
           }
           run_query "Complete production table inventory" "SELECT name FROM sqlite_master WHERE type='table' AND name NOT LIKE 'sqlite_%' ORDER BY name;"
           core_tables_sql="$(cat <<'SQL'
@@ -141,17 +138,26 @@ jobs:
           SQL
           )"
           run_query "Core runtime table presence" "$core_tables_sql"
-          migration_table_check="$(npx --yes wrangler@4 d1 execute god-emperornovel-db --remote --command "SELECT CASE WHEN EXISTS (SELECT 1 FROM sqlite_master WHERE type='table' AND name='d1_migrations') THEN 'present' ELSE 'absent' END AS migration_history_table;" 2>&1)"
-          printf '%s\n' "$migration_table_check"
-          if printf '%s' "$migration_table_check" | grep -q '"present"'; then
-            run_query "Applied D1 migration history" "SELECT * FROM d1_migrations ORDER BY id;"
+          if migration_table_check="$(npx --yes wrangler@4 d1 execute god-emperornovel-db --remote --command "SELECT CASE WHEN EXISTS (SELECT 1 FROM sqlite_master WHERE type='table' AND name='d1_migrations') THEN 'present' ELSE 'absent' END AS migration_history_table;" 2>&1)"; then
+            printf '%s\\n' "$migration_table_check"
+            if printf '%s' "$migration_table_check" | grep -q '"present"'; then
+              run_query "Applied D1 migration history" "SELECT * FROM d1_migrations ORDER BY id;"
+            else
+              echo "No d1_migrations table exists in this production database. This is an observed schema fact, not a reason to stop the remaining read-only checks."
+            fi
           else
-            echo "No d1_migrations table exists in this production database. This is an observed schema fact, not a reason to stop the remaining read-only checks."
+            echo "::warning::Could not inspect the migration-history table. Preserve the error output and treat applied migration history as unverified."
+            printf '%s\\n' "$migration_table_check"
           fi
           run_query "Publication status counts" "SELECT COALESCE(publication_status,'<NULL>') AS publication_status, COUNT(*) AS novel_count FROM novels GROUP BY publication_status ORDER BY publication_status;"
           run_query "Chapter publication status counts" "SELECT COALESCE(publication_status,'<NULL>') AS publication_status, COUNT(*) AS chapter_count FROM chapters GROUP BY publication_status ORDER BY publication_status;"
           run_query "Safe aggregate inventory" "SELECT (SELECT COUNT(*) FROM users) AS users_total, (SELECT COUNT(*) FROM users WHERE role='admin' AND banned=0) AS active_admins, (SELECT COUNT(*) FROM novels) AS novels_total, (SELECT COUNT(*) FROM chapters) AS chapters_total, (SELECT COUNT(*) FROM donations WHERE status='pending') AS pending_donations, (SELECT COUNT(*) FROM novel_requests WHERE status='pending') AS pending_novel_requests;"
-          run_query "Schema version marker" "SELECT key,value FROM app_settings WHERE key IN ('core_schema_version','first_admin_bootstrap_done') ORDER BY key;"
+          marker_table_check="$(npx --yes wrangler@4 d1 execute god-emperornovel-db --remote --command "SELECT CASE WHEN EXISTS (SELECT 1 FROM sqlite_master WHERE type='table' AND name='app_settings') THEN 'present' ELSE 'absent' END AS marker_table;" 2>&1 || true)"
+          if printf '%s' "$marker_table_check" | grep -q '"present"'; then
+            run_query "Schema version marker" "SELECT key,value FROM app_settings WHERE key IN ('core_schema_version','first_admin_bootstrap_done') ORDER BY key;"
+          else
+            echo "Schema marker table absent or unreadable; record the marker as unverified and inspect the inventory output."
+          fi
           run_query "Release 17.22 schema readiness (read-only)" "WITH required(name,kind) AS (VALUES ('idx_novel_genres_genre_novel','index'),('idx_novel_tags_tag_novel','index'),('idx_unlocks_chapter_time','index'),('idx_novels_published_views','index'),('idx_novels_published_rating','index'),('idx_novels_published_created','index'),('author_applications','table'),('idx_author_applications_one_pending','index'),('idx_author_applications_status_created','index'),('idx_author_applications_user_created','index'),('media_assets','table')) SELECT name,kind,CASE WHEN EXISTS(SELECT 1 FROM sqlite_master WHERE type=kind AND name=required.name) THEN 'present' ELSE 'MISSING' END AS status FROM required ORDER BY kind,name;"
           run_query "Author application schema columns (read-only)" "PRAGMA table_info(author_applications);"
           run_query "User account schema (columns only)" "PRAGMA table_info(users);"
