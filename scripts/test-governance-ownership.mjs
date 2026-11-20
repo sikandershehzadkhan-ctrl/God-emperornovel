@@ -194,7 +194,7 @@ function selfTest() {
   assert.throws(()=>validateOwnership(cyclicRegistry),/cyclic cross-domain dependency contract/);
   assert.equal(collectRelativeImports(["scripts/test.mjs","src/index.js"],file=>file==="scripts/test.mjs"?'import worker from "../src/index.js";':"").length,1);
   assert.throws(()=>collectRelativeImports(["scripts/test.mjs"],()=>'import "../missing.js";'),/unresolved relative import/);
-  assert.throws(()=>validateOwnership({...registry,owners:[{...registry.owners[0],allowedDependencies:["unknown-owner"]},...registry.owners.slice(1)]}),/unknown allowed dependency/);
+  assert.throws(()=>validateOwnership({...registry,owners:[{...registry.owners[0],allowedDependencies:["unknown-owner"]},...registry.owners.slice(1)]}),/unknown allowedDependencies reference/);
   console.log("PASS: ownership governance self-tests (complete path coverage, owner contracts, ADR requirements, and cross-domain import direction).");
 }
 if (process.argv.includes("--self-test")) selfTest();
