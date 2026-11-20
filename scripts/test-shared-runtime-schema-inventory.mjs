@@ -33,6 +33,13 @@ for (const column of ["review_feedback", "reviewed_by", "reviewed_at"]) {
   assert.ok(inventory.includes(`novels.${column}`), `novel review schema debt is undocumented: ${column}`);
 }
 
+for (const table of ["agents", "agent_runs"]) {
+  assert.ok(worker.includes(`CREATE TABLE IF NOT EXISTS ${table}`), `runtime agent schema changed: ${table}`);
+  assert.ok(inventory.includes(`\`${table}\``), `agent schema debt is undocumented: ${table}`);
+}
+assert.ok(worker.includes("idx_agent_runs_agent"));
+assert.ok(inventory.includes("idx_agent_runs_agent"));
+
 assert.ok(worker.includes("CREATE TABLE IF NOT EXISTS taxonomy_submissions"));
 assert.ok(inventory.includes("taxonomy_submissions"), "taxonomy schema debt must remain visible");
 
