@@ -145,6 +145,8 @@ assert.ok(ratingGet.includes("publication_status='published'") &&
   "rating statistics must not expose unpublished/rights-ineligible works");
 assert.ok(ratingPost.includes("Number.isInteger(rating)&&rating>=1&&rating<=10"),
   "ratings must be whole numbers on the 1-10 scale");
+assert.ok(worker.includes("const tier=x=>Number(x.rating||0)>=9?'S':Number(x.rating||0)>=8?'A':Number(x.rating||0)>=6?'B':'C';"),
+  "tier-list thresholds must use the 1-10 rating scale");
 assert.ok(ratingPost.includes("need(u)") && ratingPost.includes("u.id"),
   "rating writes must be authenticated and scoped to the session user");
 
