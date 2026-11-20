@@ -45,6 +45,8 @@ for (const route of actualInventory.filter(item => item.path.startsWith("/api/ad
     const snippet = handler(route.path, method);
     if (route.path === "/api/admin/taxonomy" && method === "POST") {
       assert.ok(snippet.includes("adminTaxonomy(req,env"), "taxonomy mutation must delegate to the admin-guarded handler");
+      const taxonomyHandler = worker.slice(worker.indexOf("async function adminTaxonomy"), worker.indexOf("async function adminTaxonomy") + 900);
+      assert.ok(taxonomyHandler.includes("admin(u)"), "delegated taxonomy handler must enforce the admin role itself");
     } else {
       assert.ok(snippet.includes("admin(u)"), "admin route lacks server-side admin guard: " + method + " " + route.path);
     }
