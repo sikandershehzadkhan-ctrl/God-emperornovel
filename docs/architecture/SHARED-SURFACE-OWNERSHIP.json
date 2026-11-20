@@ -920,6 +920,32 @@
         "worker-runtime"
       ],
       "sharedSurfacePolicy": "Cover assets require rights/provenance review and must not imply publication eligibility."
+    },
+    {
+      "id": "production-operations-documentation",
+      "paths": [
+        "docs/production/"
+      ],
+      "requiresAdr": true,
+      "accountableRole": "Database and production operations owner",
+      "changeOwner": "D1 audit and migration release maintainer",
+      "integrationOwner": "Platform architecture and release owner",
+      "pathClass": "production-operations-documentation",
+      "allowedContents": [
+        "Read-only production D1 audit procedures and SQL inventories",
+        "Canonical migration risk registers and migration release plans",
+        "Production backup, restore, rehearsal and release evidence records"
+      ],
+      "dependencyDirection": "Operational documents describe evidence collection and release controls; runtime code and build scripts must not import production documentation as executable policy.",
+      "allowedDependencies": [],
+      "invokes": [
+        "engineering-tooling"
+      ],
+      "runtimeContracts": [
+        "database-schema",
+        "cloudflare-runtime"
+      ],
+      "sharedSurfacePolicy": "Remote audit must be explicitly confirmed, SELECT-only evidence must be reviewed, and documentation never authorizes D1 mutation or Worker deployment."
     }
   ],
   "sharedSurfaceRule": "Every changed path must match exactly one owner. Paths whose owner requiresAdr=true require an ADR under docs/architecture/decisions/ or a feature contract under docs/architecture/feature-contracts/ in the same PR. Every tracked path is also checked for exactly one owner so unregistered baseline files cannot hide until changed.",
