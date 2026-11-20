@@ -26,6 +26,7 @@ assert.equal(parseManualDonationApproval({ status: "approved", note: "Verified" 
 assert.equal(parseManualDonationApproval({ status: "approved", note: "Verified" }, donation, null).ok, false, "missing reviewer identity is rejected");
 
 const source = readFileSync(new URL("../src/index.js", import.meta.url), "utf8");
+const adminPage = readFileSync(new URL("../public/admin.html", import.meta.url), "utf8");
 const start = source.indexOf("let ad=p.match");
 const end = source.indexOf('if(p==="/api/admin/reports"', start);
 assert.ok(start >= 0, "admin donation decision route must remain present");
@@ -39,5 +40,8 @@ for (const fragment of [
 ]) assert.ok(route.includes(fragment), `missing attributable donation-review invariant: ${fragment}`);
 assert.ok(!route.includes("UPDATE users SET tickets=tickets+?"), "application code must not duplicate the database trigger's Crown credit");
 assert.ok(!route.includes("INSERT INTO ticket_ledger"), "application code must not duplicate the database trigger's ledger posting");
+
+assert.ok(adminPage.includes("Review note (required)"), "admin UI must collect a required donation review note");
+assert.ok(adminPage.includes("JSON.stringify({status:statusValue,tickets,note})"), "admin UI must submit the review note to the API");
 
 console.log("PASS: donation decisions require an independent administrator, attributable review note, and one trigger-backed credit/ledger posting.");
