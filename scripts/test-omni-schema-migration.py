@@ -5,7 +5,7 @@ root = Path(__file__).resolve().parents[1]
 db = sqlite3.connect(":memory:")
 db.execute("PRAGMA foreign_keys = ON")
 db.executescript((root / "migrations/0001_initial.sql").read_text(encoding="utf-8"))
-migration = (root / "migrations/0047_omniportal_runtime_support.sql").read_text(encoding="utf-8")
+migration = (root / "migrations/0048_omniportal_runtime_support.sql").read_text(encoding="utf-8")
 db.executescript(migration)
 # CREATE TABLE/INDEX IF NOT EXISTS makes the migration safe for databases where
 # the former lazy GET initializer already provisioned these exact tables.
@@ -28,4 +28,4 @@ for table, required in expected.items():
 indexes = {row[0] for row in db.execute("SELECT name FROM sqlite_master WHERE type='index'")}
 assert {"idx_connector_events_connector", "idx_import_jobs_user", "idx_connector_auth_requests_status"} <= indexes
 
-print("PASS: migration 0047 provisions every OmniPortal read dependency and is safe to replay when the lazy initializer already created the tables.")
+print("PASS: migration 0048 provisions every OmniPortal read dependency and is safe to replay when the lazy initializer already created the tables.")
