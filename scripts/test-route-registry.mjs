@@ -208,6 +208,26 @@ assert.ok(worker.includes('rel="canonical"') && worker.includes('property="og:ur
 assert.ok(worker.includes('const noindexPattern=/^\\/fandom\\//.test(p)'),
   "fandom compatibility routes must be noindex");
 
+const languageMatch = client.match(/const IN_LANG=(\{[\s\S]*?\});function isRtlLanguage/);
+assert.ok(languageMatch, "UI language dictionary not found");
+const uiLanguages = Object.keys(JSON.parse(languageMatch[1]));
+assert.deepEqual(uiLanguages, manifest.localePolicy.uiLanguages, "UI language choices differ from the route locale registry");
+assert.equal(uiLanguages.length, 14, "expected 14 supported UI language choices");
+
+const languageSelectStart = client.indexOf('<select id="imperialLanguageSelect"');
+const languageSelectEnd = client.indexOf("</select>", languageSelectStart);
+assert.ok(languageSelectStart >= 0 && languageSelectEnd > languageSelectStart,
+  "language selector not found");
+const languageSelectMarkup = client.slice(languageSelectStart, languageSelectEnd);
+const optionCodes = [...languageSelectMarkup.matchAll(/<option value="([^"]+)"/g)].map(match => match[1]);
+assert.equal(optionCodes.length, 14, "language selector must expose 14 choices");
+assert.deepEqual([...optionCodes].sort(), [...manifest.localePolicy.uiLanguages].sort(),
+  "language selector choices differ from the locale registry");
+
+assert.deepEqual(manifest.localePolicy.rtlLanguageCodes, ["ar", "fa", "ur"]);
+assert.ok(client.includes("function isRtlLanguage(language)"), "RTL language resolver missing");
+assert.ok(client.includes('document.documentElement.dir=isRtlLanguage(c)?"rtl":"ltr"'), "UI direction must follow the selected interface language");
+assert.ok(client.includes("isRtlLanguage(n.language)") && client.includes('id="readerContent"'), "reader content direction must follow the work language independently");
 console.log("Worker route registry validated: " + manifest.routes.length +
   " exact routes, " + manifest.patterns.length + " dynamic patterns, " +
   manifest.sitemaps.length + " sitemap endpoints, " +
