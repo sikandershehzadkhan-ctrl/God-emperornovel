@@ -3,6 +3,7 @@ import { readFileSync } from 'node:fs';
 
 const path = 'docs/production/production-d1-read-only-audit.sql';
 const source = readFileSync(path, 'utf8');
+const workflow = readFileSync('.github/workflows/audit-production-d1.yml', 'utf8');
 
 // Strip SQL comments before checking each executable statement.
 const withoutComments = source
@@ -26,5 +27,14 @@ for (const [index, statement] of statements.entries()) {
     `Audit statement ${index + 1} contains a forbidden mutation/control keyword.`
   );
 }
+
+
+assert.match(workflow, /workflow_dispatch:/, 'the production audit must be manually triggered');
+assert.match(workflow, /default: "no"/, 'manual audit confirmation must default to no');
+assert.match(workflow, /if: \\$\\{\\{ inputs\\.confirm_read_only_audit == 'yes' \\}\\}/, 'the job must require explicit yes confirmation');
+assert.doesNotMatch(workflow, /^  push:/m, 'production audit must never run automatically on push');
+assert.doesNotMatch(workflow, /^  pull_request:/m, 'production audit must never run on pull requests');
+assert.match(workflow, /wrangler@4 d1 execute god-emperornovel-db --remote/, 'audit queries must explicitly target the configured remote D1 database');
+assert.doesNotMatch(workflow, /wrangler@4 d1 migrations apply|wrangler@4 deploy/, 'audit workflow must never apply migrations or deploy the Worker');
 
 console.log(`PASS: ${statements.length} production D1 audit statements are SELECT-only.`);
