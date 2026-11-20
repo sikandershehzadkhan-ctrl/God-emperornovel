@@ -1,10 +1,8 @@
+import { STATIC_SITEMAP_PATHS } from "./route-registry.mjs";
+
 export const SITEMAP_PAGE_SIZE = 10000;
 
-const STATIC_PATHS = [
-  "/", "/catalog", "/formats", "/genres", "/tags", "/search",
-  "/community", "/leaderboard", "/omniportal", "/trend-factory",
-  "/community-taxonomy", "/privacy", "/terms", "/copyright"
-];
+
 
 function xmlEscape(value) {
   return String(value ?? "").replace(/[&<>"']/g, character => ({
@@ -39,7 +37,7 @@ export function renderSitemapIndex(originValue, novelPages = 0, chapterPages = 0
 
 export function renderStaticSitemap(originValue) {
   const origin = safeOrigin(originValue);
-  return `<?xml version="1.0" encoding="UTF-8"?><urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">${STATIC_PATHS.map(path => urlEntry(origin, path)).join("")}</urlset>`;
+  return `<?xml version="1.0" encoding="UTF-8"?><urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">${STATIC_SITEMAP_PATHS.map(path => urlEntry(origin, path)).join("")}</urlset>`;
 }
 
 export function renderNovelSitemap(originValue, rows = []) {
@@ -54,4 +52,4 @@ export function renderChapterSitemap(originValue, rows = []) {
   return `<?xml version="1.0" encoding="UTF-8"?><urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">${entries.join("")}</urlset>`;
 }
 
-export const SITEMAP_STATIC_PATHS = Object.freeze([...STATIC_PATHS]);
+export { STATIC_SITEMAP_PATHS };
