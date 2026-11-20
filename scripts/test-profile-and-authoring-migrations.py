@@ -5,7 +5,9 @@ db = sqlite3.connect(":memory:")
 db.execute("PRAGMA foreign_keys=ON")
 
 # Exercise the canonical fresh-install chain through migration 0017 only.
-for path in sorted(Path("migrations").glob("[0-9][0-9][0-1][0-7]_*.sql")):
+for path in sorted(Path("migrations").glob("[0-9][0-9][0-9][0-9]_*.sql")):
+    if int(path.name[:4]) > 17:
+        continue
     db.executescript(path.read_text(encoding="utf-8"))
 
 def must_fail(sql, params=()):
