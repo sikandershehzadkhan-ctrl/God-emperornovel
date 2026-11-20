@@ -1,7 +1,4 @@
-const ALIASES = Object.freeze({
-  "/discover": "/catalog",
-  "/for-you": "/made-for-you"
-});
+import { CANONICAL_ALIASES, DYNAMIC_ROUTE_REGISTRY } from "./route-registry.mjs";
 
 export function canonicalPathForRoute(pathname) {
   const raw = String(pathname ?? "/").split(/[?#]/, 1)[0] || "/";
@@ -9,6 +6,8 @@ export function canonicalPathForRoute(pathname) {
   const normalized = absolute.length > 1
     ? absolute.replace(/\/+$/, "") || "/"
     : "/";
-  if (normalized.startsWith("/fandom/")) return null;
-  return ALIASES[normalized] || normalized;
+  if (DYNAMIC_ROUTE_REGISTRY.some(route =>
+    route.canonicalPathPolicy === "omitted-compatibility-redirect" && route.regex.test(normalized)
+  )) return null;
+  return CANONICAL_ALIASES[normalized] || normalized;
 }
