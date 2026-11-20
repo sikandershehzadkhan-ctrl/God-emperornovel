@@ -90,4 +90,4 @@ Migrations 0025 and 0027 are the single posting authorities for administrator cr
 
 ## OmniPortal read-route schema dependency
 
-Migration 0047 provisions the four support tables queried by side-effect-free OmniPortal GET routes. The migration is replay-safe for tables already created by the former lazy initializer. It intentionally does not add optional connector configuration columns; their remote presence is an explicit read-only audit finding and must be reconciled before any later column migration.
+Migration 0048 provisions the four support tables queried by side-effect-free OmniPortal GET routes. The migration is replay-safe for tables already created by the former lazy initializer. It intentionally does not add optional connector configuration columns; their remote presence is an explicit read-only audit finding and must be reconciled before any later column migration.
