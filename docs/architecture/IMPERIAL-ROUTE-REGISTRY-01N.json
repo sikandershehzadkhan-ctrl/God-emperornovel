@@ -2,7 +2,7 @@
   "schemaVersion": 1,
   "name": "Imperial Novel route registry",
   "sourceBranch": "main",
-  "sourceCommit": "d1947261a775aee526ac323b039bf98fc39f7a96",
+  "sourceCommit": "5db03a3c34afe97c744c4d44c67f9471adbd8f96",
   "auditDate": "2026-11-20",
   "scope": "Source-audited route inventory with one runtime registry driving Worker page-shell dispatch, canonical aliases, noindex policy, and static sitemap paths. The registry also records initial source-backed access, locale/RTL, and navigation policies. It does not certify every API method/object-ownership rule, mixed-language per-chapter locale behavior, live HTTP/browser behavior, or global rights-gated product switches.",
   "routes": [
@@ -403,9 +403,10 @@
     "/omniportal is publicly linked and included in the static sitemap; external search is limited to enabled authorized connectors and imports require authentication plus an enabled authorized connector. Confirm whether a global product-level disable switch is required before treating the portal as fully off.",
     "Reader chapter-content and single/batch unlock source guards are now inventoried and regression-tested; runtime integration and concurrency tests remain open.",
     "Reader direction is based on the novel-level language field. If a single novel may contain chapters in different languages, a chapter-level language override and corresponding API field will be needed.",
-    "OmniPortal currently appears in both the desktop top navigation and main navigation drawer and remains in the static sitemap. The required global disable state pending rights approval still needs an explicit product-level decision and implementation."
+    "OmniPortal currently appears in both the desktop top navigation and main navigation drawer and remains in the static sitemap. The required global disable state pending rights approval still needs an explicit product-level decision and implementation.",
+    "Unknown page paths now resolve to a real HTTP 404 and noindex response in source; deployed HTTP status verification remains open."
   ],
-  "sourceBlob": "src/index.js@1cfb9421d3a68bc1be2a79bd0d42f314a0d46a60",
+  "sourceBlob": "src/index.js@2b1d01a7a13175eb4df08ea3ca3ab6a59b93981c",
   "staticSitemapPaths": [
     "/",
     "/catalog",
@@ -422,7 +423,7 @@
     "/terms",
     "/copyright"
   ],
-  "sitemapSourceBlob": "src/sitemap.mjs@79f7f2c1f4d50b291a1b91c3c5a675cd67ae99c8",
+  "sitemapSourceBlob": "src/sitemap.mjs@ce7e67b046aab81a8d7b211cad9134c5722a7f07",
   "accessPolicy": {
     "status": "source-audited-initial; not a complete authorization certification",
     "shellAccess": "public-shell: Worker html() dispatches static assets without a session or role gate; protected data/actions must be enforced by client and API layers",
