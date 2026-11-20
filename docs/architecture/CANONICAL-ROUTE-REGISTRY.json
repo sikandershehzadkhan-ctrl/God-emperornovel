@@ -1,0 +1,1906 @@
+{
+  "schema_version": "1.0.0",
+  "registry": "imperial-novel-canonical-route-registry",
+  "status": "canonical-source-contract-foundation-review-gated",
+  "product": "Imperial Novel",
+  "motto": "Read • Create • Conquer",
+  "generated_at": "2026-11-20",
+  "source_evidence": {
+    "repository": "sikandershehzadkhan-ctrl/God-emperornovel",
+    "branch": "architecture/phase-01-foundation-route-registry",
+    "commit": "052887bcee546726a04157631dc416abd016fd17",
+    "worker_file": "src/index.js",
+    "worker_blob": "2f8c4b310ee7859933f752d337b91a353b0d487e",
+    "client_file": "public/app.js",
+    "client_blob": "4f482c79101785300248910e1a9256d23923bd6e",
+    "sitemap_file": "src/sitemap.mjs",
+    "sitemap_blob": "3e6e885554751cbf6255fa0942e590573c574280",
+    "method": "Runtime page shells, dynamic page families, noindex policy and static sitemap membership are sourced from src/route-registry.mjs. This JSON file is the reviewable evidence snapshot. API path inventory and authorization remain separately reviewed and are not certified by route resolution tests.",
+    "runtime_registry_file": "src/route-registry.mjs",
+    "runtime_registry_blob": "c0741fd783bd829e5a72fce6bbea1abb51e4b699",
+    "url_policy_file": "docs/architecture/URL-AND-LOCALE-POLICY.md"
+  },
+  "pages": [
+    {
+      "path": "/",
+      "shell": "index.html",
+      "status": "observed-worker-dispatch",
+      "access_policy": "not-certified",
+      "sitemap_policy": "included-in-static-sitemap",
+      "screen_completeness": "not-yet-audited",
+      "canonical_path": "/",
+      "ownership": "page-shell-and-client-screen-dispatch",
+      "release_gate": "screen-qa-and-access-policy-review-required"
+    },
+    {
+      "path": "/catalog",
+      "shell": "catalog.html",
+      "status": "observed-worker-dispatch",
+      "access_policy": "not-certified",
+      "sitemap_policy": "included-in-static-sitemap",
+      "screen_completeness": "not-yet-audited",
+      "canonical_path": "/catalog",
+      "ownership": "page-shell-and-client-screen-dispatch",
+      "release_gate": "screen-qa-and-access-policy-review-required"
+    },
+    {
+      "path": "/discover",
+      "shell": "catalog.html",
+      "status": "observed-worker-dispatch",
+      "access_policy": "not-certified",
+      "sitemap_policy": "not-in-static-sitemap",
+      "screen_completeness": "not-yet-audited",
+      "canonical_path": "/discover",
+      "ownership": "page-shell-and-client-screen-dispatch",
+      "release_gate": "screen-qa-and-access-policy-review-required"
+    },
+    {
+      "path": "/formats",
+      "shell": "index.html",
+      "status": "observed-worker-dispatch",
+      "access_policy": "not-certified",
+      "sitemap_policy": "included-in-static-sitemap",
+      "screen_completeness": "not-yet-audited",
+      "canonical_path": "/formats",
+      "ownership": "page-shell-and-client-screen-dispatch",
+      "release_gate": "screen-qa-and-access-policy-review-required"
+    },
+    {
+      "path": "/genres",
+      "shell": "genres.html",
+      "status": "observed-worker-dispatch",
+      "access_policy": "not-certified",
+      "sitemap_policy": "included-in-static-sitemap",
+      "screen_completeness": "not-yet-audited",
+      "canonical_path": "/genres",
+      "ownership": "page-shell-and-client-screen-dispatch",
+      "release_gate": "screen-qa-and-access-policy-review-required"
+    },
+    {
+      "path": "/tags",
+      "shell": "tags.html",
+      "status": "observed-worker-dispatch",
+      "access_policy": "not-certified",
+      "sitemap_policy": "included-in-static-sitemap",
+      "screen_completeness": "not-yet-audited",
+      "canonical_path": "/tags",
+      "ownership": "page-shell-and-client-screen-dispatch",
+      "release_gate": "screen-qa-and-access-policy-review-required"
+    },
+    {
+      "path": "/search",
+      "shell": "search.html",
+      "status": "observed-worker-dispatch",
+      "access_policy": "public-utility-noindex-not-an-access-control",
+      "sitemap_policy": "excluded-from-static-sitemap-utility-route",
+      "screen_completeness": "not-yet-audited",
+      "canonical_path": "/search",
+      "ownership": "page-shell-and-client-screen-dispatch",
+      "release_gate": "screen-qa-and-access-policy-review-required"
+    },
+    {
+      "path": "/library",
+      "shell": "library.html",
+      "status": "observed-worker-dispatch",
+      "access_policy": "noindex-route-authentication-still-requires-server-verification",
+      "sitemap_policy": "not-in-static-sitemap",
+      "screen_completeness": "not-yet-audited",
+      "canonical_path": "/library",
+      "ownership": "page-shell-and-client-screen-dispatch",
+      "release_gate": "screen-qa-and-access-policy-review-required"
+    },
+    {
+      "path": "/history",
+      "shell": "history.html",
+      "status": "observed-worker-dispatch",
+      "access_policy": "noindex-route-authentication-still-requires-server-verification",
+      "sitemap_policy": "not-in-static-sitemap",
+      "screen_completeness": "not-yet-audited",
+      "canonical_path": "/history",
+      "ownership": "page-shell-and-client-screen-dispatch",
+      "release_gate": "screen-qa-and-access-policy-review-required"
+    },
+    {
+      "path": "/following",
+      "shell": "following.html",
+      "status": "observed-worker-dispatch",
+      "access_policy": "noindex-route-authentication-still-requires-server-verification",
+      "sitemap_policy": "not-in-static-sitemap",
+      "screen_completeness": "not-yet-audited",
+      "canonical_path": "/following",
+      "ownership": "page-shell-and-client-screen-dispatch",
+      "release_gate": "screen-qa-and-access-policy-review-required"
+    },
+    {
+      "path": "/tickets",
+      "shell": "tickets.html",
+      "status": "observed-worker-dispatch",
+      "access_policy": "noindex-route-authentication-still-requires-server-verification",
+      "sitemap_policy": "not-in-static-sitemap",
+      "screen_completeness": "not-yet-audited",
+      "canonical_path": "/tickets",
+      "ownership": "page-shell-and-client-screen-dispatch",
+      "release_gate": "screen-qa-and-access-policy-review-required"
+    },
+    {
+      "path": "/requests",
+      "shell": "requests.html",
+      "status": "observed-worker-dispatch",
+      "access_policy": "noindex-route-authentication-still-requires-server-verification",
+      "sitemap_policy": "not-in-static-sitemap",
+      "screen_completeness": "not-yet-audited",
+      "canonical_path": "/requests",
+      "ownership": "page-shell-and-client-screen-dispatch",
+      "release_gate": "screen-qa-and-access-policy-review-required"
+    },
+    {
+      "path": "/omniportal",
+      "shell": "omniportal.html",
+      "status": "observed-worker-dispatch",
+      "access_policy": "public-utility-noindex-not-an-access-control",
+      "sitemap_policy": "excluded-from-static-sitemap-utility-route",
+      "screen_completeness": "not-yet-audited",
+      "canonical_path": "/omniportal",
+      "ownership": "page-shell-and-client-screen-dispatch",
+      "release_gate": "screen-qa-and-access-policy-review-required"
+    },
+    {
+      "path": "/community",
+      "shell": "index.html",
+      "status": "observed-worker-dispatch",
+      "access_policy": "not-certified",
+      "sitemap_policy": "included-in-static-sitemap",
+      "screen_completeness": "not-yet-audited",
+      "canonical_path": "/community",
+      "ownership": "page-shell-and-client-screen-dispatch",
+      "release_gate": "screen-qa-and-access-policy-review-required"
+    },
+    {
+      "path": "/leaderboard",
+      "shell": "index.html",
+      "status": "observed-worker-dispatch",
+      "access_policy": "not-certified",
+      "sitemap_policy": "included-in-static-sitemap",
+      "screen_completeness": "not-yet-audited",
+      "canonical_path": "/leaderboard",
+      "ownership": "page-shell-and-client-screen-dispatch",
+      "release_gate": "screen-qa-and-access-policy-review-required"
+    },
+    {
+      "path": "/tier-list",
+      "shell": "index.html",
+      "status": "observed-worker-dispatch",
+      "access_policy": "not-certified",
+      "sitemap_policy": "not-in-static-sitemap",
+      "screen_completeness": "not-yet-audited",
+      "canonical_path": "/tier-list",
+      "ownership": "page-shell-and-client-screen-dispatch",
+      "release_gate": "screen-qa-and-access-policy-review-required"
+    },
+    {
+      "path": "/random",
+      "shell": "index.html",
+      "status": "observed-worker-dispatch",
+      "access_policy": "not-certified",
+      "sitemap_policy": "not-in-static-sitemap",
+      "screen_completeness": "not-yet-audited",
+      "canonical_path": "/random",
+      "ownership": "page-shell-and-client-screen-dispatch",
+      "release_gate": "screen-qa-and-access-policy-review-required"
+    },
+    {
+      "path": "/made-for-you",
+      "shell": "index.html",
+      "status": "observed-worker-dispatch",
+      "access_policy": "public-utility-noindex-not-an-access-control",
+      "sitemap_policy": "not-in-static-sitemap-personalized-utility",
+      "screen_completeness": "not-yet-audited",
+      "canonical_path": "/made-for-you",
+      "ownership": "page-shell-and-client-screen-dispatch",
+      "release_gate": "screen-qa-and-access-policy-review-required"
+    },
+    {
+      "path": "/settings",
+      "shell": "index.html",
+      "status": "observed-worker-dispatch",
+      "access_policy": "noindex-route-authentication-still-requires-server-verification",
+      "sitemap_policy": "not-in-static-sitemap",
+      "screen_completeness": "not-yet-audited",
+      "canonical_path": "/settings",
+      "ownership": "page-shell-and-client-screen-dispatch",
+      "release_gate": "screen-qa-and-access-policy-review-required"
+    },
+    {
+      "path": "/for-you",
+      "shell": "index.html",
+      "status": "observed-worker-dispatch",
+      "access_policy": "public-utility-noindex-not-an-access-control",
+      "sitemap_policy": "not-in-static-sitemap-personalized-utility",
+      "screen_completeness": "not-yet-audited",
+      "canonical_path": "/for-you",
+      "ownership": "page-shell-and-client-screen-dispatch",
+      "release_gate": "screen-qa-and-access-policy-review-required"
+    },
+    {
+      "path": "/trending",
+      "shell": "index.html",
+      "status": "observed-worker-dispatch",
+      "access_policy": "not-certified",
+      "sitemap_policy": "not-in-static-sitemap",
+      "screen_completeness": "not-yet-audited",
+      "canonical_path": "/trending",
+      "ownership": "page-shell-and-client-screen-dispatch",
+      "release_gate": "screen-qa-and-access-policy-review-required"
+    },
+    {
+      "path": "/vote",
+      "shell": "index.html",
+      "status": "observed-worker-dispatch",
+      "access_policy": "not-certified",
+      "sitemap_policy": "not-in-static-sitemap",
+      "screen_completeness": "not-yet-audited",
+      "canonical_path": "/vote",
+      "ownership": "page-shell-and-client-screen-dispatch",
+      "release_gate": "screen-qa-and-access-policy-review-required"
+    },
+    {
+      "path": "/notifications",
+      "shell": "index.html",
+      "status": "observed-worker-dispatch",
+      "access_policy": "noindex-route-authentication-still-requires-server-verification",
+      "sitemap_policy": "not-in-static-sitemap",
+      "screen_completeness": "not-yet-audited",
+      "canonical_path": "/notifications",
+      "ownership": "page-shell-and-client-screen-dispatch",
+      "release_gate": "screen-qa-and-access-policy-review-required"
+    },
+    {
+      "path": "/trend-factory",
+      "shell": "index.html",
+      "status": "observed-worker-dispatch",
+      "access_policy": "public-utility-noindex-not-an-access-control",
+      "sitemap_policy": "excluded-from-static-sitemap-utility-route",
+      "screen_completeness": "not-yet-audited",
+      "canonical_path": "/trend-factory",
+      "ownership": "page-shell-and-client-screen-dispatch",
+      "release_gate": "screen-qa-and-access-policy-review-required"
+    },
+    {
+      "path": "/community-taxonomy",
+      "shell": "community-taxonomy.html",
+      "status": "observed-worker-dispatch",
+      "access_policy": "not-certified",
+      "sitemap_policy": "included-in-static-sitemap",
+      "screen_completeness": "not-yet-audited",
+      "canonical_path": "/community-taxonomy",
+      "ownership": "page-shell-and-client-screen-dispatch",
+      "release_gate": "screen-qa-and-access-policy-review-required"
+    },
+    {
+      "path": "/privacy",
+      "shell": "privacy.html",
+      "status": "observed-worker-dispatch",
+      "access_policy": "not-certified",
+      "sitemap_policy": "included-in-static-sitemap",
+      "screen_completeness": "not-yet-audited",
+      "canonical_path": "/privacy",
+      "ownership": "page-shell-and-client-screen-dispatch",
+      "release_gate": "screen-qa-and-access-policy-review-required"
+    },
+    {
+      "path": "/terms",
+      "shell": "terms.html",
+      "status": "observed-worker-dispatch",
+      "access_policy": "not-certified",
+      "sitemap_policy": "included-in-static-sitemap",
+      "screen_completeness": "not-yet-audited",
+      "canonical_path": "/terms",
+      "ownership": "page-shell-and-client-screen-dispatch",
+      "release_gate": "screen-qa-and-access-policy-review-required"
+    },
+    {
+      "path": "/copyright",
+      "shell": "copyright.html",
+      "status": "observed-worker-dispatch",
+      "access_policy": "not-certified",
+      "sitemap_policy": "included-in-static-sitemap",
+      "screen_completeness": "not-yet-audited",
+      "canonical_path": "/copyright",
+      "ownership": "page-shell-and-client-screen-dispatch",
+      "release_gate": "screen-qa-and-access-policy-review-required"
+    },
+    {
+      "path": "/account",
+      "shell": "account.html",
+      "status": "observed-worker-dispatch",
+      "access_policy": "noindex-route-authentication-still-requires-server-verification",
+      "sitemap_policy": "not-in-static-sitemap",
+      "screen_completeness": "not-yet-audited",
+      "canonical_path": "/account",
+      "ownership": "page-shell-and-client-screen-dispatch",
+      "release_gate": "screen-qa-and-access-policy-review-required"
+    },
+    {
+      "path": "/login",
+      "shell": "login.html",
+      "status": "observed-worker-dispatch",
+      "access_policy": "noindex-route-authentication-still-requires-server-verification",
+      "sitemap_policy": "not-in-static-sitemap",
+      "screen_completeness": "not-yet-audited",
+      "canonical_path": "/login",
+      "ownership": "page-shell-and-client-screen-dispatch",
+      "release_gate": "screen-qa-and-access-policy-review-required"
+    },
+    {
+      "path": "/register",
+      "shell": "register.html",
+      "status": "observed-worker-dispatch",
+      "access_policy": "noindex-route-authentication-still-requires-server-verification",
+      "sitemap_policy": "not-in-static-sitemap",
+      "screen_completeness": "not-yet-audited",
+      "canonical_path": "/register",
+      "ownership": "page-shell-and-client-screen-dispatch",
+      "release_gate": "screen-qa-and-access-policy-review-required"
+    },
+    {
+      "path": "/admin",
+      "shell": "admin.html",
+      "status": "observed-worker-dispatch",
+      "access_policy": "noindex-route-authentication-still-requires-server-verification",
+      "sitemap_policy": "not-in-static-sitemap",
+      "screen_completeness": "not-yet-audited",
+      "canonical_path": "/admin",
+      "ownership": "page-shell-and-client-screen-dispatch",
+      "release_gate": "screen-qa-and-access-policy-review-required"
+    },
+    {
+      "path": "/author",
+      "shell": "index.html",
+      "status": "observed-worker-dispatch",
+      "access_policy": "noindex-route-authentication-still-requires-server-verification",
+      "sitemap_policy": "not-in-static-sitemap",
+      "screen_completeness": "not-yet-audited",
+      "canonical_path": "/author",
+      "ownership": "page-shell-and-client-screen-dispatch",
+      "release_gate": "screen-qa-and-access-policy-review-required"
+    }
+  ],
+  "dynamic_pages": [
+    {
+      "pattern": "^/format/[^/]+/?$",
+      "shell": "index.html",
+      "kind": "format-landing",
+      "status": "observed-worker-dispatch",
+      "access_policy": "must-be-verified-per-resource",
+      "sitemap_policy": "resource-specific-or-not-listed",
+      "screen_completeness": "not-yet-audited",
+      "source_expression": "/^\\/format\\/[^/]+\\/?$/.test(p)",
+      "samples": [
+        "/format/novel",
+        "/format/comic/"
+      ],
+      "ownership": "page-shell-and-client-screen-dispatch",
+      "release_gate": "resource-policy-and-screen-qa-required"
+    },
+    {
+      "pattern": "^/novel/[0-9]+/chapters/?$",
+      "shell": "novel.html",
+      "kind": "novel-chapter-directory",
+      "status": "observed-worker-dispatch",
+      "access_policy": "must-be-verified-per-resource",
+      "sitemap_policy": "resource-specific-or-not-listed",
+      "screen_completeness": "not-yet-audited",
+      "source_expression": "/^\\/novel\\/\\d+\\/chapters\\/?$/.test(p)",
+      "samples": [
+        "/novel/12/chapters",
+        "/novel/12/chapters/"
+      ],
+      "ownership": "page-shell-and-client-screen-dispatch",
+      "release_gate": "resource-policy-and-screen-qa-required"
+    },
+    {
+      "pattern": "^/novel/[0-9]+/?$",
+      "shell": "novel.html",
+      "kind": "novel-detail",
+      "status": "observed-worker-dispatch",
+      "access_policy": "must-be-verified-per-resource",
+      "sitemap_policy": "resource-specific-or-not-listed",
+      "screen_completeness": "not-yet-audited",
+      "source_expression": "/^\\/novel\\/\\d+\\/?$/.test(p)",
+      "samples": [
+        "/novel/12",
+        "/novel/12/"
+      ],
+      "ownership": "page-shell-and-client-screen-dispatch",
+      "release_gate": "resource-policy-and-screen-qa-required"
+    },
+    {
+      "pattern": "^/read/[0-9]+/[0-9]+/?$",
+      "shell": "read.html",
+      "kind": "chapter-reader",
+      "status": "observed-worker-dispatch",
+      "access_policy": "must-be-verified-per-resource",
+      "sitemap_policy": "resource-specific-or-not-listed",
+      "screen_completeness": "not-yet-audited",
+      "source_expression": "/^\\/read\\/\\d+\\/\\d+\\/?$/.test(p)",
+      "samples": [
+        "/read/12/3",
+        "/read/12/3/"
+      ],
+      "ownership": "page-shell-and-client-screen-dispatch",
+      "release_gate": "resource-policy-and-screen-qa-required"
+    },
+    {
+      "pattern": "^/fandom/",
+      "shell": "fandom.html",
+      "kind": "fandom-tag-redirect",
+      "status": "observed-server-redirect",
+      "access_policy": "must-be-verified-per-resource",
+      "sitemap_policy": "resource-specific-or-not-listed",
+      "screen_completeness": "redirect-not-a-page-screen",
+      "source_expression": "/^\\/fandom\\//.test(p)",
+      "samples": [
+        "/fandom/example",
+        "/fandom/abc/def"
+      ],
+      "client_behavior": "server-308-redirect-to-catalog-tag",
+      "client_source_expression": "else if(p.startsWith('/fandom/'))",
+      "ownership": "page-shell-and-client-screen-dispatch",
+      "release_gate": "redirect-and-query-preservation-tests-required"
+    },
+    {
+      "pattern": "^/author/[^/]+/?$",
+      "shell": "author-public.html",
+      "kind": "public-author-profile",
+      "status": "observed-worker-dispatch",
+      "access_policy": "must-be-verified-per-resource",
+      "sitemap_policy": "resource-specific-or-not-listed",
+      "screen_completeness": "not-yet-audited",
+      "source_expression": "/^\\/author\\/[^/]+\\/?$/.test(p)",
+      "samples": [
+        "/author/example",
+        "/author/a",
+        "/author/example.name",
+        "/author/example.name/"
+      ],
+      "ownership": "page-shell-and-client-screen-dispatch",
+      "release_gate": "resource-policy-and-screen-qa-required"
+    }
+  ],
+  "api_endpoints": [
+    {
+      "path": "/api/health",
+      "methods": [
+        "GET"
+      ],
+      "method_evidence": "explicit-literal-conditions",
+      "source_lines": [
+        413,
+        423
+      ],
+      "occurrences": 2,
+      "authz": "not-certified",
+      "resource_ownership": "not-certified",
+      "release_gate": "handler-authz-resource-contract-and-runtime-tests-required"
+    },
+    {
+      "path": "/api/agents",
+      "methods": [
+        "GET"
+      ],
+      "method_evidence": "explicit-literal-conditions",
+      "source_lines": [
+        417
+      ],
+      "occurrences": 1,
+      "authz": "not-certified",
+      "resource_ownership": "not-certified",
+      "release_gate": "handler-authz-resource-contract-and-runtime-tests-required"
+    },
+    {
+      "path": "/api/admin/agents",
+      "methods": [
+        "GET"
+      ],
+      "method_evidence": "explicit-literal-conditions",
+      "source_lines": [
+        418
+      ],
+      "occurrences": 1,
+      "authz": "not-certified",
+      "resource_ownership": "not-certified",
+      "release_gate": "handler-authz-resource-contract-and-runtime-tests-required"
+    },
+    {
+      "path": "/api/admin/agents/run",
+      "methods": [
+        "POST"
+      ],
+      "method_evidence": "explicit-literal-conditions",
+      "source_lines": [
+        419
+      ],
+      "occurrences": 1,
+      "authz": "not-certified",
+      "resource_ownership": "not-certified",
+      "release_gate": "handler-authz-resource-contract-and-runtime-tests-required"
+    },
+    {
+      "path": "/api/taxonomy",
+      "methods": [
+        "GET",
+        "POST"
+      ],
+      "method_evidence": "delegated-method-contract",
+      "source_lines": [
+        420
+      ],
+      "occurrences": 1,
+      "authz": "not-certified",
+      "resource_ownership": "not-certified",
+      "release_gate": "handler-authz-resource-contract-and-runtime-tests-required"
+    },
+    {
+      "path": "/api/admin/taxonomy",
+      "methods": [
+        "GET",
+        "POST"
+      ],
+      "method_evidence": "explicit-literal-conditions",
+      "source_lines": [
+        421,
+        422
+      ],
+      "occurrences": 2,
+      "authz": "not-certified",
+      "resource_ownership": "not-certified",
+      "release_gate": "handler-authz-resource-contract-and-runtime-tests-required"
+    },
+    {
+      "path": "/api/auth/register",
+      "methods": [
+        "POST"
+      ],
+      "method_evidence": "explicit-literal-conditions",
+      "source_lines": [
+        424
+      ],
+      "occurrences": 1,
+      "authz": "not-certified",
+      "resource_ownership": "not-certified",
+      "release_gate": "handler-authz-resource-contract-and-runtime-tests-required"
+    },
+    {
+      "path": "/api/auth/login",
+      "methods": [
+        "POST"
+      ],
+      "method_evidence": "explicit-literal-conditions",
+      "source_lines": [
+        425
+      ],
+      "occurrences": 1,
+      "authz": "not-certified",
+      "resource_ownership": "not-certified",
+      "release_gate": "handler-authz-resource-contract-and-runtime-tests-required"
+    },
+    {
+      "path": "/api/auth/logout",
+      "methods": [
+        "POST"
+      ],
+      "method_evidence": "explicit-literal-conditions",
+      "source_lines": [
+        426
+      ],
+      "occurrences": 1,
+      "authz": "not-certified",
+      "resource_ownership": "not-certified",
+      "release_gate": "handler-authz-resource-contract-and-runtime-tests-required"
+    },
+    {
+      "path": "/api/me",
+      "methods": [
+        "GET"
+      ],
+      "method_evidence": "explicit-literal-conditions",
+      "source_lines": [
+        427
+      ],
+      "occurrences": 1,
+      "authz": "not-certified",
+      "resource_ownership": "not-certified",
+      "release_gate": "handler-authz-resource-contract-and-runtime-tests-required"
+    },
+    {
+      "path": "/api/config",
+      "methods": [
+        "GET"
+      ],
+      "method_evidence": "explicit-literal-conditions",
+      "source_lines": [
+        428
+      ],
+      "occurrences": 1,
+      "authz": "not-certified",
+      "resource_ownership": "not-certified",
+      "release_gate": "handler-authz-resource-contract-and-runtime-tests-required"
+    },
+    {
+      "path": "/api/genres",
+      "methods": [
+        "GET"
+      ],
+      "method_evidence": "explicit-literal-conditions",
+      "source_lines": [
+        429
+      ],
+      "occurrences": 1,
+      "authz": "not-certified",
+      "resource_ownership": "not-certified",
+      "release_gate": "handler-authz-resource-contract-and-runtime-tests-required"
+    },
+    {
+      "path": "/api/tags",
+      "methods": [
+        "GET"
+      ],
+      "method_evidence": "explicit-literal-conditions",
+      "source_lines": [
+        430
+      ],
+      "occurrences": 1,
+      "authz": "not-certified",
+      "resource_ownership": "not-certified",
+      "release_gate": "handler-authz-resource-contract-and-runtime-tests-required"
+    },
+    {
+      "path": "/api/public-authors",
+      "methods": [
+        "GET"
+      ],
+      "method_evidence": "explicit-literal-conditions",
+      "source_lines": [
+        431
+      ],
+      "occurrences": 1,
+      "authz": "not-certified",
+      "resource_ownership": "not-certified",
+      "release_gate": "handler-authz-resource-contract-and-runtime-tests-required"
+    },
+    {
+      "path": "/api/sources",
+      "methods": [
+        "GET"
+      ],
+      "method_evidence": "explicit-literal-conditions",
+      "source_lines": [
+        436
+      ],
+      "occurrences": 1,
+      "authz": "not-certified",
+      "resource_ownership": "not-certified",
+      "release_gate": "handler-authz-resource-contract-and-runtime-tests-required"
+    },
+    {
+      "path": "/api/omni/status",
+      "methods": [
+        "GET"
+      ],
+      "method_evidence": "explicit-literal-conditions",
+      "source_lines": [
+        437
+      ],
+      "occurrences": 1,
+      "authz": "not-certified",
+      "resource_ownership": "not-certified",
+      "release_gate": "handler-authz-resource-contract-and-runtime-tests-required"
+    },
+    {
+      "path": "/api/omni/search",
+      "methods": [
+        "GET"
+      ],
+      "method_evidence": "explicit-literal-conditions",
+      "source_lines": [
+        438
+      ],
+      "occurrences": 1,
+      "authz": "not-certified",
+      "resource_ownership": "not-certified",
+      "release_gate": "handler-authz-resource-contract-and-runtime-tests-required"
+    },
+    {
+      "path": "/api/omni/resolve",
+      "methods": [
+        "GET"
+      ],
+      "method_evidence": "explicit-literal-conditions",
+      "source_lines": [
+        439
+      ],
+      "occurrences": 1,
+      "authz": "not-certified",
+      "resource_ownership": "not-certified",
+      "release_gate": "handler-authz-resource-contract-and-runtime-tests-required"
+    },
+    {
+      "path": "/api/omni/import",
+      "methods": [
+        "POST"
+      ],
+      "method_evidence": "explicit-literal-conditions",
+      "source_lines": [
+        440
+      ],
+      "occurrences": 1,
+      "authz": "not-certified",
+      "resource_ownership": "not-certified",
+      "release_gate": "handler-authz-resource-contract-and-runtime-tests-required"
+    },
+    {
+      "path": "/api/omni/jobs",
+      "methods": [
+        "GET"
+      ],
+      "method_evidence": "explicit-literal-conditions",
+      "source_lines": [
+        441
+      ],
+      "occurrences": 1,
+      "authz": "not-certified",
+      "resource_ownership": "not-certified",
+      "release_gate": "handler-authz-resource-contract-and-runtime-tests-required"
+    },
+    {
+      "path": "/api/omni/smart-unlock",
+      "methods": [
+        "GET"
+      ],
+      "method_evidence": "explicit-literal-conditions",
+      "source_lines": [
+        442
+      ],
+      "occurrences": 1,
+      "authz": "not-certified",
+      "resource_ownership": "not-certified",
+      "release_gate": "handler-authz-resource-contract-and-runtime-tests-required"
+    },
+    {
+      "path": "/api/formats",
+      "methods": [
+        "GET"
+      ],
+      "method_evidence": "explicit-literal-conditions",
+      "source_lines": [
+        444
+      ],
+      "occurrences": 1,
+      "authz": "not-certified",
+      "resource_ownership": "not-certified",
+      "release_gate": "handler-authz-resource-contract-and-runtime-tests-required"
+    },
+    {
+      "path": "/api/novels",
+      "methods": [
+        "GET"
+      ],
+      "method_evidence": "explicit-literal-conditions",
+      "source_lines": [
+        446
+      ],
+      "occurrences": 1,
+      "authz": "not-certified",
+      "resource_ownership": "not-certified",
+      "release_gate": "handler-authz-resource-contract-and-runtime-tests-required"
+    },
+    {
+      "path": "/api/bookmark",
+      "methods": [
+        "POST"
+      ],
+      "method_evidence": "explicit-literal-conditions",
+      "source_lines": [
+        463
+      ],
+      "occurrences": 1,
+      "authz": "not-certified",
+      "resource_ownership": "not-certified",
+      "release_gate": "handler-authz-resource-contract-and-runtime-tests-required"
+    },
+    {
+      "path": "/api/history",
+      "methods": [
+        "GET",
+        "POST"
+      ],
+      "method_evidence": "explicit-literal-conditions",
+      "source_lines": [
+        464,
+        465
+      ],
+      "occurrences": 2,
+      "authz": "not-certified",
+      "resource_ownership": "not-certified",
+      "release_gate": "handler-authz-resource-contract-and-runtime-tests-required"
+    },
+    {
+      "path": "/api/library",
+      "methods": [
+        "GET",
+        "POST"
+      ],
+      "method_evidence": "explicit-literal-conditions",
+      "source_lines": [
+        466,
+        467
+      ],
+      "occurrences": 2,
+      "authz": "not-certified",
+      "resource_ownership": "not-certified",
+      "release_gate": "handler-authz-resource-contract-and-runtime-tests-required"
+    },
+    {
+      "path": "/api/bookmarks",
+      "methods": [
+        "GET"
+      ],
+      "method_evidence": "explicit-literal-conditions",
+      "source_lines": [
+        468
+      ],
+      "occurrences": 1,
+      "authz": "not-certified",
+      "resource_ownership": "not-certified",
+      "release_gate": "handler-authz-resource-contract-and-runtime-tests-required"
+    },
+    {
+      "path": "/api/novel-reactions",
+      "methods": [
+        "GET",
+        "POST"
+      ],
+      "method_evidence": "explicit-literal-conditions",
+      "source_lines": [
+        469,
+        470
+      ],
+      "occurrences": 2,
+      "authz": "not-certified",
+      "resource_ownership": "not-certified",
+      "release_gate": "handler-authz-resource-contract-and-runtime-tests-required"
+    },
+    {
+      "path": "/api/comments",
+      "methods": [
+        "GET",
+        "POST"
+      ],
+      "method_evidence": "explicit-literal-conditions",
+      "source_lines": [
+        471,
+        472
+      ],
+      "occurrences": 2,
+      "authz": "not-certified",
+      "resource_ownership": "not-certified",
+      "release_gate": "handler-authz-resource-contract-and-runtime-tests-required"
+    },
+    {
+      "path": "/api/comments/like",
+      "methods": [
+        "POST"
+      ],
+      "method_evidence": "explicit-literal-conditions",
+      "source_lines": [
+        473
+      ],
+      "occurrences": 1,
+      "authz": "not-certified",
+      "resource_ownership": "not-certified",
+      "release_gate": "handler-authz-resource-contract-and-runtime-tests-required"
+    },
+    {
+      "path": "/api/comments/report",
+      "methods": [
+        "POST"
+      ],
+      "method_evidence": "explicit-literal-conditions",
+      "source_lines": [
+        474
+      ],
+      "occurrences": 1,
+      "authz": "not-certified",
+      "resource_ownership": "not-certified",
+      "release_gate": "handler-authz-resource-contract-and-runtime-tests-required"
+    },
+    {
+      "path": "/api/rating",
+      "methods": [
+        "GET",
+        "POST"
+      ],
+      "method_evidence": "explicit-literal-conditions",
+      "source_lines": [
+        475,
+        476,
+        503
+      ],
+      "occurrences": 3,
+      "authz": "not-certified",
+      "resource_ownership": "not-certified",
+      "release_gate": "handler-authz-resource-contract-and-runtime-tests-required"
+    },
+    {
+      "path": "/api/admin/community/comments",
+      "methods": [
+        "GET",
+        "PATCH"
+      ],
+      "method_evidence": "explicit-literal-conditions",
+      "source_lines": [
+        477,
+        478
+      ],
+      "occurrences": 2,
+      "authz": "not-certified",
+      "resource_ownership": "not-certified",
+      "release_gate": "handler-authz-resource-contract-and-runtime-tests-required"
+    },
+    {
+      "path": "/api/admin/community/reports",
+      "methods": [
+        "GET",
+        "PATCH"
+      ],
+      "method_evidence": "explicit-literal-conditions",
+      "source_lines": [
+        479,
+        480
+      ],
+      "occurrences": 2,
+      "authz": "not-certified",
+      "resource_ownership": "not-certified",
+      "release_gate": "handler-authz-resource-contract-and-runtime-tests-required"
+    },
+    {
+      "path": "/api/donations",
+      "methods": [
+        "POST"
+      ],
+      "method_evidence": "explicit-literal-conditions",
+      "source_lines": [
+        482
+      ],
+      "occurrences": 1,
+      "authz": "not-certified",
+      "resource_ownership": "not-certified",
+      "release_gate": "handler-authz-resource-contract-and-runtime-tests-required"
+    },
+    {
+      "path": "/api/payment/webhook",
+      "methods": [
+        "POST"
+      ],
+      "method_evidence": "explicit-literal-conditions",
+      "source_lines": [
+        499
+      ],
+      "occurrences": 1,
+      "authz": "not-certified",
+      "resource_ownership": "not-certified",
+      "release_gate": "handler-authz-resource-contract-and-runtime-tests-required"
+    },
+    {
+      "path": "/api/requests",
+      "methods": [
+        "POST",
+        "GET"
+      ],
+      "method_evidence": "explicit-literal-conditions",
+      "source_lines": [
+        500,
+        501
+      ],
+      "occurrences": 2,
+      "authz": "not-certified",
+      "resource_ownership": "not-certified",
+      "release_gate": "handler-authz-resource-contract-and-runtime-tests-required"
+    },
+    {
+      "path": "/api/follow",
+      "methods": [
+        "POST"
+      ],
+      "method_evidence": "explicit-literal-conditions",
+      "source_lines": [
+        502
+      ],
+      "occurrences": 1,
+      "authz": "not-certified",
+      "resource_ownership": "not-certified",
+      "release_gate": "handler-authz-resource-contract-and-runtime-tests-required"
+    },
+    {
+      "path": "/api/community/discussions",
+      "methods": [
+        "GET"
+      ],
+      "method_evidence": "explicit-literal-conditions",
+      "source_lines": [
+        504
+      ],
+      "occurrences": 1,
+      "authz": "not-certified",
+      "resource_ownership": "not-certified",
+      "release_gate": "handler-authz-resource-contract-and-runtime-tests-required"
+    },
+    {
+      "path": "/api/leaderboard",
+      "methods": [
+        "GET"
+      ],
+      "method_evidence": "explicit-literal-conditions",
+      "source_lines": [
+        516
+      ],
+      "occurrences": 1,
+      "authz": "not-certified",
+      "resource_ownership": "not-certified",
+      "release_gate": "handler-authz-resource-contract-and-runtime-tests-required"
+    },
+    {
+      "path": "/api/tier-list",
+      "methods": [
+        "GET"
+      ],
+      "method_evidence": "explicit-literal-conditions",
+      "source_lines": [
+        524
+      ],
+      "occurrences": 1,
+      "authz": "not-certified",
+      "resource_ownership": "not-certified",
+      "release_gate": "handler-authz-resource-contract-and-runtime-tests-required"
+    },
+    {
+      "path": "/api/random",
+      "methods": [
+        "GET"
+      ],
+      "method_evidence": "explicit-literal-conditions",
+      "source_lines": [
+        529
+      ],
+      "occurrences": 1,
+      "authz": "not-certified",
+      "resource_ownership": "not-certified",
+      "release_gate": "handler-authz-resource-contract-and-runtime-tests-required"
+    },
+    {
+      "path": "/api/made-for-you",
+      "methods": [
+        "GET"
+      ],
+      "method_evidence": "explicit-literal-conditions",
+      "source_lines": [
+        533
+      ],
+      "occurrences": 1,
+      "authz": "not-certified",
+      "resource_ownership": "not-certified",
+      "release_gate": "handler-authz-resource-contract-and-runtime-tests-required"
+    },
+    {
+      "path": "/api/vote-novels",
+      "methods": [
+        "GET",
+        "POST"
+      ],
+      "method_evidence": "explicit-literal-conditions",
+      "source_lines": [
+        541,
+        545
+      ],
+      "occurrences": 2,
+      "authz": "not-certified",
+      "resource_ownership": "not-certified",
+      "release_gate": "handler-authz-resource-contract-and-runtime-tests-required"
+    },
+    {
+      "path": "/api/notifications",
+      "methods": [
+        "GET"
+      ],
+      "method_evidence": "explicit-literal-conditions",
+      "source_lines": [
+        552
+      ],
+      "occurrences": 1,
+      "authz": "not-certified",
+      "resource_ownership": "not-certified",
+      "release_gate": "handler-authz-resource-contract-and-runtime-tests-required"
+    },
+    {
+      "path": "/api/notifications/read",
+      "methods": [
+        "POST"
+      ],
+      "method_evidence": "explicit-literal-conditions",
+      "source_lines": [
+        553
+      ],
+      "occurrences": 1,
+      "authz": "not-certified",
+      "resource_ownership": "not-certified",
+      "release_gate": "handler-authz-resource-contract-and-runtime-tests-required"
+    },
+    {
+      "path": "/api/report",
+      "methods": [
+        "POST"
+      ],
+      "method_evidence": "explicit-literal-conditions",
+      "source_lines": [
+        554
+      ],
+      "occurrences": 1,
+      "authz": "not-certified",
+      "resource_ownership": "not-certified",
+      "release_gate": "handler-authz-resource-contract-and-runtime-tests-required"
+    },
+    {
+      "path": "/api/tickets/ledger",
+      "methods": [
+        "GET"
+      ],
+      "method_evidence": "explicit-literal-conditions",
+      "source_lines": [
+        555
+      ],
+      "occurrences": 1,
+      "authz": "not-certified",
+      "resource_ownership": "not-certified",
+      "release_gate": "handler-authz-resource-contract-and-runtime-tests-required"
+    },
+    {
+      "path": "/api/recommendations",
+      "methods": [
+        "GET"
+      ],
+      "method_evidence": "explicit-literal-conditions",
+      "source_lines": [
+        556
+      ],
+      "occurrences": 1,
+      "authz": "not-certified",
+      "resource_ownership": "not-certified",
+      "release_gate": "handler-authz-resource-contract-and-runtime-tests-required"
+    },
+    {
+      "path": "/api/follows",
+      "methods": [
+        "GET"
+      ],
+      "method_evidence": "explicit-literal-conditions",
+      "source_lines": [
+        557
+      ],
+      "occurrences": 1,
+      "authz": "not-certified",
+      "resource_ownership": "not-certified",
+      "release_gate": "handler-authz-resource-contract-and-runtime-tests-required"
+    },
+    {
+      "path": "/api/profile",
+      "methods": [
+        "GET"
+      ],
+      "method_evidence": "explicit-literal-conditions",
+      "source_lines": [
+        558
+      ],
+      "occurrences": 1,
+      "authz": "not-certified",
+      "resource_ownership": "not-certified",
+      "release_gate": "handler-authz-resource-contract-and-runtime-tests-required"
+    },
+    {
+      "path": "/api/author/applications/me",
+      "methods": [
+        "GET"
+      ],
+      "method_evidence": "explicit-literal-conditions",
+      "source_lines": [
+        559
+      ],
+      "occurrences": 1,
+      "authz": "not-certified",
+      "resource_ownership": "not-certified",
+      "release_gate": "handler-authz-resource-contract-and-runtime-tests-required"
+    },
+    {
+      "path": "/api/author/applications",
+      "methods": [
+        "POST"
+      ],
+      "method_evidence": "explicit-literal-conditions",
+      "source_lines": [
+        565
+      ],
+      "occurrences": 1,
+      "authz": "not-certified",
+      "resource_ownership": "not-certified",
+      "release_gate": "handler-authz-resource-contract-and-runtime-tests-required"
+    },
+    {
+      "path": "/api/admin/author-applications",
+      "methods": [
+        "GET"
+      ],
+      "method_evidence": "explicit-literal-conditions",
+      "source_lines": [
+        581
+      ],
+      "occurrences": 1,
+      "authz": "not-certified",
+      "resource_ownership": "not-certified",
+      "release_gate": "handler-authz-resource-contract-and-runtime-tests-required"
+    },
+    {
+      "path": "/api/admin/stats",
+      "methods": [
+        "GET"
+      ],
+      "method_evidence": "explicit-literal-conditions",
+      "source_lines": [
+        610
+      ],
+      "occurrences": 1,
+      "authz": "not-certified",
+      "resource_ownership": "not-certified",
+      "release_gate": "handler-authz-resource-contract-and-runtime-tests-required"
+    },
+    {
+      "path": "/api/admin/users",
+      "methods": [
+        "GET"
+      ],
+      "method_evidence": "explicit-literal-conditions",
+      "source_lines": [
+        611
+      ],
+      "occurrences": 1,
+      "authz": "not-certified",
+      "resource_ownership": "not-certified",
+      "release_gate": "handler-authz-resource-contract-and-runtime-tests-required"
+    },
+    {
+      "path": "/api/author/ai/status",
+      "methods": [
+        "GET"
+      ],
+      "method_evidence": "explicit-literal-conditions",
+      "source_lines": [
+        615
+      ],
+      "occurrences": 1,
+      "authz": "not-certified",
+      "resource_ownership": "not-certified",
+      "release_gate": "handler-authz-resource-contract-and-runtime-tests-required"
+    },
+    {
+      "path": "/api/author/ai/projects",
+      "methods": [
+        "GET",
+        "POST"
+      ],
+      "method_evidence": "explicit-literal-conditions",
+      "source_lines": [
+        619,
+        623
+      ],
+      "occurrences": 2,
+      "authz": "not-certified",
+      "resource_ownership": "not-certified",
+      "release_gate": "handler-authz-resource-contract-and-runtime-tests-required"
+    },
+    {
+      "path": "/api/author/ai/benchmarks",
+      "methods": [
+        "GET",
+        "POST"
+      ],
+      "method_evidence": "explicit-literal-conditions",
+      "source_lines": [
+        690,
+        696
+      ],
+      "occurrences": 2,
+      "authz": "not-certified",
+      "resource_ownership": "not-certified",
+      "release_gate": "handler-authz-resource-contract-and-runtime-tests-required"
+    },
+    {
+      "path": "/api/author/novels",
+      "methods": [
+        "GET",
+        "POST"
+      ],
+      "method_evidence": "explicit-literal-conditions",
+      "source_lines": [
+        701,
+        705
+      ],
+      "occurrences": 2,
+      "authz": "not-certified",
+      "resource_ownership": "not-certified",
+      "release_gate": "handler-authz-resource-contract-and-runtime-tests-required"
+    },
+    {
+      "path": "/api/author/chapters",
+      "methods": [
+        "GET",
+        "POST"
+      ],
+      "method_evidence": "explicit-literal-conditions",
+      "source_lines": [
+        733,
+        737
+      ],
+      "occurrences": 2,
+      "authz": "not-certified",
+      "resource_ownership": "not-certified",
+      "release_gate": "handler-authz-resource-contract-and-runtime-tests-required"
+    },
+    {
+      "path": "/api/admin/publishing",
+      "methods": [
+        "GET"
+      ],
+      "method_evidence": "explicit-literal-conditions",
+      "source_lines": [
+        757
+      ],
+      "occurrences": 1,
+      "authz": "not-certified",
+      "resource_ownership": "not-certified",
+      "release_gate": "handler-authz-resource-contract-and-runtime-tests-required"
+    },
+    {
+      "path": "/api/admin/publishing/novels",
+      "methods": [
+        "POST"
+      ],
+      "method_evidence": "explicit-literal-conditions",
+      "source_lines": [
+        758
+      ],
+      "occurrences": 1,
+      "authz": "not-certified",
+      "resource_ownership": "not-certified",
+      "release_gate": "handler-authz-resource-contract-and-runtime-tests-required"
+    },
+    {
+      "path": "/api/admin/publishing/chapters/reorder",
+      "methods": [
+        "POST"
+      ],
+      "method_evidence": "explicit-literal-conditions",
+      "source_lines": [
+        805
+      ],
+      "occurrences": 1,
+      "authz": "not-certified",
+      "resource_ownership": "not-certified",
+      "release_gate": "handler-authz-resource-contract-and-runtime-tests-required"
+    },
+    {
+      "path": "/api/admin/publishing/chapters",
+      "methods": [
+        "POST"
+      ],
+      "method_evidence": "explicit-literal-conditions",
+      "source_lines": [
+        820
+      ],
+      "occurrences": 1,
+      "authz": "not-certified",
+      "resource_ownership": "not-certified",
+      "release_gate": "handler-authz-resource-contract-and-runtime-tests-required"
+    },
+    {
+      "path": "/api/admin/donations",
+      "methods": [
+        "GET"
+      ],
+      "method_evidence": "explicit-literal-conditions",
+      "source_lines": [
+        821
+      ],
+      "occurrences": 1,
+      "authz": "not-certified",
+      "resource_ownership": "not-certified",
+      "release_gate": "handler-authz-resource-contract-and-runtime-tests-required"
+    },
+    {
+      "path": "/api/admin/reports",
+      "methods": [
+        "GET"
+      ],
+      "method_evidence": "explicit-literal-conditions",
+      "source_lines": [
+        823
+      ],
+      "occurrences": 1,
+      "authz": "not-certified",
+      "resource_ownership": "not-certified",
+      "release_gate": "handler-authz-resource-contract-and-runtime-tests-required"
+    },
+    {
+      "path": "/api/admin/tickets",
+      "methods": [
+        "POST"
+      ],
+      "method_evidence": "explicit-literal-conditions",
+      "source_lines": [
+        825
+      ],
+      "occurrences": 1,
+      "authz": "not-certified",
+      "resource_ownership": "not-certified",
+      "release_gate": "handler-authz-resource-contract-and-runtime-tests-required"
+    },
+    {
+      "path": "/api/admin/connectors",
+      "methods": [
+        "GET",
+        "PATCH",
+        "POST"
+      ],
+      "method_evidence": "explicit-literal-conditions",
+      "source_lines": [
+        826,
+        827,
+        831
+      ],
+      "occurrences": 3,
+      "authz": "not-certified",
+      "resource_ownership": "not-certified",
+      "release_gate": "handler-authz-resource-contract-and-runtime-tests-required"
+    },
+    {
+      "path": "/api/admin/omni/health",
+      "methods": [
+        "POST"
+      ],
+      "method_evidence": "explicit-literal-conditions",
+      "source_lines": [
+        828
+      ],
+      "occurrences": 1,
+      "authz": "not-certified",
+      "resource_ownership": "not-certified",
+      "release_gate": "handler-authz-resource-contract-and-runtime-tests-required"
+    },
+    {
+      "path": "/api/admin/connectors/cleanup",
+      "methods": [
+        "POST"
+      ],
+      "method_evidence": "explicit-literal-conditions",
+      "source_lines": [
+        829
+      ],
+      "occurrences": 1,
+      "authz": "not-certified",
+      "resource_ownership": "not-certified",
+      "release_gate": "handler-authz-resource-contract-and-runtime-tests-required"
+    },
+    {
+      "path": "/api/connector-authorization-requests",
+      "methods": [
+        "POST"
+      ],
+      "method_evidence": "explicit-literal-conditions",
+      "source_lines": [
+        830
+      ],
+      "occurrences": 1,
+      "authz": "not-certified",
+      "resource_ownership": "not-certified",
+      "release_gate": "handler-authz-resource-contract-and-runtime-tests-required"
+    },
+    {
+      "path": "/api/admin/requests",
+      "methods": [
+        "GET"
+      ],
+      "method_evidence": "explicit-literal-conditions",
+      "source_lines": [
+        832
+      ],
+      "occurrences": 1,
+      "authz": "not-certified",
+      "resource_ownership": "not-certified",
+      "release_gate": "handler-authz-resource-contract-and-runtime-tests-required"
+    },
+    {
+      "path": "/api/admin/connector-authorization-requests",
+      "methods": [
+        "GET"
+      ],
+      "method_evidence": "explicit-literal-conditions",
+      "source_lines": [
+        834
+      ],
+      "occurrences": 1,
+      "authz": "not-certified",
+      "resource_ownership": "not-certified",
+      "release_gate": "handler-authz-resource-contract-and-runtime-tests-required"
+    }
+  ],
+  "dynamic_api_endpoints": [
+    {
+      "pattern": "/api/novels/{id}",
+      "methods": [
+        "GET"
+      ],
+      "method_contract": "explicit-literal-method-guard",
+      "source_expression": "p.match(/^\\/api\\/novels\\/(\\d+)",
+      "source_line": 459,
+      "authz": "not-certified",
+      "resource_ownership": "not-certified",
+      "release_gate": "handler-authz-resource-contract-and-runtime-tests-required"
+    },
+    {
+      "pattern": "/api/chapters/{id}",
+      "methods": [
+        "GET"
+      ],
+      "method_contract": "explicit-literal-method-guard",
+      "source_expression": "p.match(/^\\/api\\/chapters\\/(\\d+)",
+      "source_line": 460,
+      "authz": "not-certified",
+      "resource_ownership": "not-certified",
+      "release_gate": "handler-authz-resource-contract-and-runtime-tests-required"
+    },
+    {
+      "pattern": "/api/chapters/{id}/unlock",
+      "methods": [
+        "POST"
+      ],
+      "method_contract": "explicit-literal-method-guard",
+      "source_expression": "/^\\/api\\/chapters\\/\\d+\\/unlock$/.test(p)",
+      "source_line": 461,
+      "authz": "not-certified",
+      "resource_ownership": "not-certified",
+      "release_gate": "handler-authz-resource-contract-and-runtime-tests-required"
+    },
+    {
+      "pattern": "/api/novels/{id}/batch-unlock",
+      "methods": [
+        "POST"
+      ],
+      "method_contract": "explicit-literal-method-guard",
+      "source_expression": "p.match(/^\\/api\\/novels\\/(\\d+)",
+      "source_line": 462,
+      "authz": "not-certified",
+      "resource_ownership": "not-certified",
+      "release_gate": "handler-authz-resource-contract-and-runtime-tests-required"
+    },
+    {
+      "pattern": "/api/admin/author-applications/{id}",
+      "methods": [
+        "PATCH"
+      ],
+      "method_contract": "explicit-literal-method-guard",
+      "source_expression": "p.startsWith(\"/api/admin/author-applications/\")",
+      "source_line": 588,
+      "authz": "not-certified",
+      "resource_ownership": "not-certified",
+      "release_gate": "handler-authz-resource-contract-and-runtime-tests-required"
+    },
+    {
+      "pattern": "/api/admin/users/{id}",
+      "methods": [
+        "PATCH"
+      ],
+      "method_contract": "explicit-literal-method-guard",
+      "source_expression": "p.match(/^\\/api\\/admin\\/users\\/(\\d+)",
+      "source_line": 612,
+      "authz": "not-certified",
+      "resource_ownership": "not-certified",
+      "release_gate": "handler-authz-resource-contract-and-runtime-tests-required"
+    },
+    {
+      "pattern": "/api/author/ai/projects/{id}",
+      "methods": [
+        "GET",
+        "PATCH"
+      ],
+      "method_contract": "explicit-literal-method-guard",
+      "source_expression": "p.match(/^\\/api\\/author\\/ai\\/projects\\/(\\d+)",
+      "source_line": 633,
+      "authz": "not-certified",
+      "resource_ownership": "not-certified",
+      "release_gate": "handler-authz-resource-contract-and-runtime-tests-required"
+    },
+    {
+      "pattern": "/api/admin/publishing/novels/{id}",
+      "methods": [
+        "PATCH"
+      ],
+      "method_contract": "explicit-literal-method-guard",
+      "source_expression": "p.match(/^\\/api\\/admin\\/publishing\\/novels\\/(\\d+)",
+      "source_line": 772,
+      "authz": "not-certified",
+      "resource_ownership": "not-certified",
+      "release_gate": "handler-authz-resource-contract-and-runtime-tests-required"
+    },
+    {
+      "pattern": "/api/admin/publishing/chapters/{id}",
+      "methods": [
+        "PATCH"
+      ],
+      "method_contract": "explicit-literal-method-guard",
+      "source_expression": "p.match(/^\\/api\\/admin\\/publishing\\/chapters\\/(\\d+)",
+      "source_line": 781,
+      "authz": "not-certified",
+      "resource_ownership": "not-certified",
+      "release_gate": "handler-authz-resource-contract-and-runtime-tests-required"
+    },
+    {
+      "pattern": "/api/admin/donations/{id}",
+      "methods": [
+        "PATCH"
+      ],
+      "method_contract": "explicit-literal-method-guard",
+      "source_expression": "p.match(/^\\/api\\/admin\\/donations\\/(\\d+)",
+      "source_line": 822,
+      "authz": "not-certified",
+      "resource_ownership": "not-certified",
+      "release_gate": "handler-authz-resource-contract-and-runtime-tests-required"
+    },
+    {
+      "pattern": "/api/admin/reports/{id}",
+      "methods": [
+        "PATCH"
+      ],
+      "method_contract": "explicit-literal-method-guard",
+      "source_expression": "p.match(/^\\/api\\/admin\\/reports\\/(\\d+)",
+      "source_line": 824,
+      "authz": "not-certified",
+      "resource_ownership": "not-certified",
+      "release_gate": "handler-authz-resource-contract-and-runtime-tests-required"
+    },
+    {
+      "pattern": "/api/admin/requests/{id}",
+      "methods": [
+        "PATCH"
+      ],
+      "method_contract": "explicit-literal-method-guard",
+      "source_expression": "p.startsWith(\"/api/admin/requests/\")",
+      "source_line": 833,
+      "authz": "not-certified",
+      "resource_ownership": "not-certified",
+      "release_gate": "handler-authz-resource-contract-and-runtime-tests-required"
+    },
+    {
+      "pattern": "/api/admin/connector-authorization-requests/{id}",
+      "methods": [
+        "PATCH"
+      ],
+      "method_contract": "explicit-literal-method-guard",
+      "source_expression": "p.match(/^\\/api\\/admin\\/connector-authorization-requests\\/(\\d+)",
+      "source_line": 835,
+      "authz": "not-certified",
+      "resource_ownership": "not-certified",
+      "release_gate": "handler-authz-resource-contract-and-runtime-tests-required"
+    },
+    {
+      "pattern": "/api/author/ai/projects/{id}/blueprint",
+      "methods": [
+        "POST"
+      ],
+      "method_contract": "explicit-literal-method-guard",
+      "source_expression": "/^\\/api\\/author\\/ai\\/projects\\/\\d+\\/blueprint$/.test(p)",
+      "source_line": 646,
+      "authz": "not-certified",
+      "resource_ownership": "not-certified",
+      "release_gate": "handler-authz-resource-contract-and-runtime-tests-required"
+    },
+    {
+      "pattern": "/api/author/ai/projects/{id}/run",
+      "methods": [
+        "POST"
+      ],
+      "method_contract": "explicit-literal-method-guard",
+      "source_expression": "/^\\/api\\/author\\/ai\\/projects\\/\\d+\\/run$/.test(p)",
+      "source_line": 657,
+      "authz": "not-certified",
+      "resource_ownership": "not-certified",
+      "release_gate": "handler-authz-resource-contract-and-runtime-tests-required"
+    },
+    {
+      "pattern": "/api/author/ai/projects/{id}/jobs",
+      "methods": [
+        "GET"
+      ],
+      "method_contract": "explicit-literal-method-guard",
+      "source_expression": "/^\\/api\\/author\\/ai\\/projects\\/\\d+\\/jobs$/.test(p)",
+      "source_line": 686,
+      "authz": "not-certified",
+      "resource_ownership": "not-certified",
+      "release_gate": "handler-authz-resource-contract-and-runtime-tests-required"
+    },
+    {
+      "pattern": "/api/author/novels/{id}/submit",
+      "methods": [
+        "POST"
+      ],
+      "method_contract": "explicit-literal-method-guard",
+      "source_expression": "/^\\/api\\/author\\/novels\\/\\d+\\/submit$/.test(p)",
+      "source_line": 715,
+      "authz": "not-certified",
+      "resource_ownership": "not-certified",
+      "release_gate": "handler-authz-resource-contract-and-runtime-tests-required"
+    },
+    {
+      "pattern": "/api/author/novels/{id}",
+      "methods": [
+        "PATCH"
+      ],
+      "method_contract": "explicit-literal-method-guard",
+      "source_expression": "/^\\/api\\/author\\/novels\\/\\d+$/.test(p)",
+      "source_line": 721,
+      "authz": "not-certified",
+      "resource_ownership": "not-certified",
+      "release_gate": "handler-authz-resource-contract-and-runtime-tests-required"
+    },
+    {
+      "pattern": "/api/author/chapters/{id}",
+      "methods": [
+        "PATCH"
+      ],
+      "method_contract": "explicit-literal-method-guard",
+      "source_expression": "/^\\/api\\/author\\/chapters\\/\\d+$/.test(p)",
+      "source_line": 745,
+      "authz": "not-certified",
+      "resource_ownership": "not-certified",
+      "release_gate": "handler-authz-resource-contract-and-runtime-tests-required"
+    },
+    {
+      "pattern": "/api/author/chapters/{id}/publish",
+      "methods": [
+        "POST"
+      ],
+      "method_contract": "explicit-literal-method-guard",
+      "source_expression": "/^\\/api\\/author\\/chapters\\/\\d+\\/publish$/.test(p)",
+      "source_line": 752,
+      "authz": "not-certified",
+      "resource_ownership": "not-certified",
+      "release_gate": "handler-authz-resource-contract-and-runtime-tests-required"
+    },
+    {
+      "pattern": "/api/admin/publishing/chapters",
+      "methods": [
+        "GET"
+      ],
+      "method_contract": "explicit-literal-method-guard",
+      "source_expression": "p.match(/^\\/api\\/admin\\/publishing\\/chapters(?:\\/(\\d+)",
+      "source_line": 773,
+      "authz": "not-certified",
+      "resource_ownership": "not-certified",
+      "release_gate": "handler-authz-resource-contract-and-runtime-tests-required"
+    }
+  ],
+  "sitemap": {
+    "endpoints": [
+      "/sitemap.xml",
+      "/sitemap-static.xml",
+      "/sitemap-novels.xml",
+      "/sitemap-chapters.xml"
+    ],
+    "static_paths": [
+      "/",
+      "/catalog",
+      "/formats",
+      "/genres",
+      "/tags",
+      "/community",
+      "/leaderboard",
+      "/community-taxonomy",
+      "/privacy",
+      "/terms",
+      "/copyright"
+    ],
+    "noindex_exact_paths": [
+      "/admin",
+      "/account",
+      "/login",
+      "/register",
+      "/library",
+      "/history",
+      "/following",
+      "/tickets",
+      "/requests",
+      "/settings",
+      "/notifications",
+      "/author",
+      "/search",
+      "/omniportal",
+      "/trend-factory",
+      "/made-for-you",
+      "/for-you"
+    ],
+    "invariants": [
+      "noindex is not authorization",
+      "private and personalized routes are excluded from static landing sitemap",
+      "novel/chapter sitemap entries must remain published and rights-eligible"
+    ]
+  },
+  "navigation": {
+    "href_occurrences": 168,
+    "normalized_destinations": 41,
+    "versioned_bundle_matches_unversioned": true,
+    "test": "scripts/test-client-navigation-coverage.mjs"
+  },
+  "governance": {
+    "ownership_registry": "docs/architecture/SHARED-SURFACE-OWNERSHIP.json",
+    "owner_groups": 27,
+    "ownership_rules": 349,
+    "unowned_files": 0,
+    "multiply_owned_files": 0,
+    "stale_exact_file_rules": 0,
+    "tracked_files_on_audited_branch": 464,
+    "root_level_files": 149,
+    "root_archives_and_trigger_artifacts_retained": true,
+    "validation": "Migration Governance workflow on the PR's synthetic merge commit; all 464 tracked paths and all changed paths matched exactly one owner; ADR coverage passed."
+  },
+  "release_gates": [
+    "all page shells and dynamic route families have screen-level responsive, empty, error, unauthorized and accessibility evidence",
+    "all API handlers have explicit method, authentication, role, validation, response and resource-ownership contracts",
+    "two-user adversarial isolation tests pass for every user-owned data family",
+    "redirect, locale, canonical URL and RTL behavior is verified",
+    "sitemap output is derived from or mechanically checked against this registry",
+    "required CI passes on the final reviewed commit",
+    "production deployment is separately authorized and live behavior is verified"
+  ],
+  "known_blockers": [
+    "API authorization and resource ownership are not certified by source method inventory",
+    "Cloudflare staging D1 two-user adversarial tests remain outstanding; build now runs two-user Worker-handler isolation tests against local SQLite through a D1-compatible adapter.",
+    "Full screen-level responsive, empty/error/unauthorized and visual accessibility QA remains unaudited; source-level accessibility foundation contracts pass.",
+    "Locale-prefixed URLs are not implemented; RTL chapter direction and canonical slash/legacy redirects have source-level checks but still require deployed browser verification.",
+    "POST /api/rating duplicate declaration and 1-10 rating integration remain a separate PR dependency",
+    "Dynamic sitemap endpoint dispatch and Cloudflare route declarations remain explicit wiring; Worker page-shell resolution and static sitemap membership are sourced from src/route-registry.mjs."
+  ],
+  "not_certified": [
+    "live deployment state",
+    "browser visual QA",
+    "all endpoint authorization",
+    "cross-account isolation",
+    "screen-level accessibility",
+    "runtime D1 endpoint behavior"
+  ]
+}

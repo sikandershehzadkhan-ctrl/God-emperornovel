@@ -2,11 +2,13 @@ import assert from "node:assert/strict";
 import { readFile } from "node:fs/promises";
 import {
   SITEMAP_PAGE_SIZE,
+  SITEMAP_STATIC_PATHS,
   renderSitemapIndex,
   renderStaticSitemap,
   renderNovelSitemap,
   renderChapterSitemap
 } from "../src/sitemap.mjs";
+import { NOINDEX_EXACT_PATHS } from "../src/route-registry.mjs";
 
 const origin = "https://stories.example";
 const index = renderSitemapIndex(origin, 3, 2);
@@ -21,6 +23,7 @@ for (const path of ["/", "/catalog", "/formats", "/genres", "/community", "/priv
   assert.ok(staticMap.includes(origin + path), "static sitemap includes " + path);
 }
 assert.ok(!staticMap.includes("/admin") && !staticMap.includes("/author"), "private account surfaces must not be indexed");
+for (const utility of ["/search", "/omniportal", "/trend-factory"]) assert.ok(!staticMap.includes(origin + utility), "utility route must not appear in the static sitemap: " + utility);
 const novels = renderNovelSitemap(origin, [
   { id: 7, updated_at: "2026-11-03 10:30:00" },
   { id: "<script>", updated_at: "bad" },
@@ -49,6 +52,9 @@ for (const path of ["/sitemap.xml", "/sitemap-static.xml", "/sitemap-novels.xml"
   assert.ok(wrangler.includes('"' + path + '"'), "Cloudflare routes " + path + " through the Worker");
 }
 assert.ok(robots.includes("Sitemap: " + origin.replace("https://stories.example", "https://god-emperornovel.sikandershehzadkhan.workers.dev") + "/sitemap.xml"), "robots.txt advertises the canonical sitemap");
-assert.ok(fallback.includes("/catalog") && fallback.includes("/copyright"), "static fallback sitemap contains core public pages");
+const fallbackPaths=[...fallback.matchAll(/<loc>([^<]+)<\/loc>/g)].map(match=>new URL(match[1]).pathname);
+assert.deepEqual(fallbackPaths,[...SITEMAP_STATIC_PATHS],"static fallback sitemap must exactly match canonical static route membership");
+assert.ok(fallbackPaths.every(path=>!NOINDEX_EXACT_PATHS.has(path)),"static fallback sitemap must exclude every noindex route");
+for (const utility of ["/search", "/omniportal", "/trend-factory"]) assert.ok(!fallback.includes("workers.dev" + utility + "</loc>"), "static fallback sitemap excludes utility route: " + utility);
 assert.equal(SITEMAP_PAGE_SIZE, 10000, "sitemap chunks stay bounded");
 console.log("Dynamic sitemap index, static routes, rights-filtered novels/chapters, pagination and robots.txt tests passed.");

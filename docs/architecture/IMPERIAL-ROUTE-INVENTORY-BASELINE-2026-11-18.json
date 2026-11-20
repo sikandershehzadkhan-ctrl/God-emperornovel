@@ -1,0 +1,1016 @@
+{
+  "schema_version": "1.0.0",
+  "registry": "imperial-novel-observed-route-inventory",
+  "status": "source-inventory-baseline-not-release-certified",
+  "audit_date": "2026-11-19",
+  "product": "Imperial Novel",
+  "source_evidence": {
+    "repository": "sikandershehzadkhan-ctrl/God-emperornovel",
+    "branch": "architecture/phase-01-foundation-route-registry",
+    "worker_file": "src/index.js",
+    "worker_blob": "deca24eb256f3805ad05a0b5eed7fd1cb600b141",
+    "sitemap_file": "src/sitemap.mjs",
+    "sitemap_blob": "3e6e885554751cbf6255fa0942e590573c574280",
+    "method": "Static source extraction from the PR branch: Worker dispatch, sitemap source, and client boot/navigation source. Does not prove live deployment, browser screen completeness, or authorization correctness.",
+    "client_file": "public/app.js",
+    "client_blob": "4f482c79101785300248910e1a9256d23923bd6e",
+    "commit": "290d28af632410705acae4575d6ca3b5eb7a490e"
+  },
+  "page_routes": [
+    {
+      "path": "/",
+      "shell": "index.html",
+      "status": "observed-worker-dispatch",
+      "access_policy": "not-certified",
+      "sitemap_policy": "included-in-static-sitemap",
+      "screen_completeness": "not-yet-audited"
+    },
+    {
+      "path": "/catalog",
+      "shell": "catalog.html",
+      "status": "observed-worker-dispatch",
+      "access_policy": "not-certified",
+      "sitemap_policy": "included-in-static-sitemap",
+      "screen_completeness": "not-yet-audited"
+    },
+    {
+      "path": "/discover",
+      "shell": "catalog.html",
+      "status": "observed-worker-dispatch",
+      "access_policy": "not-certified",
+      "sitemap_policy": "not-in-static-sitemap",
+      "screen_completeness": "not-yet-audited"
+    },
+    {
+      "path": "/formats",
+      "shell": "index.html",
+      "status": "observed-worker-dispatch",
+      "access_policy": "not-certified",
+      "sitemap_policy": "included-in-static-sitemap",
+      "screen_completeness": "not-yet-audited"
+    },
+    {
+      "path": "/genres",
+      "shell": "genres.html",
+      "status": "observed-worker-dispatch",
+      "access_policy": "not-certified",
+      "sitemap_policy": "included-in-static-sitemap",
+      "screen_completeness": "not-yet-audited"
+    },
+    {
+      "path": "/tags",
+      "shell": "tags.html",
+      "status": "observed-worker-dispatch",
+      "access_policy": "not-certified",
+      "sitemap_policy": "included-in-static-sitemap",
+      "screen_completeness": "not-yet-audited"
+    },
+    {
+      "path": "/search",
+      "shell": "search.html",
+      "status": "observed-worker-dispatch",
+      "access_policy": "public-utility-noindex-not-an-access-control",
+      "sitemap_policy": "excluded-from-static-sitemap-utility-route",
+      "screen_completeness": "not-yet-audited"
+    },
+    {
+      "path": "/library",
+      "shell": "library.html",
+      "status": "observed-worker-dispatch",
+      "access_policy": "noindex-route-authentication-still-requires-server-verification",
+      "sitemap_policy": "not-in-static-sitemap",
+      "screen_completeness": "not-yet-audited"
+    },
+    {
+      "path": "/history",
+      "shell": "history.html",
+      "status": "observed-worker-dispatch",
+      "access_policy": "noindex-route-authentication-still-requires-server-verification",
+      "sitemap_policy": "not-in-static-sitemap",
+      "screen_completeness": "not-yet-audited"
+    },
+    {
+      "path": "/following",
+      "shell": "following.html",
+      "status": "observed-worker-dispatch",
+      "access_policy": "noindex-route-authentication-still-requires-server-verification",
+      "sitemap_policy": "not-in-static-sitemap",
+      "screen_completeness": "not-yet-audited"
+    },
+    {
+      "path": "/tickets",
+      "shell": "tickets.html",
+      "status": "observed-worker-dispatch",
+      "access_policy": "noindex-route-authentication-still-requires-server-verification",
+      "sitemap_policy": "not-in-static-sitemap",
+      "screen_completeness": "not-yet-audited"
+    },
+    {
+      "path": "/requests",
+      "shell": "requests.html",
+      "status": "observed-worker-dispatch",
+      "access_policy": "noindex-route-authentication-still-requires-server-verification",
+      "sitemap_policy": "not-in-static-sitemap",
+      "screen_completeness": "not-yet-audited"
+    },
+    {
+      "path": "/omniportal",
+      "shell": "omniportal.html",
+      "status": "observed-worker-dispatch",
+      "access_policy": "public-utility-noindex-not-an-access-control",
+      "sitemap_policy": "excluded-from-static-sitemap-utility-route",
+      "screen_completeness": "not-yet-audited"
+    },
+    {
+      "path": "/community",
+      "shell": "index.html",
+      "status": "observed-worker-dispatch",
+      "access_policy": "not-certified",
+      "sitemap_policy": "included-in-static-sitemap",
+      "screen_completeness": "not-yet-audited"
+    },
+    {
+      "path": "/leaderboard",
+      "shell": "index.html",
+      "status": "observed-worker-dispatch",
+      "access_policy": "not-certified",
+      "sitemap_policy": "included-in-static-sitemap",
+      "screen_completeness": "not-yet-audited"
+    },
+    {
+      "path": "/tier-list",
+      "shell": "index.html",
+      "status": "observed-worker-dispatch",
+      "access_policy": "not-certified",
+      "sitemap_policy": "not-in-static-sitemap",
+      "screen_completeness": "not-yet-audited"
+    },
+    {
+      "path": "/random",
+      "shell": "index.html",
+      "status": "observed-worker-dispatch",
+      "access_policy": "not-certified",
+      "sitemap_policy": "not-in-static-sitemap",
+      "screen_completeness": "not-yet-audited"
+    },
+    {
+      "path": "/made-for-you",
+      "shell": "index.html",
+      "status": "observed-worker-dispatch",
+      "access_policy": "public-utility-noindex-not-an-access-control",
+      "sitemap_policy": "not-in-static-sitemap-personalized-utility",
+      "screen_completeness": "not-yet-audited"
+    },
+    {
+      "path": "/settings",
+      "shell": "index.html",
+      "status": "observed-worker-dispatch",
+      "access_policy": "noindex-route-authentication-still-requires-server-verification",
+      "sitemap_policy": "not-in-static-sitemap",
+      "screen_completeness": "not-yet-audited"
+    },
+    {
+      "path": "/for-you",
+      "shell": "index.html",
+      "status": "observed-worker-dispatch",
+      "access_policy": "public-utility-noindex-not-an-access-control",
+      "sitemap_policy": "not-in-static-sitemap-personalized-utility",
+      "screen_completeness": "not-yet-audited"
+    },
+    {
+      "path": "/trending",
+      "shell": "index.html",
+      "status": "observed-worker-dispatch",
+      "access_policy": "not-certified",
+      "sitemap_policy": "not-in-static-sitemap",
+      "screen_completeness": "not-yet-audited"
+    },
+    {
+      "path": "/vote",
+      "shell": "index.html",
+      "status": "observed-worker-dispatch",
+      "access_policy": "not-certified",
+      "sitemap_policy": "not-in-static-sitemap",
+      "screen_completeness": "not-yet-audited"
+    },
+    {
+      "path": "/notifications",
+      "shell": "index.html",
+      "status": "observed-worker-dispatch",
+      "access_policy": "noindex-route-authentication-still-requires-server-verification",
+      "sitemap_policy": "not-in-static-sitemap",
+      "screen_completeness": "not-yet-audited"
+    },
+    {
+      "path": "/trend-factory",
+      "shell": "index.html",
+      "status": "observed-worker-dispatch",
+      "access_policy": "public-utility-noindex-not-an-access-control",
+      "sitemap_policy": "excluded-from-static-sitemap-utility-route",
+      "screen_completeness": "not-yet-audited"
+    },
+    {
+      "path": "/community-taxonomy",
+      "shell": "community-taxonomy.html",
+      "status": "observed-worker-dispatch",
+      "access_policy": "not-certified",
+      "sitemap_policy": "included-in-static-sitemap",
+      "screen_completeness": "not-yet-audited"
+    },
+    {
+      "path": "/privacy",
+      "shell": "privacy.html",
+      "status": "observed-worker-dispatch",
+      "access_policy": "not-certified",
+      "sitemap_policy": "included-in-static-sitemap",
+      "screen_completeness": "not-yet-audited"
+    },
+    {
+      "path": "/terms",
+      "shell": "terms.html",
+      "status": "observed-worker-dispatch",
+      "access_policy": "not-certified",
+      "sitemap_policy": "included-in-static-sitemap",
+      "screen_completeness": "not-yet-audited"
+    },
+    {
+      "path": "/copyright",
+      "shell": "copyright.html",
+      "status": "observed-worker-dispatch",
+      "access_policy": "not-certified",
+      "sitemap_policy": "included-in-static-sitemap",
+      "screen_completeness": "not-yet-audited"
+    },
+    {
+      "path": "/account",
+      "shell": "account.html",
+      "status": "observed-worker-dispatch",
+      "access_policy": "noindex-route-authentication-still-requires-server-verification",
+      "sitemap_policy": "not-in-static-sitemap",
+      "screen_completeness": "not-yet-audited"
+    },
+    {
+      "path": "/login",
+      "shell": "login.html",
+      "status": "observed-worker-dispatch",
+      "access_policy": "noindex-route-authentication-still-requires-server-verification",
+      "sitemap_policy": "not-in-static-sitemap",
+      "screen_completeness": "not-yet-audited"
+    },
+    {
+      "path": "/register",
+      "shell": "register.html",
+      "status": "observed-worker-dispatch",
+      "access_policy": "noindex-route-authentication-still-requires-server-verification",
+      "sitemap_policy": "not-in-static-sitemap",
+      "screen_completeness": "not-yet-audited"
+    },
+    {
+      "path": "/admin",
+      "shell": "admin.html",
+      "status": "observed-worker-dispatch",
+      "access_policy": "noindex-route-authentication-still-requires-server-verification",
+      "sitemap_policy": "not-in-static-sitemap",
+      "screen_completeness": "not-yet-audited"
+    },
+    {
+      "path": "/author",
+      "shell": "index.html",
+      "status": "observed-worker-dispatch",
+      "access_policy": "noindex-route-authentication-still-requires-server-verification",
+      "sitemap_policy": "not-in-static-sitemap",
+      "screen_completeness": "not-yet-audited"
+    }
+  ],
+  "dynamic_page_patterns": [
+    {
+      "pattern": "^/format/[^/]+/?$",
+      "shell": "index.html",
+      "kind": "format-landing",
+      "status": "observed-worker-dispatch",
+      "access_policy": "must-be-verified-per-resource",
+      "sitemap_policy": "resource-specific-or-not-listed",
+      "screen_completeness": "not-yet-audited",
+      "source_expression": "/^\\/format\\/[^/]+\\/?$/.test(p)",
+      "samples": [
+        "/format/novel",
+        "/format/comic/"
+      ]
+    },
+    {
+      "pattern": "^/novel/[0-9]+/chapters/?$",
+      "shell": "novel.html",
+      "kind": "novel-chapter-directory",
+      "status": "observed-worker-dispatch",
+      "access_policy": "must-be-verified-per-resource",
+      "sitemap_policy": "resource-specific-or-not-listed",
+      "screen_completeness": "not-yet-audited",
+      "source_expression": "/^\\/novel\\/\\d+\\/chapters\\/?$/.test(p)",
+      "samples": [
+        "/novel/12/chapters",
+        "/novel/12/chapters/"
+      ]
+    },
+    {
+      "pattern": "^/novel/[0-9]+/?$",
+      "shell": "novel.html",
+      "kind": "novel-detail",
+      "status": "observed-worker-dispatch",
+      "access_policy": "must-be-verified-per-resource",
+      "sitemap_policy": "resource-specific-or-not-listed",
+      "screen_completeness": "not-yet-audited",
+      "source_expression": "/^\\/novel\\/\\d+\\/?$/.test(p)",
+      "samples": [
+        "/novel/12",
+        "/novel/12/"
+      ]
+    },
+    {
+      "pattern": "^/read/[0-9]+/[0-9]+/?$",
+      "shell": "read.html",
+      "kind": "chapter-reader",
+      "status": "observed-worker-dispatch",
+      "access_policy": "must-be-verified-per-resource",
+      "sitemap_policy": "resource-specific-or-not-listed",
+      "screen_completeness": "not-yet-audited",
+      "source_expression": "/^\\/read\\/\\d+\\/\\d+\\/?$/.test(p)",
+      "samples": [
+        "/read/12/3",
+        "/read/12/3/"
+      ]
+    },
+    {
+      "pattern": "^/fandom/",
+      "shell": "fandom.html",
+      "kind": "fandom-tag-redirect",
+      "status": "observed-worker-dispatch",
+      "access_policy": "must-be-verified-per-resource",
+      "sitemap_policy": "resource-specific-or-not-listed",
+      "screen_completeness": "not-a-dedicated-screen-redirect-only",
+      "source_expression": "/^\\/fandom\\//.test(p)",
+      "samples": [
+        "/fandom/example",
+        "/fandom/abc/def"
+      ],
+      "client_behavior": "client-side-redirect-to-catalog-tag",
+      "client_source_expression": "else if(p.startsWith('/fandom/'))"
+    },
+    {
+      "pattern": "^/author/[^/]+/?$",
+      "shell": "author-public.html",
+      "kind": "public-author-profile",
+      "status": "observed-worker-dispatch",
+      "access_policy": "must-be-verified-per-resource",
+      "sitemap_policy": "resource-specific-or-not-listed",
+      "screen_completeness": "not-yet-audited",
+      "source_expression": "/^\\/author\\/[^/]+\\/?$/.test(p)",
+      "samples": [
+        "/author/example",
+        "/author/a",
+        "/author/example.name/"
+      ]
+    }
+  ],
+  "api_route_literals": [
+    {
+      "path": "/api/admin/agents",
+      "status": "observed-literal-in-api-handler",
+      "methods": "not-yet-normalized",
+      "authentication": "not-yet-normalized",
+      "resource_ownership": "not-yet-normalized",
+      "response_contract": "not-yet-normalized"
+    },
+    {
+      "path": "/api/admin/agents/run",
+      "status": "observed-literal-in-api-handler",
+      "methods": "not-yet-normalized",
+      "authentication": "not-yet-normalized",
+      "resource_ownership": "not-yet-normalized",
+      "response_contract": "not-yet-normalized"
+    },
+    {
+      "path": "/api/admin/author-applications",
+      "status": "observed-literal-in-api-handler",
+      "methods": "not-yet-normalized",
+      "authentication": "not-yet-normalized",
+      "resource_ownership": "not-yet-normalized",
+      "response_contract": "not-yet-normalized"
+    },
+    {
+      "path": "/api/admin/community/comments",
+      "status": "observed-literal-in-api-handler",
+      "methods": "not-yet-normalized",
+      "authentication": "not-yet-normalized",
+      "resource_ownership": "not-yet-normalized",
+      "response_contract": "not-yet-normalized"
+    },
+    {
+      "path": "/api/admin/community/reports",
+      "status": "observed-literal-in-api-handler",
+      "methods": "not-yet-normalized",
+      "authentication": "not-yet-normalized",
+      "resource_ownership": "not-yet-normalized",
+      "response_contract": "not-yet-normalized"
+    },
+    {
+      "path": "/api/admin/connector-authorization-requests",
+      "status": "observed-literal-in-api-handler",
+      "methods": "not-yet-normalized",
+      "authentication": "not-yet-normalized",
+      "resource_ownership": "not-yet-normalized",
+      "response_contract": "not-yet-normalized"
+    },
+    {
+      "path": "/api/admin/connectors",
+      "status": "observed-literal-in-api-handler",
+      "methods": "not-yet-normalized",
+      "authentication": "not-yet-normalized",
+      "resource_ownership": "not-yet-normalized",
+      "response_contract": "not-yet-normalized"
+    },
+    {
+      "path": "/api/admin/connectors/cleanup",
+      "status": "observed-literal-in-api-handler",
+      "methods": "not-yet-normalized",
+      "authentication": "not-yet-normalized",
+      "resource_ownership": "not-yet-normalized",
+      "response_contract": "not-yet-normalized"
+    },
+    {
+      "path": "/api/admin/donations",
+      "status": "observed-literal-in-api-handler",
+      "methods": "not-yet-normalized",
+      "authentication": "not-yet-normalized",
+      "resource_ownership": "not-yet-normalized",
+      "response_contract": "not-yet-normalized"
+    },
+    {
+      "path": "/api/admin/omni/health",
+      "status": "observed-literal-in-api-handler",
+      "methods": "not-yet-normalized",
+      "authentication": "not-yet-normalized",
+      "resource_ownership": "not-yet-normalized",
+      "response_contract": "not-yet-normalized"
+    },
+    {
+      "path": "/api/admin/publishing",
+      "status": "observed-literal-in-api-handler",
+      "methods": "not-yet-normalized",
+      "authentication": "not-yet-normalized",
+      "resource_ownership": "not-yet-normalized",
+      "response_contract": "not-yet-normalized"
+    },
+    {
+      "path": "/api/admin/publishing/chapters",
+      "status": "observed-literal-in-api-handler",
+      "methods": "not-yet-normalized",
+      "authentication": "not-yet-normalized",
+      "resource_ownership": "not-yet-normalized",
+      "response_contract": "not-yet-normalized"
+    },
+    {
+      "path": "/api/admin/publishing/chapters/reorder",
+      "status": "observed-literal-in-api-handler",
+      "methods": "not-yet-normalized",
+      "authentication": "not-yet-normalized",
+      "resource_ownership": "not-yet-normalized",
+      "response_contract": "not-yet-normalized"
+    },
+    {
+      "path": "/api/admin/publishing/novels",
+      "status": "observed-literal-in-api-handler",
+      "methods": "not-yet-normalized",
+      "authentication": "not-yet-normalized",
+      "resource_ownership": "not-yet-normalized",
+      "response_contract": "not-yet-normalized"
+    },
+    {
+      "path": "/api/admin/reports",
+      "status": "observed-literal-in-api-handler",
+      "methods": "not-yet-normalized",
+      "authentication": "not-yet-normalized",
+      "resource_ownership": "not-yet-normalized",
+      "response_contract": "not-yet-normalized"
+    },
+    {
+      "path": "/api/admin/requests",
+      "status": "observed-literal-in-api-handler",
+      "methods": "not-yet-normalized",
+      "authentication": "not-yet-normalized",
+      "resource_ownership": "not-yet-normalized",
+      "response_contract": "not-yet-normalized"
+    },
+    {
+      "path": "/api/admin/stats",
+      "status": "observed-literal-in-api-handler",
+      "methods": "not-yet-normalized",
+      "authentication": "not-yet-normalized",
+      "resource_ownership": "not-yet-normalized",
+      "response_contract": "not-yet-normalized"
+    },
+    {
+      "path": "/api/admin/taxonomy",
+      "status": "observed-literal-in-api-handler",
+      "methods": "not-yet-normalized",
+      "authentication": "not-yet-normalized",
+      "resource_ownership": "not-yet-normalized",
+      "response_contract": "not-yet-normalized"
+    },
+    {
+      "path": "/api/admin/tickets",
+      "status": "observed-literal-in-api-handler",
+      "methods": "not-yet-normalized",
+      "authentication": "not-yet-normalized",
+      "resource_ownership": "not-yet-normalized",
+      "response_contract": "not-yet-normalized"
+    },
+    {
+      "path": "/api/admin/users",
+      "status": "observed-literal-in-api-handler",
+      "methods": "not-yet-normalized",
+      "authentication": "not-yet-normalized",
+      "resource_ownership": "not-yet-normalized",
+      "response_contract": "not-yet-normalized"
+    },
+    {
+      "path": "/api/agents",
+      "status": "observed-literal-in-api-handler",
+      "methods": "not-yet-normalized",
+      "authentication": "not-yet-normalized",
+      "resource_ownership": "not-yet-normalized",
+      "response_contract": "not-yet-normalized"
+    },
+    {
+      "path": "/api/auth/login",
+      "status": "observed-literal-in-api-handler",
+      "methods": "not-yet-normalized",
+      "authentication": "not-yet-normalized",
+      "resource_ownership": "not-yet-normalized",
+      "response_contract": "not-yet-normalized"
+    },
+    {
+      "path": "/api/auth/logout",
+      "status": "observed-literal-in-api-handler",
+      "methods": "not-yet-normalized",
+      "authentication": "not-yet-normalized",
+      "resource_ownership": "not-yet-normalized",
+      "response_contract": "not-yet-normalized"
+    },
+    {
+      "path": "/api/auth/register",
+      "status": "observed-literal-in-api-handler",
+      "methods": "not-yet-normalized",
+      "authentication": "not-yet-normalized",
+      "resource_ownership": "not-yet-normalized",
+      "response_contract": "not-yet-normalized"
+    },
+    {
+      "path": "/api/author/ai/benchmarks",
+      "status": "observed-literal-in-api-handler",
+      "methods": "not-yet-normalized",
+      "authentication": "not-yet-normalized",
+      "resource_ownership": "not-yet-normalized",
+      "response_contract": "not-yet-normalized"
+    },
+    {
+      "path": "/api/author/ai/projects",
+      "status": "observed-literal-in-api-handler",
+      "methods": "not-yet-normalized",
+      "authentication": "not-yet-normalized",
+      "resource_ownership": "not-yet-normalized",
+      "response_contract": "not-yet-normalized"
+    },
+    {
+      "path": "/api/author/ai/status",
+      "status": "observed-literal-in-api-handler",
+      "methods": "not-yet-normalized",
+      "authentication": "not-yet-normalized",
+      "resource_ownership": "not-yet-normalized",
+      "response_contract": "not-yet-normalized"
+    },
+    {
+      "path": "/api/author/applications",
+      "status": "observed-literal-in-api-handler",
+      "methods": "not-yet-normalized",
+      "authentication": "not-yet-normalized",
+      "resource_ownership": "not-yet-normalized",
+      "response_contract": "not-yet-normalized"
+    },
+    {
+      "path": "/api/author/applications/me",
+      "status": "observed-literal-in-api-handler",
+      "methods": "not-yet-normalized",
+      "authentication": "not-yet-normalized",
+      "resource_ownership": "not-yet-normalized",
+      "response_contract": "not-yet-normalized"
+    },
+    {
+      "path": "/api/author/chapters",
+      "status": "observed-literal-in-api-handler",
+      "methods": "not-yet-normalized",
+      "authentication": "not-yet-normalized",
+      "resource_ownership": "not-yet-normalized",
+      "response_contract": "not-yet-normalized"
+    },
+    {
+      "path": "/api/author/novels",
+      "status": "observed-literal-in-api-handler",
+      "methods": "not-yet-normalized",
+      "authentication": "not-yet-normalized",
+      "resource_ownership": "not-yet-normalized",
+      "response_contract": "not-yet-normalized"
+    },
+    {
+      "path": "/api/bookmark",
+      "status": "observed-literal-in-api-handler",
+      "methods": "not-yet-normalized",
+      "authentication": "not-yet-normalized",
+      "resource_ownership": "not-yet-normalized",
+      "response_contract": "not-yet-normalized"
+    },
+    {
+      "path": "/api/bookmarks",
+      "status": "observed-literal-in-api-handler",
+      "methods": "not-yet-normalized",
+      "authentication": "not-yet-normalized",
+      "resource_ownership": "not-yet-normalized",
+      "response_contract": "not-yet-normalized"
+    },
+    {
+      "path": "/api/comments",
+      "status": "observed-literal-in-api-handler",
+      "methods": "not-yet-normalized",
+      "authentication": "not-yet-normalized",
+      "resource_ownership": "not-yet-normalized",
+      "response_contract": "not-yet-normalized"
+    },
+    {
+      "path": "/api/comments/like",
+      "status": "observed-literal-in-api-handler",
+      "methods": "not-yet-normalized",
+      "authentication": "not-yet-normalized",
+      "resource_ownership": "not-yet-normalized",
+      "response_contract": "not-yet-normalized"
+    },
+    {
+      "path": "/api/comments/report",
+      "status": "observed-literal-in-api-handler",
+      "methods": "not-yet-normalized",
+      "authentication": "not-yet-normalized",
+      "resource_ownership": "not-yet-normalized",
+      "response_contract": "not-yet-normalized"
+    },
+    {
+      "path": "/api/community/discussions",
+      "status": "observed-literal-in-api-handler",
+      "methods": "not-yet-normalized",
+      "authentication": "not-yet-normalized",
+      "resource_ownership": "not-yet-normalized",
+      "response_contract": "not-yet-normalized"
+    },
+    {
+      "path": "/api/config",
+      "status": "observed-literal-in-api-handler",
+      "methods": "not-yet-normalized",
+      "authentication": "not-yet-normalized",
+      "resource_ownership": "not-yet-normalized",
+      "response_contract": "not-yet-normalized"
+    },
+    {
+      "path": "/api/connector-authorization-requests",
+      "status": "observed-literal-in-api-handler",
+      "methods": "not-yet-normalized",
+      "authentication": "not-yet-normalized",
+      "resource_ownership": "not-yet-normalized",
+      "response_contract": "not-yet-normalized"
+    },
+    {
+      "path": "/api/donations",
+      "status": "observed-literal-in-api-handler",
+      "methods": "not-yet-normalized",
+      "authentication": "not-yet-normalized",
+      "resource_ownership": "not-yet-normalized",
+      "response_contract": "not-yet-normalized"
+    },
+    {
+      "path": "/api/follow",
+      "status": "observed-literal-in-api-handler",
+      "methods": "not-yet-normalized",
+      "authentication": "not-yet-normalized",
+      "resource_ownership": "not-yet-normalized",
+      "response_contract": "not-yet-normalized"
+    },
+    {
+      "path": "/api/follows",
+      "status": "observed-literal-in-api-handler",
+      "methods": "not-yet-normalized",
+      "authentication": "not-yet-normalized",
+      "resource_ownership": "not-yet-normalized",
+      "response_contract": "not-yet-normalized"
+    },
+    {
+      "path": "/api/formats",
+      "status": "observed-literal-in-api-handler",
+      "methods": "not-yet-normalized",
+      "authentication": "not-yet-normalized",
+      "resource_ownership": "not-yet-normalized",
+      "response_contract": "not-yet-normalized"
+    },
+    {
+      "path": "/api/genres",
+      "status": "observed-literal-in-api-handler",
+      "methods": "not-yet-normalized",
+      "authentication": "not-yet-normalized",
+      "resource_ownership": "not-yet-normalized",
+      "response_contract": "not-yet-normalized"
+    },
+    {
+      "path": "/api/health",
+      "status": "observed-literal-in-api-handler",
+      "methods": "not-yet-normalized",
+      "authentication": "not-yet-normalized",
+      "resource_ownership": "not-yet-normalized",
+      "response_contract": "not-yet-normalized"
+    },
+    {
+      "path": "/api/history",
+      "status": "observed-literal-in-api-handler",
+      "methods": "not-yet-normalized",
+      "authentication": "not-yet-normalized",
+      "resource_ownership": "not-yet-normalized",
+      "response_contract": "not-yet-normalized"
+    },
+    {
+      "path": "/api/leaderboard",
+      "status": "observed-literal-in-api-handler",
+      "methods": "not-yet-normalized",
+      "authentication": "not-yet-normalized",
+      "resource_ownership": "not-yet-normalized",
+      "response_contract": "not-yet-normalized"
+    },
+    {
+      "path": "/api/library",
+      "status": "observed-literal-in-api-handler",
+      "methods": "not-yet-normalized",
+      "authentication": "not-yet-normalized",
+      "resource_ownership": "not-yet-normalized",
+      "response_contract": "not-yet-normalized"
+    },
+    {
+      "path": "/api/made-for-you",
+      "status": "observed-literal-in-api-handler",
+      "methods": "not-yet-normalized",
+      "authentication": "not-yet-normalized",
+      "resource_ownership": "not-yet-normalized",
+      "response_contract": "not-yet-normalized"
+    },
+    {
+      "path": "/api/me",
+      "status": "observed-literal-in-api-handler",
+      "methods": "not-yet-normalized",
+      "authentication": "not-yet-normalized",
+      "resource_ownership": "not-yet-normalized",
+      "response_contract": "not-yet-normalized"
+    },
+    {
+      "path": "/api/notifications",
+      "status": "observed-literal-in-api-handler",
+      "methods": "not-yet-normalized",
+      "authentication": "not-yet-normalized",
+      "resource_ownership": "not-yet-normalized",
+      "response_contract": "not-yet-normalized"
+    },
+    {
+      "path": "/api/notifications/read",
+      "status": "observed-literal-in-api-handler",
+      "methods": "not-yet-normalized",
+      "authentication": "not-yet-normalized",
+      "resource_ownership": "not-yet-normalized",
+      "response_contract": "not-yet-normalized"
+    },
+    {
+      "path": "/api/novel-reactions",
+      "status": "observed-literal-in-api-handler",
+      "methods": "not-yet-normalized",
+      "authentication": "not-yet-normalized",
+      "resource_ownership": "not-yet-normalized",
+      "response_contract": "not-yet-normalized"
+    },
+    {
+      "path": "/api/novels",
+      "status": "observed-literal-in-api-handler",
+      "methods": "not-yet-normalized",
+      "authentication": "not-yet-normalized",
+      "resource_ownership": "not-yet-normalized",
+      "response_contract": "not-yet-normalized"
+    },
+    {
+      "path": "/api/omni/import",
+      "status": "observed-literal-in-api-handler",
+      "methods": "not-yet-normalized",
+      "authentication": "not-yet-normalized",
+      "resource_ownership": "not-yet-normalized",
+      "response_contract": "not-yet-normalized"
+    },
+    {
+      "path": "/api/omni/jobs",
+      "status": "observed-literal-in-api-handler",
+      "methods": "not-yet-normalized",
+      "authentication": "not-yet-normalized",
+      "resource_ownership": "not-yet-normalized",
+      "response_contract": "not-yet-normalized"
+    },
+    {
+      "path": "/api/omni/resolve",
+      "status": "observed-literal-in-api-handler",
+      "methods": "not-yet-normalized",
+      "authentication": "not-yet-normalized",
+      "resource_ownership": "not-yet-normalized",
+      "response_contract": "not-yet-normalized"
+    },
+    {
+      "path": "/api/omni/search",
+      "status": "observed-literal-in-api-handler",
+      "methods": "not-yet-normalized",
+      "authentication": "not-yet-normalized",
+      "resource_ownership": "not-yet-normalized",
+      "response_contract": "not-yet-normalized"
+    },
+    {
+      "path": "/api/omni/smart-unlock",
+      "status": "observed-literal-in-api-handler",
+      "methods": "not-yet-normalized",
+      "authentication": "not-yet-normalized",
+      "resource_ownership": "not-yet-normalized",
+      "response_contract": "not-yet-normalized"
+    },
+    {
+      "path": "/api/omni/status",
+      "status": "observed-literal-in-api-handler",
+      "methods": "not-yet-normalized",
+      "authentication": "not-yet-normalized",
+      "resource_ownership": "not-yet-normalized",
+      "response_contract": "not-yet-normalized"
+    },
+    {
+      "path": "/api/payment/webhook",
+      "status": "observed-literal-in-api-handler",
+      "methods": "not-yet-normalized",
+      "authentication": "not-yet-normalized",
+      "resource_ownership": "not-yet-normalized",
+      "response_contract": "not-yet-normalized"
+    },
+    {
+      "path": "/api/profile",
+      "status": "observed-literal-in-api-handler",
+      "methods": "not-yet-normalized",
+      "authentication": "not-yet-normalized",
+      "resource_ownership": "not-yet-normalized",
+      "response_contract": "not-yet-normalized"
+    },
+    {
+      "path": "/api/public-authors",
+      "status": "observed-literal-in-api-handler",
+      "methods": "not-yet-normalized",
+      "authentication": "not-yet-normalized",
+      "resource_ownership": "not-yet-normalized",
+      "response_contract": "not-yet-normalized"
+    },
+    {
+      "path": "/api/random",
+      "status": "observed-literal-in-api-handler",
+      "methods": "not-yet-normalized",
+      "authentication": "not-yet-normalized",
+      "resource_ownership": "not-yet-normalized",
+      "response_contract": "not-yet-normalized"
+    },
+    {
+      "path": "/api/rating",
+      "status": "observed-literal-in-api-handler",
+      "methods": "not-yet-normalized",
+      "authentication": "not-yet-normalized",
+      "resource_ownership": "not-yet-normalized",
+      "response_contract": "not-yet-normalized"
+    },
+    {
+      "path": "/api/recommendations",
+      "status": "observed-literal-in-api-handler",
+      "methods": "not-yet-normalized",
+      "authentication": "not-yet-normalized",
+      "resource_ownership": "not-yet-normalized",
+      "response_contract": "not-yet-normalized"
+    },
+    {
+      "path": "/api/report",
+      "status": "observed-literal-in-api-handler",
+      "methods": "not-yet-normalized",
+      "authentication": "not-yet-normalized",
+      "resource_ownership": "not-yet-normalized",
+      "response_contract": "not-yet-normalized"
+    },
+    {
+      "path": "/api/requests",
+      "status": "observed-literal-in-api-handler",
+      "methods": "not-yet-normalized",
+      "authentication": "not-yet-normalized",
+      "resource_ownership": "not-yet-normalized",
+      "response_contract": "not-yet-normalized"
+    },
+    {
+      "path": "/api/sources",
+      "status": "observed-literal-in-api-handler",
+      "methods": "not-yet-normalized",
+      "authentication": "not-yet-normalized",
+      "resource_ownership": "not-yet-normalized",
+      "response_contract": "not-yet-normalized"
+    },
+    {
+      "path": "/api/tags",
+      "status": "observed-literal-in-api-handler",
+      "methods": "not-yet-normalized",
+      "authentication": "not-yet-normalized",
+      "resource_ownership": "not-yet-normalized",
+      "response_contract": "not-yet-normalized"
+    },
+    {
+      "path": "/api/taxonomy",
+      "status": "observed-literal-in-api-handler",
+      "methods": "not-yet-normalized",
+      "authentication": "not-yet-normalized",
+      "resource_ownership": "not-yet-normalized",
+      "response_contract": "not-yet-normalized"
+    },
+    {
+      "path": "/api/tickets/ledger",
+      "status": "observed-literal-in-api-handler",
+      "methods": "not-yet-normalized",
+      "authentication": "not-yet-normalized",
+      "resource_ownership": "not-yet-normalized",
+      "response_contract": "not-yet-normalized"
+    },
+    {
+      "path": "/api/tier-list",
+      "status": "observed-literal-in-api-handler",
+      "methods": "not-yet-normalized",
+      "authentication": "not-yet-normalized",
+      "resource_ownership": "not-yet-normalized",
+      "response_contract": "not-yet-normalized"
+    },
+    {
+      "path": "/api/vote-novels",
+      "status": "observed-literal-in-api-handler",
+      "methods": "not-yet-normalized",
+      "authentication": "not-yet-normalized",
+      "resource_ownership": "not-yet-normalized",
+      "response_contract": "not-yet-normalized"
+    }
+  ],
+  "sitemap_endpoints": [
+    "/sitemap.xml",
+    "/sitemap-static.xml",
+    "/sitemap-novels.xml",
+    "/sitemap-chapters.xml"
+  ],
+  "sitemap_static_paths": [
+    "/",
+    "/catalog",
+    "/formats",
+    "/genres",
+    "/tags",
+    "/community",
+    "/leaderboard",
+    "/community-taxonomy",
+    "/privacy",
+    "/terms",
+    "/copyright"
+  ],
+  "noindex_exact_paths": [
+    "/admin",
+    "/account",
+    "/login",
+    "/register",
+    "/library",
+    "/history",
+    "/following",
+    "/tickets",
+    "/requests",
+    "/settings",
+    "/notifications",
+    "/author",
+    "/search",
+    "/omniportal",
+    "/trend-factory",
+    "/made-for-you",
+    "/for-you"
+  ],
+  "known_gaps": [
+    "API path literals are not a complete method/permission contract. Dynamic suffix routes and delegated handlers require handler-level extraction.",
+    "A noindex directive is not authorization. Private route access must be enforced and tested server-side.",
+    "Canonical route policy is now explicitly excluding /search, /omniportal and /trend-factory as utility routes; remaining routes still require a complete indexability and canonical review.",
+    "Several exact page routes share index.html. Route existence does not prove a dedicated screen or complete interactions.",
+    "Dynamic novel/chapter sitemap inclusion is rights-filtered in the Worker; this must remain a mandatory invariant.",
+    "Observed source is not proof of deployed Worker behavior.",
+    "Static client href destinations are covered by a build-gated test; event-driven navigation and locale alternates remain unreviewed, and redirects still require deployed browser verification.",
+    "Personalized recommendation routes are noindex utilities; this does not enforce account authentication or user-data isolation."
+  ]
+}

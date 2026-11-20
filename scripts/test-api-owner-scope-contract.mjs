@@ -1,0 +1,94 @@
+import assert from "node:assert/strict";
+import { readFile } from "node:fs/promises";
+
+const worker = await readFile(new URL("../src/index.js", import.meta.url), "utf8");
+const checks = [
+  ["history reads are account-scoped", "WHERE h.user_id=?", ".bind(u.id).all()"],
+  ["library reads are account-scoped", "WHERE l.user_id=?", ".bind(u.id).all()"],
+  ["bookmark reads are account-scoped", "WHERE b.user_id=?", ".bind(u.id).all()"],
+  ["follow reads are account-scoped", "WHERE f.user_id=?", ".bind(u.id).all()"],
+  ["notifications are account-scoped", "WHERE user_id=? ORDER BY created_at DESC", ".bind(u.id).all()"],
+  ["request reads are account-scoped", "WHERE user_id=? AND week_key=?", ".bind(u.id,week)"],
+  ["AI project lists are account-scoped", "WHERE p.owner_user_id=?", ".bind(u.id).all()"],
+  ["author novel lists are account-scoped", "WHERE n.owner_user_id=?", ".bind(u.id).all()"]
+];
+const guardedRoutes = [
+  ['if(p==="/api/history"&&m==="GET")', "need(u)"],
+  ['if(p==="/api/library"&&m==="GET")', "need(u)"],
+  ['if(p==="/api/bookmarks"&&m==="GET")', "need(u)"],
+  ['if(p==="/api/follows"&&m==="GET")', "need(u)"],
+  ['if(p==="/api/notifications"&&m==="GET")', "need(u)"],
+  ['if(p==="/api/requests"&&m==="GET")', "need(u)"],
+  ['if(p==="/api/author/ai/projects"&&m==="GET")', "author(u)"],
+  ['if(p==="/api/author/novels"&&m==="GET")', "author(u)"]
+];
+for (const [route, guard] of guardedRoutes) {
+  const start = worker.indexOf(route);
+  assert.ok(start >= 0, "private endpoint must exist: " + route);
+  assert.ok(worker.slice(start, start + 500).includes(guard), "private endpoint must require its session/role guard: " + route);
+}
+
+for (const [label, query, binding] of checks) {
+  assert.ok(worker.includes(query), label + ": missing owner predicate");
+  assert.ok(worker.includes(binding), label + ": missing authenticated-user binding");
+}
+
+assert.ok(worker.includes("Number(row.owner_user_id)!==Number(u.id)"), "AI project detail and update handlers must enforce project ownership");
+assert.ok(worker.includes("Number(n.owner_user_id)!==Number(u.id)"), "author novel and chapter handlers must enforce novel ownership");
+assert.ok(worker.includes("INSERT INTO novels") && worker.includes("rights,u.id,'draft'"), "author-created novels must bind ownership to the authenticated user");
+assert.ok(worker.includes("ai_author_projects(owner_user_id,novel_id") && worker.includes(".bind(u.id,novelId,name,mode"), "AI project creation must bind ownership to the authenticated user");
+
+for (const route of [
+  'if(p==="/api/admin/users"&&m==="GET")',
+  'if(p==="/api/admin/tickets"&&m==="POST")',
+  'if(p==="/api/admin/connectors"&&m==="POST")'
+]) {
+  const start = worker.indexOf(route);
+  assert.ok(start >= 0, "admin route must exist: " + route);
+  assert.ok(worker.slice(start, start + 1200).includes("admin(u)"), "admin route must require the admin guard: " + route);
+}
+console.log("PASS: source-level account ownership predicates and admin route guards.");
+
+const inventory = JSON.parse(await readFile(new URL("../docs/architecture/API-ENDPOINT-INVENTORY-2026-11-18.json", import.meta.url), "utf8"));
+const adminEndpoints = inventory.literal_endpoints.filter(endpoint => endpoint.path.startsWith("/api/admin/"));
+for (const endpoint of adminEndpoints) {
+  for (const method of endpoint.explicit_methods) {
+    const escaped = endpoint.path.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+    const marker = new RegExp('if\\s*\\(\\s*p\\s*===?\\s*["\\\']' + escaped + '["\\\']\\s*&&\\s*m\\s*===?\\s*["\\\']' + method + '["\\\']\\s*\\)');
+    const match = marker.exec(worker);
+    assert.ok(match, "admin API method branch must exist: " + method + " " + endpoint.path);
+    const branch = worker.slice(match.index, match.index + 500);
+    if (endpoint.path === "/api/admin/taxonomy" && method === "POST") {
+      assert.ok(branch.includes("adminTaxonomy(req,env,u)"), "taxonomy moderation must delegate with the resolved user");
+      const helperStart = worker.indexOf("async function adminTaxonomy(");
+      assert.ok(helperStart >= 0 && worker.slice(helperStart, helperStart + 1200).includes("admin(u)"), "delegated taxonomy moderation must require administrator role");
+    } else {
+      assert.ok(branch.includes("admin(u)"), "admin API method must enforce administrator authorization before work: " + method + " " + endpoint.path);
+    }
+  }
+}
+for (const endpoint of inventory.dynamic_endpoints.filter(endpoint => endpoint.pattern.startsWith("/api/admin/"))) {
+  const start = worker.indexOf(endpoint.source);
+  assert.ok(start >= 0, "dynamic admin API route expression must exist: " + endpoint.pattern);
+  assert.ok(worker.slice(start, start + 700).includes("admin(u)"), "dynamic admin API route must enforce administrator authorization: " + endpoint.pattern);
+}
+console.log("PASS: administrator authorization guards cover every inventoried literal and dynamic admin API route.");
+
+const escapeRegex = value => value.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+for (const endpoint of inventory.literal_endpoints.filter(item => item.observed_helper_signals?.length)) {
+  for (const method of endpoint.explicit_methods) {
+    const marker = new RegExp('if\\s*\\(\\s*p\\s*===?\\s*["\\\']' + escapeRegex(endpoint.path) + '["\\\']\\s*&&\\s*m\\s*===?\\s*["\\\']' + method + '["\\\']\\s*\\)');
+    const match = marker.exec(worker);
+    assert.ok(match, "guarded literal API branch must exist: " + endpoint.path + " " + method);
+    const branch = worker.slice(match.index, match.index + 1000);
+    if (endpoint.path === "/api/admin/taxonomy" && method === "POST") continue;
+    assert.ok(endpoint.observed_helper_signals.some(signal => branch.includes(signal + "(u)")), "literal API authorization helper signal must remain in its route branch: " + endpoint.path + " " + method);
+  }
+}
+for (const endpoint of inventory.dynamic_endpoints.filter(item => item.observed_helper_signals?.length)) {
+  const start = worker.lastIndexOf(endpoint.source);
+  assert.ok(start >= 0, "guarded dynamic API route expression must exist: " + endpoint.pattern);
+  const branch = worker.slice(start, start + 1400);
+  assert.ok(endpoint.observed_helper_signals.some(signal => branch.includes(signal + "(u)")), "dynamic API authorization helper signal must remain in its route branch: " + endpoint.pattern);
+}
+console.log("PASS: inventoried API authorization helper signals remain attached to literal and dynamic route branches.");

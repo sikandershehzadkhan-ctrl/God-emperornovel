@@ -1102,3 +1102,8 @@ html[data-theme="light"][data-high-contrast="true"]{--text:#080616;--muted:#3935
 html[data-reduced-motion="true"] *,html[data-reduced-motion="true"] *::before,html[data-reduced-motion="true"] *::after{animation-duration:.01ms!important;animation-iteration-count:1!important;scroll-behavior:auto!important;transition-duration:.01ms!important}
 html[data-compact-cards="true"] .novelGrid{gap:10px}html[data-compact-cards="true"] .novelCard{padding:10px}
 @media(max-width:620px){.settingsGridPro{grid-template-columns:minmax(0,1fr)}.settingsPanel .settingRow{align-items:flex-start;flex-wrap:wrap}.settingsPanel .settingRow select{width:100%;max-width:none}.settingsPanel .settingRow input[type=range]{width:calc(100% - 58px)}.settingsActions>*{flex:1 1 100%;text-align:center;justify-content:center}}
+
+/* Accessible keyboard entry point */
+.skipLink{position:fixed;inset-block-start:8px;inset-inline-start:8px;z-index:10000;transform:translateY(-180%);padding:12px 16px;border:2px solid currentColor;border-radius:10px;background:var(--panel,#fff);color:var(--text,#111);font-weight:700;text-decoration:none;box-shadow:0 8px 24px rgba(0,0,0,.2)}
+.skipLink:focus,.skipLink:focus-visible{transform:translateY(0);outline:3px solid var(--brand-sapphire,#2563eb);outline-offset:3px}
+@media(forced-colors:active){.skipLink{forced-color-adjust:auto;background:Canvas;color:CanvasText;border:2px solid CanvasText}button:focus-visible,a:focus-visible,input:focus-visible,select:focus-visible,textarea:focus-visible{outline:2px solid Highlight!important;outline-offset:3px}}
