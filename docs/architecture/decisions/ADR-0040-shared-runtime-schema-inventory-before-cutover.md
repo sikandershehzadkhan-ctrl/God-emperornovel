@@ -8,7 +8,7 @@
 
 The Worker API dispatcher invokes shared core and runtime-feature schema initializers before ordinary API route dispatch. The scheduled Worker entrypoint also invokes the core initializer. These initializers contain a mixture of DDL, data backfills, cleanup, reference-data seeding, and schema-version marker writes.
 
-Canonical migrations now cover much of this behavior, but source inspection identified remaining runtime-only schema operations: two comment columns, three novel review columns, the community taxonomy submissions table, and eight optional connector configuration columns. The remote production D1 schema and exact applied migration history have not yet been inspected. Therefore neither source presence nor fresh-SQLite migration replay can prove which operations production still needs.
+Canonical migrations now cover much of this behavior, but source inspection identified remaining runtime-only schema operations: two comment columns, three novel review columns, the agent registry tables, the community taxonomy submissions table, and eight optional connector configuration columns. The remote production D1 schema and exact applied migration history have not yet been inspected. Therefore neither source presence nor fresh-SQLite migration replay can prove which operations production still needs.
 
 ## Decision
 
