@@ -27,3 +27,7 @@ The current ownership registry rejects every tracked path without exactly one de
 ## Verification
 
 The migration-governance workflow validates complete tracked-path ownership, required ADR coverage, and dependency direction. The production D1 audit SQL also has a build-gated check requiring each executable statement to be SELECT-only and rejecting common mutation/control keywords.
+
+## Explicit non-goals
+
+This ownership decision does not establish the live production schema, prove which migrations have been applied, create a migration ledger, or establish backup restorability. Those claims require separately collected production evidence and a rehearsed recovery procedure. The read-only audit workflow is deliberately manual and must not be treated as a deployment prerequisite that performs writes.
