@@ -208,7 +208,7 @@ assert.ok(worker.includes('rel="canonical"') && worker.includes('property="og:ur
 assert.ok(worker.includes('const noindexPattern=/^\\/fandom\\//.test(p)'),
   "fandom compatibility routes must be noindex");
 
-const languageMatch = client.match(/const IN_LANG=(\{[\s\S]*?\});function setINLang/);
+const languageMatch = client.match(/const IN_LANG=(\{[\s\S]*?\});function isRtlLanguage/);
 assert.ok(languageMatch, "UI language dictionary not found");
 const uiLanguages = Object.keys(JSON.parse(languageMatch[1]));
 assert.deepEqual(uiLanguages, manifest.localePolicy.uiLanguages, "UI language choices differ from the route locale registry");
