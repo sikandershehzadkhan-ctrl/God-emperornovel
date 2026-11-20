@@ -17,7 +17,7 @@ Do not remove either shared initializer until the remote production schema and a
 
 | Runtime initializer responsibility | Canonical migration coverage | Audit result |
 |---|---|---|
-| Core identity, session, novel, chapter, taxonomy, reading, finance, notification, agent and settings baseline tables | `0001_initial.sql` through `0003_finish_product.sql` | Baseline structures are represented in the canonical chain. Verify the actual production columns and constraints remotely. |
+| Core identity, session, novel, chapter, base genres/tags taxonomy, reading, finance, notification and settings baseline tables | `0001_initial.sql` through `0003_finish_product.sql` | Baseline structures are represented in the canonical chain. Verify the actual production columns and constraints remotely. |
 | Novel ownership, publication and rights-review columns/index | `0004_legal_publishing.sql` | Covered by migration source. |
 | Chapter publication column/index and `chapter_views` | `0005_chapter_publishing.sql` | Covered by migration source. |
 | Author Studio AI project, job, run, benchmark and publish-policy tables | `0007_ai_author_studio.sql` | Covered by migration source. |
