@@ -122,7 +122,7 @@ export function collectRelativeImports(trackedPaths, readFile = file => fs.readF
   const edges = [];
   const sourceExtensions = /\.(?:[cm]?js|jsx|ts|tsx)$/i;
   const patterns = [
-    /\b(?:import|export)\s+(?:[\s\S]*?\s+from\s*)?["']([^"']+)["']/g,
+    /(?:^|\n)\s*(?:import|export)\s+(?:[\s\S]*?\s+from\s*)?["']([^"']+)["']/g,
     /\bimport\s*\(\s*["']([^"']+)["']\s*\)/g,
     /\brequire\s*\(\s*["']([^"']+)["']\s*\)/g
   ];
