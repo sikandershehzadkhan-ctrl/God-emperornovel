@@ -26,7 +26,7 @@ def user(name, email):
 
 donor = user("donor", "donor@example.test")
 admin = user("reviewer", "reviewer@example.test", "admin")
-self_reviewer = user("selfreview", "selfreview@example.test")
+self_reviewer = user("selfreview", "selfreview@example.test", "admin")
 db.commit()
 
 # A pending donation cannot be finalized without an attributable review.
