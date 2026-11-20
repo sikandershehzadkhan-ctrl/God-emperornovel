@@ -1,5 +1,6 @@
 import assert from "node:assert/strict";
 import fs from "node:fs";
+import { execFileSync } from "node:child_process";
 
 const registry = JSON.parse(fs.readFileSync("docs/architecture/API-AUTHORIZATION-REGISTRY-01N.json", "utf8"));
 const worker = fs.readFileSync("src/index.js", "utf8");
@@ -10,6 +11,12 @@ assert.equal(registry.version, 1);
 assert.equal(registry.sourceFile, "src/index.js");
 assert.match(registry.sourceBlob, /^src\/index\.js@[a-f0-9]{40}$/);
 assert.equal(routeManifest.apiAuthorizationRegistry, "docs/architecture/API-AUTHORIZATION-REGISTRY-01N.json");
+const indexBlob = execFileSync("git", ["hash-object", "src/index.js"], { encoding:"utf8" }).trim();
+const apiRegistryBlob = execFileSync("git", ["hash-object", "docs/architecture/API-AUTHORIZATION-REGISTRY-01N.json"], { encoding:"utf8" }).trim();
+assert.equal(registry.sourceBlob, "src/index.js@" + indexBlob, "API inventory source blob must match the checked Worker source");
+assert.equal(routeManifest.apiAuthorizationRegistrySourceBlob,
+  "docs/architecture/API-AUTHORIZATION-REGISTRY-01N.json@" + apiRegistryBlob,
+  "page route manifest must pin the API authorization registry blob");
 
 const discovered = new Map();
 for (const match of worker.matchAll(/if\(p===["']([^"']+)["'](?:&&m===["']([^"']+)["'])?/g)) {
