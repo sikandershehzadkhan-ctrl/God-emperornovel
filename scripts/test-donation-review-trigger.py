@@ -27,6 +27,7 @@ def user(name, email):
 donor = user("donor", "donor@example.test")
 admin = user("reviewer", "reviewer@example.test")
 self_reviewer = user("selfreview", "selfreview@example.test")
+db.commit()
 
 # A pending donation cannot be finalized without an attributable review.
 cur = db.execute(
@@ -34,6 +35,7 @@ cur = db.execute(
     (donor, 25, "missing-review")
 )
 missing_review_donation = cur.lastrowid
+db.commit()
 try:
     db.execute("UPDATE donations SET status='approved' WHERE id=?", (missing_review_donation,))
     raise AssertionError("approval without a review unexpectedly succeeded")
@@ -47,6 +49,7 @@ cur = db.execute(
     (donor, 25, "approved-reference")
 )
 approved_id = cur.lastrowid
+db.commit()
 db.execute(
     "INSERT INTO donation_reviews(donation_id,reviewer_user_id,decision,tickets,note) VALUES(?,?,?,?,?)",
     (approved_id, admin, "approved", 25, "Payment reference independently verified")
@@ -57,6 +60,7 @@ assert db.execute(
     "SELECT COUNT(*) FROM ticket_ledger WHERE user_id=? AND reason='payment' AND reference=?",
     (donor, str(approved_id))
 ).fetchone()[0] == 1
+db.commit()
 
 # Repeated finalization cannot post a second credit or ledger row.
 db.execute("UPDATE donations SET status='approved' WHERE id=?", (approved_id,))
@@ -65,6 +69,7 @@ assert db.execute(
     "SELECT COUNT(*) FROM ticket_ledger WHERE user_id=? AND reason='payment' AND reference=?",
     (donor, str(approved_id))
 ).fetchone()[0] == 1
+db.commit()
 
 # A rejection is recorded but never credits the donor.
 cur = db.execute(
@@ -72,6 +77,7 @@ cur = db.execute(
     (donor, 40, "rejected-reference")
 )
 rejected_id = cur.lastrowid
+db.commit()
 db.execute(
     "INSERT INTO donation_reviews(donation_id,reviewer_user_id,decision,tickets,note) VALUES(?,?,?,?,?)",
     (rejected_id, admin, "rejected", 0, "Payment evidence did not match")
@@ -82,6 +88,7 @@ assert db.execute(
     "SELECT COUNT(*) FROM ticket_ledger WHERE reason='payment' AND reference=?",
     (str(rejected_id),)
 ).fetchone()[0] == 0
+db.commit()
 
 # The database independently rejects a self-review even if application validation is bypassed.
 cur = db.execute(
@@ -89,6 +96,7 @@ cur = db.execute(
     (self_reviewer, 10, "self-review")
 )
 self_id = cur.lastrowid
+db.commit()
 db.execute(
     "INSERT INTO donation_reviews(donation_id,reviewer_user_id,decision,tickets,note) VALUES(?,?,?,?,?)",
     (self_id, self_reviewer, "approved", 10, "Attempted self-review")
