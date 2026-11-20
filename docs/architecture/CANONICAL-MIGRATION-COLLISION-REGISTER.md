@@ -223,3 +223,19 @@ The #146 SSR module is independently useful and escapes story metadata, validate
 - PR #146's Worker diff is stacked with unrelated catalog/search changes from #149 and must not be copied wholesale.
 
 **Safe next step:** split the SSR module into content-only rendering (or refactor its header to use the canonical shell), add a root-only Worker render path that queries published, rights-cleared novels with a strict limit, and change client boot to preserve and progressively enhance that exact SSR root without injecting duplicate navigation. Add tests for no-JS output, duplicate header/footer absence, theme and locale boot, hydration preservation, empty data, escaping, cover URL validation, cache headers, and canonical SEO/noindex behavior. Until these conditions are met, keep the current client-rendered homepage and do not claim SSR is live.
+
+
+## Current-main donation review and Crown-posting reconciliation (2026-11-20)
+
+Migration 0024 creates two distinct database responsibilities: a pre-transition guard requiring an attributable `donation_reviews` row, and an approval trigger that credits the donor and inserts the payment ledger row. Migration 0026 strengthens the guard so the reviewer must be independent of the donor.
+
+The current-main Worker previously performed the donation status transition and then separately credited `users.tickets` and inserted `ticket_ledger` rows in its application batch. Leaving that code unchanged while enabling the 0024 approval trigger would post the same approval twice. The prior admin UI also supplied no review note, although `donation_reviews.note` is mandatory.
+
+The current-main integration candidate resolves the collision by making the database trigger the sole Crown/ledger posting authority:
+- The admin API validates an authenticated reviewer, rejects self-review, and requires a 1–1000 character note for both approval and rejection.
+- The API inserts the attributable review row before transitioning the pending donation.
+- The application no longer issues a second ticket-balance update or payment-ledger insert.
+- The admin UI captures the required review note.
+- The SQLite regression suite verifies missing-review rejection, self-review rejection, immutable review history, exactly-once approval credit/ledger posting, and zero credit on rejection.
+
+Do not merge the migration trigger and the old application-side posting logic together. Do not remove the trigger without an explicit, tested change of posting authority. Production D1 still requires its independent read-only schema audit, verified backup/restore rehearsal, and reviewed release plan.
