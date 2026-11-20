@@ -25,7 +25,7 @@ def user(name, email):
     return cur.lastrowid
 
 donor = user("donor", "donor@example.test")
-admin = user("reviewer", "reviewer@example.test")
+admin = user("reviewer", "reviewer@example.test", "admin")
 self_reviewer = user("selfreview", "selfreview@example.test")
 db.commit()
 
