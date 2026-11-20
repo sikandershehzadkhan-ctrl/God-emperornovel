@@ -1,0 +1,29 @@
+name: Imperial Novel Route Registry Validation
+
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - "src/index.js"
+      - "src/sitemap.mjs"
+      - "docs/architecture/IMPERIAL-ROUTE-REGISTRY-01N.json"
+      - "scripts/test-route-registry.mjs"
+      - "package.json"
+      - ".github/workflows/route-registry-validation.yml"
+
+permissions:
+  contents: read
+
+jobs:
+  route-registry:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Check out source
+        uses: actions/checkout@v4
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Validate canonical Worker route registry
+        run: npm run check:route-registry
