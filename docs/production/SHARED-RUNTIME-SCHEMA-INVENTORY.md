@@ -31,8 +31,9 @@ These are concrete DDL operations still present in the runtime initializers and 
 
 1. **Comments columns:** `comments.parent_id INTEGER` and `comments.edited_at TEXT`, added by `createRuntimeFeatureSchemaEnsurer()` in `src/runtime-feature-schema.mjs`.
 2. **Novel review columns:** `novels.review_feedback TEXT`, `novels.reviewed_by INTEGER`, and `novels.reviewed_at TEXT`, added by `ensurePublishingSchema()` in `src/index.js`. Migration 0004 covers the other publication/rights columns but not these three review fields.
-3. **Community taxonomy proposals:** `taxonomy_submissions`, created by `ensureCommunityTaxonomySchema()` in `src/index.js`.
-4. **Optional connector configuration columns:** `connectors.search_url`, `connectors.auth_header`, `connectors.secret_name`, `connectors.rights_evidence_url`, `connectors.terms_url`, `connectors.rights_notes`, `connectors.metadata_import_allowed`, and `connectors.attribution_required`, added by `ensureOmniTables()` in `src/index.js`.
+3. **Agent registry tables:** `agents`, `agent_runs`, and `idx_agent_runs_agent`, created by the core initializer in `src/index.js`. These are used by the local agent registry and run history; the inspected baseline migrations 0001–0011 do not define them.
+4. **Community taxonomy proposals:** `taxonomy_submissions`, created by `ensureCommunityTaxonomySchema()` in `src/index.js`.
+5. **Optional connector configuration columns:** `connectors.search_url`, `connectors.auth_header`, `connectors.secret_name`, `connectors.rights_evidence_url`, `connectors.terms_url`, `connectors.rights_notes`, `connectors.metadata_import_allowed`, and `connectors.attribution_required`, added by `ensureOmniTables()` in `src/index.js`.
 
 Migration 0048 intentionally provisions the four OmniPortal support tables but does not claim to provision these optional connector columns. Do not infer that they exist in production merely because the runtime initializer attempts to add them.
 
