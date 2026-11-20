@@ -515,13 +515,12 @@
       "sample": "/api/author/ai/projects/42",
       "methods": [
         "GET",
-        "PATCH",
-        "DELETE"
+        "PATCH"
       ],
       "accessClass": "author-owner",
       "guard": "author(u)",
       "scope": "project.owner_user_id equals u.id unless admin",
-      "sourceMarker": "let aip=p.match(/^\\/api\\/author\\/ai\\/projects\\/"
+      "sourceMarker": "let aip=p.match(/^\\/api\\/author\\/ai\\/projects\\/(\\d+)$/);"
     },
     {
       "pattern": "^/api/admin/publishing/novels/([0-9]+)$",
@@ -595,6 +594,17 @@
       "guard": "admin(u)",
       "sourceMechanism": "prefix dispatch",
       "sourceMarker": "if(p.startsWith(\"/api/admin/requests/\")&&m===\"PATCH\")"
+    },
+    {
+      "pattern": "^/api/author/ai/projects/[0-9]+/blueprint$",
+      "sample": "/api/author/ai/projects/42/blueprint",
+      "methods": [
+        "POST"
+      ],
+      "accessClass": "author-owner",
+      "guard": "author(u)",
+      "scope": "project.owner_user_id equals u.id unless admin",
+      "sourceMarker": "if(/^\\/api\\/author\\/ai\\/projects\\/\\d+\\/blueprint$/.test(p))"
     }
   ],
   "policies": {
@@ -632,7 +642,16 @@
         "^/api/admin/author-applications/(\\\\d+)$",
         "^/api/admin/requests/(\\\\d+)$"
       ],
-      "scope": "Administrator role is checked server-side; client-provided roles are not trusted."
+      "scope": "Administrator role is checked server-side; client-provided roles are not trusted.",
+      "methodOverrides": [
+        {
+          "path": "/api/author/ai/benchmarks",
+          "methods": [
+            "POST"
+          ],
+          "guard": "admin(u)"
+        }
+      ]
     },
     "userOwned": {
       "guard": "need(u)",
