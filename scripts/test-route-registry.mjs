@@ -77,8 +77,8 @@ const sitemapHandlerEnd = worker.indexOf("\nasync function html(", sitemapHandle
 assert.ok(sitemapHandlerStart >= 0 && sitemapHandlerEnd > sitemapHandlerStart,
   "Worker sitemap handler not found");
 const sitemapHandler = worker.slice(sitemapHandlerStart, sitemapHandlerEnd);
-const sitemapSql = [...sitemapHandler.matchAll(/env\\.DB\\.prepare\\("([^"]+)"\\)/g)]
-  .map(match => match[1].replace(/\\s+/g, " ").trim());
+const sitemapSql = sitemapHandler.split('env.DB.prepare("').slice(1)
+  .map(statement => statement.split('")')[0].replaceAll("\n", " ").replaceAll("  ", " ").trim());
 const novelSitemapSql = sitemapSql.filter(sql => /FROM novels(?: |$)/.test(sql));
 const chapterSitemapSql = sitemapSql.filter(sql => /FROM chapters c JOIN novels n/.test(sql));
 const rightsEligibility = "rights_status IN ('original','public_domain','licensed','authorized')";
