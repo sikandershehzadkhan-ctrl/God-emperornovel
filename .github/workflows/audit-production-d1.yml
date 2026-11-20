@@ -1,10 +1,6 @@
 name: Imperial Novel Read-Only Production D1 Audit
 
 on:
-  push:
-    branches: [main]
-    paths:
-      - '.github/workflows/audit-production-d1.yml'
   workflow_dispatch:
     inputs:
       confirm_read_only_audit:
@@ -25,7 +21,7 @@ concurrency:
 
 jobs:
   audit:
-    if: ${{ github.event_name == 'push' || inputs.confirm_read_only_audit == 'yes' }}
+    if: ${{ inputs.confirm_read_only_audit == 'yes' }}
     runs-on: ubuntu-latest
     timeout-minutes: 5
     steps:
@@ -190,3 +186,14 @@ jobs:
           run_query "Published chapter integrity (aggregate only)" "SELECT COUNT(*) AS published_chapters, SUM(CASE WHEN n.id IS NULL THEN 1 ELSE 0 END) AS chapters_without_novel FROM chapters c LEFT JOIN novels n ON n.id=c.novel_id WHERE COALESCE(c.publication_status,'published')='published';"
           echo
           echo "Audit completed with SELECT/PRAGMA statements only. No data was changed and no deployment was performed."
+
+      - name: Capture complete read-only schema and foreign-key inventory
+        shell: bash
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+        run: |
+          set -euo pipefail
+          echo "===== Complete SQLite schema object inventory (read-only) ====="
+          npx --yes wrangler@4 d1 execute god-emperornovel-db --remote --file=docs/production/production-d1-read-only-audit.sql
+          echo "PASS: schema object inventory and foreign-key check completed using SELECT-only audit SQL."
