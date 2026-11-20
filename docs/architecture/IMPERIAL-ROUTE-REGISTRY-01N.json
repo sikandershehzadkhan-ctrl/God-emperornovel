@@ -2,7 +2,7 @@
   "schemaVersion": 1,
   "name": "Imperial Novel route registry",
   "sourceBranch": "main",
-  "sourceCommit": "4a218a3ebb303175b898c0374d4e03628d2dc482",
+  "sourceCommit": "22140adede0ef7af619cee733acb46da015f00f8",
   "auditDate": "2026-11-20",
   "scope": "Source-audited Worker page-shell inventory. This registry certifies dispatcher-to-shell mapping only; it does not certify client rendering completeness, authorization, ownership isolation, locale/RTL behavior, canonical metadata, live HTTP status, or production deployment.",
   "routes": [
@@ -401,7 +401,8 @@
     "Dynamic novel/chapter sitemap eligibility is rights- and publication-filtered in the Worker; runtime sitemap output still needs integration tests.",
     "Live Worker behavior, HTTP status codes, browser navigation, and deployed asset versions require runtime verification.",
     "/omniportal is publicly linked and included in the static sitemap; external search is limited to enabled authorized connectors and imports require authentication plus an enabled authorized connector. Confirm whether a global product-level disable switch is required before treating the portal as fully off.",
-    "Reader chapter-content and single/batch unlock source guards are now inventoried and regression-tested; runtime integration and concurrency tests remain open."
+    "Reader chapter-content and single/batch unlock source guards are now inventoried and regression-tested; runtime integration and concurrency tests remain open.",
+    "Reader direction is based on the novel-level language field. If a single novel may contain chapters in different languages, a chapter-level language override and corresponding API field will be needed."
   ],
   "sourceBlob": "src/index.js@cb1ecb0191cc14aa22c0095b0527649664489d83",
   "staticSitemapPaths": [
@@ -813,5 +814,32 @@
   "noindexPatterns": [
     "^/fandom/"
   ],
-  "canonicalSourceBlob": "src/route-canonical.mjs@57be091478aee74e99b42f73b3132081233bf562"
+  "canonicalSourceBlob": "src/route-canonical.mjs@57be091478aee74e99b42f73b3132081233bf562",
+  "localePolicy": {
+    "uiLanguages": [
+      "en",
+      "ur",
+      "hi",
+      "zh-CN",
+      "zh-TW",
+      "es",
+      "fr",
+      "id",
+      "ja",
+      "ko",
+      "pt-BR",
+      "ar",
+      "vi",
+      "fa"
+    ],
+    "rtlLanguageCodes": [
+      "ar",
+      "fa",
+      "ur"
+    ],
+    "uiDirection": "The selected interface language controls document-level direction.",
+    "readerContentDirection": "The novel/work language controls the readerContent element direction independently of the selected interface language.",
+    "languageStorage": "imperial_language in localStorage; routes do not use locale prefixes.",
+    "scope": "Current content direction is work-level because the current reader obtains language from the novel record; per-chapter language overrides for mixed-language works are not established."
+  }
 }
