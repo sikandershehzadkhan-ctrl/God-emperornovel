@@ -525,7 +525,7 @@ async function api(req,env){
  }
  if(p==="/api/tier-list"&&m==="GET"){
   const rows=(await env.DB.prepare(`SELECT n.id,n.title,n.author,n.cover_url,n.rating,n.views,COUNT(c.id) chapter_count FROM novels n LEFT JOIN chapters c ON c.novel_id=n.id AND c.publication_status='published' WHERE n.publication_status='published' AND n.rights_status IN ('original','public_domain','licensed','authorized') GROUP BY n.id ORDER BY n.rating DESC,n.views DESC LIMIT 60`).all()).results||[];
-  const tier=x=>Number(x.rating||0)>=4.5?'S':Number(x.rating||0)>=4?'A':Number(x.rating||0)>=3?'B':'C';
+  const tier=x=>Number(x.rating||0)>=9?'S':Number(x.rating||0)>=8?'A':Number(x.rating||0)>=6?'B':'C';
   return json({tiers:{S:rows.filter(x=>tier(x)==='S'),A:rows.filter(x=>tier(x)==='A'),B:rows.filter(x=>tier(x)==='B'),C:rows.filter(x=>tier(x)==='C')}});
  }
  if(p==="/api/random"&&m==="GET"){
