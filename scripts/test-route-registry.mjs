@@ -32,7 +32,9 @@ assert.deepEqual(CANONICAL_ALIASES, manifest.canonicalPolicy.aliases,
   "canonical aliases differ from runtime route registry");
 assert.ok(htmlDispatcher.includes("const route=resolvePageRoute(p)"),
   "Worker must resolve page shells from the runtime route registry");
-assert.ok(htmlDispatcher.includes('const noindex=route?.robots==="noindex"'),
+assert.ok(htmlDispatcher.includes('const noindex=!route||route.robots==="noindex"'),
+assert.ok(htmlDispatcher.includes("const pageStatus=route?200:404") && htmlDispatcher.includes("status:pageStatus"),
+  "unknown routes must return an actual 404 status");
   "Worker robots policy must come from the runtime route registry");
 assert.ok(sitemap.includes('import { STATIC_SITEMAP_PATHS } from "./route-registry.mjs";'),
   "sitemap renderer must import paths from the runtime route registry");
