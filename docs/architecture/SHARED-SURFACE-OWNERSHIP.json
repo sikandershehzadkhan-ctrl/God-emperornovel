@@ -1,6 +1,6 @@
 {
   "version": 2,
-  "purpose": "Fail-closed ownership map covering every tracked repository path. Directory-level owners are intentionally coarse initial domain boundaries; owners must be refined before the affected domain is split into independently governed modules.",
+  "purpose": "Single source of truth for every tracked repository path owner, permitted contents, dependency direction, accountable change and integration roles, and shared-surface policy.",
   "owners": [
     {
       "id": "repository-root-artifacts",
@@ -461,5 +461,6 @@
     "runtimeContractRule": "HTTP API, D1 schema, asset binding, design token and CI invocation relationships are declared separately as runtimeContracts/invokes and are not static import permissions.",
     "unresolvedRelativeImportRule": "Every relative static/dynamic import must resolve to a tracked file or the governance gate fails.",
     "noReverseDependencies": "Frontend, Worker, migrations, docs, and scripts may not import from a lower-level or unrelated domain unless explicitly allowed."
-  }
+  },
+  "registryName": "Imperial Novel canonical root-path ownership registry"
 }
