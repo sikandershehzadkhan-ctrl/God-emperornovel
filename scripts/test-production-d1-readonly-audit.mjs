@@ -36,5 +36,17 @@ assert.doesNotMatch(workflow, /^  push:/m, 'production audit must never run auto
 assert.doesNotMatch(workflow, /^  pull_request:/m, 'production audit must never run on pull requests');
 assert.match(workflow, /wrangler@4 d1 execute god-emperornovel-db --remote/, 'audit queries must explicitly target the configured remote D1 database');
 assert.doesNotMatch(workflow, /wrangler@4 d1 migrations apply|wrangler@4 deploy/, 'audit workflow must never apply migrations or deploy the Worker');
+for (const [table, column] of [
+  ['novels', 'review_feedback'], ['novels', 'reviewed_by'], ['novels', 'reviewed_at'],
+  ['comments', 'parent_id'], ['comments', 'edited_at'],
+  ['connectors', 'search_url'], ['connectors', 'auth_header'], ['connectors', 'secret_name'],
+  ['connectors', 'rights_evidence_url'], ['connectors', 'terms_url'], ['connectors', 'rights_notes'],
+  ['connectors', 'metadata_import_allowed'], ['connectors', 'attribution_required']
+]) {
+  assert.ok(workflow.includes(`('${table}','${column}')`), `production audit must inspect ${table}.${column}`);
+}
+assert.match(workflow, /PRAGMA table_info\\(agent_runs\\)/, 'audit must inspect agent run history columns');
+assert.match(workflow, /PRAGMA table_info\\(taxonomy_submissions\\)/, 'audit must inspect taxonomy proposal columns');
+
 
 console.log(`PASS: ${statements.length} production D1 audit statements are SELECT-only.`);
