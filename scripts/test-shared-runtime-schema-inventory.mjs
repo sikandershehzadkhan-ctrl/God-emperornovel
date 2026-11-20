@@ -28,6 +28,11 @@ for (const column of [
   assert.ok(inventory.includes(`connectors.${column}`), `connector schema debt is undocumented: ${column}`);
 }
 
+for (const column of ["review_feedback", "reviewed_by", "reviewed_at"]) {
+  assert.ok(worker.includes(`'${column}'`) || worker.includes(`"${column}"`), `novel review runtime column changed: ${column}`);
+  assert.ok(inventory.includes(`novels.${column}`), `novel review schema debt is undocumented: ${column}`);
+}
+
 assert.ok(worker.includes("CREATE TABLE IF NOT EXISTS taxonomy_submissions"));
 assert.ok(inventory.includes("taxonomy_submissions"), "taxonomy schema debt must remain visible");
 
