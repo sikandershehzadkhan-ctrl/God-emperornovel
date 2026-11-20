@@ -23,3 +23,7 @@ Remove schema initialization from the public status/search GET routes and authen
 ## Validation
 
 `scripts/test-omni-get-readonly.mjs` is included in the build gate. It checks the read-route side-effect boundary and verifies connector initialization remains behind the admin guard. CI and runtime tests remain required before merge.
+
+
+## Scope limitation
+These contracts guarantee that the named route branches do not invoke Omni schema creation and reject unsupported HTTP methods. They do not yet certify that the complete API request is database-read-only: the shared Worker dispatcher still invokes legacy ensureCoreSchema and ensureRuntimeFeatureSchema initialization before route dispatch. Removing those shared initializers requires a separate full schema inventory and production reconciliation; this PR does not claim that work is complete.
