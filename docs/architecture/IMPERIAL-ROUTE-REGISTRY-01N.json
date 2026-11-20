@@ -2,7 +2,7 @@
   "schemaVersion": 1,
   "name": "Imperial Novel route registry",
   "sourceBranch": "main",
-  "sourceCommit": "f8f388b0c4afb10a884e310296813174d9404fac",
+  "sourceCommit": "fc927689766803a8fb9753fb7d002171b1d84d95",
   "auditDate": "2026-11-20",
   "scope": "Source-audited route inventory with one runtime registry driving Worker page-shell dispatch, canonical aliases, noindex policy, and static sitemap paths. The registry also records initial source-backed access, locale/RTL, and navigation policies. It does not certify every API method/object-ownership rule, mixed-language per-chapter locale behavior, live HTTP/browser behavior, or global rights-gated product switches.",
   "routes": [
@@ -407,7 +407,7 @@
     "Unknown page paths now resolve to a real HTTP 404 and noindex response in source; deployed HTTP status verification remains open.",
     "API authorization registry and source tests now cover all exact API declarations plus dynamic API patterns; seeded-D1 adversarial tests and optional-session response-shape tests remain open."
   ],
-  "sourceBlob": "src/index.js@2b1d01a7a13175eb4df08ea3ca3ab6a59b93981c",
+  "sourceBlob": "src/index.js@ddb7429ac4809c733f8a44ef9c3c48c89bc4b2d3",
   "staticSitemapPaths": [
     "/",
     "/catalog",
