@@ -441,6 +441,30 @@
         "frontend-runtime-and-assets"
       ],
       "sharedSurfacePolicy": "All user-owned data requires session and object-level ownership checks; rights/publishing gates must be enforced server-side; secrets remain in environment bindings."
+    },
+    {
+      "id": "production-operations-documentation",
+      "paths": [
+        "docs/production/"
+      ],
+      "requiresAdr": true,
+      "accountableRole": "Database and production operations owner",
+      "changeOwner": "Production D1 audit, backup, restore and release evidence maintainer",
+      "integrationOwner": "Platform architecture and release owner",
+      "pathClass": "production-operations-documentation",
+      "allowedContents": [
+        "Read-only production D1 audit procedures",
+        "Canonical migration risk and release plans",
+        "Backup, restore, rehearsal and release evidence records"
+      ],
+      "dependencyDirection": "Operational documentation describes controlled procedures; runtime code must not import production documentation and documentation must not authorize unreviewed production mutations.",
+      "allowedDependencies": [],
+      "invokes": [],
+      "runtimeContracts": [
+        "database-schema",
+        "worker-runtime"
+      ],
+      "sharedSurfacePolicy": "Documentation is evidence and guidance only. Production D1 mutation, migration execution, secret changes and Worker deployment require separate explicit release authorization."
     }
   ],
   "sharedSurfaceRule": "Every changed path must match exactly one owner. Paths whose owner requiresAdr=true require an ADR under docs/architecture/decisions/ or a feature contract under docs/architecture/feature-contracts/ in the same PR. Every tracked path is also checked for exactly one owner so unregistered baseline files cannot hide until changed.",
