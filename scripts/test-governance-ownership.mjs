@@ -109,7 +109,6 @@ export function collectRelativeImports(trackedPaths, readFile = file => fs.readF
     /\bimport\s*\(\s*["']([^"']+)["']\s*\)/g,
     /\brequire\s*\(\s*["']([^"']+)["']\s*\)/g
   ];
-  ];
   for (const file of trackedPaths) {
     if (!sourceExtensions.test(file)) continue;
     const source = readFile(file);
