@@ -2,16 +2,10 @@
   "version": 1,
   "registryName": "Imperial Novel API authorization and object-ownership registry",
   "sourceFile": "src/index.js",
-  "sourceCommit": "e1b08c7d893e6f2d8f3a3a2f8f9c0b9d4f9e4d3a",
+  "sourceCommit": "main",
   "sourceBlob": "src/index.js@2cb77da4f44566740c07731327c3d47b8666572e",
   "coverage": "All exact API path/method declarations plus dynamic API patterns are inventoried; critical admin, user-owned, author-owned, public-rights and payment paths have explicit source guards and scope assertions.",
   "exactInventory": [
-    {
-      "path": "/",
-      "methods": [
-        "ANY"
-      ]
-    },
     {
       "path": "/api/admin/agents",
       "methods": [
@@ -472,17 +466,11 @@
         "GET",
         "POST"
       ]
-    },
-    {
-      "path": "/community-taxonomy",
-      "methods": [
-        "ANY"
-      ]
     }
   ],
   "dynamicInventory": [
     {
-      "pattern": "^/api/novels/(\\\\d+)$",
+      "pattern": "^/api/novels/([0-9]+)$",
       "sample": "/api/novels/42",
       "methods": [
         "GET"
@@ -491,7 +479,7 @@
       "guard": "published and rights_status allowlist"
     },
     {
-      "pattern": "^/api/chapters/(\\\\d+)$",
+      "pattern": "^/api/chapters/([0-9]+)$",
       "sample": "/api/chapters/42",
       "methods": [
         "GET"
@@ -500,7 +488,7 @@
       "guard": "published parent novel, rights allowlist, chapter publication and entitlement"
     },
     {
-      "pattern": "^/api/novels/(\\\\d+)/batch-unlock$",
+      "pattern": "^/api/novels/([0-9]+)/batch-unlock$",
       "sample": "/api/novels/42/batch-unlock",
       "methods": [
         "POST"
@@ -510,7 +498,7 @@
       "scope": "all unlock rows and ticket debit bound to u.id"
     },
     {
-      "pattern": "^/api/admin/users/(\\\\d+)$",
+      "pattern": "^/api/admin/users/([0-9]+)$",
       "sample": "/api/admin/users/42",
       "methods": [
         "PATCH"
@@ -519,7 +507,7 @@
       "guard": "admin(u)"
     },
     {
-      "pattern": "^/api/author/ai/projects/(\\\\d+)$",
+      "pattern": "^/api/author/ai/projects/([0-9]+)$",
       "sample": "/api/author/ai/projects/42",
       "methods": [
         "GET",
@@ -531,7 +519,7 @@
       "scope": "project.owner_user_id equals u.id unless admin"
     },
     {
-      "pattern": "^/api/admin/publishing/novels/(\\\\d+)$",
+      "pattern": "^/api/admin/publishing/novels/([0-9]+)$",
       "sample": "/api/admin/publishing/novels/42",
       "methods": [
         "PATCH"
@@ -540,7 +528,7 @@
       "guard": "admin(u)"
     },
     {
-      "pattern": "^/api/admin/publishing/chapters(?:/(\\\\d+))?$",
+      "pattern": "^/api/admin/publishing/chapters(?:/([0-9]+))?$",
       "sample": "/api/admin/publishing/chapters/42",
       "methods": [
         "GET",
@@ -550,7 +538,7 @@
       "guard": "admin(u)"
     },
     {
-      "pattern": "^/api/admin/donations/(\\\\d+)$",
+      "pattern": "^/api/admin/donations/([0-9]+)$",
       "sample": "/api/admin/donations/42",
       "methods": [
         "PATCH"
@@ -559,7 +547,7 @@
       "guard": "admin(u)"
     },
     {
-      "pattern": "^/api/admin/reports/(\\\\d+)$",
+      "pattern": "^/api/admin/reports/([0-9]+)$",
       "sample": "/api/admin/reports/42",
       "methods": [
         "PATCH"
@@ -568,7 +556,7 @@
       "guard": "admin(u)"
     },
     {
-      "pattern": "^/api/admin/connector-authorization-requests/(\\\\d+)$",
+      "pattern": "^/api/admin/connector-authorization-requests/([0-9]+)$",
       "sample": "/api/admin/connector-authorization-requests/42",
       "methods": [
         "PATCH"
@@ -577,7 +565,7 @@
       "guard": "admin(u)"
     },
     {
-      "pattern": "^/api/admin/author-applications/(\\\\d+)$",
+      "pattern": "^/api/admin/author-applications/([0-9]+)$",
       "sample": "/api/admin/author-applications/42",
       "methods": [
         "PATCH"
@@ -587,7 +575,7 @@
       "sourceMechanism": "prefix dispatch"
     },
     {
-      "pattern": "^/api/admin/requests/(\\\\d+)$",
+      "pattern": "^/api/admin/requests/([0-9]+)$",
       "sample": "/api/admin/requests/42",
       "methods": [
         "PATCH"
