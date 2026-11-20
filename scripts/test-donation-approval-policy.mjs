@@ -27,9 +27,9 @@ assert.equal(parseManualDonationApproval({ status: "approved", note: "Verified" 
 
 const source = readFileSync(new URL("../src/index.js", import.meta.url), "utf8");
 const start = source.indexOf("let ad=p.match");
-const end = source.indexOf('if(p==="\\/api\\/admin\\/reports"', start);
+const end = source.indexOf('if(p==="/api/admin/reports"', start);
 assert.ok(start >= 0, "admin donation decision route must remain present");
-const route = source.slice(start, source.indexOf('if(p==="\\/api\\/admin\\/reports"', start));
+const route = source.slice(start, source.indexOf('if(p==="/api/admin/reports"', start));
 for (const fragment of [
   "parseManualDonationApproval(b,d,u.id)",
   "INSERT INTO donation_reviews",
