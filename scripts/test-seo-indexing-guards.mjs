@@ -1,12 +1,15 @@
 import assert from "node:assert/strict";
+import { EXACT_ROUTE_REGISTRY, DYNAMIC_ROUTE_REGISTRY, resolvePageRoute } from "../src/route-registry.mjs";
 import { readFile } from "node:fs/promises";
 const worker=await readFile(new URL("../src/index.js",import.meta.url),"utf8");
 const robots=await readFile(new URL("../public/robots.txt",import.meta.url),"utf8");
-const privatePaths=["/admin","/account","/login","/register","/library","/history","/following","/tickets","/requests","/settings","/notifications","/author"];
-assert.ok(worker.includes('const noindex=new Set(["/admin","/account","/login","/register","/library","/history","/following","/tickets","/requests","/settings","/notifications","/author"]).has(p);'),"private HTML route list must be explicit and exact");
+const privatePaths=EXACT_ROUTE_REGISTRY.filter(route=>route.robots==="noindex").map(route=>route.path);
+assert.ok(worker.includes('const noindex=!route||route.robots==="noindex"'),"Worker must read noindex policy from the runtime route registry");
+for(const path of privatePaths)assert.equal(resolvePageRoute(path)?.robots,"noindex","route registry noindex policy includes "+path);
+assert.ok(DYNAMIC_ROUTE_REGISTRY.some(route=>route.pattern==="^/fandom/"&&route.robots==="noindex"),"fandom compatibility routes remain noindex");
 assert.ok(worker.includes('<meta name="robots" content="noindex,nofollow">'),"private HTML pages must receive a noindex meta tag");
 assert.ok(worker.includes('"x-robots-tag":noindex?"noindex, nofollow":"index, follow"'),"private route indexing policy must be sent in the HTTP response headers");
-for(const path of privatePaths)assert.ok(worker.includes('"'+path+'"'),"noindex policy includes "+path);
+for(const path of privatePaths)assert.equal(resolvePageRoute(path)?.robots,"noindex","runtime noindex route missing "+path);
 assert.ok(!worker.includes('new Set(["/author/'),"public author profile paths must not be blocked by the private author-studio rule");
 assert.ok(robots.includes("Disallow: /api/"),"robots.txt discourages crawling API endpoints");
 assert.ok(robots.includes("Allow: /")&&robots.includes("/sitemap.xml"),"robots.txt retains public indexing and the dynamic sitemap");
