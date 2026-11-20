@@ -10,7 +10,7 @@ Migration 0024 adds a database trigger that credits a donor's Crown balance and 
 
 ## Decision
 
-Use the database trigger as the single posting authority. The Worker must validate the administrator, reject self-review, require a bounded review note, insert an attributable donation_reviews row, and then transition the pending donation. The Worker must not also update the donor's balance or insert a payment ledger row. The database trigger posts both atomically with the status transition.
+Use the database trigger as the single posting authority. The Worker must validate the administrator, reject self-review, require a bounded review note, insert an attributable donation_reviews row, and then transition the pending donation. The Worker must not also update the donor's balance or insert a payment ledger row. The database trigger posts both atomically with the status transition and independently verifies that the reviewer is an active administrator.
 
 The admin interface must collect the review note for both approval and rejection. Database triggers remain the final enforcement boundary for review attribution, independent review, and immutable review history.
 
