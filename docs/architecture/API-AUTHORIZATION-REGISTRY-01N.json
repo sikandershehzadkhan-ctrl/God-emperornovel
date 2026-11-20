@@ -365,7 +365,7 @@
     {
       "path": "/api/omni/search",
       "methods": [
-        "ANY"
+        "GET"
       ]
     },
     {
@@ -377,7 +377,7 @@
     {
       "path": "/api/omni/status",
       "methods": [
-        "ANY"
+        "GET"
       ]
     },
     {
