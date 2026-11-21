@@ -227,3 +227,20 @@ The initializer uses app_settings.runtime_feature_schema_version='1' as a fast-p
 Thus the shared API bootstrap combines schema DDL, bounded-but-request-triggered rate-limit cleanup, and version-marker writes. The helper memoizes readiness in the Worker isolate and clears that memo on failure, but the database marker is not proof that the exact production definitions match the source. Cutover must reconcile these objects with canonical migration files and production D1 before removing the helper. The cleanup should become an explicitly owned maintenance task or migration only if its lifecycle and operational impact are separately approved.
 
 This is source-level evidence only. No production D1 query or modification was performed.
+### Canonical migration versus core runtime bootstrap schema drift (2026-11-21)
+
+A comparison of the inline CREATE TABLE statements in ensureCoreSchema() with migrations/0001_initial.sql confirms that these are not equivalent schema definitions. Examples:
+
+| Object | Canonical migration | Runtime bootstrap |
+|---|---|---|
+| users.role | CHECK constraint limits values to user, author, moderator, admin | No equivalent CHECK constraint |
+| sessions.user_id | Foreign key to users with ON DELETE CASCADE | No foreign key clause |
+| chapters.novel_id | Foreign key to novels with ON DELETE CASCADE | No foreign key clause |
+| novel_genres / novel_tags | Foreign keys to their parent tables with ON DELETE CASCADE | No foreign key clauses |
+| unlocks | Foreign keys to users and chapters with ON DELETE CASCADE | No foreign key clauses |
+
+Because these statements use CREATE TABLE IF NOT EXISTS, the runtime bootstrap does not repair a table that already exists with a different definition. Conversely, a fresh database created by the runtime bootstrap can receive weaker constraints than the canonical initial migration. The core initializer and migration 0001 therefore cannot be treated as interchangeable schema authorities.
+
+Cutover requirement: choose the canonical migration chain as the sole schema owner; compare production sqlite_master / PRAGMA table_info / foreign_key_list / index_list output against the intended migration result; explicitly plan any constraint rebuilds and orphan checks before applying changes. Do not attempt an in-place table rebuild or create a new migration until the production read-only audit and backup/restore rehearsal are complete.
+
+This is a source-to-migration comparison only. It does not establish which schema variant currently exists in production.
