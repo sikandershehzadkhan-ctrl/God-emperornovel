@@ -58,3 +58,8 @@ assert.ok(workflow.includes('Duplicate pending connector authorization requests 
 
 
 console.log(`PASS: ${statements.length} production D1 audit statements are SELECT-only.`);
+
+assert.ok(workflow.includes('audit_query_failures=0'), 'audit must track failed required inspections');
+assert.ok(workflow.includes('audit_query_failures=$((audit_query_failures + 1))'), 'failed required inspections must increment the failure count');
+assert.ok(workflow.includes('Read-only audit finished with $audit_query_failures failed required database inspection(s)'), 'audit must fail closed when a required inspection fails');
+assert.ok(!workflow.includes('|| echo "::warning::This read-only query failed.'), 'required schema query failures must not be downgraded to warnings');
