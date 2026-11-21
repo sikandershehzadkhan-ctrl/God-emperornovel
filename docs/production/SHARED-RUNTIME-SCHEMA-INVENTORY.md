@@ -65,3 +65,51 @@ No remote D1 query was run as part of this source audit.
 - No migration was applied to production.
 - No Worker deployment was performed.
 - The source inventory is not evidence of the production database's current state.
+
+
+## Detailed cutover ownership map (source inspection, 2026-11-21)
+
+This section expands the outstanding list into migration design inputs. It is not a migration reservation, an applied-migration ledger, or evidence about production D1.
+
+| Runtime source / responsibility | Canonical owner candidate | Required migration or cutover treatment | Data and behavior safeguards |
+|---|---|---|---|
+| `ensurePublishingSchema()`: `novels.review_feedback`, `reviewed_by`, `reviewed_at` | publishing | Add the three missing review columns and verify the existing publication/rights columns and indexes are already owned by 0004; do not duplicate them | Preserve every existing review value; additive nullable/default-compatible columns only after remote schema inspection |
+| `ensureRuntimeFeatureSchema()`: `comments.parent_id`, `comments.edited_at` | community | Add both columns; confirm the other feature tables and integrity indexes/triggers are already covered by 0028 | Preserve comment rows and existing moderation state; test parent references, edit timestamp behavior, and foreign-key policy |
+| `ensureCoreSchema()`: `agents`, `agent_runs`, `idx_agent_runs_agent` | platform-data / automation | Provision tables and index in canonical migrations; keep agent catalogue population as a separately versioned, idempotent reference-data operation | Preserve existing run history; do not reset agent status, enablement, or last-run fields during seeding |
+| `ensureCommunityTaxonomySchema()`: `taxonomy_submissions` | community | Provision the table and its uniqueness/index requirements in a canonical migration | Preserve proposal, submitter, reviewer, status and timestamps; retain pending/rejected history |
+| `ensureOmniTables()`: eight optional `connectors` columns | OmniPortal / platform-data | Add the eight columns through a deterministic migration with explicit failure behavior; 0048 owns the four support tables and 0049 owns pending-request uniqueness, not these columns | Preserve connector configuration; keep all connectors disabled unless separately authorized; never swallow ALTER failures |
+| `ensureOmniTables()`: connector events, import jobs, recommendations, connector authorization requests and indexes | platform-data | Already represented by 0048; verify exact production definitions and 0049 index before removing runtime creation | Do not recreate or overwrite existing rows; preserve user attribution and job history |
+| `ensureAuthorAISchema()`: AI project/job/run/benchmark/policy tables and indexes | ai | Already represented by 0007 plus later additive AI migrations including 0046; verify exact production definitions and all current indexes | Preserve projects, jobs, generation history, policy settings and active run fencing; no destructive rebuild without a production-shaped rehearsal |
+| `ensurePublishingSchema()`: publication backfills and `chapter_views` | publishing | Structural ownership is 0004/0005; move any required backfill into a separately reviewed, bounded data migration or verified one-time data operation | Measure affected rows first; preserve existing publication choices; prove idempotency |
+| `ensureRuntimeFeatureSchema()`: expired auth-rate-limit cleanup and schema marker | identity / platform-data | Remove schema marker dependency after cutover; move expiry cleanup to a deliberate bounded scheduled maintenance task, not a GET request | Retain rate-limit protection; cleanup must be bounded, observable, and safe under concurrent scheduled invocations |
+| `ensureCoreSchema()`: taxonomy and agent seeds, ticket-pack default, bootstrap markers | platform-data / community / automation | Separate schema from reference-data provisioning; define explicit versioned seed ownership and no-op behavior on already customized production data | Never overwrite administrator-edited settings, taxonomy, connector state, or agent configuration; do not create demo novels or chapters |
+| scheduled handler: `ensureCoreSchema()` before automation | automation / platform-data | Replace implicit schema bootstrap with an explicit readiness check; scheduled jobs must fail closed and report missing schema rather than mutate DDL | A missing migration must be observable and must not trigger an implicit schema upgrade |
+
+### Confirmed initializer call graph
+
+- The API dispatcher calls `ensureCoreSchema(env)` and `ensureRuntimeFeatureSchema(env)` before ordinary route dispatch, after the special health-check early return.
+- `ensureCoreSchema()` calls `ensurePublishingSchema()`, seeds taxonomy, creates community taxonomy schema, seeds agents, and creates Author Studio AI schema.
+- `ensureOmniTables()` is still reachable from OmniPortal route paths and `seedOmni()`; it currently suppresses individual connector-column ALTER failures and suppresses its support-table batch failure.
+- The scheduled handler calls `ensureCoreSchema()` before running automation.
+- `ensureCoreSchema()` uses an in-memory isolate promise and a `core_schema_version` marker. `ensureRuntimeFeatureSchema()` uses an in-memory promise and a separate database marker. These markers are bootstrap shortcuts, not proof that every canonical migration has been applied.
+
+### Migration allocation decision
+
+Do not reserve 0050 until the exact production schema audit identifies which of the structures above are absent, partially present, or structurally divergent. Once known, allocate the next unused number in the global register before authoring. The likely business concepts span platform-data, publishing, community, and OmniPortal, so do not force all outstanding structures into one migration merely to consume one sequence number. Prefer separate domain-owned migrations where the schema and review ownership differ. Never reuse 0047.
+
+### Cutover acceptance tests required before removing initializers
+
+1. Fresh database: applying the canonical migration chain alone creates every required table, column, index, trigger and foreign key. No Worker request is needed to prepare schema.
+2. Existing database rehearsal: use a production-shaped copy and exact remote schema findings; preserve all records, constraints, user settings, connector configuration, agent state, taxonomy submissions and AI job history.
+3. API read-only dispatch: with a fully migrated database, ordinary GET requests do not execute CREATE, ALTER, DROP, schema marker writes, seed inserts, cleanup deletes, or other bootstrap DML.
+4. Missing-schema fail-closed: remove a required object in a disposable fixture and verify the Worker reports a clear readiness failure without attempting runtime DDL.
+5. Scheduled execution: a scheduled invocation performs a read-only schema readiness check and refuses to run automation if required schema is missing; it does not call any initializer.
+6. Reference data: seed operations are explicit, versioned, idempotent and non-destructive to customized production rows. No demo novel/chapter content is inserted by production bootstrap.
+7. OmniPortal: route handlers do not call `ensureOmniTables()`; all eight connector columns and 0048/0049 objects are migration-owned and verified.
+8. Failure semantics: migration errors are surfaced; no catch-and-ignore DDL behavior remains.
+9. Source guard: CI statically rejects calls to the removed initializers from API dispatch, route handlers and scheduled execution.
+10. Rehearsal evidence: record migration checksums, before/after schema snapshots, row-count/data invariants, `PRAGMA integrity_check`, `PRAGMA foreign_key_check`, and a separately verified recovery/restore rehearsal.
+
+### Explicit non-authorization
+
+This source inspection does not authorize running the production audit workflow, applying migrations, writing production D1 data, enabling the deployment workflow, merging PR #374, or deploying the Worker. The release remains blocked until the read-only production audit is explicitly approved and the recovery/rehearsal gates are satisfied.
