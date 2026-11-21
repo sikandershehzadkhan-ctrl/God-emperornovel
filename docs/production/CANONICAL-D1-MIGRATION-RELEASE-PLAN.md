@@ -39,6 +39,9 @@ The workflow is therefore hard-disabled. Do not remove that block merely to depl
 - 0044: independent immutable approval bound to the exact disposition-plan digest.
 - 0045: specialist-scoped immutable account-deletion findings and corresponding audit events.
 - 0046: token-fenced AI Author Studio run-claim columns and lookup index.
+- 0047: retired allocation; never reuse.
+- 0048: canonical OmniPortal support tables for side-effect-free read endpoints.
+- 0049: unique pending connector authorization request per connector; requires zero duplicate pending groups before application.
 
 ## Required work before a production release
 
@@ -90,7 +93,7 @@ Migrations 0025 and 0027 are the single posting authorities for administrator cr
 
 ## OmniPortal read-route schema dependency
 
-Migration 0048 provisions the four support tables queried by side-effect-free OmniPortal GET routes. The migration is replay-safe for tables already created by the former lazy initializer. It intentionally does not add optional connector configuration columns; their remote presence is an explicit read-only audit finding and must be reconciled before any later column migration.
+Migration 0048 provisions the four support tables queried by side-effect-free OmniPortal GET routes. The migration is replay-safe for tables already created by the former lazy initializer. It intentionally does not add optional connector configuration columns; their remote presence is an explicit read-only audit finding and must be reconciled before any later column migration. Migration 0049 adds a partial unique index for one pending authorization request per connector. Its preflight must confirm there are no duplicate pending groups; the migration deliberately fails rather than deleting request history.
 
 
 ## Shared runtime schema bootstrap remains a separate blocker
