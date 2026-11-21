@@ -196,6 +196,27 @@ for (const [table, constraint] of [
 }
 assert.ok(inventory.includes("Expanded core-baseline constraint drift"), "expanded core constraint drift must remain documented");
 
+const agentTables = [
+  "CREATE TABLE IF NOT EXISTS agents (id INTEGER PRIMARY KEY AUTOINCREMENT,slug TEXT NOT NULL UNIQUE,name TEXT NOT NULL,role TEXT NOT NULL,icon TEXT DEFAULT '🤖',mode TEXT NOT NULL DEFAULT 'automation',status TEXT NOT NULL DEFAULT 'ready',enabled INTEGER NOT NULL DEFAULT 1,last_run_at TEXT,last_result TEXT DEFAULT '',created_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP)",
+  "CREATE TABLE IF NOT EXISTS agent_runs (id INTEGER PRIMARY KEY AUTOINCREMENT,agent_id INTEGER NOT NULL,trigger TEXT NOT NULL,result TEXT DEFAULT '',status TEXT NOT NULL DEFAULT 'ok',created_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP)"
+];
+for (const definition of agentTables) assert.ok(worker.includes(definition), "agent runtime schema changed without migration review");
+assert.ok(worker.includes("async function ensureAgents(env)"), "agent seed path must remain identifiable");
+assert.ok(worker.includes("INSERT OR IGNORE INTO agents(slug,name,role,icon,mode)"), "agent seed must remain reviewable");
+assert.ok(worker.includes("CREATE TABLE IF NOT EXISTS taxonomy_submissions"), "taxonomy submission runtime DDL must remain identifiable");
+assert.ok(worker.includes("async function seedTaxonomy(env)"), "taxonomy seed path must remain identifiable");
+assert.ok(worker.includes("INSERT OR IGNORE INTO genres(name,slug)"), "genre vocabulary seed must remain reviewable");
+assert.ok(worker.includes("INSERT OR IGNORE INTO tags(name,slug)"), "tag vocabulary seed must remain reviewable");
+const migrationFiles = fs.readdirSync("migrations").filter((name) => name.endsWith(".sql"));
+for (const table of ["agents", "agent_runs", "taxonomy_submissions"]) {
+  const ownedByMigration = migrationFiles.some((name) => {
+    const source = migration(name);
+    return new RegExp(`CREATE\\s+TABLE\\s+(?:IF\\s+NOT\\s+EXISTS\\s+)?${table}\\b`, "i").test(source);
+  });
+  assert.equal(ownedByMigration, false, `unexpected migration owner for ${table}; update the runtime ownership inventory`);
+}
+assert.ok(inventory.includes("Agent registry and taxonomy bootstrap ownership gap"), "agent/taxonomy runtime ownership gap must remain documented");
+
 const migration2 = migration("0002_omniportal.sql");
 const migration3 = migration("0003_finish_product.sql");
 assert.ok(worker.includes("CREATE TABLE IF NOT EXISTS user_library"), "runtime user library table must remain identifiable");
