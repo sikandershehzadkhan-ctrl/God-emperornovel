@@ -12,7 +12,7 @@ def extract(pattern, label):
 
 tick = r"\x60"
 chapter_insert = extract(
-    r"prepare\(" + tick + r"(INSERT INTO chapters\(novel_id,chapter_number,title,content,is_locked,ticket_cost,publication_status.*?)" + tick + r"\)",
+    r"prepare\(" + tick + r"(INSERT INTO chapters\(novel_id,chapter_number,title,content,is_locked,ticket_cost,publication_status\) SELECT \?,\?,\?,\?,\?,\?, 'draft' WHERE EXISTS \(SELECT 1 FROM novels WHERE id=\? AND \(owner_user_id=\? OR \?=char\(97,100,109,105,110\)\)\))" + tick + r"\)",
     "author chapter insert",
 )
 chapter_update = extract(
