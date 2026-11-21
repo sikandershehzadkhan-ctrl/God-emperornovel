@@ -47,6 +47,7 @@ for (const [table, column] of [
 }
 assert.ok(workflow.includes('PRAGMA table_info(agent_runs);'), 'audit must inspect agent run history columns');
 assert.ok(workflow.includes('PRAGMA table_info(taxonomy_submissions);'), 'audit must inspect taxonomy proposal columns');
+assert.ok(workflow.includes('Duplicate pending connector authorization requests (must be zero before migration 0049)'), 'audit must preflight duplicate pending connector requests before migration 0049');
 
 
 console.log(`PASS: ${statements.length} production D1 audit statements are SELECT-only.`);
