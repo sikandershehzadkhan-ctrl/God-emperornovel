@@ -249,3 +249,20 @@ This is a source-to-migration comparison only. It does not establish which schem
 The runtime feature initializer also defines simplified versions of tables owned by migration 0028. In particular, its comment_likes definition omits the canonical foreign keys; comment_reports omits the canonical UNIQUE(user_id,comment_id) and foreign keys; request_votes omits its canonical foreign keys. Migration 0028 adds orphan/duplicate archival, cleanup, uniqueness, validation/cascade triggers, and supporting indexes.
 
 This is another reason not to assume that a runtime marker or CREATE TABLE IF NOT EXISTS means the canonical schema is present. Migration 0028 contains integrity work beyond the runtime helper's table-creation statements. The production cutover must verify every object from 0028, including triggers and the legacy duplicate archive, not merely table names and columns.
+
+### Expanded core-baseline constraint drift (2026-11-21)
+
+A second pass compared the complete `CREATE TABLE` definitions in `ensureCoreSchema()` with `migrations/0001_initial.sql`. The previously recorded examples are not the full set. The source comparison also identifies these baseline constraint differences:
+
+| Table | Canonical migration constraint | Runtime bootstrap difference | Cutover requirement |
+|---|---|---|---|
+| `unlock_batches` | `user_id` references `users(id)` with `ON DELETE CASCADE` | Runtime definition has no foreign key | Check for orphaned user references and preserve batch history before any table rebuild |
+| `bookmarks` | `user_id` references `users(id)` with `ON DELETE CASCADE` | Runtime definition has no foreign key | Check orphaned users; preserve every bookmark and reading position |
+| `history` | `user_id` references `users(id)` with `ON DELETE CASCADE` | Runtime definition has no foreign key | Check orphaned users; preserve all reading-history rows |
+| `donations` | nullable `user_id` references `users(id)` with `ON DELETE SET NULL` | Runtime definition has no foreign key | Preserve donation records and nullable ownership semantics; do not delete orphaned financial history |
+| `comments` | `user_id` and `novel_id` reference their parent tables with cascade behavior | Runtime definition has no foreign keys | Check both orphan classes and retain moderation/content history |
+| `novel_requests` | `user_id` references `users(id)` with `ON DELETE CASCADE` | Runtime definition has no foreign key | Check orphaned user references and preserve request status/history |
+
+The earlier comparison also found differences for `users.role`, `sessions.user_id`, `chapters.novel_id`, `novel_genres`, `novel_tags`, and `unlocks`. The runtime bootstrap is therefore not a constraint-equivalent substitute for the canonical baseline, even when both create tables with matching names and many matching columns.
+
+This is source-level evidence only. It does not establish whether production D1 was initialized by migrations, by the runtime helper, or by a mixture of both. Do not rebuild tables or add repair migrations until the read-only production audit has captured actual `sqlite_master` definitions, `PRAGMA foreign_key_list` results, orphan counts, and a restorable backup.
