@@ -53,7 +53,7 @@ assert db.execute(chapter_publish, ("published",1,1,"author")).rowcount == 1
 # Chapter creation is scoped in the INSERT itself, not just a preceding read.
 assert db.execute(chapter_insert, (1,2,"Injected","bad",0,0,1,2,"author")).rowcount == 0
 assert db.execute("SELECT COUNT(*) FROM chapters WHERE novel_id=1").fetchone()[0] == 1
-assert db.execute(chapter_insert, (1,2,"A second","valid",0,0,1,1,"author")).rowcount == 1
+assert db.execute(chapter_insert, (1,3,"A second","valid",0,0,1,1,"author")).rowcount == 1
 
 # Submission is ownership-scoped at write time.
 assert db.execute(novel_submit, (1,2,"author")).rowcount == 0
