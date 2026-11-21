@@ -177,7 +177,7 @@ const aiBlueprint = worker.slice(worker.indexOf('if(/^\\/api\\/author\\/ai\\/pro
 assert.ok(aiBlueprint.includes("owner_user_id=? OR ?=char(97,100,109,105,110)"),
   "AI Story Bible writes must atomically re-check project ownership");
 const aiRun = worker.slice(worker.indexOf('if(/^\\/api\\/author\\/ai\\/projects\\/\\d+\\/run$/.test(p)'), worker.indexOf('if(/^\\/api\\/author\\/ai\\/projects\\/\\d+\\/jobs$/.test(p)'));
-assert.ok((aiRun.match(/owner_user_id=\? OR \?=char\(97,100,109,105,110\)/g) || []).length >= 3,
+assert.ok(aiRun.includes("status<>'running'") && (aiRun.match(/owner_user_id=\? OR \?=char\(97,100,109,105,110\)/g) || []).length >= 3,
   "AI generation state transitions must atomically re-check project ownership");
 assert.ok(aiRun.includes("INSERT INTO chapters") && aiRun.includes("INSERT INTO chapters") &&
   aiRun.includes("n.owner_user_id=? OR ?=char(97,100,109,105,110)") &&
