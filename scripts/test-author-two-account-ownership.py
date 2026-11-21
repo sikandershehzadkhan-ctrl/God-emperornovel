@@ -11,6 +11,10 @@ def extract(pattern, label):
     return match.group(1)
 
 tick = r"\x60"
+novel_update = extract(
+    r"prepare\(" + tick + r"(UPDATE novels SET title=.*?WHERE id=\? AND \(owner_user_id=\? OR \?=char\(97,100,109,105,110\)\))" + tick + r"\)",
+    "author novel update",
+)
 chapter_insert = extract(
     r"prepare\(" + tick + r"(INSERT INTO chapters\(novel_id,chapter_number,title,content,is_locked,ticket_cost,publication_status\) SELECT \?,\?,\?,\?,\?,\?, 'draft' WHERE EXISTS \(SELECT 1 FROM novels WHERE id=\? AND \(owner_user_id=\? OR \?=char\(97,100,109,105,110\)\)\))" + tick + r"\)",
     "author chapter insert",
@@ -36,6 +40,8 @@ for migration in sorted(Path("migrations").glob("*.sql")):
 
 # Match the documented runtime-initializer column used by the live submission SQL.
 db.execute("ALTER TABLE novels ADD COLUMN review_feedback TEXT DEFAULT ''")
+db.execute("ALTER TABLE novels ADD COLUMN reviewed_by INTEGER")
+db.execute("ALTER TABLE novels ADD COLUMN reviewed_at TEXT")
 
 db.executemany(
     "INSERT INTO users(username,email,password_hash) VALUES(?,?,?)",
@@ -58,6 +64,14 @@ assert db.execute(chapter_publish, ("published",1,1,"author")).rowcount == 1
 assert db.execute(chapter_insert, (1,2,"Injected","bad",0,0,1,2,"author")).rowcount == 0
 assert db.execute("SELECT COUNT(*) FROM chapters WHERE novel_id=1").fetchone()[0] == 1
 assert db.execute(chapter_insert, (1,3,"A second","valid",0,0,1,1,"author")).rowcount == 1
+
+# Editing a novel is ownership-scoped at write time too.
+novel_update_params = ("A changed title","","Author A","","ongoing","original","English","","","original","","",0,0,0,0,"Rights details changed.",0,0,1,2,"author")
+assert db.execute(novel_update, novel_update_params).rowcount == 0
+assert db.execute("SELECT title FROM novels WHERE id=1").fetchone()[0] == "A novel"
+owner_params = novel_update_params[:-2] + (1,"author")
+assert db.execute(novel_update, owner_params).rowcount == 1
+assert db.execute("SELECT title FROM novels WHERE id=1").fetchone()[0] == "A changed title"
 
 # Submission is ownership-scoped at write time.
 assert db.execute(novel_submit, (1,2,"author")).rowcount == 0
