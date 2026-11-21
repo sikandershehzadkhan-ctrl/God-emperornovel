@@ -99,7 +99,7 @@ ai_bible_update = extract(
     "AI Story Bible save",
 )
 ai_run_update = extract(
-    r'prepare\("(UPDATE ai_author_projects SET status=\'running\'.*?owner_user_id=\? OR \?=char\(97,100,109,105,110\)\))"\)',
+    r'prepare\("(UPDATE ai_author_projects SET status=\'running\'.*?owner_user_id=\? OR \?=char\(97,100,109,105,110\)\) AND status<>\'running\'")\)',
     "AI project run claim",
 )
 ai_job_insert = extract(
@@ -129,6 +129,7 @@ assert db.execute(ai_bible_update, ('{"owner":true}',project_a,1,"author")).rowc
 assert db.execute(ai_run_update, (project_a,2,"author")).rowcount == 0
 assert db.execute("SELECT status FROM ai_author_projects WHERE id=?", (project_a,)).fetchone()[0] == "draft"
 assert db.execute(ai_run_update, (project_a,1,"author")).rowcount == 1
+assert db.execute(ai_run_update, (project_a,1,"author")).rowcount == 0, "concurrent AI run claim must fail after the first claim"
 
 # A user cannot queue a job under another author's AI project.
 assert db.execute(ai_job_insert, (project_a,2,1,"forged prompt",project_a,2,"author")).rowcount == 0
