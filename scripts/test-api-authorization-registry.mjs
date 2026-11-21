@@ -165,6 +165,11 @@ assert.ok(worker.includes("const tier=x=>Number(x.rating||0)>=9?'S':Number(x.rat
 assert.ok(ratingPost.includes("need(u)") && ratingPost.includes("u.id"),
   "rating writes must be authenticated and scoped to the session user");
 
+assert.ok(worker.includes("WHERE id=? AND (owner_user_id=? OR ?='admin')"), 
+  "author novel update and submission writes must atomically re-check owner_user_id at mutation time");
+assert.ok(worker.includes("WHERE id=? AND EXISTS (SELECT 1 FROM novels n WHERE n.id=chapters.novel_id AND (n.owner_user_id=? OR ?='admin'))"),
+  "author chapter edits and publication writes must atomically re-check parent novel ownership");
+
 const webhook = handler("/api/payment/webhook", "POST");
 assert.ok(webhook.includes("503") && webhook.includes("temporarily disabled"),
   "payment webhook must remain disabled until provider signature/replay protections are verified");
