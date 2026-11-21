@@ -6,6 +6,22 @@ const runtime = fs.readFileSync("src/runtime-feature-schema.mjs", "utf8");
 const inventory = fs.readFileSync("docs/production/SHARED-RUNTIME-SCHEMA-INVENTORY.md", "utf8");
 const migration = (name) => fs.readFileSync(`migrations/${name}`, "utf8");
 
+const apiStart = worker.indexOf("async function api(req,env){");
+const apiEnd = worker.indexOf('if(p===" /api/agents"', apiStart);
+assert.ok(apiStart >= 0, "API dispatcher must exist");
+const apiSource = worker.slice(apiStart, apiEnd > apiStart ? apiEnd : worker.length);
+const healthFastPath = apiSource.indexOf('if(p==="/api/health"&&m==="GET")');
+const coreBootstrap = apiSource.indexOf("await ensureCoreSchema(env)");
+const featureBootstrap = apiSource.indexOf("await ensureRuntimeFeatureSchema(env)");
+assert.ok(healthFastPath >= 0 && coreBootstrap > healthFastPath && featureBootstrap > coreBootstrap,
+  "API schema bootstrap must remain explicitly located after the health fast path until migration cutover");
+const scheduledStart = worker.indexOf("async scheduled(event,env)");
+const scheduledEnd = worker.indexOf(",async fetch(req,env)", scheduledStart);
+assert.ok(scheduledStart >= 0 && scheduledEnd > scheduledStart,
+  "scheduled Worker handler must remain identifiable");
+assert.match(worker.slice(scheduledStart, scheduledEnd), /ensureCoreSchema\(env\)/,
+  "scheduled handler schema bootstrap must remain documented until readiness-check cutover");
+
 for (const marker of [
   "ensureCoreSchema(env)",
   "ensureRuntimeFeatureSchema(env)",
