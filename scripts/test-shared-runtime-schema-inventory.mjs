@@ -3,6 +3,7 @@ import fs from "node:fs";
 
 const worker = fs.readFileSync("src/index.js", "utf8");
 const runtime = fs.readFileSync("src/runtime-feature-schema.mjs", "utf8");
+const donationIndex = fs.readFileSync("src/donation-reference-index.mjs", "utf8");
 const inventory = fs.readFileSync("docs/production/SHARED-RUNTIME-SCHEMA-INVENTORY.md", "utf8");
 const migration = (name) => fs.readFileSync(`migrations/${name}`, "utf8");
 
@@ -88,5 +89,11 @@ assert.ok(worker.includes('if(p==="/api/admin/connectors"&&m==="GET"){const e=ad
   "admin connector GET must remain visible as a schema-and-seed side-effect until cutover");
 assert.ok(worker.includes('if(p==="/api/admin/connector-authorization-requests"&&m==="GET"){const e=admin(u);if(e)return e;await ensureOmniTables(env);'),
   "admin authorization-request GET must remain visible as a direct DDL side-effect until cutover");
+assert.ok(donationIndex.includes("CREATE UNIQUE INDEX IF NOT EXISTS idx_donations_reference_normalized"),
+  "donation reference index runtime DDL must remain visible until migration ownership is confirmed");
+assert.ok(worker.includes("await ensureDonationReferenceIndex(env)"),
+  "donation submission runtime index call site must remain visible until migration cutover");
+assert.ok(inventory.includes("`POST /api/donations`"),
+  "donation reference index DDL call site is not inventoried");
 
 console.log("PASS: shared runtime schema coverage and outstanding migration debt are explicitly inventoried.");
