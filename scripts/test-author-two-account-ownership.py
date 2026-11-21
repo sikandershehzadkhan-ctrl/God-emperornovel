@@ -16,7 +16,7 @@ novel_update = extract(
     "author novel update",
 )
 chapter_insert = extract(
-    r"prepare\(" + tick + r"(INSERT INTO chapters\(novel_id,chapter_number,title,content,is_locked,ticket_cost,publication_status\) SELECT \?,\?,\?,\?,\?,\?, 'draft' WHERE EXISTS \(SELECT 1 FROM novels WHERE id=\? AND \(owner_user_id=\? OR \?=char\(97,100,109,105,110\)\)\))" + tick + r"\)",
+    r"prepare\(" + tick + r"(INSERT INTO chapters\(novel_id,chapter_number,title,content,is_locked,ticket_cost,publication_status\) SELECT \?,\?,\?,\?,0,0,'draft' WHERE EXISTS \(SELECT 1 FROM novels n WHERE n.id=\? AND \(n.owner_user_id=\? OR \?=char\(97,100,109,105,110\)\) AND n.rights_status IN \('original','public_domain','licensed','authorized'\)\))" + tick + r"\)",
     "author chapter insert",
 )
 chapter_update = extract(
@@ -61,9 +61,9 @@ assert db.execute("SELECT publication_status FROM chapters WHERE id=1").fetchone
 assert db.execute(chapter_publish, ("published",1,1,"author")).rowcount == 1
 
 # Chapter creation is scoped in the INSERT itself, not just a preceding read.
-assert db.execute(chapter_insert, (1,2,"Injected","bad",0,0,1,2,"author")).rowcount == 0
+assert db.execute(chapter_insert, (1,2,"Injected","bad",1,2,"author")).rowcount == 0
 assert db.execute("SELECT COUNT(*) FROM chapters WHERE novel_id=1").fetchone()[0] == 1
-assert db.execute(chapter_insert, (1,3,"A second","valid",0,0,1,1,"author")).rowcount == 1
+assert db.execute(chapter_insert, (1,3,"A second","valid",1,1,"author")).rowcount == 1
 
 # Editing a novel is ownership-scoped at write time too.
 novel_update_params = ("A changed title","","Author A","","ongoing","original","English","","","original","","",0,0,0,0,"Rights details changed.",0,0,1,2,"author")
@@ -82,4 +82,60 @@ assert db.execute("SELECT id FROM novels WHERE owner_user_id=?", (1,)).fetchall(
 assert db.execute("SELECT id FROM novels WHERE owner_user_id=?", (2,)).fetchall() == [(2,)]
 assert db.execute(chapter_publish, ("draft",2,99,"admin")).rowcount == 1
 
-print("PASS: two-account SQLite/D1-SQL integration checks for author chapter create/edit/publish, novel edit/submission, ownership isolation, and admin exception.")
+
+# Build the AI tables from the exact runtime DDL in the Worker.
+for table in ("ai_author_projects", "ai_chapter_jobs"):
+    ddl_match = re.search(tick + r"(CREATE TABLE IF NOT EXISTS " + table + r" \(.*?\))" + tick, source, re.S)
+    if not ddl_match:
+        raise AssertionError("Could not extract runtime AI table DDL: " + table)
+    db.execute(ddl_match.group(1))
+
+ai_project_update = extract(
+    r"prepare\(" + tick + r"(UPDATE ai_author_projects SET name=.*?owner_user_id=\? OR \?=char\(97,100,109,105,110\)\))" + tick + r"\)",
+    "AI project edit",
+)
+ai_bible_update = extract(
+    r"prepare\('(UPDATE ai_author_projects SET bible_json=.*?owner_user_id=\? OR \?=char\(97,100,109,105,110\)\))'\)",
+    "AI Story Bible save",
+)
+ai_run_update = extract(
+    r'prepare\("(UPDATE ai_author_projects SET status=\'running\'.*?owner_user_id=\? OR \?=char\(97,100,109,105,110\)\))"\)',
+    "AI project run claim",
+)
+ai_job_insert = extract(
+    r"prepare\(" + tick + r"(INSERT INTO ai_chapter_jobs.*?WHERE EXISTS \(SELECT 1 FROM ai_author_projects WHERE id=\? AND \(owner_user_id=\? OR \?=char\(97,100,109,105,110\)\)\))" + tick + r"\)",
+    "AI job creation",
+)
+ai_jobs_read = extract(
+    r"prepare\('(SELECT id,chapter_number,job_type,status,attempts,created_at,finished_at FROM ai_chapter_jobs WHERE project_id=.*?LIMIT 100)'\)",
+    "AI job history read",
+)
+
+db.execute("INSERT INTO ai_author_projects(owner_user_id,name) VALUES(1,'A AI project')")
+db.execute("INSERT INTO ai_author_projects(owner_user_id,name) VALUES(2,'B AI project')")
+project_a = db.execute("SELECT id FROM ai_author_projects WHERE owner_user_id=1").fetchone()[0]
+project_b = db.execute("SELECT id FROM ai_author_projects WHERE owner_user_id=2").fetchone()[0]
+
+project_values = ("Hijacked name","manual","draft","Fantasy","","premise","hero","{}",0,5,project_a,2,"author")
+assert db.execute(ai_project_update, project_values).rowcount == 0
+assert db.execute("SELECT name FROM ai_author_projects WHERE id=?", (project_a,)).fetchone()[0] == "A AI project"
+owner_values = project_values[:-2] + (1,"author")
+assert db.execute(ai_project_update, owner_values).rowcount == 1
+
+assert db.execute(ai_bible_update, ('{"stolen":true}',project_a,2,"author")).rowcount == 0
+assert db.execute("SELECT bible_json FROM ai_author_projects WHERE id=?", (project_a,)).fetchone()[0] == "{}"
+assert db.execute(ai_bible_update, ('{"owner":true}',project_a,1,"author")).rowcount == 1
+
+assert db.execute(ai_run_update, (project_a,2,"author")).rowcount == 0
+assert db.execute("SELECT status FROM ai_author_projects WHERE id=?", (project_a,)).fetchone()[0] == "draft"
+assert db.execute(ai_run_update, (project_a,1,"author")).rowcount == 1
+
+# A user cannot queue a job under another author's AI project.
+assert db.execute(ai_job_insert, (project_a,2,1,"forged prompt",project_a,2,"author")).rowcount == 0
+assert db.execute(ai_job_insert, (project_a,1,1,"owner prompt",project_a,1,"author")).rowcount == 1
+assert db.execute(ai_job_insert, (project_b,2,1,"other owner prompt",project_b,2,"author")).rowcount == 1
+assert db.execute(ai_jobs_read, (project_a,2,"author")).fetchall() == []
+assert len(db.execute(ai_jobs_read, (project_a,1,"author")).fetchall()) == 1
+assert len(db.execute(ai_jobs_read, (project_a,2,"admin")).fetchall()) == 1
+
+print("PASS: two-account SQLite/D1-SQL integration checks for author and AI project/job ownership isolation, chapter create/edit/publish, novel edit/submission, and admin exception.")
