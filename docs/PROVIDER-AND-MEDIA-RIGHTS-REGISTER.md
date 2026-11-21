@@ -1,0 +1,148 @@
+# Imperial Novel: Free Provider and Media Rights Register
+
+Research date: 2026-10-31  
+Decision owner: Product, Content & Rights, Operations, Security  
+Budget rule: PKR 0. No paid APIs, subscriptions, credit-card trials, hidden usage charges, or paid fallbacks.
+
+This is a provider evaluation, not a claim that any provider is already connected to production. A public API being reachable does not grant permission to republish the underlying work.
+
+## Executive decision
+
+Imperial Novel should use providers for distinct purposes rather than treat every free catalogue as a content warehouse:
+
+1. **Metadata and discovery:** use public APIs with explicit caching, rate limits, source attribution and outbound links.
+2. **Reusable media assets:** only use individual files whose exact license and attribution requirements have been verified.
+3. **Reading, listening and viewing:** prioritize creator uploads and direct rights-holder partnerships. A catalogue API is not a content licence.
+4. **No-cost production dependencies:** reject services that require a paid account, reserve the right to charge for our intended use, or are unsuitable for high-traffic production.
+
+No provider in this register is authorized to supply copyrighted manga/manhwa chapters, anime episodes, commercial audiobooks or music for rehosting.
+
+## Provider assessment
+
+| Provider | Best use | Cost/access evidence | Rights and limits | Decision |
+|---|---|---|---|---|
+| Library of Congress APIs | Book, image, audio/video collection metadata and links; selected public-domain media | Public JSON/YAML API needs no API key. Official limit: 20 requests/minute for JSON/YAML; text/image services 150/minute; streaming 60/minute. | Rights vary by item. Read each item's rights statement and use permitted assets only. Do not assume all collections are reusable. | **Preferred metadata/media candidate**, item-level rights gate |
+| Wikimedia Commons | Openly licensed illustrations, historical images, maps, audio and other individual media files | Public repository and MediaWiki APIs; no paid subscription needed for ordinary reuse. | Every file has its own license. Verify author, license, attribution, share-alike and non-copyright restrictions. Commons warns its licensing metadata is not guaranteed. | **Preferred asset source**, per-file verification |
+| Openverse | Search/discovery of openly licensed images and audio | API registration/OAuth and rate tiers. Standard tier is available by authenticating. | Openverse aggregates third-party metadata and does not verify the license. Terms reserve the right to charge for commercial use or heavy usage. Attribution and source-platform terms still apply. | **Research-only until commercial no-fee terms are confirmed**; never treat results as automatically cleared |
+| Internet Archive | Discovery and outbound links to books, audio, video and historical material | Public developer APIs and metadata access. | "Freely available" does not mean public domain or reusable. Check item-level rights, access restrictions and source terms. Do not mirror files or bypass controlled digital lending. | **Metadata/link-out only by default**; asset use only after rights review |
+| Project Gutenberg | Public-domain ebook discovery and possible title-by-title text sourcing | Public ebook catalogue; no API key or paid subscription required for ordinary access. | The vast majority are public domain in the US, not necessarily in Pakistan or every territory. Confirm each title's status. Project Gutenberg name/trademark has separate terms; its permission page notes commercial use of the trademark may require royalties. Link to ebook landing pages, not deep file URLs. | **Conditional public-domain source**, no blanket ingestion |
+| Standard Ebooks | High-quality public-domain ebook editions and metadata | Volunteer-driven, freely accessible project. | Confirm the underlying work's status in every relevant territory and the edition's own terms. Do not imply endorsement. | **Good candidate for carefully cleared public-domain editions** |
+| Open Library | Book, author, edition and cover metadata | Public API. Default limit 1 request/second; identified apps with User-Agent and contact details 3 requests/second. | Its official guidance says APIs are not intended as a bulk backend or high-traffic commercial infrastructure. Cache; make user-driven requests; do not scrape HTML or bulk harvest. | **Small-scale user-triggered metadata lookup only** |
+| TVmaze | TV, drama and screen-adaptation metadata, episode schedules and outbound discovery links | Free public REST API, no API key for public endpoints; official docs state at least 20 calls per 10 seconds per IP and CORS support. | API data licensed CC BY-SA; provide TVmaze attribution/link and comply with ShareAlike. Do not assume show artwork is covered by the same licence; avoid rehosting images unless each asset's rights are verified. Metadata only, no episode playback. | **Preferred screen-metadata candidate**, subject to ShareAlike separation and a small production smoke test |
+| AniList | Anime/manga metadata, season/series relationships and discovery links | Public GraphQL API; documented baseline 90 requests/minute, temporarily degraded to 30/minute at research time. Its commercial-use terms say free below $150/month revenue, but that does not override its competing-service restriction. | Terms explicitly prohibit using its API in competing, non-complementary services of the same nature, including anime/manga list or tracker services. The restriction applies to all API data, including media data. Imperial Novel's unified media catalogue overlaps this category. | **Reject for Imperial Novel catalogue** unless AniList grants explicit written permission or changes its terms. |
+| Google Books API | Bibliographic search and preview availability links | Public API documentation exists; quota and current project eligibility must be checked before adoption. | Its specific API terms say the application may not charge users without a separate agreement or Google's written permission. This conflicts with Imperial Novel's planned Crown/paid features unless permission is obtained. | **Reject for monetized product unless written permission is obtained** |
+| MangaDex API | Manga metadata and source links | Public API; general limit approximately 5 requests/second/IP. | MangaDex explicitly requires clients to proxy requests for CORS and image delivery, and warns that hotlinked images will not be served correctly. API availability is not proof that uploaded chapter images are licensed for republication. Proxying user traffic creates cost, abuse and rights exposure. | **Do not proxy or rehost chapters**; metadata/link-out only after policy review |
+| MyAnimeList API | Anime/manga metadata | Client ID and registration agreement required. | Official API agreement defines revenue-generating/financial apps as commercial and prohibits generating fees, profits or revenue through commercial applications without express written authorization. | **Reject unless written commercial authorization is obtained** |
+| Freesound API | Sound effects and ambience | Official API terms say free use is only for non-commercial purposes; commercial use requires a separate licensing discussion. | File-level CC0/CC-BY does not remove the separate API's non-commercial restriction. | **Reject for commercial production use** |
+| Kitsu | Anime metadata | API documentation was discoverable, but its current access, commercial terms and operational limits were not verified in this review. | Do not infer rights from public API availability. | **Defer pending official terms and live verification** |
+| Spotify Web API | Music metadata and user-library integrations | Official documentation says a Spotify Premium account is required to use the Web API. | Playback is Spotify's service, not a licence to stream tracks through Imperial Novel. | **Reject for PKR 0 architecture** |
+| Deezer API | Music metadata | Official developer page could not be read without login during this review. | No verified free production terms or playback rights established. | **Do not adopt until terms and access are verified** |
+
+## No-cost design and on-device reader capabilities
+
+These are not content catalogues. They are useful supporting technologies that can reduce recurring service costs:
+
+| Resource | Use | Licence / cost basis | Guardrail |
+|---|---|---|---|
+| Lucide | Consistent UI icons | Official repository uses ISC licensing for the project; selected legacy icon assets may carry their own notices. | Keep the licence notice in the source distribution; inspect any separately licensed asset. |
+| Tabler Icons | Large set of UI SVG icons | Official repository states MIT licence. | Keep the MIT notice; use a curated subset and self-host the SVGs. |
+| Google Fonts repository | Typography for multilingual UI and reading | Individual font folders declare their own licences, commonly SIL Open Font License. | Check the exact font's OFL file; self-host only the chosen font files to avoid a runtime font CDN dependency. |
+| Browser Web Speech API | Read-aloud narration of unlocked prose | Built into supported browsers/devices; no Imperial Novel speech API account or per-request API key. | Voices and languages depend on the device/browser. Some system voices may use network services. Do not promise offline playback or audiobook-quality voices. Do not upload chapter text to a third-party TTS service. Provide stop/pause controls and respect user gestures. |
+
+Official references:
+- Lucide licence: https://github.com/lucide-icons/lucide/blob/main/LICENSE
+- Tabler Icons licence: https://github.com/tabler/tabler-icons/blob/master/LICENSE
+- Google Fonts source and font licences: https://github.com/google/fonts
+- MDN Web Speech API: https://developer.mozilla.org/en-US/docs/Web/API/Web_Speech_API
+
+## No-cost infrastructure providers and services
+
+| Service | Purpose | Official cost/access evidence | Decision |
+|---|---|---|---|
+| Cloudflare Turnstile Free | Bot/challenge protection for registration, login, ticket requests and abuse-prone actions | Free plan includes unlimited challenges, up to 20 widgets and 10 hostnames per widget. | **Preferred security provider.** Configure keys in Cloudflare dashboard, keep the secret server-side, validate tokens on the server and never treat a client-only widget as protection. |
+| Cloudflare Web Analytics | Privacy-first real-user page and performance analytics | Official docs describe it as free and state that it does not collect or use visitors' personal data. Requires a Cloudflare account and a page beacon snippet. | **Preferred analytics provider.** Enable only after reviewing the snippet and privacy notice. No paid dependency. |
+| Cloudflare Email Routing | Receive/forward email for domain aliases | Available on Free and Paid plans. It handles inbound routing/forwarding. | **Useful for inbound contact aliases only.** It is not a free outbound transactional email sender. |
+| Cloudflare Email Sending | Verification, password reset and transactional email | Official docs state arbitrary-recipient sending requires Workers Paid. | **Reject under PKR 0.** Do not upgrade the Worker plan for email. |
+| Cloudflare R2 | User-uploaded covers, pages, audio and other object storage | Free monthly allowance is 10 GB-month, 1M Class A and 10M Class B operations; standard rates apply beyond the allowance. | **Do not adopt for production uploads under the strict zero-billing rule.** Free allowance is not a hard spending cap; excess usage is billable. |
+| Resend | Transactional email | A free plan exists, but the pricing page also documents optional pay-as-you-go transactional overages. Card acceptance and upgrade paths are present. | **Defer.** Do not connect until signup requirements, billing lock, overage disablement and free quota are verified. |
+ 
+Cloudflare official references:
+- Turnstile plans: https://developers.cloudflare.com/turnstile/plans/
+- Web Analytics: https://developers.cloudflare.com/web-analytics/about/
+- Email service and plan availability: https://developers.cloudflare.com/email-routing/
+- R2 pricing and free allowance: https://developers.cloudflare.com/r2/pricing/
+- Resend pricing and overages: https://resend.com/pricing
+
+## Provider integration rules
+
+Every proposed connector must pass these checks before it can be enabled:
+
+- **No-cost test:** no paid account, card-required trial, usage-based bill, automatic top-up, paid overage, or paid fallback for the intended production use.
+- **Purpose test:** identify whether it supplies metadata, an outbound link, a reusable asset, or licensed playable content. Do not conflate them.
+- **Rights test:** store source URL, creator, license identifier and URL, attribution text, territory, permitted uses, modification rules, evidence timestamp and reviewer decision.
+- **Rate-limit test:** enforce per-provider request budgets, backoff on 429, timeouts, bounded response size, caching and a global kill switch.
+- **Security test:** fixed host allowlists, HTTPS, DNS/IP egress protections, no user-controlled arbitrary fetch URL, no credential leakage and no server-side proxy to untrusted hosts.
+- **Reliability test:** provider outage must not break reading or discovery. Use graceful degradation and source-status labels.
+- **Data governance:** retain only necessary metadata. Do not store provider content or user credentials unless the terms and product need are established.
+- **Attribution:** show provider and creator attribution where required, with a direct source/license link.
+- **Commercial review:** re-check terms before ads, paid Crowns, subscriptions or any commercial distribution is activated.
+
+## Recommended free-first provider architecture
+
+### Tier A: safe candidates for limited metadata and asset discovery
+- Library of Congress: public API, strict rate limits and per-item rights review.
+- Wikimedia Commons: per-file license verification and attribution.
+- AniList: **not approved**. Its official terms prohibit use in competing anime/manga list or tracker services. The under-$150/month commercial allowance does not waive this separate restriction.
+- MyAnimeList API: **not approved** for the monetized platform without express written authorization to generate revenue.
+- Google Books API: **not approved** for the monetized platform without written permission to charge users.
+- Freesound API: **not approved** because its API access is free only for non-commercial use.
+- TVmaze: preferred metadata candidate for screen adaptations, provided its CC BY-SA attribution and ShareAlike requirements are respected and its artwork is not assumed reusable.
+- Standard Ebooks / Project Gutenberg: title-by-title public-domain review, no blanket import.
+
+### Tier B: restricted research or link-out
+- Openverse: search openly licensed candidates, but no production dependency until its commercial-use fee reservation and registration terms are resolved.
+- Internet Archive: metadata and landing-page links unless an item's reuse rights are independently clear.
+- Open Library: low-volume user-initiated metadata lookups only.
+
+### Tier C: reject or defer
+- Spotify Web API: Premium account requirement conflicts with PKR 0.
+- Deezer: access and commercial terms not verified.
+- MangaDex chapter image delivery: proxy requirement and item-level rights uncertainties make it unsuitable as a free content backend.
+- Any unofficial manga/manhwa/anime scraper, raw-MTL mirror, paywall bypass, DRM bypass or bulk chapter importer: prohibited.
+
+## Important product truth
+
+There is no verified, universal, free-and-licensed provider in this research that grants Imperial Novel the right to republish current commercial manga, manhwa, manhua, anime episodes or commercial audiobooks. We must obtain creator submissions, explicit licences, rights-holder agreements or use content that is genuinely public domain/openly licensed for our intended use.
+
+For now, Imperial Novel's strongest zero-budget content supply is:
+- original work submitted by creators;
+- commissioned/authorized works only when permission is documented;
+- public-domain works after jurisdiction and edition checks;
+- CC/openly licensed assets after file-level verification;
+- metadata and outbound links for discovery, without copying source chapters.
+
+## Official references
+
+- Library of Congress APIs: https://www.loc.gov/apis/
+- Library of Congress API limits: https://www.loc.gov/apis/json-and-yaml/working-within-limits/
+- Wikimedia Commons reuse rules: https://commons.wikimedia.org/wiki/Commons:Reusing_content_outside_Wikimedia
+- Openverse API authentication/throttling: https://docs.openverse.org/api/reference/authentication_and_throttling.html
+- Openverse Terms of Service: https://docs.openverse.org/terms_of_service.html
+- Internet Archive Developer Portal: https://archive.org/developers/
+- Project Gutenberg permissions: https://www.gutenberg.org/policy/permission.html
+- Standard Ebooks: https://standardebooks.org/
+- Open Library API and usage rules: https://openlibrary.org/developers/api
+- TVmaze API and CC BY-SA licence: https://www.tvmaze.com/api
+- MyAnimeList API agreement: https://myanimelist.net/static/apiagreement.html
+- Google Books API terms: https://developers.google.com/books/terms
+- Freesound API terms: https://freesound.org/docs/api/terms_of_use.html
+- AniList API terms: https://docs.anilist.co/guide/terms-of-use
+- AniList API rate limits: https://anilist.gitbook.io/anilist-apiv2-docs/docs/guide/rate-limiting
+- MangaDex API limitations: https://api.mangadex.org/docs/2-limitations/
+- MangaDex chapter image delivery: https://api.mangadex.org/docs/04-chapter/retrieving-chapter/
+- Google Books API: https://developers.google.com/books
+- Spotify Web API: https://developers.spotify.com/documentation/web-api
+
+## Verification status
+
+This document records official documentation inspected on 2026-10-31. It does not claim provider accounts have been registered, APIs connected, licences acquired, or content imported. Each integration remains disabled until its individual access, cost, rights and technical checks pass.
