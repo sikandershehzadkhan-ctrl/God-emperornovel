@@ -153,3 +153,12 @@ A further source pass found a runtime DDL path outside the OmniPortal initialize
 The helper in `src/donation-reference-index.mjs` memoizes the DDL promise per Worker isolate and retries after failure. This is still request-triggered schema mutation. It is a POST rather than a GET, but mutation handlers should not perform schema upgrades either: the migration must own the uniqueness invariant before the application relies on it.
 
 The source inventory does not yet establish whether an equivalent expression index is present in every production environment or which canonical migration owns it. Do not assume that the runtime helper's existence proves production state. This finding expands the runtime DDL inventory and does not authorize production queries or changes.
+
+
+### Deployment-demo content seeding removed from runtime bootstrap (2026-11-21)
+
+The source audit confirmed that `seedTaxonomy()`, called by `ensureCoreSchema()`, previously inserted a demo novel titled **God-Emperor's Infinite Ascension** whenever the novels table was empty, then inserted 120 published placeholder chapters and genre/tag links. This was real runtime data mutation, not merely a dormant fixture.
+
+The code path has now been removed from `seedTaxonomy()`. Taxonomy reference rows continue to use their existing idempotent `INSERT OR IGNORE` behavior; the bootstrap no longer creates demo novels or placeholder chapters. The change is additive with respect to existing data: it does not delete or alter any already-seeded demo novel, chapter, or user content. Any existing demo records require a separately reviewed content audit and explicit owner decision before cleanup.
+
+A regression assertion now rejects reintroduction of the demo title or placeholder chapter body in the Worker source. This is source-level evidence only. No production D1 query or cleanup was performed.
