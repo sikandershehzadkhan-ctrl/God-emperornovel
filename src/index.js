@@ -396,9 +396,19 @@ async function adminTaxonomy(req,env,u){
  if(!id||!['approve','reject'].includes(decision))return json({error:'id and decision required'},400);
  const row=await env.DB.prepare('SELECT * FROM taxonomy_submissions WHERE id=?').bind(id).first();if(!row)return json({error:'Submission not found'},404);
  if(row.status!=='pending')return json({error:'Already reviewed'},409);
- if(decision==='reject'){await env.DB.prepare("UPDATE taxonomy_submissions SET status='rejected',reviewed_at=CURRENT_TIMESTAMP,reviewer_id=? WHERE id=?").bind(u.id,id).run();return json({ok:true,status:'rejected'});}
- const table=row.type==='genre'?'genres':'tags';await env.DB.prepare(`INSERT OR IGNORE INTO ${table}(name,slug) VALUES(?,?)`).bind(row.name,row.slug).run();
- await env.DB.prepare("UPDATE taxonomy_submissions SET status='approved',reviewed_at=CURRENT_TIMESTAMP,reviewer_id=? WHERE id=?").bind(u.id,id).run();return json({ok:true,status:'approved',name:row.name,type:row.type});
+ if(!['genre','tag'].includes(row.type))return json({error:'Invalid taxonomy type'},400);
+ if(decision==='reject'){
+  const result=await env.DB.prepare("UPDATE taxonomy_submissions SET status='rejected',reviewed_at=CURRENT_TIMESTAMP,reviewer_id=? WHERE id=? AND status='pending'").bind(u.id,id).run();
+  const changed=Number(result?.meta?.changes??result?.changes??0);if(changed!==1)return json({error:'Submission was already reviewed. Refresh the queue.'},409);
+  return json({ok:true,status:'rejected'});
+ }
+ const table=row.type==='genre'?'genres':'tags';
+ const results=await env.DB.batch([
+  env.DB.prepare("UPDATE taxonomy_submissions SET status='approved',reviewed_at=CURRENT_TIMESTAMP,reviewer_id=? WHERE id=? AND status='pending'").bind(u.id,id),
+  env.DB.prepare(`INSERT OR IGNORE INTO ${table}(name,slug) SELECT name,slug FROM taxonomy_submissions WHERE id=? AND status='approved' AND changes()=1`).bind(id)
+ ]);
+ const changed=Number(results?.[0]?.meta?.changes??results?.[0]?.changes??0);if(changed!==1)return json({error:'Submission was already reviewed. Refresh the queue.'},409);
+ return json({ok:true,status:'approved',name:row.name,type:row.type});
 }
 
 async function seed(env){
