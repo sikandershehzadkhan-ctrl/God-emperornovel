@@ -183,3 +183,20 @@ Cutover requirements:
 5. Preserve the existing admin security behavior; schema cutover must not reintroduce automatic administrator promotion.
 
 This is source-level evidence. It does not establish the production database's present schema, data, or migration ledger.
+
+### Additional Author Studio GET schema side effects (2026-11-21)
+
+A follow-up call-site audit found that the Author Studio AI initializer is invoked directly inside multiple GET handlers, in addition to being invoked from the shared core bootstrap:
+
+| Route | Direct initializer call | Consequence | Required cutover |
+|---|---|---|---|
+| GET /api/author/ai/projects | ensureAuthorAISchema(env) | Executes CREATE TABLE / CREATE INDEX statements before listing projects | Replace with a migration-owned readiness check; GET must not create schema |
+| GET /api/author/ai/projects/:id | ensureAuthorAISchema(env) | Executes schema DDL before reading a project | Same; preserve project ownership filtering |
+| GET /api/author/ai/projects/:id/jobs | ensureAuthorAISchema(env) | Executes schema DDL before reading job history | Same; preserve job history and owner scoping |
+| GET /api/author/ai/benchmarks | ensureAuthorAISchema(env) | Executes schema DDL before reading benchmark observations | Same; preserve recorded benchmark history |
+
+The initializer is also called by Author Studio POST/PATCH handlers, which means schema provisioning is coupled to both read and write requests. The direct GET calls are separately important: even if the shared API dispatcher bootstrap is later removed, these handlers would still mutate schema unless their direct calls are removed.
+
+The source inspection confirms that ensureAuthorAISchema() propagates statement failures rather than swallowing them. That is better failure behavior than the OmniPortal helper, but it remains request-triggered DDL and is not a migration substitute. Migration 0007 and later AI migrations remain the candidate canonical owners; production definitions and migration ledger must be verified before the initializer is retired.
+
+This is source-level evidence only. No production D1 query or change was performed.
