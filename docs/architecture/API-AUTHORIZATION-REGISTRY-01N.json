@@ -615,7 +615,7 @@
       "accessClass": "author-owner",
       "guard": "author(u)",
       "scope": "project.owner_user_id equals u.id unless admin",
-      "sourceMarker": "if(/^\\\\/api\\\\/author\\\\/ai\\\\/projects\\\\/\\\\d+\\\\/run$/.test(p)"
+      "sourceMarker": "if(/^\\/api\\/author\\/ai\\/projects\\/\\d+\\/run$/.test(p)"
     },
     {
       "pattern": "^/api/author/ai/projects/[0-9]+/jobs$",
@@ -626,7 +626,7 @@
       "accessClass": "author-owner",
       "guard": "author(u)",
       "scope": "project.owner_user_id equals u.id unless admin; job list selected by verified project id",
-      "sourceMarker": "if(/^\\\\/api\\\\/author\\\\/ai\\\\/projects\\\\/\\\\d+\\\\/jobs$/.test(p)"
+      "sourceMarker": "if(/^\\/api\\/author\\/ai\\/projects\\/\\d+\\/jobs$/.test(p)"
     }
   ],
   "policies": {
