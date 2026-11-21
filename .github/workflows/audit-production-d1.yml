@@ -114,12 +114,16 @@ jobs:
           CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
         run: |
           set -euo pipefail
+          audit_query_failures=0
           run_query() {
             local label="$1"
             local sql="$2"
             echo
             echo "===== $label (read-only) ====="
-            npx --yes wrangler@4 d1 execute god-emperornovel-db --remote --command "$sql" || echo "::warning::This read-only query failed. Preserve its error output and treat the corresponding schema evidence as unverified."
+            if ! npx --yes wrangler@4 d1 execute god-emperornovel-db --remote --command "$sql"; then
+              audit_query_failures=$((audit_query_failures + 1))
+              echo "::error::Required read-only query failed; corresponding schema evidence is unverified."
+            fi
           }
           run_query "Complete production table inventory" "SELECT name FROM sqlite_master WHERE type='table' AND name NOT LIKE 'sqlite_%' ORDER BY name;"
           run_query "Complete production schema object definitions" "SELECT type,name,tbl_name,sql FROM sqlite_master WHERE name NOT LIKE 'sqlite_%' AND sql IS NOT NULL ORDER BY type,tbl_name,name;"
@@ -148,7 +152,8 @@ jobs:
               echo "No d1_migrations table exists in this production database. This is an observed schema fact, not a reason to stop the remaining read-only checks."
             fi
           else
-            echo "::warning::Could not inspect the migration-history table. Preserve the error output and treat applied migration history as unverified."
+            audit_query_failures=$((audit_query_failures + 1))
+            echo "::error::Could not inspect the migration-history table; applied migration history is unverified."
             printf '%s\\n' "$migration_table_check"
           fi
           run_query "Publication status counts" "SELECT COALESCE(publication_status,'<NULL>') AS publication_status, COUNT(*) AS novel_count FROM novels GROUP BY publication_status ORDER BY publication_status;"
@@ -205,4 +210,8 @@ jobs:
           run_query "Published catalog rights readiness (aggregate only)" "SELECT COUNT(*) AS published_novels, SUM(CASE WHEN COALESCE(rights_status,'') NOT IN ('original','licensed','authorized','public_domain','cc') THEN 1 ELSE 0 END) AS unusual_rights_status, SUM(CASE WHEN COALESCE(rights_evidence,'')='' THEN 1 ELSE 0 END) AS missing_rights_evidence, SUM(CASE WHEN owner_user_id IS NULL THEN 1 ELSE 0 END) AS missing_owner FROM novels WHERE publication_status='published';"
           run_query "Published chapter integrity (aggregate only)" "SELECT COUNT(*) AS published_chapters, SUM(CASE WHEN n.id IS NULL THEN 1 ELSE 0 END) AS chapters_without_novel FROM chapters c LEFT JOIN novels n ON n.id=c.novel_id WHERE COALESCE(c.publication_status,'published')='published';"
           echo
-          echo "Audit completed with SELECT/PRAGMA statements only. No data was changed and no deployment was performed."
+          if [ "$audit_query_failures" -ne 0 ]; then
+            echo "::error::Read-only audit finished with $audit_query_failures failed required database inspection(s). Schema evidence is incomplete; do not proceed with migration cutover."
+            exit 1
+          fi
+          echo "PASS: all required database inspections completed using SELECT/PRAGMA only. No data was changed and no deployment was performed."
