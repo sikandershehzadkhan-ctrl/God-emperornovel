@@ -135,3 +135,16 @@ for (const route of aiGetRoutes) {
 }
 assert.ok(inventory.includes("Additional Author Studio GET schema side effects"),
   "direct Author Studio GET DDL call sites must be inventoried separately from shared bootstrap");
+for (const route of [
+  'if(p==="/api/admin/publishing"&&m==="GET"){',
+  'if(ach && m==="GET"){',
+]) {
+  const at = worker.indexOf(route);
+  assert.ok(at >= 0, `publishing GET route must remain identifiable: ${route}`);
+  const nextRoute = worker.indexOf("\n if(", at + route.length);
+  const handler = worker.slice(at, nextRoute > at ? nextRoute : at + 1800);
+  assert.ok(handler.includes("ensurePublishingSchema(env)"),
+    `publishing GET schema side effect changed and requires cutover review: ${route}`);
+}
+assert.ok(inventory.includes("Additional publishing GET schema side effects"),
+  "direct publishing GET DDL and backfill call sites must be inventoried");
