@@ -943,14 +943,6 @@
           ],
           "guard": "need(u)",
           "scope": "request user_id bound to u.id"
-        },
-        {
-          "path": "/api/taxonomy",
-          "methods": [
-            "POST"
-          ],
-          "guard": "need(u)",
-          "scope": "taxonomy_submissions.creator_id and creator_name are derived from authenticated u.id and u.username; client identity fields ignored"
         }
       ],
       "scope": "User-owned rows are scoped with authenticated u.id, not a client-supplied user id."
@@ -1125,6 +1117,18 @@
         }
       ],
       "scope": "Connector discovery and import are constrained by explicit provider authorization; import records and job status remain user-scoped."
+    },
+    "authenticatedSubmissions": {
+      "routes": [
+        {
+          "path": "/api/taxonomy",
+          "methods": [
+            "POST"
+          ],
+          "guard": "need(u)",
+          "scope": "creator_id and creator_name derived from authenticated session; client identity fields ignored"
+        }
+      ]
     }
   },
   "knownOpenQuestions": [
