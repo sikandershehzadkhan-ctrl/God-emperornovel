@@ -576,3 +576,169 @@ html[data-theme="dark"] .navlinks a.active,
 html[data-theme="dark"] .mobileNav a.active{color:#FFFFFF;background:rgba(106,13,173,.22)}
 html[data-theme="dark"] a:not(.primary):not(.secondary):not(.pill):not(.brand){color:#8DB8FF}
 html[data-theme="dark"] a:not(.primary):not(.secondary):not(.pill):not(.brand):hover{color:#B78AE2}
+
+
+/* 17.21.0 homepage correction: the editorial hero must look intentional in BOTH
+   themes. Earlier Archive styling was dark-theme-only, leaving the default light
+   theme on legacy hero rules. This block is the final homepage style authority. */
+.hero.imperialArchiveHero{
+  display:grid;
+  grid-template-columns:minmax(0,1fr);
+  align-items:center;
+  min-height:clamp(390px,62vh,610px);
+  padding:clamp(28px,6vw,76px);
+  position:relative;
+  isolation:isolate;
+  overflow:hidden;
+  border:1px solid #ded8f2;
+  border-radius:26px;
+  background:
+    radial-gradient(ellipse at 88% 50%,rgba(79,140,255,.11),transparent 34%),
+    radial-gradient(ellipse at 82% 58%,rgba(139,92,246,.12),transparent 43%),
+    linear-gradient(112deg,#fff 0%,#f8f7ff 58%,#f2f5ff 100%);
+  box-shadow:0 18px 54px rgba(37,32,73,.08);
+}
+.hero.imperialArchiveHero:before{
+  content:"";
+  position:absolute;
+  z-index:-1;
+  pointer-events:none;
+  width:clamp(230px,35vw,460px);
+  aspect-ratio:1;
+  right:-5%;
+  top:50%;
+  transform:translateY(-50%);
+  border-radius:50%;
+  border:1px solid rgba(118,81,216,.22);
+  background:radial-gradient(circle,rgba(79,140,255,.09) 0 15%,transparent 15.5% 31%,rgba(139,92,246,.11) 31.5% 32%,transparent 32.5% 49%,rgba(79,140,255,.10) 49.5% 50%,transparent 50.5%);
+}
+.hero.imperialArchiveHero:after{
+  content:"";
+  position:absolute;
+  z-index:-1;
+  pointer-events:none;
+  width:clamp(76px,12vw,150px);
+  aspect-ratio:1;
+  right:calc(clamp(230px,35vw,460px)*.43);
+  top:50%;
+  transform:translateY(-50%) rotate(45deg);
+  border:1px solid rgba(118,81,216,.28);
+  background:linear-gradient(135deg,rgba(139,92,246,.16),rgba(79,140,255,.08));
+}
+.hero.imperialArchiveHero .nextHeroCopy{max-width:850px;padding:0;position:relative;z-index:1}
+.hero.imperialArchiveHero h1{
+  max-width:11ch;
+  margin:18px 0 22px;
+  color:#171629;
+  font-size:clamp(3rem,7vw,6.7rem);
+  font-weight:780;
+  line-height:.96;
+  letter-spacing:-.065em;
+}
+.hero.imperialArchiveHero h1 span{
+  color:#6746c4;
+  background:none;
+  -webkit-text-fill-color:currentColor;
+}
+.hero.imperialArchiveHero .nextHeroLead{
+  max-width:54ch;
+  color:#5d5c70;
+  font-size:clamp(1rem,1.5vw,1.18rem);
+  line-height:1.7;
+}
+.hero.imperialArchiveHero .heroSearch{
+  max-width:620px;
+  border:1px solid #d8d3e8;
+  border-radius:13px;
+  box-shadow:0 8px 26px rgba(47,40,91,.07);
+}
+.hero.imperialArchiveHero .heroSearch button{
+  background:linear-gradient(120deg,#7651d8,#416fd1);
+  border:0;
+  box-shadow:none;
+}
+.hero.imperialArchiveHero .heroTags{display:flex;flex-wrap:wrap;gap:8px;margin-top:19px}
+.hero.imperialArchiveHero .heroTags a{
+  border:1px solid #ded9ed;
+  border-radius:999px;
+  padding:7px 12px;
+  background:rgba(255,255,255,.76);
+  color:#514b6c;
+  font-size:12px;
+}
+.hero.imperialArchiveHero .heroPromise{margin-top:22px;color:#25233b;font-weight:750;letter-spacing:.025em}
+.hero.imperialArchiveHero .promiseText{display:block;margin-top:7px;color:#77768a;font-size:.84rem;font-weight:500;letter-spacing:0}
+.homeFormatShelf,.nextShelf,.nextFeatureDeck{position:relative}
+.homeFormatHeading{display:flex;justify-content:space-between;align-items:end;gap:18px;flex-wrap:wrap}
+.homeFormatGrid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px}
+.homeFormatCard{
+  min-width:0;display:flex;align-items:center;gap:13px;padding:16px;
+  border:1px solid #e2dfed;border-radius:15px;background:#fff;
+  color:#242238;transition:border-color .16s ease,transform .16s ease;
+}
+.homeFormatCard:hover{border-color:#a99add;transform:translateY(-2px)}
+.homeFormatGlyph{display:grid;place-items:center;flex:0 0 42px;width:42px;height:42px;border-radius:12px;background:#f0ebff;color:#6547bd;font-size:19px}
+.homeFormatCopy{display:grid;gap:3px;min-width:0}
+.homeFormatCopy b{font-size:14px}
+.homeFormatCopy small{color:#77768a;font-size:12px}
+.homeFormatArrow{margin-left:auto;color:#6b51c4}
+.nextFeatureDeck{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:13px}
+.nextFeatureIntro{grid-column:1/-1;max-width:650px}
+.nextFeatureTile{
+  display:flex;flex-direction:column;align-items:flex-start;min-height:220px;
+  padding:22px;border:1px solid #e2dfed;border-radius:17px;
+  background:linear-gradient(145deg,#fff,#f8f7ff);color:#242238;
+}
+.nextFeatureTile .featureGlyph{font-size:24px;color:#7354cc;margin:16px 0}
+.nextFeatureTile p{color:#69677a;line-height:1.65}
+.nextFeatureTile .featureInlineLink{margin-top:auto;color:#6746c4;font-weight:750}
+@media(max-width:760px){
+  .hero.imperialArchiveHero{min-height:0;padding:28px 20px 26px;border-radius:18px}
+  .hero.imperialArchiveHero:before{width:210px;right:-95px;top:20%;opacity:.55}
+  .hero.imperialArchiveHero:after{width:70px;right:4px;top:20%;opacity:.45}
+  .hero.imperialArchiveHero .nextHeroCopy{max-width:100%}
+  .hero.imperialArchiveHero h1{max-width:10ch;font-size:clamp(2.55rem,11vw,3.5rem);line-height:1;letter-spacing:-.055em}
+  .hero.imperialArchiveHero .nextHeroLead{max-width:38ch;font-size:15px}
+  .hero.imperialArchiveHero .heroSearch{display:flex;gap:6px;padding:5px}
+  .hero.imperialArchiveHero .heroSearch input{min-width:0;width:100%}
+  .hero.imperialArchiveHero .heroSearch button{padding:10px 11px;white-space:nowrap;font-size:12px}
+  .homeFormatGrid{grid-template-columns:repeat(2,minmax(0,1fr));gap:9px}
+  .homeFormatCard{padding:12px;gap:9px}
+  .homeFormatGlyph{flex-basis:36px;width:36px;height:36px}
+  .homeFormatCopy b{font-size:12px}
+  .homeFormatCopy small{font-size:11px;line-height:1.4}
+  .nextFeatureDeck{grid-template-columns:1fr}
+  .nextFeatureIntro{grid-column:auto}
+  .nextFeatureTile{min-height:170px}
+}
+@media(max-width:380px){
+  .homeFormatGrid{grid-template-columns:1fr}
+  .hero.imperialArchiveHero .heroSearch button{font-size:11px;padding-inline:8px}
+}
+@media(prefers-reduced-motion:reduce){
+  .homeFormatCard{transition:none}
+}
+html[data-theme="dark"] .hero.imperialArchiveHero{
+  border-color:rgba(167,139,250,.24);
+  background:
+    radial-gradient(ellipse at 88% 50%,rgba(79,140,255,.12),transparent 34%),
+    radial-gradient(ellipse at 82% 58%,rgba(139,92,246,.13),transparent 43%),
+    linear-gradient(112deg,#090b14 0%,#101426 58%,#0a1020 100%);
+  box-shadow:none;
+}
+html[data-theme="dark"] .hero.imperialArchiveHero:before{border-color:rgba(139,92,246,.25)}
+html[data-theme="dark"] .hero.imperialArchiveHero:after{border-color:rgba(245,247,255,.22);background:linear-gradient(135deg,rgba(139,92,246,.22),rgba(79,140,255,.08))}
+html[data-theme="dark"] .hero.imperialArchiveHero h1{color:#f5f7ff}
+html[data-theme="dark"] .hero.imperialArchiveHero h1 span{color:#b9a4ff}
+html[data-theme="dark"] .hero.imperialArchiveHero .nextHeroLead{color:#b9c2d9}
+html[data-theme="dark"] .hero.imperialArchiveHero .heroSearch{border-color:rgba(167,139,250,.3)}
+html[data-theme="dark"] .hero.imperialArchiveHero .heroTags a{border-color:#343950;background:rgba(255,255,255,.035);color:#d9def2}
+html[data-theme="dark"] .hero.imperialArchiveHero .heroPromise{color:#f5f7ff}
+html[data-theme="dark"] .hero.imperialArchiveHero .promiseText{color:#929bb5}
+html[data-theme="dark"] .homeFormatCard,html[data-theme="dark"] .nextFeatureTile{
+  border-color:#292e42;background:linear-gradient(145deg,#111522,#0d1220);color:#f0f2ff
+}
+html[data-theme="dark"] .homeFormatCard:hover{border-color:#7561b6}
+html[data-theme="dark"] .homeFormatGlyph{background:#211b3b;color:#c2adff}
+html[data-theme="dark"] .homeFormatCopy small,html[data-theme="dark"] .nextFeatureTile p{color:#aab3ca}
+html[data-theme="dark"] .homeFormatArrow,html[data-theme="dark"] .nextFeatureTile .featureInlineLink{color:#b9a4ff}
