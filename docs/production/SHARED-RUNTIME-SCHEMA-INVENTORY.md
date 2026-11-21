@@ -244,3 +244,8 @@ Because these statements use CREATE TABLE IF NOT EXISTS, the runtime bootstrap d
 Cutover requirement: choose the canonical migration chain as the sole schema owner; compare production sqlite_master / PRAGMA table_info / foreign_key_list / index_list output against the intended migration result; explicitly plan any constraint rebuilds and orphan checks before applying changes. Do not attempt an in-place table rebuild or create a new migration until the production read-only audit and backup/restore rehearsal are complete.
 
 This is a source-to-migration comparison only. It does not establish which schema variant currently exists in production.
+### Runtime feature table definitions versus migration 0028
+
+The runtime feature initializer also defines simplified versions of tables owned by migration 0028. In particular, its comment_likes definition omits the canonical foreign keys; comment_reports omits the canonical UNIQUE(user_id,comment_id) and foreign keys; request_votes omits its canonical foreign keys. Migration 0028 adds orphan/duplicate archival, cleanup, uniqueness, validation/cascade triggers, and supporting indexes.
+
+This is another reason not to assume that a runtime marker or CREATE TABLE IF NOT EXISTS means the canonical schema is present. Migration 0028 contains integrity work beyond the runtime helper's table-creation statements. The production cutover must verify every object from 0028, including triggers and the legacy duplicate archive, not merely table names and columns.
