@@ -8,7 +8,7 @@ def extract(pattern, label):
     match = re.search(pattern, source, re.S)
     if not match:
         raise AssertionError("Could not extract live Worker SQL: " + label)
-    return match.group(1)
+    return match.group(1).rstrip('"')
 
 tick = r"\x60"
 novel_update = extract(
