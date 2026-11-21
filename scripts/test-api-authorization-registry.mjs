@@ -92,8 +92,8 @@ for (const route of registry.policies.userOwned.routes) {
     assert.ok(snippet.includes("need(u)"), "user-owned route must require a session: " + method + " " + route.path);
     assert.ok(snippet.includes("u.id"), "user-owned route must derive scope from session u.id: " + method + " " + route.path);
     assert.ok(snippet.includes(".bind(u.id"), "user-owned route must bind database ownership to session u.id: " + method + " " + route.path);
-    assert.ok(/(?:WHERE|AND)\\s+[^\\n;]*user_id\\s*=\\s*\\?/.test(snippet) ||
-      /INSERT(?: OR IGNORE)? INTO [a-z_]+\\s*\\([^)]*user_id/.test(snippet),
+    assert.ok(/(?:WHERE|AND)\s+[^\n;]*user_id\s*=\s*\?/.test(snippet) ||
+      /INSERT(?: OR IGNORE)? INTO [a-z_]+\s*\([^)]*user_id/.test(snippet),
       "user-owned route must use a parameterized user_id predicate or insert column: " + method + " " + route.path);
   }
 }
