@@ -148,7 +148,7 @@ for (const route of [
 }
 assert.ok(inventory.includes("Additional publishing GET schema side effects"),
   "direct publishing GET DDL and backfill call sites must be inventoried");
-const runtimeFeature = await readFile(new URL("../src/runtime-feature-schema.mjs", import.meta.url), "utf8");
+const runtimeFeature = runtime;
 assert.ok(runtimeFeature.includes("CREATE TABLE IF NOT EXISTS auth_rate_limits"), "runtime feature schema inventory must retain auth rate-limit table evidence");
 assert.ok(runtimeFeature.includes("DELETE FROM auth_rate_limits WHERE window_start<?"), "runtime feature schema cleanup side effect must remain visible for cutover review");
 assert.ok(runtimeFeature.includes("runtime_feature_schema_version"), "runtime feature schema marker must remain visible for cutover review");
