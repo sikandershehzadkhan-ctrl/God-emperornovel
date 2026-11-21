@@ -627,6 +627,61 @@
       "guard": "author(u)",
       "scope": "project.owner_user_id equals u.id unless admin; job list selected by verified project id",
       "sourceMarker": "if(/^\\/api\\/author\\/ai\\/projects\\/\\d+\\/jobs$/.test(p)"
+    },
+    {
+      "pattern": "^/api/chapters/([0-9]+)/unlock$",
+      "sample": "/api/chapters/42/unlock",
+      "methods": [
+        "POST"
+      ],
+      "accessClass": "authenticated-user",
+      "guard": "need(u)",
+      "scope": "unlock row and ticket debit bound to authenticated u.id",
+      "sourceMarker": "if(/^\\/api\\/chapters\\/\\d+\\/unlock$/.test(p)"
+    },
+    {
+      "pattern": "^/api/author/novels/([0-9]+)/submit$",
+      "sample": "/api/author/novels/42/submit",
+      "methods": [
+        "POST"
+      ],
+      "accessClass": "author-owner",
+      "guard": "author(u)",
+      "scope": "novel.owner_user_id equals u.id unless admin",
+      "sourceMarker": "if(/^\\/api\\/author\\/novels\\/\\d+\\/submit$/.test(p)"
+    },
+    {
+      "pattern": "^/api/author/novels/([0-9]+)$",
+      "sample": "/api/author/novels/42",
+      "methods": [
+        "PATCH"
+      ],
+      "accessClass": "author-owner",
+      "guard": "author(u)",
+      "scope": "novel.owner_user_id equals u.id unless admin",
+      "sourceMarker": "if(/^\\/api\\/author\\/novels\\/\\d+$/.test(p)"
+    },
+    {
+      "pattern": "^/api/author/chapters/([0-9]+)$",
+      "sample": "/api/author/chapters/42",
+      "methods": [
+        "PATCH"
+      ],
+      "accessClass": "author-owner",
+      "guard": "author(u)",
+      "scope": "parent novel.owner_user_id equals u.id unless admin",
+      "sourceMarker": "if(/^\\/api\\/author\\/chapters\\/\\d+$/.test(p)"
+    },
+    {
+      "pattern": "^/api/author/chapters/([0-9]+)/publish$",
+      "sample": "/api/author/chapters/42/publish",
+      "methods": [
+        "POST"
+      ],
+      "accessClass": "author-owner",
+      "guard": "author(u)",
+      "scope": "parent novel.owner_user_id equals u.id unless admin; publication rights allowlist enforced",
+      "sourceMarker": "if(/^\\/api\\/author\\/chapters\\/\\d+\\/publish$/.test(p)"
     }
   ],
   "policies": {
