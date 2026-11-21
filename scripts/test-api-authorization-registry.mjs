@@ -124,6 +124,14 @@ for (const route of registry.policies.publicRightsFiltered.routes) {
   }
 }
 
+const taxonomy = handler("/api/taxonomy");
+assert.ok(taxonomy.includes("communityTaxonomy(req,env,u)"),
+  "taxonomy route must pass the authenticated session into its delegated handler");
+const taxonomyHandler = worker.slice(worker.indexOf("async function communityTaxonomy"), worker.indexOf("async function adminTaxonomy"));
+const taxonomyPost = taxonomyHandler.slice(taxonomyHandler.indexOf("if(method==='POST')"));
+assert.ok(taxonomyPost.includes("need(u)") && taxonomyPost.includes("u.id") && taxonomyPost.includes("u.username"),
+  "taxonomy submissions must require authentication and derive submitter identity from the session, never client fields");
+
 const omniSearch = handler("/api/omni/search", "GET");
 assert.ok(omniSearch.includes("enabled=1 AND rights_status='authorized'"),
   "OmniPortal search must query only enabled, rights-authorized connectors");
