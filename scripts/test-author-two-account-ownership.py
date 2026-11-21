@@ -82,4 +82,4 @@ assert db.execute("SELECT id FROM novels WHERE owner_user_id=?", (1,)).fetchall(
 assert db.execute("SELECT id FROM novels WHERE owner_user_id=?", (2,)).fetchall() == [(2,)]
 assert db.execute(chapter_publish, ("draft",2,99,"admin")).rowcount == 1
 
-print("PASS: two-account SQLite/D1-SQL integration checks for author chapter create/edit/publish, novel submission, ownership isolation, and admin exception.")
+print("PASS: two-account SQLite/D1-SQL integration checks for author chapter create/edit/publish, novel edit/submission, ownership isolation, and admin exception.")
