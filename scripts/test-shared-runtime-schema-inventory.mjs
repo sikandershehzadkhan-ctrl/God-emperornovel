@@ -97,3 +97,8 @@ assert.ok(inventory.includes("`POST /api/donations`"),
   "donation reference index DDL call site is not inventoried");
 
 console.log("PASS: shared runtime schema coverage and outstanding migration debt are explicitly inventoried.");
+
+assert.ok(!worker.includes("God-Emperor's Infinite Ascension"),
+  "production bootstrap must not seed a deployment-demo novel");
+assert.ok(!worker.includes("placeholder chapter content for deployment testing"),
+  "production bootstrap must not seed placeholder chapter bodies");
