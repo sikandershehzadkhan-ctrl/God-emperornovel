@@ -5,7 +5,9 @@ Status: **AUDITED IN SOURCE; PRODUCTION STATE UNKNOWN; RUNTIME DDL NOT YET REMOV
 Date: 2026-11-20
 Audited source: `src/index.js` and `src/runtime-feature-schema.mjs` at the canonical migration integration candidate.
 
-Architecture decision: [ADR-0040](../architecture/decisions/ADR-0040-shared-runtime-schema-inventory-before-cutover.md).\n\n## Why this inventory exists
+Architecture decision: [ADR-0040](../architecture/decisions/ADR-0040-shared-runtime-schema-inventory-before-cutover.md).
+
+## Why this inventory exists
 
 The API dispatcher invokes `ensureCoreSchema(env)` and `ensureRuntimeFeatureSchema(env)` before normal API route dispatch. The health endpoint returns before those initializers. The Worker also invokes `ensureCoreSchema(env)` from its scheduled handler. The core initializer uses the `core_schema_version` marker to skip its bootstrap after it has been initialized, while the runtime-feature initializer uses `runtime_feature_schema_version`.
 
