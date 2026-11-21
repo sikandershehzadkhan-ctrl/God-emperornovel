@@ -170,6 +170,20 @@ assert.ok(worker.includes("WHERE id=? AND (owner_user_id=? OR ?=char(97,100,109,
 assert.ok(worker.includes("WHERE id=? AND EXISTS (SELECT 1 FROM novels n WHERE n.id=chapters.novel_id AND (n.owner_user_id=? OR ?=char(97,100,109,105,110)))"),
   "author chapter edits and publication writes must atomically re-check parent novel ownership");
 
+const aiProjectPatch = worker.slice(worker.indexOf('if(aip&&m==="PATCH")'), worker.indexOf('if(/^\\/api\\/author\\/ai\\/projects\\/\\d+\\/blueprint$/.test(p)'));
+assert.ok(aiProjectPatch.includes("owner_user_id=? OR ?=char(97,100,109,105,110)"),
+  "AI project edits must atomically re-check project ownership in the UPDATE statement");
+const aiBlueprint = worker.slice(worker.indexOf('if(/^\\/api\\/author\\/ai\\/projects\\/\\d+\\/blueprint$/.test(p)'), worker.indexOf('if(/^\\/api\\/author\\/ai\\/projects\\/\\d+\\/run$/.test(p)'));
+assert.ok(aiBlueprint.includes("owner_user_id=? OR ?=char(97,100,109,105,110)"),
+  "AI Story Bible writes must atomically re-check project ownership");
+const aiRun = worker.slice(worker.indexOf('if(/^\\/api\\/author\\/ai\\/projects\\/\\d+\\/run$/.test(p)'), worker.indexOf('if(/^\\/api\\/author\\/ai\\/projects\\/\\d+\\/jobs$/.test(p)'));
+assert.ok((aiRun.match(/owner_user_id=\? OR \?=char\(97,100,109,105,110\)/g) || []).length >= 3,
+  "AI generation state transitions must atomically re-check project ownership");
+assert.ok(aiRun.includes("INSERT INTO chapters") && aiRun.includes("INSERT INTO chapters") &&
+  aiRun.includes("n.owner_user_id=? OR ?=char(97,100,109,105,110)") &&
+  aiRun.includes("n.rights_status IN ('original','public_domain','licensed','authorized')"),
+  "AI-generated chapter storage must atomically enforce novel ownership and publication rights");
+
 const webhook = handler("/api/payment/webhook", "POST");
 assert.ok(webhook.includes("503") && webhook.includes("temporarily disabled"),
   "payment webhook must remain disabled until provider signature/replay protections are verified");
