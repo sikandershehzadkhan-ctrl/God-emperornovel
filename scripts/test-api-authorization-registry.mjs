@@ -124,6 +124,14 @@ for (const route of registry.policies.publicRightsFiltered.routes) {
   }
 }
 
+const taxonomyAdmin = worker.slice(worker.indexOf("async function adminTaxonomy"), worker.indexOf("async function seed("));
+assert.ok(taxonomyAdmin.includes("WHERE id=? AND status='pending'") &&
+  taxonomyAdmin.includes("meta?.changes") && taxonomyAdmin.includes("Submission was already reviewed"),
+  "taxonomy moderation must use compare-and-set status transitions and reject stale reviewers");
+assert.ok(taxonomyAdmin.includes("AND changes()=1") &&
+  taxonomyAdmin.includes("INSERT OR IGNORE INTO ${table}(name,slug) SELECT name,slug"),
+  "taxonomy approval must publish the official term only when its pending-to-approved claim succeeds");
+
 const taxonomy = handler("/api/taxonomy");
 assert.ok(taxonomy.includes("communityTaxonomy(req,env,u)"),
   "taxonomy route must pass the authenticated session into its delegated handler");
