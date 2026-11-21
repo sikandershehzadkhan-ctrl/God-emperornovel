@@ -211,9 +211,6 @@ const aiJobs = worker.slice(worker.indexOf('if(/^\\/api\\/author\\/ai\\/projects
 assert.ok(aiJobs.includes("WHERE project_id=? AND (owner_user_id=? OR ?=char(97,100,109,105,110))"),
   "AI job history reads must be scoped to the project owner or admin");
 
-assert.ok(connectorReview.includes("AND EXISTS (SELECT 1 FROM connectors WHERE connectors.id=connector_authorization_requests.connector_id)"),
-  "connector review claim must require the connector to exist so a missing connector cannot leave a half-reviewed request");
-
 const connectorSubmission = handler("/api/connector-authorization-requests", "POST");
 assert.ok(connectorSubmission.includes("catch{const pending=await env.DB.prepare") &&
   connectorSubmission.includes("Authorization request already pending.") &&
@@ -222,6 +219,9 @@ assert.ok(connectorSubmission.includes("catch{const pending=await env.DB.prepare
 
 const connectorReviewStart = worker.indexOf('let car=p.match(/^\\/api\\/admin\\/connector-authorization-requests\\/');
 const connectorReview = worker.slice(connectorReviewStart, worker.indexOf('return json({error:"Not found"},404);', connectorReviewStart));
+assert.ok(connectorReview.includes("AND EXISTS (SELECT 1 FROM connectors WHERE connectors.id=connector_authorization_requests.connector_id)"),
+  "connector review claim must require the connector to exist so a missing connector cannot leave a half-reviewed request");
+
 assert.ok(connectorReview.includes("WHERE id=? AND status='pending'") &&
   connectorReview.includes("WHERE id=? AND changes()=1") &&
   connectorReview.includes("reviewed!==1||updated!==1") &&
