@@ -642,7 +642,7 @@ async function api(req,env){
   const b=await body(req);const mode=['manual','auto','hybrid'].includes(String(b.mode||row.mode))?String(b.mode||row.mode):row.mode;
   const status=['draft','running','paused','complete'].includes(String(b.status||row.status))?String(b.status||row.status):row.status;
   const settings={...aiJson(row.settings_json),...('settings' in b?b.settings:{})};
-  await env.DB.prepare(`UPDATE ai_author_projects SET name=?,mode=?,status=?,genre=?,fandom=?,premise=?,protagonist=?,settings_json=?,auto_publish=?,chapters_target=?,updated_at=CURRENT_TIMESTAMP WHERE id=?`).bind(aiSafeText(b.name??row.name,160),mode,status,aiSafeText(b.genre??row.genre,120),aiSafeText(b.fandom??row.fandom,160),aiSafeText(b.premise??row.premise,3000),aiSafeText(b.protagonist??row.protagonist,800),JSON.stringify(settings),0,b.chapters_target===undefined?row.chapters_target:Math.max(0,Number(b.chapters_target)),row.id).run();
+  await env.DB.prepare(`UPDATE ai_author_projects SET name=?,mode=?,status=?,genre=?,fandom=?,premise=?,protagonist=?,settings_json=?,auto_publish=?,chapters_target=?,updated_at=CURRENT_TIMESTAMP WHERE id=? AND (owner_user_id=? OR ?=char(97,100,109,105,110))`).bind(aiSafeText(b.name??row.name,160),mode,status,aiSafeText(b.genre??row.genre,120),aiSafeText(b.fandom??row.fandom,160),aiSafeText(b.premise??row.premise,3000),aiSafeText(b.protagonist??row.protagonist,800),JSON.stringify(settings),0,b.chapters_target===undefined?row.chapters_target:Math.max(0,Number(b.chapters_target)),row.id,u.id,u.role).run();
   return json({ok:true});
  }
  if(/^\/api\/author\/ai\/projects\/\d+\/blueprint$/.test(p)&&m==="POST"){
@@ -652,20 +652,20 @@ async function api(req,env){
   if(ai.error||!ai.text)return json({error:ai.error||'The AI provider returned no Story Bible. Nothing was saved.'},502);
   let output;try{output={...blueprint,...JSON.parse(ai.text)}}catch{return json({error:'The AI provider returned invalid Story Bible JSON. Nothing was saved.'},502)}
   const provider=ai.provider;
-  await env.DB.prepare('UPDATE ai_author_projects SET bible_json=?,updated_at=CURRENT_TIMESTAMP WHERE id=?').bind(JSON.stringify(output),id).run();
+  await env.DB.prepare('UPDATE ai_author_projects SET bible_json=?,updated_at=CURRENT_TIMESTAMP WHERE id=? AND (owner_user_id=? OR ?=char(97,100,109,105,110))').bind(JSON.stringify(output),id,u.id,u.role).run();
   await env.DB.prepare(`INSERT INTO ai_generation_runs(project_id,owner_user_id,agent,mode,status,input_summary,output_summary,provider) VALUES(?,?,?,?,'ok',?,?,?)`).bind(id,u.id,'worldbuilding',row.mode,`${row.genre}/${row.fandom}`,`Story bible generated with ${Object.keys(output).length} sections`,provider).run();
   return json({ok:true,provider,blueprint:output});
  }
  if(/^\/api\/author\/ai\/projects\/\d+\/run$/.test(p)&&m==="POST"){
   const e=author(u);if(e)return e;if(!String(env.OPENAI_API_KEY||'').trim())return json({error:"AI generation is not configured. Manual Chapter Studio remains available."},503);await ensureAuthorAISchema(env);const id=Number(p.split('/')[5]);const row=await env.DB.prepare('SELECT * FROM ai_author_projects WHERE id=?').bind(id).first();if(!row)return json({error:'AI project not found'},404);if(u.role!=='admin'&&Number(row.owner_user_id)!==Number(u.id))return json({error:'You do not own this project'},403);
   if(row.status==='running')return json({error:'Project is already running'},409);
-  await env.DB.prepare("UPDATE ai_author_projects SET status='running',updated_at=CURRENT_TIMESTAMP WHERE id=?").bind(id).run();
+  await env.DB.prepare("UPDATE ai_author_projects SET status='running',updated_at=CURRENT_TIMESTAMP WHERE id=? AND (owner_user_id=? OR ?=char(97,100,109,105,110))").bind(id,u.id,u.role).run();
   const next=Number(row.chapters_generated||0)+1, target=Number(row.chapters_target||0);
-  if(target&&next>target){await env.DB.prepare("UPDATE ai_author_projects SET status='complete' WHERE id=?").bind(id).run();return json({ok:true,status:'complete',message:'Chapter target reached.'})}
+  if(target&&next>target){await env.DB.prepare("UPDATE ai_author_projects SET status='complete' WHERE id=? AND (owner_user_id=? OR ?=char(97,100,109,105,110))").bind(id,u.id,u.role).run();return json({ok:true,status:'complete',message:'Chapter target reached.'})}
   const job=await env.DB.prepare(`INSERT INTO ai_chapter_jobs(project_id,owner_user_id,chapter_number,job_type,status,prompt) VALUES(?,?,?,'draft','queued',?)`).bind(id,u.id,next,aiSafeText(row.premise,3000)).run();
   const jobId=Number(job.meta.last_row_id);
   const ai=await callAuthorModel(env,'You are the chapter writer for a rights-aware novel platform. Write an original clean chapter based only on the supplied story bible/project data. Do not reproduce protected text from any source. Keep continuity, character consistency, gradual world/territory building, dialogue and concrete consequences. Return HTML paragraphs only.',JSON.stringify({project:{name:row.name,genre:row.genre,fandom:row.fandom,premise:row.premise,protagonist:row.protagonist},bible:aiJson(row.bible_json),chapter_number:next}),3200);
-  if(ai.error||!ai.text){await env.DB.batch([env.DB.prepare("UPDATE ai_chapter_jobs SET status='failed',error=?,attempts=1,started_at=CURRENT_TIMESTAMP,finished_at=CURRENT_TIMESTAMP WHERE id=?").bind(ai.error||'AI provider returned no chapter text',jobId),env.DB.prepare("UPDATE ai_author_projects SET status='paused',updated_at=CURRENT_TIMESTAMP WHERE id=?").bind(id)]);return json({error:ai.error||'The AI provider returned no chapter text. The project remains paused and no chapter was published.'},502)}
+  if(ai.error||!ai.text){await env.DB.batch([env.DB.prepare("UPDATE ai_chapter_jobs SET status='failed',error=?,attempts=1,started_at=CURRENT_TIMESTAMP,finished_at=CURRENT_TIMESTAMP WHERE id=?").bind(ai.error||'AI provider returned no chapter text',jobId),env.DB.prepare("UPDATE ai_author_projects SET status='paused',updated_at=CURRENT_TIMESTAMP WHERE id=? AND (owner_user_id=? OR ?=char(97,100,109,105,110))").bind(id,u.id,u.role)]);return json({error:ai.error||'The AI provider returned no chapter text. The project remains paused and no chapter was published.'},502)}
   const draft=ai.text,provider=ai.provider;
   let createdChapter=null;
   if(row.novel_id){
