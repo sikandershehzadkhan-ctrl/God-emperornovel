@@ -200,3 +200,15 @@ The initializer is also called by Author Studio POST/PATCH handlers, which means
 The source inspection confirms that ensureAuthorAISchema() propagates statement failures rather than swallowing them. That is better failure behavior than the OmniPortal helper, but it remains request-triggered DDL and is not a migration substitute. Migration 0007 and later AI migrations remain the candidate canonical owners; production definitions and migration ledger must be verified before the initializer is retired.
 
 This is source-level evidence only. No production D1 query or change was performed.
+### Additional publishing GET schema side effects (2026-11-21)
+
+The same direct-call audit found two authenticated publishing GET handlers that invoke ensurePublishingSchema() before reading data:
+
+| Route | Side effect | Required cutover |
+|---|---|---|
+| GET /api/admin/publishing | Rechecks/creates publication columns and indexes, backfills blank novel publication status, creates chapter_views, and may add chapter publication status | Remove initializer call after 0004/0005 and any required bounded backfill are reconciled against production; GET must only read |
+| GET /api/admin/publishing/chapters | Performs the same publishing schema checks/backfills before listing chapters | Same; preserve chapter ordering, publication state and view records |
+
+These calls are separate from the API dispatcher's shared bootstrap. Removing the shared initializer alone would not make these GET handlers read-only. The publishing helper propagates failures, but it performs DDL and DML (including UPDATE backfills) directly in request handling.
+
+No production schema or row state was inspected. The migration cutover must compare the exact production definitions and measure affected backfill rows before replacing this behavior.
