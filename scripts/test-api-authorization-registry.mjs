@@ -65,6 +65,12 @@ for (const override of registry.policies.adminOnly.methodOverrides) {
   const snippet = handler(override.path, override.methods[0]);
   assert.ok(snippet.includes("admin(u)"), "method-specific admin override lacks admin guard: " + override.path);
 }
+const regexRouteMarkers = [...worker.matchAll(/if\\((\\/\\^.*?\\/\\.test\\(p\\))/g)].map(match => "if(" + match[1]);
+for (const marker of regexRouteMarkers) {
+  assert.ok(registry.dynamicInventory.some(route => route.sourceMarker === marker),
+    "dynamic API regex route is missing from the authorization registry: " + marker);
+}
+
 for (const route of registry.dynamicInventory) {
   assert.ok(new RegExp(route.pattern).test(route.sample), "dynamic API sample does not match: " + route.pattern);
   assert.ok(worker.includes(route.sourceMarker), "dynamic API route source marker missing: " + route.sourceMarker);
