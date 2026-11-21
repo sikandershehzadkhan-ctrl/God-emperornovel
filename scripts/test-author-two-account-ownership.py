@@ -116,7 +116,7 @@ db.execute("INSERT INTO ai_author_projects(owner_user_id,name) VALUES(2,'B AI pr
 project_a = db.execute("SELECT id FROM ai_author_projects WHERE owner_user_id=1").fetchone()[0]
 project_b = db.execute("SELECT id FROM ai_author_projects WHERE owner_user_id=2").fetchone()[0]
 
-project_values = ("Hijacked name","manual","draft","Fantasy","","premise","hero","{}",0,5,project_a,2,"author")
+project_values = ("Hijacked name","manual","Fantasy","","premise","hero","{}",0,5,project_a,2,"author")
 assert db.execute(ai_project_update, project_values).rowcount == 0
 assert db.execute("SELECT name FROM ai_author_projects WHERE id=?", (project_a,)).fetchone()[0] == "A AI project"
 owner_values = project_values[:-2] + (1,"author")
