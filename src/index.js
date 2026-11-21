@@ -673,13 +673,13 @@ async function api(req,env){
    if(n&&(u.role==='admin'||Number(n.owner_user_id)===Number(u.id))&&['original','public_domain','licensed','authorized'].includes(String(n.rights_status))){
     const existing=await env.DB.prepare('SELECT id FROM chapters WHERE novel_id=? AND chapter_number=?').bind(row.novel_id,next).first();
     if(!existing){
-     const cr=await env.DB.prepare(`INSERT INTO chapters(novel_id,chapter_number,title,content,is_locked,ticket_cost,publication_status) VALUES(?,?,?,?,0,0,'draft')`).bind(row.novel_id,next,`Chapter ${next}`,draft).run();createdChapter=Number(cr.meta.last_row_id);
+     const cr=await env.DB.prepare(`INSERT INTO chapters(novel_id,chapter_number,title,content,is_locked,ticket_cost,publication_status) SELECT ?,?,?,?,0,0,'draft' WHERE EXISTS (SELECT 1 FROM novels n WHERE n.id=? AND (n.owner_user_id=? OR ?=char(97,100,109,105,110)) AND n.rights_status IN ('original','public_domain','licensed','authorized'))`).bind(row.novel_id,next,`Chapter ${next}`,draft,row.novel_id,u.id,u.role).run();if(Number(cr.meta.changes||0)===1)createdChapter=Number(cr.meta.last_row_id);
     }
    }
   }
   await env.DB.batch([
    env.DB.prepare("UPDATE ai_chapter_jobs SET status='complete',result=?,attempts=1,started_at=CURRENT_TIMESTAMP,finished_at=CURRENT_TIMESTAMP WHERE id=?").bind(draft.slice(0,50000),jobId),
-   env.DB.prepare("UPDATE ai_author_projects SET chapters_generated=?,status=?,updated_at=CURRENT_TIMESTAMP WHERE id=?").bind(next,target&&next>=target?'complete':'paused',id),
+   env.DB.prepare("UPDATE ai_author_projects SET chapters_generated=?,status=?,updated_at=CURRENT_TIMESTAMP WHERE id=? AND (owner_user_id=? OR ?=char(97,100,109,105,110))").bind(next,target&&next>=target?'complete':'paused',id,u.id,u.role),
    env.DB.prepare("INSERT INTO ai_generation_runs(project_id,owner_user_id,agent,mode,status,input_summary,output_summary,provider) VALUES(?,?,? ,? ,'ok',?,?,?)").bind(id,u.id,'chapter-writer',row.mode,`chapter=${next}`,`draft=${draft.length} chars`,provider)
   ]);
   await audit(env,u,'ai_author_chapter_generated',`project=${id};chapter=${next};provider=${provider}`);
