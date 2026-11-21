@@ -158,3 +158,10 @@ assert.ok(initialMigration.includes("CHECK(role IN ('user','author','moderator',
 assert.ok(initialMigration.includes("FOREIGN KEY(user_id) REFERENCES users(id) ON DELETE CASCADE"), "canonical initial migration must retain user foreign-key constraints");
 assert.ok(worker.includes("CREATE TABLE IF NOT EXISTS users"), "runtime core bootstrap must remain identifiable for schema drift review");
 assert.ok(inventory.includes("Canonical migration versus core runtime bootstrap schema drift"), "migration/runtime schema divergence must remain documented");
+const runtimeFeatureSource = runtime;
+const integrityMigration = migration("0028_runtime_feature_integrity.sql");
+assert.ok(runtimeFeatureSource.includes("CREATE TABLE IF NOT EXISTS comment_reports"), "runtime comment report schema must remain identifiable");
+assert.ok(integrityMigration.includes("CREATE TABLE IF NOT EXISTS comment_reports_legacy_duplicates"), "canonical runtime integrity migration must retain duplicate archive");
+assert.ok(integrityMigration.includes("trg_comment_reports_validate_insert"), "canonical runtime integrity migration must retain validation triggers");
+assert.ok(integrityMigration.includes("idx_comment_reports_user_comment"), "canonical runtime integrity migration must retain uniqueness enforcement");
+assert.ok(inventory.includes("Runtime feature table definitions versus migration 0028"), "runtime feature integrity differences must remain documented");
