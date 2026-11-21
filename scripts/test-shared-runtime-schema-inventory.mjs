@@ -158,6 +158,30 @@ assert.ok(initialMigration.includes("CHECK(role IN ('user','author','moderator',
 assert.ok(initialMigration.includes("FOREIGN KEY(user_id) REFERENCES users(id) ON DELETE CASCADE"), "canonical initial migration must retain user foreign-key constraints");
 assert.ok(worker.includes("CREATE TABLE IF NOT EXISTS users"), "runtime core bootstrap must remain identifiable for schema drift review");
 assert.ok(inventory.includes("Canonical migration versus core runtime bootstrap schema drift"), "migration/runtime schema divergence must remain documented");
+
+const coreRuntimeDefinitions = [
+  "CREATE TABLE IF NOT EXISTS unlock_batches (id INTEGER PRIMARY KEY AUTOINCREMENT,user_id INTEGER NOT NULL,novel_id INTEGER NOT NULL,start_chapter INTEGER NOT NULL,end_chapter INTEGER NOT NULL,requested_count INTEGER NOT NULL,cost REAL NOT NULL DEFAULT 0,created_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP)",
+  "CREATE TABLE IF NOT EXISTS bookmarks (user_id INTEGER NOT NULL,novel_id INTEGER NOT NULL,chapter_number INTEGER NOT NULL DEFAULT 1,updated_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,PRIMARY KEY(user_id,novel_id))",
+  "CREATE TABLE IF NOT EXISTS history (user_id INTEGER NOT NULL,novel_id INTEGER NOT NULL,chapter_number INTEGER NOT NULL,updated_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,PRIMARY KEY(user_id,novel_id))",
+  "CREATE TABLE IF NOT EXISTS donations (id INTEGER PRIMARY KEY AUTOINCREMENT,user_id INTEGER,amount REAL NOT NULL,reference_id TEXT NOT NULL,status TEXT NOT NULL DEFAULT 'pending',created_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP)",
+  "CREATE TABLE IF NOT EXISTS comments (id INTEGER PRIMARY KEY AUTOINCREMENT,user_id INTEGER NOT NULL,novel_id INTEGER NOT NULL,body TEXT NOT NULL,status TEXT NOT NULL DEFAULT 'visible',created_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP)",
+  "CREATE TABLE IF NOT EXISTS novel_requests (id INTEGER PRIMARY KEY AUTOINCREMENT,user_id INTEGER NOT NULL,url TEXT NOT NULL,source_host TEXT NOT NULL,week_key INTEGER NOT NULL,cost REAL NOT NULL DEFAULT 0,status TEXT NOT NULL DEFAULT 'pending',created_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP)"
+];
+for (const definition of coreRuntimeDefinitions) {
+  assert.ok(worker.includes(definition), "core runtime table definition changed without constraint-drift review");
+}
+for (const [table, constraint] of [
+  ["unlock_batches", "FOREIGN KEY(user_id) REFERENCES users(id) ON DELETE CASCADE"],
+  ["bookmarks", "FOREIGN KEY(user_id) REFERENCES users(id) ON DELETE CASCADE"],
+  ["history", "FOREIGN KEY(user_id) REFERENCES users(id) ON DELETE CASCADE"],
+  ["donations", "FOREIGN KEY(user_id) REFERENCES users(id) ON DELETE SET NULL"],
+  ["comments", "FOREIGN KEY(user_id) REFERENCES users(id) ON DELETE CASCADE"],
+  ["novel_requests", "FOREIGN KEY(user_id) REFERENCES users(id) ON DELETE CASCADE"]
+]) {
+  const statement = initialMigration.split(";").find((sql) => sql.includes(`CREATE TABLE IF NOT EXISTS ${table} `));
+  assert.ok(statement?.includes(constraint), `canonical ${table} foreign-key ownership changed`);
+}
+assert.ok(inventory.includes("Expanded core-baseline constraint drift"), "expanded core constraint drift must remain documented");
 const runtimeFeatureSource = runtime;
 const integrityMigration = migration("0028_runtime_feature_integrity.sql");
 assert.ok(runtimeFeatureSource.includes("CREATE TABLE IF NOT EXISTS comment_reports"), "runtime comment report schema must remain identifiable");
