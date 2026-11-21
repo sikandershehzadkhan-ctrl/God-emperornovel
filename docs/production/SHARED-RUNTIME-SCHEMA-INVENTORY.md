@@ -299,3 +299,24 @@ The core initializer has additional responsibilities that must be separated from
 The source confirms `agents`, `agent_runs`, `idx_agent_runs_agent`, and `taxonomy_submissions` are not defined by migration `0001_initial.sql`; the broader 0001–0011 gap for the agent registry remains as previously recorded. A first API GET on a database without the expected core marker can therefore trigger structural DDL and taxonomy/agent reference-data DML before its route handler. The scheduled entrypoint separately calls the same core initializer. This is not evidence that production currently lacks any of these objects.
 
 Cutover safeguards: inventory actual production rows and schema first; preserve agent status/enabled flags and all run history; preserve taxonomy proposal/review states; count existing genre/tag rows before seed reconciliation; make reference-data changes auditable and idempotent; and do not silently reseed or normalize user-created vocabulary.
+
+
+### Agent registry and taxonomy bootstrap ownership gap (2026-11-21)
+
+A further pass through the complete core initializer identified additional runtime-owned schema and data responsibilities:
+
+- `ensureCoreSchema()` creates `agents`, `agent_runs`, and `idx_agent_runs_agent` inline. A repository-wide migration-source search found no canonical migration that creates these two tables. They currently have runtime-bootstrap ownership rather than an identified forward migration owner.
+- `ensureAgents()` inserts the built-in specialist-agent registry using `INSERT OR IGNORE` during core bootstrap. This is repeatable seed data, but it remains an implicit application-startup write. Its owner and versioning policy must be explicit.
+- `ensureCommunityTaxonomySchema()` creates `taxonomy_submissions` at runtime. No canonical migration currently creates this table.
+- `seedTaxonomy()` inserts the built-in genre and tag vocabulary using `INSERT OR IGNORE` batches during core bootstrap. The demo novel/chapter seed has been removed, but this taxonomy vocabulary remains intentional reference data. Its owner, versioning policy, and safe update behavior must be explicit.
+- Core bootstrap also inserts the default `ticket_packs` setting and writes the `first_admin_bootstrap_done` and `core_schema_version` settings. These are application configuration/bootstrap markers, not migration-ledger evidence.
+
+The core initializer has a `core_schema_version='16.64.0'` fast path that returns before running the above helpers. Seeing this marker does not prove that agent tables, taxonomy submissions, agent seed rows, or current taxonomy vocabulary exist or are complete. The Worker isolate memo is not durable schema evidence either.
+
+Cutover requirements:
+1. Allocate canonical migrations for `agents`, `agent_runs`, and `taxonomy_submissions` only after checking production D1 objects and the migration ledger.
+2. Define whether the agent registry and genre/tag vocabulary are immutable seed snapshots, versioned reference-data migrations, or separately managed catalog data. Preserve administrator edits and user-created taxonomy.
+3. Extend the read-only audit to inspect these exact tables, indexes, row counts, and existing vocabulary without exposing sensitive row contents.
+4. Keep runtime helpers in place until migration and data ownership are proven. Do not create or apply a guessed migration based only on repository source.
+
+This is repository-source evidence, not a statement about production D1 contents. No production query or mutation was performed.
