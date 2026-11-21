@@ -124,6 +124,15 @@ for (const route of registry.policies.publicRightsFiltered.routes) {
   }
 }
 
+const communityCommentModeration = handler("/api/admin/community/comments", "PATCH");
+const communityReportModeration = handler("/api/admin/community/reports", "PATCH");
+const genericReportModeration = worker.slice(worker.indexOf('let ar=p.match(/^\\/api\\/admin\\/reports\\/'), worker.indexOf('if(p==="/api/admin/tickets"'));
+for (const [name, snippet] of [["comment",communityCommentModeration],["community report",communityReportModeration],["generic report",genericReportModeration]]) {
+  assert.ok(snippet.includes("SELECT status") && snippet.includes("AND status=?") &&
+    snippet.includes("changed!==1") && snippet.includes("changed concurrently"),
+    name + " moderation must compare-and-set the status observed by the reviewer");
+}
+
 const taxonomyAdmin = worker.slice(worker.indexOf("async function adminTaxonomy"), worker.indexOf("async function seed("));
 assert.ok(taxonomyAdmin.includes("WHERE id=? AND status='pending'") &&
   taxonomyAdmin.includes("meta?.changes") && taxonomyAdmin.includes("Submission was already reviewed"),
