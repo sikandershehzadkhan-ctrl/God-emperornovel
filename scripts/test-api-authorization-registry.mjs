@@ -184,6 +184,15 @@ assert.ok(aiRun.includes("INSERT INTO chapters") && aiRun.includes("INSERT INTO 
   aiRun.includes("n.rights_status IN ('original','public_domain','licensed','authorized')"),
   "AI-generated chapter storage must atomically enforce novel ownership and publication rights");
 
+assert.ok(aiRun.includes("INSERT INTO ai_chapter_jobs") &&
+  aiRun.includes("WHERE EXISTS (SELECT 1 FROM ai_author_projects WHERE id=? AND (owner_user_id=? OR ?=char(97,100,109,105,110)))"),
+  "AI job creation must atomically verify the project owner");
+assert.ok(aiRun.includes("WHERE id=? AND owner_user_id=?"),
+  "AI job result writes must be scoped to the authenticated job owner");
+const aiJobs = worker.slice(worker.indexOf('if(/^\\/api\\/author\\/ai\\/projects\\/\\d+\\/jobs$/.test(p)'), worker.indexOf('if(p==="/api/author/ai/benchmarks"'));
+assert.ok(aiJobs.includes("WHERE project_id=? AND (owner_user_id=? OR ?=char(97,100,109,105,110))"),
+  "AI job history reads must be scoped to the project owner or admin");
+
 const webhook = handler("/api/payment/webhook", "POST");
 assert.ok(webhook.includes("503") && webhook.includes("temporarily disabled"),
   "payment webhook must remain disabled until provider signature/replay protections are verified");
