@@ -203,6 +203,14 @@ const aiJobs = worker.slice(worker.indexOf('if(/^\\/api\\/author\\/ai\\/projects
 assert.ok(aiJobs.includes("WHERE project_id=? AND (owner_user_id=? OR ?=char(97,100,109,105,110))"),
   "AI job history reads must be scoped to the project owner or admin");
 
+const connectorReviewStart = worker.indexOf('let car=p.match(/^\\/api\\/admin\\/connector-authorization-requests\\/');
+const connectorReview = worker.slice(connectorReviewStart, worker.indexOf('return json({error:"Not found"},404);', connectorReviewStart));
+assert.ok(connectorReview.includes("WHERE id=? AND status='pending'") &&
+  connectorReview.includes("WHERE id=? AND changes()=1") &&
+  connectorReview.includes("reviewed!==1||updated!==1") &&
+  connectorReview.includes("},409)"),
+  "connector rights review must atomically claim a pending request, update its connector only after the claim, and reject stale/concurrent reviews");
+
 const webhook = handler("/api/payment/webhook", "POST");
 assert.ok(webhook.includes("503") && webhook.includes("temporarily disabled"),
   "payment webhook must remain disabled until provider signature/replay protections are verified");
