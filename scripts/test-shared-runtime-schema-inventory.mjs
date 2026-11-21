@@ -102,3 +102,19 @@ assert.ok(!worker.includes("God-Emperor's Infinite Ascension"),
   "production bootstrap must not seed a deployment-demo novel");
 assert.ok(!worker.includes("placeholder chapter content for deployment testing"),
   "production bootstrap must not seed placeholder chapter bodies");
+
+const omniStart = worker.indexOf("async function ensureOmniTables(env)");
+const omniEnd = worker.indexOf("async function seedOmni(env)", omniStart);
+assert.ok(omniStart >= 0 && omniEnd > omniStart, "OmniPortal runtime schema helper must remain identifiable");
+const omniSchema = worker.slice(omniStart, omniEnd);
+assert.ok((omniSchema.match(/catch\{\}/g) || []).length >= 1,
+  "inventory must be reviewed if broad connector ALTER error suppression changes");
+assert.ok(omniSchema.includes(".catch(()=>{})"),
+  "inventory must be reviewed if OmniPortal schema batch error suppression changes");
+const seedStart = omniEnd;
+const seedEnd = worker.indexOf("async function seedTaxonomy", seedStart);
+const omniSeed = worker.slice(seedStart, seedEnd);
+assert.ok(omniSeed.includes("catch(e){console.error('connector seed',e)}"),
+  "connector registry seed failure handling changed; review explicit seed cutover");
+assert.ok(inventory.includes("broad exception suppression") && inventory.includes("schema-readiness evidence"),
+  "OmniPortal schema error suppression must be explicitly documented");
