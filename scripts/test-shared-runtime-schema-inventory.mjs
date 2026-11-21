@@ -72,4 +72,21 @@ for (const [file, needles] of [
 
 assert.match(inventory, /PRODUCTION STATE UNKNOWN/);
 assert.match(inventory, /Do not remove either shared initializer/);
+
+for (const route of [
+  "`GET /api/admin/connectors`",
+  "`GET /api/admin/connector-authorization-requests`",
+  "`PATCH /api/admin/connectors`",
+  "`POST /api/omni/import`",
+  "`POST /api/admin/omni/health`",
+  "`POST /api/admin/connectors/cleanup`",
+  "`POST /api/connector-authorization-requests`",
+  "`PATCH /api/admin/connector-authorization-requests/:id`"
+]) assert.ok(inventory.includes(route), `route-level runtime DDL call site is not inventoried: ${route}`);
+
+assert.ok(worker.includes('if(p==="/api/admin/connectors"&&m==="GET"){const e=admin(u);if(e)return e;await seedOmni(env);'),
+  "admin connector GET must remain visible as a schema-and-seed side-effect until cutover");
+assert.ok(worker.includes('if(p==="/api/admin/connector-authorization-requests"&&m==="GET"){const e=admin(u);if(e)return e;await ensureOmniTables(env);'),
+  "admin authorization-request GET must remain visible as a direct DDL side-effect until cutover");
+
 console.log("PASS: shared runtime schema coverage and outstanding migration debt are explicitly inventoried.");
