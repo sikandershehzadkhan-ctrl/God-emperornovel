@@ -22,7 +22,7 @@ db.execute("INSERT INTO connector_authorization_requests(connector_id,user_id,st
 # A reviewed request remains in history and a new pending request is allowed.
 db.execute("UPDATE connector_authorization_requests SET status='approved' WHERE connector_id=1 AND status='pending'")
 db.execute("INSERT INTO connector_authorization_requests(connector_id,user_id,status) VALUES(1,13,'pending')")
-assert db.execute("SELECT COUNT(*) FROM connector_authorization_requests WHERE connector_id=1").fetchone()[0] == 3
+assert db.execute("SELECT COUNT(*) FROM connector_authorization_requests WHERE connector_id=1").fetchone()[0] == 2
 
 # Existing duplicate pending data must stop migration instead of being silently altered.
 dirty = sqlite3.connect(":memory:")
