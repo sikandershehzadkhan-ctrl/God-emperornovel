@@ -1,0 +1,186 @@
+name: Imperial Novel Cloudflare Builds Connection Audit
+
+on:
+  push:
+    branches:
+      - investigate/cloudflare-builds-connection
+    paths:
+      - '.github/workflows/cloudflare-builds-connection-audit.yml'
+  workflow_dispatch:
+    inputs:
+      confirm_read_only_audit:
+        description: "Confirm this workflow is read-only and will not deploy"
+        required: true
+        default: "yes"
+        type: choice
+        options:
+          - "no"
+          - "yes"
+
+permissions:
+  contents: read
+
+concurrency:
+  group: imperial-novel-cloudflare-builds-connection-audit
+  cancel-in-progress: false
+
+jobs:
+  inspect-build-integration:
+    if: ${{ github.event_name == 'push' || inputs.confirm_read_only_audit == 'yes' }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Read Worker tag and inspect Cloudflare Builds triggers (read-only)
+        shell: bash
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+        run: |
+          set -euo pipefail
+          test -n "${CLOUDFLARE_API_TOKEN:-}" || { echo "::error::CLOUDFLARE_API_TOKEN is missing"; exit 1; }
+          test -n "${CLOUDFLARE_ACCOUNT_ID:-}" || { echo "::error::CLOUDFLARE_ACCOUNT_ID is missing"; exit 1; }
+          headers=(-H "Authorization: Bearer $CLOUDFLARE_API_TOKEN" -H "Content-Type: application/json")
+          tmp="$(mktemp -d)"
+          trap 'rm -rf "$tmp"' EXIT
+
+          scripts_status="$(curl --silent --show-error --max-time 25 -o "$tmp/scripts.json" -w '%{http_code}' "${headers[@]}" "https://api.cloudflare.com/client/v4/accounts/$CLOUDFLARE_ACCOUNT_ID/workers/scripts" || true)"
+          echo "Worker script inventory HTTP status: $scripts_status"
+          if [ "$scripts_status" != "200" ]; then
+            echo "Cannot read Worker script inventory; no configuration changes were made."
+            exit 0
+          fi
+
+          tag="$(node --input-type=module - "$tmp/scripts.json" <<'NODE'
+          import fs from 'node:fs';
+          const d=JSON.parse(fs.readFileSync(process.argv[2],'utf8'));
+          const x=(Array.isArray(d.result)?d.result:[]).find(v=>v.id==='god-emperornovel');
+          if(x?.tag) process.stdout.write(x.tag);
+          NODE
+          )"
+          if [ -z "$tag" ]; then
+            echo "Cloudflare script inventory did not expose a tag for god-emperornovel. Safe metadata only:"
+            node --input-type=module - "$tmp/scripts.json" <<'NODE'
+          import fs from 'node:fs';
+          const d=JSON.parse(fs.readFileSync(process.argv[2],'utf8'));
+          console.log(JSON.stringify({success:d.success,errors:Array.isArray(d.errors)?d.errors.map(e=>({code:e.code,message:e.message})):[],script_found:(Array.isArray(d.result)?d.result:[]).some(x=>x.id==='god-emperornovel')},null,2));
+          NODE
+            exit 0
+          fi
+          echo "Found the target Worker tag; tag value intentionally withheld."
+
+          triggers_status="$(curl --silent --show-error --max-time 25 -o "$tmp/triggers.json" -w '%{http_code}' "${headers[@]}" "https://api.cloudflare.com/client/v4/accounts/$CLOUDFLARE_ACCOUNT_ID/builds/workers/$tag/triggers" || true)"
+          echo "Workers Builds trigger inventory HTTP status: $triggers_status"
+          node --input-type=module - "$tmp/triggers.json" "$triggers_status" <<'NODE'
+          import fs from 'node:fs';
+          const status=process.argv[3];
+          try {
+            const d=JSON.parse(fs.readFileSync(process.argv[2],'utf8'));
+            if(status!=='200' || d.success!==true) {
+              console.log(JSON.stringify({success:d.success,http_status:status,errors:Array.isArray(d.errors)?d.errors.map(e=>({code:e.code,message:e.message})):[],result_shape:d.result&&typeof d.result==='object'?(Array.isArray(d.result)?'array':Object.keys(d.result)) : typeof d.result},null,2));
+              process.exit(0);
+            }
+            const items=Array.isArray(d.result)?d.result:(Array.isArray(d.result?.triggers)?d.result.triggers:[]);
+            console.log(JSON.stringify({success:true,trigger_count:items.length,triggers:items.map(x=>({
+              trigger_name:x.trigger_name,
+              branch_includes:x.branch_includes,
+              branch_excludes:x.branch_excludes,
+              path_includes:x.path_includes,
+              path_excludes:x.path_excludes,
+              root_directory:x.root_directory,
+              build_command:x.build_command,
+              deploy_command:x.deploy_command,
+              created_on:x.created_on,
+              modified_on:x.modified_on
+            }))},null,2));
+          } catch { console.log(JSON.stringify({http_status:status,response:'non-JSON; body omitted'})); }
+          NODE
+
+          builds_status="$(curl --silent --show-error --max-time 25 -o "$tmp/builds.json" -w '%{http_code}' "${headers[@]}" "https://api.cloudflare.com/client/v4/accounts/$CLOUDFLARE_ACCOUNT_ID/builds/workers/$tag/builds" || true)"
+          echo "Workers Builds history HTTP status: $builds_status"
+          node --input-type=module - "$tmp/builds.json" "$builds_status" <<'NODE'
+          import fs from 'node:fs';
+          const status=process.argv[3];
+          try {
+            const d=JSON.parse(fs.readFileSync(process.argv[2],'utf8'));
+            if(status!=='200' || d.success!==true) {
+              console.log(JSON.stringify({success:d.success,http_status:status,errors:Array.isArray(d.errors)?d.errors.map(e=>({code:e.code,message:e.message})):[],result_shape:d.result&&typeof d.result==='object'?(Array.isArray(d.result)?'array':Object.keys(d.result)) : typeof d.result},null,2));
+              process.exit(0);
+            }
+            const root=d.result;
+            const items=Array.isArray(root)?root:(Array.isArray(root?.builds)?root.builds:[]);
+            console.log(JSON.stringify({success:true,build_count:items.length,latest_builds:items.slice(0,10).map(x=>({
+              build_uuid:x.build_uuid,
+              status:x.status,
+              created_at:x.created_at,
+              branch:x.build_trigger_metadata?.branch,
+              commit_hash:x.build_trigger_metadata?.commit_hash,
+              trigger_name:x.trigger?.trigger_name,
+              trigger_uuid:x.trigger?.trigger_uuid
+            }))},null,2));
+          } catch { console.log(JSON.stringify({http_status:status,response:'non-JSON; body omitted'})); }
+          NODE
+
+      - name: Match live Worker deployments to Cloudflare Builds records (read-only)
+        shell: bash
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+        run: |
+          set -euo pipefail
+          headers=(-H "Authorization: Bearer $CLOUDFLARE_API_TOKEN" -H "Content-Type: application/json")
+          tmp="$(mktemp -d)"
+          trap 'rm -rf "$tmp"' EXIT
+          curl --fail --silent --show-error --max-time 25 "${headers[@]}" \
+            "https://api.cloudflare.com/client/v4/accounts/$CLOUDFLARE_ACCOUNT_ID/workers/scripts/god-emperornovel/deployments" > "$tmp/deployments.json"
+          node --input-type=module - "$tmp/deployments.json" > "$tmp/version_ids.txt" <<'NODE'
+          import fs from 'node:fs';
+          const d=JSON.parse(fs.readFileSync(process.argv[2],'utf8'));
+          const items=Array.isArray(d.result?.deployments)?d.result.deployments:[];
+          for (const deployment of items.slice(0,8)) {
+            const versions=Array.isArray(deployment.versions)?deployment.versions:[];
+            for (const v of versions) {
+              if(v.version_id) {
+                console.log(JSON.stringify({deployment_id:deployment.id,created_on:deployment.created_on,source:deployment.source,version_id:v.version_id,percentage:v.percentage}));
+                console.log(v.version_id);
+              }
+            }
+          }
+          NODE
+          echo "Deployment-to-build correlation (latest live deployment metadata):"
+          while IFS= read -r version_id; do
+            [ -n "$version_id" ] || continue
+            case "$version_id" in *[!a-fA-F0-9-]*) continue;; esac
+            curl --silent --show-error --max-time 20 -o "$tmp/version-build.json" "${headers[@]}" \
+              "https://api.cloudflare.com/client/v4/accounts/$CLOUDFLARE_ACCOUNT_ID/builds/builds?version_ids=$version_id" || true
+            node --input-type=module - "$tmp/version-build.json" "$version_id" <<'NODE'
+          import fs from 'node:fs';
+          const versionId=process.argv[3];
+          try {
+            const d=JSON.parse(fs.readFileSync(process.argv[2],'utf8'));
+            const root=d.result;
+            const items=Array.isArray(root)?root:(Array.isArray(root?.builds)?root.builds:[]);
+            console.log(JSON.stringify({queried_version_id:versionId,success:d.success,errors:Array.isArray(d.errors)?d.errors.map(e=>({code:e.code,message:e.message})):[],builds:items.slice(0,3).map(x=>({
+              build_uuid:x.build_uuid,
+              status:x.status,
+              branch:x.build_trigger_metadata?.branch,
+              commit_hash:x.build_trigger_metadata?.commit_hash,
+              trigger_name:x.trigger?.trigger_name
+            }))}));
+          } catch { console.log(JSON.stringify({queried_version_id:versionId,response:'non-JSON'})); }
+          NODE
+          done < <(awk 'NR % 2 == 0' "$tmp/version_ids.txt" | head -n 8)
+          echo "Read-only correlation complete; no build was started, canceled, or modified."
+
+      - name: Compare live Worker health (read-only)
+        shell: bash
+        run: |
+          set -euo pipefail
+          url="https://god-emperornovel.sikandershehzadkhan.workers.dev/api/health?build-audit=$(date +%s%N)"
+          curl --fail --silent --show-error --max-time 20 -H "Cache-Control: no-cache" "$url" |
+            node --input-type=module -e '
+              let s=""; for await (const c of process.stdin) s+=c;
+              const d=JSON.parse(s);
+              console.log(JSON.stringify({ok:d.ok,service:d.service,version:d.version,database:d.database,time:d.time},null,2));
+              if(d.ok!==true || d.database!==true) process.exitCode=1;
+            '
+          echo "Read-only audit complete. No deploy, settings change, or D1 write was performed."
