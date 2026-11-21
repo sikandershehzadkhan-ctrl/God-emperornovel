@@ -47,6 +47,13 @@ for (const [table, column] of [
 }
 assert.ok(workflow.includes('PRAGMA table_info(agent_runs);'), 'audit must inspect agent run history columns');
 assert.ok(workflow.includes('PRAGMA table_info(taxonomy_submissions);'), 'audit must inspect taxonomy proposal columns');
+assert.ok(workflow.includes('Complete production schema object definitions'), 'audit must capture actual table, index, trigger and view definitions');
+assert.ok(workflow.includes('PRAGMA foreign_key_check;'), 'audit must inspect production foreign-key integrity');
+assert.ok(workflow.includes("('agents','agent_id')"), 'audit must inspect agent-run ownership/link columns');
+assert.ok(workflow.includes("('taxonomy_submissions','creator_id')"), 'audit must inspect taxonomy submitter identity columns');
+assert.ok(workflow.includes("('connector_authorization_requests','reviewed_by')"), 'audit must inspect connector review attribution');
+assert.ok(workflow.includes('Migration 0049 unique-index presence'), 'audit must verify the pending-request uniqueness index after migration');
+
 assert.ok(workflow.includes('Duplicate pending connector authorization requests (must be zero before migration 0049)'), 'audit must preflight duplicate pending connector requests before migration 0049');
 
 
