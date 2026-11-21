@@ -24,6 +24,7 @@ Do not remove either shared initializer until the remote production schema and a
 | Auth rate limits, comment likes/reports, novel reactions, request votes and their integrity rules | `0028_runtime_feature_integrity.sql` | Covered by migration source. Existing lazily-created tables may have weaker original definitions; migration 0028 adds integrity triggers/indexes and performs its documented cleanup. Remote state still needs inspection. |
 | Connector events, import jobs and recommendations | `0002_omniportal.sql`, replay-safe support in `0048_omniportal_runtime_support.sql` | Covered by migration source. |
 | Connector authorization requests | `0048_omniportal_runtime_support.sql` | Covered by migration source. |
+| Pending connector authorization uniqueness | `0049_unique_pending_connector_authorization.sql` | Partial unique index is covered by migration source; production preflight must find zero duplicate pending groups before application. |
 
 ## Outstanding schema debt found in the live Worker source
 
@@ -57,7 +58,9 @@ Migration 0048 intentionally provisions the four OmniPortal support tables but d
 
 ## Safety boundary
 
-- No remote D1 query was run as part of this source audit.
+- The production audit workflow now captures complete schema-object SQL, foreign-key violations, the outstanding agent/taxonomy/connector review columns, and migration 0049 index presence. These are audit capabilities only; the workflow has not been dispatched.
+
+No remote D1 query was run as part of this source audit.
 - No production D1 data or schema was changed.
 - No migration was applied to production.
 - No Worker deployment was performed.
