@@ -171,7 +171,7 @@ assert.ok(worker.includes("WHERE id=? AND EXISTS (SELECT 1 FROM novels n WHERE n
   "author chapter edits and publication writes must atomically re-check parent novel ownership");
 
 const aiProjectPatch = worker.slice(worker.indexOf('if(aip&&m==="PATCH")'), worker.indexOf('if(/^\\/api\\/author\\/ai\\/projects\\/\\d+\\/blueprint$/.test(p)'));
-assert.ok(aiProjectPatch.includes("const status=row.status;") && !aiProjectPatch.includes("String(b.status"),
+assert.ok(!aiProjectPatch.includes("status=?") && !aiProjectPatch.includes("String(b.status"),
   "clients must not override AI run lifecycle state through project PATCH");
 assert.ok(aiProjectPatch.includes("owner_user_id=? OR ?=char(97,100,109,105,110)"),
   "AI project edits must atomically re-check project ownership in the UPDATE statement");
