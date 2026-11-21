@@ -60,6 +60,19 @@ assert.ok(inventory.includes("idx_agent_runs_agent"));
 assert.ok(worker.includes("CREATE TABLE IF NOT EXISTS taxonomy_submissions"));
 assert.ok(inventory.includes("taxonomy_submissions"), "taxonomy schema debt must remain visible");
 
+assert.ok(worker.includes("await seedTaxonomy(env)"), "core bootstrap taxonomy reference-data writes must remain visible");
+assert.ok(worker.includes("await ensureCommunityTaxonomySchema(env)"), "core bootstrap taxonomy-submission DDL must remain visible");
+assert.ok(worker.includes("await ensureAgents(env)"), "core bootstrap agent registry seeding must remain visible");
+assert.ok(worker.includes("async function runAgent(env,slug,trigger=\"manual\"){await ensureAgents(env)"),
+  "agent-run path must remain visible as an additional idempotent registry seed caller");
+assert.ok(inventory.includes("Core bootstrap reference-data and registry side effects"),
+  "taxonomy and agent reference-data side effects must remain documented");
+const initialSchema = migration("0001_initial.sql");
+for (const table of ["agents", "agent_runs", "taxonomy_submissions"]) {
+  assert.ok(!initialSchema.includes(`CREATE TABLE IF NOT EXISTS ${table}`),
+    `0001 must not be treated as canonical owner of runtime-only ${table}`);
+}
+
 for (const [file, needles] of [
   ["0004_legal_publishing.sql", ["owner_user_id", "publication_status", "rights_evidence"]],
   ["0005_chapter_publishing.sql", ["chapter_views", "idx_chapters_publication"]],
