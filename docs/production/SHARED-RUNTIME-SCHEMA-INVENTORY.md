@@ -140,3 +140,16 @@ Do not reserve 0050 until the exact production schema audit identifies which of 
 ### Explicit non-authorization
 
 This source inspection does not authorize running the production audit workflow, applying migrations, writing production D1 data, enabling the deployment workflow, merging PR #374, or deploying the Worker. The release remains blocked until the read-only production audit is explicitly approved and the recovery/rehearsal gates are satisfied.
+
+
+### Additional route-level DDL found: donation reference uniqueness (2026-11-21)
+
+A further source pass found a runtime DDL path outside the OmniPortal initializer:
+
+| Route / execution path | Current source call | Side effect | Required cutover |
+|---|---|---|---|
+| `POST /api/donations` | `ensureDonationReferenceIndex(env)` | Executes `CREATE UNIQUE INDEX IF NOT EXISTS idx_donations_reference_normalized ON donations(LOWER(TRIM(reference_id)))` before inserting a donation reference | Verify whether an equivalent canonical migration owns the exact expression index and its duplicate-data preflight; if absent, allocate a domain-owned migration only after production schema/data inspection. Remove route-time DDL after ownership and rollout are proven |
+
+The helper in `src/donation-reference-index.mjs` memoizes the DDL promise per Worker isolate and retries after failure. This is still request-triggered schema mutation. It is a POST rather than a GET, but mutation handlers should not perform schema upgrades either: the migration must own the uniqueness invariant before the application relies on it.
+
+The source inventory does not yet establish whether an equivalent expression index is present in every production environment or which canonical migration owns it. Do not assume that the runtime helper's existence proves production state. This finding expands the runtime DDL inventory and does not authorize production queries or changes.
