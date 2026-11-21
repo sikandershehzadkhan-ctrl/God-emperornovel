@@ -662,10 +662,10 @@ async function api(req,env){
   await env.DB.prepare("UPDATE ai_author_projects SET status='running',updated_at=CURRENT_TIMESTAMP WHERE id=? AND (owner_user_id=? OR ?=char(97,100,109,105,110))").bind(id,u.id,u.role).run();
   const next=Number(row.chapters_generated||0)+1, target=Number(row.chapters_target||0);
   if(target&&next>target){await env.DB.prepare("UPDATE ai_author_projects SET status='complete' WHERE id=? AND (owner_user_id=? OR ?=char(97,100,109,105,110))").bind(id,u.id,u.role).run();return json({ok:true,status:'complete',message:'Chapter target reached.'})}
-  const job=await env.DB.prepare(`INSERT INTO ai_chapter_jobs(project_id,owner_user_id,chapter_number,job_type,status,prompt) VALUES(?,?,?,'draft','queued',?)`).bind(id,u.id,next,aiSafeText(row.premise,3000)).run();
+  const job=await env.DB.prepare(`INSERT INTO ai_chapter_jobs(project_id,owner_user_id,chapter_number,job_type,status,prompt) SELECT ?,?,?, 'draft','queued',? WHERE EXISTS (SELECT 1 FROM ai_author_projects WHERE id=? AND (owner_user_id=? OR ?=char(97,100,109,105,110)))`).bind(id,u.id,next,aiSafeText(row.premise,3000),id,u.id,u.role).run();
   const jobId=Number(job.meta.last_row_id);
   const ai=await callAuthorModel(env,'You are the chapter writer for a rights-aware novel platform. Write an original clean chapter based only on the supplied story bible/project data. Do not reproduce protected text from any source. Keep continuity, character consistency, gradual world/territory building, dialogue and concrete consequences. Return HTML paragraphs only.',JSON.stringify({project:{name:row.name,genre:row.genre,fandom:row.fandom,premise:row.premise,protagonist:row.protagonist},bible:aiJson(row.bible_json),chapter_number:next}),3200);
-  if(ai.error||!ai.text){await env.DB.batch([env.DB.prepare("UPDATE ai_chapter_jobs SET status='failed',error=?,attempts=1,started_at=CURRENT_TIMESTAMP,finished_at=CURRENT_TIMESTAMP WHERE id=?").bind(ai.error||'AI provider returned no chapter text',jobId),env.DB.prepare("UPDATE ai_author_projects SET status='paused',updated_at=CURRENT_TIMESTAMP WHERE id=? AND (owner_user_id=? OR ?=char(97,100,109,105,110))").bind(id,u.id,u.role)]);return json({error:ai.error||'The AI provider returned no chapter text. The project remains paused and no chapter was published.'},502)}
+  if(ai.error||!ai.text){await env.DB.batch([env.DB.prepare("UPDATE ai_chapter_jobs SET status='failed',error=?,attempts=1,started_at=CURRENT_TIMESTAMP,finished_at=CURRENT_TIMESTAMP WHERE id=? AND owner_user_id=?").bind(ai.error||'AI provider returned no chapter text',jobId,u.id),env.DB.prepare("UPDATE ai_author_projects SET status='paused',updated_at=CURRENT_TIMESTAMP WHERE id=? AND (owner_user_id=? OR ?=char(97,100,109,105,110))").bind(id,u.id,u.role)]);return json({error:ai.error||'The AI provider returned no chapter text. The project remains paused and no chapter was published.'},502)}
   const draft=ai.text,provider=ai.provider;
   let createdChapter=null;
   if(row.novel_id){
@@ -678,7 +678,7 @@ async function api(req,env){
    }
   }
   await env.DB.batch([
-   env.DB.prepare("UPDATE ai_chapter_jobs SET status='complete',result=?,attempts=1,started_at=CURRENT_TIMESTAMP,finished_at=CURRENT_TIMESTAMP WHERE id=?").bind(draft.slice(0,50000),jobId),
+   env.DB.prepare("UPDATE ai_chapter_jobs SET status='complete',result=?,attempts=1,started_at=CURRENT_TIMESTAMP,finished_at=CURRENT_TIMESTAMP WHERE id=? AND owner_user_id=?").bind(draft.slice(0,50000),jobId,u.id),
    env.DB.prepare("UPDATE ai_author_projects SET chapters_generated=?,status=?,updated_at=CURRENT_TIMESTAMP WHERE id=? AND (owner_user_id=? OR ?=char(97,100,109,105,110))").bind(next,target&&next>=target?'complete':'paused',id,u.id,u.role),
    env.DB.prepare("INSERT INTO ai_generation_runs(project_id,owner_user_id,agent,mode,status,input_summary,output_summary,provider) VALUES(?,?,? ,? ,'ok',?,?,?)").bind(id,u.id,'chapter-writer',row.mode,`chapter=${next}`,`draft=${draft.length} chars`,provider)
   ]);
@@ -687,7 +687,7 @@ async function api(req,env){
  }
  if(/^\/api\/author\/ai\/projects\/\d+\/jobs$/.test(p)&&m==="GET"){
   const e=author(u);if(e)return e;await ensureAuthorAISchema(env);const id=Number(p.split('/')[5]);const row=await env.DB.prepare('SELECT owner_user_id FROM ai_author_projects WHERE id=?').bind(id).first();if(!row)return json({error:'AI project not found'},404);if(u.role!=='admin'&&Number(row.owner_user_id)!==Number(u.id))return json({error:'You do not own this project'},403);
-  return json((await env.DB.prepare('SELECT id,chapter_number,job_type,status,attempts,created_at,finished_at FROM ai_chapter_jobs WHERE project_id=? ORDER BY id DESC LIMIT 100').bind(id).all()).results||[]);
+  return json((await env.DB.prepare('SELECT id,chapter_number,job_type,status,attempts,created_at,finished_at FROM ai_chapter_jobs WHERE project_id=? AND (owner_user_id=? OR ?=char(97,100,109,105,110)) ORDER BY id DESC LIMIT 100').bind(id,u.id,u.role).all()).results||[]);
  }
  if(p==="/api/author/ai/benchmarks"&&m==="GET"){
   const e=author(u);if(e)return e;await ensureAuthorAISchema(env);
