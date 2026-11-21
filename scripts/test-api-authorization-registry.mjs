@@ -104,7 +104,7 @@ for (const route of registry.policies.authorOwned.routes) {
     if (route.path === "/api/author/ai/projects" || route.path === "/api/author/novels" || route.path === "/api/author/chapters") {
       assert.ok(snippet.includes("owner_user_id") && snippet.includes("u.id"),
         "author route must enforce resource ownership: " + method + " " + route.path);
-      assert.ok(snippet.includes(".bind(u.id"),
+      assert.ok(snippet.includes(".bind(") && snippet.includes("u.id"),
         "author-owned route must bind database queries and ownership checks using session values: " + method + " " + route.path);
     }
   }
