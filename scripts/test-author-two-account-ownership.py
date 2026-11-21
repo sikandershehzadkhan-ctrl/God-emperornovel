@@ -30,6 +30,8 @@ novel_submit = extract(
 
 db = sqlite3.connect(":memory:")
 db.execute("PRAGMA foreign_keys=ON")
+# Match the documented runtime-initializer column used by the live submission SQL.
+db.execute("ALTER TABLE novels ADD COLUMN review_feedback TEXT DEFAULT ''")
 for migration in sorted(Path("migrations").glob("*.sql")):
     db.executescript(migration.read_text(encoding="utf-8"))
 
