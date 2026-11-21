@@ -162,3 +162,24 @@ The source audit confirmed that `seedTaxonomy()`, called by `ensureCoreSchema()`
 The code path has now been removed from `seedTaxonomy()`. Taxonomy reference rows continue to use their existing idempotent `INSERT OR IGNORE` behavior; the bootstrap no longer creates demo novels or placeholder chapters. The change is additive with respect to existing data: it does not delete or alter any already-seeded demo novel, chapter, or user content. Any existing demo records require a separately reviewed content audit and explicit owner decision before cleanup.
 
 A regression assertion now rejects reintroduction of the demo title or placeholder chapter body in the Worker source. This is source-level evidence only. No production D1 query or cleanup was performed.
+
+
+### Runtime schema error suppression and bootstrap ordering (2026-11-21)
+
+A closer inspection of the actual helper bodies found that the OmniPortal initializer does not provide reliable schema-readiness evidence:
+
+- Each of the eight `ALTER TABLE connectors ADD COLUMN ...` statements is wrapped in an empty `catch {}`. Any failure is silently ignored, not only duplicate-column errors.
+- The `CREATE TABLE` / index batch for OmniPortal support tables ends with `.catch(()=>{})`, suppressing batch failure.
+- `seedOmni()` catches and logs connector-registry seed failures, then returns normally.
+- The two admin GET routes previously inventoried therefore can return after an attempted but partially failed schema/seed operation. A successful HTTP response is not proof that the connector schema is complete.
+
+The core bootstrap order is also explicit: core base tables, publishing initializer, ticket-pack default setting, taxonomy seed, taxonomy-submission table, agent seed, Author Studio AI schema, security marker, then core version marker. This confirms the initializer mixes schema creation, reference-data provisioning, cleanup/default values, and version-marker writes. These responsibilities need separate, versioned owners before the initializer can be retired.
+
+Cutover requirements:
+1. Replace broad exception suppression with migration-time failures that stop the release and produce actionable diagnostics.
+2. Run duplicate-column compatibility checks only as migration preflight logic; do not treat arbitrary DDL errors as successful readiness.
+3. Make connector seed provisioning an explicit idempotent operation with an auditable outcome, never a side effect of a GET.
+4. Keep core schema version advancement atomic with successful completion of its owned migration/provisioning steps.
+5. Preserve the existing admin security behavior; schema cutover must not reintroduce automatic administrator promotion.
+
+This is source-level evidence. It does not establish the production database's present schema, data, or migration ledger.
