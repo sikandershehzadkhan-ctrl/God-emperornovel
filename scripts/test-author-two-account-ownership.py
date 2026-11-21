@@ -12,7 +12,7 @@ def extract(pattern, label):
 
 tick = r"\x60"
 chapter_insert = extract(
-    r"prepare\(" + tick + r"(INSERT INTO chapters\(novel_id,chapter_number,title,content,is_locked,ticket_cost,publication_status\).*?)" + tick + r"\)",
+    r"prepare\(" + tick + r"(INSERT INTO chapters\(novel_id,chapter_number,title,content,is_locked,ticket_cost,publication_status.*?)" + tick + r"\)",
     "author chapter insert",
 )
 chapter_update = extract(
