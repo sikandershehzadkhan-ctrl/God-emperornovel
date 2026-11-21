@@ -118,3 +118,20 @@ assert.ok(omniSeed.includes("catch(e){console.error('connector seed',e)}"),
   "connector registry seed failure handling changed; review explicit seed cutover");
 assert.ok(inventory.includes("broad exception suppression") && inventory.includes("schema-readiness evidence"),
   "OmniPortal schema error suppression must be explicitly documented");
+
+const aiGetRoutes = [
+  'if(p==="/api/author/ai/projects"&&m==="GET"){',
+  'if(aip&&m==="GET"){',
+  'if(/^\\/api\\/author\\/ai\\/projects\\/\\d+\\/jobs$/.test(p)&&m==="GET"){',
+  'if(p==="/api/author/ai/benchmarks"&&m==="GET"){',
+];
+for (const route of aiGetRoutes) {
+  const at = worker.indexOf(route);
+  assert.ok(at >= 0, `Author Studio GET route must remain identifiable: ${route}`);
+  const nextRoute = worker.indexOf("\n if(", at + route.length);
+  const handler = worker.slice(at, nextRoute > at ? nextRoute : at + 1800);
+  assert.ok(handler.includes("ensureAuthorAISchema(env)"),
+    `Author Studio GET schema side effect changed and requires cutover review: ${route}`);
+}
+assert.ok(inventory.includes("Additional Author Studio GET schema side effects"),
+  "direct Author Studio GET DDL call sites must be inventoried separately from shared bootstrap");
