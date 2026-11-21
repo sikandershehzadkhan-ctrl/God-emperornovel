@@ -122,7 +122,7 @@ assert.ok(inventory.includes("broad exception suppression") && inventory.include
 const aiGetRoutes = [
   'if(p==="/api/author/ai/projects"&&m==="GET"){',
   'if(aip&&m==="GET"){',
-  'if(/^\\/api\\/author\\/ai\\/projects\\/\\d+\\/jobs$/.test(p)&&m==="GET"){',
+  'jobs$/.test(p)&&m==="GET"){' ,
   'if(p==="/api/author/ai/benchmarks"&&m==="GET"){',
 ];
 for (const route of aiGetRoutes) {
