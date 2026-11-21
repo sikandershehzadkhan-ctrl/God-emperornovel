@@ -182,6 +182,22 @@ for (const [table, constraint] of [
   assert.ok(statement?.includes(constraint), `canonical ${table} foreign-key ownership changed`);
 }
 assert.ok(inventory.includes("Expanded core-baseline constraint drift"), "expanded core constraint drift must remain documented");
+
+const migration2 = migration("0002_omniportal.sql");
+const migration3 = migration("0003_finish_product.sql");
+assert.ok(worker.includes("CREATE TABLE IF NOT EXISTS user_library"), "runtime user library table must remain identifiable");
+assert.ok(worker.includes('if(p==="/api/library"&&m==="GET")'), "library GET dependency must remain covered");
+assert.ok(worker.includes('if(p==="/api/library"&&m==="POST")'), "library mutation dependency must remain covered");
+for (const [file, source] of [["0001_initial.sql", initialMigration], ["0002_omniportal.sql", migration2], ["0003_finish_product.sql", migration3]]) {
+  assert.ok(!source.includes("user_library"), `${file} unexpectedly claims canonical user_library ownership; review migration inventory`);
+}
+assert.ok(inventory.includes("Additional core baseline omissions and publishing default drift"), "user library migration gap and publishing defaults must remain documented");
+assert.ok(inventory.includes("`user_library`"), "user library table gap must remain visible");
+assert.ok(worker.includes("['publication_status',\"TEXT NOT NULL DEFAULT 'published'\"]"), "runtime publishing default must remain identifiable for drift review");
+assert.ok(migration("0004_legal_publishing.sql").includes("publication_status TEXT NOT NULL DEFAULT 'draft'"), "canonical publishing default must remain explicit");
+for (const column of ["review_feedback", "reviewed_by", "reviewed_at"]) {
+  assert.ok(worker.includes(column), `runtime publishing review column ${column} must remain visible`);
+}
 const runtimeFeatureSource = runtime;
 const integrityMigration = migration("0028_runtime_feature_integrity.sql");
 assert.ok(runtimeFeatureSource.includes("CREATE TABLE IF NOT EXISTS comment_reports"), "runtime comment report schema must remain identifiable");
