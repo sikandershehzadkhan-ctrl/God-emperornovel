@@ -266,3 +266,23 @@ A second pass compared the complete `CREATE TABLE` definitions in `ensureCoreSch
 The earlier comparison also found differences for `users.role`, `sessions.user_id`, `chapters.novel_id`, `novel_genres`, `novel_tags`, and `unlocks`. The runtime bootstrap is therefore not a constraint-equivalent substitute for the canonical baseline, even when both create tables with matching names and many matching columns.
 
 This is source-level evidence only. It does not establish whether production D1 was initialized by migrations, by the runtime helper, or by a mixture of both. Do not rebuild tables or add repair migrations until the read-only production audit has captured actual `sqlite_master` definitions, `PRAGMA foreign_key_list` results, orphan counts, and a restorable backup.
+
+
+### Additional core baseline omissions and publishing default drift (2026-11-21)
+
+A full pass over the `ensureCoreSchema()` statement list found another runtime-created table that is used by live API handlers but is not defined by baseline migrations 0001–0003:
+
+| Runtime object | Runtime behavior / consumers | Canonical migration status | Cutover requirement |
+|---|---|---|---|
+| `user_library` | Created by `ensureCoreSchema()`; read by `GET /api/library` and written/deleted by `POST /api/library` to track a user's saved novels | No `user_library` table declaration appears in `0001_initial.sql`, `0002_omniportal.sql`, or `0003_finish_product.sql` | Add an allocated canonical migration after verifying the remote table definition, row count, duplicate behavior, and any existing indexes. Preserve all user-to-novel membership rows. Define foreign-key and deletion policy deliberately; do not silently infer it from current runtime DDL. |
+
+This is a functional dependency, not merely an optional optimization. A database created from the inspected canonical baseline without runtime bootstrap will not satisfy the library API's table dependency. The API's route-level use is confirmed in `src/index.js`; production presence remains unknown until the remote audit.
+
+The publishing helper also has a source-level default mismatch worth preserving explicitly in the cutover plan:
+
+- `ensurePublishingSchema()` adds `novels.publication_status` with default `'published'` when the column is absent.
+- Migration `0004_legal_publishing.sql` adds the same column with default `'draft'`.
+- The helper additionally adds `novels.review_feedback`, `reviewed_by`, and `reviewed_at`, which are not defined in migration 0004.
+- The helper backfills blank novel publication statuses to `draft`, while chapter publication status is backfilled to `published`. These data updates must be measured and understood before the helper is retired.
+
+Do not resolve the default mismatch by changing existing production rows or by assuming the default clause affects rows already present. Inspect actual `PRAGMA table_info` defaults, migration history, null/blank counts, and application expectations first. A future canonical migration should explicitly define the intended behavior for new rows and preserve the established publication/rights review state.
