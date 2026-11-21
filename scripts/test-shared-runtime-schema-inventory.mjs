@@ -153,3 +153,8 @@ assert.ok(runtimeFeature.includes("CREATE TABLE IF NOT EXISTS auth_rate_limits")
 assert.ok(runtimeFeature.includes("DELETE FROM auth_rate_limits WHERE window_start<?"), "runtime feature schema cleanup side effect must remain visible for cutover review");
 assert.ok(runtimeFeature.includes("runtime_feature_schema_version"), "runtime feature schema marker must remain visible for cutover review");
 assert.ok(inventory.includes("Runtime feature schema bootstrap and request-time cleanup"), "shared runtime feature schema bootstrap must be inventoried");
+const initialMigration = migration("0001_initial.sql");
+assert.ok(initialMigration.includes("CHECK(role IN ('user','author','moderator','admin'))"), "canonical initial migration must retain the users role constraint");
+assert.ok(initialMigration.includes("FOREIGN KEY(user_id) REFERENCES users(id) ON DELETE CASCADE"), "canonical initial migration must retain user foreign-key constraints");
+assert.ok(worker.includes("CREATE TABLE IF NOT EXISTS users"), "runtime core bootstrap must remain identifiable for schema drift review");
+assert.ok(inventory.includes("Canonical migration versus core runtime bootstrap schema drift"), "migration/runtime schema divergence must remain documented");
