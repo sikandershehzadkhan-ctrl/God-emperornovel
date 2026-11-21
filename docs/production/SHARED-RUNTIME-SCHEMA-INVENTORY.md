@@ -286,3 +286,16 @@ The publishing helper also has a source-level default mismatch worth preserving 
 - The helper backfills blank novel publication statuses to `draft`, while chapter publication status is backfilled to `published`. These data updates must be measured and understood before the helper is retired.
 
 Do not resolve the default mismatch by changing existing production rows or by assuming the default clause affects rows already present. Inspect actual `PRAGMA table_info` defaults, migration history, null/blank counts, and application expectations first. A future canonical migration should explicitly define the intended behavior for new rows and preserve the established publication/rights review state.
+
+
+### Core bootstrap reference-data and registry side effects (2026-11-21)
+
+The core initializer has additional responsibilities that must be separated from structural migration ownership during cutover:
+
+- `seedTaxonomy(env)` batches `INSERT OR IGNORE` writes for the built-in genre and tag vocabularies. This is idempotent reference-data provisioning, not table DDL. It runs when the `core_schema_version` marker is absent or differs from `16.64.0`; after the marker fast path succeeds, the initializer skips the batch. Preserve existing taxonomy rows and define a separately versioned reference-data process before retiring this behavior.
+- `ensureAgents(env)` inserts the built-in `AGENT_SEED` registry with `INSERT OR IGNORE` into `agents`. It is called by the core initializer and again by `runAgent()`. An agent-run action can therefore also seed registry rows. Keep the registry catalogue and user/admin enablement state separate from table creation; do not overwrite existing agent settings while migrating.
+- `ensureCommunityTaxonomySchema(env)` creates `taxonomy_submissions` from the core initializer. It is not an independent public GET initializer in the inspected source, but an unmarked or marker-mismatched API request reaches it before route dispatch. The table is not present in inspected migrations 0001–0011.
+
+The source confirms `agents`, `agent_runs`, `idx_agent_runs_agent`, and `taxonomy_submissions` are not defined by migration `0001_initial.sql`; the broader 0001–0011 gap for the agent registry remains as previously recorded. A first API GET on a database without the expected core marker can therefore trigger structural DDL and taxonomy/agent reference-data DML before its route handler. The scheduled entrypoint separately calls the same core initializer. This is not evidence that production currently lacks any of these objects.
+
+Cutover safeguards: inventory actual production rows and schema first; preserve agent status/enabled flags and all run history; preserve taxonomy proposal/review states; count existing genre/tag rows before seed reconciliation; make reference-data changes auditable and idempotent; and do not silently reseed or normalize user-created vocabulary.
