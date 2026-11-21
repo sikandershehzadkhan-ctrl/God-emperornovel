@@ -640,7 +640,7 @@ async function api(req,env){
  if(aip&&m==="PATCH"){
   const e=author(u);if(e)return e;await ensureAuthorAISchema(env);const row=await env.DB.prepare('SELECT * FROM ai_author_projects WHERE id=?').bind(Number(aip[1])).first();if(!row)return json({error:'AI project not found'},404);if(u.role!=='admin'&&Number(row.owner_user_id)!==Number(u.id))return json({error:'You do not own this project'},403);
   const b=await body(req);const mode=['manual','auto','hybrid'].includes(String(b.mode||row.mode))?String(b.mode||row.mode):row.mode;
-  const status=['draft','running','paused','complete'].includes(String(b.status||row.status))?String(b.status||row.status):row.status;
+  const status=row.status; // Lifecycle transitions are server-controlled; PATCH cannot reset or bypass an active generation claim.
   const settings={...aiJson(row.settings_json),...('settings' in b?b.settings:{})};
   await env.DB.prepare(`UPDATE ai_author_projects SET name=?,mode=?,status=?,genre=?,fandom=?,premise=?,protagonist=?,settings_json=?,auto_publish=?,chapters_target=?,updated_at=CURRENT_TIMESTAMP WHERE id=? AND (owner_user_id=? OR ?=char(97,100,109,105,110))`).bind(aiSafeText(b.name??row.name,160),mode,status,aiSafeText(b.genre??row.genre,120),aiSafeText(b.fandom??row.fandom,160),aiSafeText(b.premise??row.premise,3000),aiSafeText(b.protagonist??row.protagonist,800),JSON.stringify(settings),0,b.chapters_target===undefined?row.chapters_target:Math.max(0,Number(b.chapters_target)),row.id,u.id,u.role).run();
   return json({ok:true});
