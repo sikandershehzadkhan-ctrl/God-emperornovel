@@ -95,6 +95,31 @@ This section expands the outstanding list into migration design inputs. It is no
 - The scheduled handler calls `ensureCoreSchema()` before running automation.
 - `ensureCoreSchema()` uses an in-memory isolate promise and a `core_schema_version` marker. `ensureRuntimeFeatureSchema()` uses an in-memory promise and a separate database marker. These markers are bootstrap shortcuts, not proof that every canonical migration has been applied.
 
+
+### Route-level schema and seed side effects confirmed (2026-11-21)
+
+The shared API initializers are not the only runtime-DDL entrypoints. Direct route-level call sites also need to be removed or converted to readiness checks during the same cutover:
+
+| Route / execution path | Current source call | Side effect | Required cutover |
+|---|---|---|---|
+| `GET /api/admin/connectors` | `seedOmni(env)` | Calls `ensureOmniTables(env)`, then inserts missing registry connector rows | Make GET strictly read-only; move connector registry provisioning to an explicit, versioned, idempotent seed operation |
+| `GET /api/admin/connector-authorization-requests` | `ensureOmniTables(env)` | Attempts eight ALTER TABLE statements and creates support tables/indexes | Replace with schema readiness check; return a clear unavailable response if migrations are missing |
+| `PATCH /api/admin/connectors` | `ensureOmniTables(env)` | Performs DDL before updating connector configuration | Remove DDL from mutation route; require migration-owned schema |
+| `POST /api/omni/import` | `ensureOmniTables(env)` | Performs DDL before inserting an import job | Remove DDL; require migration-owned schema |
+| `POST /api/admin/omni/health` | `ensureOmniTables(env)` | Performs DDL before health checks and connector status updates | Remove DDL; require migration-owned schema |
+| `POST /api/admin/connectors/cleanup` | `ensureOmniTables(env)` | Performs DDL before connector deduplication and related data updates | Remove DDL; require migration-owned schema |
+| `POST /api/connector-authorization-requests` | `ensureOmniTables(env)` | Performs DDL before authorization request creation | Remove DDL; require migration-owned schema |
+| `PATCH /api/admin/connector-authorization-requests/:id` | `ensureOmniTables(env)` | Performs DDL before authorization review | Remove DDL; require migration-owned schema |
+
+Two important distinctions:
+
+- The admin connector GET is both a schema side-effect and a reference-data write because `seedOmni()` inserts connector registry rows. Admin authentication does not make a GET read-only.
+- The admin authorization-request GET invokes schema setup directly. This is a second route-level DDL path beyond the shared dispatcher bootstrap.
+
+The existing public OmniPortal status/search/jobs GET handlers do not call `ensureOmniTables()` directly, but they still pass through the shared API dispatcher, which can invoke both shared schema initializers when their database markers are absent. Therefore they are not proof of whole-request read-only behavior.
+
+These call sites were confirmed by source inspection of `src/index.js` on 2026-11-21. They remain blockers, not an authorization to change production schema or connector data.
+
 ### Migration allocation decision
 
 Do not reserve 0050 until the exact production schema audit identifies which of the structures above are absent, partially present, or structurally divergent. Once known, allocate the next unused number in the global register before authoring. The likely business concepts span platform-data, publishing, community, and OmniPortal, so do not force all outstanding structures into one migration merely to consume one sequence number. Prefer separate domain-owned migrations where the schema and review ownership differ. Never reuse 0047.
