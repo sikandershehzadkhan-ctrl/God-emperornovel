@@ -212,3 +212,18 @@ The same direct-call audit found two authenticated publishing GET handlers that 
 These calls are separate from the API dispatcher's shared bootstrap. Removing the shared initializer alone would not make these GET handlers read-only. The publishing helper propagates failures, but it performs DDL and DML (including UPDATE backfills) directly in request handling.
 
 No production schema or row state was inspected. The migration cutover must compare the exact production definitions and measure affected backfill rows before replacing this behavior.
+### Runtime feature schema bootstrap and request-time cleanup (2026-11-21)
+
+The shared API dispatcher invokes ensureRuntimeFeatureSchema(env) after ensureCoreSchema(env) for API requests other than the separately fast-pathed health route. The helper is therefore not limited to feature writes or administrator actions. Any ordinary API request can enter this initializer before its route handler runs, including GET requests.
+
+The initializer uses app_settings.runtime_feature_schema_version='1' as a fast-path marker. When the marker is absent or differs, it:
+
+- Creates auth_rate_limits and its window index.
+- Creates comment_likes, comment_reports, novel_reactions, request_votes and their indexes.
+- Adds comments.parent_id and comments.edited_at. It tolerates only duplicate-column errors; other ALTER failures propagate.
+- Deletes auth_rate_limits rows older than 48 hours (a data cleanup operation).
+- Writes/replaces the runtime_feature_schema_version marker.
+
+Thus the shared API bootstrap combines schema DDL, bounded-but-request-triggered rate-limit cleanup, and version-marker writes. The helper memoizes readiness in the Worker isolate and clears that memo on failure, but the database marker is not proof that the exact production definitions match the source. Cutover must reconcile these objects with canonical migration files and production D1 before removing the helper. The cleanup should become an explicitly owned maintenance task or migration only if its lifecycle and operational impact are separately approved.
+
+This is source-level evidence only. No production D1 query or modification was performed.
