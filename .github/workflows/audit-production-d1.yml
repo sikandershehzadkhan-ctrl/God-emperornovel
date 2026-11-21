@@ -122,6 +122,8 @@ jobs:
             npx --yes wrangler@4 d1 execute god-emperornovel-db --remote --command "$sql" || echo "::warning::This read-only query failed. Preserve its error output and treat the corresponding schema evidence as unverified."
           }
           run_query "Complete production table inventory" "SELECT name FROM sqlite_master WHERE type='table' AND name NOT LIKE 'sqlite_%' ORDER BY name;"
+          run_query "Complete production schema object definitions" "SELECT type,name,tbl_name,sql FROM sqlite_master WHERE name NOT LIKE 'sqlite_%' AND sql IS NOT NULL ORDER BY type,tbl_name,name;"
+          run_query "Production foreign-key integrity check" "PRAGMA foreign_key_check;"
           core_tables_sql="$(cat <<'SQL'
           WITH required(name) AS (
             VALUES ('users'),('sessions'),('novels'),('chapters'),('genres'),('tags'),('novel_genres'),('novel_tags'),
@@ -169,6 +171,7 @@ jobs:
           run_query "Donation schema (columns only)" "PRAGMA table_info(donations);"
           run_query "Donation reference duplicate audit (aggregate only)" "SELECT COUNT(*) AS donation_rows, COUNT(*)-COUNT(NULLIF(TRIM(reference_id),'')) AS blank_reference_rows, COUNT(DISTINCT CASE WHEN TRIM(reference_id)<>'' THEN LOWER(TRIM(reference_id)) END) AS distinct_nonblank_references, (SELECT COUNT(*) FROM (SELECT LOWER(TRIM(reference_id)) AS normalized_reference FROM donations WHERE TRIM(reference_id)<>'' GROUP BY LOWER(TRIM(reference_id)) HAVING COUNT(*)>1)) AS duplicate_reference_groups, (SELECT COALESCE(SUM(duplicate_rows-1),0) FROM (SELECT COUNT(*) AS duplicate_rows FROM donations WHERE TRIM(reference_id)<>'' GROUP BY LOWER(TRIM(reference_id)) HAVING COUNT(*)>1)) AS duplicate_extra_rows FROM donations;"
           run_query "Duplicate pending connector authorization requests (must be zero before migration 0049)" "SELECT connector_id,COUNT(*) AS pending_requests FROM connector_authorization_requests WHERE status='pending' GROUP BY connector_id HAVING COUNT(*)>1;"
+          run_query "Migration 0049 unique-index presence" "SELECT name,sql FROM sqlite_master WHERE type='index' AND name='idx_connector_auth_one_pending_per_connector';"
           run_query "Novel request schema (columns only)" "PRAGMA table_info(novel_requests);"
           run_query "Connector schema (columns only)" "PRAGMA table_info(connectors);"
           run_query "Comment schema (columns only)" "PRAGMA table_info(comments);"
@@ -185,7 +188,11 @@ jobs:
               ('chapters','id'),('chapters','novel_id'),('chapters','chapter_number'),('chapters','title'),('chapters','content'),('chapters','is_locked'),('chapters','ticket_cost'),('chapters','publication_status'),
               ('app_settings','key'),('app_settings','value'),
               ('donations','id'),('donations','user_id'),('donations','amount'),('donations','reference_id'),('donations','status'),
-              ('comments','parent_id'),('comments','edited_at'),('connectors','search_url'),('connectors','auth_header'),('connectors','secret_name'),('connectors','rights_evidence_url'),('connectors','terms_url'),('connectors','rights_notes'),('connectors','metadata_import_allowed'),('connectors','attribution_required'),('novel_requests','id'),('novel_requests','user_id'),('novel_requests','status')
+              ('comments','parent_id'),('comments','edited_at'),('connectors','search_url'),('connectors','auth_header'),('connectors','secret_name'),('connectors','rights_evidence_url'),('connectors','terms_url'),('connectors','rights_notes'),('connectors','metadata_import_allowed'),('connectors','attribution_required'),
+              ('agents','id'),('agents','name'),('agent_runs','id'),('agent_runs','agent_id'),('agent_runs','status'),
+              ('taxonomy_submissions','id'),('taxonomy_submissions','type'),('taxonomy_submissions','name'),('taxonomy_submissions','slug'),('taxonomy_submissions','creator_id'),('taxonomy_submissions','creator_name'),('taxonomy_submissions','status'),('taxonomy_submissions','reviewer_id'),('taxonomy_submissions','reviewed_at'),
+              ('connector_authorization_requests','id'),('connector_authorization_requests','connector_id'),('connector_authorization_requests','user_id'),('connector_authorization_requests','status'),('connector_authorization_requests','reviewed_by'),('connector_authorization_requests','reviewed_at'),
+              ('novel_requests','id'),('novel_requests','user_id'),('novel_requests','status')
           )
           SELECT e.table_name,e.column_name,
                  CASE WHEN EXISTS (SELECT 1 FROM pragma_table_info(e.table_name) p WHERE p.name=e.column_name)
