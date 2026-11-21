@@ -2,7 +2,7 @@
   "schemaVersion": 1,
   "name": "Global D1 migration allocation register",
   "sequencePattern": "^([0-9]{4})_",
-  "lastObservedSequence": 48,
+  "lastObservedSequence": 49,
   "canonicalSource": "migrations/",
   "policy": {
     "reserveBeforeAuthoring": true,
@@ -103,6 +103,12 @@
       "to": 48,
       "owner": "platform-data",
       "status": "OmniPortal runtime support tables for side-effect-free read endpoints"
+    },
+    {
+      "from": 49,
+      "to": 49,
+      "owner": "platform-data",
+      "status": "unique pending connector authorization request per connector"
     }
   ],
   "allocations": []
