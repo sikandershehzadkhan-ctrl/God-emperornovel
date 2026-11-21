@@ -366,30 +366,6 @@
       "sharedSurfacePolicy": "Forward-only migrations, explicit rollback/recovery strategy, migration governance and no production D1 mutation during architecture-foundation work."
     },
     {
-      "id": "frontend-runtime-and-assets",
-      "paths": [
-        "public/"
-      ],
-      "requiresAdr": true,
-      "accountableRole": "Frontend platform owner",
-      "changeOwner": "Frontend experience and accessibility maintainer",
-      "integrationOwner": "Frontend/platform integration owner",
-      "pathClass": "browser-runtime-assets",
-      "allowedContents": [
-        "HTML page shells",
-        "Browser JavaScript and versioned bundles",
-        "CSS, fonts, icons and public media assets"
-      ],
-      "dependencyDirection": "Browser code communicates with Worker APIs through documented HTTP contracts; it must not import Worker internals, D1 migrations, scripts, or secrets.",
-      "allowedDependencies": [],
-      "invokes": [],
-      "runtimeContracts": [
-        "worker-runtime",
-        "design-system"
-      ],
-      "sharedSurfacePolicy": "No server secrets or direct database access. Source and served/versioned bundles must remain synchronized; accessibility, responsive and RTL checks are required."
-    },
-    {
       "id": "engineering-tooling",
       "paths": [
         "scripts/"
@@ -407,7 +383,16 @@
       ],
       "dependencyDirection": "Tooling may import the runtime modules it validates; production Worker and browser code must never import scripts.",
       "allowedDependencies": [
-        "worker-runtime"
+        "worker-runtime",
+        "route-and-sitemap",
+        "authentication-security",
+        "connector-security",
+        "content-policy",
+        "author-application-policy",
+        "donation-domain",
+        "public-novel-projection",
+        "runtime-schema",
+        "reader-community-components"
       ],
       "invokes": [],
       "runtimeContracts": [
@@ -420,27 +405,545 @@
     {
       "id": "worker-runtime",
       "paths": [
-        "src/"
+        "src/index.js"
       ],
       "requiresAdr": true,
-      "accountableRole": "Backend and Cloudflare Worker owner",
-      "changeOwner": "Worker API, security and runtime maintainer",
-      "integrationOwner": "Platform architecture and release owner",
-      "pathClass": "production-worker-runtime",
+      "accountableRole": "Worker composition root and HTTP dispatcher",
+      "changeOwner": "Worker runtime source",
+      "integrationOwner": "Cloudflare runtime integration",
+      "pathClass": "worker-runtime",
       "allowedContents": [
-        "Worker request routing",
-        "API handlers and authorization",
-        "Domain services and query modules",
-        "Runtime response and security policy"
+        "Worker fetch dispatch, API orchestration, response composition"
       ],
-      "dependencyDirection": "Worker modules import only other Worker modules. D1 schema and public assets are runtime bindings/contracts, not static code imports. Worker code must not import scripts, docs, workflows, or browser bundles.",
+      "dependencyDirection": "The Worker entrypoint composes domain policies and adapters; domain modules must not import the composition root.",
+      "allowedDependencies": [
+        "route-and-sitemap",
+        "authentication-security",
+        "connector-security",
+        "content-policy",
+        "author-application-policy",
+        "donation-domain",
+        "public-novel-projection",
+        "runtime-schema"
+      ],
+      "invokes": [],
+      "runtimeContracts": [
+        "worker-runtime"
+      ],
+      "sharedSurfacePolicy": "Domain policy modules are invoked by the Worker composition root."
+    },
+    {
+      "id": "route-and-sitemap",
+      "paths": [
+        "src/route-canonical.mjs",
+        "src/route-registry.mjs",
+        "src/sitemap.mjs"
+      ],
+      "requiresAdr": true,
+      "accountableRole": "Route and crawl-policy owner",
+      "changeOwner": "Route and sitemap maintainer",
+      "integrationOwner": "Platform routing integrator",
+      "pathClass": "routing-policy",
+      "allowedContents": [
+        "Canonical page routes, redirects, sitemap generation and crawler policy"
+      ],
+      "dependencyDirection": "Route policy is consumed by the Worker; it does not depend on API handlers or frontend assets.",
+      "allowedDependencies": [],
+      "invokes": [],
+      "runtimeContracts": [
+        "worker-runtime"
+      ],
+      "sharedSurfacePolicy": "Canonical route and sitemap behavior is source-tested and separately verified after deployment."
+    },
+    {
+      "id": "authentication-security",
+      "paths": [
+        "src/auth-password.mjs"
+      ],
+      "requiresAdr": true,
+      "accountableRole": "Authentication security owner",
+      "changeOwner": "Authentication policy maintainer",
+      "integrationOwner": "Platform security integrator",
+      "pathClass": "authentication-policy",
+      "allowedContents": [
+        "Password and authentication policy helpers"
+      ],
+      "dependencyDirection": "Authentication policy is consumed by the Worker; it must not import request dispatch or frontend code.",
+      "allowedDependencies": [],
+      "invokes": [],
+      "runtimeContracts": [
+        "worker-runtime"
+      ],
+      "sharedSurfacePolicy": "Authentication primitives remain isolated from presentation and persistence orchestration."
+    },
+    {
+      "id": "connector-security",
+      "paths": [
+        "src/connector-url-policy.mjs"
+      ],
+      "requiresAdr": true,
+      "accountableRole": "Connector security owner",
+      "changeOwner": "Connector URL policy maintainer",
+      "integrationOwner": "Platform security integrator",
+      "pathClass": "connector-security-policy",
+      "allowedContents": [
+        "Connector URL validation and outbound destination policy"
+      ],
+      "dependencyDirection": "Connector security policy is consumed by Worker handlers; it must not import frontend or external connector implementation.",
+      "allowedDependencies": [],
+      "invokes": [],
+      "runtimeContracts": [
+        "worker-runtime"
+      ],
+      "sharedSurfacePolicy": "Outbound connector URL policy is validated before network access."
+    },
+    {
+      "id": "content-policy",
+      "paths": [
+        "src/comic-chapter-policy.mjs",
+        "src/content-formats.mjs"
+      ],
+      "requiresAdr": true,
+      "accountableRole": "Content policy owner",
+      "changeOwner": "Content-format and chapter-policy maintainer",
+      "integrationOwner": "Publishing platform integrator",
+      "pathClass": "content-policy",
+      "allowedContents": [
+        "Novel format and chapter content validation policies"
+      ],
+      "dependencyDirection": "Content policy is consumed by Worker publishing handlers and must not import frontend components.",
+      "allowedDependencies": [],
+      "invokes": [],
+      "runtimeContracts": [
+        "worker-runtime"
+      ],
+      "sharedSurfacePolicy": "Publishing validation is shared across create and edit operations."
+    },
+    {
+      "id": "author-application-policy",
+      "paths": [
+        "src/author-application-policy.mjs"
+      ],
+      "requiresAdr": true,
+      "accountableRole": "Author application owner",
+      "changeOwner": "Author eligibility policy maintainer",
+      "integrationOwner": "Author platform integrator",
+      "pathClass": "author-eligibility-policy",
+      "allowedContents": [
+        "Author application eligibility and state transition policy"
+      ],
+      "dependencyDirection": "Author application policy is consumed by Worker handlers; it must not import route dispatch or frontend assets.",
+      "allowedDependencies": [],
+      "invokes": [],
+      "runtimeContracts": [
+        "worker-runtime"
+      ],
+      "sharedSurfacePolicy": "Author application eligibility remains a reusable domain policy."
+    },
+    {
+      "id": "donation-domain",
+      "paths": [
+        "src/donation-approval-policy.mjs",
+        "src/donation-reference-index.mjs",
+        "src/donation-reference-policy.mjs"
+      ],
+      "requiresAdr": true,
+      "accountableRole": "Donation domain owner",
+      "changeOwner": "Donation reference and approval policy maintainer",
+      "integrationOwner": "Payments and ledger integrator",
+      "pathClass": "donation-domain-policy",
+      "allowedContents": [
+        "Donation reference indexing, uniqueness and approval policy"
+      ],
+      "dependencyDirection": "Donation domain policies are consumed by Worker handlers; they must not import presentation code.",
+      "allowedDependencies": [],
+      "invokes": [],
+      "runtimeContracts": [
+        "worker-runtime"
+      ],
+      "sharedSurfacePolicy": "Donation approval and reference identity remain server-owned."
+    },
+    {
+      "id": "public-novel-projection",
+      "paths": [
+        "src/public-novel.mjs"
+      ],
+      "requiresAdr": true,
+      "accountableRole": "Public content projection owner",
+      "changeOwner": "Novel visibility projection maintainer",
+      "integrationOwner": "Catalog and publishing integrator",
+      "pathClass": "public-content-projection",
+      "allowedContents": [
+        "Public novel projection and rights-eligibility helpers"
+      ],
+      "dependencyDirection": "Public projection is consumed by Worker catalog and discovery handlers; it must not import frontend code.",
+      "allowedDependencies": [],
+      "invokes": [],
+      "runtimeContracts": [
+        "worker-runtime"
+      ],
+      "sharedSurfacePolicy": "Public content projection must fail closed on publication and rights eligibility."
+    },
+    {
+      "id": "runtime-schema",
+      "paths": [
+        "src/runtime-feature-schema.mjs"
+      ],
+      "requiresAdr": true,
+      "accountableRole": "Runtime schema owner",
+      "changeOwner": "Runtime feature schema maintainer",
+      "integrationOwner": "Platform data integrator",
+      "pathClass": "runtime-schema-policy",
+      "allowedContents": [
+        "Runtime feature schema definitions and validation helpers"
+      ],
+      "dependencyDirection": "Runtime schema policy is consumed by Worker runtime and must not import migration files or frontend code.",
+      "allowedDependencies": [],
+      "invokes": [],
+      "runtimeContracts": [
+        "worker-runtime"
+      ],
+      "sharedSurfacePolicy": "Runtime schema bootstrap and migrations remain separately governed."
+    },
+    {
+      "id": "reader-community-components",
+      "paths": [
+        "src/react/"
+      ],
+      "requiresAdr": true,
+      "accountableRole": "Reader and community component owner",
+      "changeOwner": "React island component maintainer",
+      "integrationOwner": "Frontend integration owner",
+      "pathClass": "reader-community-components",
+      "allowedContents": [
+        "Reader, rating, reaction and comment React island components"
+      ],
+      "dependencyDirection": "React components are built into browser assets; they must not import Worker internals or D1.",
+      "allowedDependencies": [],
+      "invokes": [],
+      "runtimeContracts": [
+        "worker-runtime"
+      ],
+      "sharedSurfacePolicy": "Reader and community islands remain a single component ownership boundary pending further decomposition."
+    },
+    {
+      "id": "public-page-shells",
+      "paths": [
+        "public/404.html",
+        "public/account.html",
+        "public/admin.html",
+        "public/author-public.html",
+        "public/author.html",
+        "public/catalog.html",
+        "public/community-taxonomy.html",
+        "public/copyright.html",
+        "public/fandom.html",
+        "public/following.html",
+        "public/genres.html",
+        "public/history.html",
+        "public/index.html",
+        "public/library.html",
+        "public/login.html",
+        "public/novel.html",
+        "public/omniportal.html",
+        "public/privacy.html",
+        "public/read.html",
+        "public/register.html",
+        "public/requests.html",
+        "public/search.html",
+        "public/tags.html",
+        "public/terms.html",
+        "public/tickets.html"
+      ],
+      "requiresAdr": true,
+      "accountableRole": "Frontend page-shell owner",
+      "changeOwner": "HTML page shell maintainer",
+      "integrationOwner": "Frontend platform integrator",
+      "pathClass": "browser-page-shells",
+      "allowedContents": [
+        "Static HTML page shells and route-specific document structure"
+      ],
+      "dependencyDirection": "Page shells load the canonical browser runtime and communicate with the Worker through documented HTTP APIs.",
+      "allowedDependencies": [],
+      "invokes": [],
+      "runtimeContracts": [
+        "worker-runtime"
+      ],
+      "sharedSurfacePolicy": "Page shell changes require responsive, navigation, accessibility and route verification."
+    },
+    {
+      "id": "public-release-notes",
+      "paths": [
+        "public/RELEASE_NOTES_16.3.0.md",
+        "public/RELEASE_NOTES_16.3.2.md",
+        "public/RELEASE_NOTES_16.3.3.md",
+        "public/RELEASE_NOTES_16.3.4.md",
+        "public/RELEASE_NOTES_16.3.5.md",
+        "public/RELEASE_NOTES_16.3.6.md",
+        "public/RELEASE_NOTES_16.3.7.md"
+      ],
+      "requiresAdr": true,
+      "accountableRole": "Release documentation owner",
+      "changeOwner": "Public release note maintainer",
+      "integrationOwner": "Release documentation integrator",
+      "pathClass": "release-notes",
+      "allowedContents": [
+        "Published release-note documents"
+      ],
+      "dependencyDirection": "Release notes are static public documents and are not imported by application runtime.",
+      "allowedDependencies": [],
+      "invokes": [],
+      "runtimeContracts": [
+        "worker-runtime"
+      ],
+      "sharedSurfacePolicy": "Historical release notes are preserved; new notes must be accurate and dated."
+    },
+    {
+      "id": "public-versioned-release-artifacts",
+      "paths": [
+        "public/app-17.10.0.css",
+        "public/app-17.10.0.js",
+        "public/app-17.11.0.css",
+        "public/app-17.11.0.js",
+        "public/app-17.12.0.js",
+        "public/app-17.13.0.js",
+        "public/app-17.14.0.js",
+        "public/app-17.15.0.js",
+        "public/app-17.16.0.js",
+        "public/app-17.17.0.css",
+        "public/app-17.17.0.js",
+        "public/app-17.18.0.css",
+        "public/app-17.18.0.js",
+        "public/app-17.19.0.css",
+        "public/app-17.19.0.js",
+        "public/app-17.20.0.css",
+        "public/app-17.20.0.js",
+        "public/app-17.21.0.css",
+        "public/app-17.21.0.js",
+        "public/app-17.22.0.css",
+        "public/app-17.22.0.js",
+        "public/app-17.23.0.css",
+        "public/app-17.23.0.js",
+        "public/app-17.4.0.css",
+        "public/app-17.4.0.js",
+        "public/app-17.5.0.css",
+        "public/app-17.5.0.js",
+        "public/app-17.6.0.css",
+        "public/app-17.6.0.js",
+        "public/app-17.7.0.css",
+        "public/app-17.7.0.js",
+        "public/app-17.8.0.css",
+        "public/app-17.8.0.js",
+        "public/app-17.9.0.css",
+        "public/app-17.9.0.js",
+        "public/imperial-comic-reader-17.16.0.css",
+        "public/imperial-comic-reader-17.17.0.css",
+        "public/imperial-comic-reader-17.18.0.css",
+        "public/imperial-comic-reader-17.19.0.css",
+        "public/imperial-comic-reader-17.20.0.css",
+        "public/imperial-comic-reader-17.21.0.css",
+        "public/imperial-comic-reader-17.22.0.css",
+        "public/imperial-comic-reader-17.23.0.css",
+        "public/imperial-formats-17.15.0.css",
+        "public/imperial-formats-17.16.0.css",
+        "public/imperial-formats-17.17.0.css",
+        "public/imperial-formats-17.18.0.css",
+        "public/imperial-formats-17.19.0.css",
+        "public/imperial-formats-17.20.0.css",
+        "public/imperial-formats-17.21.0.css",
+        "public/imperial-formats-17.22.0.css",
+        "public/imperial-formats-17.23.0.css",
+        "public/imperial-luxury-17.12.0.css",
+        "public/imperial-luxury-17.13.0.css",
+        "public/imperial-luxury-17.17.0.css",
+        "public/imperial-luxury-17.18.0.css",
+        "public/imperial-luxury-17.19.0.css",
+        "public/imperial-luxury-17.20.0.css",
+        "public/imperial-luxury-17.21.0.css",
+        "public/imperial-luxury-17.22.0.css",
+        "public/imperial-luxury-17.23.0.css",
+        "public/manifest-17.10.0.webmanifest",
+        "public/manifest-17.11.0.webmanifest",
+        "public/manifest-17.12.0.webmanifest",
+        "public/manifest-17.13.0.webmanifest",
+        "public/manifest-17.15.0.webmanifest",
+        "public/manifest-17.16.0.webmanifest",
+        "public/manifest-17.17.0.webmanifest",
+        "public/manifest-17.18.0.webmanifest",
+        "public/manifest-17.19.0.webmanifest",
+        "public/manifest-17.20.0.webmanifest",
+        "public/manifest-17.21.0.webmanifest",
+        "public/manifest-17.22.0.webmanifest",
+        "public/manifest-17.23.0.webmanifest",
+        "public/manifest-17.4.0.webmanifest",
+        "public/manifest-17.5.0.webmanifest",
+        "public/manifest-17.6.0.webmanifest",
+        "public/manifest-17.7.0.webmanifest",
+        "public/manifest-17.8.0.webmanifest",
+        "public/manifest-17.9.0.webmanifest",
+        "public/style-17.10.0.css",
+        "public/style-17.11.0.css",
+        "public/style-17.17.0.css",
+        "public/style-17.18.0.css",
+        "public/style-17.19.0.css",
+        "public/style-17.20.0.css",
+        "public/style-17.21.0.css",
+        "public/style-17.22.0.css",
+        "public/style-17.23.0.css",
+        "public/style-17.4.0.css",
+        "public/style-17.5.0.css",
+        "public/style-17.6.0.css",
+        "public/style-17.7.0.css",
+        "public/style-17.8.0.css",
+        "public/style-17.9.0.css",
+        "public/sw-17.10.0.js",
+        "public/sw-17.11.0.js",
+        "public/sw-17.4.0.js",
+        "public/sw-17.5.0.js",
+        "public/sw-17.6.0.js",
+        "public/sw-17.7.0.js",
+        "public/sw-17.8.0.js",
+        "public/sw-17.9.0.js"
+      ],
+      "requiresAdr": true,
+      "accountableRole": "Versioned asset owner",
+      "changeOwner": "Release artifact maintainer",
+      "integrationOwner": "Frontend release integrator",
+      "pathClass": "versioned-browser-artifacts",
+      "allowedContents": [
+        "Immutable versioned JavaScript, CSS, service-worker and web-manifest artifacts"
+      ],
+      "dependencyDirection": "Versioned browser artifacts are generated or frozen release outputs; editable sources remain separately owned.",
+      "allowedDependencies": [],
+      "invokes": [],
+      "runtimeContracts": [
+        "worker-runtime"
+      ],
+      "sharedSurfacePolicy": "Never overwrite historical versioned artifacts; new releases must preserve source-to-served parity."
+    },
+    {
+      "id": "frontend-runtime-and-assets",
+      "paths": [
+        "public/app.css",
+        "public/app.js",
+        "public/imperial-glass.css",
+        "public/manifest.webmanifest",
+        "public/style.css",
+        "public/sw.js"
+      ],
+      "requiresAdr": true,
+      "accountableRole": "Frontend runtime source owner",
+      "changeOwner": "Canonical browser runtime maintainer",
+      "integrationOwner": "Frontend platform integrator",
+      "pathClass": "browser-runtime-source",
+      "allowedContents": [
+        "Editable browser runtime JavaScript, CSS, service worker and web manifest sources"
+      ],
+      "dependencyDirection": "Editable browser sources are upstream of immutable versioned artifacts and communicate with Worker APIs only.",
+      "allowedDependencies": [],
+      "invokes": [],
+      "runtimeContracts": [
+        "worker-runtime"
+      ],
+      "sharedSurfacePolicy": "Keep editable and served runtime sources synchronized; require accessibility, responsive and RTL validation."
+    },
+    {
+      "id": "public-brand-assets",
+      "paths": [
+        "public/apple-touch-icon.png",
+        "public/favicon.ico",
+        "public/favicon.svg",
+        "public/imperial-character.png",
+        "public/imperial-crown-icon.png",
+        "public/imperial-hero.png",
+        "public/imperial-novel-app-icon.svg",
+        "public/imperial-novel-crest-17.18.0.svg",
+        "public/imperial-novel-crest.svg",
+        "public/imperial-search-icon.png",
+        "public/story-cover-placeholder.svg"
+      ],
+      "requiresAdr": true,
+      "accountableRole": "Brand and media asset owner",
+      "changeOwner": "Brand asset maintainer",
+      "integrationOwner": "Brand and frontend integrator",
+      "pathClass": "brand-media-assets",
+      "allowedContents": [
+        "Logos, icons, illustrations, favicons and static brand imagery"
+      ],
+      "dependencyDirection": "Brand assets are consumed by page shells and browser runtime; they contain no executable server policy.",
+      "allowedDependencies": [],
+      "invokes": [],
+      "runtimeContracts": [
+        "worker-runtime"
+      ],
+      "sharedSurfacePolicy": "Asset changes require provenance, licensing and visual-quality review."
+    },
+    {
+      "id": "public-crawl-and-sitemap",
+      "paths": [
+        "public/robots.txt",
+        "public/sitemap.xml"
+      ],
+      "requiresAdr": true,
+      "accountableRole": "Crawl policy owner",
+      "changeOwner": "Robots and sitemap maintainer",
+      "integrationOwner": "SEO and platform integrator",
+      "pathClass": "crawl-policy",
+      "allowedContents": [
+        "robots.txt and static sitemap fallback policy"
+      ],
+      "dependencyDirection": "Crawl policy is consumed by search engines and must agree with canonical Worker route and sitemap policy.",
+      "allowedDependencies": [],
+      "invokes": [],
+      "runtimeContracts": [
+        "worker-runtime"
+      ],
+      "sharedSurfacePolicy": "Crawler directives must be reconciled with runtime sitemap and noindex policy."
+    },
+    {
+      "id": "public-cover-library",
+      "paths": [
+        "public/covers/"
+      ],
+      "requiresAdr": true,
+      "accountableRole": "Cover library owner",
+      "changeOwner": "Cover asset maintainer",
+      "integrationOwner": "Catalog media integrator",
+      "pathClass": "cover-library",
+      "allowedContents": [
+        "Novel cover image assets"
+      ],
+      "dependencyDirection": "Cover assets are public media only and must not contain executable code.",
+      "allowedDependencies": [],
+      "invokes": [],
+      "runtimeContracts": [
+        "worker-runtime"
+      ],
+      "sharedSurfacePolicy": "Cover assets require rights/provenance review and must not imply publication eligibility."
+    },
+    {
+      "id": "production-operations-documentation",
+      "paths": [
+        "docs/production/"
+      ],
+      "requiresAdr": true,
+      "accountableRole": "Database and production operations owner",
+      "changeOwner": "Production D1 audit, backup, restore and release evidence maintainer",
+      "integrationOwner": "Platform architecture and release owner",
+      "pathClass": "production-operations-documentation",
+      "allowedContents": [
+        "Read-only production D1 audit procedures",
+        "Canonical migration risk and release plans",
+        "Backup, restore, rehearsal and release evidence records"
+      ],
+      "dependencyDirection": "Operational documentation describes controlled procedures; runtime code must not import production documentation and documentation must not authorize unreviewed production mutations.",
       "allowedDependencies": [],
       "invokes": [],
       "runtimeContracts": [
         "database-schema",
-        "frontend-runtime-and-assets"
+        "worker-runtime"
       ],
-      "sharedSurfacePolicy": "All user-owned data requires session and object-level ownership checks; rights/publishing gates must be enforced server-side; secrets remain in environment bindings."
+      "sharedSurfacePolicy": "Documentation is evidence and guidance only. Production D1 mutation, migration execution, secret changes and Worker deployment require separate explicit release authorization."
     }
   ],
   "sharedSurfaceRule": "Every changed path must match exactly one owner. Paths whose owner requiresAdr=true require an ADR under docs/architecture/decisions/ or a feature contract under docs/architecture/feature-contracts/ in the same PR. Every tracked path is also checked for exactly one owner so unregistered baseline files cannot hide until changed.",
