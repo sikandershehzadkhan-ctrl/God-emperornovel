@@ -40,6 +40,21 @@ These are concrete DDL operations still present in the runtime initializers and 
 
 Migration 0048 intentionally provisions the four OmniPortal support tables but does not claim to provision these optional connector columns. Do not infer that they exist in production merely because the runtime initializer attempts to add them.
 
+## Route-local database work on GET requests
+
+The shared dispatcher bootstrap above runs before every non-health API route, including GET. In addition, the source currently contains route-local initializer calls inside these GET handlers:
+
+| GET route | Route-local call | Additional effect to account for |
+|---|---|---|
+| `/api/author/ai/projects` | `ensureAuthorAISchema(env)` | Ensures Author Studio project, publish-policy and run-history structures. |
+| `/api/author/ai/projects/:id` | `ensureAuthorAISchema(env)` | Same initializer on an individual project read. |
+| `/api/admin/publishing` | `ensurePublishingSchema(env)` | Ensures publication/review columns and chapter-view structures; initializer also performs its documented publication-status backfill. |
+| `/api/admin/publishing/chapters` | `ensurePublishingSchema(env)` | Same initializer on chapter-list reads. |
+| `/api/admin/connectors` | `seedOmni(env)` | Calls `ensureOmniTables(env)` and seeds registry connector rows with `INSERT OR IGNORE`. |
+| `/api/admin/connector-authorization-requests` | `ensureOmniTables(env)` | Ensures OmniPortal tables and optional connector columns before listing requests. |
+
+These route-local calls are separate from the shared dispatcher bootstrap and must be reconciled independently. A future read-only GET contract requires removing or relocating both layers of initialization/seed work, not merely testing the route's final SELECT statement. This list is source-audited; it is not evidence that any of these structures or seed rows exist in production.
+
 ## Runtime side effects to preserve or deliberately replace
 
 - `ensurePublishingSchema()` backfills blank publication status values and creates `chapter_views`; its structural pieces are represented by migrations 0004 and 0005. Confirm the backfill outcome remotely before removing the runtime path.
