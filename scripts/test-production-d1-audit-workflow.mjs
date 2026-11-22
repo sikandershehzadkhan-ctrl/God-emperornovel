@@ -52,4 +52,23 @@ assert.ok(inventoryStep.includes("Read-only audit finished with $audit_query_fai
 assert.ok(inventoryStep.includes("audit_query_failures=$((audit_query_failures + 1))"),
   "Failed migration-marker probes must also fail the audit.");
 
-console.log("PASS: production D1 audit is manually gated, read-only, fail-closed, and covers runtime schema cutover evidence.");
+
+assert.match(workflow, /Capture normalized runtime schema evidence \(read-only\)/,
+  "The gated audit must generate machine-readable schema evidence.");
+assert.match(workflow, /normalize-runtime-schema-audit\.mjs/,
+  "Wrangler output must be normalized and validated before assessment.");
+assert.match(workflow, /compare-runtime-schema-definitions\.mjs/,
+  "Captured production evidence must be passed to the definition comparator.");
+assert.match(workflow, /upload-artifact@v4/,
+  "Read-only schema evidence must be retained as a downloadable workflow artifact.");
+assert.match(workflow, /pragma_table_info\(m\.name\)/,
+  "Evidence must include table column definitions.");
+assert.match(workflow, /pragma_foreign_key_list\(m\.name\)/,
+  "Evidence must include declared foreign-key definitions.");
+assert.match(workflow, /pragma_index_info\(i\.name\)/,
+  "Evidence must include ordered index columns.");
+assert.doesNotMatch(workflow.slice(workflow.indexOf("- name: Capture normalized runtime schema evidence"), workflow.indexOf("- name: Upload read-only production schema evidence")),
+  /\\b(?:INSERT|UPDATE|DELETE|ALTER|CREATE|DROP|REPLACE)\\b/i,
+  "Evidence capture SQL must remain read-only.");
+
+console.log("PASS: production D1 audit is manually gated, read-only, fail-closed, and emits normalized schema evidence.");
