@@ -1,0 +1,32 @@
+{
+  "schemaVersion": 1,
+  "contractId": "author-studio-tiptap-editor",
+  "status": "proposed",
+  "owner": "frontend-runtime",
+  "decision": "Implement a separate, locally bundled Tiptap React editor that is dynamically loaded only for non-comic Author Studio chapter forms and serializes to imperial_rich_text_chapter v1.",
+  "scope": [
+    "src/react/AuthorChapterEditor.jsx",
+    "scripts/build-react-islands.mjs",
+    "public/app.js",
+    "public/app-17.23.0.js",
+    "public/author-editor-17.23.0.css",
+    "scripts/test-author-editor-bundle.mjs",
+    "package.json"
+  ],
+  "invariants": [
+    "The shared reader/community React island bundle must not include Tiptap.",
+    "The editor bundle loads only inside an eligible Author Studio chapter form.",
+    "The plain-text textarea remains usable if the editor bundle fails.",
+    "Editor output is normalized to the server-validated structured chapter envelope.",
+    "Comic chapter composition remains on its existing path.",
+    "No raw HTML, image upload, external CDN, paid feature, D1 migration, or production deploy is introduced."
+  ],
+  "acceptance": [
+    "Build creates a versioned local editor bundle and reports raw/gzip size.",
+    "Editor toolbar is keyboard accessible and has 44px touch targets.",
+    "Heading levels are restricted to 2/3; code blocks are disabled; link URLs are HTTP(S) only.",
+    "Chapter save posts structured JSON to the existing author API.",
+    "Build and all CI governance checks pass."
+  ],
+  "releaseBoundary": "Author Studio client-side editor only. Deployment and live mobile QA remain separate."
+}
