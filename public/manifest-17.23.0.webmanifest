@@ -1,7 +1,7 @@
 {
   "name": "Imperial Novel",
   "short_name": "Imperial Novel",
-  "start_url": "/?app=17.23.0",
+  "start_url": "/?app=17.24.0",
   "display": "standalone",
   "background_color": "#080a12",
   "theme_color": "#080a12",
@@ -14,5 +14,5 @@
       "purpose": "any maskable"
     }
   ],
-  "version": "17.23.0"
+  "version": "17.24.0"
 }
