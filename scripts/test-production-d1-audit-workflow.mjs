@@ -40,4 +40,16 @@ assert.ok(queryLabels.includes("Production foreign-key integrity check"));
 assert.doesNotMatch(workflow, /d1\s+migrations\s+apply|wrangler[^\n]*deploy/i,
   "Read-only audit must never apply migrations or deploy the Worker.");
 
+const inventoryStepStart = workflow.indexOf("- name: Read-only database inventory");
+assert.ok(inventoryStepStart >= 0, "The required read-only inventory step must exist.");
+const inventoryStep = workflow.slice(inventoryStepStart);
+assert.doesNotMatch(inventoryStep, /^\\s+continue-on-error:/m,
+  "Required database inventory failures must never be downgraded to successful workflow steps.");
+assert.match(inventoryStep, /if ! npx --yes wrangler@4 d1 execute god-emperornovel-db --remote --command/,
+  "Each required query must explicitly detect command failure.");
+assert.match(inventoryStep, /Read-only audit finished with \\$audit_query_failures failed required database inspection/,
+  "The inventory must fail closed when any required query fails.");
+assert.match(inventoryStep, /audit_query_failures=\\$\\(\\(audit_query_failures \\+ 1\\)\\)/,
+  "Failed migration-marker probes must also fail the audit.");
+
 console.log("PASS: production D1 audit is manually gated, read-only, fail-closed, and covers runtime schema cutover evidence.");
