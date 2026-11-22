@@ -3,7 +3,7 @@ import fs from "node:fs";
 
 const workflow = fs.readFileSync(".github/workflows/deploy.yml", "utf8");
 const schemaInventory = fs.readFileSync("docs/production/SHARED-RUNTIME-SCHEMA-INVENTORY.md", "utf8");
-const pendingCanonicalMigrations = fs.readdirSync("migrations").filter(name => /^\\d{4}_.+\\.sql$/.test(name) && Number(name.slice(0, 4)) > 11);
+const pendingCanonicalMigrations = fs.readdirSync("migrations").filter(name => /^\d{4}_.+\.sql$/.test(name) && Number(name.slice(0, 4)) > 11);
 assert.ok(pendingCanonicalMigrations.length > 0,
   "The deployment guard must be removed only after later canonical migrations have been explicitly reconciled and released.");
 assert.ok(workflow.includes("workflow_dispatch:"), "Production deploy must remain manual.");
