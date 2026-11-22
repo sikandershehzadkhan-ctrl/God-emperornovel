@@ -33,21 +33,29 @@ function validateNode(node,state,depth,parent){
  }
  if(node.type==="hardBreak")return parent==="inline"&&onlyKeys(node,new Set(["type"]));
  if(!BLOCKS.has(node.type)||parent==="inline"||!onlyKeys(node,new Set(["type","attrs","content"])))return false;
+ if(parent==="root"&&!["paragraph","heading","blockquote","bulletList","orderedList"].includes(node.type))return false;
+ if(parent==="list"&&node.type!=="listItem")return false;
+ if(parent==="listItem"&&!["paragraph","heading","blockquote","bulletList","orderedList"].includes(node.type))return false;
+ if(parent==="blockquote"&&!["paragraph","heading","blockquote","bulletList","orderedList"].includes(node.type))return false;
  if(node.type==="heading"){
   if(!plainObject(node.attrs)||!onlyKeys(node.attrs,new Set(["level"]))||![1,2,3].includes(node.attrs.level))return false;
  }else if(node.type==="orderedList"){
   if(node.attrs!==undefined&&(!plainObject(node.attrs)||!onlyKeys(node.attrs,new Set(["start"]))||!(node.attrs.start===null||Number.isInteger(node.attrs.start)&&node.attrs.start>=1&&node.attrs.start<=10000)))return false;
  }else if(own(node,"attrs"))return false;
+ if(node.type==="paragraph"||node.type==="heading"){
+  if(node.content!==undefined&&!Array.isArray(node.content))return false;
+  for(const child of node.content||[])if(!validateNode(child,state,depth+1,"inline"))return false;
+  return true;
+ }
  if(!Array.isArray(node.content)||!node.content.length)return false;
- const childParent=["paragraph","heading","blockquote","bulletList","orderedList","listItem"].includes(node.type)?"mixed":"mixed";
  for(const child of node.content){
-  if(node.type==="paragraph"||node.type==="heading"){
-   if(!validateNode(child,state,depth+1,"inline"))return false;
-  }else if(node.type==="bulletList"||node.type==="orderedList"){
-   if(child?.type!=="listItem"||!validateNode(child,state,depth+1,"block"))return false;
-  }else if(node.type==="listItem"||node.type==="blockquote"){
-   if(!validateNode(child,state,depth+1,"block"))return false;
-  }else if(!validateNode(child,state,depth+1,childParent))return false;
+  if(node.type==="bulletList"||node.type==="orderedList"){
+   if(child?.type!=="listItem"||!validateNode(child,state,depth+1,"list"))return false;
+  }else if(node.type==="listItem"){
+   if(!validateNode(child,state,depth+1,"listItem"))return false;
+  }else if(node.type==="blockquote"){
+   if(!validateNode(child,state,depth+1,"blockquote"))return false;
+  }
  }
  return true;
 }
@@ -56,7 +64,7 @@ export function parseTextChapter(raw){
  let payload;try{payload=JSON.parse(raw)}catch{return {ok:false,error:"Text chapter document is not valid JSON."}}
  if(!plainObject(payload)||payload.type!=="imperial_text_chapter"||payload.version!==1||!plainObject(payload.document)||payload.document.type!=="doc"||!Array.isArray(payload.document.content)||!payload.document.content.length||!onlyKeys(payload,new Set(["type","version","document"]))||!onlyKeys(payload.document,new Set(["type","content"])))return {ok:false,error:"Text chapter document format is invalid."};
  const state={nodes:0,text:0};
- for(const node of payload.document.content)if(!validateNode(node,state,1,"block"))return {ok:false,error:"Text chapter contains unsupported or unsafe formatting."};
+ for(const node of payload.document.content)if(!validateNode(node,state,1,"root"))return {ok:false,error:"Text chapter contains unsupported or unsafe formatting."};
  return {ok:true,payload};
 }
 const esc=value=>String(value??"").replace(/[&<>"']/g,char=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[char]));
