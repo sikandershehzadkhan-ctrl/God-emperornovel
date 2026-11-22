@@ -72,7 +72,7 @@ assert.match(capture, /PRAGMA index_info\(/,
   "Evidence capture must include ordered index columns.");
 assert.match(capture, /PRAGMA index_list\(/,
   "Evidence capture must include implicit and explicit table index metadata.");
-assert.match(capture, /--remote --command[\s\S]*?--json/,
+assert.match(capture, /'--remote',\s*'--command',[\s\S]*?'--json'/,
   "Schema metadata must be captured through Wrangler's remote JSON query mode.");
 assert.doesNotMatch(workflow.slice(workflow.indexOf("- name: Capture normalized runtime schema evidence"), workflow.indexOf("- name: Upload read-only production schema evidence")),
   /\\b(?:INSERT|UPDATE|DELETE|ALTER|CREATE|DROP|REPLACE)\\b/i,
