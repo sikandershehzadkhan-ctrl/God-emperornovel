@@ -26,7 +26,7 @@ function normalize(raw) {
   assert.ok(typeof evidence.auditedAt === 'string' && !Number.isNaN(Date.parse(evidence.auditedAt)), 'Evidence audit timestamp is invalid.');
   assert.equal(evidence.inventoryComplete, true, 'Evidence must explicitly mark a complete inventory.');
   assert.ok(Array.isArray(evidence.tables) && evidence.tables.length > 0, 'Evidence has no table inventory.');
-  assert.ok(Array.isArray(evidence.indexes), 'Evidence has no index inventory.');
+  assert.ok(Array.isArray(evidence.indexes), 'Evidence has no index inventory.');\n  assert.ok(Array.isArray(evidence.tableIndexes), 'Evidence has no table-index inventory.');
   assert.ok(Array.isArray(evidence.foreignKeys), 'Evidence has no foreign-key inventory.');
   const tableNames = new Set();
   for (const table of evidence.tables) {
@@ -49,7 +49,7 @@ function normalize(raw) {
 function selfTest() {
   const evidence = { database:'god-emperornovel-db',auditedAt:'2026-11-22T00:00:00Z',inventoryComplete:true,
     tables:[{name:'agents',sql:'CREATE TABLE agents(id INTEGER)',columns:[{name:'id',type:'INTEGER',notnull:0,dflt_value:null,pk:1}],foreignKeys:[]}],
-    indexes:[{name:'idx_agent_runs_agent',table:'agent_runs',unique:0,columns:['agent_id','created_at'],sql:'CREATE INDEX...'}],foreignKeys:[] };
+    indexes:[{name:'idx_agent_runs_agent',table:'agent_runs',unique:0,columns:['agent_id','created_at'],sql:'CREATE INDEX...'}],tableIndexes:[{name:'agents_slug',table:'agents',unique:1,columns:['slug'],origin:'u',partial:0}],foreignKeys:[] };
   const wrapper = JSON.stringify([{results:[{schema_evidence:JSON.stringify(evidence)}],success:true}]);
   assert.deepEqual(normalize(wrapper),evidence);
   assert.throws(()=>normalize(JSON.stringify([{results:[{schema_evidence:'{}'}]}])),/database identity/);
