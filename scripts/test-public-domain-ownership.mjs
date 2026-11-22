@@ -3,7 +3,7 @@ import { execFileSync } from "node:child_process";
 import { readFile } from "node:fs/promises";
 
 const registry = JSON.parse(await readFile(new URL("../docs/architecture/SHARED-SURFACE-OWNERSHIP.json", import.meta.url), "utf8"));
-const publicFiles = execFileSync("git", ["ls-files", "-z", "--", "public"], { encoding: "utf8" }).split("\0").filter(Boolean);
+const publicFiles = execFileSync("git", ["ls-files", "-z"], { encoding: "utf8" }).split("\0").filter(file => file.startsWith("public/"));
 const roots = registry.owners.flatMap(owner => owner.paths.map(path => ({ owner: owner.id, path, requiresAdr: owner.requiresAdr })));
 const publicRoots = roots.filter(root => root.path === "public/" || root.path.startsWith("public/"));
 assert.ok(publicFiles.length > 0, "tracked public asset inventory must not be empty");
