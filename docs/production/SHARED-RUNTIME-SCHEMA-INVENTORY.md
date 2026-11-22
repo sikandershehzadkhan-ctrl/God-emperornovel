@@ -460,3 +460,28 @@ Cutover requirements:
 4. Keep runtime helpers in place until migration and data ownership are proven. Do not create or apply a guessed migration based only on repository source.
 
 This is repository-source evidence, not a statement about production D1 contents. No production query or mutation was performed.
+
+
+## Definition-level runtime schema comparison
+
+The repository also includes `scripts/compare-runtime-schema-definitions.mjs`. This is a stricter offline second pass than the name-only assessor above. It compares source-transcribed definitions for the runtime-created `agents`, `agent_runs`, and `taxonomy_submissions` tables; the runtime-added comments, novel-review and connector columns; and the `idx_agent_runs_agent` index.
+
+Normalized evidence must contain:
+- `database`, `auditedAt`, and explicit boolean `inventoryComplete`;
+- `tables`: each table has `name` and `columns`; each column carries the SQLite `PRAGMA table_info` fields `name`, `type`, `notnull`, `dflt_value`, and `pk`;
+- `indexes`: each index has `name`, `table`, ordered `columns`, and boolean `unique`;
+- `foreignKeys`: an array reserved for the captured `PRAGMA foreign_key_list` output.
+
+Example index representation:
+
+```json
+{ "name": "idx_agent_runs_agent", "table": "agent_runs", "columns": ["agent_id", "created_at"], "unique": false }
+```
+
+Run the offline self-test with:
+
+```sh
+node scripts/compare-runtime-schema-definitions.mjs --self-test
+```
+
+The comparison reports `verified`, `missing`, `mismatch`, and `unknown`. Missing is used only when the relevant inventory is explicitly complete; otherwise absence is unknown. A column mismatch includes type, NOT NULL, default, or primary-key-position differences. The required agent-run index is checked for table, ordered columns, and uniqueness. This tool still sets `releaseReady: false` unconditionally. It does not establish every table-level UNIQUE/CHECK constraint, validate arbitrary foreign-key semantics or triggers, inspect row data, prove migration provenance, verify recovery, or replace a production-shaped rehearsal. Do not use illustrative evidence as production evidence.
