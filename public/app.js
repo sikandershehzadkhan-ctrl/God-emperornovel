@@ -382,7 +382,7 @@ function loadAuthorEditorBundle(){
  if(!authorEditorBundlePromise)authorEditorBundlePromise=new Promise((resolve,reject)=>{
   const script=document.createElement('script');
   script.src='/author-editor-'+authorEditorAssetVersion()+'.js';
-  script.onload=()=>window.ImperialAuthorEditor?.mountAuthorChapterEditor?resolve(window.ImperialAuthorEditor):reject(new Error('The chapter editor bundle did not initialize.'));
+  script.onload=()=>{if(window.ImperialAuthorEditor?.mountAuthorChapterEditor)resolve(window.ImperialAuthorEditor);else{authorEditorBundlePromise=null;reject(new Error('The chapter editor bundle did not initialize.'))}};
   script.onerror=()=>{authorEditorBundlePromise=null;reject(new Error('The chapter editor could not be loaded.'));};
   document.head.appendChild(script);
  });
