@@ -18,7 +18,7 @@ function reconcile(manifest, evidence) {
     'Production evidence must include appliedMigrations, even when empty.');
   const source = new Map();
   for (const item of manifest.migrations) {
-    assert.match(item.file, /^migrations\\/\\d{4}_[a-z0-9_-]+\\.sql$/i);
+    assert.match(item.file, /^migrations\/\d{4}_[a-z0-9_-]+\.sql$/i);
     assert.match(item.sha256, /^[a-f0-9]{64}$/);
     assert.ok(Number.isInteger(item.bytes) && item.bytes > 0);
     assert.ok(!source.has(item.file), 'Duplicate repository migration: ' + item.file);
@@ -114,7 +114,7 @@ if (process.argv.includes('--self-test')) {
   }
   const result = reconcile(JSON.parse(fs.readFileSync(resolve(manifestPath), 'utf8')),
     JSON.parse(fs.readFileSync(resolve(evidencePath), 'utf8')));
-  process.stdout.write(JSON.stringify(result, null, 2) + '\\n');
+  process.stdout.write(JSON.stringify(result, null, 2) + '\n');
   if (!result.releaseReady) process.exitCode = 1;
 }
 
