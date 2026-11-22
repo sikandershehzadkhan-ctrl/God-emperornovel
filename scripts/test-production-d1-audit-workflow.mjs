@@ -43,7 +43,7 @@ assert.doesNotMatch(workflow, /d1\s+migrations\s+apply|wrangler[^\n]*deploy/i,
 const inventoryStepStart = workflow.indexOf("- name: Read-only database inventory");
 assert.ok(inventoryStepStart >= 0, "The required read-only inventory step must exist.");
 const inventoryStep = workflow.slice(inventoryStepStart);
-assert.doesNotMatch(inventoryStep, /^\\s+continue-on-error:/m,
+assert.doesNotMatch(inventoryStep, /^\s+continue-on-error:/m,
   "Required database inventory failures must never be downgraded to successful workflow steps.");
 assert.match(inventoryStep, /if ! npx --yes wrangler@4 d1 execute god-emperornovel-db --remote --command/,
   "Each required query must explicitly detect command failure.");
