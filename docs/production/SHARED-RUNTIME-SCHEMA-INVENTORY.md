@@ -485,3 +485,12 @@ node scripts/compare-runtime-schema-definitions.mjs --self-test
 ```
 
 The comparison reports `verified`, `missing`, `mismatch`, and `unknown`. Missing is used only when the relevant inventory is explicitly complete; otherwise absence is unknown. A column mismatch includes type, NOT NULL, default, or primary-key-position differences. The required agent-run index is checked for table, ordered columns, and uniqueness. This tool still sets `releaseReady: false` unconditionally. It does not establish every table-level UNIQUE/CHECK constraint, validate arbitrary foreign-key semantics or triggers, inspect row data, prove migration provenance, verify recovery, or replace a production-shaped rehearsal. Do not use illustrative evidence as production evidence.
+
+
+## Automated read-only evidence artifact
+
+When the explicitly confirmed `Imperial Novel Read-Only Production D1 Audit` workflow is run, its final evidence-capture step issues one SELECT-only SQLite JSON query. It captures every non-internal table's `sqlite_master.sql`, `PRAGMA table_info` columns, declared foreign keys, and non-auto index SQL, uniqueness and ordered indexed columns. Wrangler's JSON response is normalized by `scripts/normalize-runtime-schema-audit.mjs`; the normalized evidence is then passed to the definition comparator.
+
+The workflow uploads `production-runtime-schema-evidence-<commit>` for seven days. The artifact contains schema metadata, not application rows, credentials, or chapter bodies. It also retains the raw Wrangler JSON response for auditability. If Wrangler's output shape is not recognized or the complete inventory cannot be validated, normalization fails closed and no normalized evidence is produced.
+
+The audit workflow remains manually gated by `confirm_read_only_audit=yes`. This change does not dispatch it, access production D1, change database state, or deploy the Worker. The comparison still cannot approve release: table-level constraints, data invariants, migration ledger provenance, recovery restore rehearsal, and a production-shaped migration rehearsal remain separate gates.
