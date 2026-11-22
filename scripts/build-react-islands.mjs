@@ -3,7 +3,7 @@ import fs from "node:fs";
 import { gzipSync } from "node:zlib";
 
 const pkg = JSON.parse(fs.readFileSync("package.json", "utf8"));
-if (!/^\\d+\\.\\d+\\.\\d+$/.test(pkg.version)) {
+if (!/^\d+\.\d+\.\d+$/.test(pkg.version)) {
   throw new Error("package.json must contain a semantic version before building React islands.");
 }
 
