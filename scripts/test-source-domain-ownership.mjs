@@ -19,7 +19,7 @@ const expectedGroups = {
   "route-and-sitemap": ["src/route-canonical.mjs", "src/route-registry.mjs", "src/sitemap.mjs"],
   "authentication-security": ["src/auth-password.mjs"],
   "connector-security": ["src/connector-url-policy.mjs"],
-  "content-policy": ["src/comic-chapter-policy.mjs", "src/content-formats.mjs"],
+  "content-policy": ["src/comic-chapter-policy.mjs", "src/content-formats.mjs", "src/rich-text-chapter-policy.mjs"],
   "author-application-policy": ["src/author-application-policy.mjs"],
   "donation-domain": ["src/donation-approval-policy.mjs", "src/donation-reference-index.mjs", "src/donation-reference-policy.mjs"],
   "public-novel-projection": ["src/public-novel.mjs"],
