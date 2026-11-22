@@ -47,6 +47,40 @@ The workflow is therefore hard-disabled. Do not remove that block merely to depl
 
 The repository includes `scripts/export-canonical-migration-checksums.mjs`. It computes SHA-256 over the exact raw bytes of every numbered migration file, rejects duplicate sequence numbers, empty files, and duplicate exact payloads, and emits a deterministic JSON manifest with `node scripts/export-canonical-migration-checksums.mjs --json`. The normal build runs its validation mode. Capture the JSON output together with the exact Git commit when preparing the signed-off production reconciliation evidence. This source manifest describes the candidate repository only; it is not a production applied-migration ledger and must never be used to infer remote application.
 
+## Evidence-based migration reconciliation tool
+
+The repository includes `scripts/reconcile-production-migrations.mjs`. It compares the candidate checksum manifest with an explicitly supplied production evidence JSON file. Each repository migration is classified as:
+
+- `verified`: exact filename and SHA-256 checksum match the production evidence.
+- `missing`: absent from a production ledger that the evidence explicitly marks complete.
+- `mismatch`: checksum differs, or production lists a migration absent from the candidate repository.
+- `unknown`: evidence is incomplete, or the production ledger has a name but no independently verified checksum.
+
+A plain `d1_migrations` filename row is not a checksum. It must remain `unknown` unless independent evidence establishes the exact applied file bytes. If ledger completeness cannot be established, absent rows remain `unknown`, never `missing`. The tool exits nonzero unless every row is verified and there are no extra production migration identities.
+
+Run the candidate-side exporter and reconciliation test with:
+
+```sh
+node scripts/export-canonical-migration-checksums.mjs --json > repository-migrations.json
+node scripts/reconcile-production-migrations.mjs --self-test
+node scripts/reconcile-production-migrations.mjs repository-migrations.json production-migration-evidence.json
+```
+
+The production evidence file must be created only from the approved read-only audit and independently reviewed migration provenance. Required shape:
+
+```json
+{
+  "database": "god-emperornovel-db",
+  "auditedAt": "2026-11-22T00:00:00Z",
+  "ledgerComplete": false,
+  "appliedMigrations": [
+    { "name": "0001_initial.sql", "sha256": "<64-character verified SHA-256>" }
+  ]
+}
+```
+
+The example is a schema illustration, not production data. Do not fill it with guessed checksums or assume the migration ledger is complete. The self-test covers all four outcomes, extra production identities, and invalid/duplicate evidence. The build runs this self-test. This tool does not connect to Cloudflare, read production itself, apply migrations, or authorize deployment.
+
 ## Required work before a production release
 
 1. Obtain a recoverable production D1 backup and verify that it can be restored.
