@@ -62,7 +62,7 @@ if (process.argv.includes('--self-test')) {
   const [input, output] = process.argv.slice(2);
   if (!input || !output) { console.error('Usage: node scripts/normalize-runtime-schema-audit.mjs <wrangler-json> <evidence-json>'); process.exit(2); }
   const evidence = normalize(fs.readFileSync(resolve(input),'utf8'));
-  fs.writeFileSync(resolve(output),JSON.stringify(evidence,null,2)+'\\n',{flag:'wx'});
+  fs.writeFileSync(resolve(output),JSON.stringify(evidence,null,2)+'\n',{flag:'wx'});
   console.log('Wrote normalized production schema evidence to ' + output);
 }
 export { normalize };
