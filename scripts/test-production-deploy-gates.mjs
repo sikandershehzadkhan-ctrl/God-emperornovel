@@ -4,6 +4,14 @@ import fs from "node:fs";
 const workflow = fs.readFileSync(".github/workflows/deploy.yml", "utf8");
 const schemaInventory = fs.readFileSync("docs/production/SHARED-RUNTIME-SCHEMA-INVENTORY.md", "utf8");
 assert.ok(workflow.includes("workflow_dispatch:"), "Production deploy must remain manual.");
+assert.ok(workflow.includes("Block production deployment while canonical migrations are pending"),
+  "Production deploy must hard-block while later canonical migrations are not wired into the release sequence.");
+assert.ok(workflow.includes("10#$number > 11"),
+  "The release block must detect every four-digit migration number after 0011.");
+assert.ok(workflow.includes("canonical migrations after 0011 are not yet wired"),
+  "The release block must explain the exact unresolved migration boundary.");
+assert.ok(workflow.indexOf("Block production deployment while canonical migrations are pending") < workflow.indexOf("Validate source and production configuration"),
+  "The pending-migration guard must run before build, D1 writes, or deployment.");
 assert.ok(workflow.includes("confirm_production_deploy"), "Production deploy must require an explicit confirmation input.");
 assert.ok(workflow.includes("inputs.confirm_production_deploy == 'true'"), "Production job must be gated by the explicit true confirmation.");
 assert.ok(!/^\s*push:/m.test(workflow) && !/^\s*pull_request:/m.test(workflow), "Pushes and pull requests must never auto-deploy production.");
