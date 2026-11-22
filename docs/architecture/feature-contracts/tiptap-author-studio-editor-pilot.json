@@ -1,0 +1,28 @@
+{
+  "schemaVersion": 1,
+  "contractId": "tiptap-author-studio-editor-pilot",
+  "status": "proposed",
+  "owner": "frontend-runtime",
+  "decision": "Prepare a locally bundled Tiptap React editor using exact 3.30.3 packages, npm lockfile v3 and pinned optional peers; integrate later as an Author Studio-only lazy-loaded bundle that serializes the structured chapter schema.",
+  "scope": [
+    "package.json",
+    "package-lock.json",
+    ".github/workflows/validate-cloudflare-source.yml",
+    "docs/architecture/decisions/ADR-0023-tiptap-author-studio-editor-pilot.md",
+    "docs/architecture/feature-contracts/tiptap-author-studio-editor-pilot.json"
+  ],
+  "invariants": [
+    "All locked packages must pass the existing licence and registry provenance gate.",
+    "Tiptap optional peer packages are pinned to the same 3.30.3 release.",
+    "No Tiptap code is added to the shared reader/community island bundle.",
+    "No paid features, hosted services, D1 migrations, or production deployment are introduced.",
+    "The editor must serialize only to the validated imperial_rich_text_chapter v1 envelope."
+  ],
+  "acceptance": [
+    "npm ci succeeds from the committed lockfile.",
+    "All locked packages have reviewed permissive licence metadata and npm registry provenance.",
+    "The temporary lockfile-generation workflow steps are removed before merge.",
+    "A later editor implementation is lazy-loaded only on Author Studio and passes mobile, accessibility, security and bundle-size checks."
+  ],
+  "releaseBoundary": "Dependency preparation only. Editor UI remains a separate implementation step."
+}
