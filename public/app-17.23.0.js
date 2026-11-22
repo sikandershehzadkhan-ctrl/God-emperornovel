@@ -59,7 +59,7 @@ function renderRichTextNode(node){
     else if(mark.type==='code')out='<code>'+out+'</code>';
     else if(mark.type==='link'){
      const href=String(mark.attrs?.href||'');
-     if(/^https?:\\/\\/[^\\s"'<>]+$/i.test(href))out='<a href="'+esc(href)+'" rel="nofollow noopener noreferrer" target="_blank">'+out+'</a>';
+     if(/^https?:\/\/[^\s"'<>]+$/i.test(href))out='<a href="'+esc(href)+'" rel="nofollow noopener noreferrer" target="_blank">'+out+'</a>';
     }else return null;
    }
    return out;
