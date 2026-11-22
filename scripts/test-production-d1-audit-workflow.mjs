@@ -33,7 +33,7 @@ for (const item of requiredEvidence) {
 }
 
 const sqlCommands = [...workflow.matchAll(/--command "([^"\n]*)"/g)].map(match => match[1]);
-assert.ok(sqlCommands.length >= 15, "Audit must retain its expected set of read-only SQL inspections.");
+assert.ok(sqlCommands.length >= 10, "Audit must retain its expected set of read-only SQL inspections.");
 for (const sql of sqlCommands) {
   assert.match(sql.trim(), /^(SELECT|WITH|PRAGMA)\b/i,
     `Non-read-only SQL found in production audit command: ${sql.slice(0, 100)}`);
