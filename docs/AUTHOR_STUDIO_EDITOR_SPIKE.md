@@ -23,9 +23,18 @@
 6. Preserve the current request payload fields: `novel_id`, `chapter_number`, `title`, `content`, `is_locked`, and `ticket_cost`.
 7. Keep server authorization, chapter limits, rights evidence, draft status, moderation, and publication approval authoritative. Client validation is supplementary only.
 
+## Newly verified content-contract risk
+
+The chapter API stores the submitted `content` string. For text chapters, the current server handler checks that content is non-empty but does not establish a rich-text schema or HTML sanitization contract. The current reader's `renderChapterContent()` escapes ordinary chapter content before inserting it into the page; it does not render arbitrary HTML. The comic formats are separately recognized as versioned JSON and pass through `validateComicChapterContent()`.
+
+**Consequence:** Tiptap HTML must not simply be submitted as chapter content, and the reader must not be changed to inject unsanitized HTML. The editor and reader need a shared, versioned, allowlisted document format with server-side validation and a safe reader renderer. Legacy plain-text chapters must continue to render unchanged.
+
 ## Required security and compatibility work
 
-- Inspect the complete chapter POST handler and the reader's content rendering/sanitization path before choosing the persisted format.
+- Define a versioned text-chapter document schema (allowed blocks, marks, links, and URL protocols) and validate it on the Worker before storage.
+- Implement a safe reader renderer for that schema; never use unsanitized `innerHTML` or arbitrary Tiptap HTML.
+- Preserve a legacy plain-text rendering path for existing chapters.
+- Inspect the complete chapter PATCH handler and all publication/read projections before choosing the persisted format.
 - Ensure paste handling cannot introduce scripts, event-handler attributes, unsafe URL schemes, embedded forms, or arbitrary iframes.
 - Use an explicit editor schema and allowlist for nodes, marks, and link protocols.
 - Test old chapters and new editor content through save, reload, edit, and reader rendering.
