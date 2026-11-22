@@ -15,7 +15,7 @@ assert.ok(workflow.includes("READ-ONLY PREFLIGHT COMPLETE"), "Preflight must sta
 assert.ok(!workflow.includes("wrangler@4 d1 migrations apply"), "Preflight must never apply migrations.");
 assert.ok(!workflow.includes("--file=migrations/"), "Preflight must never execute migration files.");
 
-const queryDefinitions = [...workflow.matchAll(/^\s*query "([^"]+)" "(.+)";$/gm)];
+const queryDefinitions = [...workflow.matchAll(/^\s*query "([^"]+)" "(.+)"$/gm)];
 assert.ok(queryDefinitions.length >= 20, "Expected a broad set of production schema inspection queries.");
 assert.ok(workflow.includes('npx --yes wrangler@4 d1 execute god-emperornovel-db --remote --command "$2"'),
   "The query helper must execute only its explicitly supplied SQL.");
