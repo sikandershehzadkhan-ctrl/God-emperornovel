@@ -261,6 +261,15 @@ jobs:
               ))
               FROM sqlite_master i WHERE i.type='index' AND i.name NOT LIKE 'sqlite_%' AND i.sql IS NOT NULL
             )),
+            'tableIndexes',json((
+              SELECT json_group_array(json_object(
+                'name',il.name,'table',m.name,'unique',il."unique",'origin',il.origin,'partial',il.partial,
+                'columns',json((SELECT json_group_array(z.name) FROM
+                  (SELECT ii.name FROM pragma_index_info(il.name) ii ORDER BY ii.seqno) z))
+              ))
+              FROM sqlite_master m, pragma_index_list(m.name) il
+              WHERE m.type='table' AND m.name NOT LIKE 'sqlite_%'
+            )),
             'foreignKeys',json('[]')
           ) AS schema_evidence;
           SQL
