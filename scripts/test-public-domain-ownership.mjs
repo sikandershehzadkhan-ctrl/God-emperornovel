@@ -25,7 +25,7 @@ for (const file of publicFiles) {
   else if (/\.html$/.test(name)) owner = "public-page-shells";
   else if (name === "robots.txt" || name === "sitemap.xml") owner = "public-crawl-and-sitemap";
   else if (/^(app|style|sw)\.(js|css)$/.test(name) || name === "manifest.webmanifest" || name === "imperial-glass.css") owner = "frontend-runtime-and-assets";
-  else if (/^(app|style|sw)-[0-9.]+\.(js|css)$/.test(name) || /^manifest-[0-9.]+\.webmanifest$/.test(name) || /^imperial-[a-z-]+-[0-9.]+\.css$/.test(name)) owner = "public-versioned-release-artifacts";
+  else if (/^(app|style|sw)-[0-9.]+\.(js|css)$/.test(name) || /^manifest-[0-9.]+\.webmanifest$/.test(name) || /^imperial-[a-z-]+-[0-9.]+\.css$/.test(name) || /^author-editor-[0-9.]+\.css$/.test(name)) owner = "public-versioned-release-artifacts";
   else if (/\.(svg|png|jpg|jpeg|webp|ico)$/.test(name)) owner = "public-brand-assets";
   else assert.fail("Unclassified public file requires an explicit owner: " + file);
   if (owner !== "public-cover-library") expected[owner].push(file);
