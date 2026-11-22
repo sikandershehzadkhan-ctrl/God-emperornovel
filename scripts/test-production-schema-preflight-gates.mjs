@@ -15,13 +15,15 @@ assert.ok(workflow.includes("READ-ONLY PREFLIGHT COMPLETE"), "Preflight must sta
 assert.ok(!workflow.includes("wrangler@4 d1 migrations apply"), "Preflight must never apply migrations.");
 assert.ok(!workflow.includes("--file=migrations/"), "Preflight must never execute migration files.");
 
-const d1Commands = workflow.split("\n").filter(line => line.includes("wrangler@4 d1 execute"));
-assert.ok(d1Commands.length >= 20, "Expected a broad set of production schema inspection queries.");
-for (const command of d1Commands) {
-  assert.match(command, /--remote\s+--command/, "Every D1 operation must be an explicit remote SQL query.");
-  assert.match(command, /SELECT|PRAGMA/, "Production inspection commands must be read-only SELECT or PRAGMA statements.");
-  assert.doesNotMatch(command, /\b(?:INSERT|UPDATE|DELETE|REPLACE|ALTER|CREATE|DROP)\b/i,
-    "Production preflight must not contain a D1 write or DDL command.");
+const queryDefinitions = [...workflow.matchAll(/^\\s*query "([^"]+)" "(.+)";$/gm)];
+assert.ok(queryDefinitions.length >= 20, "Expected a broad set of production schema inspection queries.");
+assert.ok(workflow.includes('npx --yes wrangler@4 d1 execute god-emperornovel-db --remote --command "$2"'),
+  "The query helper must execute only its explicitly supplied SQL.");
+for (const [, label, sql] of queryDefinitions) {
+  assert.ok(label.trim().length > 0, "Every production query must have a named evidence label.");
+  assert.match(sql, /^\\s*(SELECT|PRAGMA)\\b/i, "Production inspection statements must be read-only SELECT or PRAGMA statements: " + label);
+  assert.doesNotMatch(sql, /\\b(?:INSERT|UPDATE|DELETE|REPLACE|ALTER|CREATE|DROP)\\b/i,
+    "Production preflight must not contain a D1 write or DDL statement: " + label);
 }
 
 console.log("Production schema preflight is manual-only, explicitly gated, target-verified, and read-only.");
