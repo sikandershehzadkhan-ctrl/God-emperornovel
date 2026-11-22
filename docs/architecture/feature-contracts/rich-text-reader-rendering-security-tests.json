@@ -1,0 +1,23 @@
+{
+  "schemaVersion": 1,
+  "contractId": "rich-text-reader-rendering-security-tests",
+  "status": "proposed",
+  "owner": "engineering-tooling",
+  "decision": "Execute the actual browser reader's structured rich-text rendering functions in an isolated Node VM during the normal build to verify escaping, safe link behavior, and rejection of unsupported nodes.",
+  "scope": [
+    "scripts/test-rich-text-chapter-policy.mjs"
+  ],
+  "invariants": [
+    "The test imports no production runtime dependencies beyond Node built-ins.",
+    "Tests exercise the current public/app.js renderer source, not a copied reimplementation.",
+    "No production source, runtime behavior, database schema, or deployment workflow changes are introduced."
+  ],
+  "acceptance": [
+    "HTML-like author text is escaped.",
+    "Unsafe URL schemes do not produce anchors.",
+    "HTTP(S) links include safe rel and target attributes.",
+    "Unsupported node types and heading levels return no render output.",
+    "A valid versioned structured chapter envelope renders successfully."
+  ],
+  "releaseBoundary": "Test-only security verification."
+}
