@@ -36,6 +36,26 @@ jobs:
           node-version: 22
           cache: npm
 
+      - name: Block production deployment while canonical migrations are pending
+        shell: bash
+        run: |
+          set -euo pipefail
+          pending=()
+          for file in migrations/*.sql; do
+            [ -f "$file" ] || continue
+            name="${file##*/}"
+            number="${name%%_*}"
+            if [[ "$number" =~ ^[0-9]{4}$ ]] && (( 10#$number > 11 )); then
+              pending+=("$name")
+            fi
+          done
+          if (( ${#pending[@]} > 0 )); then
+            printf '%s\\n' "${pending[@]}"
+            echo "::error::Production deployment blocked: canonical migrations after 0011 are not yet wired into the reviewed release workflow. Complete production schema audit, migration reconciliation, and rehearsal before changing this gate."
+            exit 1
+          fi
+          echo "PASS: no unreconciled canonical migrations remain beyond the release workflow's migration set."
+
       - name: Validate source and production configuration
         run: |
           set -euo pipefail
