@@ -1,0 +1,38 @@
+{
+  "schemaVersion": 1,
+  "contractId": "release-17-24-0-author-studio-rich-text",
+  "status": "proposed",
+  "owner": "architecture-contracts",
+  "decision": "Prepare the Author Studio rich-text editor for release 17.24.0 with synchronized package, lockfile, Wrangler, HTML, service-worker, manifest and versioned asset references.",
+  "scope": [
+    "package.json",
+    "package-lock.json",
+    "wrangler.toml",
+    "public/index.html",
+    "public/sw.js",
+    "public/manifest-17.24.0.webmanifest",
+    "public/app-17.24.0.js",
+    "public/app-17.24.0.css",
+    "public/style-17.24.0.css",
+    "public/imperial-luxury-17.24.0.css",
+    "public/imperial-formats-17.24.0.css",
+    "public/imperial-comic-reader-17.24.0.css",
+    "public/author-editor-17.24.0.css",
+    "docs/architecture/decisions/ADR-0025-release-17-24-0-author-studio-rich-text.md",
+    "docs/RELEASE-17.24.0-AUTHOR-STUDIO-RICH-TEXT.md"
+  ],
+  "invariants": [
+    "All release version markers match 17.24.0.",
+    "Service-worker cache key and core asset URLs use the 17.24.0 assets.",
+    "The prior 17.23.0 manifest remains intact.",
+    "The editor JavaScript bundle is generated at build time and loaded only on Author Studio.",
+    "No production deployment, D1 mutation, or schema migration occurs."
+  ],
+  "acceptance": [
+    "npm ci and full build pass.",
+    "Release/precache consistency test passes.",
+    "Cloudflare dry-run reads the new versioned assets.",
+    "Route registry, migration governance, Graphify and source validation pass."
+  ],
+  "releaseBoundary": "Release packaging only. Production deployment remains a separate manually confirmed action."
+}
