@@ -48,6 +48,8 @@ The shared dispatcher bootstrap above runs before every non-health API route, in
 |---|---|---|
 | `/api/author/ai/projects` | `ensureAuthorAISchema(env)` | Ensures Author Studio project, publish-policy and run-history structures. |
 | `/api/author/ai/projects/:id` | `ensureAuthorAISchema(env)` | Same initializer on an individual project read. |
+| `/api/author/ai/projects/:id/jobs` | `ensureAuthorAISchema(env)` | Ensures AI project/job/run structures before reading the account-owned job history. |
+| `/api/author/ai/benchmarks` | `ensureAuthorAISchema(env)` | Ensures benchmark and Author Studio structures before reading provider observations. |
 | `/api/admin/publishing` | `ensurePublishingSchema(env)` | Ensures publication/review columns and chapter-view structures; initializer also performs its documented publication-status backfill. |
 | `/api/admin/publishing/chapters` | `ensurePublishingSchema(env)` | Same initializer on chapter-list reads. |
 | `/api/admin/connectors` | `seedOmni(env)` | Calls `ensureOmniTables(env)` and seeds registry connector rows with `INSERT OR IGNORE`. |
