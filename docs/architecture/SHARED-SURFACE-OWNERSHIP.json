@@ -281,7 +281,10 @@
         "docs/RELEASE-17.22.0-AUTHOR-APPLICATIONS.md",
         "docs/RELEASE-17.23.0-COMIC-AUTHOR-STUDIO.md",
         "docs/SOURCE-RECOVERY-REPORT.md",
-        "docs/SUSTAINABLE-REVENUE-MODEL.md"
+        "docs/SUSTAINABLE-REVENUE-MODEL.md",
+        "docs/OPEN_SOURCE_INTEGRATION_REGISTER.md",
+        "docs/AUTHOR_STUDIO_EDITOR_PILOT.md",
+        "docs/AUTHOR_STUDIO_EDITOR_SPIKE.md"
       ],
       "requiresAdr": false,
       "accountableRole": "Documentation owner",

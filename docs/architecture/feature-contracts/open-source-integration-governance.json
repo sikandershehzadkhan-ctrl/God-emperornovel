@@ -1,0 +1,34 @@
+{
+  "schemaVersion": 1,
+  "contractId": "open-source-integration-governance",
+  "pullRequest": 375,
+  "status": "proposed",
+  "owner": "documentation-reference",
+  "decision": "Establish an auditable open-source discovery and adoption process while preserving the existing Cloudflare Workers, D1, versioned-asset, security, rights, and zero-budget boundaries.",
+  "scope": [
+    "docs/OPEN_SOURCE_INTEGRATION_REGISTER.md",
+    "docs/AUTHOR_STUDIO_EDITOR_PILOT.md",
+    "docs/AUTHOR_STUDIO_EDITOR_SPIKE.md",
+    "docs/governance/OPEN_SOURCE_CANDIDATE_CATALOG.md",
+    "docs/architecture/SHARED-SURFACE-OWNERSHIP.json",
+    "docs/architecture/decisions/ADR-0020-open-source-integration-governance.md",
+    "docs/architecture/feature-contracts/open-source-integration-governance.json"
+  ],
+  "invariants": [
+    "No third-party dependency is added by this documentation-only contract.",
+    "No upstream source code, creative content, user data, secrets, or credentials are copied.",
+    "Every adopted dependency requires exact-version licence and transitive-dependency review.",
+    "Existing Cloudflare Workers and D1 runtime architecture remains authoritative.",
+    "No new paid hosting, subscription, proprietary API, or mandatory paid feature is introduced.",
+    "Existing package manifests and lockfiles are not changed.",
+    "No production deployment or D1 mutation occurs."
+  ],
+  "acceptance": [
+    "Every new and changed documentation path has exactly one registered owner.",
+    "The ownership governance check passes with an ADR and feature contract in the same PR.",
+    "The candidate catalog distinguishes free software from free hosting and free service quotas.",
+    "Candidates with unverified licences or incompatible hosting requirements are explicitly gated.",
+    "The PR remains documentation-only and existing application checks are run by CI."
+  ],
+  "releaseBoundary": "Research and governance documentation only; no runtime, dependency, database, or production change."
+}
