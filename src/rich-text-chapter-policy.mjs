@@ -22,7 +22,7 @@ function validateNode(node,parent,depth,state){
  if(depth>MAX_DEPTH)return "Rich-text chapter nesting is too deep.";
  if(typeof node.type!=="string"||!NODE_TYPES.has(node.type))return "Rich-text chapter contains an unsupported node.";
  if(parent==="root"&&node.type!=="doc")return "Rich-text chapter root must be a document.";
- if(parent!=="root"&&parent!=="doc"&&!((BLOCK_CHILDREN[parent]?.has(node.type))||(INLINE_PARENTS.has(parent)&&["text","hardBreak"].includes(node.type))))return "Rich-text node is not allowed in this position.";
+ if(parent!=="root"&&!((BLOCK_CHILDREN[parent]?.has(node.type))||(INLINE_PARENTS.has(parent)&&["text","hardBreak"].includes(node.type))))return "Rich-text node is not allowed in this position.";
  if(!exactKeys(node,new Set(["type","attrs","content","text","marks"])))return "Rich-text node contains unsupported fields.";
  if(node.attrs!==undefined&&(!node.attrs||typeof node.attrs!=="object"||Array.isArray(node.attrs)))return "Rich-text node attributes are invalid.";
  if(node.type==="heading"){
@@ -41,6 +41,8 @@ function validateNode(node,parent,depth,state){
     seen.add(mark.type);
     if(mark.type==="link"){
      if(!mark.attrs||!exactKeys(mark.attrs,new Set(["href"]))||typeof mark.attrs.href!=="string"||mark.attrs.href.length>2048||!SAFE_LINK.test(mark.attrs.href))return "Links must use a valid HTTPS or HTTP address.";
+     let link;try{link=new URL(mark.attrs.href)}catch{return "Links must use a valid HTTPS or HTTP address."}
+     if(!["http:","https:"].includes(link.protocol)||!link.hostname||link.username||link.password)return "Links must use a valid HTTPS or HTTP address.";
     }else if(mark.attrs!==undefined)return "Text mark attributes are not supported.";
    }
   }
