@@ -14,6 +14,6 @@ assert.ok(markerBlock.includes("audit_query_failures=$((audit_query_failures + 1
 assert.ok(markerBlock.includes("Could not inspect app_settings marker state"), "Command failures must be reported as unverified, not as table absence.");
 assert.ok(markerBlock.includes("THEN 'present' ELSE 'absent'"), "A successful query must distinguish observed present and absent states.");
 assert.ok(markerBlock.includes("Observed: app_settings table is absent"), "Only a successful absent result may be reported as observed absence.");
-assert.ok(markerBlock.includes("unrecognized present/absent result"), "Unexpected successful output must fail closed.");
+assert.ok(markerBlock.includes("without a recognizable present/absent result"), "Unexpected successful output must fail closed.");
 
 console.log("Production D1 marker audit fail-closed tests passed.");
