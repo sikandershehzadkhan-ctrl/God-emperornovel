@@ -5,14 +5,14 @@ import { join } from 'node:path';
 
 const directory = 'migrations';
 const files = readdirSync(directory)
-  .filter(name => /^\\d{4}_[a-z0-9_-]+\\.sql$/i.test(name))
+  .filter(name => /^\d{4}_[a-z0-9_-]+\.sql$/i.test(name))
   .sort((a, b) => a.localeCompare(b, 'en'));
 
 assert.ok(files.length > 0, 'No canonical SQL migrations were found.');
 const seenNumbers = new Set();
 const seenDigests = new Map();
 const entries = files.map(file => {
-  const match = /^(\\d{4})_/.exec(file);
+  const match = /^(\d{4})_/.exec(file);
   assert.ok(match, 'Migration filename is not canonical: ' + file);
   assert.ok(!seenNumbers.has(match[1]), 'Duplicate migration number: ' + match[1]);
   seenNumbers.add(match[1]);
@@ -33,7 +33,7 @@ const manifest = {
   migrations: entries
 };
 if (process.argv.includes('--json')) {
-  process.stdout.write(JSON.stringify(manifest, null, 2) + '\\n');
+  process.stdout.write(JSON.stringify(manifest, null, 2) + '\n');
 } else {
   console.log('PASS: ' + entries.length + ' canonical migrations have unique sequence numbers and exact SHA-256 checksums.');
   console.log('Checksum format: raw file bytes, SHA-256; use --json to export the complete manifest.');
