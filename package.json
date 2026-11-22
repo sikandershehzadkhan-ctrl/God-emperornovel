@@ -12,7 +12,9 @@
   },
   "dependencies": {
     "react": "19.3.1",
-    "react-dom": "19.3.1"
+    "react-dom": "19.3.1",
+    "@tiptap/react": "3.30.3",
+    "@tiptap/starter-kit": "3.30.3"
   },
   "devDependencies": {
     "esbuild": "0.28.2"
