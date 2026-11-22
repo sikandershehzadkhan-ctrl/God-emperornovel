@@ -808,16 +808,7 @@
         "public/sw-17.6.0.js",
         "public/sw-17.7.0.js",
         "public/sw-17.8.0.js",
-        "public/sw-17.9.0.js",
-        "public/app-17.24.0.css",
-        "public/app-17.24.0.js",
-        "public/author-editor-17.23.0.css",
-        "public/author-editor-17.24.0.css",
-        "public/imperial-comic-reader-17.24.0.css",
-        "public/imperial-formats-17.24.0.css",
-        "public/imperial-luxury-17.24.0.css",
-        "public/manifest-17.24.0.webmanifest",
-        "public/style-17.24.0.css"
+        "public/sw-17.9.0.js"
       ],
       "requiresAdr": true,
       "accountableRole": "Versioned asset owner",
