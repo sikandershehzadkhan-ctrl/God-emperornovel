@@ -2,8 +2,8 @@
   "version": 1,
   "registryName": "Imperial Novel API authorization and object-ownership registry",
   "sourceFile": "src/index.js",
-  "sourceCommit": "fc927689766803a8fb9753fb7d002171b1d84d95",
-  "sourceBlob": "src/index.js@d10b07dd3a9e58a4ca3df5a32658a8f2d7d371f2",
+  "sourceCommit": "e0b42d995c83daa1aac75654d67e3d34a5b1283c",
+  "sourceBlob": "src/index.js@47779654feff93a4f16fa9623e08ac62257e2dac",
   "coverage": "All exact API path/method declarations plus dynamic API patterns are inventoried; critical admin, user-owned, author-owned, public-rights and payment paths have explicit source guards and scope assertions.",
   "exactInventory": [
     {
@@ -365,7 +365,7 @@
     {
       "path": "/api/omni/search",
       "methods": [
-        "ANY"
+        "GET"
       ]
     },
     {
@@ -377,7 +377,7 @@
     {
       "path": "/api/omni/status",
       "methods": [
-        "ANY"
+        "GET"
       ]
     },
     {
@@ -605,6 +605,83 @@
       "guard": "author(u)",
       "scope": "project.owner_user_id equals u.id unless admin",
       "sourceMarker": "if(/^\\/api\\/author\\/ai\\/projects\\/\\d+\\/blueprint$/.test(p)"
+    },
+    {
+      "pattern": "^/api/author/ai/projects/[0-9]+/run$",
+      "sample": "/api/author/ai/projects/42/run",
+      "methods": [
+        "POST"
+      ],
+      "accessClass": "author-owner",
+      "guard": "author(u)",
+      "scope": "project.owner_user_id equals u.id unless admin",
+      "sourceMarker": "if(/^\\/api\\/author\\/ai\\/projects\\/\\d+\\/run$/.test(p)"
+    },
+    {
+      "pattern": "^/api/author/ai/projects/[0-9]+/jobs$",
+      "sample": "/api/author/ai/projects/42/jobs",
+      "methods": [
+        "GET"
+      ],
+      "accessClass": "author-owner",
+      "guard": "author(u)",
+      "scope": "project.owner_user_id equals u.id unless admin; job list selected by verified project id",
+      "sourceMarker": "if(/^\\/api\\/author\\/ai\\/projects\\/\\d+\\/jobs$/.test(p)"
+    },
+    {
+      "pattern": "^/api/chapters/([0-9]+)/unlock$",
+      "sample": "/api/chapters/42/unlock",
+      "methods": [
+        "POST"
+      ],
+      "accessClass": "authenticated-user",
+      "guard": "need(u)",
+      "scope": "unlock row and ticket debit bound to authenticated u.id",
+      "sourceMarker": "if(/^\\/api\\/chapters\\/\\d+\\/unlock$/.test(p)"
+    },
+    {
+      "pattern": "^/api/author/novels/([0-9]+)/submit$",
+      "sample": "/api/author/novels/42/submit",
+      "methods": [
+        "POST"
+      ],
+      "accessClass": "author-owner",
+      "guard": "author(u)",
+      "scope": "novel.owner_user_id equals u.id unless admin",
+      "sourceMarker": "if(/^\\/api\\/author\\/novels\\/\\d+\\/submit$/.test(p)"
+    },
+    {
+      "pattern": "^/api/author/novels/([0-9]+)$",
+      "sample": "/api/author/novels/42",
+      "methods": [
+        "PATCH"
+      ],
+      "accessClass": "author-owner",
+      "guard": "author(u)",
+      "scope": "novel.owner_user_id equals u.id unless admin",
+      "sourceMarker": "if(/^\\/api\\/author\\/novels\\/\\d+$/.test(p)"
+    },
+    {
+      "pattern": "^/api/author/chapters/([0-9]+)$",
+      "sample": "/api/author/chapters/42",
+      "methods": [
+        "PATCH"
+      ],
+      "accessClass": "author-owner",
+      "guard": "author(u)",
+      "scope": "parent novel.owner_user_id equals u.id unless admin",
+      "sourceMarker": "if(/^\\/api\\/author\\/chapters\\/\\d+$/.test(p)"
+    },
+    {
+      "pattern": "^/api/author/chapters/([0-9]+)/publish$",
+      "sample": "/api/author/chapters/42/publish",
+      "methods": [
+        "POST"
+      ],
+      "accessClass": "author-owner",
+      "guard": "author(u)",
+      "scope": "parent novel.owner_user_id equals u.id unless admin; publication rights allowlist enforced",
+      "sourceMarker": "if(/^\\/api\\/author\\/chapters\\/\\d+\\/publish$/.test(p)"
     }
   ],
   "policies": {
@@ -1040,6 +1117,18 @@
         }
       ],
       "scope": "Connector discovery and import are constrained by explicit provider authorization; import records and job status remain user-scoped."
+    },
+    "authenticatedSubmissions": {
+      "routes": [
+        {
+          "path": "/api/taxonomy",
+          "methods": [
+            "POST"
+          ],
+          "guard": "need(u)",
+          "scope": "creator_id and creator_name derived from authenticated session; client identity fields ignored"
+        }
+      ]
     }
   },
   "knownOpenQuestions": [
