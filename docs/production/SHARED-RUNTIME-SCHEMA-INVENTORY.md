@@ -75,6 +75,94 @@ These route-local calls are separate from the shared dispatcher bootstrap and mu
 6. Add tests proving the Worker dispatcher and scheduled entrypoint no longer invoke runtime DDL after the migration cutover.
 7. Only then consider marking the complete HTTP GET path read-only and removing the legacy initializers.
 
+## Exact outstanding runtime DDL definitions (source transcription)
+
+The following definitions are transcribed from the current Worker source to make production comparison precise. They are not proposed migration SQL and must not be applied blindly. The production audit must capture the actual `sqlite_master.sql`, `PRAGMA table_info`, indexes and foreign-key metadata for each object before a migration is designed.
+
+### Agent registry
+
+```sql
+CREATE TABLE IF NOT EXISTS agents (
+  id INTEGER PRIMARY KEY AUTOINCREMENT,
+  slug TEXT NOT NULL UNIQUE,
+  name TEXT NOT NULL,
+  role TEXT NOT NULL,
+  icon TEXT DEFAULT '🤖',
+  mode TEXT NOT NULL DEFAULT 'automation',
+  status TEXT NOT NULL DEFAULT 'ready',
+  enabled INTEGER NOT NULL DEFAULT 1,
+  last_run_at TEXT,
+  last_result TEXT DEFAULT '',
+  created_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP
+);
+CREATE TABLE IF NOT EXISTS agent_runs (
+  id INTEGER PRIMARY KEY AUTOINCREMENT,
+  agent_id INTEGER NOT NULL,
+  trigger TEXT NOT NULL,
+  result TEXT DEFAULT '',
+  status TEXT NOT NULL DEFAULT 'ok',
+  created_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP
+);
+CREATE INDEX IF NOT EXISTS idx_agent_runs_agent ON agent_runs(agent_id,created_at);
+```
+
+### Community taxonomy proposals
+
+```sql
+CREATE TABLE IF NOT EXISTS taxonomy_submissions (
+  id INTEGER PRIMARY KEY AUTOINCREMENT,
+  type TEXT NOT NULL,
+  name TEXT NOT NULL,
+  slug TEXT NOT NULL,
+  description TEXT DEFAULT '',
+  creator_id INTEGER,
+  creator_name TEXT DEFAULT '',
+  status TEXT NOT NULL DEFAULT 'pending',
+  created_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  reviewed_at TEXT,
+  reviewer_id INTEGER,
+  UNIQUE(type,slug)
+);
+```
+
+### Connector configuration columns
+
+The runtime helper attempts these individual ALTER statements and suppresses every error, not only duplicate-column errors. A future migration must first determine which columns already exist and whether any existing column has a different type/default/nullability. SQLite/D1 does not support using `ADD COLUMN IF NOT EXISTS` as a safe universal reconciliation shortcut.
+
+```sql
+ALTER TABLE connectors ADD COLUMN search_url TEXT DEFAULT '';
+ALTER TABLE connectors ADD COLUMN auth_header TEXT DEFAULT 'authorization';
+ALTER TABLE connectors ADD COLUMN secret_name TEXT DEFAULT '';
+ALTER TABLE connectors ADD COLUMN rights_evidence_url TEXT DEFAULT '';
+ALTER TABLE connectors ADD COLUMN terms_url TEXT DEFAULT '';
+ALTER TABLE connectors ADD COLUMN rights_notes TEXT DEFAULT '';
+ALTER TABLE connectors ADD COLUMN metadata_import_allowed INTEGER NOT NULL DEFAULT 0;
+ALTER TABLE connectors ADD COLUMN attribution_required INTEGER NOT NULL DEFAULT 0;
+```
+
+### Novel review and comment columns
+
+```sql
+ALTER TABLE novels ADD COLUMN review_feedback TEXT DEFAULT '';
+ALTER TABLE novels ADD COLUMN reviewed_by INTEGER;
+ALTER TABLE novels ADD COLUMN reviewed_at TEXT;
+ALTER TABLE comments ADD COLUMN parent_id INTEGER;
+ALTER TABLE comments ADD COLUMN edited_at TEXT;
+```
+
+The source performs these additions conditionally through schema inspection or duplicate-column handling. A static SQL migration cannot safely replay these ALTER statements against a database where runtime bootstrap may already have added some or all of them. The migration runner/reconciliation design must account for per-column presence without treating an arbitrary ALTER failure as success.
+
+### Non-DDL bootstrap behavior that cannot be silently dropped
+
+- `seedTaxonomy(env)` inserts the canonical genre/tag vocabulary using `INSERT OR IGNORE`; preserve existing IDs and custom taxonomy entries. Reference-data synchronization needs an explicit ownership and versioning policy.
+- `ensureAgents(env)` seeds agent catalogue rows. Preserve existing enabled/status/last-run fields; do not overwrite operator changes when migrating from runtime seeding.
+- `seedOmni(env)` inserts connector registry rows with disabled status and pending rights. Preserve user/operator changes and do not enable any connector during cutover.
+- `ensurePublishingSchema(env)` backfills blank novel and chapter publication states and creates the chapter-view counter table. Confirm current values and data volumes before replacing this behavior.
+- `ensureRuntimeFeatureSchema(env)` deletes auth-rate-limit records older than 48 hours and writes a runtime version marker. A migration-only architecture must separate the bounded cleanup schedule from request handling and define marker ownership.
+- `ensureCoreSchema(env)` writes the core version marker and the secure first-admin bootstrap marker. The latter must not be replaced with an automatic privilege grant.
+
+These behaviors are independent of whether the corresponding table or column already exists. The cutover plan must account for them separately from schema DDL.
+
 ## Production release workflow gap
 
 The current production deploy workflow applies and verifies migrations `0009`–`0011` only. This candidate adds canonical migrations `0012`–`0046` and `0048`–`0049`, but those later migrations are not included in the deploy workflow's apply step. Therefore, a green source build or a passing deployment dry run must not be interpreted as evidence that the candidate's full canonical migration chain has been applied or that production is ready for this Worker revision. The deploy workflow must be reconciled with the production audit, exact applied-migration history, per-migration preflight, and production-shaped rehearsal before a production release is approved.
