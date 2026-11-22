@@ -13,7 +13,7 @@ function reconcile(manifest, evidence) {
   assert.ok(typeof evidence.auditedAt === 'string' && !Number.isNaN(Date.parse(evidence.auditedAt)),
     'Production evidence must include a valid audit timestamp.');
   assert.ok(typeof evidence.ledgerComplete === 'boolean',
-    'Production evidence must explicitly state whether the applied migration ledger is complete.');
+    'Production evidence ledger completeness must be explicitly declared as a boolean.');
   assert.ok(Array.isArray(evidence.appliedMigrations),
     'Production evidence must include appliedMigrations, even when empty.');
   const source = new Map();
