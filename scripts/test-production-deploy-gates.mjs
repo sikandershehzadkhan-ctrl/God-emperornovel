@@ -7,6 +7,14 @@ const pendingCanonicalMigrations = fs.readdirSync("migrations").filter(name => /
 assert.ok(pendingCanonicalMigrations.length > 0,
   "The deployment guard must be removed only after later canonical migrations have been explicitly reconciled and released.");
 assert.ok(workflow.includes("workflow_dispatch:"), "Production deploy must remain manual.");
+assert.ok(workflow.includes("Require the exact reviewed production schema marker"),
+  "Production deploy must require the exact reviewed schema marker.");
+assert.ok(workflow.includes('if [ "$marker" != "16.64.0" ]'),
+  "Production deploy must fail closed unless the exact reviewed schema marker is present.");
+assert.ok(!workflow.includes("Legacy marker found. Checking production tables"),
+  "Production deploy must not treat the legacy marker as permission to run runtime schema bootstrap.");
+assert.ok(!workflow.includes("Runtime bootstrap will apply only its reviewed idempotent schema operations"),
+  "Runtime DDL must never be used as an implicit production migration path.");
 assert.ok(workflow.includes("Block production deployment while canonical migrations are pending"),
   "Production deploy must hard-block while later canonical migrations are not wired into the release sequence.");
 assert.ok(workflow.includes("10#$number > 11"),
