@@ -163,6 +163,35 @@ The source performs these additions conditionally through schema inspection or d
 
 These behaviors are independent of whether the corresponding table or column already exists. The cutover plan must account for them separately from schema DDL.
 
+## Offline runtime-schema evidence assessment
+
+The repository now includes `scripts/assess-runtime-schema-evidence.mjs`. It accepts a normalized JSON capture produced from the read-only production audit and classifies the specific runtime-only tables, columns, and index names as `present`, `missing`, or `unknown`. It requires the target database name, audit timestamp, explicit inventory-completeness declaration, table/column arrays, and index names. It rejects duplicate table/column/index identities.
+
+This is deliberately a presence-only first pass. A present column is **not** considered definition-compatible: its declared type, nullability, default, primary-key status, table SQL, indexes, foreign keys, triggers, existing data, and migration provenance still need independent comparison. The result always sets `releaseReady: false`, even when every required name is present. It cannot connect to Cloudflare, apply SQL, or approve deployment.
+
+Run its self-test with:
+
+```sh
+node scripts/assess-runtime-schema-evidence.mjs --self-test
+```
+
+Example normalized evidence shape (illustrative only, not production state):
+
+```json
+{
+  "database": "god-emperornovel-db",
+  "auditedAt": "2026-11-22T00:00:00Z",
+  "inventoryComplete": false,
+  "tables": [
+    { "name": "comments", "columns": [{ "name": "id" }, { "name": "parent_id" }] },
+    { "name": "connectors", "columns": [{ "name": "id" }, { "name": "search_url" }] }
+  ],
+  "indexes": ["idx_agent_runs_agent"]
+}
+```
+
+Only populate this file from actual audit output. Set `inventoryComplete: true` only after confirming the audit captured the complete relevant table, column, and index inventories and every required query succeeded. Never convert a failed query or omitted table into a missing-object finding. A complete inventory may establish name-level absence, but it still does not prove migration history or exact schema compatibility.
+
 ## Production release workflow gap
 
 The current production deploy workflow applies and verifies migrations `0009`–`0011` only. This candidate adds canonical migrations `0012`–`0046` and `0048`–`0049`, but those later migrations are not included in the deploy workflow's apply step. Therefore, a green source build or a passing deployment dry run must not be interpreted as evidence that the candidate's full canonical migration chain has been applied or that production is ready for this Worker revision. The deploy workflow must be reconciled with the production audit, exact applied-migration history, per-migration preflight, and production-shaped rehearsal before a production release is approved.
