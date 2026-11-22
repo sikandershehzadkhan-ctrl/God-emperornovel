@@ -45,7 +45,7 @@ const renderStart = appRuntime.indexOf("function renderRichTextNode(node){");
 const renderEnd = appRuntime.indexOf("function renderChapterContent(raw,kind){", renderStart);
 assert.ok(renderStart >= 0 && renderEnd > renderStart, "Reader rich-text renderer is present");
 const renderSource = appRuntime.slice(renderStart, renderEnd) +
-  "\\nthis.renderRichTextNode=renderRichTextNode;this.renderRichTextChapter=renderRichTextChapter;";
+  "\nthis.renderRichTextNode=renderRichTextNode;this.renderRichTextChapter=renderRichTextChapter;";
 const sandbox = {
   esc: value => String(value ?? "").replace(/[&<>"']/g, char => ({
     "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;"
@@ -56,7 +56,7 @@ const renderNode = sandbox.renderRichTextNode;
 const renderChapter = sandbox.renderRichTextChapter;
 assert.equal(
   renderNode({ type: "paragraph", content: [{ type: "text", text: '<img src=x onerror="alert(1)">' }] }),
-  '<p>&lt;img src=x onerror=&quot;alert(1)&quot;&gt;',
+  '<p>&lt;img src=x onerror=&quot;alert(1)&quot;&gt;</p>',
   "Author text is escaped instead of interpreted as HTML"
 );
 assert.equal(
