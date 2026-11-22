@@ -133,7 +133,7 @@ if (process.argv.includes('--self-test')) {
     process.exit(2);
   }
   const result = assess(JSON.parse(fs.readFileSync(resolve(evidencePath), 'utf8')));
-  process.stdout.write(JSON.stringify(result, null, 2) + '\\n');
+  process.stdout.write(JSON.stringify(result, null, 2) + '\n');
   if (!result.schemaObjectsPresentByName) process.exitCode = 1;
 }
 
