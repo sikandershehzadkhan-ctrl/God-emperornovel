@@ -36,7 +36,11 @@ const EXPECTED_ADDED_COLUMNS = {
   'connectors.metadata_import_allowed': col('metadata_import_allowed','INTEGER',1,'0'),
   'connectors.attribution_required': col('attribution_required','INTEGER',1,'0')
 };
-const EXPECTED_UNIQUE_CONSTRAINTS = [\n  { table: 'agents', columns: ['slug'] },\n  { table: 'taxonomy_submissions', columns: ['type','slug'] }\n];\nconst EXPECTED_INDEXES = {
+const EXPECTED_UNIQUE_CONSTRAINTS = [
+  { table: 'agents', columns: ['slug'] },
+  { table: 'taxonomy_submissions', columns: ['type','slug'] }
+];
+const EXPECTED_INDEXES = {
   idx_agent_runs_agent: { table: 'agent_runs', columns: ['agent_id','created_at'], unique: false }
 };
 
