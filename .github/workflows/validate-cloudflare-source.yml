@@ -82,8 +82,8 @@ jobs:
               'legacy novels remain published when the publication column is added': "['publication_status',\"TEXT NOT NULL DEFAULT 'published'\"]" in source,
               'first-admin bootstrap cannot promote an arbitrary user': "UPDATE users SET role='admin',verified=1 WHERE id=?" not in source,
               'the schema marker remains compatible with the existing runtime migration': "core_schema_version','16.64.0" in source,
-              'production deployment workflow includes a schema compatibility gate': "Verify production schema compatibility before deployment" in Path('.github/workflows/deploy.yml').read_text(encoding='utf-8'),
-              'production deployment gate blocks unknown markers and checks legacy schema compatibility': 'Unrecognized production schema marker' in Path('.github/workflows/deploy.yml').read_text(encoding='utf-8') and 'compatibility"' in Path('.github/workflows/deploy.yml').read_text(encoding='utf-8'),
+              'production deployment workflow requires the exact reviewed schema marker': "Require the exact reviewed production schema marker" in Path('.github/workflows/deploy.yml').read_text(encoding='utf-8'),
+              'production deployment rejects legacy runtime bootstrap and unknown markers': 'Production schema marker is not the exact reviewed baseline 16.64.0' in Path('.github/workflows/deploy.yml').read_text(encoding='utf-8') and 'Runtime bootstrap is not an approved migration mechanism' in Path('.github/workflows/deploy.yml').read_text(encoding='utf-8')),
               'novel-request refunds are conditional and idempotent': "UPDATE novel_requests SET status=? WHERE id=? AND status='pending'" in source and "INSERT INTO ticket_ledger(user_id,delta,reason,reference) SELECT ?,?,?,? WHERE changes()=1" in source,
           }
           for label, ok in checks.items():
