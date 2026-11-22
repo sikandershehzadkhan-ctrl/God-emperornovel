@@ -12,8 +12,7 @@ const BLOCK_CHILDREN={
 };
 const INLINE_PARENTS=new Set(["paragraph","heading"]);
 const MARKS=new Set(["bold","italic","underline","strike","code","link"]);
-const SAFE_LINK=/^https?:\\/\\/[^\\s"'<>]+$/i;
-const own=(o,k)=>Object.prototype.hasOwnProperty.call(o,k);
+const SAFE_LINK=/^https?:\/\/[^\s"'<>]+$/i;
 function fail(error){return {ok:false,richText:true,error}}
 function exactKeys(value,allowed){return Object.keys(value).every(key=>allowed.has(key))}
 function validateNode(node,parent,depth,state){
