@@ -226,6 +226,7 @@ jobs:
           echo "PASS: all required database inspections completed using SELECT/PRAGMA only. No data was changed and no deployment was performed."
 
       - name: Capture normalized runtime schema evidence (read-only)
+        if: ${{ always() && inputs.confirm_read_only_audit == 'yes' }}
         shell: bash
         env:
           CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
