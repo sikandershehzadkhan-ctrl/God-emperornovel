@@ -62,6 +62,17 @@ jobs:
       - name: Build application
         run: npm run build
 
+      - name: Export exact canonical migration checksum manifest
+        run: node scripts/export-canonical-migration-checksums.mjs --json > canonical-migration-checksums.json
+
+      - name: Preserve canonical migration checksum evidence
+        uses: actions/upload-artifact@v4
+        with:
+          name: canonical-migration-checksums-${{ github.sha }}
+          path: canonical-migration-checksums.json
+          if-no-files-found: error
+          retention-days: 90
+
       - name: Validate Cloudflare Worker bundle without deploying
         run: npx --yes wrangler@4 deploy --dry-run
 
