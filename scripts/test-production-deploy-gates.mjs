@@ -2,6 +2,7 @@ import assert from "node:assert/strict";
 import fs from "node:fs";
 
 const workflow = fs.readFileSync(".github/workflows/deploy.yml", "utf8");
+const schemaInventory = fs.readFileSync("docs/production/SHARED-RUNTIME-SCHEMA-INVENTORY.md", "utf8");
 assert.ok(workflow.includes("workflow_dispatch:"), "Production deploy must remain manual.");
 assert.ok(workflow.includes("confirm_production_deploy"), "Production deploy must require an explicit confirmation input.");
 assert.ok(workflow.includes("inputs.confirm_production_deploy == 'true'"), "Production job must be gated by the explicit true confirmation.");
@@ -9,6 +10,11 @@ assert.ok(!/^\s*push:/m.test(workflow) && !/^\s*pull_request:/m.test(workflow), 
 assert.ok(workflow.includes("npx --yes wrangler@4 deploy --dry-run"), "Production bundle must be validated before deployment.");
 assert.ok(workflow.includes("Verify catalog and author-application D1 migrations after deployment"), "Production deployment must verify additive catalog and creator migrations.");
 assert.ok(workflow.includes("Apply and verify additive D1 migrations before Worker deployment"), "Production D1 migrations must run before publishing the Worker.");
+for (const migration of ["0012_user_profiles.sql", "0028_runtime_feature_integrity.sql", "0046_atomic_ai_run_claims.sql", "0048_omniportal_runtime_support.sql", "0049_unique_pending_connector_authorization.sql"]) {
+  assert.ok(!workflow.includes("--file=migrations/" + migration), "Production deploy must not silently apply an unreconciled canonical migration: " + migration);
+}
+assert.ok(schemaInventory.includes("those later migrations are not included in the deploy workflow's apply step"),
+  "The release documentation must explicitly disclose that canonical migrations 0012+ are not yet wired into production deployment.");
 for (const migration of ["migrations/0009_catalog_filter_indexes.sql", "migrations/0010_catalog_sort_indexes.sql", "migrations/0011_author_applications.sql"]) {
   assert.ok(workflow.includes("--file=" + migration), "Pre-deploy migration step must apply " + migration);
 }
