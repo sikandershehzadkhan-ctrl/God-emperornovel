@@ -61,14 +61,19 @@ assert.match(workflow, /compare-runtime-schema-definitions\.mjs/,
   "Captured production evidence must be passed to the definition comparator.");
 assert.match(workflow, /upload-artifact@v4/,
   "Read-only schema evidence must be retained as a downloadable workflow artifact.");
-assert.match(workflow, /pragma_table_info\(m\.name\)/,
-  "Evidence must include table column definitions.");
-assert.match(workflow, /pragma_foreign_key_list\(m\.name\)/,
-  "Evidence must include declared foreign-key definitions.");
-assert.match(workflow, /pragma_index_info\(i\.name\)/,
-  "Evidence must include ordered index columns.");
-assert.match(workflow, /pragma_index_list\(m\.name\)/,
-  "Evidence must include implicit and explicit table index metadata.");
+const capture = fs.readFileSync("scripts/capture-runtime-schema-audit.mjs", "utf8");
+assert.match(workflow, /capture-runtime-schema-audit\.mjs/,
+  "The read-only workflow must invoke the dedicated schema metadata capture script.");
+assert.match(capture, /PRAGMA table_info\(/,
+  "Evidence capture must include table column definitions.");
+assert.match(capture, /PRAGMA foreign_key_list\(/,
+  "Evidence capture must include declared foreign-key definitions.");
+assert.match(capture, /PRAGMA index_info\(/,
+  "Evidence capture must include ordered index columns.");
+assert.match(capture, /PRAGMA index_list\(/,
+  "Evidence capture must include implicit and explicit table index metadata.");
+assert.match(capture, /--remote --command[\s\S]*?--json/,
+  "Schema metadata must be captured through Wrangler's remote JSON query mode.");
 assert.doesNotMatch(workflow.slice(workflow.indexOf("- name: Capture normalized runtime schema evidence"), workflow.indexOf("- name: Upload read-only production schema evidence")),
   /\\b(?:INSERT|UPDATE|DELETE|ALTER|CREATE|DROP|REPLACE)\\b/i,
   "Evidence capture SQL must remain read-only.");
