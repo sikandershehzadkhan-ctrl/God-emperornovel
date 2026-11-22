@@ -47,7 +47,7 @@ assert.doesNotMatch(inventoryStep, /^\\s+continue-on-error:/m,
   "Required database inventory failures must never be downgraded to successful workflow steps.");
 assert.match(inventoryStep, /if ! npx --yes wrangler@4 d1 execute god-emperornovel-db --remote --command/,
   "Each required query must explicitly detect command failure.");
-assert.match(inventoryStep, /Read-only audit finished with \\$audit_query_failures failed required database inspection/,
+assert.ok(inventoryStep.includes("Read-only audit finished with $audit_query_failures failed required database inspection"),
   "The inventory must fail closed when any required query fails.");
 assert.match(inventoryStep, /audit_query_failures=\\$\\(\\(audit_query_failures \\+ 1\\)\\)/,
   "Failed migration-marker probes must also fail the audit.");
