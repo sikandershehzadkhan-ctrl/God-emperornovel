@@ -32,9 +32,51 @@ function uniqueLatestStories(trendingRows,latestRows){const trendingIds=new Set(
 function card(n){return `<a class="card" href="/novel/${n.id}"><div class="cover"><img src="${img(n.cover_url,n.title)}" alt="${esc(n.title)} cover" loading="lazy" decoding="async" fetchpriority="low" onerror="this.onerror=null;this.src='/story-cover-placeholder.svg'"></div><div class="cardBody"><div class="cardTitle">${esc(n.title)}</div><div class="muted">${esc(n.author||'Unknown author')}</div><div class="meta"><span>★ ${ratingText(n.rating)}</span><span>◷ ${Number(n.chapter_count||n.latest_chapter||0)} ch.</span></div></div></a>`}
 function chapterRow(ch,id){return `<a class="chapter" href="/read/${id}/${ch.chapter_number}"><span class="chapterNo">${ch.chapter_number}</span><span><b>${esc(ch.title)}</b><br><span class="muted">${ch.is_locked?'Locked · '+ch.ticket_cost+' Imperial Crowns':'Free to read'}</span></span><span class="lock">${ch.is_locked?'⌑':'›'}</span></a>`}
 const COMIC_FORMATS=new Set(['manga','manhwa','manhua','webtoon','comic','graphic_novel']);
+function renderRichTextNode(node){
+ if(!node||typeof node!=='object'||Array.isArray(node))return null;
+ const children=Array.isArray(node.content)?node.content.map(renderRichTextNode):[];
+ if(children.some(x=>x===null))return null;
+ const body=children.join('');
+ switch(node.type){
+  case 'doc':return body;
+  case 'paragraph':return '<p>'+body+'</p>';
+  case 'heading':{const level=Number(node.attrs?.level);if(level!==2&&level!==3)return null;return '<h'+level+'>'+body+'</h'+level+'>'}
+  case 'blockquote':return '<blockquote>'+body+'</blockquote>';
+  case 'bulletList':return '<ul>'+body+'</ul>';
+  case 'orderedList':{const start=Number(node.attrs?.start??1);if(!Number.isInteger(start)||start<1||start>1000)return null;return '<ol'+(start!==1?' start="'+start+'"':'')+'>'+body+'</ol>'}
+  case 'listItem':return '<li>'+body+'</li>';
+  case 'horizontalRule':return node.content===undefined?'<hr>':null;
+  case 'hardBreak':return node.content===undefined?'<br>':null;
+  case 'text':{
+   if(typeof node.text!=='string'||node.content!==undefined)return null;
+   let out=esc(node.text);
+   for(const mark of Array.isArray(node.marks)?node.marks:[]){
+    if(!mark||typeof mark!=='object')return null;
+    if(mark.type==='bold')out='<strong>'+out+'</strong>';
+    else if(mark.type==='italic')out='<em>'+out+'</em>';
+    else if(mark.type==='underline')out='<u>'+out+'</u>';
+    else if(mark.type==='strike')out='<s>'+out+'</s>';
+    else if(mark.type==='code')out='<code>'+out+'</code>';
+    else if(mark.type==='link'){
+     const href=String(mark.attrs?.href||'');
+     if(/^https?:\/\/[^\s"'<>]+$/i.test(href))out='<a href="'+esc(href)+'" rel="nofollow noopener noreferrer" target="_blank">'+out+'</a>';
+    }else return null;
+   }
+   return out;
+  }
+  default:return null;
+ }
+}
+function renderRichTextChapter(raw){
+ let payload;try{payload=JSON.parse(String(raw||''))}catch{return null}
+ if(payload?.type!=='imperial_rich_text_chapter')return null;
+ if(payload.version!==1||!payload.doc||payload.doc.type!=='doc')return null;
+ const rendered=renderRichTextNode(payload.doc);
+ return rendered===null?null:'<div class="richTextChapter">'+rendered+'</div>';
+}
 function renderChapterContent(raw,kind){
  const fallback=esc(raw||'This chapter has no content yet.');
- if(!COMIC_FORMATS.has(String(kind||'').toLowerCase()))return fallback;
+ if(!COMIC_FORMATS.has(String(kind||'').toLowerCase()))return renderRichTextChapter(raw)??fallback;
  let payload;try{payload=JSON.parse(String(raw||''))}catch{return fallback}
  if(payload?.type!=='imperial_comic_chapter'||payload.version!==1||!Array.isArray(payload.pages)||!payload.pages.length)return fallback;
  const pages=payload.pages.slice(0,300).map((page,i)=>{

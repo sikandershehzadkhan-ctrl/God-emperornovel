@@ -1,0 +1,30 @@
+{
+  "schemaVersion": 1,
+  "contractId": "structured-text-chapter-v1",
+  "status": "proposed",
+  "owner": "worker-runtime",
+  "decision": "Support an optional versioned allowlisted rich-text JSON chapter envelope, validate it server-side on create/update, and render it with fixed safe HTML elements while preserving legacy plain-text and comic formats.",
+  "scope": [
+    "src/rich-text-chapter-policy.mjs",
+    "src/index.js",
+    "public/app.js",
+    "public/app-17.23.0.js",
+    "scripts/test-rich-text-chapter-policy.mjs",
+    "package.json"
+  ],
+  "invariants": [
+    "No raw author HTML is rendered or trusted.",
+    "Existing plain-text chapter content retains its escaped rendering path.",
+    "Existing comic chapter envelope and reader behavior remain separate.",
+    "Chapter authorization, ownership, draft status, locking and publication review remain unchanged.",
+    "No database migration or new dependency is introduced."
+  ],
+  "acceptance": [
+    "Validator rejects unsupported node/mark types, invalid structure, unsafe links, excessive size, node count, depth and text length.",
+    "Chapter POST and PATCH validate recognized rich-text envelopes.",
+    "Reader renders only fixed allowlisted elements and escapes all author text and links.",
+    "Existing plain-text and comic reader paths remain intact.",
+    "Build runs the new policy test."
+  ],
+  "releaseBoundary": "Structured content validation and reader compatibility only. No Tiptap editor UI, production deployment, or D1 mutation."
+}
