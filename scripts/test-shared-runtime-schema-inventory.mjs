@@ -32,6 +32,8 @@ const routeRead = (start, end) => {
 for (const [start, end, initializer, route] of [
   ['if(p==="/api/author/ai/projects"&&m==="GET"){', 'if(p==="/api/author/ai/projects"&&m==="POST"){', "ensureAuthorAISchema(env)", "/api/author/ai/projects"],
   ['if(aip&&m==="GET"){', 'if(aip&&m==="PATCH"){', "ensureAuthorAISchema(env)", "/api/author/ai/projects/:id"],
+  ['if(/^\\/api\\/author\\/ai\\/projects\\/\\d+\\/jobs$/.test(p)&&m==="GET"){', 'if(p==="/api/author/ai/benchmarks"&&m==="GET"){', "ensureAuthorAISchema(env)", "/api/author/ai/projects/:id/jobs"],
+  ['if(p==="/api/author/ai/benchmarks"&&m==="GET"){', 'if(p==="/api/author/ai/benchmarks"&&m==="POST"){', "ensureAuthorAISchema(env)", "/api/author/ai/benchmarks"],
   ['if(p==="/api/admin/publishing"&&m==="GET"){', 'let apn=', "ensurePublishingSchema(env)", "/api/admin/publishing"],
   ['if(ach && m==="GET"){', 'let acm=', "ensurePublishingSchema(env)", "/api/admin/publishing/chapters"],
   ['if(p==="/api/admin/connectors"&&m==="GET"){', 'if(p==="/api/admin/connectors"&&m==="PATCH"){', "seedOmni(env)", "/api/admin/connectors"],
