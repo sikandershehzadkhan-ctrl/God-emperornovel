@@ -1,0 +1,29 @@
+{
+  "schemaVersion": 1,
+  "contractId": "third-party-license-and-provenance-gate",
+  "status": "proposed",
+  "owner": "build-toolchain",
+  "decision": "Add a dependency-free Node.js build gate that verifies exact root dependency lockfile agreement, licence metadata, a reviewed permissive SPDX allowlist, and npm registry provenance for all locked packages.",
+  "scope": [
+    "package.json",
+    "scripts/check-third-party-licenses.mjs",
+    "docs/governance/THIRD_PARTY_DEPENDENCY_POLICY.md",
+    "docs/architecture/decisions/ADR-0021-third-party-dependency-licence-provenance.md",
+    "docs/architecture/feature-contracts/third-party-license-and-provenance-gate.json"
+  ],
+  "invariants": [
+    "No new npm package is added by this change.",
+    "package-lock.json remains unchanged and authoritative for exact package versions and integrity metadata.",
+    "The checker uses only Node.js built-in modules.",
+    "Unknown, missing, or unapproved licence identifiers fail closed.",
+    "No production deployment, D1 mutation, secret, or paid service is introduced."
+  ],
+  "acceptance": [
+    "All current locked packages pass the reviewed allowlist and provenance checks.",
+    "Direct dependencies in package.json match the lockfile root exactly.",
+    "Normal npm run build invokes the licence gate before other checks.",
+    "npm run check:licenses is available as a standalone command.",
+    "Cloudflare source validation, migration governance, Graphify and the normal build pass in CI."
+  ],
+  "releaseBoundary": "Build-time dependency governance only; no runtime behavior or production data changes."
+}
