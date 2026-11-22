@@ -37,7 +37,9 @@ function normalize(raw) {
     for (const column of table.columns) {
       for (const key of ['name','type','notnull','dflt_value','pk']) assert.ok(Object.hasOwn(column,key), 'Column evidence missing ' + key + ': ' + table.name);
     }
-    for (const fk of table.foreignKeys || []) evidence.foreignKeys.push({ table: table.name, ...fk });
+    if (evidence.foreignKeys.length === 0) {
+      for (const fk of table.foreignKeys || []) evidence.foreignKeys.push({ table: table.name, ...fk });
+    }
   }
   const indexNames = new Set();
   for (const index of evidence.indexes) {
