@@ -1,10 +1,6 @@
 name: Imperial Novel Production Schema Upgrade Preflight
 
 on:
-  push:
-    branches: [main]
-    paths:
-      - '.github/workflows/production-schema-preflight.yml'
   workflow_dispatch:
     inputs:
       confirm_read_only_preflight:
@@ -25,7 +21,7 @@ concurrency:
 
 jobs:
   inspect:
-    if: ${{ github.event_name == 'push' || inputs.confirm_read_only_preflight == 'yes' }}
+    if: ${{ github.event_name == 'workflow_dispatch' && inputs.confirm_read_only_preflight == 'yes' }}
     runs-on: ubuntu-latest
     timeout-minutes: 8
     steps:
