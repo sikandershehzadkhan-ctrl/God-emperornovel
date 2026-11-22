@@ -19,7 +19,7 @@
 
 | Candidate | Potential value | Licence / status | Decision |
 |---|---|---|---|
-| [Tiptap](https://github.com/ueberdosis/tiptap) | Modular rich-text chapter editor for Author Studio | MIT-licensed open-source core; verify each selected extension and package | **First technical pilot candidate.** Prototype a small editor island; preserve the existing chapter API and stored-content format until compatibility is proven. |
+| [Tiptap](https://github.com/ueberdosis/tiptap) | Modular rich-text chapter editor for Author Studio | MIT-licensed open-source core; verify each selected extension and package | **First technical pilot candidate.** Architecture review found that the current reader escapes text content, so raw HTML integration is unsafe/incompatible. Use a versioned structured document, strict Worker validation, safe DOM rendering, and a local versioned bundle. See [Author Studio Editor Pilot](AUTHOR_STUDIO_EDITOR_PILOT.md). |
 | [OpenNovel](https://github.com/rishabbairagi/open-novel) | Reader/publishing workflows, search and content presentation patterns | No verified licence file found in this review; package metadata alone does not grant reuse rights | Study product patterns only. Do not copy code until an explicit licence is verified. |
 | [Bibliogon](https://github.com/astrapi69/bibliogon) | Story bible, character/location/lore management, chapter organization | Licence not verified in this review | Research workflow ideas; no code reuse until licence verification. |
 | [Vela](https://github.com/heider-x/vela) | Long-form writing IDE, story knowledge and AI workflow ideas | GPL-3.0 reported by repository search | Do not copy implementation into Imperial Novel without legal review. |
