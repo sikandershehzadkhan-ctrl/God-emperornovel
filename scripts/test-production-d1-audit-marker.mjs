@@ -3,7 +3,7 @@ import fs from "node:fs";
 
 const workflow = fs.readFileSync(".github/workflows/audit-production-d1.yml", "utf8");
 const markerStart = workflow.indexOf('if marker_table_check=');
-const markerEnd = workflow.indexOf('run_query "Release 17.22 schema readiness"', markerStart);
+const markerEnd = workflow.indexOf('run_query "Release 17.22 schema readiness', markerStart);
 assert.notEqual(markerStart, -1, "Production audit must inspect the app_settings marker table.");
 assert.notEqual(markerEnd, -1, "Production audit marker inspection block must be complete.");
 const markerBlock = workflow.slice(markerStart, markerEnd);
