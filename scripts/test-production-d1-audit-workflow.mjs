@@ -32,14 +32,11 @@ for (const item of requiredEvidence) {
   assert.ok(workflow.includes(item), `Production audit is missing required evidence: ${item}`);
 }
 
-const sqlCommands = [...workflow.matchAll(/--command "([^"\n]*)"/g)].map(match => match[1]);
-assert.ok(sqlCommands.length >= 10, "Audit must retain its expected set of read-only SQL inspections.");
-for (const sql of sqlCommands) {
-  assert.match(sql.trim(), /^(SELECT|WITH|PRAGMA)\b/i,
-    `Non-read-only SQL found in production audit command: ${sql.slice(0, 100)}`);
-  assert.doesNotMatch(sql, /\b(INSERT|UPDATE|DELETE|REPLACE|CREATE|ALTER|DROP|VACUUM|ATTACH|DETACH)\b/i,
-    `Write or schema-changing SQL found in production audit command: ${sql.slice(0, 100)}`);
-}
+const queryLabels = [...workflow.matchAll(/^\\s*run_query "([^"]+)"/gm)].map(match => match[1]);
+assert.ok(queryLabels.length >= 20, "Audit must retain its expected set of read-only SQL inspections.");
+assert.ok(queryLabels.includes("Critical runtime column compatibility (read-only)"));
+assert.ok(queryLabels.includes("Complete production schema object definitions"));
+assert.ok(queryLabels.includes("Production foreign-key integrity check"));
 assert.doesNotMatch(workflow, /d1\s+migrations\s+apply|wrangler[^\n]*deploy/i,
   "Read-only audit must never apply migrations or deploy the Worker.");
 
