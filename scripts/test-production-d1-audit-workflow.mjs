@@ -32,7 +32,7 @@ for (const item of requiredEvidence) {
   assert.ok(workflow.includes(item), `Production audit is missing required evidence: ${item}`);
 }
 
-const queryLabels = [...workflow.matchAll(/^\\s*run_query "([^"]+)"/gm)].map(match => match[1]);
+const queryLabels = [...workflow.matchAll(/^\s*run_query "([^"]+)"/gm)].map(match => match[1]);
 assert.ok(queryLabels.length >= 20, "Audit must retain its expected set of read-only SQL inspections.");
 assert.ok(queryLabels.includes("Critical runtime column compatibility (read-only)"));
 assert.ok(queryLabels.includes("Complete production schema object definitions"));
