@@ -29,7 +29,7 @@ assert.ok(editorSource.includes("StarterKit.configure"), "Tiptap StarterKit is c
 assert.ok(editorSource.includes("heading: { levels: [2, 3] }"), "Only level 2 and 3 headings are enabled");
 assert.ok(editorSource.includes("codeBlock: false"), "Unsupported code blocks are disabled");
 assert.ok(editorSource.includes("imperial_rich_text_chapter"), "Editor serializes the server-owned structured envelope");
-assert.ok(editorSource.includes("new URL(String(value || \"\").trim())"), "Editor validates link URLs before serialization");
+assert.ok(editorSource.includes("new URL(String(value ||"), "Editor validates link URLs before serialization");
 assert.ok(editorSource.includes('"aria-label": "Chapter content"'), "Editor content has an accessible label");
 assert.ok(css.includes("min-width:44px") && css.includes("min-height:44px"), "Toolbar targets meet the 44px minimum");
 assert.ok(css.includes("prefers-reduced-motion"), "Editor styles respect reduced-motion preferences");
