@@ -45,7 +45,7 @@ function renderRichTextNode(node){
   case 'bulletList':return '<ul>'+body+'</ul>';
   case 'orderedList':{const start=Number(node.attrs?.start??1);if(!Number.isInteger(start)||start<1||start>1000)return null;return '<ol'+(start!==1?' start="'+start+'"':'')+'>'+body+'</ol>'}
   case 'listItem':return '<li>'+body+'</li>';
-  case 'horizontalRule':return node.content===undefined?' <hr> ':null;
+  case 'horizontalRule':return node.content===undefined?'<hr>':null;
   case 'hardBreak':return node.content===undefined?'<br>':null;
   case 'text':{
    if(typeof node.text!=='string'||node.content!==undefined)return null;
