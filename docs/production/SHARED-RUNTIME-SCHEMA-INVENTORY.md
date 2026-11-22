@@ -75,6 +75,12 @@ These route-local calls are separate from the shared dispatcher bootstrap and mu
 6. Add tests proving the Worker dispatcher and scheduled entrypoint no longer invoke runtime DDL after the migration cutover.
 7. Only then consider marking the complete HTTP GET path read-only and removing the legacy initializers.
 
+## Production release workflow gap
+
+The current production deploy workflow applies and verifies migrations `0009`–`0011` only. This candidate adds canonical migrations `0012`–`0046` and `0048`–`0049`, but those later migrations are not included in the deploy workflow's apply step. Therefore, a green source build or a passing deployment dry run must not be interpreted as evidence that the candidate's full canonical migration chain has been applied or that production is ready for this Worker revision. The deploy workflow must be reconciled with the production audit, exact applied-migration history, per-migration preflight, and production-shaped rehearsal before a production release is approved.
+
+The separate production schema preflight previously had a push-to-main trigger that could query production automatically when its workflow file changed. It is now manual-dispatch-only and requires the explicit `confirm_read_only_preflight=yes` input. This is a control change only; it has not been dispatched and makes no claim about live production state.
+
 ## Safety boundary
 
 - The production audit workflow now captures complete schema-object SQL, foreign-key violations, the outstanding agent/taxonomy/connector review columns, and migration 0049 index presence. These are audit capabilities only; the workflow has not been dispatched.
