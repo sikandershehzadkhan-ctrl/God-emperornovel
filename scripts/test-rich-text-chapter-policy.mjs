@@ -22,6 +22,8 @@ assert.equal(validateRichTextChapterContent(doc([{type:"paragraph",attrs:{class:
 assert.equal(validateRichTextChapterContent(doc([paragraph([text("x")])]).replace('"paragraph"','"script"')).ok,false);
 assert.equal(validateRichTextChapterContent(JSON.stringify({type:"imperial_rich_text_chapter",version:2,doc:{type:"doc",content:[paragraph([text("x")])]}})).ok,false);
 assert.equal(validateRichTextChapterContent("x".repeat(95001)).richText,false);
+const oversized=JSON.stringify({type:"imperial_rich_text_chapter",version:1,doc:{type:"doc",content:[paragraph([text("x".repeat(80001))])]}});
+assert.equal(validateRichTextChapterContent(oversized).ok,false);
 assert.equal(validateRichTextChapterContent(doc([paragraph([text("x".repeat(20001))])])).ok,false);
 const deep={type:"paragraph",content:[text("x")]};let nested=deep;for(let i=0;i<15;i++){nested={type:"blockquote",content:[nested]};}
 assert.equal(validateRichTextChapterContent(doc([nested])).ok,false);
