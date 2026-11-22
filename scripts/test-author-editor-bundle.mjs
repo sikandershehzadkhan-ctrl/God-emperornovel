@@ -24,10 +24,12 @@ assert.ok(app.includes("function loadAuthorEditorBundle()"), "Editor bundle is l
 assert.ok(app.includes("if(!f.hidden)initAuthorChapterEditor(f)"), "Editor loads only after opening a chapter form");
 assert.ok(app.includes("textarea.hidden=true;textarea.required=false"), "Textarea is hidden only after editor mount succeeds");
 assert.ok(app.includes("textarea.hidden=false;textarea.required=true"), "Plain-text fallback remains available on load failure");
+assert.ok(app.includes("Number(f.dataset.editorTextLength)>80000"), "Client enforces the server text-length limit before save");
 assert.ok(app.includes("initComicPageComposer(f);f.onsubmit="), "Existing comic chapter composer remains separate");
 assert.ok(editorSource.includes("StarterKit.configure"), "Tiptap StarterKit is configured explicitly");
 assert.ok(editorSource.includes("heading: { levels: [2, 3] }"), "Only level 2 and 3 headings are enabled");
 assert.ok(editorSource.includes("codeBlock: false"), "Unsupported code blocks are disabled");
+assert.ok(!editorSource.includes("shouldRerenderOnTransaction: false"), "Toolbar state can update as the editor changes");
 assert.ok(editorSource.includes("imperial_rich_text_chapter"), "Editor serializes the server-owned structured envelope");
 assert.ok(editorSource.includes("new URL(String(value ||"), "Editor validates link URLs before serialization");
 assert.ok(editorSource.includes('"aria-label": "Chapter content"'), "Editor content has an accessible label");
