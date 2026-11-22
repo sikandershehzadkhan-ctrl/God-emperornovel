@@ -36,7 +36,7 @@ const EXPECTED_ADDED_COLUMNS = {
   'connectors.metadata_import_allowed': col('metadata_import_allowed','INTEGER',1,'0'),
   'connectors.attribution_required': col('attribution_required','INTEGER',1,'0')
 };
-const EXPECTED_INDEXES = {
+const EXPECTED_UNIQUE_CONSTRAINTS = [\n  { table: 'agents', columns: ['slug'] },\n  { table: 'taxonomy_submissions', columns: ['type','slug'] }\n];\nconst EXPECTED_INDEXES = {
   idx_agent_runs_agent: { table: 'agent_runs', columns: ['agent_id','created_at'], unique: false }
 };
 
@@ -58,7 +58,7 @@ function assess(evidence) {
   assert.equal(evidence.database, 'god-emperornovel-db', 'Evidence must identify the configured production D1 database.');
   assert.ok(typeof evidence.auditedAt === 'string' && !Number.isNaN(Date.parse(evidence.auditedAt)), 'A valid audit timestamp is required.');
   assert.equal(typeof evidence.inventoryComplete, 'boolean', 'Inventory completeness must be an explicit boolean.');
-  for (const key of ['tables','indexes','foreignKeys']) assert.ok(Array.isArray(evidence[key]), 'Evidence must include ' + key + ' arrays.');
+  for (const key of ['tables','indexes','tableIndexes','foreignKeys']) assert.ok(Array.isArray(evidence[key]), 'Evidence must include ' + key + ' arrays.');
   const tables = new Map();
   for (const table of evidence.tables) {
     assert.ok(table && typeof table.name === 'string' && table.name.trim(), 'Every table requires a name.');
@@ -100,6 +100,16 @@ function assess(evidence) {
       ? compareColumn(table.columnMap.get(columnName), expected)
       : absent('column',identity)) });
   }
+  for (const expected of EXPECTED_UNIQUE_CONSTRAINTS) {
+    const actual = evidence.tableIndexes.find(index => index.table === expected.table &&
+      Boolean(index.unique) && Array.isArray(index.columns) &&
+      index.columns.join(',') === expected.columns.join(','));
+    rows.push({ object: 'unique-constraint', name: expected.table + '(' + expected.columns.join(',') + ')',
+      status: actual ? 'verified' : evidence.inventoryComplete ? 'missing' : 'unknown',
+      reason: actual ? 'SQLite unique index metadata confirms the required ordered unique key.' :
+        evidence.inventoryComplete ? 'Required unique key is absent from complete PRAGMA index_list evidence.' :
+          'Required unique key is not visible in incomplete PRAGMA index_list evidence.' });
+  }
   for (const [name, expected] of Object.entries(EXPECTED_INDEXES)) {
     const actual = indexes.get(name);
     if (!actual) { rows.push({ object: 'index', name, ...absent('index',name) }); continue; }
@@ -133,7 +143,7 @@ function selfTest() {
     table.columns.push({...EXPECTED_ADDED_COLUMNS[identity]});
   }
   const base = { database:'god-emperornovel-db', auditedAt:'2026-11-22T00:00:00Z', inventoryComplete:true, tables,
-    indexes:[{name:'idx_agent_runs_agent',table:'agent_runs',columns:['agent_id','created_at'],unique:false}], foreignKeys:[] };
+    indexes:[{name:'idx_agent_runs_agent',table:'agent_runs',columns:['agent_id','created_at'],unique:false}], tableIndexes:[{name:'agents_slug',table:'agents',columns:['slug'],unique:true},{name:'taxonomy_type_slug',table:'taxonomy_submissions',columns:['type','slug'],unique:true}], foreignKeys:[] };
   let result = assess(base);
   assert.equal(result.definitionsCompatible,true);
   assert.equal(result.releaseReady,false);
