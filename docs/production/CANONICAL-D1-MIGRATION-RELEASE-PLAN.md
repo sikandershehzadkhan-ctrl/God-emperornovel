@@ -43,6 +43,10 @@ The workflow is therefore hard-disabled. Do not remove that block merely to depl
 - 0048: canonical OmniPortal support tables for side-effect-free read endpoints.
 - 0049: unique pending connector authorization request per connector; requires zero duplicate pending groups before application.
 
+## Canonical migration checksum evidence
+
+The repository includes `scripts/export-canonical-migration-checksums.mjs`. It computes SHA-256 over the exact raw bytes of every numbered migration file, rejects duplicate sequence numbers, empty files, and duplicate exact payloads, and emits a deterministic JSON manifest with `node scripts/export-canonical-migration-checksums.mjs --json`. The normal build runs its validation mode. Capture the JSON output together with the exact Git commit when preparing the signed-off production reconciliation evidence. This source manifest describes the candidate repository only; it is not a production applied-migration ledger and must never be used to infer remote application.
+
 ## Required work before a production release
 
 1. Obtain a recoverable production D1 backup and verify that it can be restored.
