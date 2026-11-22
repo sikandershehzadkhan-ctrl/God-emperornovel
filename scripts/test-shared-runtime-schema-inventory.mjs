@@ -105,6 +105,26 @@ for (const [file, needles] of [
   for (const needle of needles) assert.ok(source.includes(needle), `${file} missing expected schema coverage: ${needle}`);
 }
 
+for (const exactSourceShape of [
+  "CREATE TABLE IF NOT EXISTS agents",
+  "CREATE TABLE IF NOT EXISTS agent_runs",
+  "CREATE TABLE IF NOT EXISTS taxonomy_submissions",
+  "ALTER TABLE connectors ADD COLUMN search_url TEXT DEFAULT ''",
+  "ALTER TABLE connectors ADD COLUMN auth_header TEXT DEFAULT 'authorization'",
+  "ALTER TABLE connectors ADD COLUMN metadata_import_allowed INTEGER NOT NULL DEFAULT 0",
+  "ALTER TABLE connectors ADD COLUMN attribution_required INTEGER NOT NULL DEFAULT 0",
+  "ALTER TABLE novels ADD COLUMN review_feedback TEXT DEFAULT ''",
+  "ALTER TABLE comments ADD COLUMN parent_id INTEGER",
+  "seedTaxonomy(env)",
+  "ensureAgents(env)",
+  "seedOmni(env)"
+]) {
+  assert.ok(inventory.includes(exactSourceShape),
+    "exact runtime DDL or bootstrap responsibility is missing from the cutover inventory: " + exactSourceShape);
+}
+assert.ok(inventory.includes("does not support using `ADD COLUMN IF NOT EXISTS`"),
+  "inventory must explicitly prevent unsafe assumed-idempotent SQLite column additions");
+
 assert.match(inventory, /PRODUCTION STATE UNKNOWN/);
 assert.match(inventory, /Do not remove either shared initializer/);
 
