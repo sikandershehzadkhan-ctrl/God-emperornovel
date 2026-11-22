@@ -374,8 +374,8 @@ async function authorApplicationPage(user){
 
 let authorEditorBundlePromise=null;
 function authorEditorAssetVersion(){
- const script=[...document.scripts].find(x=>/\\/app-\\d+\\.\\d+\\.\\d+\\.js(?:$|\\?)/.test(new URL(x.src,location.href).pathname));
- return script?.src.match(/app-(\\d+\\.\\d+\\.\\d+)\\.js/)?.[1]||'17.23.0';
+ const script=[...document.scripts].find(x=>/\/app-\d+\.\d+\.\d+\.js(?:$|\?)/.test(new URL(x.src,location.href).pathname));
+ return script?.src.match(/app-(\d+\.\d+\.\d+)\.js/)?.[1]||'17.23.0';
 }
 function loadAuthorEditorBundle(){
  if(window.ImperialAuthorEditor?.mountAuthorChapterEditor)return Promise.resolve(window.ImperialAuthorEditor);
@@ -396,7 +396,7 @@ async function initAuthorChapterEditor(form){
  if(!form||COMIC_FORMATS.has(String(form.dataset.kind||'').toLowerCase())||form.dataset.editorInit==='true')return;
  const root=form.querySelector('[data-author-editor-root]'),textarea=form.querySelector('[data-text-chapter-content]'),label=form.querySelector('[data-text-chapter-label]'),status=form.querySelector('[data-author-editor-status]');
  if(!root||!textarea)return;
- form.dataset.editorInit='true';textarea.readOnly=true;if(status)status.textContent='Loading the local chapter editor…';
+ form.dataset.editorInit='true';form.dataset.editorHasText='false';textarea.readOnly=true;if(status)status.textContent='Loading the local chapter editor…';
  ensureAuthorEditorStyles();
  try{
   const bundle=await loadAuthorEditorBundle();
@@ -411,7 +411,7 @@ async function initAuthorChapterEditor(form){
   if(status)status.textContent='Rich-text editor ready. Your chapter is still saved as a private draft.';
   form.dataset.editorMode='rich-text';
  }catch(error){
-  root.hidden=true;textarea.hidden=false;textarea.required=true;textarea.readOnly=false;
+  form.dataset.editorInit='false';form.dataset.editorMode='plain-text';root.hidden=true;textarea.hidden=false;textarea.required=true;textarea.readOnly=false;
   if(label)label.textContent='Chapter text (plain-text fallback)';
   if(status)status.textContent='Rich-text editor unavailable. You can still write and save plain text.';
   form.dataset.editorMode='plain-text';
