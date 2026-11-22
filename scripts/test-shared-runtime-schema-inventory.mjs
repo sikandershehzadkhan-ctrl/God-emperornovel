@@ -23,6 +23,25 @@ assert.ok(scheduledStart >= 0 && scheduledEnd > scheduledStart,
 assert.match(worker.slice(scheduledStart, scheduledEnd), /ensureCoreSchema\(env\)/,
   "scheduled handler schema bootstrap must remain documented until readiness-check cutover");
 
+const routeRead = (start, end) => {
+  const from = worker.indexOf(start);
+  const to = end ? worker.indexOf(end, from + start.length) : -1;
+  assert.ok(from >= 0 && (end ? to > from : true), "GET route source boundary missing: " + start);
+  return worker.slice(from, end ? to : from + 1200);
+};
+for (const [start, end, initializer, route] of [
+  ['if(p==="/api/author/ai/projects"&&m==="GET"){', 'if(p==="/api/author/ai/projects"&&m==="POST"){', "ensureAuthorAISchema(env)", "/api/author/ai/projects"],
+  ['if(aip&&m==="GET"){', 'if(aip&&m==="PATCH"){', "ensureAuthorAISchema(env)", "/api/author/ai/projects/:id"],
+  ['if(p==="/api/admin/publishing"&&m==="GET"){', 'let apn=', "ensurePublishingSchema(env)", "/api/admin/publishing"],
+  ['if(ach && m==="GET"){', 'let acm=', "ensurePublishingSchema(env)", "/api/admin/publishing/chapters"],
+  ['if(p==="/api/admin/connectors"&&m==="GET"){', 'if(p==="/api/admin/connectors"&&m==="PATCH"){', "seedOmni(env)", "/api/admin/connectors"],
+  ['if(p==="/api/admin/connector-authorization-requests"&&m==="GET"){', 'let car=', "ensureOmniTables(env)", "/api/admin/connector-authorization-requests"]
+]) {
+  const source = routeRead(start, end);
+  assert.ok(source.includes(initializer), "route-local GET initializer changed without inventory review: " + route);
+  assert.ok(inventory.includes(route), "route-local GET schema side effect is undocumented: " + route);
+}
+
 for (const marker of [
   "ensureCoreSchema(env)",
   "ensureRuntimeFeatureSchema(env)",
