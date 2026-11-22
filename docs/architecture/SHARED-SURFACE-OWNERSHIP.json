@@ -284,7 +284,8 @@
         "docs/SUSTAINABLE-REVENUE-MODEL.md",
         "docs/OPEN_SOURCE_INTEGRATION_REGISTER.md",
         "docs/AUTHOR_STUDIO_EDITOR_PILOT.md",
-        "docs/AUTHOR_STUDIO_EDITOR_SPIKE.md"
+        "docs/AUTHOR_STUDIO_EDITOR_SPIKE.md",
+        "docs/RELEASE-17.24.0-AUTHOR-STUDIO-RICH-TEXT.md"
       ],
       "requiresAdr": false,
       "accountableRole": "Documentation owner",
