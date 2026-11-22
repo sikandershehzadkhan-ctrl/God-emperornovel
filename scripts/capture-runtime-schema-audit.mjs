@@ -139,7 +139,7 @@ const evidence = {
   tables,
   indexes,
   tableIndexes,
-  foreignKeys
+  foreignKeys: []
 };
 
 // Keep the normalizer's established Wrangler JSON envelope unchanged.
