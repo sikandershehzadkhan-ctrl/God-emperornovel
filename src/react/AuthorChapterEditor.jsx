@@ -73,7 +73,6 @@ function AuthorChapterEditor({ onChange }) {
     ],
     content: { type: "doc", content: [{ type: "paragraph" }] },
     immediatelyRender: false,
-    shouldRerenderOnTransaction: false,
     editorProps: {
       attributes: {
         class: "authorEditorCanvas",
