@@ -23,7 +23,7 @@ jobs:
   audit:
     if: ${{ inputs.confirm_read_only_audit == 'yes' }}
     runs-on: ubuntu-latest
-    timeout-minutes: 5
+    timeout-minutes: 15
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
@@ -234,48 +234,7 @@ jobs:
         run: |
           set -euo pipefail
           mkdir -p audit-output
-          schema_sql="$(cat <<'SQL'
-          SELECT json_object(
-            'database','god-emperornovel-db',
-            'auditedAt',strftime('%Y-%m-%dT%H:%M:%fZ','now'),
-            'inventoryComplete',json('true'),
-            'tables',json((
-              SELECT json_group_array(json_object(
-                'name',m.name,
-                'sql',m.sql,
-                'columns',json((SELECT json_group_array(json_object(
-                  'name',p.name,'type',p.type,'notnull',p."notnull",'dflt_value',p.dflt_value,'pk',p.pk
-                )) FROM pragma_table_info(m.name) p)),
-                'foreignKeys',json((SELECT json_group_array(json_object(
-                  'id',f.id,'seq',f.seq,'table',f."table",'from',f."from",'to',f."to",
-                  'on_update',f.on_update,'on_delete',f.on_delete,'match',f."match"
-                )) FROM pragma_foreign_key_list(m.name) f))
-              ))
-              FROM sqlite_master m WHERE m.type='table' AND m.name NOT LIKE 'sqlite_%'
-            )),
-            'indexes',json((
-              SELECT json_group_array(json_object(
-                'name',i.name,'table',i.tbl_name,'sql',i.sql,
-                'unique',COALESCE((SELECT il."unique" FROM pragma_index_list(i.tbl_name) il WHERE il.name=i.name),0),
-                'columns',json((SELECT json_group_array(x.name) FROM
-                  (SELECT ii.name FROM pragma_index_info(i.name) ii ORDER BY ii.seqno) x))
-              ))
-              FROM sqlite_master i WHERE i.type='index' AND i.name NOT LIKE 'sqlite_%' AND i.sql IS NOT NULL
-            )),
-            'tableIndexes',json((
-              SELECT json_group_array(json_object(
-                'name',il.name,'table',m.name,'unique',il."unique",'origin',il.origin,'partial',il.partial,
-                'columns',json((SELECT json_group_array(z.name) FROM
-                  (SELECT ii.name FROM pragma_index_info(il.name) ii ORDER BY ii.seqno) z))
-              ))
-              FROM sqlite_master m, pragma_index_list(m.name) il
-              WHERE m.type='table' AND m.name NOT LIKE 'sqlite_%'
-            )),
-            'foreignKeys',json('[]')
-          ) AS schema_evidence;
-          SQL
-          )"
-          npx --yes wrangler@4 d1 execute god-emperornovel-db --remote --command "$schema_sql" --json > audit-output/wrangler-schema-evidence.json
+          node scripts/capture-runtime-schema-audit.mjs
           node scripts/normalize-runtime-schema-audit.mjs audit-output/wrangler-schema-evidence.json audit-output/production-schema-evidence.json
           node scripts/compare-runtime-schema-definitions.mjs audit-output/production-schema-evidence.json > audit-output/runtime-schema-definition-assessment.json || {
             status=$?
