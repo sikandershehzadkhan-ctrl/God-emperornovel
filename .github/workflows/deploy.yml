@@ -103,34 +103,22 @@ jobs:
           fi
           npx --yes wrangler@4 whoami
 
-      - name: Verify production schema compatibility before deployment
+      - name: Require the exact reviewed production schema marker
         shell: bash
         env:
           CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
         run: |
           set -euo pipefail
-          echo "Checking the live schema marker and required production structures..."
           marker_output="$(npx --yes wrangler@4 d1 execute god-emperornovel-db --remote --command "SELECT value FROM app_settings WHERE key='core_schema_version' LIMIT 1;")"
-          printf '%s\n' "$marker_output"
-          marker="$(printf '%s' "$marker_output" | node -e 'let s="";process.stdin.on("data",d=>s+=d).on("end",()=>{const m=s.match(/"value"\s*:\s*"([^"]+)"/);console.log(m?m[1]:"unknown")})')"
+          printf '%s\\n' "$marker_output"
+          marker="$(printf '%s' "$marker_output" | node -e 'let s="";process.stdin.on("data",d=>s+=d).on("end",()=>{const m=s.match(/"value"\\s*:\\s*"([^"]+)"/);console.log(m?m[1]:"unknown")})')"
           echo "Live schema marker: $marker"
-          if [ "$marker" = "16.64.0" ]; then
-            echo "Schema marker matches the reviewed runtime baseline."
-          elif [ "$marker" = "16.12.1" ]; then
-            echo "Legacy marker found. Checking production tables and columns before allowing the additive runtime bootstrap."
-            compatibility_output="$(npx --yes wrangler@4 d1 execute god-emperornovel-db --remote --command "SELECT CASE WHEN EXISTS(SELECT 1 FROM sqlite_master WHERE type='table' AND name='users') AND EXISTS(SELECT 1 FROM sqlite_master WHERE type='table' AND name='novels') AND EXISTS(SELECT 1 FROM sqlite_master WHERE type='table' AND name='chapters') AND EXISTS(SELECT 1 FROM sqlite_master WHERE type='table' AND name='app_settings') AND EXISTS(SELECT 1 FROM sqlite_master WHERE type='table' AND name='agents') AND EXISTS(SELECT 1 FROM sqlite_master WHERE type='table' AND name='agent_runs') AND EXISTS(SELECT 1 FROM sqlite_master WHERE type='table' AND name='ai_author_projects') AND EXISTS(SELECT 1 FROM sqlite_master WHERE type='table' AND name='ai_chapter_jobs') AND EXISTS(SELECT 1 FROM sqlite_master WHERE type='table' AND name='ai_generation_runs') AND EXISTS(SELECT 1 FROM pragma_table_info('novels') WHERE name='publication_status') AND EXISTS(SELECT 1 FROM pragma_table_info('novels') WHERE name='rights_evidence') AND EXISTS(SELECT 1 FROM pragma_table_info('chapters') WHERE name='publication_status') AND EXISTS(SELECT 1 FROM pragma_table_info('ai_author_projects') WHERE name='updated_at') AND EXISTS(SELECT 1 FROM pragma_table_info('ai_chapter_jobs') WHERE name='project_id') AND EXISTS(SELECT 1 FROM pragma_table_info('ai_generation_runs') WHERE name='created_at') THEN 'compatible' ELSE 'incompatible' END AS compatibility;")"
-            printf '%s\n' "$compatibility_output"
-            compatibility="$(printf '%s' "$compatibility_output" | node -e 'let s="";process.stdin.on("data",d=>s+=d).on("end",()=>{const m=s.match(/"compatibility"\s*:\s*"([^"]+)"/);console.log(m?m[1]:"unknown")})')"
-            if [ "$compatibility" != "compatible" ]; then
-              echo "::error::Production schema is not compatible with the additive runtime bootstrap. No Worker deployment was attempted."
-              exit 1
-            fi
-            echo "Required legacy schema structures are present. Runtime bootstrap will apply only its reviewed idempotent schema operations and advance the marker after success."
-          else
-            echo "::error::Unrecognized production schema marker '$marker'. Deployment blocked pending review."
+          if [ "$marker" != "16.64.0" ]; then
+            echo "::error::Production schema marker is not the exact reviewed baseline 16.64.0. Runtime bootstrap is not an approved migration mechanism; deployment is blocked pending the canonical D1 release."
             exit 1
           fi
+          echo "PASS: exact reviewed schema marker 16.64.0 is present."
 
       - name: Validate Cloudflare bundle without deploying
         run: npx --yes wrangler@4 deploy --dry-run
