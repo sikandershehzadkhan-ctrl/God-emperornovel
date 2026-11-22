@@ -3,6 +3,7 @@ import { resolvePageRoute } from "./route-registry.mjs";
 import { canonicalPathForRoute } from "./route-canonical.mjs";
 import { SITEMAP_PAGE_SIZE, renderSitemapIndex, renderStaticSitemap, renderNovelSitemap, renderChapterSitemap } from "./sitemap.mjs";
 import { validateComicChapterContent } from "./comic-chapter-policy.mjs";
+import { validateRichTextChapterContent } from "./rich-text-chapter-policy.mjs";
 import { hashPassword, verifyPassword } from "./auth-password.mjs";
 import { isAllowedConnectorSearchUrl } from "./connector-url-policy.mjs";
 import { parseManualDonationApproval } from "./donation-approval-policy.mjs";
@@ -740,14 +741,14 @@ async function api(req,env){
   const e=author(u);if(e)return e;const b=await body(req),nid=Number(b.novel_id),num=Number(b.chapter_number),title=String(b.title||'').trim(),content=String(b.content||'');
   const n=await env.DB.prepare('SELECT id,owner_user_id,kind FROM novels WHERE id=?').bind(nid).first();if(!n)return json({error:'Novel not found'},404);if(u.role!=="admin"&&Number(n.owner_user_id)!==Number(u.id))return json({error:'You do not own this novel'},403);
   if(!Number.isInteger(num)||num<1||!title||!content)return json({error:'Chapter number, title and content are required'},400);
-  if(["manga","manhwa","manhua","webtoon","comic","graphic_novel"].includes(String(n.kind||"").toLowerCase())){const comicCheck=validateComicChapterContent(content);if(!comicCheck.ok)return json({error:comicCheck.error},400)}
+  if(["manga","manhwa","manhua","webtoon","comic","graphic_novel"].includes(String(n.kind||"").toLowerCase())){const comicCheck=validateComicChapterContent(content);if(!comicCheck.ok)return json({error:comicCheck.error},400)}else{const richTextCheck=validateRichTextChapterContent(content);if(!richTextCheck.ok)return json({error:richTextCheck.error},400)}
   const locked=!!b.is_locked,cost=Number(b.ticket_cost||0);if(cost<0)return json({error:'Ticket cost cannot be negative'},400);
   try{const r=await env.DB.prepare(`INSERT INTO chapters(novel_id,chapter_number,title,content,is_locked,ticket_cost,publication_status) VALUES(?,?,?,?,?,?, 'draft')`).bind(nid,num,title,content,locked?1:0,cost).run();await env.DB.prepare('UPDATE novels SET updated_at=CURRENT_TIMESTAMP WHERE id=?').bind(nid).run();await audit(env,u,'author_chapter_created',`novel=${nid};chapter=${num}`);return json({ok:true,id:Number(r.meta.last_row_id),message:'Chapter saved as draft.'},201)}catch(err){return json({error:'Chapter number already exists or could not be saved'},409)}
  }
  if(/^\/api\/author\/chapters\/\d+$/.test(p)&&m==="PATCH"){
   const e=author(u);if(e)return e;const id=Number(p.split('/').pop()),b=await body(req);
   const c=await env.DB.prepare(`SELECT c.*,n.owner_user_id FROM chapters c JOIN novels n ON n.id=c.novel_id WHERE c.id=?`).bind(id).first();if(!c)return json({error:'Chapter not found'},404);if(u.role!=="admin"&&Number(c.owner_user_id)!==Number(u.id))return json({error:'You do not own this chapter'},403);
-  const num=Number(b.chapter_number??c.chapter_number),title=String(b.title??c.title).trim(),content=String(b.content??c.content);const cost=Number(b.ticket_cost??c.ticket_cost);if(!Number.isInteger(num)||num<1||!title||!content||cost<0)return json({error:'Invalid chapter data'},400);
+  const num=Number(b.chapter_number??c.chapter_number),title=String(b.title??c.title).trim(),content=String(b.content??c.content);const cost=Number(b.ticket_cost??c.ticket_cost);if(!Number.isInteger(num)||num<1||!title||!content||cost<0)return json({error:'Invalid chapter data'},400);if(!["manga","manhwa","manhua","webtoon","comic","graphic_novel"].includes(String(c.kind||"").toLowerCase())){const richTextCheck=validateRichTextChapterContent(content);if(!richTextCheck.ok)return json({error:richTextCheck.error},400)}
   const dup=await env.DB.prepare('SELECT id FROM chapters WHERE novel_id=? AND chapter_number=? AND id<>?').bind(c.novel_id,num,id).first();if(dup)return json({error:'Another chapter already uses that chapter number.'},409);
   await env.DB.prepare(`UPDATE chapters SET chapter_number=?,title=?,content=?,is_locked=?,ticket_cost=?,updated_at=CURRENT_TIMESTAMP WHERE id=?`).bind(num,title,content,b.is_locked?1:0,cost,id).run();await env.DB.prepare('UPDATE novels SET updated_at=CURRENT_TIMESTAMP WHERE id=?').bind(c.novel_id).run();await audit(env,u,'author_chapter_updated',`chapter=${id}`);return json({ok:true,message:'Chapter saved.'})
  }
