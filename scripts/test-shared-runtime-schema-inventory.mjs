@@ -8,7 +8,7 @@ const inventory = fs.readFileSync("docs/production/SHARED-RUNTIME-SCHEMA-INVENTO
 const migration = (name) => fs.readFileSync(`migrations/${name}`, "utf8");
 
 const apiStart = worker.indexOf("async function api(req,env){");
-const apiEnd = worker.indexOf(",async scheduled(event,env)", apiStart);
+const apiEnd = worker.indexOf("\n}\n", apiStart);
 assert.ok(apiStart >= 0 && apiEnd > apiStart, "API dispatcher boundaries must be located precisely");
 const apiSource = worker.slice(apiStart, apiEnd > apiStart ? apiEnd : worker.length);
 const healthFastPath = apiSource.indexOf('if(p==="/api/health"&&m==="GET")');
