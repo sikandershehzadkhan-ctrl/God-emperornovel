@@ -125,6 +125,9 @@ assert.ok(reviewerAssignmentRevoke.includes("admin(u)") && reviewerAssignmentRev
 assert.ok(reviewerClaim.includes("role_key IN ('support_reviewer','privacy_administrator')") &&
   reviewerClaim.includes("subject_user_id") && reviewerClaim.includes("version=version+1") &&
   reviewerClaim.includes("claim_expires_at"), "case claims must require an active eligible role, prevent self-review, and use versioned leases");
+assert.ok(reviewerClaim.includes("env.DB.batch([") && reviewerClaim.includes("AND changes()=1") &&
+  reviewerClaim.includes("claimResults?.[0]") && reviewerClaim.includes("claimResults?.[1]"),
+  "case claim and closure-request state transition must be committed as one ordered D1 batch with the second update gated on the first");
 assert.ok(reviewerFinding.includes("roleByDependency") && reviewerFinding.includes("reviewer_id") &&
   reviewerFinding.includes("Date.parse(String(review.claim_expires_at)") &&
   reviewerFinding.includes("account_deletion_disposition_findings"),
