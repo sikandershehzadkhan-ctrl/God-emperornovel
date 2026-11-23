@@ -143,3 +143,23 @@ The OmniPortal route changes remove route-local ensureOmniTables calls and add m
 ## Shared runtime initializer inventory (2026-11-20)
 
 A source-level inventory of the remaining runtime DDL and migration coverage is maintained in [SHARED-RUNTIME-SCHEMA-INVENTORY.md](./SHARED-RUNTIME-SCHEMA-INVENTORY.md). It records the still-unmigrated `comments.parent_id` and `comments.edited_at` columns, `taxonomy_submissions`, and eight optional `connectors` columns, plus the initializer's marker, cleanup, taxonomy/agent seeding, and scheduled-handler responsibilities. The inventory test is part of the Cloudflare build. This is source evidence only; it does not establish the remote D1 state and does not authorize removal of the runtime initializers.
+
+## Latest production evidence (2026-11-23, read-only)
+
+Audit run: [#45161955794](https://github.com/sikandershehzadkhan-ctrl/God-emperornovel/actions/runs/45161955794), executed from the canonical migration PR branch at commit `c1b6e473a94e16a71ab2babab9bd47d7ce2b1740`. The schema-capture step completed and uploaded artifact `production-runtime-schema-evidence-c1b6e473a94e16a71ab2babab9bd47d7ce2b1740`.
+
+Observed capture totals: 45 tables, 28 explicit indexes, 52 table-index entries, and 6 foreign keys. The audit reported zero D1 rows written. The schema comparison artifact reported 47 checked definitions, zero missing or mismatched items in that comparison scope, and `releaseReady: false`. This limited comparison is not a full migration-history or whole-database equivalence proof.
+
+The same run recorded these production facts:
+- Public Worker health returned `ok: true`, database connected, live Worker version `17.23.0`.
+- Repository target version was `17.24.0`; production version drift remains.
+- `app_settings.core_schema_version` was `16.64.0`.
+- No `d1_migrations` table exists, so exact applied migration history remains unverified.
+- The required-object inventory reported `media_assets` as missing.
+- The audit performed no migration, schema mutation, data write, merge, or deployment.
+
+### Interpretation and next safe action
+
+The successful capture fixes the prior Cloudflare-internal `_cf_KV` inspection failure. It does not establish which canonical migrations were previously applied, nor whether runtime bootstrap created structures that resemble migration outputs. Do not synthesize a `d1_migrations` ledger from table presence or the `core_schema_version` marker.
+
+Next, complete a source-to-production object reconciliation from the captured evidence. For each migration, distinguish (a) exact DDL present, (b) partially present or definition mismatch, (c) absent, and (d) origin unknown. Where a runtime initializer and migration produce equivalent objects, record origin as unknown unless independent deployment/audit evidence proves provenance. In particular, inspect the complete definitions and dependent objects for migration 0018 before planning its missing `media_assets` / comic-page structures. No new migration, baseline marker, or migration runner may be applied to production until this reconciliation, backup/restore verification, and production-shaped rehearsal are reviewed and explicitly approved.
