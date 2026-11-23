@@ -220,6 +220,24 @@ const aiJobs = worker.slice(worker.indexOf('if(/^\\/api\\/author\\/ai\\/projects
 assert.ok(aiJobs.includes("WHERE project_id=? AND (owner_user_id=? OR ?=char(97,100,109,105,110))"),
   "AI job history reads must be scoped to the project owner or admin");
 
+const closureGet = handler("/api/account/closure-request", "GET");
+const closureCreate = handler("/api/account/closure-request", "POST");
+const closureCancel = handler("/api/account/closure-request/cancel", "POST");
+assert.ok(closureGet.includes("need(u)") && closureGet.includes("WHERE r.user_id=?") &&
+  closureGet.includes("bind(u.id"),
+  "account closure status must be private to the authenticated account");
+assert.ok(closureCreate.includes("need(u)") && closureCreate.includes("req.headers.get(\"origin\")!==url.origin") &&
+  closureCreate.includes("application/json") && closureCreate.includes("bind(u.id") &&
+  closureCreate.includes("30*86400") && closureCreate.includes("case_opened"),
+  "closure requests must be same-origin, user-scoped, time-bounded, and create an attributable review case");
+assert.ok(!closureCreate.includes("DELETE FROM users") && !closureCreate.includes("DELETE FROM novels") &&
+  !closureCreate.includes("DELETE FROM chapters"),
+  "a closure request must not execute account or content erasure");
+assert.ok(closureCancel.includes("need(u)") && closureCancel.includes("WHERE r.user_id=?") &&
+  closureCancel.includes("status='pending'") && closureCancel.includes("version=version+1") &&
+  closureCancel.includes("state='cancelled'"),
+  "closure cancellation must compare-and-set only the requester's pending, unclaimed review");
+
 const connectorSubmission = handler("/api/connector-authorization-requests", "POST");
 assert.ok(connectorSubmission.includes("catch{const pending=await env.DB.prepare") &&
   connectorSubmission.includes("Authorization request already pending.") &&
