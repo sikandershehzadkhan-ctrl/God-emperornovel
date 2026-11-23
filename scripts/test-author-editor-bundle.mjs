@@ -13,8 +13,8 @@ const sharedIslands = fs.readFileSync("src/react/index.jsx", "utf8");
 const bundlePath = `public/author-editor-${pkg.version}.js`;
 
 assert.equal(app, versionedApp, "Editable and served application runtimes must match");
-assert.equal(pkg.dependencies["@tiptap/react"], "3.30.3");
-assert.equal(pkg.dependencies["@tiptap/starter-kit"], "3.30.3");
+assert.equal(pkg.dependencies["@tiptap/react"], "3.35.0");
+assert.equal(pkg.dependencies["@tiptap/starter-kit"], "3.35.0");
 assert.ok(buildSource.includes("src/react/AuthorChapterEditor.jsx"), "Editor has a separate build entry");
 assert.ok(buildSource.includes("author-editor-${pkg.version}.js"), "Editor bundle is versioned");
 assert.ok(buildSource.includes("gzipSync"), "Build measures compressed editor bundle size");
