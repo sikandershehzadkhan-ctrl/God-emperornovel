@@ -4,6 +4,24 @@ import { resolve } from 'node:path';
 
 const col = (name, type, notnull = 0, dflt_value = null, pk = 0) => ({ name, type, notnull, dflt_value, pk });
 const EXPECTED_TABLES = {
+  media_assets: [
+    col('id','INTEGER',0,null,1), col('owner_user_id','INTEGER',1), col('storage_provider','TEXT',1,"'r2'"),
+    col('object_key','TEXT',1), col('mime_type','TEXT',1), col('size_bytes','INTEGER',1),
+    col('width','INTEGER'), col('height','INTEGER'), col('sha256_hex','TEXT'),
+    col('status','TEXT',1,"'pending_upload'"), col('rights_status','TEXT',1,"'pending_review'"),
+    col('rights_holder','TEXT',0,"''"), col('license_name','TEXT',0,"''"), col('rights_evidence','TEXT',0,"''"),
+    col('created_at','TEXT',1,'CURRENT_TIMESTAMP'), col('uploaded_at','TEXT'), col('reviewed_at','TEXT'),
+    col('deleted_at','TEXT'), col('reviewed_by_user_id','INTEGER')
+  ],
+  comic_chapter_pages: [
+    col('id','INTEGER',0,null,1), col('chapter_id','INTEGER',1), col('media_asset_id','INTEGER',1),
+    col('page_number','INTEGER',1), col('alt_text','TEXT',1,"''"), col('caption','TEXT',1,"''"),
+    col('created_at','TEXT',1,'CURRENT_TIMESTAMP')
+  ],
+  media_asset_reviews: [
+    col('id','INTEGER',0,null,1), col('media_asset_id','INTEGER',1), col('reviewer_user_id','INTEGER',1),
+    col('decision','TEXT',1), col('note','TEXT',1,"''"), col('created_at','TEXT',1,'CURRENT_TIMESTAMP')
+  ],
   agents: [
     col('id','INTEGER',0,null,1), col('slug','TEXT',1), col('name','TEXT',1), col('role','TEXT',1),
     col('icon','TEXT',0,"'🤖'"), col('mode','TEXT',1,"'automation'"), col('status','TEXT',1,"'ready'"),
@@ -22,6 +40,7 @@ const EXPECTED_TABLES = {
   ]
 };
 const EXPECTED_ADDED_COLUMNS = {
+  'media_assets.reviewed_by_user_id': col('reviewed_by_user_id','INTEGER'),
   'comments.parent_id': col('parent_id','INTEGER'),
   'comments.edited_at': col('edited_at','TEXT'),
   'novels.review_feedback': col('review_feedback','TEXT',0,"''"),
@@ -37,10 +56,17 @@ const EXPECTED_ADDED_COLUMNS = {
   'connectors.attribution_required': col('attribution_required','INTEGER',1,'0')
 };
 const EXPECTED_UNIQUE_CONSTRAINTS = [
+  { table: 'comic_chapter_pages', columns: ['chapter_id','page_number'] },
+  { table: 'comic_chapter_pages', columns: ['chapter_id','media_asset_id'] },
   { table: 'agents', columns: ['slug'] },
   { table: 'taxonomy_submissions', columns: ['type','slug'] }
 ];
 const EXPECTED_INDEXES = {
+  idx_media_assets_owner_status: { table: 'media_assets', columns: ['owner_user_id','status','created_at'], unique: false },
+  idx_media_assets_rights_status: { table: 'media_assets', columns: ['rights_status','status','created_at'], unique: false },
+  idx_comic_pages_chapter_order: { table: 'comic_chapter_pages', columns: ['chapter_id','page_number'], unique: false },
+  idx_comic_pages_asset: { table: 'comic_chapter_pages', columns: ['media_asset_id'], unique: false },
+  idx_media_asset_reviews_asset_created: { table: 'media_asset_reviews', columns: ['media_asset_id','created_at','id'], unique: false },
   idx_agent_runs_agent: { table: 'agent_runs', columns: ['agent_id','created_at'], unique: false }
 };
 
@@ -62,7 +88,7 @@ function assess(evidence) {
   assert.equal(evidence.database, 'god-emperornovel-db', 'Evidence must identify the configured production D1 database.');
   assert.ok(typeof evidence.auditedAt === 'string' && !Number.isNaN(Date.parse(evidence.auditedAt)), 'A valid audit timestamp is required.');
   assert.equal(typeof evidence.inventoryComplete, 'boolean', 'Inventory completeness must be an explicit boolean.');
-  for (const key of ['tables','indexes','tableIndexes','foreignKeys']) assert.ok(Array.isArray(evidence[key]), 'Evidence must include ' + key + ' arrays.');
+  for (const key of ['tables','indexes','tableIndexes','foreignKeys','triggers']) assert.ok(Array.isArray(evidence[key]), 'Evidence must include ' + key + ' arrays.');
   const tables = new Map();
   for (const table of evidence.tables) {
     assert.ok(table && typeof table.name === 'string' && table.name.trim(), 'Every table requires a name.');
@@ -82,6 +108,22 @@ function assess(evidence) {
     assert.ok(!indexes.has(index.name), 'Duplicate index: ' + index.name);
     indexes.set(index.name, index);
   }
+  const triggerNames = new Set(evidence.triggers.map(trigger => trigger.name));
+  const expectedTriggers = [
+    'trg_comic_page_requires_publishable_asset_insert',
+    'trg_comic_page_requires_publishable_asset_update',
+    'trg_referenced_media_must_remain_publishable',
+    'trg_comic_page_asset_must_match_novel_owner_insert',
+    'trg_comic_page_asset_must_match_novel_owner_update',
+    'trg_media_asset_reviews_require_independent_reviewer',
+    'trg_media_asset_approval_requires_review',
+    'trg_media_asset_reviews_no_update',
+    'trg_media_asset_reviews_no_delete',
+    'trg_media_asset_owner_quota_insert',
+    'trg_media_asset_owner_quota_update',
+    'trg_media_asset_mark_deleted_timestamp',
+    'trg_media_asset_deleted_is_terminal'
+  ];
   const rows = [];
   const absent = (kind, name) => evidence.inventoryComplete
     ? { status: 'missing', reason: 'Absent from complete ' + kind + ' inventory.' }
@@ -124,6 +166,13 @@ function assess(evidence) {
     rows.push({ object: 'index', name, status: differences.length ? 'mismatch' : 'verified',
       reason: differences.length ? 'Index differs in: ' + differences.join(', ') + '.' : 'Index table, ordered columns and uniqueness match source DDL.' });
   }
+  for (const name of expectedTriggers) rows.push({
+    object: 'trigger', name,
+    status: triggerNames.has(name) ? 'verified' : evidence.inventoryComplete ? 'missing' : 'unknown',
+    reason: triggerNames.has(name) ? 'Trigger name is present; SQL body equivalence still requires review.' :
+      evidence.inventoryComplete ? 'Required trigger is absent from complete sqlite_master trigger inventory.' :
+        'Trigger absence cannot be established from incomplete inventory.'
+  });
   const counts = Object.fromEntries(['verified','missing','mismatch','unknown'].map(status => [status,rows.filter(r => r.status === status).length]));
   return {
     format: 'imperial-novel-runtime-schema-definition-comparison/v1',
@@ -132,7 +181,7 @@ function assess(evidence) {
     releaseReady: false,
     limitations: [
       'This compares source-transcribed table columns, column properties and the required runtime index only.',
-      'It does not prove table CHECK/UNIQUE constraints, trigger definitions, all foreign-key semantics, row-data safety, migration provenance, backup restoration or production-shaped rehearsal.',
+      'It compares media registry tables, columns, unique keys, indexes and required trigger names, but does not prove CHECK constraints, trigger SQL-body equivalence, all foreign-key semantics, row-data safety, migration provenance, backup restoration or production-shaped rehearsal.',
       'It never authorizes migration or deployment.'
     ],
     rows
@@ -147,7 +196,21 @@ function selfTest() {
     table.columns.push({...EXPECTED_ADDED_COLUMNS[identity]});
   }
   const base = { database:'god-emperornovel-db', auditedAt:'2026-11-22T00:00:00Z', inventoryComplete:true, tables,
-    indexes:[{name:'idx_agent_runs_agent',table:'agent_runs',columns:['agent_id','created_at'],unique:false}], tableIndexes:[{name:'agents_slug',table:'agents',columns:['slug'],unique:true},{name:'taxonomy_type_slug',table:'taxonomy_submissions',columns:['type','slug'],unique:true}], foreignKeys:[] };
+    indexes:[
+    {name:'idx_agent_runs_agent',table:'agent_runs',columns:['agent_id','created_at'],unique:false},
+    {name:'idx_media_assets_owner_status',table:'media_assets',columns:['owner_user_id','status','created_at'],unique:false},
+    {name:'idx_media_assets_rights_status',table:'media_assets',columns:['rights_status','status','created_at'],unique:false},
+    {name:'idx_comic_pages_chapter_order',table:'comic_chapter_pages',columns:['chapter_id','page_number'],unique:false},
+    {name:'idx_comic_pages_asset',table:'comic_chapter_pages',columns:['media_asset_id'],unique:false},
+    {name:'idx_media_asset_reviews_asset_created',table:'media_asset_reviews',columns:['media_asset_id','created_at','id'],unique:false}
+  ], tableIndexes:[{name:'agents_slug',table:'agents',columns:['slug'],unique:true},{name:'taxonomy_type_slug',table:'taxonomy_submissions',columns:['type','slug'],unique:true},
+    {name:'comic_chapter_pages_chapter_page',table:'comic_chapter_pages',columns:['chapter_id','page_number'],unique:true},
+    {name:'comic_chapter_pages_chapter_asset',table:'comic_chapter_pages',columns:['chapter_id','media_asset_id'],unique:true}], foreignKeys:[], triggers: Object.keys({
+    trg_comic_page_requires_publishable_asset_insert:1,trg_comic_page_requires_publishable_asset_update:1,trg_referenced_media_must_remain_publishable:1,
+    trg_comic_page_asset_must_match_novel_owner_insert:1,trg_comic_page_asset_must_match_novel_owner_update:1,
+    trg_media_asset_reviews_require_independent_reviewer:1,trg_media_asset_approval_requires_review:1,trg_media_asset_reviews_no_update:1,trg_media_asset_reviews_no_delete:1,
+    trg_media_asset_owner_quota_insert:1,trg_media_asset_owner_quota_update:1,trg_media_asset_mark_deleted_timestamp:1,trg_media_asset_deleted_is_terminal:1
+  }).map(name=>({name,table:'media_assets',sql:'CREATE TRIGGER '+name})) };
   let result = assess(base);
   assert.equal(result.definitionsCompatible,true);
   assert.equal(result.releaseReady,false);
