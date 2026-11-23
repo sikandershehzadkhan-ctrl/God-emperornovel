@@ -64,10 +64,12 @@ function quoteIdentifier(value) {
 // Exclude platform-owned objects; this audit covers the application schema.
 const objects = runReadOnly(
   'sqlite_master application table and index inventory',
-  "SELECT type,name,tbl_name,sql FROM sqlite_master WHERE type IN ('table','index') AND name NOT LIKE 'sqlite_%' AND substr(name,1,4) <> '_cf_' AND substr(tbl_name,1,4) <> '_cf_' ORDER BY type,tbl_name,name;"
+  "SELECT type,name,tbl_name,sql FROM sqlite_master WHERE type IN ('table','index','trigger') AND name NOT LIKE 'sqlite_%' AND substr(name,1,4) <> '_cf_' AND substr(tbl_name,1,4) <> '_cf_' ORDER BY type,tbl_name,name;"
 );
 const tableObjects = objects.filter(row => row.type === 'table');
 const explicitIndexes = objects.filter(row => row.type === 'index' && row.sql !== null);
+const triggerObjects = objects.filter(row => row.type === 'trigger' && row.sql !== null);
+const triggers = triggerObjects.map(row => ({ name: row.name, table: row.tbl_name, sql: row.sql }));
 if (!tableObjects.length) throw new Error('The production schema inventory returned no user tables.');
 
 const tables = [];
@@ -142,7 +144,8 @@ const evidence = {
   tables,
   indexes,
   tableIndexes,
-  foreignKeys
+  foreignKeys,
+  triggers
 };
 
 // Keep the normalizer's established Wrangler JSON envelope unchanged.
@@ -157,6 +160,7 @@ fs.writeFileSync(DIAGNOSTICS, JSON.stringify({
   explicitIndexCount: indexes.length,
   tableIndexCount: tableIndexes.length,
   foreignKeyCount: foreignKeys.length,
+  triggerCount: triggers.length,
   method: 'separate read-only sqlite_master and PRAGMA statements'
 }, null, 2) + '\n');
 
