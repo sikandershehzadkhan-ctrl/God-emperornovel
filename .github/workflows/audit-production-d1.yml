@@ -23,7 +23,7 @@ jobs:
   audit:
     if: ${{ inputs.confirm_read_only_audit == 'yes' }}
     runs-on: ubuntu-latest
-    timeout-minutes: 15
+    timeout-minutes: 45
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
