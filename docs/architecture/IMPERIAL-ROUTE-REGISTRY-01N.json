@@ -1082,5 +1082,5 @@
   "runtimeRegistrySourceBlob": "src/route-registry.mjs@67ea3926ba32cf0bd2535f40250da5a9e1c9bb13",
   "apiAuthorizationRegistry": "docs/architecture/API-AUTHORIZATION-REGISTRY-01N.json",
   "apiAuthorizationStatus": "Account closure self-service, reviewer assignments/queue/claims, specialist findings, digest-bound disposition plans and independent approvals are implemented and source-inventoried. Finalization/erasure execution is deliberately not implemented.",
-  "apiAuthorizationRegistrySourceBlob": "docs/architecture/API-AUTHORIZATION-REGISTRY-01N.json@26321afd30fa80c9f9ac32ee64b8a52dddf7df5b"
+  "apiAuthorizationRegistrySourceBlob": "docs/architecture/API-AUTHORIZATION-REGISTRY-01N.json@b307ed4793058cdbe24ac3b2709be8e40f28725e"
 }
