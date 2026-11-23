@@ -55,10 +55,19 @@ const EXPECTED_ADDED_COLUMNS = {
   'connectors.attribution_required': col('attribution_required','INTEGER',1,'0')
 };
 const EXPECTED_UNIQUE_CONSTRAINTS = [
+  { table: 'media_assets', columns: ['object_key'] },
   { table: 'comic_chapter_pages', columns: ['chapter_id','page_number'] },
   { table: 'comic_chapter_pages', columns: ['chapter_id','media_asset_id'] },
   { table: 'agents', columns: ['slug'] },
   { table: 'taxonomy_submissions', columns: ['type','slug'] }
+];
+const EXPECTED_FOREIGN_KEYS = [
+  { table: 'media_assets', from: 'owner_user_id', target: 'users', to: 'id', on_delete: 'CASCADE' },
+  { table: 'media_assets', from: 'reviewed_by_user_id', target: 'users', to: 'id', on_delete: 'SET NULL' },
+  { table: 'comic_chapter_pages', from: 'chapter_id', target: 'chapters', to: 'id', on_delete: 'CASCADE' },
+  { table: 'comic_chapter_pages', from: 'media_asset_id', target: 'media_assets', to: 'id', on_delete: 'RESTRICT' },
+  { table: 'media_asset_reviews', from: 'media_asset_id', target: 'media_assets', to: 'id', on_delete: 'RESTRICT' },
+  { table: 'media_asset_reviews', from: 'reviewer_user_id', target: 'users', to: 'id', on_delete: 'RESTRICT' }
 ];
 const EXPECTED_INDEXES = {
   idx_media_assets_owner_status: { table: 'media_assets', columns: ['owner_user_id','status','created_at'], unique: false },
@@ -155,6 +164,19 @@ function assess(evidence) {
         evidence.inventoryComplete ? 'Required unique key is absent from complete PRAGMA index_list evidence.' :
           'Required unique key is not visible in incomplete PRAGMA index_list evidence.' });
   }
+  for (const expected of EXPECTED_FOREIGN_KEYS) {
+    const actual = evidence.foreignKeys.find(fk => fk.table === expected.table &&
+      fk.from === expected.from && fk.to === expected.to &&
+      fk.on_delete === expected.on_delete && fk.target_table === expected.target);
+    rows.push({
+      object: 'foreign-key',
+      name: expected.table + '.' + expected.from + ' -> ' + expected.target + '.' + expected.to,
+      status: actual ? 'verified' : evidence.inventoryComplete ? 'missing' : 'unknown',
+      reason: actual ? 'Required foreign-key target and delete action are present.' :
+        evidence.inventoryComplete ? 'Required foreign key is absent from complete PRAGMA foreign_key_list evidence.' :
+          'Foreign-key absence cannot be established from incomplete inventory.'
+    });
+  }
   for (const [name, expected] of Object.entries(EXPECTED_INDEXES)) {
     const actual = indexes.get(name);
     if (!actual) { rows.push({ object: 'index', name, ...absent('index',name) }); continue; }
@@ -180,7 +202,7 @@ function assess(evidence) {
     releaseReady: false,
     limitations: [
       'This compares source-transcribed table columns, column properties and the required runtime index only.',
-      'It compares media registry tables, columns, unique keys, indexes and required trigger names, but does not prove CHECK constraints, trigger SQL-body equivalence, all foreign-key semantics, row-data safety, migration provenance, backup restoration or production-shaped rehearsal.',
+      'It compares media registry tables, columns, selected unique keys, selected foreign keys, indexes and required trigger names, but does not prove CHECK constraints, trigger SQL-body equivalence, other foreign-key semantics, row-data safety, migration provenance, backup restoration or production-shaped rehearsal.',
       'It never authorizes migration or deployment.'
     ],
     rows
@@ -203,8 +225,16 @@ function selfTest() {
     {name:'idx_comic_pages_asset',table:'comic_chapter_pages',columns:['media_asset_id'],unique:false},
     {name:'idx_media_asset_reviews_asset_created',table:'media_asset_reviews',columns:['media_asset_id','created_at','id'],unique:false}
   ], tableIndexes:[{name:'agents_slug',table:'agents',columns:['slug'],unique:true},{name:'taxonomy_type_slug',table:'taxonomy_submissions',columns:['type','slug'],unique:true},
+    {name:'media_assets_object_key',table:'media_assets',columns:['object_key'],unique:true},
     {name:'comic_chapter_pages_chapter_page',table:'comic_chapter_pages',columns:['chapter_id','page_number'],unique:true},
-    {name:'comic_chapter_pages_chapter_asset',table:'comic_chapter_pages',columns:['chapter_id','media_asset_id'],unique:true}], foreignKeys:[], triggers: Object.keys({
+    {name:'comic_chapter_pages_chapter_asset',table:'comic_chapter_pages',columns:['chapter_id','media_asset_id'],unique:true}], foreignKeys:[
+      {table:'media_assets',target_table:'users',from:'owner_user_id',to:'id',on_delete:'CASCADE'},
+      {table:'media_assets',target_table:'users',from:'reviewed_by_user_id',to:'id',on_delete:'SET NULL'},
+      {table:'comic_chapter_pages',target_table:'chapters',from:'chapter_id',to:'id',on_delete:'CASCADE'},
+      {table:'comic_chapter_pages',target_table:'media_assets',from:'media_asset_id',to:'id',on_delete:'RESTRICT'},
+      {table:'media_asset_reviews',target_table:'media_assets',from:'media_asset_id',to:'id',on_delete:'RESTRICT'},
+      {table:'media_asset_reviews',target_table:'users',from:'reviewer_user_id',to:'id',on_delete:'RESTRICT'}
+    ], triggers: Object.keys({
     trg_comic_page_requires_publishable_asset_insert:1,trg_comic_page_requires_publishable_asset_update:1,trg_referenced_media_must_remain_publishable:1,
     trg_comic_page_asset_must_match_novel_owner_insert:1,trg_comic_page_asset_must_match_novel_owner_update:1,
     trg_media_asset_reviews_require_independent_reviewer:1,trg_media_asset_approval_requires_review:1,trg_media_asset_reviews_no_update:1,trg_media_asset_reviews_no_delete:1,
