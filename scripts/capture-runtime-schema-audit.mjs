@@ -95,7 +95,7 @@ for (const tableObject of tableObjects) {
       from: row.from, to: row.to, on_update: row.on_update,
       on_delete: row.on_delete, match: row.match
     }));
-  for (const fk of tableForeignKeys) foreignKeys.push({ table: tableName, ...fk });
+  for (const fk of tableForeignKeys) foreignKeys.push({ source_table: tableName, ...fk });
 
   const listedIndexes = runReadOnly('index_list: ' + tableName, 'PRAGMA index_list(' + identifier + ');');
   for (const listed of listedIndexes) {
