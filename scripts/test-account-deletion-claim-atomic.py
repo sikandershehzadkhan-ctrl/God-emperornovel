@@ -34,7 +34,7 @@ def setup(request_status='pending'):
       state TEXT NOT NULL,version INTEGER NOT NULL,claimed_by INTEGER,claim_expires_at TEXT,
       updated_at TEXT
     );
-    INSERT INTO account_closure_requests VALUES(10,1,'pending');
+    INSERT INTO account_closure_requests(id,user_id,status) VALUES(10,1,'pending');
     INSERT INTO account_deletion_reviews VALUES(100,10,1,'review_required',1,NULL,NULL,CURRENT_TIMESTAMP);
     """)
     db.execute("UPDATE account_closure_requests SET status=? WHERE id=10", (request_status,))
