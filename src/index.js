@@ -539,7 +539,7 @@ async function api(req,env){
   const review=await env.DB.prepare("SELECT v.request_id,v.subject_user_id,v.version,v.state,v.claimed_by,v.claim_expires_at,r.status request_status FROM account_deletion_reviews v JOIN account_closure_requests r ON r.id=v.request_id WHERE v.id=?").bind(reviewId).first();
   if(!review)return json({error:"Review case not found"},404);
   if(Number(review.subject_user_id)===Number(u.id))return json({error:"The account owner cannot review their own case"},403);
-  if(review.state!=="review_in_progress"||!review.claimed_by||!review.claim_expires_at||review.claim_expires_at<=new Date().toISOString().replace("T"," ").slice(0,19)||!["pending_deletion","review_required"].includes(review.request_status))return json({error:"The case must have an active reviewer claim before specialist findings can be submitted"},409);
+  if(review.state!=="review_in_progress"||!review.claimed_by||!review.claim_expires_at||Date.parse(String(review.claim_expires_at).replace(" ","T")+"Z")<=Date.now()||!["pending_deletion","review_required"].includes(review.request_status))return json({error:"The case must have an active reviewer claim before specialist findings can be submitted"},409);
   const previous=await env.DB.prepare("SELECT COALESCE(MAX(revision),0) revision FROM account_deletion_disposition_findings WHERE review_id=? AND dependency_key=?").bind(reviewId,dependency).first();
   const revision=Number(previous?.revision||0)+1;
   try{
