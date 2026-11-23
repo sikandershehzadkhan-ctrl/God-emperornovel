@@ -26,7 +26,8 @@ def setup(request_status='pending'):
     db.execute('PRAGMA foreign_keys=ON')
     db.executescript("""
     CREATE TABLE account_closure_requests(
-      id INTEGER PRIMARY KEY,user_id INTEGER NOT NULL,status TEXT NOT NULL
+      id INTEGER PRIMARY KEY,user_id INTEGER NOT NULL,status TEXT NOT NULL,
+      updated_at TEXT
     );
     CREATE TABLE account_deletion_reviews(
       id INTEGER PRIMARY KEY,request_id INTEGER NOT NULL,subject_user_id INTEGER NOT NULL,
