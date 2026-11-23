@@ -50,7 +50,7 @@ jobs:
             fi
           done
           if (( ${#pending[@]} > 0 )); then
-            printf '%s\\n' "${pending[@]}"
+            printf '%s\n' "${pending[@]}"
             echo "::error::Production deployment blocked: canonical migrations after 0011 are not yet wired into the reviewed release workflow. Complete production schema audit, migration reconciliation, and rehearsal before changing this gate."
             exit 1
           fi
@@ -111,8 +111,8 @@ jobs:
         run: |
           set -euo pipefail
           marker_output="$(npx --yes wrangler@4 d1 execute god-emperornovel-db --remote --command "SELECT value FROM app_settings WHERE key='core_schema_version' LIMIT 1;")"
-          printf '%s\\n' "$marker_output"
-          marker="$(printf '%s' "$marker_output" | node -e 'let s="";process.stdin.on("data",d=>s+=d).on("end",()=>{const m=s.match(/"value"\\s*:\\s*"([^"]+)"/);console.log(m?m[1]:"unknown")})')"
+          printf '%s\n' "$marker_output"
+          marker="$(printf '%s' "$marker_output" | node -e 'let s="";process.stdin.on("data",d=>s+=d).on("end",()=>{const m=s.match(/"value"\s*:\s*"([^"]+)"/);console.log(m?m[1]:"unknown")})')"
           echo "Live schema marker: $marker"
           if [ "$marker" != "16.64.0" ]; then
             echo "::error::Production schema marker is not the exact reviewed baseline 16.64.0. Runtime bootstrap is not an approved migration mechanism; deployment is blocked pending the canonical D1 release."
