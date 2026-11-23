@@ -519,12 +519,16 @@ async function api(req,env){
   if(!row)return json({error:"Review case not found"},404);
   if(Number(row.subject_user_id)===Number(u.id))return json({error:"The account owner cannot review their own case"},403);
   if(!["pending","review_required"].includes(row.request_status))return json({error:"This request is not eligible for review"},409);
-  const claimResults=await env.DB.batch([
-   env.DB.prepare("UPDATE account_deletion_reviews SET state='review_in_progress',version=version+1,claimed_by=?,claim_expires_at=datetime('now','+30 minutes'),updated_at=CURRENT_TIMESTAMP WHERE id=? AND subject_user_id<>? AND version=? AND (state='review_required' OR (state='review_in_progress' AND (claimed_by=? OR claim_expires_at<=CURRENT_TIMESTAMP)))").bind(u.id,id,u.id,row.version,u.id),
-   env.DB.prepare("UPDATE account_closure_requests SET status='review_required',updated_at=CURRENT_TIMESTAMP WHERE id=? AND user_id=? AND status IN ('pending','review_required') AND changes()=1 AND EXISTS (SELECT 1 FROM account_deletion_reviews v WHERE v.id=? AND v.request_id=? AND v.claimed_by=? AND v.version=?)").bind(row.request_id,row.subject_user_id,id,row.request_id,u.id,Number(row.version)+1)
-  ]);
+  let claimResults;
+  try{
+   claimResults=await env.DB.batch([
+    env.DB.prepare("UPDATE account_deletion_reviews SET state='review_in_progress',version=version+1,claimed_by=?,claim_expires_at=datetime('now','+30 minutes'),updated_at=CURRENT_TIMESTAMP WHERE id=? AND subject_user_id<>? AND version=? AND (state='review_required' OR (state='review_in_progress' AND (claimed_by=? OR claim_expires_at<=CURRENT_TIMESTAMP)))").bind(u.id,id,u.id,row.version,u.id),
+    env.DB.prepare("UPDATE account_closure_requests SET status='review_required',updated_at=CURRENT_TIMESTAMP WHERE id=? AND user_id=? AND status IN ('pending','review_required') AND changes()=1 AND EXISTS (SELECT 1 FROM account_deletion_reviews v WHERE v.id=? AND v.request_id=? AND v.claimed_by=? AND v.version=?)").bind(row.request_id,row.subject_user_id,id,row.request_id,u.id,Number(row.version)+1),
+    env.DB.prepare("SELECT CASE WHEN changes()=1 THEN 1 ELSE json('not-json') END")
+   ]);
+  }catch{return json({error:"Case claim could not update both review records atomically. Refresh the queue."},409)}
   const changed=r=>Number(r?.meta?.changes??r?.changes??0);
-  if(changed(claimResults?.[0])!==1||changed(claimResults?.[1])!==1)return json({error:"Case was claimed or changed before both review records could be updated. Refresh the queue."},409);
+  if(claimResults?.length!==3||changed(claimResults?.[0])!==1||changed(claimResults?.[1])!==1)return json({error:"Case claim was not committed consistently. Refresh the queue."},409);
   await audit(env,u,"account_deletion_case_claimed",`review=${id};request=${row.request_id}`);
   return json({ok:true,review_id:id,version:Number(row.version)+1,claim_expires_in_seconds:1800});
  }
