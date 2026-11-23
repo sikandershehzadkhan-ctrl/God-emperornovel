@@ -426,6 +426,48 @@ async function api(req,env){
  await ensureCoreSchema(env);
  await ensureRuntimeFeatureSchema(env);
  const u=await getUser(req,env);
+ // Account closure is a reversible request only. It never erases user data or
+ // revokes the account until a separately approved finalization system exists.
+ if(p==="/api/account/closure-request"&&m==="GET"){
+  const e=need(u);if(e)return e;
+  const row=await env.DB.prepare(`SELECT r.id,r.status,r.requested_at,r.grace_until,r.cancelled_at,r.completed_at,v.state review_state,v.version review_version FROM account_closure_requests r LEFT JOIN account_deletion_reviews v ON v.request_id=r.id WHERE r.user_id=? ORDER BY r.id DESC LIMIT 1`).bind(u.id).first();
+  return json({request:row||null});
+ }
+ if(p==="/api/account/closure-request"&&m==="POST"){
+  const e=need(u);if(e)return e;
+  if(req.headers.get("origin")!==url.origin||!String(req.headers.get("content-type")||"").toLowerCase().startsWith("application/json"))return json({error:"Same-origin JSON request required"},403);
+  const existing=await env.DB.prepare("SELECT id,status FROM account_closure_requests WHERE user_id=? AND status IN ('pending','review_required','pending_deletion') ORDER BY id DESC LIMIT 1").bind(u.id).first();
+  if(existing)return json({error:"An account closure request is already active",request_id:existing.id,status:existing.status},409);
+  const requested=now(),grace=requested+30*86400;
+  let results;
+  try{
+   results=await env.DB.batch([
+    env.DB.prepare("INSERT INTO account_closure_requests(user_id,status,requested_at,grace_until) VALUES(?,'pending',?,?)").bind(u.id,requested,grace),
+    env.DB.prepare("INSERT INTO account_deletion_reviews(request_id,subject_user_id,state) SELECT r.id,r.user_id,'review_required' FROM account_closure_requests r WHERE r.user_id=? AND r.status='pending' AND NOT EXISTS (SELECT 1 FROM account_deletion_reviews v WHERE v.request_id=r.id) ORDER BY r.id DESC LIMIT 1").bind(u.id),
+    env.DB.prepare("INSERT INTO account_deletion_review_events(review_id,request_id,actor_id,event_type,from_state,to_state,review_version,metadata_json) SELECT v.id,v.request_id,NULL,'case_opened',NULL,v.state,v.version,'{}' FROM account_deletion_reviews v WHERE v.subject_user_id=? AND v.state='review_required' ORDER BY v.id DESC LIMIT 1").bind(u.id)
+   ]);
+  }catch{return json({error:"Could not create the closure request. Refresh and check its status before retrying."},409)}
+  const changed=r=>Number(r?.meta?.changes??r?.changes??0);
+  if(!results||changed(results[0])!==1||changed(results[1])!==1||changed(results[2])!==1)return json({error:"Closure request was not fully recorded. Contact support before retrying."},409);
+  const row=await env.DB.prepare("SELECT id,status,requested_at,grace_until FROM account_closure_requests WHERE user_id=? AND status='pending' ORDER BY id DESC LIMIT 1").bind(u.id).first();
+  await audit(env,u,"account_closure_requested",`request=${row?.id||0};grace_until=${grace}`);
+  return json({ok:true,request:row,review_state:"review_required"},201);
+ }
+ if(p==="/api/account/closure-request/cancel"&&m==="POST"){
+  const e=need(u);if(e)return e;
+  if(req.headers.get("origin")!==url.origin||!String(req.headers.get("content-type")||"").toLowerCase().startsWith("application/json"))return json({error:"Same-origin JSON request required"},403);
+  const row=await env.DB.prepare(`SELECT r.id,v.version FROM account_closure_requests r JOIN account_deletion_reviews v ON v.request_id=r.id WHERE r.user_id=? AND r.status='pending' AND v.state='review_required' ORDER BY r.id DESC LIMIT 1`).bind(u.id).first();
+  if(!row)return json({error:"No cancellable closure request was found"},409);
+  const at=now();
+  const results=await env.DB.batch([
+   env.DB.prepare("UPDATE account_deletion_reviews SET state='cancelled',version=version+1,updated_at=CURRENT_TIMESTAMP WHERE request_id=? AND subject_user_id=? AND state='review_required' AND version=? AND EXISTS (SELECT 1 FROM account_closure_requests r WHERE r.id=? AND r.user_id=? AND r.status='pending')").bind(row.id,u.id,row.version,row.id,u.id),
+   env.DB.prepare("UPDATE account_closure_requests SET status='cancelled',cancelled_at=?,updated_at=CURRENT_TIMESTAMP WHERE id=? AND user_id=? AND status='pending' AND EXISTS (SELECT 1 FROM account_deletion_reviews v WHERE v.request_id=? AND v.subject_user_id=? AND v.state='cancelled' AND v.version=?)").bind(at,row.id,u.id,row.id,u.id,Number(row.version)+1)
+  ]);
+  const changed=r=>Number(r?.meta?.changes??r?.changes??0);
+  if(changed(results?.[0])!==1||changed(results?.[1])!==1)return json({error:"The request changed before cancellation could complete. Refresh and try again."},409);
+  await audit(env,u,"account_closure_cancelled",`request=${row.id}`);
+  return json({ok:true,status:"cancelled",request_id:row.id});
+ }
  if(p==="/api/agents"&&m==="GET"){return json((await env.DB.prepare(`SELECT slug,name,role,icon,mode,status,last_run_at FROM agents WHERE enabled=1 ORDER BY id`).all()).results)}
  if(p==="/api/admin/agents"&&m==="GET"){const e=admin(u);if(e)return e;return json((await env.DB.prepare(`SELECT id,slug,name,role,icon,mode,status,enabled,last_run_at,last_result FROM agents ORDER BY id`).all()).results)}
  if(p==="/api/admin/agents/run"&&m==="POST"){const e=admin(u);if(e)return e;const b=await body(req);const slug=String(b.slug||'');if(slug)return json(await runAgent(env,slug,'admin'));return json(await runAutomation(env))}
