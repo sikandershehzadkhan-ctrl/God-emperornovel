@@ -11,8 +11,8 @@ assert.equal(registry.version, 1);
 assert.equal(registry.sourceFile, "src/index.js");
 assert.match(registry.sourceBlob, /^src\/index\.js@[a-f0-9]{40}$/);
 assert.equal(routeManifest.apiAuthorizationRegistry, "docs/architecture/API-AUTHORIZATION-REGISTRY-01N.json");
-const indexBlob = execFileSync("git", ["hash-object", "src/index.js"], { encoding:"utf8" }).trim();
-const apiRegistryBlob = execFileSync("git", ["hash-object", "docs/architecture/API-AUTHORIZATION-REGISTRY-01N.json"], { encoding:"utf8" }).trim();
+const indexBlob = execFileSync("git", ["rev-parse", "HEAD:src/index.js"], { encoding:"utf8" }).trim();
+const apiRegistryBlob = execFileSync("git", ["rev-parse", "HEAD:docs/architecture/API-AUTHORIZATION-REGISTRY-01N.json"], { encoding:"utf8" }).trim();
 assert.equal(registry.sourceBlob, "src/index.js@" + indexBlob, "API inventory source blob must match the checked Worker source");
 assert.equal(routeManifest.apiAuthorizationRegistrySourceBlob,
   "docs/architecture/API-AUTHORIZATION-REGISTRY-01N.json@" + apiRegistryBlob,
