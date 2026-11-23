@@ -1,0 +1,40 @@
+name: Prepare Tiptap security remediation
+on:
+  push:
+    branches:
+      - security/tiptap-3350-remediation-2026-11-23
+  workflow_dispatch:
+permissions:
+  contents: write
+jobs:
+  prepare:
+    if: github.actor != 'github-actions[bot]'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.ref_name }}
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - name: Install current locked dependencies
+        run: npm ci
+      - name: Upgrade coordinated Tiptap packages and regenerate lockfile
+        run: |
+          npm pkg set 'dependencies.@tiptap/react=3.35.0' 'dependencies.@tiptap/starter-kit=3.35.0' 'overrides.@tiptap/extension-bubble-menu=3.35.0' 'overrides.@tiptap/extension-floating-menu=3.35.0'
+          npm install --package-lock-only --ignore-scripts
+          npm ci
+      - name: Update editor version contract
+        run: sed -i 's/"3.30.3"/"3.35.0"/g' scripts/test-author-editor-bundle.mjs
+      - name: Verify zero vulnerabilities and full Cloudflare build
+        run: |
+          npm audit --audit-level=low
+          npm run build:cloudflare
+      - name: Commit verified dependency remediation
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add package.json package-lock.json scripts/test-author-editor-bundle.mjs
+          git commit -m "fix(security): upgrade Tiptap to patched 3.35.0"
+          git push
