@@ -3,7 +3,7 @@
   "registryName": "Imperial Novel API authorization and object-ownership registry",
   "sourceFile": "src/index.js",
   "sourceCommit": "f1c247fbb6a6eb347e30b01e8a0a916565976c3b",
-  "sourceBlob": "src/index.js@d21588a6a48a7e7834c04061ced990a52ee64157",
+  "sourceBlob": "src/index.js@c5b8a7d311b519f17b04a316e672f0d25bb60644",
   "coverage": "All exact API path/method declarations plus dynamic API patterns are inventoried; critical admin, user-owned, author-owned, public-rights and payment paths have explicit source guards and scope assertions.",
   "exactInventory": [
     {
@@ -463,6 +463,12 @@
       ]
     },
     {
+      "path": "/api/reviewer/account-deletion/approve",
+      "methods": [
+        "POST"
+      ]
+    },
+    {
       "path": "/api/reviewer/account-deletion/claim",
       "methods": [
         "POST"
@@ -470,6 +476,12 @@
     },
     {
       "path": "/api/reviewer/account-deletion/findings",
+      "methods": [
+        "POST"
+      ]
+    },
+    {
+      "path": "/api/reviewer/account-deletion/plan",
       "methods": [
         "POST"
       ]
@@ -1211,12 +1223,12 @@
       "guard": "need(u) plus active, unrevoked account_deletion_reviewer_assignments for u.id and category-specific role",
       "routes": [
         {
-          "path": "/api/reviewer/account-deletion/queue",
+          "path": "/api/reviewer/account-deletion/approve",
           "methods": [
-            "GET"
+            "POST"
           ],
           "guard": "need(u)",
-          "scope": "only cases visible to the active reviewer; active assignment selected by session u.id"
+          "scope": "active deletion_second_approver role; requester and proposer excluded; exact latest plan digest; immutable independent approval; no erasure execution"
         },
         {
           "path": "/api/reviewer/account-deletion/claim",
@@ -1233,6 +1245,22 @@
           ],
           "guard": "need(u)",
           "scope": "category-specific active specialist assignment; reviewer identity from u.id; active claim, subject isolation, immutable versioned finding enforced by SQLite"
+        },
+        {
+          "path": "/api/reviewer/account-deletion/plan",
+          "methods": [
+            "POST"
+          ],
+          "guard": "need(u)",
+          "scope": "active support/privacy case claimant; all eleven latest specialist findings required; canonical SHA-256 digest; immutable plan/items and compare-and-set review version"
+        },
+        {
+          "path": "/api/reviewer/account-deletion/queue",
+          "methods": [
+            "GET"
+          ],
+          "guard": "need(u)",
+          "scope": "only cases visible to the active reviewer; active assignment selected by session u.id"
         }
       ],
       "scope": "Reviewer privileges are explicit, revocable assignments and never inherited from the broad admin role."
