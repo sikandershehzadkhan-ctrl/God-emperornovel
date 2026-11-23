@@ -468,6 +468,86 @@ async function api(req,env){
   await audit(env,u,"account_closure_cancelled",`request=${row.id}`);
   return json({ok:true,status:"cancelled",request_id:row.id});
  }
+ // Account-deletion reviewer controls. Review actions never execute data erasure.
+ const reviewerRoles=['support_reviewer','creator_rights_reviewer','finance_compliance_reviewer','privacy_administrator','deletion_second_approver'];
+ if(p==="/api/admin/account-deletion/reviewers"&&m==="GET"){
+  const e=admin(u);if(e)return e;
+  return json((await env.DB.prepare("SELECT a.id,a.user_id,u.username,a.role_key,a.assigned_by,a.assigned_at,a.revoked_by,a.revoked_at FROM account_deletion_reviewer_assignments a JOIN users u ON u.id=a.user_id ORDER BY a.revoked_at IS NULL DESC,a.role_key,u.username").all()).results||[]);
+ }
+ if(p==="/api/admin/account-deletion/reviewers"&&m==="POST"){
+  const e=admin(u);if(e)return e;
+  if(req.headers.get("origin")!==url.origin||!String(req.headers.get("content-type")||"").toLowerCase().startsWith("application/json"))return json({error:"Same-origin JSON request required"},403);
+  const b=await body(req),target=Number(b.user_id),role=String(b.role_key||"");
+  if(!Number.isSafeInteger(target)||target<1||!reviewerRoles.includes(role))return json({error:"Valid user_id and reviewer role are required"},400);
+  const subject=await env.DB.prepare("SELECT id FROM users WHERE id=? AND COALESCE(banned,0)=0").bind(target).first();
+  if(!subject)return json({error:"Active reviewer account not found"},404);
+  if(target===u.id)return json({error:"Administrators cannot assign a reviewer role to themselves"},409);
+  try{
+   const result=await env.DB.prepare("INSERT INTO account_deletion_reviewer_assignments(user_id,role_key,assigned_by) VALUES(?,?,?)").bind(target,role,u.id).run();
+   await audit(env,u,"account_deletion_reviewer_assigned",`assignment=${result.meta?.last_row_id||0};user=${target};role=${role}`);
+   return json({ok:true,assignment_id:result.meta?.last_row_id||null,user_id:target,role_key:role},201);
+  }catch{return json({error:"Assignment conflicts with an existing active role or database security rule"},409)}
+ }
+ if(p==="/api/admin/account-deletion/reviewers/revoke"&&m==="POST"){
+  const e=admin(u);if(e)return e;
+  if(req.headers.get("origin")!==url.origin||!String(req.headers.get("content-type")||"").toLowerCase().startsWith("application/json"))return json({error:"Same-origin JSON request required"},403);
+  const b=await body(req),id=Number(b.assignment_id);
+  if(!Number.isSafeInteger(id)||id<1)return json({error:"Valid assignment_id is required"},400);
+  const result=await env.DB.prepare("UPDATE account_deletion_reviewer_assignments SET revoked_by=?,revoked_at=CURRENT_TIMESTAMP WHERE id=? AND revoked_at IS NULL").bind(u.id,id).run();
+  if(Number(result.meta?.changes||0)!==1)return json({error:"Active reviewer assignment not found or already revoked"},409);
+  await audit(env,u,"account_deletion_reviewer_revoked",`assignment=${id}`);
+  return json({ok:true,assignment_id:id,revoked:true});
+ }
+ if(p==="/api/admin/account-deletion/queue"&&m==="GET"){
+  const e=admin(u);if(e)return e;
+  return json((await env.DB.prepare("SELECT v.id review_id,v.request_id,v.subject_user_id,v.state,v.version,v.claimed_by,v.claim_expires_at,v.proposed_by,v.approved_by,r.status request_status,r.requested_at,r.grace_until,u.username subject_username FROM account_deletion_reviews v JOIN account_closure_requests r ON r.id=v.request_id JOIN users u ON u.id=v.subject_user_id ORDER BY CASE v.state WHEN 'review_required' THEN 0 WHEN 'review_in_progress' THEN 1 ELSE 2 END,v.created_at,v.id LIMIT 200").all()).results||[]);
+ }
+ if(p==="/api/reviewer/account-deletion/queue"&&m==="GET"){
+  const e=need(u);if(e)return e;
+  const assignments=await env.DB.prepare("SELECT role_key FROM account_deletion_reviewer_assignments WHERE user_id=? AND revoked_at IS NULL").bind(u.id).all();
+  if(!assignments.results?.length)return json({error:"Active account-deletion reviewer assignment required"},403);
+  return json((await env.DB.prepare("SELECT v.id review_id,v.request_id,v.state,v.version,v.claimed_by,v.claim_expires_at,r.status request_status,r.requested_at,r.grace_until FROM account_deletion_reviews v JOIN account_closure_requests r ON r.id=v.request_id WHERE v.state IN ('review_required','review_in_progress','awaiting_user_action','blocked_retention') AND (v.claimed_by IS NULL OR v.claimed_by=? OR v.claim_expires_at<=CURRENT_TIMESTAMP) ORDER BY v.created_at,v.id LIMIT 100").bind(u.id).all()).results||[]);
+ }
+ if(p==="/api/reviewer/account-deletion/claim"&&m==="POST"){
+  const e=need(u);if(e)return e;
+  if(req.headers.get("origin")!==url.origin||!String(req.headers.get("content-type")||"").toLowerCase().startsWith("application/json"))return json({error:"Same-origin JSON request required"},403);
+  const b=await body(req),id=Number(b.review_id);
+  if(!Number.isSafeInteger(id)||id<1)return json({error:"Valid review_id is required"},400);
+  const eligible=await env.DB.prepare("SELECT 1 ok FROM account_deletion_reviewer_assignments WHERE user_id=? AND revoked_at IS NULL AND role_key IN ('support_reviewer','privacy_administrator') LIMIT 1").bind(u.id).first();
+  if(!eligible)return json({error:"Active support or privacy reviewer assignment required to claim cases"},403);
+  const row=await env.DB.prepare("SELECT v.id,v.request_id,v.subject_user_id,v.version,r.status request_status FROM account_deletion_reviews v JOIN account_closure_requests r ON r.id=v.request_id WHERE v.id=?").bind(id).first();
+  if(!row)return json({error:"Review case not found"},404);
+  if(Number(row.subject_user_id)===Number(u.id))return json({error:"The account owner cannot review their own case"},403);
+  if(!["pending","review_required"].includes(row.request_status))return json({error:"This request is not eligible for review"},409);
+  const result=await env.DB.prepare("UPDATE account_deletion_reviews SET state='review_in_progress',version=version+1,claimed_by=?,claim_expires_at=datetime('now','+30 minutes'),updated_at=CURRENT_TIMESTAMP WHERE id=? AND subject_user_id<>? AND version=? AND (state='review_required' OR (state='review_in_progress' AND (claimed_by=? OR claim_expires_at<=CURRENT_TIMESTAMP)))").bind(u.id,id,u.id,row.version,u.id).run();
+  if(Number(result.meta?.changes||0)!==1)return json({error:"Case was claimed or changed by another reviewer. Refresh the queue."},409);
+  const request=await env.DB.prepare("UPDATE account_closure_requests SET status='review_required',updated_at=CURRENT_TIMESTAMP WHERE id=? AND user_id=? AND status IN ('pending','review_required')").bind(row.request_id,row.subject_user_id).run();
+  if(Number(request.meta?.changes||0)!==1)return json({error:"Case claim recorded but request state needs administrator reconciliation"},409);
+  await audit(env,u,"account_deletion_case_claimed",`review=${id};request=${row.request_id}`);
+  return json({ok:true,review_id:id,version:Number(row.version)+1,claim_expires_in_seconds:1800});
+ }
+ if(p==="/api/reviewer/account-deletion/findings"&&m==="POST"){
+  const e=need(u);if(e)return e;
+  if(req.headers.get("origin")!==url.origin||!String(req.headers.get("content-type")||"").toLowerCase().startsWith("application/json"))return json({error:"Same-origin JSON request required"},403);
+  const b=await body(req),reviewId=Number(b.review_id),dependency=String(b.dependency_key||""),outcome=String(b.outcome||""),reason=String(b.reason||"").trim(),policy=String(b.policy_reference||"").trim(),evidence=b.evidence_ref==null?null:String(b.evidence_ref).trim();
+  const dependencies=['creator_content','creator_rights','ownership_transfers','financial_ledger','donations_refunds_disputes','moderation_legal_holds','ai_projects','omniportal_jobs','sessions_notifications','provider_records','backups'];
+  const outcomes=['retain','anonymize','delete','transfer_with_consent','await_user_action','block'];
+  if(!Number.isSafeInteger(reviewId)||reviewId<1||!dependencies.includes(dependency)||!outcomes.includes(outcome)||reason.length<1||reason.length>500||policy.length<1||policy.length>100||(evidence!==null&&(evidence.length<1||evidence.length>160)))return json({error:"Finding fields are invalid or exceed policy limits"},400);
+  const roleByDependency={creator_content:'creator_rights_reviewer',creator_rights:'creator_rights_reviewer',ownership_transfers:'creator_rights_reviewer',financial_ledger:'finance_compliance_reviewer',donations_refunds_disputes:'finance_compliance_reviewer',moderation_legal_holds:'privacy_administrator',ai_projects:'privacy_administrator',omniportal_jobs:'privacy_administrator',sessions_notifications:'privacy_administrator',provider_records:'privacy_administrator',backups:'privacy_administrator'};
+  const assigned=await env.DB.prepare("SELECT 1 ok FROM account_deletion_reviewer_assignments WHERE user_id=? AND role_key=? AND revoked_at IS NULL LIMIT 1").bind(u.id,roleByDependency[dependency]).first();
+  if(!assigned)return json({error:"An active specialist role for this finding category is required"},403);
+  const review=await env.DB.prepare("SELECT v.request_id,v.subject_user_id,v.version,v.state,v.claimed_by,v.claim_expires_at,r.status request_status FROM account_deletion_reviews v JOIN account_closure_requests r ON r.id=v.request_id WHERE v.id=?").bind(reviewId).first();
+  if(!review)return json({error:"Review case not found"},404);
+  if(Number(review.subject_user_id)===Number(u.id))return json({error:"The account owner cannot review their own case"},403);
+  if(review.state!=="review_in_progress"||!review.claimed_by||!review.claim_expires_at||review.claim_expires_at<=new Date().toISOString().replace("T"," ").slice(0,19)||!["pending_deletion","review_required"].includes(review.request_status))return json({error:"The case must have an active reviewer claim before specialist findings can be submitted"},409);
+  const previous=await env.DB.prepare("SELECT COALESCE(MAX(revision),0) revision FROM account_deletion_disposition_findings WHERE review_id=? AND dependency_key=?").bind(reviewId,dependency).first();
+  const revision=Number(previous?.revision||0)+1;
+  try{
+   const result=await env.DB.prepare("INSERT INTO account_deletion_disposition_findings(review_id,request_id,dependency_key,revision,reviewer_id,review_version,outcome,reason,evidence_ref,policy_reference) VALUES(?,?,?,?,?,?,?,?,?,?)").bind(reviewId,review.request_id,dependency,revision,u.id,review.version,outcome,reason,evidence,policy).run();
+   await audit(env,u,"account_deletion_specialist_finding",`review=${reviewId};dependency=${dependency};revision=${revision}`);
+   return json({ok:true,finding_id:result.meta?.last_row_id||null,review_id:reviewId,dependency_key:dependency,revision},201);
+  }catch{return json({error:"Finding rejected by review state, role, lease, version, or database integrity rules"},409)}
+ }
  if(p==="/api/agents"&&m==="GET"){return json((await env.DB.prepare(`SELECT slug,name,role,icon,mode,status,last_run_at FROM agents WHERE enabled=1 ORDER BY id`).all()).results)}
  if(p==="/api/admin/agents"&&m==="GET"){const e=admin(u);if(e)return e;return json((await env.DB.prepare(`SELECT id,slug,name,role,icon,mode,status,enabled,last_run_at,last_result FROM agents ORDER BY id`).all()).results)}
  if(p==="/api/admin/agents/run"&&m==="POST"){const e=admin(u);if(e)return e;const b=await body(req);const slug=String(b.slug||'');if(slug)return json(await runAgent(env,slug,'admin'));return json(await runAutomation(env))}
