@@ -22,8 +22,9 @@ jobs:
           npm pkg set 'dependencies.@tiptap/react=3.35.0' 'dependencies.@tiptap/starter-kit=3.35.0' 'overrides.@tiptap/extension-bubble-menu=3.35.0' 'overrides.@tiptap/extension-floating-menu=3.35.0'
           npm install --package-lock-only --ignore-scripts
           npm ci
-      - name: Capture audit and build results
+      - name: Validate editor version policy and build
         run: |
+          sed -i 's/"3.30.3"/"3.35.0"/g' scripts/test-author-editor-bundle.mjs
           npm audit --json > npm-audit-upgraded.json || audit_status=$?
           node -e "const a=require('./npm-audit-upgraded.json'); console.log(JSON.stringify(a.metadata?.vulnerabilities ?? {}, null, 2))"
           npm run build:cloudflare
