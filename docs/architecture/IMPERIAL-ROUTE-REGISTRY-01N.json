@@ -1081,6 +1081,6 @@
   },
   "runtimeRegistrySourceBlob": "src/route-registry.mjs@67ea3926ba32cf0bd2535f40250da5a9e1c9bb13",
   "apiAuthorizationRegistry": "docs/architecture/API-AUTHORIZATION-REGISTRY-01N.json",
-  "apiAuthorizationStatus": "All 76 exact API paths/methods and 13 dynamic patterns are inventoried; critical admin, user-owned (including reversible account closure), author-owned, public-rights, Omni connector, and payment-webhook policies are source-tested. Adversarial D1-backed runtime tests remain open.",
-  "apiAuthorizationRegistrySourceBlob": "docs/architecture/API-AUTHORIZATION-REGISTRY-01N.json@76ad2991f2a8a054d0c2d17d0ef4123d77ec44b7"
+  "apiAuthorizationStatus": "Account closure self-service, reviewer assignments/queue/claims, specialist findings, digest-bound disposition plans and independent approvals are implemented and source-inventoried. Finalization/erasure execution is deliberately not implemented.",
+  "apiAuthorizationRegistrySourceBlob": "docs/architecture/API-AUTHORIZATION-REGISTRY-01N.json@26321afd30fa80c9f9ac32ee64b8a52dddf7df5b"
 }
