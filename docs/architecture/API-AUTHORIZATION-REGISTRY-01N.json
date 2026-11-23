@@ -2,10 +2,23 @@
   "version": 1,
   "registryName": "Imperial Novel API authorization and object-ownership registry",
   "sourceFile": "src/index.js",
-  "sourceCommit": "e0b42d995c83daa1aac75654d67e3d34a5b1283c",
-  "sourceBlob": "src/index.js@47779654feff93a4f16fa9623e08ac62257e2dac",
+  "sourceCommit": "f1c247fbb6a6eb347e30b01e8a0a916565976c3b",
+  "sourceBlob": "src/index.js@002aecece0996745a66dc64b33b96bc3955cf24e",
   "coverage": "All exact API path/method declarations plus dynamic API patterns are inventoried; critical admin, user-owned, author-owned, public-rights and payment paths have explicit source guards and scope assertions.",
   "exactInventory": [
+    {
+      "path": "/api/account/closure-request",
+      "methods": [
+        "GET",
+        "POST"
+      ]
+    },
+    {
+      "path": "/api/account/closure-request/cancel",
+      "methods": [
+        "POST"
+      ]
+    },
     {
       "path": "/api/admin/agents",
       "methods": [
@@ -943,6 +956,30 @@
           ],
           "guard": "need(u)",
           "scope": "request user_id bound to u.id"
+        },
+        {
+          "path": "/api/account/closure-request",
+          "methods": [
+            "GET"
+          ],
+          "guard": "need(u)",
+          "scope": "closure request and review summary selected only by authenticated session user_id=u.id"
+        },
+        {
+          "path": "/api/account/closure-request",
+          "methods": [
+            "POST"
+          ],
+          "guard": "need(u)",
+          "scope": "new request user_id derived from u.id; same-origin JSON mutation; one active request per user; creates review case and immutable opening event"
+        },
+        {
+          "path": "/api/account/closure-request/cancel",
+          "methods": [
+            "POST"
+          ],
+          "guard": "need(u)",
+          "scope": "cancellation selects and compare-and-sets only the authenticated user's pending request and unclaimed review"
         }
       ],
       "scope": "User-owned rows are scoped with authenticated u.id, not a client-supplied user id."
