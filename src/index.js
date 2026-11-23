@@ -506,7 +506,7 @@ async function api(req,env){
   const e=need(u);if(e)return e;
   const assignments=await env.DB.prepare("SELECT role_key FROM account_deletion_reviewer_assignments WHERE user_id=? AND revoked_at IS NULL").bind(u.id).all();
   if(!assignments.results?.length)return json({error:"Active account-deletion reviewer assignment required"},403);
-  return json((await env.DB.prepare("SELECT v.id review_id,v.request_id,v.state,v.version,v.claimed_by,v.claim_expires_at,r.status request_status,r.requested_at,r.grace_until FROM account_deletion_reviews v JOIN account_closure_requests r ON r.id=v.request_id WHERE v.state IN ('review_required','review_in_progress','awaiting_user_action','blocked_retention') ORDER BY v.created_at,v.id LIMIT 100").all().all()).results||[]);
+  return json((await env.DB.prepare("SELECT v.id review_id,v.request_id,v.state,v.version,v.claimed_by,v.claim_expires_at,r.status request_status,r.requested_at,r.grace_until FROM account_deletion_reviews v JOIN account_closure_requests r ON r.id=v.request_id WHERE v.state IN ('review_required','review_in_progress','awaiting_user_action','blocked_retention') ORDER BY v.created_at,v.id LIMIT 100").all()).results||[]);
  }
  if(p==="/api/reviewer/account-deletion/claim"&&m==="POST"){
   const e=need(u);if(e)return e;
