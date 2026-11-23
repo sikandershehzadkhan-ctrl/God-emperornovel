@@ -102,6 +102,9 @@ for (const route of registry.policies.reviewerOwned.routes) {
 }
 const reviewerAssignmentCreate = handler("/api/admin/account-deletion/reviewers", "POST");
 const reviewerAssignmentRevoke = handler("/api/admin/account-deletion/reviewers/revoke", "POST");
+const reviewerQueue = handler("/api/reviewer/account-deletion/queue", "GET");
+assert.ok(reviewerQueue.includes(".all()).results") && !reviewerQueue.includes(".all().all()"),
+  "reviewer queue must use a valid single D1 all() result call");
 const reviewerClaim = handler("/api/reviewer/account-deletion/claim", "POST");
 const reviewerFinding = handler("/api/reviewer/account-deletion/findings", "POST");
 const reviewerPlan = handler("/api/reviewer/account-deletion/plan", "POST");
