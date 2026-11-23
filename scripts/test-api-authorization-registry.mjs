@@ -104,6 +104,17 @@ const reviewerAssignmentCreate = handler("/api/admin/account-deletion/reviewers"
 const reviewerAssignmentRevoke = handler("/api/admin/account-deletion/reviewers/revoke", "POST");
 const reviewerClaim = handler("/api/reviewer/account-deletion/claim", "POST");
 const reviewerFinding = handler("/api/reviewer/account-deletion/findings", "POST");
+const reviewerPlan = handler("/api/reviewer/account-deletion/plan", "POST");
+const reviewerApproval = handler("/api/reviewer/account-deletion/approve", "POST");
+assert.ok(reviewerPlan.includes("items.length!==dependencies.length") &&
+  reviewerPlan.includes("crypto.subtle.digest") && reviewerPlan.includes("account_deletion_disposition_plans") &&
+  reviewerPlan.includes("base_review_version"),
+  "disposition proposals must require all dependency reviews and create a canonical digest-bound immutable plan");
+assert.ok(reviewerApproval.includes("role_key='deletion_second_approver'") &&
+  reviewerApproval.includes("row.proposed_by") && reviewerApproval.includes("approved_plan_digest") &&
+  reviewerApproval.includes("erasure_executed:false"),
+  "approval must be independent, bound to the exact plan, and never execute erasure");
+
 assert.ok(reviewerAssignmentCreate.includes("admin(u)") && reviewerAssignmentCreate.includes("assigned_by") &&
   reviewerAssignmentCreate.includes("reviewerRoles"), "reviewer grants must be administrator-only and role allowlisted");
 assert.ok(reviewerAssignmentRevoke.includes("admin(u)") && reviewerAssignmentRevoke.includes("revoked_by") &&
