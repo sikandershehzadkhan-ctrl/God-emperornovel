@@ -165,9 +165,9 @@ function assess(evidence) {
           'Required unique key is not visible in incomplete PRAGMA index_list evidence.' });
   }
   for (const expected of EXPECTED_FOREIGN_KEYS) {
-    const actual = evidence.foreignKeys.find(fk => fk.table === expected.table &&
-      fk.from === expected.from && fk.to === expected.to &&
-      fk.on_delete === expected.on_delete && fk.target_table === expected.target);
+    const actual = evidence.foreignKeys.find(fk => fk.source_table === expected.table && fk.from === expected.from &&
+      fk.table === expected.target && fk.to === expected.to &&
+      fk.on_delete === expected.on_delete);
     rows.push({
       object: 'foreign-key',
       name: expected.table + '.' + expected.from + ' -> ' + expected.target + '.' + expected.to,
@@ -228,12 +228,12 @@ function selfTest() {
     {name:'media_assets_object_key',table:'media_assets',columns:['object_key'],unique:true},
     {name:'comic_chapter_pages_chapter_page',table:'comic_chapter_pages',columns:['chapter_id','page_number'],unique:true},
     {name:'comic_chapter_pages_chapter_asset',table:'comic_chapter_pages',columns:['chapter_id','media_asset_id'],unique:true}], foreignKeys:[
-      {table:'media_assets',target_table:'users',from:'owner_user_id',to:'id',on_delete:'CASCADE'},
-      {table:'media_assets',target_table:'users',from:'reviewed_by_user_id',to:'id',on_delete:'SET NULL'},
-      {table:'comic_chapter_pages',target_table:'chapters',from:'chapter_id',to:'id',on_delete:'CASCADE'},
-      {table:'comic_chapter_pages',target_table:'media_assets',from:'media_asset_id',to:'id',on_delete:'RESTRICT'},
-      {table:'media_asset_reviews',target_table:'media_assets',from:'media_asset_id',to:'id',on_delete:'RESTRICT'},
-      {table:'media_asset_reviews',target_table:'users',from:'reviewer_user_id',to:'id',on_delete:'RESTRICT'}
+      {source_table:'media_assets',table:'users',from:'owner_user_id',to:'id',on_delete:'CASCADE'},
+      {source_table:'media_assets',table:'users',from:'reviewed_by_user_id',to:'id',on_delete:'SET NULL'},
+      {source_table:'comic_chapter_pages',table:'chapters',from:'chapter_id',to:'id',on_delete:'CASCADE'},
+      {source_table:'comic_chapter_pages',table:'media_assets',from:'media_asset_id',to:'id',on_delete:'RESTRICT'},
+      {source_table:'media_asset_reviews',table:'media_assets',from:'media_asset_id',to:'id',on_delete:'RESTRICT'},
+      {source_table:'media_asset_reviews',table:'users',from:'reviewer_user_id',to:'id',on_delete:'RESTRICT'}
     ], triggers: Object.keys({
     trg_comic_page_requires_publishable_asset_insert:1,trg_comic_page_requires_publishable_asset_update:1,trg_referenced_media_must_remain_publishable:1,
     trg_comic_page_asset_must_match_novel_owner_insert:1,trg_comic_page_asset_must_match_novel_owner_update:1,
