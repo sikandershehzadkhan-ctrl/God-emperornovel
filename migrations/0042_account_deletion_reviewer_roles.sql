@@ -21,6 +21,29 @@ CREATE UNIQUE INDEX IF NOT EXISTS uq_account_deletion_reviewer_active_role
 CREATE INDEX IF NOT EXISTS idx_account_deletion_reviewer_active
   ON account_deletion_reviewer_assignments(role_key,user_id) WHERE revoked_at IS NULL;
 
+-- Reviewer grants and revocations are privileged security operations.
+-- Enforce the active administrator identity in SQLite, not only in API code.
+CREATE TRIGGER IF NOT EXISTS trg_account_deletion_reviewer_assignment_admin
+BEFORE INSERT ON account_deletion_reviewer_assignments
+WHEN NOT EXISTS (
+  SELECT 1 FROM users
+  WHERE id=NEW.assigned_by AND role='admin' AND COALESCE(banned,0)=0
+)
+BEGIN
+  SELECT RAISE(ABORT,'reviewer role assignment requires an active administrator');
+END;
+CREATE TRIGGER IF NOT EXISTS trg_account_deletion_reviewer_revocation_admin
+BEFORE UPDATE OF revoked_by,revoked_at ON account_deletion_reviewer_assignments
+WHEN OLD.revoked_at IS NULL AND (
+  NEW.revoked_at IS NOT NULL OR NEW.revoked_by IS NOT NULL
+) AND NOT EXISTS (
+  SELECT 1 FROM users
+  WHERE id=NEW.revoked_by AND role='admin' AND COALESCE(banned,0)=0
+)
+BEGIN
+  SELECT RAISE(ABORT,'reviewer role revocation requires an active administrator');
+END;
+
 CREATE TABLE IF NOT EXISTS account_deletion_reviewer_assignment_events (
   id INTEGER PRIMARY KEY AUTOINCREMENT,
   assignment_id INTEGER NOT NULL,
