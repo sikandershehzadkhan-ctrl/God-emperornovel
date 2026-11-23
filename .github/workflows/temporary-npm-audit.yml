@@ -17,21 +17,22 @@ jobs:
           cache: npm
       - name: Install current locked dependencies
         run: npm ci
-      - name: Test patched Tiptap dependency tree
+      - name: Test coordinated Tiptap 3.35.0 upgrade
         run: |
-          npm pkg set 'overrides.@tiptap/extension-bubble-menu=3.30.5' 'overrides.@tiptap/extension-floating-menu=3.30.5'
-          npm audit fix --package-lock-only --ignore-scripts
+          npm pkg set 'dependencies.@tiptap/react=3.35.0' 'dependencies.@tiptap/starter-kit=3.35.0' 'overrides.@tiptap/extension-bubble-menu=3.35.0' 'overrides.@tiptap/extension-floating-menu=3.35.0'
+          npm install --package-lock-only --ignore-scripts
           npm ci
-      - name: Capture patched audit report
+      - name: Capture audit and build results
         run: |
-          npm audit --json > npm-audit-patched.json || status=$?
-          node -e "const a=require('./npm-audit-patched.json'); console.log(JSON.stringify(a.metadata?.vulnerabilities ?? {}, null, 2))"
-          exit ${status:-0}
+          npm audit --json > npm-audit-upgraded.json || audit_status=$?
+          node -e "const a=require('./npm-audit-upgraded.json'); console.log(JSON.stringify(a.metadata?.vulnerabilities ?? {}, null, 2))"
+          npm run build:cloudflare
+          exit ${audit_status:-0}
       - uses: actions/upload-artifact@v4
         if: always()
         with:
-          name: npm-audit-patched-report
+          name: npm-audit-upgraded-report
           path: |
-            npm-audit-patched.json
+            npm-audit-upgraded.json
             package-lock.json
           if-no-files-found: warn
