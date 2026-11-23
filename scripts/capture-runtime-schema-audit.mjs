@@ -59,9 +59,12 @@ function quoteIdentifier(value) {
   return '"' + String(value).replace(/"/g, '""') + '"';
 }
 
+// Cloudflare-managed D1 internals (for example, _cf_KV) may appear in
+// sqlite_master but are not exposed to customer-issued PRAGMA inspection.
+// Exclude platform-owned objects; this audit covers the application schema.
 const objects = runReadOnly(
-  'sqlite_master table and index inventory',
-  "SELECT type,name,tbl_name,sql FROM sqlite_master WHERE type IN ('table','index') AND name NOT LIKE 'sqlite_%' ORDER BY type,tbl_name,name;"
+  'sqlite_master application table and index inventory',
+  "SELECT type,name,tbl_name,sql FROM sqlite_master WHERE type IN ('table','index') AND name NOT LIKE 'sqlite_%' AND substr(name,1,4) <> '_cf_' AND substr(tbl_name,1,4) <> '_cf_' ORDER BY type,tbl_name,name;"
 );
 const tableObjects = objects.filter(row => row.type === 'table');
 const explicitIndexes = objects.filter(row => row.type === 'index' && row.sql !== null);
