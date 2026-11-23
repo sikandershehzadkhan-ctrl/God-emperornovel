@@ -92,6 +92,30 @@ for (const route of registry.dynamicInventory) {
   }
 }
 
+for (const route of registry.policies.reviewerOwned.routes) {
+  for (const method of route.methods) {
+    const snippet = handler(route.path, method);
+    assert.ok(snippet.includes("need(u)"), "reviewer route must require a session: " + method + " " + route.path);
+    assert.ok(snippet.includes("u.id") && snippet.includes("account_deletion_reviewer_assignments"),
+      "reviewer route must derive reviewer identity from active assignments for session u.id: " + method + " " + route.path);
+  }
+}
+const reviewerAssignmentCreate = handler("/api/admin/account-deletion/reviewers", "POST");
+const reviewerAssignmentRevoke = handler("/api/admin/account-deletion/reviewers/revoke", "POST");
+const reviewerClaim = handler("/api/reviewer/account-deletion/claim", "POST");
+const reviewerFinding = handler("/api/reviewer/account-deletion/findings", "POST");
+assert.ok(reviewerAssignmentCreate.includes("admin(u)") && reviewerAssignmentCreate.includes("assigned_by") &&
+  reviewerAssignmentCreate.includes("reviewerRoles"), "reviewer grants must be administrator-only and role allowlisted");
+assert.ok(reviewerAssignmentRevoke.includes("admin(u)") && reviewerAssignmentRevoke.includes("revoked_by") &&
+  reviewerAssignmentRevoke.includes("revoked_at"), "reviewer revocation must be administrator-only and auditable");
+assert.ok(reviewerClaim.includes("role_key IN ('support_reviewer','privacy_administrator')") &&
+  reviewerClaim.includes("subject_user_id") && reviewerClaim.includes("version=version+1") &&
+  reviewerClaim.includes("claim_expires_at"), "case claims must require an active eligible role, prevent self-review, and use versioned leases");
+assert.ok(reviewerFinding.includes("roleByDependency") && reviewerFinding.includes("reviewer_id") &&
+  reviewerFinding.includes("Date.parse(String(review.claim_expires_at)") &&
+  reviewerFinding.includes("account_deletion_disposition_findings"),
+  "specialist findings must enforce category roles, authenticated identity, active lease expiry and immutable finding storage");
+
 for (const route of registry.policies.userOwned.routes) {
   for (const method of route.methods) {
     const snippet = handler(route.path, method);
