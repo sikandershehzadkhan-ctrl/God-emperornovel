@@ -9,6 +9,8 @@ assert.ok(pendingCanonicalMigrations.length > 0,
 assert.ok(workflow.includes("workflow_dispatch:"), "Production deploy must remain manual.");
 assert.ok(workflow.includes("Require the exact reviewed production schema marker"),
   "Production deploy must require the exact reviewed schema marker.");
+assert.ok(workflow.includes("s.match(/\"value\"\\s*:\\s*\"([^\"]+)\"/)"),
+  "The schema marker parser must use whitespace matching rather than a literal backslash-s sequence.");
 assert.ok(workflow.includes('if [ "$marker" != "16.64.0" ]'),
   "Production deploy must fail closed unless the exact reviewed schema marker is present.");
 assert.ok(!workflow.includes("Legacy marker found. Checking production tables"),
