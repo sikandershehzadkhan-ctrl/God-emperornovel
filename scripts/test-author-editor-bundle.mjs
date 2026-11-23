@@ -2,6 +2,7 @@ import assert from "node:assert/strict";
 import fs from "node:fs";
 import { gzipSync } from "node:zlib";
 
+const lock = JSON.parse(fs.readFileSync("package-lock.json", "utf8"));
 const pkg = JSON.parse(fs.readFileSync("package.json", "utf8"));
 const app = fs.readFileSync("public/app.js", "utf8");
 const versionedApp = fs.readFileSync(`public/app-${pkg.version}.js`, "utf8");
@@ -15,6 +16,16 @@ const bundlePath = `public/author-editor-${pkg.version}.js`;
 assert.equal(app, versionedApp, "Editable and served application runtimes must match");
 assert.equal(pkg.dependencies["@tiptap/react"], "3.35.0");
 assert.equal(pkg.dependencies["@tiptap/starter-kit"], "3.35.0");
+assert.equal(pkg.overrides["@tiptap/extension-bubble-menu"], "3.35.0");
+assert.equal(pkg.overrides["@tiptap/extension-floating-menu"], "3.35.0");
+assert.deepEqual(lock.packages[""].dependencies, pkg.dependencies,
+  "Lockfile root dependencies must exactly match package.json");
+const tiptapVersions = Object.entries(lock.packages)
+  .filter(([path]) => path.includes("node_modules/@tiptap/"))
+  .map(([, metadata]) => metadata.version);
+assert.ok(tiptapVersions.length > 0, "Lockfile must contain the Tiptap dependency graph");
+assert.deepEqual([...new Set(tiptapVersions)], ["3.35.0"],
+  "Every installed Tiptap package must resolve to the coordinated 3.35.0 release");
 assert.ok(buildSource.includes("src/react/AuthorChapterEditor.jsx"), "Editor has a separate build entry");
 assert.ok(buildSource.includes("author-editor-${pkg.version}.js"), "Editor bundle is versioned");
 assert.ok(buildSource.includes("gzipSync"), "Build measures compressed editor bundle size");
