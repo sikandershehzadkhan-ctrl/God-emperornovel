@@ -548,6 +548,66 @@ async function api(req,env){
    return json({ok:true,finding_id:result.meta?.last_row_id||null,review_id:reviewId,dependency_key:dependency,revision},201);
   }catch{return json({error:"Finding rejected by review state, role, lease, version, or database integrity rules"},409)}
  }
+ if(p==="/api/reviewer/account-deletion/plan"&&m==="POST"){
+  const e=need(u);if(e)return e;
+  if(req.headers.get("origin")!==url.origin||!String(req.headers.get("content-type")||"").toLowerCase().startsWith("application/json"))return json({error:"Same-origin JSON request required"},403);
+  const b=await body(req),reviewId=Number(b.review_id),policy=String(b.policy_version||"").trim();
+  const dependencies=['creator_content','creator_rights','ownership_transfers','financial_ledger','donations_refunds_disputes','moderation_legal_holds','ai_projects','omniportal_jobs','sessions_notifications','provider_records','backups'];
+  const outcomes=['retain','anonymize','delete','transfer_with_consent','await_user_action','block'];
+  if(!Number.isSafeInteger(reviewId)||reviewId<1||policy.length<1||policy.length>64||!Array.isArray(b.items)||b.items.length!==dependencies.length)return json({error:"A review_id, policy_version, and all eleven disposition items are required"},400);
+  const items=b.items.map(x=>({dependency_key:String(x?.dependency_key||""),outcome:String(x?.outcome||""),reason:String(x?.reason||"").trim(),evidence_ref:x?.evidence_ref==null?null:String(x.evidence_ref).trim(),policy_reference:String(x?.policy_reference||"").trim()})).sort((a,z)=>a.dependency_key.localeCompare(z.dependency_key));
+  if(new Set(items.map(x=>x.dependency_key)).size!==dependencies.length||items.some(x=>!dependencies.includes(x.dependency_key)||!outcomes.includes(x.outcome)||x.reason.length<1||x.reason.length>500||x.policy_reference.length<1||x.policy_reference.length>100||(x.evidence_ref!==null&&(x.evidence_ref.length<1||x.evidence_ref.length>160)))||dependencies.some(k=>!items.some(x=>x.dependency_key===k)))return json({error:"Disposition items must uniquely cover every dependency and satisfy field limits"},400);
+  const eligible=await env.DB.prepare("SELECT 1 ok FROM account_deletion_reviewer_assignments WHERE user_id=? AND revoked_at IS NULL AND role_key IN ('support_reviewer','privacy_administrator') LIMIT 1").bind(u.id).first();
+  if(!eligible)return json({error:"Active support or privacy reviewer assignment required to propose a plan"},403);
+  const review=await env.DB.prepare("SELECT v.id,v.request_id,v.subject_user_id,v.version,v.state,v.claimed_by,v.claim_expires_at FROM account_deletion_reviews v WHERE v.id=?").bind(reviewId).first();
+  if(!review)return json({error:"Review case not found"},404);
+  if(Number(review.subject_user_id)===Number(u.id))return json({error:"The account owner cannot propose their own disposition"},403);
+  if(review.state!=="review_in_progress"||Number(review.claimed_by)!==Number(u.id)||!review.claim_expires_at||Date.parse(String(review.claim_expires_at).replace(" ","T")+"Z")<=Date.now())return json({error:"An active case claim held by this reviewer is required"},409);
+  for(const item of items){
+   const finding=await env.DB.prepare("SELECT id FROM account_deletion_disposition_findings WHERE review_id=? AND dependency_key=? ORDER BY revision DESC LIMIT 1").bind(reviewId,item.dependency_key).first();
+   if(!finding)return json({error:"A current specialist finding is required for "+item.dependency_key},409);
+  }
+  const latest=await env.DB.prepare("SELECT COALESCE(MAX(plan_version),0) version FROM account_deletion_disposition_plans WHERE review_id=?").bind(reviewId).first();
+  const planVersion=Number(latest?.version||0)+1,baseVersion=Number(review.version);
+  const canonical=JSON.stringify({review_id:reviewId,request_id:review.request_id,plan_version:planVersion,base_review_version:baseVersion,proposer_id:u.id,policy_version:policy,items});
+  const digestBytes=new Uint8Array(await crypto.subtle.digest("SHA-256",new TextEncoder().encode(canonical)));
+  const planDigest=Array.from(digestBytes,x=>x.toString(16).padStart(2,"0")).join("");
+  const statements=[
+   env.DB.prepare("INSERT INTO account_deletion_disposition_plans(review_id,request_id,plan_version,base_review_version,proposer_id,policy_version,plan_digest) VALUES(?,?,?,?,?,?,?)").bind(reviewId,review.request_id,planVersion,baseVersion,u.id,policy,planDigest),
+   ...items.map(item=>env.DB.prepare("INSERT INTO account_deletion_disposition_items(plan_id,dependency_key,outcome,reason,evidence_ref,policy_reference) SELECT id,?,?,?,?,? FROM account_deletion_disposition_plans WHERE review_id=? AND plan_version=? AND plan_digest=?").bind(item.dependency_key,item.outcome,item.reason,item.evidence_ref,item.policy_reference,reviewId,planVersion,planDigest)),
+   env.DB.prepare("UPDATE account_deletion_reviews SET proposed_by=?,plan_digest=?,version=version+1,updated_at=CURRENT_TIMESTAMP WHERE id=? AND state='review_in_progress' AND claimed_by=? AND version=? AND claim_expires_at>CURRENT_TIMESTAMP"),
+   env.DB.prepare("INSERT INTO account_deletion_review_events(review_id,request_id,actor_id,event_type,from_state,to_state,review_version,metadata_json) VALUES(?,?,?,'disposition_proposed','review_in_progress','review_in_progress',?,?)")
+  ];
+  statements[1+items.length]=statements[1+items.length].bind(u.id,planDigest,reviewId,u.id,baseVersion);
+  statements[2+items.length]=statements[2+items.length].bind(reviewId,review.request_id,u.id,baseVersion+1,JSON.stringify({plan_version:planVersion,plan_digest:planDigest}));
+  let results;try{results=await env.DB.batch(statements)}catch{return json({error:"Disposition plan rejected by claim, version, or immutable database policy"},409)}
+  if(!results||results.some((r,i)=>i!==1+items.length&&Number(r?.meta?.changes||0)!==1))return json({error:"Disposition plan did not complete atomically"},409);
+  await audit(env,u,"account_deletion_disposition_proposed",`review=${reviewId};plan=${planVersion};digest=${planDigest}`);
+  return json({ok:true,review_id:reviewId,plan_version:planVersion,base_review_version:baseVersion,review_version:baseVersion+1,plan_digest:planDigest},201);
+ }
+ if(p==="/api/reviewer/account-deletion/approve"&&m==="POST"){
+  const e=need(u);if(e)return e;
+  if(req.headers.get("origin")!==url.origin||!String(req.headers.get("content-type")||"").toLowerCase().startsWith("application/json"))return json({error:"Same-origin JSON request required"},403);
+  const b=await body(req),reviewId=Number(b.review_id);
+  if(!Number.isSafeInteger(reviewId)||reviewId<1)return json({error:"Valid review_id is required"},400);
+  const eligible=await env.DB.prepare("SELECT 1 ok FROM account_deletion_reviewer_assignments WHERE user_id=? AND role_key='deletion_second_approver' AND revoked_at IS NULL LIMIT 1").bind(u.id).first();
+  if(!eligible)return json({error:"Active independent second-approver assignment required"},403);
+  const row=await env.DB.prepare("SELECT v.id,v.request_id,v.subject_user_id,v.version,v.state,v.proposed_by,v.plan_digest,p.id plan_id,p.plan_version,p.base_review_version,p.plan_digest approved_digest FROM account_deletion_reviews v JOIN account_deletion_disposition_plans p ON p.review_id=v.id AND p.plan_version=(SELECT MAX(p2.plan_version) FROM account_deletion_disposition_plans p2 WHERE p2.review_id=v.id) WHERE v.id=?").bind(reviewId).first();
+  if(!row)return json({error:"A disposition plan is required before independent approval"},409);
+  if(Number(row.subject_user_id)===Number(u.id)||Number(row.proposed_by)===Number(u.id))return json({error:"The requester and plan proposer cannot approve this plan"},403);
+  if(row.state!=="review_in_progress"||Number(row.version)!==Number(row.base_review_version)+1||row.plan_digest!==row.approved_digest)return json({error:"Review or plan changed; independent approval is unavailable"},409);
+  const statements=[
+   env.DB.prepare("INSERT INTO account_deletion_disposition_approvals(plan_id,review_id,request_id,approver_id,approved_plan_digest,approval_policy_version) VALUES(?,?,?,?,?,?)").bind(row.plan_id,reviewId,row.request_id,u.id,row.approved_digest,String(b.approval_policy_version||"account-deletion-approval-v1").slice(0,64)),
+   env.DB.prepare("UPDATE account_deletion_reviews SET approved_by=?,version=version+1,updated_at=CURRENT_TIMESTAMP WHERE id=? AND state='review_in_progress' AND version=? AND proposed_by=? AND plan_digest=?"),
+   env.DB.prepare("INSERT INTO account_deletion_review_events(review_id,request_id,actor_id,event_type,from_state,to_state,review_version,metadata_json) VALUES(?,?,?,'disposition_approved','review_in_progress','review_in_progress',?,?)")
+  ];
+  statements[1]=statements[1].bind(u.id,reviewId,row.version,row.proposed_by,row.approved_digest);
+  statements[2]=statements[2].bind(reviewId,row.request_id,u.id,Number(row.version)+1,JSON.stringify({plan_id:row.plan_id,plan_digest:row.approved_digest}));
+  let results;try{results=await env.DB.batch(statements)}catch{return json({error:"Approval rejected by independent-approver or immutable database policy"},409)}
+  if(!results||results.some(r=>Number(r?.meta?.changes||0)!==1))return json({error:"Approval did not complete atomically"},409);
+  await audit(env,u,"account_deletion_disposition_approved",`review=${reviewId};plan=${row.plan_id};approver=${u.id}`);
+  return json({ok:true,review_id:reviewId,plan_id:row.plan_id,approved:true,review_version:Number(row.version)+1,erasure_executed:false});
+ }
  if(p==="/api/agents"&&m==="GET"){return json((await env.DB.prepare(`SELECT slug,name,role,icon,mode,status,last_run_at FROM agents WHERE enabled=1 ORDER BY id`).all()).results)}
  if(p==="/api/admin/agents"&&m==="GET"){const e=admin(u);if(e)return e;return json((await env.DB.prepare(`SELECT id,slug,name,role,icon,mode,status,enabled,last_run_at,last_result FROM agents ORDER BY id`).all()).results)}
  if(p==="/api/admin/agents/run"&&m==="POST"){const e=admin(u);if(e)return e;const b=await body(req);const slug=String(b.slug||'');if(slug)return json(await runAgent(env,slug,'admin'));return json(await runAutomation(env))}
