@@ -3,7 +3,7 @@
   "registryName": "Imperial Novel API authorization and object-ownership registry",
   "sourceFile": "src/index.js",
   "sourceCommit": "f1c247fbb6a6eb347e30b01e8a0a916565976c3b",
-  "sourceBlob": "src/index.js@002aecece0996745a66dc64b33b96bc3955cf24e",
+  "sourceBlob": "src/index.js@d21588a6a48a7e7834c04061ced990a52ee64157",
   "coverage": "All exact API path/method declarations plus dynamic API patterns are inventoried; critical admin, user-owned, author-owned, public-rights and payment paths have explicit source guards and scope assertions.",
   "exactInventory": [
     {
@@ -15,6 +15,25 @@
     },
     {
       "path": "/api/account/closure-request/cancel",
+      "methods": [
+        "POST"
+      ]
+    },
+    {
+      "path": "/api/admin/account-deletion/queue",
+      "methods": [
+        "GET"
+      ]
+    },
+    {
+      "path": "/api/admin/account-deletion/reviewers",
+      "methods": [
+        "GET",
+        "POST"
+      ]
+    },
+    {
+      "path": "/api/admin/account-deletion/reviewers/revoke",
       "methods": [
         "POST"
       ]
@@ -444,6 +463,24 @@
       ]
     },
     {
+      "path": "/api/reviewer/account-deletion/claim",
+      "methods": [
+        "POST"
+      ]
+    },
+    {
+      "path": "/api/reviewer/account-deletion/findings",
+      "methods": [
+        "POST"
+      ]
+    },
+    {
+      "path": "/api/reviewer/account-deletion/queue",
+      "methods": [
+        "GET"
+      ]
+    },
+    {
       "path": "/api/sources",
       "methods": [
         "ANY"
@@ -701,6 +738,9 @@
     "adminOnly": {
       "guard": "admin(u)",
       "exactPaths": [
+        "/api/admin/account-deletion/queue",
+        "/api/admin/account-deletion/reviewers",
+        "/api/admin/account-deletion/reviewers/revoke",
         "/api/admin/agents",
         "/api/admin/agents/run",
         "/api/admin/author-applications",
@@ -1166,6 +1206,36 @@
           "scope": "creator_id and creator_name derived from authenticated session; client identity fields ignored"
         }
       ]
+    },
+    "reviewerOwned": {
+      "guard": "need(u) plus active, unrevoked account_deletion_reviewer_assignments for u.id and category-specific role",
+      "routes": [
+        {
+          "path": "/api/reviewer/account-deletion/queue",
+          "methods": [
+            "GET"
+          ],
+          "guard": "need(u)",
+          "scope": "only cases visible to the active reviewer; active assignment selected by session u.id"
+        },
+        {
+          "path": "/api/reviewer/account-deletion/claim",
+          "methods": [
+            "POST"
+          ],
+          "guard": "need(u)",
+          "scope": "only support_reviewer/privacy_administrator may claim; requester cannot claim own case; versioned lease claim"
+        },
+        {
+          "path": "/api/reviewer/account-deletion/findings",
+          "methods": [
+            "POST"
+          ],
+          "guard": "need(u)",
+          "scope": "category-specific active specialist assignment; reviewer identity from u.id; active claim, subject isolation, immutable versioned finding enforced by SQLite"
+        }
+      ],
+      "scope": "Reviewer privileges are explicit, revocable assignments and never inherited from the broad admin role."
     }
   },
   "knownOpenQuestions": [
