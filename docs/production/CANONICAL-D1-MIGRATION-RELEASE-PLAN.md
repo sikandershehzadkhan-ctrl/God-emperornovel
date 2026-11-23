@@ -146,23 +146,40 @@ A source-level inventory of the remaining runtime DDL and migration coverage is 
 
 ## Latest production evidence (2026-11-23, read-only)
 
-Audit run: [#45161955794](https://github.com/sikandershehzadkhan-ctrl/God-emperornovel/actions/runs/45161955794), executed from the canonical migration PR branch at commit `c1b6e473a94e16a71ab2babab9bd47d7ce2b1740`. The schema-capture step completed and uploaded artifact `production-runtime-schema-evidence-c1b6e473a94e16a71ab2babab9bd47d7ce2b1740`.
+Latest audit run: [#45185492870](https://github.com/sikandershehzadkhan-ctrl/God-emperornovel/actions/runs/45185492870), executed from branch `foundation/canonical-migrations-current-mainline-2026-11-22` at commit `9051b040583533aae23a63c82c6cce1525a42280`. The complete read-only audit job succeeded and uploaded artifact [`production-runtime-schema-evidence-9051b040583533aae23a63c82c6cce1525a42280`](https://github.com/sikandershehzadkhan-ctrl/God-emperornovel/actions/runs/45185492870/artifacts/14823488359).
 
-Observed capture totals: 45 tables, 28 explicit indexes, 52 table-index entries, and 6 foreign keys. The audit reported zero D1 rows written. The schema comparison artifact reported 47 checked definitions, zero missing or mismatched items in that comparison scope, and `releaseReady: false`. This limited comparison is not a full migration-history or whole-database equivalence proof.
+The audit verified Cloudflare account access, found a current D1 Time Travel bookmark, and received HTTP 200 from the public Worker. The health endpoint returned `ok: true`, database connected, and live Worker version `17.23.0`; the repository target was `17.24.0`. The bookmark is not a backup/restore rehearsal. The audit used SELECT/PRAGMA metadata reads only. The D1 query metadata consistently reported `changed_db: false` and `rows_written: 0`; no migration, schema mutation, or deployment was performed.
 
-The same run recorded these production facts:
-- Public Worker health returned `ok: true`, database connected, live Worker version `17.23.0`.
-- Repository target version was `17.24.0`; production version drift remains.
-- `app_settings.core_schema_version` was `16.64.0`.
-- No `d1_migrations` table exists, so exact applied migration history remains unverified.
-- The required-object inventory reported `media_assets` as missing.
-- The full captured table inventory also lacks `comic_chapter_pages` and `media_asset_reviews`; all three media-registry tables introduced by migrations 0018 and 0021 are absent.
-- The five named media indexes from migrations 0018 and 0021 are absent from the captured explicit-index inventory.
-- That artifact did not capture triggers, so the 13 media publication, owner, rights-review and quota triggers introduced by migrations 0019–0022 were **not assessed** in that run.
-- The audit performed no migration, schema mutation, data write, merge, or deployment.
+### Full captured schema inventory and comparison
+
+The uploaded artifact was downloaded and inspected directly. It contains:
+- 45 tables
+- 28 explicit indexes
+- 52 table-index entries
+- 6 foreign keys
+- 0 triggers
+
+The capture diagnostics report `completed: true` and `inventoryComplete: true`. The comparison assessed 77 source-defined objects: 47 verified, 30 missing, zero mismatches and zero unknown. `definitionsCompatible: false` and `releaseReady: false`.
+
+The 30 missing objects are fully accounted for:
+- 3 tables: `media_assets`, `comic_chapter_pages`, `media_asset_reviews`.
+- 3 unique constraints: `media_assets(object_key)`, `comic_chapter_pages(chapter_id,page_number)`, and `comic_chapter_pages(chapter_id,media_asset_id)`.
+- 6 foreign keys across those three media tables, including their user, chapter and media-asset relationships.
+- 5 explicit indexes: `idx_media_assets_owner_status`, `idx_media_assets_rights_status`, `idx_comic_pages_chapter_order`, `idx_comic_pages_asset`, and `idx_media_asset_reviews_asset_created`.
+- 13 triggers: the media publication eligibility, novel-owner matching, independent review, review immutability, owner quota, deletion timestamp and terminal-deletion guards defined by migrations 0019–0022.
+
+Because the inventory is complete and contains zero triggers, those 13 required trigger names are absent from the captured production schema. This is now an evidence-backed absence finding, not an unknown as it was in the previous audit. The three tables and their dependent keys/indexes/triggers must be treated as a coherent missing media-registry subsystem, not installed piecemeal.
+
+### Other release blockers reconfirmed
+
+- No `d1_migrations` table exists. Applied migration history and exact checksums remain unverified.
+- `app_settings.core_schema_version` remains `16.64.0`.
+- Live Worker is `17.23.0`, while repository target is `17.24.0`.
+- A current Time Travel bookmark exists, but no restore rehearsal has been performed.
+- The schema comparison deliberately sets `releaseReady: false`; even a future all-green object comparison would not prove migration provenance, row-data safety, backup restoration or production-shaped rehearsal.
 
 ### Interpretation and next safe action
 
-The successful capture fixes the prior Cloudflare-internal `_cf_KV` inspection failure. It does not establish which canonical migrations were previously applied, nor whether runtime bootstrap created structures that resemble migration outputs. Do not synthesize a `d1_migrations` ledger from table presence or the `core_schema_version` marker.
+The audit's overall GitHub conclusion is `success` because all required read-only inspection and artifact-capture steps completed. The schema comparator separately reported missing definitions using a warning, not a workflow failure. Do not interpret the green workflow badge as database release readiness.
 
-The source review has now inspected migrations 0018–0022 in full. Migration 0018 defines `media_assets` and `comic_chapter_pages` plus four indexes; migration 0021 adds `media_assets.reviewed_by_user_id`, `media_asset_reviews`, and its index; migrations 0019, 0020, 0021 and 0022 define 13 media-related triggers. The old evidence confirms the three tables and five indexes are absent, but does not contain trigger inventory, so trigger state remains unknown. The audit capture, normalizer and definition comparator have been updated on the current PR branch to include trigger names and these media-registry objects. This tooling change still needs its fresh CI and a new read-only production audit before trigger presence/absence can be reported.\n\nNext, complete a source-to-production object reconciliation from the captured evidence. For each migration, distinguish (a) exact DDL present, (b) partially present or definition mismatch, (c) absent, and (d) origin unknown. Where a runtime initializer and migration produce equivalent objects, record origin as unknown unless independent deployment/audit evidence proves provenance. In particular, inspect the complete definitions and dependent objects for migration 0018 before planning its missing `media_assets` / comic-page structures. No new migration, baseline marker, or migration runner may be applied to production until this reconciliation, backup/restore verification, and production-shaped rehearsal are reviewed and explicitly approved.
+Do not synthesize a `d1_migrations` ledger from table presence or the version marker. Do not apply migrations 0018–0022 directly or create the three media tables independently of their foreign keys, uniqueness constraints, indexes and integrity triggers. The next engineering step is to reconcile the complete canonical migration chain against production objects and independently establish which historical changes came from migrations, runtime initialization or manual operations. Then prepare and verify a recoverable backup, rehearse the full remaining sequence against a production-shaped copy, and obtain explicit release approval. Production migration and Worker deployment remain blocked.
