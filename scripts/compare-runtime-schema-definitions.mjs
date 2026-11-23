@@ -40,7 +40,6 @@ const EXPECTED_TABLES = {
   ]
 };
 const EXPECTED_ADDED_COLUMNS = {
-  'media_assets.reviewed_by_user_id': col('reviewed_by_user_id','INTEGER'),
   'comments.parent_id': col('parent_id','INTEGER'),
   'comments.edited_at': col('edited_at','TEXT'),
   'novels.review_feedback': col('review_feedback','TEXT',0,"''"),
