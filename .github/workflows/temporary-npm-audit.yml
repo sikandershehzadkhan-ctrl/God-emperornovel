@@ -15,16 +15,23 @@ jobs:
         with:
           node-version: 22
           cache: npm
-      - name: Install locked dependencies
+      - name: Install current locked dependencies
         run: npm ci
-      - name: Capture complete npm audit report
+      - name: Test patched Tiptap dependency tree
         run: |
-          npm audit --json > npm-audit.json || status=$?
-          node -e "const a=require('./npm-audit.json'); console.log(JSON.stringify(a.metadata?.vulnerabilities ?? {}, null, 2))"
+          npm pkg set 'overrides.@tiptap/extension-bubble-menu=3.30.5' 'overrides.@tiptap/extension-floating-menu=3.30.5'
+          npm audit fix --package-lock-only --ignore-scripts
+          npm ci
+      - name: Capture patched audit report
+        run: |
+          npm audit --json > npm-audit-patched.json || status=$?
+          node -e "const a=require('./npm-audit-patched.json'); console.log(JSON.stringify(a.metadata?.vulnerabilities ?? {}, null, 2))"
           exit ${status:-0}
       - uses: actions/upload-artifact@v4
         if: always()
         with:
-          name: npm-audit-report
-          path: npm-audit.json
-          if-no-files-found: error
+          name: npm-audit-patched-report
+          path: |
+            npm-audit-patched.json
+            package-lock.json
+          if-no-files-found: warn
