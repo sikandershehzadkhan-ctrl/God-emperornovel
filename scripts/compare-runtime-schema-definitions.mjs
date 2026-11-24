@@ -130,7 +130,10 @@ function assess(evidence) {
     'trg_media_asset_owner_quota_insert',
     'trg_media_asset_owner_quota_update',
     'trg_media_asset_mark_deleted_timestamp',
-    'trg_media_asset_deleted_is_terminal'
+    'trg_media_asset_deleted_is_terminal',
+    'trg_comic_pages_insert_only_draft',
+    'trg_comic_pages_update_only_draft',
+    'trg_comic_pages_delete_only_draft'
   ];
   const rows = [];
   const absent = (kind, name) => evidence.inventoryComplete
@@ -238,7 +241,8 @@ function selfTest() {
     trg_comic_page_requires_publishable_asset_insert:1,trg_comic_page_requires_publishable_asset_update:1,trg_referenced_media_must_remain_publishable:1,
     trg_comic_page_asset_must_match_novel_owner_insert:1,trg_comic_page_asset_must_match_novel_owner_update:1,
     trg_media_asset_reviews_require_independent_reviewer:1,trg_media_asset_approval_requires_review:1,trg_media_asset_reviews_no_update:1,trg_media_asset_reviews_no_delete:1,
-    trg_media_asset_owner_quota_insert:1,trg_media_asset_owner_quota_update:1,trg_media_asset_mark_deleted_timestamp:1,trg_media_asset_deleted_is_terminal:1
+    trg_media_asset_owner_quota_insert:1,trg_media_asset_owner_quota_update:1,trg_media_asset_mark_deleted_timestamp:1,trg_media_asset_deleted_is_terminal:1,
+    trg_comic_pages_insert_only_draft:1,trg_comic_pages_update_only_draft:1,trg_comic_pages_delete_only_draft:1
   }).map(name=>({name,table:'media_assets',sql:'CREATE TRIGGER '+name})) };
   let result = assess(base);
   assert.equal(result.definitionsCompatible,true);
@@ -249,6 +253,9 @@ function selfTest() {
   const missing = structuredClone(base);
   missing.indexes=[];
   assert.ok(assess(missing).counts.missing > 0);
+  const missingDraftGuard = structuredClone(base);
+  missingDraftGuard.triggers = missingDraftGuard.triggers.filter(t => t.name !== 'trg_comic_pages_delete_only_draft');
+  assert.ok(assess(missingDraftGuard).counts.missing > 0);
   const uncertain = assess({...base,inventoryComplete:false,indexes:[]});
   assert.ok(uncertain.counts.unknown > 0);
   const wrongIndex = structuredClone(base);
