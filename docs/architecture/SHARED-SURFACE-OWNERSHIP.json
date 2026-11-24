@@ -285,7 +285,8 @@
         "docs/OPEN_SOURCE_INTEGRATION_REGISTER.md",
         "docs/AUTHOR_STUDIO_EDITOR_PILOT.md",
         "docs/AUTHOR_STUDIO_EDITOR_SPIKE.md",
-        "docs/RELEASE-17.24.0-AUTHOR-STUDIO-RICH-TEXT.md"
+        "docs/RELEASE-17.24.0-AUTHOR-STUDIO-RICH-TEXT.md",
+        "docs/D1-BACKUP-AND-RECOVERY-RUNBOOK.md"
       ],
       "requiresAdr": false,
       "accountableRole": "Documentation owner",
