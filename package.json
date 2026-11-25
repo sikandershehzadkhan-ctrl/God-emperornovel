@@ -11,16 +11,16 @@
     "check:licenses": "node scripts/check-third-party-licenses.mjs"
   },
   "dependencies": {
+    "@tiptap/react": "3.35.0",
+    "@tiptap/starter-kit": "3.35.0",
     "react": "19.3.1",
-    "react-dom": "19.3.1",
-    "@tiptap/react": "3.30.3",
-    "@tiptap/starter-kit": "3.30.3"
+    "react-dom": "19.3.1"
   },
   "devDependencies": {
     "esbuild": "0.28.2"
   },
   "overrides": {
-    "@tiptap/extension-bubble-menu": "3.30.3",
-    "@tiptap/extension-floating-menu": "3.30.3"
+    "@tiptap/extension-bubble-menu": "3.35.0",
+    "@tiptap/extension-floating-menu": "3.35.0"
   }
 }
