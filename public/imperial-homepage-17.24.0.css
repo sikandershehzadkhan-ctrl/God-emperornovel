@@ -1,0 +1,226 @@
+/* Imperial Novel 17.24.0 homepage hero
+   Unslop pass: restore the approved single-column editorial composition in every theme.
+   Keep the page literary, readable, low-glare and light enough for entry-level mobile devices. */
+
+.hero.imperialArchiveHero{
+  display:grid;
+  grid-template-columns:minmax(0,1fr);
+  align-items:center;
+  min-height:clamp(360px,56vh,520px);
+  padding:clamp(28px,5.5vw,68px);
+  position:relative;
+  isolation:isolate;
+  overflow:hidden;
+  border:1px solid var(--in-line,rgba(11,18,21,.12));
+  border-top:3px solid var(--in-purple,#6A0DAD);
+  border-radius:22px;
+  background:var(--in-panel,#FDFBF7);
+  color:var(--in-obsidian,#0B1215);
+  box-shadow:none;
+}
+
+/* The single-column editorial direction is intentional. Do not reserve an empty
+   second column or add decorative orbits, glow fog, grids or glass layers. */
+.hero.imperialArchiveHero:before,
+.hero.imperialArchiveHero:after,
+.hero.imperialArchiveHero .nextHeroGlow{
+  display:none!important;
+  content:none!important;
+}
+
+.hero.imperialArchiveHero .nextHeroCopy{
+  position:relative;
+  z-index:1;
+  width:100%;
+  max-width:780px;
+  padding:0;
+}
+.hero.imperialArchiveHero h1{
+  max-width:12ch;
+  margin:0 0 22px;
+  color:var(--in-obsidian,#0B1215);
+  font-size:clamp(3rem,7.2vw,6.25rem);
+  font-weight:760;
+  line-height:.98;
+  letter-spacing:-.06em;
+  text-wrap:balance;
+}
+.hero.imperialArchiveHero h1 span{
+  color:var(--in-purple,#6A0DAD);
+  background:none;
+  -webkit-text-fill-color:currentColor;
+}
+.hero.imperialArchiveHero .nextHeroLead{
+  max-width:56ch;
+  margin:0;
+  color:var(--in-muted,#4C5960);
+  font-size:clamp(1rem,1.45vw,1.15rem);
+  line-height:1.7;
+}
+.hero.imperialArchiveHero .heroSearch{
+  display:flex;
+  align-items:center;
+  gap:10px;
+  max-width:620px;
+  margin-top:26px;
+  padding:7px 7px 7px 14px;
+  border:1px solid rgba(11,18,21,.18);
+  border-radius:12px;
+  background:#FFFFFF;
+  box-shadow:none;
+}
+.hero.imperialArchiveHero .heroSearch>span{color:#4C5960}
+.hero.imperialArchiveHero .heroSearch input{
+  min-width:0;
+  min-height:44px;
+  color:#0B1215;
+  background:transparent;
+  box-shadow:none;
+}
+.hero.imperialArchiveHero .heroSearch input::placeholder{color:#66737A;opacity:1}
+.hero.imperialArchiveHero .heroSearch button{
+  min-width:44px;
+  min-height:44px;
+  padding:0 16px;
+  border:1px solid #6A0DAD;
+  border-radius:9px;
+  background:#6A0DAD;
+  color:#FFFFFF;
+  box-shadow:none;
+}
+.hero.imperialArchiveHero .heroSearch button:hover{
+  background:#0F52BA;
+  border-color:#0F52BA;
+}
+.hero.imperialArchiveHero .heroTags{
+  display:flex;
+  flex-wrap:wrap;
+  align-items:center;
+  gap:8px;
+  margin-top:16px;
+}
+.hero.imperialArchiveHero .heroTags a{
+  display:inline-flex;
+  align-items:center;
+  min-height:40px;
+  padding:8px 12px;
+  border:1px solid var(--in-line,rgba(11,18,21,.14));
+  border-radius:999px;
+  background:transparent;
+  color:var(--in-obsidian,#0B1215);
+  font-size:12px;
+  line-height:1.25;
+  text-decoration:none;
+}
+.hero.imperialArchiveHero .heroTags a:hover{
+  border-color:var(--in-purple,#6A0DAD);
+  background:rgba(106,13,173,.07);
+  color:var(--in-purple,#6A0DAD);
+}
+.hero.imperialArchiveHero .heroPromise{
+  display:flex;
+  align-items:center;
+  flex-wrap:wrap;
+  gap:10px;
+  margin-top:24px;
+  color:var(--in-obsidian,#0B1215);
+  font-size:11px;
+  font-weight:750;
+  letter-spacing:.08em;
+}
+.hero.imperialArchiveHero .promiseText{
+  color:var(--in-muted,#4C5960);
+  font-size:12px;
+  font-weight:450;
+  letter-spacing:0;
+}
+
+/* Warm paper is the low-glare light reading and discovery surface. */
+html[data-theme="light"] .hero.imperialArchiveHero{
+  background:#FDFBF7;
+  border-color:rgba(11,18,21,.12);
+  border-top-color:#6A0DAD;
+  color:#0B1215;
+}
+html[data-theme="light"] .hero.imperialArchiveHero h1{color:#0B1215}
+html[data-theme="light"] .hero.imperialArchiveHero h1 span{color:#6A0DAD;-webkit-text-fill:#6A0DAD}
+html[data-theme="light"] .hero.imperialArchiveHero .nextHeroLead,
+html[data-theme="light"] .hero.imperialArchiveHero .promiseText{color:#4C5960}
+
+/* Obsidian dark mode keeps the same hierarchy and a softer amethyst accent. */
+html[data-theme="dark"] .hero.imperialArchiveHero{
+  background:#111A1F;
+  border-color:rgba(255,255,255,.13);
+  border-top-color:#B78AE2;
+  color:#FFFFFF;
+}
+html[data-theme="dark"] .hero.imperialArchiveHero h1{color:#FFFFFF}
+html[data-theme="dark"] .hero.imperialArchiveHero h1 span{color:#B78AE2;-webkit-text-fill-color:#B78AE2}
+html[data-theme="dark"] .hero.imperialArchiveHero .nextHeroLead,
+html[data-theme="dark"] .hero.imperialArchiveHero .promiseText{color:#C0C9CE}
+html[data-theme="dark"] .hero.imperialArchiveHero .heroSearch{
+  border-color:#3A474D;
+  background:#0B1215;
+}
+html[data-theme="dark"] .hero.imperialArchiveHero .heroSearch>span{color:#C0C9CE}
+html[data-theme="dark"] .hero.imperialArchiveHero .heroSearch input{color:#FFFFFF}
+html[data-theme="dark"] .hero.imperialArchiveHero .heroSearch input::placeholder{color:#AAB6BC}
+html[data-theme="dark"] .hero.imperialArchiveHero .heroTags a{
+  border-color:#3A474D;
+  color:#E8EDEF;
+}
+html[data-theme="dark"] .hero.imperialArchiveHero .heroTags a:hover{
+  border-color:#B78AE2;
+  background:rgba(183,138,226,.10);
+  color:#E4CFFF;
+}
+html[data-theme="dark"] .hero.imperialArchiveHero .heroPromise{color:#FFFFFF}
+
+@media(max-width:760px){
+  .hero.imperialArchiveHero{
+    min-height:0;
+    padding:28px 20px 30px;
+    border-radius:18px;
+  }
+  .hero.imperialArchiveHero h1{
+    max-width:13ch;
+    margin-bottom:18px;
+    font-size:clamp(2.65rem,11.8vw,4.1rem);
+    line-height:1.02;
+    letter-spacing:-.05em;
+  }
+  .hero.imperialArchiveHero .nextHeroLead{
+    max-width:38ch;
+    font-size:1rem;
+    line-height:1.65;
+  }
+  .hero.imperialArchiveHero .heroSearch{
+    display:grid;
+    grid-template-columns:auto minmax(0,1fr);
+    gap:8px;
+    max-width:none;
+    margin-top:22px;
+    padding:8px;
+  }
+  .hero.imperialArchiveHero .heroSearch input{width:100%;min-height:44px}
+  .hero.imperialArchiveHero .heroSearch button{
+    grid-column:1/-1;
+    width:100%;
+    min-height:46px;
+  }
+  .hero.imperialArchiveHero .heroTags{gap:7px;margin-top:14px}
+  .hero.imperialArchiveHero .heroTags a{min-height:40px;padding:8px 11px}
+  .hero.imperialArchiveHero .heroPromise{gap:8px;margin-top:20px;line-height:1.5}
+}
+@media(max-width:360px){
+  .hero.imperialArchiveHero{padding-inline:16px}
+  .hero.imperialArchiveHero h1{font-size:clamp(2.45rem,11.5vw,3.1rem)}
+}
+@media(prefers-reduced-motion:reduce){
+  .hero.imperialArchiveHero *{scroll-behavior:auto!important;transition:none!important;animation:none!important}
+}
+@media(forced-colors:active){
+  .hero.imperialArchiveHero{border:1px solid CanvasText;border-top:3px solid Highlight}
+  .hero.imperialArchiveHero .heroSearch button{border:1px solid ButtonText}
+  .hero.imperialArchiveHero .heroTags a:focus-visible{outline:2px solid Highlight}
+}
