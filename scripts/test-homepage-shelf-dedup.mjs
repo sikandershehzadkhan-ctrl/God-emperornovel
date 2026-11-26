@@ -14,6 +14,6 @@ const latest=[{id:1,title:'Duplicate'},{id:3,title:'Fresh update'},{id:'2',title
 assert.deepEqual(Array.from(uniqueLatestStories(trending,latest),x=>x.id),[3,4],'Latest shelf must exclude trending IDs while preserving order');
 assert.deepEqual(Array.from(uniqueLatestStories([],latest),x=>x.id),[1,3,'2',4],'No trending stories must preserve all latest stories');
 assert.deepEqual(Array.from(uniqueLatestStories([{id:1}],[{title:'Missing ID'}]),x=>x.title),['Missing ID'],'Rows without IDs must not be accidentally removed');
-assert.ok(source.includes('const distinctLatestRows=uniqueLatestStories(trendRows,latestRows);'),'Homepage must compute a distinct latest shelf');
+assert.ok(source.includes('const distinctLatestRows=trendingResult.status===\'fulfilled\'?uniqueLatestStories(trendRows,latestRows):latestRows;'),'Homepage must de-duplicate latest stories when trending data is available and preserve latest results when it is not');
 assert.ok(source.includes("renderHomeStories('#latest',distinctLatestRows"),'Homepage must render the de-duplicated latest shelf');
 console.log('Homepage shelf regression passed: cross-shelf de-duplication, stable order, and empty-ID safety.');
