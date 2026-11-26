@@ -20,6 +20,8 @@ assert.ok(css.includes('@media(forced-colors:active)'),'Hero must preserve force
 assert.ok(!/radial-gradient|linear-gradient|filter:\s*blur/i.test(css),'Hero refinement must not add decorative gradients or blur effects');
 assert.ok(css.includes('.homePage .homeFormatShelf{')&&css.includes('background:#FDFBF7'),'Format shelf must use the warm-paper editorial surface');
 assert.ok(css.includes('html[data-theme="dark"] .homePage .homeFormatShelf'),'Format shelf must define an explicit dark theme');
+assert.ok(css.includes('html[data-theme="light"] .homePage .homeFormatShelf'),'Light format shelf must override legacy glass theme selectors');
+assert.ok(css.includes('html[data-theme="light"] .homePage .homeStoryGrid .card'),'Light story cards must override legacy glass theme selectors');
 assert.ok(css.includes('.homePage .homeStoryGrid .card{')&&css.includes('box-shadow:none'),'Homepage story cards must use quiet, non-glossy surfaces');
 assert.ok(css.includes('content:"IN"'),'Format links must use the Imperial Novel monogram rather than decorative glyphs');
 assert.ok(css.includes('@media(forced-colors:active)'),'Discovery shelf and story cards must preserve forced-colors usability');
