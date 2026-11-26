@@ -47,7 +47,9 @@ See [Free Asset Policy](docs/FREE-ASSET-POLICY.md). See [Sustainable Revenue Mod
 
 The repository contains a Cloudflare Worker application, D1-backed features, and incrementally mounted React components for novel reactions, comments, and ratings. This is an evolving implementation, not a claim that every part of the broader product vision is already complete.
 
-## Brand
+## Brand and originality
+
+Imperial Novel must develop and maintain its own original brand identity, visual language, interface patterns, illustrations, icons, editorial voice, and product experiences. Inspiration may inform broad design principles, but no competitor's distinctive expression, layout, assets, copy, or source code may be copied or traced. All third-party code, fonts, libraries, and assets must be reviewed, attributed where required, and used under their actual licences. Creator-owned stories and artwork remain the creators' intellectual property unless a separate, explicit agreement says otherwise. See [Originality and Intellectual Property Standard](docs/brand/ORIGINALITY-AND-IP-STANDARD.md).
 
 **Imperial Novel**  
 **Read • Create • Conquer**
