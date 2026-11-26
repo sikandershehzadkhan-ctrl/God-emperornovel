@@ -69,6 +69,26 @@ A first runtime CSS change has now been made on this branch in the existing `pub
 
 Source-level checks on the changed file found 211 opening and 211 closing braces and confirmed the core semantic roles are declared in both global theme blocks. This is only a structural source check. It is not a CSS parser run, build, screenshot review, contrast certification, RTL check, or mobile browser test. Hard-coded legacy colours and the original declarations still exist; this is a compatibility bridge, not a completed stylesheet consolidation.
 
+
+### Core token-pair contrast calculation
+
+A separate sRGB/WCAG relative-luminance calculation on the new token values produced these foreground/background ratios:
+
+| Pair | Contrast ratio |
+| --- | ---: |
+| Light primary text / canvas | 18.28:1 |
+| Light muted text / canvas | 6.20:1 |
+| Light purple accent / white | 9.24:1 |
+| Light sapphire action / white | 7.15:1 |
+| Dark primary text / canvas | 16.01:1 |
+| Dark muted text / canvas | 10.12:1 |
+| Dark purple accent / dark surface | 6.64:1 |
+| Dark sapphire action / dark surface | 6.73:1 |
+| Light warning / canvas | 5.90:1 |
+| Dark warning / canvas | 11.51:1 |
+
+These selected token pairs exceed WCAG AA's 4.5:1 normal-text threshold. This is a calculation of selected token pairs only, not a whole-interface accessibility certification. Every actual text/background pairing, disabled state, hover/focus state, border, chart, icon, and overlay still requires route-level review.
+
 ## Remaining boundaries
 
 No HTML, JavaScript, database, Worker configuration, secrets, image assets, or production deployment changed. The new visual tokens are not certified accessible or visually correct until measured and tested in a real browser across the supported route set. The asset provenance gaps remain open. This audit is not a complete selector-consumer inventory; that requires automated source analysis and browser QA.
