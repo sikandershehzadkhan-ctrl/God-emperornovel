@@ -15,8 +15,10 @@ const catalogStart = app.indexOf("async function catalog(){");
 assert.ok(homeStart >= 0 && catalogStart > homeStart);
 const home = app.slice(homeStart, catalogStart);
 assert.match(home, /apiWithTimeout\('/);
-assert.match(home, /catch\(error\)/);
-assert.match(home, /Story shelves could not be loaded/);
+assert.match(home, /Promise\.allSettled\(\[/, "Homepage trending and latest requests must settle independently");
+assert.match(home, /renderHomeShelfError\(/, "A failed homepage request must show its own retryable shelf error state");
+assert.match(home, /Trending stories could not be loaded/);
+assert.match(home, /Latest updates could not be loaded/);
 
 const loadStart = app.indexOf("async function load(page=1){", catalogStart);
 const loadEnd = app.indexOf("form.onsubmit=", loadStart);
