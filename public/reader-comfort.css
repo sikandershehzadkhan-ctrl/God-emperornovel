@@ -17,7 +17,7 @@
 .readerPage .readerProgress{background:var(--read-line)!important}
 .readerPage .readerProgress span{background:var(--read-accent)!important}
 .readerPage ::selection{background:color-mix(in srgb,var(--read-accent) 30%,transparent);color:var(--read-heading)}
-.readerPage[data-reader-theme="soft-paper"]{--read-bg:#e8e2d8;--read-surface:#eee8de;--read-bar:#e2dbd0;--read-text:#39352f;--read-heading:#302b25;--read-muted:#71695f;--read-line:#cfc6b9;--read-control:#e5ded3;--read-accent:#66558a}
+.readerPage[data-reader-theme="soft-paper"]{--read-bg:#e8e2d8;--read-surface:#eee8de;--read-bar:#e2dbd0;--read-text:#39352f;--read-heading:#302b25;--read-muted:#6c645b;--read-line:#cfc6b9;--read-control:#e5ded3;--read-accent:#66558a}
 .readerPage[data-reader-theme="dark"]{--read-bg:#202127;--read-surface:#282a32;--read-bar:#24262d;--read-text:#d8d7d2;--read-heading:#e5e3dd;--read-muted:#aaa9a2;--read-line:#41434b;--read-control:#30323a;--read-accent:#b6a2d8}
 .readerPage[data-reader-theme="midnight"]{--read-bg:#151c27;--read-surface:#1c2633;--read-bar:#18212c;--read-text:#d1dbe5;--read-heading:#e0e7ee;--read-muted:#9daab8;--read-line:#344252;--read-control:#222e3c;--read-accent:#91b6d8}
 .readerPage[data-reader-theme="sepia"]{--read-bg:#ded2bc;--read-surface:#e8dcc7;--read-bar:#d8cbb5;--read-text:#493d30;--read-heading:#392e23;--read-muted:#675949;--read-line:#c4b49b;--read-control:#dfd2bc;--read-accent:#866b49}
