@@ -10,7 +10,7 @@ assert.ok(app.includes("p.set('limit','24')"),'Catalog page size must remain unc
 assert.ok(app.includes('items.map(catalogCard).join()'),'Catalog must keep rendering the existing story card projection');
 assert.ok(app.includes('name="min_rating"'),'Minimum rating filter must remain available');
 assert.ok(app.includes('name="genre"')&&app.includes('name="tag"')&&app.includes('name="language"'),'Genre, tag and language filters must remain available');
-assert.ok(app.includes("href="/catalog""),'Catalog reset path must remain available');
+assert.ok(app.includes('href="/catalog"'),'Catalog reset path must remain available');
 assert.ok(css.includes('#cat.catalogGrid{')&&css.includes('grid-template-columns:repeat(4,minmax(0,1fr))'),'Desktop catalog must retain a four-column grid');
 assert.ok(css.includes('@media(max-width:680px)')&&css.includes('grid-template-columns:repeat(2,minmax(0,1fr))'),'Catalog must adapt to two columns on mobile');
 assert.ok(css.includes('@media(max-width:360px)'),'Very narrow phones must receive a compact card layout');
