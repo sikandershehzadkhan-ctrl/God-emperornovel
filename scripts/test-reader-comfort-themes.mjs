@@ -56,5 +56,10 @@ assert.ok(!css.includes('--read-bg:#ffffff'),'Reader backgrounds must not use pu
 assert.ok(css.includes('.readerPage .chapterDrawer{background:var(--read-surface)!important'), 'Chapter drawer must follow the selected reader surface');
 assert.ok(css.includes('.readerPage .readerChapterItem.current{background:color-mix'), 'Selected chapter must use the active reader palette');
 assert.ok(css.includes('.readerPage .readerLock .lockCost b{color:var(--read-accent)!important}'), 'Locked chapter price must use the reader accent');
+assert.ok(css.includes('.readerPage .readerTool{min-width:44px;min-height:44px}'), 'Reader toolbar controls must meet the 44px target on standard screens');
+assert.ok(css.includes('@media(max-width:520px){.readerPage .readerTool{min-width:40px;min-height:40px}}'), 'Reader toolbar controls must retain usable targets on mobile');
+assert.ok(css.includes('.readerPage :focus-visible{outline:3px solid var(--read-accent)!important'), 'Keyboard focus must use the active reader palette accent');
+assert.ok(css.includes('.readerPage .readerContent a{color:var(--read-text)!important'), 'Chapter links must retain readable reader text colour');
+assert.ok(css.includes('.readerPage .readerContent blockquote{border-inline-start:3px solid var(--read-accent)'), 'Chapter quotations must use palette-aware styling');
 assert.ok(css.split('\n').filter(line=>line.includes('.readerPage')).every(line=>!line.includes('html,')&&!line.includes('body{')),'Reader theme selectors must remain scoped');
 console.log('Reader comfort themes: 15 palettes, selector parity, release parity and AA text contrast passed.');
