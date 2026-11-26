@@ -42,10 +42,15 @@ for(const [value] of themes){
  const block=css.match(new RegExp(String.raw`\.readerPage\[data-reader-theme="${value}"\]\{([^}]*)\}`));
  assert.ok(block,`Missing palette block for ${value}`);
  const get=name=>block[1].match(new RegExp(name+':(#[0-9a-fA-F]{6})'))?.[1];
- const bg=get('--read-bg'),text=get('--read-text'),muted=get('--read-muted');
- assert.ok(bg&&text&&muted,`Palette ${value} must define background, text and muted text`);
- assert.ok(contrast(bg,text)>=4.5,`${value} body text contrast is below WCAG AA`);
- assert.ok(contrast(bg,muted)>=4.5,`${value} muted text contrast is below WCAG AA`);
+ const bg=get('--read-bg'),surface=get('--read-surface'),bar=get('--read-bar'),control=get('--read-control'),text=get('--read-text'),muted=get('--read-muted'),heading=get('--read-heading');
+ assert.ok(bg&&surface&&bar&&control&&text&&muted&&heading,`Palette ${value} must define all reading surfaces and text roles`);
+ assert.ok(contrast(bg,text)>=4.5,`${value} body text contrast on page background is below WCAG AA`);
+ assert.ok(contrast(surface,text)>=4.5,`${value} body text contrast on chapter surface is below WCAG AA`);
+ assert.ok(contrast(bar,text)>=4.5,`${value} toolbar text contrast is below WCAG AA`);
+ assert.ok(contrast(control,text)>=4.5,`${value} control text contrast is below WCAG AA`);
+ assert.ok(contrast(bg,muted)>=4.5,`${value} muted text contrast on page background is below WCAG AA`);
+ assert.ok(contrast(surface,muted)>=4.5,`${value} muted text contrast on chapter surface is below WCAG AA`);
+ assert.ok(contrast(bg,heading)>=4.5,`${value} heading contrast is below WCAG AA`);
 }
 assert.ok(!css.includes('--read-bg:#ffffff'),'Reader backgrounds must not use pure white');
 assert.ok(css.includes('.readerPage .chapterDrawer{background:var(--read-surface)!important'), 'Chapter drawer must follow the selected reader surface');
