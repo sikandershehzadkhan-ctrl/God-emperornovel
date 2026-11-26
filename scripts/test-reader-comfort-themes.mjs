@@ -48,5 +48,8 @@ for(const [value] of themes){
  assert.ok(contrast(bg,muted)>=4.5,`${value} muted text contrast is below WCAG AA`);
 }
 assert.ok(!css.includes('--read-bg:#ffffff'),'Reader backgrounds must not use pure white');
+assert.ok(css.includes('.readerPage .chapterDrawer{background:var(--read-surface)!important'), 'Chapter drawer must follow the selected reader surface');
+assert.ok(css.includes('.readerPage .readerChapterItem.current{background:color-mix'), 'Selected chapter must use the active reader palette');
+assert.ok(css.includes('.readerPage .readerLock .lockCost b{color:var(--read-accent)!important}'), 'Locked chapter price must use the reader accent');
 assert.ok(css.split('\n').filter(line=>line.includes('.readerPage')).every(line=>!line.includes('html,')&&!line.includes('body{')),'Reader theme selectors must remain scoped');
 console.log('Reader comfort themes: 15 palettes, selector parity, release parity and AA text contrast passed.');
