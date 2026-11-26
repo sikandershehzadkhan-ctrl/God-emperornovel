@@ -37,7 +37,7 @@ function contrast(a,b){
  return (values[0]+.05)/(values[1]+.05);
 }
 for(const [value] of themes){
- const block=css.match(new RegExp(String.raw`\\.readerPage\\[data-reader-theme="${value}"\\]\\{([^}]*)\\}`));
+ const block=css.match(new RegExp(String.raw`\.readerPage\[data-reader-theme="${value}"\]\{([^}]*)\}`));
  assert.ok(block,`Missing palette block for ${value}`);
  const get=name=>block[1].match(new RegExp(name+':(#[0-9a-fA-F]{6})'))?.[1];
  const bg=get('--read-bg'),text=get('--read-text'),muted=get('--read-muted');
@@ -46,5 +46,5 @@ for(const [value] of themes){
  assert.ok(contrast(bg,muted)>=4.5,`${value} muted text contrast is below WCAG AA`);
 }
 assert.ok(!css.includes('--read-bg:#ffffff'),'Reader backgrounds must not use pure white');
-assert.ok(css.split('\\n').filter(line=>line.includes('.readerPage')).every(line=>!line.includes('html,')&&!line.includes('body{')),'Reader theme selectors must remain scoped');
+assert.ok(css.split('\n').filter(line=>line.includes('.readerPage')).every(line=>!line.includes('html,')&&!line.includes('body{')),'Reader theme selectors must remain scoped');
 console.log('Reader comfort themes: 15 palettes, selector parity, release parity and AA text contrast passed.');
