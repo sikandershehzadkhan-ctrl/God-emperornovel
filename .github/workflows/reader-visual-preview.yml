@@ -1,0 +1,51 @@
+name: Reader visual regression preview
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - "public/reader-comfort.css"
+      - "public/style-17.24.0.css"
+      - "scripts/fixtures/reader-visual.html"
+      - ".github/workflows/reader-visual-preview.yml"
+      - "scripts/test-reader-comfort-themes.mjs"
+permissions:
+  contents: read
+jobs:
+  reader-visual-preview:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Set up Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Install browser
+        run: npx --yes playwright@1.56.1 install --with-deps chromium
+      - name: Start isolated static visual fixture
+        run: |
+          python3 -m http.server 8765 --bind 127.0.0.1 > /tmp/reader-visual-server.log 2>&1 &
+          echo $! > /tmp/reader-visual-server.pid
+          for attempt in $(seq 1 30); do
+            if curl --fail --silent http://127.0.0.1:8765/scripts/fixtures/reader-visual.html >/dev/null; then exit 0; fi
+            sleep 1
+          done
+          cat /tmp/reader-visual-server.log
+          exit 1
+      - name: Capture all reader palettes on mobile and desktop
+        run: |
+          set -euo pipefail
+          mkdir -p artifacts/reader-visual/mobile artifacts/reader-visual/desktop
+          themes="soft-paper dark midnight sepia imperial cosmic warm-parchment oat sage mist-blue dusty-rose lavender-mist charcoal forest ocean"
+          for theme in $themes; do
+            npx --yes playwright@1.56.1 screenshot --browser chromium --viewport-size "390,844" "http://127.0.0.1:8765/scripts/fixtures/reader-visual.html?theme=$theme" "artifacts/reader-visual/mobile/$theme.png"
+            npx --yes playwright@1.56.1 screenshot --browser chromium --viewport-size "1440,1000" "http://127.0.0.1:8765/scripts/fixtures/reader-visual.html?theme=$theme" "artifacts/reader-visual/desktop/$theme.png"
+          done
+      - name: Upload visual evidence
+        uses: actions/upload-artifact@v4
+        with:
+          name: imperial-novel-reader-visual-qa
+          path: artifacts/reader-visual/
+          if-no-files-found: error
+          retention-days: 14
