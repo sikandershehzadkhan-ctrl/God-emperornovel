@@ -348,3 +348,169 @@ html[data-theme="light"] .homePage .homeStoryGrid .card:hover{
   border-color:#6A0DAD;
   box-shadow:none;
 }
+
+
+/* Imperial catalog: a quiet, readable index that lets the cover art lead. */
+.catalogTop{
+  background:#FDFBF7;
+  border:1px solid rgba(11,18,21,.14);
+  border-radius:16px;
+  box-shadow:none;
+}
+.catalogTop .filterLabel{
+  color:#59656B;
+  font-size:11px;
+  font-weight:650;
+  letter-spacing:.035em;
+}
+.catalogTop .filterChip{
+  background:#FFFFFF;
+  border-color:rgba(11,18,21,.16);
+  color:#263238;
+}
+.catalogTop .filterChip.active,
+.catalogTop .filterChip:hover{
+  background:#F3EAF9;
+  border-color:#6A0DAD;
+  color:#542080;
+}
+.catalogMeta b{color:#263238}
+#cat.catalogGrid{
+  grid-template-columns:repeat(4,minmax(0,1fr));
+  gap:16px;
+}
+#cat .catalogCard{
+  background:#FFFFFF;
+  border:1px solid rgba(11,18,21,.14);
+  border-radius:12px;
+  box-shadow:none;
+  transition:border-color .16s ease;
+}
+#cat .catalogCard:hover,
+#cat .catalogCard:focus-visible{
+  transform:none;
+  border-color:#6A0DAD;
+  box-shadow:none;
+}
+#cat .catalogCard:focus-visible{
+  outline:2px solid #6A0DAD;
+  outline-offset:3px;
+}
+#cat .catalogCover{background:#EEEAE4}
+#cat .catalogCover img{transition:none}
+#cat .catalogCard:hover .catalogCover img{transform:none}
+#cat .statusBadge,
+#cat .formatBadge{
+  max-width:calc(100% - 18px);
+  border:1px solid rgba(11,18,21,.16);
+  border-radius:6px;
+  background:#FDFBF7;
+  color:#263238;
+  font-size:10px;
+  font-weight:650;
+  box-shadow:none;
+}
+#cat .formatBadge{left:9px;top:auto;bottom:9px}
+#cat .catalogBody{padding:13px}
+#cat .catalogTitle{
+  color:#0B1215;
+  font-size:14px;
+  font-weight:650;
+  line-height:1.4;
+}
+#cat .catalogBody>.muted{color:#59656B;font-size:12px}
+#cat .catalogStats{color:#59656B;font-size:11px}
+#cat .catalogTags .pill{
+  background:#F3EDF7;
+  border:1px solid #E2D5EC;
+  color:#542080;
+  font-weight:550;
+}
+#cat .catalogTags .pill.purple{
+  background:#F7F3FA;
+  border-color:#E6DDEA;
+  color:#5B4268;
+}
+#cat .readMini{
+  min-height:36px;
+  align-items:center;
+  padding:7px 10px;
+  border:1px solid #6A0DAD;
+  border-radius:7px;
+  background:#6A0DAD;
+  color:#FFFFFF;
+  font-size:11px;
+  font-weight:650;
+}
+html[data-theme="dark"] .catalogTop{
+  background:#111A1F;
+  border-color:#344148;
+}
+html[data-theme="dark"] .catalogTop .filterLabel,
+html[data-theme="dark"] .catalogMeta b{color:#B5C0C5}
+html[data-theme="dark"] .catalogTop .filterChip{
+  background:#0B1215;
+  border-color:#344148;
+  color:#E8EDEF;
+}
+html[data-theme="dark"] .catalogTop .filterChip.active,
+html[data-theme="dark"] .catalogTop .filterChip:hover{
+  background:#2B2037;
+  border-color:#C08AFF;
+  color:#E8D6FA;
+}
+html[data-theme="dark"] #cat .catalogCard{
+  background:#111A1F;
+  border-color:#344148;
+}
+html[data-theme="dark"] #cat .catalogCard:hover,
+html[data-theme="dark"] #cat .catalogCard:focus-visible{border-color:#C08AFF}
+html[data-theme="dark"] #cat .catalogCover{background:#202A30}
+html[data-theme="dark"] #cat .statusBadge,
+html[data-theme="dark"] #cat .formatBadge{
+  background:#0B1215;
+  border-color:#46545C;
+  color:#E8EDEF;
+}
+html[data-theme="dark"] #cat .catalogTitle{color:#F3F5F6}
+html[data-theme="dark"] #cat .catalogBody>.muted,
+html[data-theme="dark"] #cat .catalogStats{color:#B5C0C5}
+html[data-theme="dark"] #cat .catalogTags .pill{
+  background:#292033;
+  border-color:#49365B;
+  color:#E1C9F3;
+}
+html[data-theme="dark"] #cat .catalogTags .pill.purple{
+  background:#20232A;
+  border-color:#3B414A;
+  color:#D0C7D9;
+}
+html[data-theme="dark"] #cat .readMini{
+  background:#6A0DAD;
+  border-color:#C08AFF;
+  color:#FFFFFF;
+}
+@media(max-width:980px){
+  #cat.catalogGrid{grid-template-columns:repeat(3,minmax(0,1fr));gap:13px}
+}
+@media(max-width:680px){
+  #cat.catalogGrid{grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+  #cat .catalogBody{padding:10px}
+  #cat .catalogTitle{font-size:13px}
+  #cat .catalogStats{gap:6px;font-size:10px}
+}
+@media(max-width:360px){
+  #cat.catalogGrid{grid-template-columns:minmax(0,1fr)}
+  #cat .catalogCard{display:grid;grid-template-columns:112px minmax(0,1fr)}
+  #cat .catalogCover{height:100%;min-height:150px;aspect-ratio:auto}
+}
+@media(prefers-reduced-motion:reduce){
+  #cat .catalogCard{transition:none}
+}
+@media(forced-colors:active){
+  #cat .catalogCard,
+  #cat .statusBadge,
+  #cat .formatBadge,
+  #cat .readMini{border:1px solid CanvasText}
+  #cat .catalogCard:focus-visible{outline:2px solid Highlight}
+}
