@@ -62,6 +62,43 @@ jobs:
       - name: Build application
         run: npm run build
 
+      - name: Install Chromium for isolated reader visual QA
+        run: npx --yes playwright@1.56.1 install --with-deps chromium
+
+      - name: Start isolated static reader fixture
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 -m http.server 8765 --bind 127.0.0.1 > /tmp/reader-visual-server.log 2>&1 &
+          echo $! > /tmp/reader-visual-server.pid
+          for attempt in $(seq 1 30); do
+            if curl --fail --silent http://127.0.0.1:8765/scripts/fixtures/reader-visual.html >/dev/null; then
+              exit 0
+            fi
+            sleep 1
+          done
+          cat /tmp/reader-visual-server.log
+          exit 1
+
+      - name: Capture all 15 reader palettes on mobile and desktop
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p artifacts/reader-visual/mobile artifacts/reader-visual/desktop
+          themes="soft-paper dark midnight sepia imperial cosmic warm-parchment oat sage mist-blue dusty-rose lavender-mist charcoal forest ocean"
+          for theme in $themes; do
+            npx --yes playwright@1.56.1 screenshot --browser chromium --viewport-size "390,844" "http://127.0.0.1:8765/scripts/fixtures/reader-visual.html?theme=$theme" "artifacts/reader-visual/mobile/$theme.png"
+            npx --yes playwright@1.56.1 screenshot --browser chromium --viewport-size "1440,1000" "http://127.0.0.1:8765/scripts/fixtures/reader-visual.html?theme=$theme" "artifacts/reader-visual/desktop/$theme.png"
+          done
+
+      - name: Upload reader visual evidence
+        uses: actions/upload-artifact@v4
+        with:
+          name: imperial-novel-reader-visual-qa
+          path: artifacts/reader-visual/
+          if-no-files-found: error
+          retention-days: 14
+
       - name: Validate Cloudflare Worker bundle without deploying
         run: npx --yes wrangler@4 deploy --dry-run
 
