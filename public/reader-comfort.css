@@ -14,6 +14,10 @@
 .readerPage .readerLock h2,.readerPage .readerLock p{color:var(--read-text)!important}
 .readerPage .readerLock p,.readerPage .readerFooterCard p{color:var(--read-muted)!important}
 .readerPage .readerChapterItem{color:var(--read-text)!important;border-color:var(--read-line)!important}
+.readerPage .readerPrefs select{accent-color:var(--read-accent)}
+.readerPage .chapterDrawer{background:var(--read-surface)!important;color:var(--read-text)!important;border-color:var(--read-line)!important}
+.readerPage .readerChapterItem.current{background:color-mix(in srgb,var(--read-accent) 14%,var(--read-surface))!important;color:var(--read-heading)!important;border-color:var(--read-accent)!important}
+.readerPage .readerLock .lockCost b{color:var(--read-accent)!important}
 .readerPage .readerProgress{background:var(--read-line)!important}
 .readerPage .readerProgress span{background:var(--read-accent)!important}
 .readerPage ::selection{background:color-mix(in srgb,var(--read-accent) 30%,transparent);color:var(--read-heading)}
