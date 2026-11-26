@@ -446,6 +446,27 @@
         "frontend-runtime-and-assets"
       ],
       "sharedSurfacePolicy": "All user-owned data requires session and object-level ownership checks; rights/publishing gates must be enforced server-side; secrets remain in environment bindings."
+    },
+    {
+      "id": "agent-design-guidance",
+      "paths": [
+        ".agents/skills/unslop/"
+      ],
+      "requiresAdr": false,
+      "allowedContents": [
+        "Upstream Unslop skill source with preserved license and attribution",
+        "Imperial Novel-specific agent design overrides",
+        "Agent skill references, metadata and local helper scripts"
+      ],
+      "accountableRole": "Frontend design-system owner",
+      "changeOwner": "Agent workflow and design guidance maintainer",
+      "integrationOwner": "Frontend platform integration owner",
+      "pathClass": "agent-design-guidance",
+      "dependencyDirection": "Agent guidance informs human-reviewed design and implementation work; it is not imported by production runtime, build output, or browser assets.",
+      "allowedDependencies": [],
+      "invokes": [],
+      "runtimeContracts": [],
+      "sharedSurfacePolicy": "Preserve upstream licensing and attribution. Project-specific overrides must remain clearly separated from upstream material. Guidance is advisory and cannot override repository security, accessibility, ownership or release governance."
     }
   ],
   "sharedSurfaceRule": "Every changed path must match exactly one owner. Paths whose owner requiresAdr=true require an ADR under docs/architecture/decisions/ or a feature contract under docs/architecture/feature-contracts/ in the same PR. Every tracked path is also checked for exactly one owner so unregistered baseline files cannot hide until changed.",
