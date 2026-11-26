@@ -10,6 +10,8 @@ const html=fs.readFileSync('public/index.html','utf8');
 assert.equal(app,served,'Reader theme source and served release bundle must match');
 assert.ok(html.includes('/reader-comfort.css'),'Reader comfort stylesheet must be loaded');
 assert.ok(app.includes("theme==='light'?'soft-paper':theme"),'Legacy saved light reader theme must map to Soft Paper');
+assert.ok(app.includes("setReaderTheme(localStorage.getItem('imperial_reader_theme')||'dark',false)"),'Initial theme restoration must not rewrite the saved reader preference');
+assert.ok(app.includes("if(persist)localStorage.setItem('imperial_reader_theme',chosen)"),'Explicit theme changes must persist the selected reader preference');
 
 const themes=[
  ['soft-paper','Soft Paper'],['dark','Gentle Dark'],['midnight','Midnight'],
