@@ -224,3 +224,110 @@ html[data-theme="dark"] .hero.imperialArchiveHero .heroPromise{color:#FFFFFF}
   .hero.imperialArchiveHero .heroSearch button{border:1px solid ButtonText}
   .hero.imperialArchiveHero .heroTags a:focus-visible{outline:2px solid Highlight}
 }
+
+
+/* Imperial discovery shelf and story cards: quiet editorial chrome. */
+.homePage .homeFormatShelf{
+  background:#FDFBF7;
+  border:1px solid rgba(11,18,21,.12);
+  border-radius:18px;
+  box-shadow:none;
+}
+.homePage .homeFormatHeading h2 span{color:#6A0DAD}
+.homePage .homeFormatHeading .eyebrow{color:#59656B}
+.homePage .homeFormatGrid{gap:12px}
+.homePage .homeFormatCard,
+.homePage .homeFormatPrimary{
+  min-height:84px;
+  padding:16px;
+  border:1px solid rgba(11,18,21,.14);
+  border-radius:12px;
+  background:#FFFFFF;
+  color:#0B1215;
+  box-shadow:none;
+  transition:border-color .16s ease,background-color .16s ease;
+}
+.homePage .homeFormatCard:hover,
+.homePage .homeFormatCard:focus-visible{
+  transform:none;
+  border-color:#6A0DAD;
+  background:#F7F1FC;
+  outline:2px solid transparent;
+  outline-offset:2px;
+}
+.homePage .homeFormatGlyph{
+  flex-basis:36px;
+  width:36px;
+  height:36px;
+  border-radius:9px;
+  background:#F1E8F8;
+  color:#6A0DAD;
+  font-size:0;
+}
+.homePage .homeFormatGlyph::after{
+  content:"IN";
+  font-size:10px;
+  font-weight:600;
+  letter-spacing:.04em;
+}
+.homePage .homeFormatCopy b{font-size:14px;font-weight:600}
+.homePage .homeFormatCopy small{font-size:12px;color:#59656B}
+.homePage .homeFormatArrow{color:#6A0DAD}
+.homePage .homeStoryGrid .card{
+  border:1px solid rgba(11,18,21,.12);
+  border-radius:12px;
+  background:#FFFFFF;
+  box-shadow:none;
+  transition:border-color .16s ease;
+}
+.homePage .homeStoryGrid .card:hover{
+  transform:none;
+  border-color:#6A0DAD;
+  box-shadow:none;
+}
+.homePage .homeStoryGrid .cardTitle{color:#0B1215;font-weight:600}
+.homePage .homeStoryGrid .cardBody{padding:14px}
+.homePage .homeStoryGrid .meta{color:#59656B}
+html[data-theme="dark"] .homePage .homeFormatShelf{
+  background:#111A1F;
+  border-color:rgba(232,237,239,.14);
+}
+html[data-theme="dark"] .homePage .homeFormatHeading h2 span{color:#C08AFF}
+html[data-theme="dark"] .homePage .homeFormatHeading .eyebrow{color:#AAB6BC}
+html[data-theme="dark"] .homePage .homeFormatCard,
+html[data-theme="dark"] .homePage .homeFormatPrimary{
+  background:#0B1215;
+  border-color:#344148;
+  color:#E8EDEF;
+}
+html[data-theme="dark"] .homePage .homeFormatCard:hover,
+html[data-theme="dark"] .homePage .homeFormatCard:focus-visible{
+  border-color:#C08AFF;
+  background:#171D24;
+}
+html[data-theme="dark"] .homePage .homeFormatGlyph{
+  background:#2B2037;
+  color:#D8B8F4;
+}
+html[data-theme="dark"] .homePage .homeFormatCopy small{color:#B5C0C5}
+html[data-theme="dark"] .homePage .homeFormatArrow{color:#D8B8F4}
+html[data-theme="dark"] .homePage .homeStoryGrid .card{
+  background:#111A1F;
+  border-color:#344148;
+}
+html[data-theme="dark"] .homePage .homeStoryGrid .card:hover{border-color:#C08AFF}
+html[data-theme="dark"] .homePage .homeStoryGrid .cardTitle{color:#F3F5F6}
+html[data-theme="dark"] .homePage .homeStoryGrid .meta{color:#B5C0C5}
+@media(max-width:760px){
+  .homePage .homeFormatGrid{gap:8px}
+  .homePage .homeFormatCard{min-height:76px;padding:12px}
+}
+@media(prefers-reduced-motion:reduce){
+  .homePage .homeFormatCard,
+  .homePage .homeStoryGrid .card{transition:none}
+}
+@media(forced-colors:active){
+  .homePage .homeFormatCard,
+  .homePage .homeStoryGrid .card{border:1px solid CanvasText}
+  .homePage .homeFormatCard:focus-visible{outline:2px solid Highlight}
+}
