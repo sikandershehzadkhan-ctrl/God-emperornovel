@@ -62,6 +62,12 @@ The product may expose Light, Dark, Midnight, Sepia, Imperial, and Cosmic themes
 
 Theme changes must not alter content meaning, reading progress, language direction, or keyboard focus. Persisted preference must have a safe default and must not cause a flash of unreadable text.
 
+### Current implementation boundary (verified 2026-11-26)
+
+The six names above define the intended product theme system, not the current global-site capability. The website-wide theme controller in `public/app-17.24.0.js` currently normalises the site theme to **Light** or **Dark** only and persists it as `imperial_theme`. The reader has a separate controller and preference key (`imperial_reader_theme`) and currently accepts **Light, Dark, Midnight, Sepia, Imperial, and Cosmic**. Reader themes are scoped to `.readerPage`; they are not six complete global application themes. Global six-theme support remains unimplemented and must not be advertised as available until the site controller, all shared surfaces, settings UI, and route-level tests support it.
+
+The CSS migration must preserve this separation until a deliberate, tested architecture change unifies the theme contract. Do not silently make the reader preference overwrite the site preference or vice versa.
+
 ## 6. Typography and reading
 
 - Use a small, documented type family set with verified licences and reliable fallbacks.
