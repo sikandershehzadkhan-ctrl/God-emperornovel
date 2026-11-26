@@ -63,6 +63,12 @@ The global controller coerces any value other than `light` to `dark`. The reader
 6. Remove obsolete declarations only after route-level visual and functional checks show no regression.
 7. Update versioned asset references and cache policy as part of a separately reviewed release.
 
-## Non-actions and boundaries
+## Migration slice 1 (2026-11-26)
 
-This audit does not change CSS, HTML, JavaScript, image files, or production. It does not certify the current visual system as original, accessible, or complete. It is not a complete selector-consumer inventory; that requires automated source analysis and browser QA on the full route set.
+A first runtime CSS change has now been made on this branch in the existing `public/imperial-luxury-17.24.0.css` file; no seventh stylesheet was added. It defines semantic global Light/Dark tokens for canvas, surfaces, text, muted text, border, accent, action, focus, success, danger, warning, and shadows. Compatibility aliases map the current global legacy variables (`--bg`, `--panel`, `--text`, `--violet`, and related names) to those semantic roles. The site theme contract remains Light/Dark, and the reader theme state remains separate.
+
+Source-level checks on the changed file found 211 opening and 211 closing braces and confirmed the core semantic roles are declared in both global theme blocks. This is only a structural source check. It is not a CSS parser run, build, screenshot review, contrast certification, RTL check, or mobile browser test. Hard-coded legacy colours and the original declarations still exist; this is a compatibility bridge, not a completed stylesheet consolidation.
+
+## Remaining boundaries
+
+No HTML, JavaScript, database, Worker configuration, secrets, image assets, or production deployment changed. The new visual tokens are not certified accessible or visually correct until measured and tested in a real browser across the supported route set. The asset provenance gaps remain open. This audit is not a complete selector-consumer inventory; that requires automated source analysis and browser QA.
