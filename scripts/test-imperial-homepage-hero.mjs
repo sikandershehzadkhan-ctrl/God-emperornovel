@@ -11,6 +11,9 @@ assert.ok(sw.includes("'/imperial-homepage-17.24.0.css'"),'Homepage stylesheet m
 assert.ok(app.includes('class="hero nextHero imperialArchiveHero"'),'Homepage must retain its approved Imperial Archive hero');
 assert.ok(app.includes('action="/search" method="get" role="search"'),'Hero search must retain its real GET search action');
 assert.ok(app.includes('name="q" type="search"'),'Hero search must retain its query field');
+assert.ok(app.includes('Promise.allSettled(['),'Homepage story shelves must load independently when one request fails');
+assert.ok(app.includes("renderHomeShelfError('#trend'" )&&app.includes("renderHomeShelfError('#latest'"),'Each homepage shelf must expose its own recoverable error state');
+assert.ok(app.includes("trendingResult.status==='fulfilled'?uniqueLatestStories(trendRows,latestRows):latestRows"),'Latest stories must remain visible if only the trending request fails');
 assert.ok(css.includes('.hero.imperialArchiveHero{')&&css.includes('grid-template-columns:minmax(0,1fr)'),'Hero must use a single editorial column in every theme');
 assert.ok(css.includes('html[data-theme="light"] .hero.imperialArchiveHero'),'Warm light-theme styling must be explicit');
 assert.ok(css.includes('html[data-theme="dark"] .hero.imperialArchiveHero'),'Obsidian dark-theme styling must be explicit');
