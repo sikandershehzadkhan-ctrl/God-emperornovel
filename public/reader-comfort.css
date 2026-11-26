@@ -1,0 +1,35 @@
+/* Imperial Novel chapter-reader comfort palettes.
+   Scoped to .readerPage so website-wide appearance remains independent.
+   Backgrounds intentionally avoid pure white and high-luminance glare. */
+.readerPage{--read-bg:#e8e2d8;--read-surface:#eee8de;--read-bar:#e2dbd0;--read-text:#39352f;--read-heading:#302b25;--read-muted:#71695f;--read-line:#cfc6b9;--read-control:#e5ded3;--read-accent:#66558a;background:var(--read-bg)!important;color:var(--read-text)!important}
+.readerPage .readerBar{background:var(--read-bar)!important;border-color:var(--read-line)!important}
+.readerPage .readerArticle,.readerPage .readerFooterCard{background:var(--read-surface)!important;color:var(--read-text)!important;border-color:var(--read-line)!important;box-shadow:none!important}
+.readerPage .readerArticle h1,.readerPage .readerFooterCard h3,.readerPage .readerBook b{color:var(--read-heading)!important}
+.readerPage .readerContent{color:var(--read-text)!important}
+.readerPage .readerBook span,.readerPage .readerProgressText{color:var(--read-muted)!important}
+.readerPage .readerTool,.readerPage .readerPrefs,.readerPage .readerPrefs select{background:var(--read-control)!important;color:var(--read-text)!important;border-color:var(--read-line)!important}
+.readerPage .readerBack,.readerPage .readerDivider{color:var(--read-accent)!important}
+.readerPage .readerDivider{background:var(--read-accent)!important}
+.readerPage .readerLock{background:var(--read-surface)!important;color:var(--read-text)!important;border-color:var(--read-line)!important}
+.readerPage .readerLock h2,.readerPage .readerLock p{color:var(--read-text)!important}
+.readerPage .readerLock p,.readerPage .readerFooterCard p{color:var(--read-muted)!important}
+.readerPage .readerChapterItem{color:var(--read-text)!important;border-color:var(--read-line)!important}
+.readerPage .readerProgress{background:var(--read-line)!important}
+.readerPage .readerProgress span{background:var(--read-accent)!important}
+.readerPage ::selection{background:color-mix(in srgb,var(--read-accent) 30%,transparent);color:var(--read-heading)}
+.readerPage[data-reader-theme="soft-paper"]{--read-bg:#e8e2d8;--read-surface:#eee8de;--read-bar:#e2dbd0;--read-text:#39352f;--read-heading:#302b25;--read-muted:#71695f;--read-line:#cfc6b9;--read-control:#e5ded3;--read-accent:#66558a}
+.readerPage[data-reader-theme="dark"]{--read-bg:#202127;--read-surface:#282a32;--read-bar:#24262d;--read-text:#d8d7d2;--read-heading:#e5e3dd;--read-muted:#aaa9a2;--read-line:#41434b;--read-control:#30323a;--read-accent:#b6a2d8}
+.readerPage[data-reader-theme="midnight"]{--read-bg:#151c27;--read-surface:#1c2633;--read-bar:#18212c;--read-text:#d1dbe5;--read-heading:#e0e7ee;--read-muted:#9daab8;--read-line:#344252;--read-control:#222e3c;--read-accent:#91b6d8}
+.readerPage[data-reader-theme="sepia"]{--read-bg:#ded2bc;--read-surface:#e8dcc7;--read-bar:#d8cbb5;--read-text:#493d30;--read-heading:#392e23;--read-muted:#766653;--read-line:#c4b49b;--read-control:#dfd2bc;--read-accent:#866b49}
+.readerPage[data-reader-theme="imperial"]{--read-bg:#292332;--read-surface:#332b3e;--read-bar:#2e2738;--read-text:#ddd4e5;--read-heading:#eee5f5;--read-muted:#b5a8c2;--read-line:#51465e;--read-control:#3b3247;--read-accent:#b69bd2}
+.readerPage[data-reader-theme="cosmic"]{--read-bg:#1d2232;--read-surface:#262d40;--read-bar:#22283a;--read-text:#d5d8e5;--read-heading:#e7e8f0;--read-muted:#a9aec2;--read-line:#414960;--read-control:#30384d;--read-accent:#9eacd8}
+.readerPage[data-reader-theme="warm-parchment"]{--read-bg:#d9cbb3;--read-surface:#e4d7c1;--read-bar:#d3c4aa;--read-text:#463a2c;--read-heading:#362b20;--read-muted:#76634e;--read-line:#bfae91;--read-control:#ddcfb8;--read-accent:#80694d}
+.readerPage[data-reader-theme="oat"]{--read-bg:#e2dccc;--read-surface:#eae5d8;--read-bar:#dcd5c5;--read-text:#403d34;--read-heading:#302e27;--read-muted:#716d60;--read-line:#c8c0ae;--read-control:#e0dacb;--read-accent:#78806a}
+.readerPage[data-reader-theme="sage"]{--read-bg:#d1d9ce;--read-surface:#dce4d8;--read-bar:#cbd4c8;--read-text:#344137;--read-heading:#26352a;--read-muted:#617064;--read-line:#b4c0b2;--read-control:#d4ddd1;--read-accent:#647e68}
+.readerPage[data-reader-theme="mist-blue"]{--read-bg:#d2dce2;--read-surface:#dce5e9;--read-bar:#cbd6dd;--read-text:#34434d;--read-heading:#263641;--read-muted:#61727c;--read-line:#b5c4cc;--read-control:#d5dfe4;--read-accent:#557b91}
+.readerPage[data-reader-theme="dusty-rose"]{--read-bg:#ddcfce;--read-surface:#e7d9d7;--read-bar:#d7c8c7;--read-text:#493b3b;--read-heading:#392d2d;--read-muted:#796666;--read-line:#c6b4b3;--read-control:#e0d2d0;--read-accent:#936b78}
+.readerPage[data-reader-theme="lavender-mist"]{--read-bg:#d9d3df;--read-surface:#e3dce8;--read-bar:#d2cbd9;--read-text:#403849;--read-heading:#30283a;--read-muted:#71677b;--read-line:#c0b6ca;--read-control:#ddd6e2;--read-accent:#78658f}
+.readerPage[data-reader-theme="charcoal"]{--read-bg:#242629;--read-surface:#2d3034;--read-bar:#292c30;--read-text:#d7d8d6;--read-heading:#e8e9e7;--read-muted:#a9acab;--read-line:#484c50;--read-control:#35393d;--read-accent:#a6b4b1}
+.readerPage[data-reader-theme="forest"]{--read-bg:#1c2823;--read-surface:#25332c;--read-bar:#202d27;--read-text:#d2ddd4;--read-heading:#e4ece5;--read-muted:#a4b3a7;--read-line:#3d5145;--read-control:#2c3b33;--read-accent:#9ab99b}
+.readerPage[data-reader-theme="ocean"]{--read-bg:#1b2932;--read-surface:#243640;--read-bar:#202f39;--read-text:#d1dce1;--read-heading:#e4edf0;--read-muted:#a2b3bc;--read-line:#3a515d;--read-control:#2b3d47;--read-accent:#91b8c7}
+@media(prefers-reduced-motion:reduce){.readerPage,.readerPage *{scroll-behavior:auto!important;transition:none!important}}
