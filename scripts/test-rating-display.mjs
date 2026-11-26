@@ -4,7 +4,7 @@ import vm from 'node:vm';
 
 const packageManifest = JSON.parse(fs.readFileSync('package.json', 'utf8'));
 const version = String(packageManifest.version || '').trim();
-assert.match(version, /^\\d+\\.\\d+\\.\\d+$/, 'Package version must be a valid semantic release version');
+assert.match(version, /^\d+\.\d+\.\d+$/, 'Package version must be a valid semantic release version');
 
 const source = fs.readFileSync('public/app.js', 'utf8');
 const servedPath = `public/app-${version}.js`;
