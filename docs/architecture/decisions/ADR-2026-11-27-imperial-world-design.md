@@ -3,7 +3,7 @@
 - **Status:** Proposed in draft PR #396
 - **Date:** 2026-11-27
 - **Decision owners:** Product owner and frontend platform owner
-- **Scope:** `public/imperial-world-design.css` and its existing inclusion from `public/index.html`
+- **Scope:** `public/imperial-world-design.css` and its existing inclusion from `public/index.html`, covering homepage, discovery/catalog, novel detail, public author, Author Studio, account/library, Community discussions, and Notifications.
 
 ## Context
 
@@ -20,6 +20,7 @@ Imperial Novel needs a coherent, original visual identity across discovery, read
 7. Improve small-screen reading ergonomics with responsive toolbar wrapping, larger touch targets, reduced article padding, and a stacked preference drawer.
 8. Apply responsive editorial styling to discovery filters and story details, and provide focused form/layout styling for the existing creator workspace.
 9. Give account and library pages a compact responsive dashboard layout, with accessible navigation and low-glare metric surfaces.
+10. Refine the existing Community discussion feed and Notifications list with clear unread states, readable metadata, keyboard focus, and mobile spacing without changing their API or read-state behavior.
 
 ## Boundaries and non-goals
 
