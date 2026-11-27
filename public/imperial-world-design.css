@@ -680,3 +680,30 @@ html[data-theme="dark"] .authorStudioPage .authorStudioIntro,html[data-theme="da
 html[data-theme="dark"] .authorStudioPage .authorStudioIntro h2{color:#f0e7f5}
 html[data-theme="dark"] .authorStudioPage .fieldLabel{color:#c8bdcd}
 html[data-theme="dark"] .authorStudioPage .authorCreateForm .notice{background:#2b2830;border-color:#4a424d;color:#d9d0dc}
+
+
+/* Creator and public-author components are mounted inside #app, not on body. */
+.authorStudioLayout{display:grid;grid-template-columns:minmax(0,.85fr) minmax(0,1.15fr);gap:16px;align-items:start}
+.authorStudioIntro{grid-column:1/-1;padding:clamp(20px,4vw,34px);background:linear-gradient(135deg,#f6f1f8,#f7f4ed);border:1px solid #e4d9e9;border-radius:18px}
+.authorStudioIntro h2{font-size:clamp(26px,4vw,38px);letter-spacing:-.04em;color:#352b40}
+.authorStudioIntro p{max-width:68ch;line-height:1.75}
+.authorCreateForm,.authorWorksPanel{min-width:0;background:#fbf9f5;border:1px solid #e5ded4;border-radius:16px}
+.authorCreateForm h2,.authorWorksPanel h2{color:#352f39}
+.authorCreateForm .fieldLabel{display:block;margin:15px 0 7px;color:#625a63;font-size:12px;font-weight:800}
+.authorCreateForm input,.authorCreateForm select,.authorCreateForm textarea{width:100%;min-height:44px;padding:11px 12px;border:1px solid #ddd5ca;border-radius:10px;background:#fffdfa;color:#38333a}
+.authorCreateForm textarea{min-height:100px;resize:vertical}
+.authorFormGrid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
+.authorCreateForm input:focus-visible,.authorCreateForm select:focus-visible,.authorCreateForm textarea:focus-visible{outline:3px solid #9b83bd;outline-offset:2px;border-color:#8d70aa}
+.authorCreateForm .notice{margin:16px 0;background:#f1ede6;border-color:#ded5c8;color:#5d554b;line-height:1.6}
+.authorCreateForm button{min-height:46px}
+.authorWorksList{display:grid;gap:10px}
+.authorWorksList>*{min-width:0;border-color:#e6ded3}
+.authorHero{background:linear-gradient(135deg,#f4eff7,#f7f3ec);border:1px solid #e4dbe9;border-radius:18px;padding:22px}
+@media(max-width:760px){.authorStudioLayout{grid-template-columns:minmax(0,1fr)}.authorStudioIntro{grid-column:auto}}
+@media(max-width:420px){.authorFormGrid{grid-template-columns:minmax(0,1fr)}}
+html[data-theme="dark"] .authorStudioIntro,html[data-theme="dark"] .authorHero{background:linear-gradient(135deg,#292232,#22252b);border-color:#4b4055}
+html[data-theme="dark"] .authorStudioIntro h2,html[data-theme="dark"] .authorCreateForm h2,html[data-theme="dark"] .authorWorksPanel h2{color:#f0e7f5}
+html[data-theme="dark"] .authorCreateForm,html[data-theme="dark"] .authorWorksPanel{background:#1a1a21;border-color:#39343f;color:#e2dce7;box-shadow:none}
+html[data-theme="dark"] .authorCreateForm .fieldLabel{color:#c8bdcd}
+html[data-theme="dark"] .authorCreateForm input,html[data-theme="dark"] .authorCreateForm select,html[data-theme="dark"] .authorCreateForm textarea{background:#24232b;border-color:#49434f;color:#e7e0e9}
+html[data-theme="dark"] .authorCreateForm .notice{background:#2b2830;border-color:#4a424d;color:#d9d0dc}
