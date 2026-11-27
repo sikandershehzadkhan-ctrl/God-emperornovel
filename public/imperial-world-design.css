@@ -940,3 +940,47 @@ html[data-theme="dark"] #omniRes .cardTitle{color:#eee7f1}
  #omni{grid-template-columns:1fr}
  #omni>button{width:100%}
 }
+
+
+/* Library, history and Crown Vault: quiet, legible personal data surfaces. */
+#historyList{align-items:stretch;gap:13px}
+#historyList>.card{height:100%;border-color:#e5ded4;background:#fbf9f5;box-shadow:0 8px 22px rgba(35,27,43,.035)}
+#historyList>.card .cardBody{padding:15px}
+#historyList>.card .cardTitle{color:#3b3341;line-height:1.35}
+#historyList>.card .meta{display:flex;flex-wrap:wrap;gap:9px;color:#77717b}
+#savedList>.card{height:100%;border-color:#e5ded4;background:#fbf9f5;box-shadow:0 8px 22px rgba(35,27,43,.035)}
+#savedList>.card .cardTitle{color:#3b3341;line-height:1.35}
+#savedList>.card .meta{color:#77717b}
+#savedList>.card .removeLibrary{width:100%;border:1px solid #e1d7e7;border-radius:10px;color:#65418e;background:#f6f1f8;padding:8px 12px}
+#savedList>.card .removeLibrary:hover{background:#eee6f3;border-color:#cbb9d8}
+#bookmarkList .statline{min-width:0}
+#bookmarkList .statline>span{min-width:0;overflow-wrap:anywhere;line-height:1.55}
+#bookmarkList .statline a{flex:0 0 auto;min-height:40px;display:inline-flex;align-items:center;padding:0 12px;border:1px solid #e1d7e7;border-radius:9px;color:#65418e}
+#app .page .panel .section .chapterList .chapter{grid-template-columns:66px minmax(0,1fr) auto;gap:13px;padding:14px 16px;border-color:#e8e1d8;background:#f8f5ef}
+#app .page .panel .section .chapterList .chapter .chapterNo{display:grid;place-items:center;min-height:42px;border-radius:10px;background:#eee8f3;color:#62457e;font-variant-numeric:tabular-nums}
+#app .page .panel .section .chapterList .chapter b{color:#3b3341}
+#app .page .panel .section .chapterList .chapter .muted{color:#77717b;overflow-wrap:anywhere}
+#app .page .panel .section .chapterList .chapter>span:last-child{color:#65418e;font-size:12px;font-weight:650}
+#historyList :focus-visible,#savedList :focus-visible,#bookmarkList :focus-visible{outline:3px solid #9475b2;outline-offset:3px}
+html[data-theme="dark"] #historyList>.card,html[data-theme="dark"] #savedList>.card{background:#1c1b23;border-color:#39343f;box-shadow:none}
+html[data-theme="dark"] #historyList>.card .cardTitle,html[data-theme="dark"] #savedList>.card .cardTitle{color:#eee7f1}
+html[data-theme="dark"] #historyList>.card .meta,html[data-theme="dark"] #savedList>.card .meta{color:#bdb5c4}
+html[data-theme="dark"] #savedList>.card .removeLibrary{background:#292431;border-color:#554665;color:#e0cbed}
+html[data-theme="dark"] #savedList>.card .removeLibrary:hover{background:#393044}
+html[data-theme="dark"] #bookmarkList .statline a{border-color:#554665;color:#e0cbed}
+html[data-theme="dark"] #app .page .panel .section .chapterList .chapter{background:#202029;border-color:#39343f}
+html[data-theme="dark"] #app .page .panel .section .chapterList .chapter .chapterNo{background:#393044;color:#e0cbed}
+html[data-theme="dark"] #app .page .panel .section .chapterList .chapter b{color:#eee7f1}
+html[data-theme="dark"] #app .page .panel .section .chapterList .chapter .muted{color:#bdb5c4}
+html[data-theme="dark"] #app .page .panel .section .chapterList .chapter>span:last-child{color:#d6c2e9}
+@media(max-width:600px){
+ #historyList,#savedList{grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+ #savedList>.card .cardBody{padding:11px}
+ #savedList>.card .removeLibrary{font-size:12px;padding:7px}
+ #app .page .panel .section .chapterList .chapter{grid-template-columns:52px minmax(0,1fr);gap:9px;padding:12px}
+ #app .page .panel .section .chapterList .chapter>span:last-child{grid-column:2}
+}
+@media(max-width:390px){
+ #historyList,#savedList{grid-template-columns:1fr}
+ #bookmarkList .statline{align-items:flex-start;flex-direction:row}
+}
