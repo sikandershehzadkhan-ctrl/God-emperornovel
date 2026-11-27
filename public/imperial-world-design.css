@@ -594,3 +594,89 @@ html[data-theme="dark"] .homePage .creatorOrb{background:#211d29;border-color:#5
  .readerTools{justify-content:space-between}
  .readerTool{flex:1;max-width:56px}
 }
+
+
+/* Discovery and story-detail surfaces: editorial hierarchy with quiet imperial accents. */
+.catalogTop.panel{background:linear-gradient(145deg,#fbf9f5,#f3efe8);border-color:#e4ddd2;box-shadow:0 12px 34px rgba(40,32,24,.045)}
+.catalogSearch .search{min-height:48px;background:#fffdfa;border-color:#ded7cc}
+.catalogSearch input{min-height:46px;color:#302d29}
+.filterRow{gap:12px}
+.filterGroup{min-width:0}
+.filterGroup select,.filterGroup input{min-height:44px;background:#fffdfa;border-color:#ded7cc;color:#49443d}
+.filterLabel{color:#746d65}
+.catalogMeta{color:#655e56}
+.activeFilters{gap:8px}
+.activeFilter{border-color:#d7c9e3;background:#f1ebf6;color:#563d70}
+.catalogGrid{gap:18px}
+.catalogCard{border-color:#e5ded4;background:#fbf9f5;box-shadow:0 8px 24px rgba(38,31,25,.045);transition:transform .18s ease,border-color .18s ease,box-shadow .18s ease}
+.catalogCard:hover{transform:translateY(-3px);border-color:#c9b7d8;box-shadow:0 14px 32px rgba(48,35,63,.09)}
+.catalogBody{color:#514b44}
+.catalogTitle{color:#302b35}
+.catalogStats{color:#777068}
+.catalogTags .pill{background:#f0ebf4;color:#654b7d;border-color:#e1d6ea}
+.catalogEmpty{background:#f8f5ef;border-color:#e5ddd1}
+.novelHero{gap:clamp(22px,4vw,48px);align-items:start}
+.novelCover{border-radius:18px;overflow:hidden;box-shadow:0 18px 40px rgba(28,22,34,.14)}
+.novelInfo{min-width:0}
+.novelInfo h1{letter-spacing:-.035em;text-wrap:balance}
+.novelInfo>p{max-width:70ch;color:#625b55;line-height:1.8}
+.novelInfo .meta{gap:7px}
+.novelInfo .pill{background:#f0ebf4;border-color:#e2d7eb;color:#604879}
+.novelInfo .stats{gap:9px}
+.novelInfo .stat{background:#f7f3ed;border:1px solid #e8e0d5;border-radius:13px;padding:12px}
+.novelInfo .stat b{color:#453451}
+.novelInfo .actions{gap:9px;flex-wrap:wrap}
+.novelInfo .actions>*{min-height:44px}
+.tabs{gap:8px;overflow-x:auto;scrollbar-width:thin}
+.tabs a{min-height:44px;display:inline-flex;align-items:center}
+.chapterList{border-color:#e5ddd2}
+.chapterList>*{border-color:#ebe4da}
+.communityGrid{gap:16px}
+.communityGrid>.panel{background:#fbf9f5;border-color:#e5ded4}
+.ratingPanel h3,.communityGrid h3{color:#3d3542}
+.authorStudioPage .authorStudioLayout{display:grid;grid-template-columns:minmax(0,.85fr) minmax(0,1.15fr);gap:16px;align-items:start}
+.authorStudioPage .authorStudioIntro{grid-column:1/-1;padding:clamp(20px,4vw,34px);background:linear-gradient(135deg,#f6f1f8,#f7f4ed);border-color:#e4d9e9}
+.authorStudioPage .authorStudioIntro h2{font-size:clamp(26px,4vw,38px);letter-spacing:-.04em;color:#352b40}
+.authorStudioPage .authorStudioIntro p{max-width:68ch;line-height:1.75}
+.authorStudioPage .authorCreateForm,.authorStudioPage .authorWorksPanel{min-width:0;background:#fbf9f5;border-color:#e5ded4}
+.authorStudioPage .authorCreateForm h2,.authorStudioPage .authorWorksPanel h2{color:#352f39}
+.authorStudioPage .fieldLabel{display:block;margin:15px 0 7px;color:#625a63;font-size:12px;font-weight:800}
+.authorStudioPage .authorCreateForm input,.authorStudioPage .authorCreateForm select,.authorStudioPage .authorCreateForm textarea{width:100%;min-height:44px;padding:11px 12px;border:1px solid #ddd5ca;border-radius:10px;background:#fffdfa;color:#38333a}
+.authorStudioPage .authorCreateForm textarea{min-height:100px;resize:vertical}
+.authorStudioPage .authorFormGrid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
+.authorStudioPage .authorCreateForm input:focus-visible,.authorStudioPage .authorCreateForm select:focus-visible,.authorStudioPage .authorCreateForm textarea:focus-visible{outline:3px solid #9b83bd;outline-offset:2px;border-color:#8d70aa}
+.authorStudioPage .authorCreateForm .notice{margin:16px 0;background:#f1ede6;border-color:#ded5c8;color:#5d554b;line-height:1.6}
+.authorStudioPage .authorCreateForm button{min-height:46px}
+.authorStudioPage .authorWorksList{display:grid;gap:10px}
+.authorStudioPage .authorWorksList>*{min-width:0;border-color:#e6ded3}
+.authorStudioPage .authorHero{background:linear-gradient(135deg,#f4eff7,#f7f3ec);border:1px solid #e4dbe9;border-radius:18px;padding:22px}
+@media(max-width:760px){
+ .catalogTop.panel{padding:14px}
+ .filterRow{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:9px}
+ .catalogGrid{gap:11px}
+ .novelHero{grid-template-columns:104px minmax(0,1fr);gap:15px}
+ .novelCover{border-radius:13px}
+ .novelInfo h1{font-size:clamp(24px,7vw,34px)}
+ .novelInfo .stats{grid-template-columns:repeat(2,minmax(0,1fr))}
+ .novelInfo .actions{display:grid;grid-template-columns:repeat(2,minmax(0,1fr))}
+ .novelInfo .actions>*{justify-content:center;text-align:center}
+ .communityGrid{grid-template-columns:minmax(0,1fr)}
+ .authorStudioPage .authorStudioLayout{grid-template-columns:minmax(0,1fr)}
+ .authorStudioPage .authorStudioIntro{grid-column:auto}
+}
+@media(max-width:420px){
+ .filterRow{grid-template-columns:minmax(0,1fr)}
+ .novelHero{grid-template-columns:88px minmax(0,1fr);gap:12px}
+ .novelInfo .actions{grid-template-columns:minmax(0,1fr)}
+ .authorStudioPage .authorFormGrid{grid-template-columns:minmax(0,1fr)}
+}
+html[data-theme="dark"] .catalogTop.panel,html[data-theme="dark"] .catalogCard,html[data-theme="dark"] .communityGrid>.panel,html[data-theme="dark"] .authorStudioPage .authorCreateForm,html[data-theme="dark"] .authorStudioPage .authorWorksPanel{background:#1a1a21;border-color:#39343f;color:#e2dce7;box-shadow:none}
+html[data-theme="dark"] .catalogSearch .search,html[data-theme="dark"] .filterGroup select,html[data-theme="dark"] .filterGroup input,html[data-theme="dark"] .authorStudioPage .authorCreateForm input,html[data-theme="dark"] .authorStudioPage .authorCreateForm select,html[data-theme="dark"] .authorStudioPage .authorCreateForm textarea{background:#24232b;border-color:#49434f;color:#e7e0e9}
+html[data-theme="dark"] .catalogTitle,html[data-theme="dark"] .novelInfo h1,html[data-theme="dark"] .novelInfo .stat b,html[data-theme="dark"] .ratingPanel h3,html[data-theme="dark"] .communityGrid h3,html[data-theme="dark"] .authorStudioPage .authorCreateForm h2,html[data-theme="dark"] .authorStudioPage .authorWorksPanel h2{color:#eee7f1}
+html[data-theme="dark"] .catalogBody,html[data-theme="dark"] .novelInfo>p,html[data-theme="dark"] .catalogStats{color:#c2b9c5}
+html[data-theme="dark"] .novelInfo .stat{background:#24212b;border-color:#443b4b}
+html[data-theme="dark"] .novelInfo .pill,html[data-theme="dark"] .catalogTags .pill{background:#30283a;border-color:#51425e;color:#d8c5e8}
+html[data-theme="dark"] .authorStudioPage .authorStudioIntro,html[data-theme="dark"] .authorStudioPage .authorHero{background:linear-gradient(135deg,#292232,#22252b);border-color:#4b4055}
+html[data-theme="dark"] .authorStudioPage .authorStudioIntro h2{color:#f0e7f5}
+html[data-theme="dark"] .authorStudioPage .fieldLabel{color:#c8bdcd}
+html[data-theme="dark"] .authorStudioPage .authorCreateForm .notice{background:#2b2830;border-color:#4a424d;color:#d9d0dc}
