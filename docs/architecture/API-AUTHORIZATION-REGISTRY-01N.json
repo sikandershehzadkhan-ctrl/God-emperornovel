@@ -3,7 +3,7 @@
   "registryName": "Imperial Novel API authorization and object-ownership registry",
   "sourceFile": "src/index.js",
   "sourceCommit": "c7de0679ea2b2f988ff2a298203bca68f1b01c20",
-  "sourceBlob": "src/index.js@b58488cd26c2653efef2a28d4c66f19002d018be",
+  "sourceBlob": "src/index.js@8e6cd5440cd487bd6cf267237d3ff62225340e70",
   "coverage": "All exact API path/method declarations plus dynamic API patterns are inventoried; critical admin, user-owned, author-owned, public-rights and payment paths have explicit source guards and scope assertions.",
   "exactInventory": [
     {
