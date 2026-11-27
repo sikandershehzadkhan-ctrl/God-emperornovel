@@ -567,3 +567,30 @@ html[data-theme="dark"] .homePage .creatorOrb{background:#211d29;border-color:#5
 .readerPage[data-reader-theme] .readerTool:focus-visible,.readerPage[data-reader-theme] .readerPrefs select:focus-visible{outline:3px solid #9b83bd;outline-offset:2px}
 .readerPage[data-reader-theme] .readerContent{overflow-wrap:anywhere}
 @media(prefers-reduced-motion:reduce){.readerPage[data-reader-theme] *{scroll-behavior:auto!important;transition:none!important}}
+
+
+/* Small-screen reader ergonomics: keep every control reachable without crowding text. */
+@media(max-width:760px){
+ .readerBarInner{width:calc(100% - 24px);height:auto;min-height:60px;flex-wrap:wrap;gap:7px;padding:9px 0}
+ .readerBack{font-size:12px}
+ .readerBook{text-align:right}
+ .readerTools{width:100%;justify-content:flex-end;gap:7px}
+ .readerTool{min-width:44px;min-height:44px;height:44px}
+ .readerMain{width:calc(100% - 24px);padding:20px 0}
+ .readerArticle{padding:30px 22px;border-radius:15px}
+ .readerArticle h1{font-size:clamp(25px,7vw,32px);line-height:1.2}
+ .readerContent{font-size:18px;line-height:1.9}
+ .readerMeta{align-items:flex-start;flex-direction:column;gap:5px}
+ .readerPrefs{grid-template-columns:minmax(0,1fr);gap:9px}
+ .readerPrefs select{min-height:44px}
+ .readerChapterItem{min-height:44px}
+ .readerActions{gap:8px;flex-wrap:wrap}
+}
+@media(max-width:390px){
+ .readerBarInner{width:calc(100% - 18px)}
+ .readerMain{width:calc(100% - 18px)}
+ .readerArticle{padding:25px 16px}
+ .readerContent{font-size:17px;line-height:1.85}
+ .readerTools{justify-content:space-between}
+ .readerTool{flex:1;max-width:56px}
+}
