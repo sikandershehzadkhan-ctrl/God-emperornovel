@@ -85,7 +85,7 @@ jobs:
         run: |
           set -euo pipefail
           mkdir -p artifacts/reader-visual/mobile artifacts/reader-visual/desktop
-          themes="soft-paper dark midnight sepia imperial cosmic warm-parchment oat sage mist-blue dusty-rose lavender-mist charcoal forest ocean"
+          themes="soft-paper gentle-dark midnight sepia imperial cosmic warm-parchment oat sage mist-blue dusty-rose lavender-mist charcoal forest ocean"
           for theme in $themes; do
             npx --yes playwright@1.56.1 screenshot --browser chromium --viewport-size "390,844" "http://127.0.0.1:8765/scripts/fixtures/reader-visual.html?theme=$theme" "artifacts/reader-visual/mobile/$theme.png"
             npx --yes playwright@1.56.1 screenshot --browser chromium --viewport-size "1440,1000" "http://127.0.0.1:8765/scripts/fixtures/reader-visual.html?theme=$theme" "artifacts/reader-visual/desktop/$theme.png"
