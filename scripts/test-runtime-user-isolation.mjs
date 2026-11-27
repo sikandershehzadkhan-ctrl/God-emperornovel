@@ -107,4 +107,85 @@ const crossOrigin = await fetch(base + "/api/history", {
 });
 assert.equal(crossOrigin.status, 403, "cross-origin API mutations must be rejected before reaching private handlers");
 
-console.log("PASS: isolated local Worker runtime enforces account-scoped history and author-novel ownership, rejects ID-swapping edits and non-admin role escalation, ignores registration role injection and client user_id spoofing, rejects anonymous access, and blocks cross-origin mutations.");
+
+const localSql = sql => execFileSync("npx", [
+  "--yes", "wrangler@4", "d1", "execute", "god-emperornovel-db",
+  "--local", "--config", "wrangler.toml", "--command", sql
+], { stdio: "pipe" });
+
+// Seed account-owned records directly into disposable local D1 so these tests
+// exercise the real Worker read/update handlers without relying on UI flows.
+const aid = Number(a.user.id), bid = Number(b.user.id);
+localSql(`
+  INSERT INTO bookmarks(user_id,novel_id,chapter_number) VALUES(${aid},${fixtureNovelId},7),(${bid},${fixtureNovelId},3);
+  INSERT INTO user_library(user_id,novel_id) VALUES(${aid},${fixtureNovelId}),(${bid},${fixtureNovelId});
+  INSERT INTO notifications(id,user_id,title,body) VALUES
+    (987654331,${aid},'Alpha private notice','Alpha only'),
+    (987654332,${bid},'Bravo private notice','Bravo only');
+  INSERT INTO ticket_ledger(id,user_id,delta,reason,reference) VALUES
+    (987654341,${aid},10,'runtime fixture','alpha'),
+    (987654342,${bid},20,'runtime fixture','bravo');
+`);
+
+const aBookmarks = await request("/api/bookmarks", { cookie: a.cookie });
+const bBookmarks = await request("/api/bookmarks", { cookie: b.cookie });
+assert.equal(aBookmarks.response.status, 200);
+assert.equal(bBookmarks.response.status, 200);
+assert.equal(aBookmarks.data.length, 1);
+assert.equal(bBookmarks.data.length, 1);
+assert.equal(Number(aBookmarks.data[0].chapter_number), 7);
+assert.equal(Number(bBookmarks.data[0].chapter_number), 3);
+
+const aLibrary = await request("/api/library", { cookie: a.cookie });
+const bLibrary = await request("/api/library", { cookie: b.cookie });
+assert.equal(aLibrary.response.status, 200);
+assert.equal(bLibrary.response.status, 200);
+assert.equal(aLibrary.data.length, 1);
+assert.equal(bLibrary.data.length, 1);
+assert.equal(Number(aLibrary.data[0].novel_id), fixtureNovelId);
+assert.equal(Number(bLibrary.data[0].novel_id), fixtureNovelId);
+
+const aNotifications = await request("/api/notifications", { cookie: a.cookie });
+const bNotifications = await request("/api/notifications", { cookie: b.cookie });
+assert.equal(aNotifications.response.status, 200);
+assert.equal(bNotifications.response.status, 200);
+assert.deepEqual(aNotifications.data.map(n => n.title), ["Alpha private notice"]);
+assert.deepEqual(bNotifications.data.map(n => n.title), ["Bravo private notice"]);
+const markARead = await request("/api/notifications/read", { method: "POST", cookie: a.cookie, body: {} });
+assert.equal(markARead.response.status, 200);
+const aNoticeState = await request("/api/notifications", { cookie: a.cookie });
+const bNoticeState = await request("/api/notifications", { cookie: b.cookie });
+assert.ok(aNoticeState.data[0].read_at, "A may mark only A's notifications read");
+assert.equal(bNoticeState.data[0].read_at, null, "A must not mark B's notifications read");
+
+const aLedger = await request("/api/tickets/ledger", { cookie: a.cookie });
+const bLedger = await request("/api/tickets/ledger", { cookie: b.cookie });
+assert.equal(aLedger.response.status, 200);
+assert.equal(bLedger.response.status, 200);
+assert.deepEqual(aLedger.data.map(x => x.reference), ["alpha"]);
+assert.deepEqual(bLedger.data.map(x => x.reference), ["bravo"]);
+
+// Initialize the real AI project tables, then seed two isolated project owners.
+await request("/api/author/ai/projects", { cookie: a.cookie });
+await request("/api/author/ai/projects", { cookie: b.cookie });
+localSql(`
+  INSERT INTO ai_author_projects(id,owner_user_id,name) VALUES
+    (987654351,${aid},'Alpha private AI project'),
+    (987654352,${bid},'Bravo private AI project');
+`);
+const aProjects = await request("/api/author/ai/projects", { cookie: a.cookie });
+const bProjects = await request("/api/author/ai/projects", { cookie: b.cookie });
+assert.ok(aProjects.data.some(p => Number(p.id) === 987654351));
+assert.ok(!aProjects.data.some(p => Number(p.id) === 987654352));
+assert.ok(bProjects.data.some(p => Number(p.id) === 987654352));
+assert.ok(!bProjects.data.some(p => Number(p.id) === 987654351));
+const aProjectDetail = await request("/api/author/ai/projects/987654351", { cookie: a.cookie });
+assert.equal(aProjectDetail.response.status, 200);
+const bProjectRead = await request("/api/author/ai/projects/987654351", { cookie: b.cookie });
+assert.equal(bProjectRead.response.status, 403, "author B must not read author A's AI project by swapping its ID");
+const bProjectPatch = await request("/api/author/ai/projects/987654351", {
+  method: "PATCH", cookie: b.cookie, body: { name: "Unauthorized AI project takeover" }
+});
+assert.equal(bProjectPatch.response.status, 403, "author B must not modify author A's AI project by swapping its ID");
+
+console.log("PASS: isolated local Worker runtime enforces account-scoped history and author-novel ownership, rejects ID-swapping edits and non-admin role escalation, ignores registration role injection and client user_id spoofing, rejects anonymous access, and blocks cross-origin mutations, isolates bookmarks, library, notifications, ticket ledgers, and AI author projects, and rejects cross-account AI project reads and edits.");
