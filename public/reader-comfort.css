@@ -44,3 +44,26 @@
 .readerPage[data-reader-theme="forest"]{--read-bg:#1c2823;--read-surface:#25332c;--read-bar:#202d27;--read-text:#d2ddd4;--read-heading:#e4ece5;--read-muted:#a4b3a7;--read-line:#3d5145;--read-control:#2c3b33;--read-accent:#9ab99b}
 .readerPage[data-reader-theme="ocean"]{--read-bg:#1b2932;--read-surface:#243640;--read-bar:#202f39;--read-text:#d1dce1;--read-heading:#e4edf0;--read-muted:#a2b3bc;--read-line:#3a515d;--read-control:#2b3d47;--read-accent:#91b8c7}
 @media(prefers-reduced-motion:reduce){.readerPage,.readerPage *{scroll-behavior:auto!important;transition:none!important}}
+
+
+/* Keep Cosmic Dusk ahead of the later global reader-surface layer.
+   That layer applies !important backgrounds using website-wide --ink/--surface,
+   which otherwise makes Cosmic inherit Midnight's grey-blue surfaces. */
+html body .readerPage[data-reader-theme="cosmic"]{background:var(--read-bg)!important;color:var(--read-text)!important}
+html body .readerPage[data-reader-theme="cosmic"] .readerBar{background:var(--read-bar)!important;border-color:var(--read-line)!important}
+html body .readerPage[data-reader-theme="cosmic"] .readerArticle,
+html body .readerPage[data-reader-theme="cosmic"] .readerFooterCard,
+html body .readerPage[data-reader-theme="cosmic"] .readerLock,
+html body .readerPage[data-reader-theme="cosmic"] .chapterDrawer{background:var(--read-surface)!important;color:var(--read-text)!important;border-color:var(--read-line)!important;box-shadow:none!important}
+html body .readerPage[data-reader-theme="cosmic"] .readerTool,
+html body .readerPage[data-reader-theme="cosmic"] .readerPrefs,
+html body .readerPage[data-reader-theme="cosmic"] .readerPrefs select{background:var(--read-control)!important;color:var(--read-text)!important;border-color:var(--read-line)!important}
+html body .readerPage[data-reader-theme="cosmic"] .readerArticle h1,
+html body .readerPage[data-reader-theme="cosmic"] .readerFooterCard h3,
+html body .readerPage[data-reader-theme="cosmic"] .readerBook b{color:var(--read-heading)!important}
+html body .readerPage[data-reader-theme="cosmic"] .readerContent,
+html body .readerPage[data-reader-theme="cosmic"] .readerLock h2{color:var(--read-text)!important}
+html body .readerPage[data-reader-theme="cosmic"] .readerBook span,
+html body .readerPage[data-reader-theme="cosmic"] .readerProgressText,
+html body .readerPage[data-reader-theme="cosmic"] .readerLock p,
+html body .readerPage[data-reader-theme="cosmic"] .readerFooterCard p{color:var(--read-muted)!important}
