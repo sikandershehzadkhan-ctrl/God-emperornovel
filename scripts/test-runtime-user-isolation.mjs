@@ -23,7 +23,7 @@ async function registerAndLogin(suffix) {
   const email = `${username}@example.invalid`;
   const password = "Runtime-Isolation-Only-2026!";
   const registration = await request("/api/auth/register", {
-    method: "POST", body: { username, email, password }
+    method: "POST", body: { username, email, password, role: "admin" }
   });
   assert.equal(registration.response.status, 200, `registration failed: ${JSON.stringify(registration.data)}`);
   const login = await request("/api/auth/login", {
@@ -33,6 +33,7 @@ async function registerAndLogin(suffix) {
   const setCookie = login.response.headers.get("set-cookie") || "";
   const cookie = setCookie.split(";")[0];
   assert.match(cookie, /^session=/, "login must issue a session cookie");
+  assert.equal(login.data.user.role, "user", "registration must ignore client-supplied administrator roles");
   return { cookie, user: login.data.user };
 }
 
@@ -73,6 +74,11 @@ const bPatchForeignNovel = await request("/api/author/novels/" + privateNovelId,
 });
 assert.equal(bPatchForeignNovel.response.status, 403, "author B must not edit author A's novel by swapping its ID");
 
+const nonAdminRoleEscalation = await request("/api/admin/users/" + b.user.id, {
+  method: "PATCH", cookie: b.cookie, body: { role: "admin", verified: true, banned: false }
+});
+assert.equal(nonAdminRoleEscalation.response.status, 403, "an author must not promote accounts through admin endpoints");
+
 // This fixture exists only in Wrangler's disposable local D1 database.
 const write = await request("/api/history", {
   method: "POST",
@@ -101,4 +107,4 @@ const crossOrigin = await fetch(base + "/api/history", {
 });
 assert.equal(crossOrigin.status, 403, "cross-origin API mutations must be rejected before reaching private handlers");
 
-console.log("PASS: isolated local Worker runtime enforces account-scoped reading history, ignores client user_id spoofing, rejects anonymous access, and blocks cross-origin mutations.");
+console.log("PASS: isolated local Worker runtime enforces account-scoped history and author-novel ownership, rejects ID-swapping edits and non-admin role escalation, ignores registration role injection and client user_id spoofing, rejects anonymous access, and blocks cross-origin mutations.");
