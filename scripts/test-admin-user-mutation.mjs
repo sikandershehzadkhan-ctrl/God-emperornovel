@@ -11,9 +11,9 @@ for (const fragment of [
   "SELECT id,role,verified,banned FROM users WHERE id=?",
   "if(!target)return json({error:\"User not found\"},404)",
   "id===u.id&&(role!=='admin'||banned)",
-  "SELECT COUNT(*) n FROM users WHERE role='admin' AND banned=0",
-  "Number(activeAdmins?.n||0)<=1",
+  "SELECT COUNT(*) FROM users WHERE role='admin' AND banned=0",
+  "(role<>'admin' OR banned<>0 OR (?='admin' AND ?=0)",
   "Number(result.meta?.changes||0)!==1",
   'audit(env,u,"admin_user_updated"'
 ]) assert.ok(route.includes(fragment), "missing admin account safety invariant: "+fragment);
-console.log("PASS: admin account updates validate targets, prevent self-demotion/self-ban and last-admin lockout, check writes, and create audit entries.");
+console.log("PASS: admin account updates validate targets, prevent self-demotion/self-ban and atomically prevent concurrent last-admin lockout, check writes, and create audit entries.");
