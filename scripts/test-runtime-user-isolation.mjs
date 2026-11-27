@@ -277,6 +277,25 @@ assert.equal(Number(aAfterConcurrentBatch.data.user.tickets), 23, "concurrent ba
 const batchRaceLedger = await request("/api/tickets/ledger", { cookie: a.cookie });
 assert.equal(batchRaceLedger.data.filter(x => x.reason === "batch_unlock" && x.reference === `${fixtureNovelId}:40:10`).length, 1, "concurrent batch retries must create one ledger record");
 
+// Rejected paid requests must refund once, with an auditable ledger transition.
+localSql(`
+  UPDATE users SET tickets=18 WHERE id=${aid};
+  UPDATE users SET role='admin' WHERE id=${bid};
+  INSERT INTO novel_requests(id,user_id,url,source_host,week_key,cost,status)
+  VALUES (987654500,${aid},'https://example.invalid/refund-fixture','example.invalid',999999,5,'pending');
+  INSERT INTO ticket_ledger(user_id,delta,reason,reference)
+  VALUES (${aid},-5,'novel_request','https://example.invalid/refund-fixture');
+`);
+const refund = await request("/api/admin/requests/987654500", { method: "PATCH", cookie: b.cookie, body: { status: "rejected" } });
+assert.equal(refund.response.status, 200, `admin refund failed: ${JSON.stringify(refund.data)}`);
+assert.equal(Number(refund.data.refunded), 5, "rejection must refund the exact charged amount");
+const aAfterRefund = await request("/api/me", { cookie: a.cookie });
+assert.equal(Number(aAfterRefund.data.user.tickets), 23, "refund must restore the request charge to its owner");
+const refundReplay = await request("/api/admin/requests/987654500", { method: "PATCH", cookie: b.cookie, body: { status: "approved" } });
+assert.equal(refundReplay.response.status, 409, "a rejected request must not be approved or refunded again");
+const aRefundLedger = await request("/api/tickets/ledger", { cookie: a.cookie });
+assert.equal(aRefundLedger.data.filter(x => x.reason === "novel_request_refund" && x.reference === "https://example.invalid/refund-fixture").length, 1, "refund replay must not create a duplicate credit ledger row");
+
 // Initialize the real AI project tables, then seed two isolated project owners.
 await request("/api/author/ai/projects", { cookie: a.cookie });
 await request("/api/author/ai/projects", { cookie: b.cookie });
