@@ -22,6 +22,7 @@ Imperial Novel needs a coherent, original visual identity across discovery, read
 9. Give account and library pages a compact responsive dashboard layout, with accessible navigation and low-glare metric surfaces.
 10. Refine the existing Community discussion feed and Notifications list with clear unread states, readable metadata, keyboard focus, and mobile spacing without changing their API or read-state behavior.
 11. Give Leaderboard, Tier List, Random Novel, Vote Novels, and Request a New Novel cohesive low-glare cards, readable ranking and voting rows, responsive layouts, and visible focus states while preserving their existing APIs and interactions.
+12. Refine the existing Settings preference panels, controls, accessibility toggles, export/reset actions, and the authorized-source OmniPortal search/results workspace with responsive low-glare surfaces and keyboard focus. Preserve local preference storage and the existing metadata-only authorized-source workflow.
 
 ## Boundaries and non-goals
 
