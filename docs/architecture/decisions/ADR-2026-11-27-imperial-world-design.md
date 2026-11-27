@@ -16,7 +16,8 @@ Imperial Novel needs a coherent, original visual identity across discovery, read
 3. Prefer warm, low-glare page and reading surfaces. Decorative colors must not compromise chapter-text contrast.
 4. Refine the existing homepage structure through CSS rather than replacing its routing, data, or interaction logic.
 5. Keep the implementation dependency-free and responsive, with visible keyboard focus and reduced-motion support.
-6. Treat theme coverage as incremental: existing light/dark modes remain the only active theme controls until theme preference and reader settings are implemented and tested end-to-end.
+6. Preserve the existing reader's six theme choices (light, dark, midnight, sepia, imperial, and cosmic); this stylesheet refines their visual surfaces without changing preference storage or reader behavior.
+7. Improve small-screen reading ergonomics with responsive toolbar wrapping, larger touch targets, reduced article padding, and a stacked preference drawer.
 
 ## Boundaries and non-goals
 
@@ -29,7 +30,8 @@ Imperial Novel needs a coherent, original visual identity across discovery, read
 
 - Cloudflare source validation and production build.
 - Mobile and desktop visual review on real routes.
-- Reader contrast and low-glare review in both supported themes.
+- Reader contrast and low-glare review across all six existing reader themes.
+- Mobile layout review at narrow viewport widths, including the reader toolbar and preference drawer.
 - Keyboard focus, reduced-motion, and responsive layout checks.
 - Review of the ownership/governance gate before merge.
 
