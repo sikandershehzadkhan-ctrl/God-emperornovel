@@ -61,7 +61,9 @@ async function ensurePublishingSchema(env){
   const ci=(await env.DB.prepare('PRAGMA table_info(chapters)').all()).results||[];
   const chHave=new Set(ci.map(x=>String(x.name)));
   if(!chHave.has('publication_status')){await env.DB.prepare("ALTER TABLE chapters ADD COLUMN publication_status TEXT NOT NULL DEFAULT 'published'").run()}
+  if(!chHave.has('updated_at')){await env.DB.prepare("ALTER TABLE chapters ADD COLUMN updated_at TEXT NOT NULL DEFAULT ''").run()}
   await env.DB.prepare("UPDATE chapters SET publication_status='published' WHERE publication_status IS NULL OR publication_status=''").run()
+  await env.DB.prepare("UPDATE chapters SET updated_at=CURRENT_TIMESTAMP WHERE updated_at IS NULL OR updated_at=''").run()
   await env.DB.prepare('CREATE INDEX IF NOT EXISTS idx_chapters_publication ON chapters(novel_id,publication_status,chapter_number)').run()
   await env.DB.prepare(`CREATE TABLE IF NOT EXISTS chapter_views (chapter_id INTEGER PRIMARY KEY, views INTEGER NOT NULL DEFAULT 0, updated_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP, FOREIGN KEY(chapter_id) REFERENCES chapters(id) ON DELETE CASCADE)`).run();
  }catch(e){console.error('publishing schema failed; schema version must not advance',e);throw e}
@@ -764,7 +766,7 @@ async function api(req,env){
   if(!Number.isInteger(num)||num<1||!title||!content)return json({error:'Chapter number, title and content are required'},400);
   if(["manga","manhwa","manhua","webtoon","comic","graphic_novel"].includes(String(n.kind||"").toLowerCase())){const comicCheck=validateComicChapterContent(content);if(!comicCheck.ok)return json({error:comicCheck.error},400)}else{const richTextCheck=validateRichTextChapterContent(content);if(!richTextCheck.ok)return json({error:richTextCheck.error},400)}
   const locked=!!b.is_locked,cost=Number(b.ticket_cost||0);if(cost<0)return json({error:'Ticket cost cannot be negative'},400);
-  try{const r=await env.DB.prepare(`INSERT INTO chapters(novel_id,chapter_number,title,content,is_locked,ticket_cost,publication_status) VALUES(?,?,?,?,?,?, 'draft')`).bind(nid,num,title,content,locked?1:0,cost).run();await env.DB.prepare('UPDATE novels SET updated_at=CURRENT_TIMESTAMP WHERE id=?').bind(nid).run();await audit(env,u,'author_chapter_created',`novel=${nid};chapter=${num}`);return json({ok:true,id:Number(r.meta.last_row_id),message:'Chapter saved as draft.'},201)}catch(err){return json({error:'Chapter number already exists or could not be saved'},409)}
+  try{const r=await env.DB.prepare(`INSERT INTO chapters(novel_id,chapter_number,title,content,is_locked,ticket_cost,publication_status,updated_at) VALUES(?,?,?,?,?,?, 'draft',CURRENT_TIMESTAMP)`).bind(nid,num,title,content,locked?1:0,cost).run();await env.DB.prepare('UPDATE novels SET updated_at=CURRENT_TIMESTAMP WHERE id=?').bind(nid).run();await audit(env,u,'author_chapter_created',`novel=${nid};chapter=${num}`);return json({ok:true,id:Number(r.meta.last_row_id),message:'Chapter saved as draft.'},201)}catch(err){return json({error:'Chapter number already exists or could not be saved'},409)}
  }
  if(/^\/api\/author\/chapters\/\d+$/.test(p)&&m==="PATCH"){
   const e=author(u);if(e)return e;const id=Number(p.split('/').pop()),b=await body(req);
