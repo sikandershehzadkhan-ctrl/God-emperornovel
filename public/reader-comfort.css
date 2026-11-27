@@ -67,3 +67,30 @@ html body .readerPage[data-reader-theme="cosmic"] .readerBook span,
 html body .readerPage[data-reader-theme="cosmic"] .readerProgressText,
 html body .readerPage[data-reader-theme="cosmic"] .readerLock p,
 html body .readerPage[data-reader-theme="cosmic"] .readerFooterCard p{color:var(--read-muted)!important}
+
+
+/* Final cascade guard: legacy theme selectors in the global stylesheet are
+   more specific for several desktop reader surfaces. Keep every reader-only
+   palette authoritative without changing the website-wide appearance. */
+html body .readerPage[data-reader-theme]{background:var(--read-bg)!important;color:var(--read-text)!important}
+html body .readerPage[data-reader-theme] .readerBar{background:var(--read-bar)!important;color:var(--read-text)!important;border-color:var(--read-line)!important}
+html body .readerPage[data-reader-theme] .readerArticle,
+html body .readerPage[data-reader-theme] .readerFooterCard,
+html body .readerPage[data-reader-theme] .readerLock,
+html body .readerPage[data-reader-theme] .chapterDrawer{background:var(--read-surface)!important;color:var(--read-text)!important;border-color:var(--read-line)!important;box-shadow:none!important}
+html body .readerPage[data-reader-theme] .readerTool,
+html body .readerPage[data-reader-theme] .readerPrefs,
+html body .readerPage[data-reader-theme] .readerPrefs select{background:var(--read-control)!important;color:var(--read-text)!important;border-color:var(--read-line)!important}
+html body .readerPage[data-reader-theme] .readerArticle h1,
+html body .readerPage[data-reader-theme] .readerFooterCard h3,
+html body .readerPage[data-reader-theme] .readerBook b{color:var(--read-heading)!important}
+html body .readerPage[data-reader-theme] .readerContent,
+html body .readerPage[data-reader-theme] .readerLock h2{color:var(--read-text)!important}
+html body .readerPage[data-reader-theme] .readerBook span,
+html body .readerPage[data-reader-theme] .readerProgressText,
+html body .readerPage[data-reader-theme] .readerLock p,
+html body .readerPage[data-reader-theme] .readerFooterCard p{color:var(--read-muted)!important}
+html body .readerPage[data-reader-theme] .readerChapterItem{color:var(--read-text)!important;border-color:var(--read-line)!important}
+html body .readerPage[data-reader-theme] .readerChapterItem.current{background:color-mix(in srgb,var(--read-accent) 14%,var(--read-surface))!important;color:var(--read-heading)!important;border-color:var(--read-accent)!important}
+html body .readerPage[data-reader-theme] .readerProgress{background:var(--read-line)!important}
+html body .readerPage[data-reader-theme] .readerProgress span{background:var(--read-accent)!important}
