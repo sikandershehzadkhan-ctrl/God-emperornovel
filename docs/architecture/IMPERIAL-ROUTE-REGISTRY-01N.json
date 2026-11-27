@@ -407,7 +407,7 @@
     "Unknown page paths now resolve to a real HTTP 404 and noindex response in source; deployed HTTP status verification remains open.",
     "API authorization registry and source tests now cover all exact API declarations plus dynamic API patterns; seeded-D1 adversarial tests and optional-session response-shape tests remain open."
   ],
-  "sourceBlob": "src/index.js@ddb7429ac4809c733f8a44ef9c3c48c89bc4b2d3",
+  "sourceBlob": "src/index.js@9a88299c06a57eb6c183433b354a45311efddd06",
   "staticSitemapPaths": [
     "/",
     "/catalog",
@@ -1082,5 +1082,5 @@
   "runtimeRegistrySourceBlob": "src/route-registry.mjs@67ea3926ba32cf0bd2535f40250da5a9e1c9bb13",
   "apiAuthorizationRegistry": "docs/architecture/API-AUTHORIZATION-REGISTRY-01N.json",
   "apiAuthorizationStatus": "All 74 exact API paths/methods and 13 dynamic patterns are inventoried; critical admin, user-owned, author-owned, public-rights, Omni connector, and payment-webhook policies are source-tested. Adversarial D1-backed runtime tests remain open.",
-  "apiAuthorizationRegistrySourceBlob": "docs/architecture/API-AUTHORIZATION-REGISTRY-01N.json@32798d19777a23a916ef15eb789a34c647cadd09"
+  "apiAuthorizationRegistrySourceBlob": "docs/architecture/API-AUTHORIZATION-REGISTRY-01N.json@dd1fbb56122dc210cd72e2aeffb32b53f1cf2bed"
 }
