@@ -74,6 +74,27 @@ const bPatchForeignNovel = await request("/api/author/novels/" + privateNovelId,
 });
 assert.equal(bPatchForeignNovel.response.status, 403, "author B must not edit author A's novel by swapping its ID");
 
+const createChapter = await request("/api/author/chapters", {
+  method: "POST", cookie: a.cookie,
+  body: { novel_id: privateNovelId, chapter_number: 1, title: "Alpha private chapter", content: "<p>Private chapter fixture content.</p>" }
+});
+assert.equal(createChapter.response.status, 201, `author A could not create chapter: ${JSON.stringify(createChapter.data)}`);
+const privateChapterId = Number(createChapter.data.id);
+assert.ok(Number.isSafeInteger(privateChapterId) && privateChapterId > 0);
+const aChapters = await request("/api/author/chapters?novel_id=" + privateNovelId, { cookie: a.cookie });
+assert.equal(aChapters.response.status, 200);
+assert.ok(aChapters.data.some(c => Number(c.id) === privateChapterId));
+const bChapterList = await request("/api/author/chapters?novel_id=" + privateNovelId, { cookie: b.cookie });
+assert.equal(bChapterList.response.status, 403, "author B must not list A's chapters");
+const bChapterPatch = await request("/api/author/chapters/" + privateChapterId, {
+  method: "PATCH", cookie: b.cookie, body: { title: "Unauthorized chapter takeover" }
+});
+assert.equal(bChapterPatch.response.status, 403, "author B must not edit A's chapter by swapping its ID");
+const bChapterPublish = await request("/api/author/chapters/" + privateChapterId + "/publish", {
+  method: "POST", cookie: b.cookie, body: { publication_status: "published" }
+});
+assert.equal(bChapterPublish.response.status, 403, "author B must not publish A's chapter by swapping its ID");
+
 const nonAdminRoleEscalation = await request("/api/admin/users/" + b.user.id, {
   method: "PATCH", cookie: b.cookie, body: { role: "admin", verified: true, banned: false }
 });
@@ -188,4 +209,4 @@ const bProjectPatch = await request("/api/author/ai/projects/987654351", {
 });
 assert.equal(bProjectPatch.response.status, 403, "author B must not modify author A's AI project by swapping its ID");
 
-console.log("PASS: isolated local Worker runtime enforces account-scoped history and author-novel ownership, rejects ID-swapping edits and non-admin role escalation, ignores registration role injection and client user_id spoofing, rejects anonymous access, and blocks cross-origin mutations, isolates bookmarks, library, notifications, ticket ledgers, and AI author projects, and rejects cross-account AI project reads and edits.");
+console.log("PASS: isolated local Worker runtime enforces account-scoped history and author-novel ownership, rejects ID-swapping edits and non-admin role escalation, ignores registration role injection and client user_id spoofing, rejects anonymous access, and blocks cross-origin mutations, isolates bookmarks, library, notifications, ticket ledgers, and AI author projects, and rejects cross-account AI project reads and edits, chapter listing, chapter edits, and chapter publishing.");
