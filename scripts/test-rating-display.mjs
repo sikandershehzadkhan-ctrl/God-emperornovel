@@ -2,9 +2,14 @@ import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import vm from 'node:vm';
 
+const packageManifest = JSON.parse(fs.readFileSync('package.json', 'utf8'));
+const version = String(packageManifest.version || '').trim();
+assert.match(version, /^\d+\.\d+\.\d+$/, 'Package version must be a valid semantic release version');
+
 const source = fs.readFileSync('public/app.js', 'utf8');
-const served = fs.readFileSync('public/app-17.23.0.js', 'utf8');
-assert.equal(source, served, 'Editable app source and served runtime must remain identical');
+const servedPath = `public/app-${version}.js`;
+const served = fs.readFileSync(servedPath, 'utf8');
+assert.equal(source, served, `Editable app source and current ${version} served runtime must remain identical`);
 
 const match = source.match(/function ratingText\(value\)\s*\{[\s\S]*?\}/);
 assert.ok(match, 'A shared truthful rating formatter must exist');

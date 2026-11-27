@@ -2,9 +2,10 @@ import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import vm from 'node:vm';
 
+const version=JSON.parse(fs.readFileSync('package.json','utf8')).version;
 const source=fs.readFileSync('public/app.js','utf8');
-const served=fs.readFileSync('public/app-17.23.0.js','utf8');
-assert.equal(source,served,'Editable app source and served runtime must remain identical');
+const served=fs.readFileSync(`public/app-${version}.js`,'utf8');
+assert.equal(source,served,`Editable app source and current ${version} served runtime must remain identical`);
 const match=source.match(/function uniqueLatestStories\(trendingRows,latestRows\)\s*\{[\s\S]*?\}/);
 assert.ok(match,'Homepage shelf de-duplication helper must exist');
 const uniqueLatestStories=vm.runInNewContext(match[0]+'; uniqueLatestStories');

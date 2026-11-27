@@ -1,0 +1,63 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Imperial Novel reader visual QA fixture</title>
+<link rel="stylesheet" href="../../public/style-17.24.0.css">
+<link rel="stylesheet" href="../../public/reader-comfort.css">
+<style>
+body{margin:0;padding:0;background:#151820;font-family:system-ui,sans-serif}
+.readerPage{min-height:100vh}
+.readerVisualQa{position:fixed;z-index:20;right:12px;top:12px;display:flex;gap:8px;align-items:center;padding:8px;background:#fff;border:1px solid #bbb;border-radius:10px;box-shadow:0 2px 12px #0002}
+.readerVisualQa label{font-size:12px;color:#222}.readerVisualQa select{max-width:155px;padding:7px}
+.readerVisualQa button{padding:7px 10px}
+.readerContent p{margin:0 0 1.3em}
+.readerContent blockquote{margin:1.5em 0}
+.readerContent pre{padding:12px;overflow:auto}
+.readerVisualQaStatus{position:fixed;left:12px;bottom:12px;z-index:20;background:#fff;color:#222;padding:6px 9px;border-radius:8px;font:12px system-ui}
+@media(max-width:520px){.readerVisualQa{position:relative;top:auto;right:auto;justify-content:center;flex-wrap:wrap;border-radius:0}.readerVisualQa select{max-width:135px}.readerMain{padding-top:18px}.readerArticle{padding:28px 20px}.readerArticle h1{font-size:28px}.readerContent{font-size:17px;line-height:1.85}}
+</style>
+</head>
+<body>
+<div class="readerPage" data-reader-theme="soft-paper">
+<div class="readerBar"><div class="readerBarInner">
+<a class="readerBack" href="#">← Chapters</a>
+<div class="readerBook"><b>The Imperial Archive</b><span>Chapter 12 of 48</span></div>
+<div class="readerTools">
+<button class="readerTool" type="button" aria-label="Decrease font">A−</button>
+<button class="readerTool" type="button" aria-label="Increase font">A+</button>
+<button class="readerTool" type="button" aria-label="Bookmark chapter">☆</button>
+<button class="readerTool" type="button" aria-label="Cycle reader theme">◐</button>
+<button class="readerTool" type="button" aria-label="Open chapter list">☰</button>
+</div></div><div class="readerProgress"><span style="width:38%"></span></div></div>
+<div class="readerVisualQa"><label for="theme">Preview palette</label><select id="theme">
+<option value="soft-paper">Soft Paper</option><option value="gentle-dark">Gentle Dark</option><option value="midnight">Midnight</option><option value="sepia">Muted Sepia</option><option value="imperial">Imperial Plum</option><option value="cosmic">Cosmic Dusk</option><option value="warm-parchment">Warm Parchment</option><option value="oat">Oat Milk</option><option value="sage">Sage Garden</option><option value="mist-blue">Misty Blue</option><option value="dusty-rose">Dusty Rose</option><option value="lavender-mist">Lavender Mist</option><option value="charcoal">Soft Charcoal</option><option value="forest">Deep Forest</option><option value="ocean">Quiet Ocean</option>
+</select><button id="cycle" type="button">Next</button></div>
+<div class="readerMain">
+<div class="readerMeta"><span class="eyebrow">An original Imperial Novel</span><span class="readerProgressText">38% through chapter · 24% through novel</span></div>
+<article class="readerArticle"><h1>The Weight of a Crown</h1><div class="readerDivider"></div>
+<div class="readerContent">
+<p>The city woke beneath a quiet sky. Beyond the eastern towers, the first light moved across the old stone roofs, touching each window without demanding attention.</p>
+<p>For a moment, the palace was still. The archive doors stood open, and the long gallery carried the scent of paper, cedar and rain. Every page held a decision someone had once believed impossible.</p>
+<blockquote>Power is not measured by how brightly a throne shines, but by how carefully its keeper listens.</blockquote>
+<p>He turned another page. The ink had faded, yet the meaning remained clear. A kingdom could survive a thousand storms and still be undone by a single careless choice.</p>
+<pre>const promise = "Read with comfort";
+if (the reader is ready) {
+  openNextChapter();
+}</pre>
+<p>Outside, the gardens stirred in the wind. Somewhere beyond the walls, a new story had begun, waiting for someone patient enough to read it.</p>
+</div></article>
+<section class="readerFooterCard"><div><div class="eyebrow">Keep reading</div><h3>Next: Chapter 13</h3><p>Continue the story when you are ready.</p></div><a class="primary" href="#">Next Chapter →</a></section>
+</div>
+</div>
+<div class="readerVisualQaStatus" id="status">Visual QA fixture · CSS from current branch</div>
+<script>
+const page=document.querySelector('.readerPage'),select=document.querySelector('#theme'),names=[...select.options].map(x=>x.value);
+function setTheme(value){page.dataset.readerTheme=value;select.value=value;document.getElementById('status').textContent='Palette: '+value+' · '+innerWidth+'px viewport';}
+select.addEventListener('change',()=>setTheme(select.value));
+document.querySelector('#cycle').addEventListener('click',()=>setTheme(names[(names.indexOf(select.value)+1)%names.length]));
+const query=new URLSearchParams(location.search),requested=query.get('theme');
+if(names.includes(requested))setTheme(requested);
+</script>
+</body></html>
