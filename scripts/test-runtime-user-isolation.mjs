@@ -247,6 +247,36 @@ assert.equal(bUnlockLedger.data.filter(x => x.reason === "chapter_unlock").lengt
   "account B must receive only its own single-unlock ledger row");
 assert.ok(!bUnlockLedger.data.some(x => x.reason === "batch_unlock"), "account B must not see account A's batch ledger row");
 
+// Concurrent retries must still produce a single debit and one ledger record.
+localSql(`
+  INSERT INTO chapters(id,novel_id,chapter_number,title,content,is_locked,ticket_cost,publication_status)
+  VALUES (987654390,${fixtureNovelId},30,'Concurrent single fixture','<p>Concurrent purchase</p>',1,7,'published');
+`);
+const concurrentSingle = await Promise.all([
+  request("/api/chapters/987654390/unlock", { method: "POST", cookie: a.cookie, body: {} }),
+  request("/api/chapters/987654390/unlock", { method: "POST", cookie: a.cookie, body: {} })
+]);
+assert.ok(concurrentSingle.every(x => [200, 409].includes(x.response.status)), "concurrent single unlock requests must resolve safely");
+const aAfterConcurrentSingle = await request("/api/me", { cookie: a.cookie });
+assert.equal(Number(aAfterConcurrentSingle.data.user.tickets), 33, "concurrent single retries must debit exactly once");
+const singleRaceLedger = await request("/api/tickets/ledger", { cookie: a.cookie });
+assert.equal(singleRaceLedger.data.filter(x => x.reason === "chapter_unlock" && x.reference === "987654390").length, 1, "concurrent single retries must create one ledger record");
+
+// Repeat the race for a 10-chapter batch. Only one aggregate charge is allowed.
+const raceBatchRows = Array.from({ length: 10 }, (_, i) =>
+  `(${987654400 + i},${fixtureNovelId},${40 + i},'Concurrent batch ${i + 1}','<p>Concurrent batch content</p>',1,1,'published')`
+).join(",");
+localSql(`INSERT INTO chapters(id,novel_id,chapter_number,title,content,is_locked,ticket_cost,publication_status) VALUES ${raceBatchRows};`);
+const concurrentBatch = await Promise.all([
+  request(`/api/novels/${fixtureNovelId}/batch-unlock`, { method: "POST", cookie: a.cookie, body: { count: 10, start_chapter: 40 } }),
+  request(`/api/novels/${fixtureNovelId}/batch-unlock`, { method: "POST", cookie: a.cookie, body: { count: 10, start_chapter: 40 } })
+]);
+assert.ok(concurrentBatch.every(x => [200, 409].includes(x.response.status)), "concurrent batch requests must resolve safely");
+const aAfterConcurrentBatch = await request("/api/me", { cookie: a.cookie });
+assert.equal(Number(aAfterConcurrentBatch.data.user.tickets), 23, "concurrent batch retries must debit the aggregate price exactly once");
+const batchRaceLedger = await request("/api/tickets/ledger", { cookie: a.cookie });
+assert.equal(batchRaceLedger.data.filter(x => x.reason === "batch_unlock" && x.reference === `${fixtureNovelId}:40:10`).length, 1, "concurrent batch retries must create one ledger record");
+
 // Initialize the real AI project tables, then seed two isolated project owners.
 await request("/api/author/ai/projects", { cookie: a.cookie });
 await request("/api/author/ai/projects", { cookie: b.cookie });
