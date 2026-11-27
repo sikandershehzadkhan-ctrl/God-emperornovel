@@ -516,3 +516,54 @@ html[data-theme="dark"] .homePage .creatorOrb{background:#211d29;border-color:#5
   .homePage .homeFormatCard,.homePage .nextFeatureTile{transition:none}
   .homePage .homeFormatCard:hover,.homePage .nextFeatureTile:hover{transform:none}
 }
+
+
+/* Reader comfort layer: calm surfaces, restrained accents, and predictable contrast. */
+.readerPage[data-reader-theme="light"]{background:#eeeae3;color:#393631}
+.readerPage[data-reader-theme="light"] .readerBar{background:rgba(247,244,238,.97);border-color:#ddd6ca}
+.readerPage[data-reader-theme="light"] .readerArticle,.readerPage[data-reader-theme="light"] .readerFooterCard{background:#f8f5ef;color:#49443d;border-color:#e2dbcf;box-shadow:0 8px 28px rgba(48,40,30,.045)}
+.readerPage[data-reader-theme="light"] .readerArticle h1,.readerPage[data-reader-theme="light"] .readerFooterCard h3,.readerPage[data-reader-theme="light"] .readerBook b{color:#302d29}
+.readerPage[data-reader-theme="light"] .readerContent{color:#49443d}
+.readerPage[data-reader-theme="light"] .readerBook span,.readerPage[data-reader-theme="light"] .readerProgressText{color:#777168}
+.readerPage[data-reader-theme="light"] .readerTool,.readerPage[data-reader-theme="light"] .readerPrefs select{background:#f2eee7;color:#514b43;border-color:#dcd4c8}
+.readerPage[data-reader-theme="light"] .readerProgress{background:#e3ddd2}
+.readerPage[data-reader-theme="light"] .readerDivider{background:#a18aaf}
+.readerPage[data-reader-theme="light"] .readerLock{background:#f1ede6;border-color:#ddd4c7}
+.readerPage[data-reader-theme="sepia"]{background:#e9dfce;color:#514638}
+.readerPage[data-reader-theme="sepia"] .readerBar{background:rgba(242,233,216,.97);border-color:#d5c5a9}
+.readerPage[data-reader-theme="sepia"] .readerArticle,.readerPage[data-reader-theme="sepia"] .readerFooterCard{background:#f4ead8;color:#554938;border-color:#ddceb3;box-shadow:none}
+.readerPage[data-reader-theme="sepia"] .readerArticle h1,.readerPage[data-reader-theme="sepia"] .readerFooterCard h3,.readerPage[data-reader-theme="sepia"] .readerBook b{color:#3c3024}
+.readerPage[data-reader-theme="sepia"] .readerContent{color:#554938}
+.readerPage[data-reader-theme="sepia"] .readerTool,.readerPage[data-reader-theme="sepia"] .readerPrefs select{background:#eee2cd;color:#514331;border-color:#d5c3a4}
+.readerPage[data-reader-theme="sepia"] .readerLock{background:#eee2cd;border-color:#d5c3a4}
+.readerPage[data-reader-theme="dark"]{background:#17171b;color:#ded9d1}
+.readerPage[data-reader-theme="dark"] .readerBar{background:rgba(25,25,30,.97);border-color:#38343c}
+.readerPage[data-reader-theme="dark"] .readerArticle,.readerPage[data-reader-theme="dark"] .readerFooterCard{background:#202026;color:#d8d2ca;border-color:#39353d;box-shadow:none}
+.readerPage[data-reader-theme="dark"] .readerArticle h1,.readerPage[data-reader-theme="dark"] .readerFooterCard h3,.readerPage[data-reader-theme="dark"] .readerBook b{color:#eee8df}
+.readerPage[data-reader-theme="dark"] .readerContent{color:#d8d2ca}
+.readerPage[data-reader-theme="dark"] .readerTool,.readerPage[data-reader-theme="dark"] .readerPrefs select{background:#29282f;color:#e4ded6;border-color:#49434e}
+.readerPage[data-reader-theme="dark"] .readerProgress{background:#302d34}
+.readerPage[data-reader-theme="midnight"]{background:#101722;color:#d6dfeb}
+.readerPage[data-reader-theme="midnight"] .readerBar{background:rgba(17,24,35,.97);border-color:#293747}
+.readerPage[data-reader-theme="midnight"] .readerArticle,.readerPage[data-reader-theme="midnight"] .readerFooterCard{background:#192331;color:#d2dce8;border-color:#2d3b4b;box-shadow:none}
+.readerPage[data-reader-theme="midnight"] .readerArticle h1,.readerPage[data-reader-theme="midnight"] .readerFooterCard h3,.readerPage[data-reader-theme="midnight"] .readerBook b{color:#e7edf5}
+.readerPage[data-reader-theme="midnight"] .readerContent{color:#d2dce8}
+.readerPage[data-reader-theme="midnight"] .readerTool,.readerPage[data-reader-theme="midnight"] .readerPrefs select{background:#222f3e;color:#dce6f1;border-color:#3a4a5c}
+.readerPage[data-reader-theme="midnight"] .readerProgress{background:#263342}
+.readerPage[data-reader-theme="imperial"]{background:#211a2b;color:#e1d8eb}
+.readerPage[data-reader-theme="imperial"] .readerBar{background:rgba(35,27,46,.97);border-color:#493a58}
+.readerPage[data-reader-theme="imperial"] .readerArticle,.readerPage[data-reader-theme="imperial"] .readerFooterCard{background:#2c2338;color:#ded4e8;border-color:#4b3a5b;box-shadow:none}
+.readerPage[data-reader-theme="imperial"] .readerArticle h1,.readerPage[data-reader-theme="imperial"] .readerFooterCard h3,.readerPage[data-reader-theme="imperial"] .readerBook b{color:#f0e8f7}
+.readerPage[data-reader-theme="imperial"] .readerContent{color:#ded4e8}
+.readerPage[data-reader-theme="imperial"] .readerTool,.readerPage[data-reader-theme="imperial"] .readerPrefs select{background:#392d47;color:#eee5f5;border-color:#59476a}
+.readerPage[data-reader-theme="imperial"] .readerProgress{background:#403249}
+.readerPage[data-reader-theme="cosmic"]{background:#171b28;color:#dce1ee}
+.readerPage[data-reader-theme="cosmic"] .readerBar{background:rgba(23,28,42,.97);border-color:#354052}
+.readerPage[data-reader-theme="cosmic"] .readerArticle,.readerPage[data-reader-theme="cosmic"] .readerFooterCard{background:#222a3a;color:#d7deec;border-color:#3c485c;box-shadow:none}
+.readerPage[data-reader-theme="cosmic"] .readerArticle h1,.readerPage[data-reader-theme="cosmic"] .readerFooterCard h3,.readerPage[data-reader-theme="cosmic"] .readerBook b{color:#edf0f8}
+.readerPage[data-reader-theme="cosmic"] .readerContent{color:#d7deec}
+.readerPage[data-reader-theme="cosmic"] .readerTool,.readerPage[data-reader-theme="cosmic"] .readerPrefs select{background:#2c3548;color:#e2e8f3;border-color:#46546b}
+.readerPage[data-reader-theme="cosmic"] .readerProgress{background:#303a4d}
+.readerPage[data-reader-theme] .readerTool:focus-visible,.readerPage[data-reader-theme] .readerPrefs select:focus-visible{outline:3px solid #9b83bd;outline-offset:2px}
+.readerPage[data-reader-theme] .readerContent{overflow-wrap:anywhere}
+@media(prefers-reduced-motion:reduce){.readerPage[data-reader-theme] *{scroll-behavior:auto!important;transition:none!important}}
