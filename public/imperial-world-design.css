@@ -707,3 +707,50 @@ html[data-theme="dark"] .authorCreateForm,html[data-theme="dark"] .authorWorksPa
 html[data-theme="dark"] .authorCreateForm .fieldLabel{color:#c8bdcd}
 html[data-theme="dark"] .authorCreateForm input,html[data-theme="dark"] .authorCreateForm select,html[data-theme="dark"] .authorCreateForm textarea{background:#24232b;border-color:#49434f;color:#e7e0e9}
 html[data-theme="dark"] .authorCreateForm .notice{background:#2b2830;border-color:#4a424d;color:#d9d0dc}
+
+
+/* Personal account and library: calm, private-feeling dashboard surfaces. */
+.accountGrid{display:grid;grid-template-columns:minmax(190px,240px) minmax(0,1fr);gap:18px;align-items:start}
+.accountMenu{position:sticky;top:88px;padding:10px;background:#f7f4ee;border:1px solid #e5ddd2;border-radius:16px}
+.accountMenu a{display:flex;align-items:center;min-height:44px;padding:10px 12px;border-radius:10px;color:#62596a;text-decoration:none}
+.accountMenu a.active,.accountMenu a:hover{background:#eee8f3;color:#54396f}
+.accountMenu button{min-height:44px}
+.accountGrid main{min-width:0;display:grid;gap:15px}
+.accountGrid main>.panel{background:#fbf9f5;border-color:#e5ded4}
+.profileTop{display:flex;align-items:center;gap:15px;padding-bottom:17px;border-bottom:1px solid #e8e1d8}
+.profileTop h2{color:#352f39;overflow-wrap:anywhere}
+.profileTop .muted{overflow-wrap:anywhere}
+.profileTop .avatar{width:64px;height:64px;border-radius:50%;object-fit:cover;border:2px solid #d9c9e4;background:#f0ebf4}
+.metricGrid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px;margin-top:16px}
+.metric{min-width:0;padding:14px;background:#f4f0e9;border:1px solid #e7dfd3;border-radius:13px}
+.metric>b,.metric b{display:block;color:#4c3a5c;font-size:clamp(20px,3vw,27px);font-variant-numeric:tabular-nums}
+.metric .muted{font-size:12px;line-height:1.45}
+.accountGrid main>.panel h2{color:#3d3542}
+.accountGrid #recs{margin-top:12px}
+#continueList>.panel{background:#f8f5ef;border-color:#e7dfd4}
+#continueList>.panel h3{color:#3b3341}
+#continueList>.panel .primary{min-height:42px;display:inline-flex;align-items:center}
+#bookmarkList{background:#fbf9f5;border-color:#e5ded4}
+.statline{display:flex;justify-content:space-between;align-items:center;gap:12px;padding:12px 4px;border-bottom:1px solid #ebe4da}
+.statline:last-child{border-bottom:0}
+.removeLibrary{min-height:42px}
+@media(max-width:760px){
+ .accountGrid{grid-template-columns:minmax(0,1fr);gap:12px}
+ .accountMenu{position:static;display:flex;gap:5px;overflow-x:auto;white-space:nowrap;scrollbar-width:thin;padding:7px}
+ .accountMenu a{flex:0 0 auto}
+ .accountMenu button{flex:0 0 auto;width:auto!important;margin:0!important}
+ .metricGrid{grid-template-columns:repeat(2,minmax(0,1fr))}
+}
+@media(max-width:390px){
+ .profileTop{align-items:flex-start}
+ .profileTop .avatar{width:52px;height:52px}
+ .statline{align-items:flex-start;flex-direction:column}
+}
+html[data-theme="dark"] .accountMenu,html[data-theme="dark"] .accountGrid main>.panel,html[data-theme="dark"] #bookmarkList{background:#1a1a21;border-color:#39343f;color:#e2dce7}
+html[data-theme="dark"] .accountMenu a{color:#c8bdcf}
+html[data-theme="dark"] .accountMenu a.active,html[data-theme="dark"] .accountMenu a:hover{background:#30283a;color:#e6d7f1}
+html[data-theme="dark"] .profileTop{border-color:#39343f}
+html[data-theme="dark"] .profileTop h2,html[data-theme="dark"] .accountGrid main>.panel h2,html[data-theme="dark"] #continueList>.panel h3{color:#eee7f1}
+html[data-theme="dark"] .metric,html[data-theme="dark"] #continueList>.panel{background:#24212b;border-color:#443b4b}
+html[data-theme="dark"] .metric>b,html[data-theme="dark"] .metric b{color:#d8c5e8}
+html[data-theme="dark"] .statline{border-color:#39343f}
