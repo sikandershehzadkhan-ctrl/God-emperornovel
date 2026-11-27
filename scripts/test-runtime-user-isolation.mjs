@@ -1,4 +1,5 @@
 import assert from "node:assert/strict";
+import { execFileSync } from "node:child_process";
 
 const base = (process.env.IMPERIAL_TEST_BASE_URL || "http://127.0.0.1:8787").replace(/\/$/, "");
 const origin = base;
@@ -38,6 +39,39 @@ async function registerAndLogin(suffix) {
 const a = await registerAndLogin("alpha");
 const b = await registerAndLogin("bravo");
 assert.notEqual(a.user.id, b.user.id, "test accounts must be distinct");
+
+// Promote only these throwaway local fixtures, never production accounts.
+execFileSync("npx", [
+  "--yes", "wrangler@4", "d1", "execute", "god-emperornovel-db",
+  "--local", "--config", "wrangler.toml",
+  "--command", "UPDATE users SET role='author' WHERE username IN ('isolation_alpha','isolation_bravo')"
+], { stdio: "pipe" });
+
+const aNovels = await request("/api/author/novels", { cookie: a.cookie });
+const bNovels = await request("/api/author/novels", { cookie: b.cookie });
+assert.equal(aNovels.response.status, 200);
+assert.equal(bNovels.response.status, 200);
+assert.deepEqual(aNovels.data, []);
+assert.deepEqual(bNovels.data, []);
+
+const createNovel = await request("/api/author/novels", {
+  method: "POST",
+  cookie: a.cookie,
+  body: { title: "Runtime Ownership Fixture", author: "Isolation Test", rights_status: "original" }
+});
+assert.equal(createNovel.response.status, 201, `author A could not create fixture novel: ${JSON.stringify(createNovel.data)}`);
+const privateNovelId = Number(createNovel.data.id);
+assert.ok(Number.isSafeInteger(privateNovelId) && privateNovelId > 0, "created novel must have a valid ID");
+
+const aOwnNovels = await request("/api/author/novels", { cookie: a.cookie });
+const bCannotListNovel = await request("/api/author/novels", { cookie: b.cookie });
+assert.ok(aOwnNovels.data.some(n => Number(n.id) === privateNovelId), "author A must see its own novel");
+assert.ok(!bCannotListNovel.data.some(n => Number(n.id) === privateNovelId), "author B must not list A's private novel");
+
+const bPatchForeignNovel = await request("/api/author/novels/" + privateNovelId, {
+  method: "PATCH", cookie: b.cookie, body: { title: "Unauthorized takeover attempt" }
+});
+assert.equal(bPatchForeignNovel.response.status, 403, "author B must not edit author A's novel by swapping its ID");
 
 // This fixture exists only in Wrangler's disposable local D1 database.
 const write = await request("/api/history", {
