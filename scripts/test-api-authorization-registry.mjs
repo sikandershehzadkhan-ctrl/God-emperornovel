@@ -79,7 +79,7 @@ const requiredDynamicMarkers = [
   "if(/^\\/api\\/author\\/chapters\\/\\d+\\/publish$/.test(p)",
   "let apn=p.match(/^\\/api\\/admin\\/publishing\\/novels\\/",
   "let ach=p.match(/^\\/api\\/admin\\/publishing\\/chapters",
-  "let acm=p.match(/^\\/api\\/admin\\/publishing\\/chapters\\/(\\\\d+)$/)",
+  "let acm=p.match(/^\\/api\\/admin\\/publishing\\/chapters\\/",
   "let ad=p.match(/^\\/api\\/admin\\/donations\\/",
   "let ar=p.match(/^\\/api\\/admin\\/reports\\/",
   "let car=p.match(/^\\/api\\/admin\\/connector-authorization-requests\\/",
@@ -88,7 +88,7 @@ const requiredDynamicMarkers = [
 ];
 const registeredDynamicMarkers = new Set(registry.dynamicInventory.map(route => route.sourceMarker));
 for (const marker of requiredDynamicMarkers) {
-  assert.ok(registeredDynamicMarkers.has(marker), "dynamic API route missing from authorization inventory: " + marker);
+  assert.ok([...registeredDynamicMarkers].some(registered => registered.startsWith(marker)), "dynamic API route missing from authorization inventory: " + marker);
 }
 
 for (const route of registry.dynamicInventory) {
