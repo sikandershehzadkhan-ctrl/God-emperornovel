@@ -754,3 +754,43 @@ html[data-theme="dark"] .profileTop h2,html[data-theme="dark"] .accountGrid main
 html[data-theme="dark"] .metric,html[data-theme="dark"] #continueList>.panel{background:#24212b;border-color:#443b4b}
 html[data-theme="dark"] .metric>b,html[data-theme="dark"] .metric b{color:#d8c5e8}
 html[data-theme="dark"] .statline{border-color:#39343f}
+
+
+/* Community discussions and notifications: readable activity surfaces. */
+#communityDiscussions{padding:8px 18px;background:#fbf9f5;border-color:#e5ded4}
+#communityDiscussions .chapter{padding:16px 2px!important;border-bottom:1px solid #e9e2d8;line-height:1.6}
+#communityDiscussions .chapter:last-child{border-bottom:0}
+#communityDiscussions .chapter>a{color:#51396b;text-decoration:none;text-underline-offset:3px}
+#communityDiscussions .chapter>a:hover{text-decoration:underline}
+#communityDiscussions .chapter .muted{color:#77717b;font-size:12px}
+#communityDiscussions .chapter p{color:#49434d;line-height:1.7}
+#communityDiscussions .empty{padding:24px 10px;color:#716b75}
+#communityGrid{align-items:stretch}
+#communityGrid>.card{height:100%;border-color:#e5ded4;background:#fbf9f5}
+#noticeList{display:grid;gap:0;border-top:1px solid #e9e2d8}
+#noticeList>.chapter{display:grid;grid-template-columns:28px minmax(0,1fr);align-items:start;gap:12px;padding:16px 10px;border-bottom:1px solid #e9e2d8;line-height:1.6}
+#noticeList>.chapter:last-child{border-bottom:0}
+#noticeList .chapterNo{display:grid;place-items:center;width:26px;height:26px;border-radius:50%;background:#eee8f3;color:#62457e;font-size:12px;font-weight:800}
+#noticeList .chapter b{color:#37313d}
+#noticeList .chapter .muted{display:inline-block;margin-top:4px;color:#77717b;font-size:12px;overflow-wrap:anywhere}
+#noticeList>.unreadNotice{background:#f4f0f7}
+#noticeList>.unreadNotice .chapterNo{background:#65458a;color:#fff}
+#communityDiscussions a:focus-visible,#communityGrid a:focus-visible,#noticeList a:focus-visible{outline:3px solid #9475b2;outline-offset:3px;border-radius:5px}
+@media(max-width:600px){
+ #communityDiscussions{padding:4px 12px}
+ #communityDiscussions .chapter{padding:14px 0!important}
+ #noticeList>.chapter{grid-template-columns:24px minmax(0,1fr);gap:9px;padding:14px 6px}
+ #noticeList .chapterNo{width:24px;height:24px}
+}
+html[data-theme="dark"] #communityDiscussions{background:#1a1a21;border-color:#39343f}
+html[data-theme="dark"] #communityDiscussions .chapter{border-color:#39343f}
+html[data-theme="dark"] #communityDiscussions .chapter>a{color:#d6c2e9}
+html[data-theme="dark"] #communityDiscussions .chapter .muted,html[data-theme="dark"] #communityDiscussions .chapter p{color:#c1bac7}
+html[data-theme="dark"] #communityGrid>.card{background:#1c1b23;border-color:#39343f}
+html[data-theme="dark"] #noticeList{border-color:#39343f}
+html[data-theme="dark"] #noticeList>.chapter{border-color:#39343f}
+html[data-theme="dark"] #noticeList .chapter b{color:#eee7f1}
+html[data-theme="dark"] #noticeList .chapter .muted{color:#bdb5c4}
+html[data-theme="dark"] #noticeList>.unreadNotice{background:#282331}
+html[data-theme="dark"] #noticeList .chapterNo{background:#393044;color:#e6d7f1}
+html[data-theme="dark"] #noticeList>.unreadNotice .chapterNo{background:#755994;color:#fff}
