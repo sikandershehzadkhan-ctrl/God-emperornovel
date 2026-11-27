@@ -186,6 +186,67 @@ assert.equal(bLedger.response.status, 200);
 assert.deepEqual(aLedger.data.map(x => x.reference), ["alpha"]);
 assert.deepEqual(bLedger.data.map(x => x.reference), ["bravo"]);
 
+
+// Exercise real chapter-unlock handlers against disposable local D1 fixtures.
+// Account balances and chapter IDs are deliberately isolated from production.
+localSql(`
+  UPDATE users SET tickets=100 WHERE id=${aid};
+  UPDATE users SET tickets=2 WHERE id=${bid};
+  INSERT INTO chapters(id,novel_id,chapter_number,title,content,is_locked,ticket_cost,publication_status) VALUES
+    (987654361,${fixtureNovelId},1,'Unlock fixture 1','<p>Paid fixture content 1</p>',1,5,'published'),
+    (987654362,${fixtureNovelId},2,'Unlock fixture 2','<p>Paid fixture content 2</p>',1,5,'published'),
+    (987654363,${fixtureNovelId},3,'Unlock fixture 3','<p>Paid fixture content 3</p>',1,5,'published');
+`);
+const aBeforeUnlock = await request("/api/me", { cookie: a.cookie });
+assert.equal(Number(aBeforeUnlock.data.user.tickets), 100);
+const aUnlock = await request("/api/chapters/987654361/unlock", { method: "POST", cookie: a.cookie, body: {} });
+assert.equal(aUnlock.response.status, 200, `account A unlock failed: ${JSON.stringify(aUnlock.data)}`);
+assert.equal(Number(aUnlock.data.tickets), 95, "single unlock must deduct the exact chapter price");
+const aUnlockAgain = await request("/api/chapters/987654361/unlock", { method: "POST", cookie: a.cookie, body: {} });
+assert.equal(aUnlockAgain.response.status, 200);
+assert.equal(Number(aUnlockAgain.data.tickets), 95, "repeated unlock must not charge twice");
+const bCannotReadAUnlock = await request("/api/chapters/987654361", { cookie: b.cookie });
+assert.equal(bCannotReadAUnlock.response.status, 200);
+assert.equal(bCannotReadAUnlock.data.unlocked, false, "account A's unlock must not unlock content for account B");
+assert.equal(bCannotReadAUnlock.data.content, null, "locked chapter content must remain hidden from account B");
+const bInsufficientUnlock = await request("/api/chapters/987654361/unlock", { method: "POST", cookie: b.cookie, body: {} });
+assert.equal(bInsufficientUnlock.response.status, 402, "insufficient balance must reject a chapter purchase");
+const bAfterRejectedUnlock = await request("/api/me", { cookie: b.cookie });
+assert.equal(Number(bAfterRejectedUnlock.data.user.tickets), 2, "insufficient-balance attempt must not debit account B");
+localSql(`UPDATE users SET tickets=20 WHERE id=${bid};`);
+const bUnlockOwn = await request("/api/chapters/987654361/unlock", { method: "POST", cookie: b.cookie, body: {} });
+assert.equal(bUnlockOwn.response.status, 200);
+assert.equal(Number(bUnlockOwn.data.tickets), 15, "account B must pay independently for its own unlock");
+const aAfterBUnlock = await request("/api/me", { cookie: a.cookie });
+assert.equal(Number(aAfterBUnlock.data.user.tickets), 95, "account B purchase must not change account A balance");
+
+// Ten-chapter batch purchase: verify aggregate debit, per-chapter unlocks,
+// batch receipt, and idempotent retry after every chapter is already unlocked.
+const batchRows = Array.from({ length: 10 }, (_, i) =>
+  `(${987654370 + i},${fixtureNovelId},${10 + i},'Batch fixture ${i + 1}','<p>Batch content</p>',1,${i + 1},'published')`
+).join(",");
+localSql(`INSERT INTO chapters(id,novel_id,chapter_number,title,content,is_locked,ticket_cost,publication_status) VALUES ${batchRows};`);
+const aBatch = await request(`/api/novels/${fixtureNovelId}/batch-unlock`, {
+  method: "POST", cookie: a.cookie, body: { count: 10, start_chapter: 10 }
+});
+assert.equal(aBatch.response.status, 200, `batch unlock failed: ${JSON.stringify(aBatch.data)}`);
+assert.equal(Number(aBatch.data.unlocked), 10);
+assert.equal(Number(aBatch.data.cost), 55);
+assert.equal(Number(aBatch.data.tickets), 40);
+const aBatchAgain = await request(`/api/novels/${fixtureNovelId}/batch-unlock`, {
+  method: "POST", cookie: a.cookie, body: { count: 10, start_chapter: 10 }
+});
+assert.equal(aBatchAgain.response.status, 200);
+assert.equal(Number(aBatchAgain.data.unlocked), 0, "retry must not create duplicate batch unlocks");
+assert.equal(Number(aBatchAgain.data.tickets), 40, "retry must not debit the batch twice");
+const aUnlockLedger = await request("/api/tickets/ledger", { cookie: a.cookie });
+const bUnlockLedger = await request("/api/tickets/ledger", { cookie: b.cookie });
+assert.equal(aUnlockLedger.data.filter(x => ["chapter_unlock", "batch_unlock"].includes(x.reason)).length, 2,
+  "account A must receive one single-unlock ledger row and one batch ledger row");
+assert.equal(bUnlockLedger.data.filter(x => x.reason === "chapter_unlock").length, 1,
+  "account B must receive only its own single-unlock ledger row");
+assert.ok(!bUnlockLedger.data.some(x => x.reason === "batch_unlock"), "account B must not see account A's batch ledger row");
+
 // Initialize the real AI project tables, then seed two isolated project owners.
 await request("/api/author/ai/projects", { cookie: a.cookie });
 await request("/api/author/ai/projects", { cookie: b.cookie });
