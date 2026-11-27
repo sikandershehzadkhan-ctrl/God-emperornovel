@@ -794,3 +794,96 @@ html[data-theme="dark"] #noticeList .chapter .muted{color:#bdb5c4}
 html[data-theme="dark"] #noticeList>.unreadNotice{background:#282331}
 html[data-theme="dark"] #noticeList .chapterNo{background:#393044;color:#e6d7f1}
 html[data-theme="dark"] #noticeList>.unreadNotice .chapterNo{background:#755994;color:#fff}
+
+
+/* Rankings, tier discovery, random picks, voting and requests. */
+.quickGrid{grid-template-columns:repeat(4,minmax(0,1fr));gap:12px}
+.quickCard{min-height:76px;padding:15px 16px;border-radius:15px;background:#fbf9f5;border-color:#e5ded4;box-shadow:none;text-decoration:none}
+.quickCard:hover{transform:translateY(-2px);border-color:#cbbbd9;background:#f7f2fa}
+.quickCard>span{width:38px;height:38px;border-radius:12px;background:#eee8f3;color:#62457e}
+.quickCard b{color:#37313d;font-size:14px}
+.quickCard small{color:#77717b;font-size:11px}
+#lbNovels>.panel,#lbAuthors>.panel{padding:20px;border-color:#e5ded4;background:#fbf9f5;box-shadow:none}
+#lbNovels .cardTitle{font-size:18px;line-height:1.35;margin-bottom:5px}
+#lbNovels .meta,#lbAuthors .meta{display:flex;flex-wrap:wrap;gap:8px 14px;margin:12px 0;color:#716b75}
+.rankBadge{min-width:46px;height:32px;border-color:#d9cde3;background:#f0eaf4;color:#62457e;border-radius:10px}
+.tierGrid{gap:16px}
+.tierPanel{padding:20px;border-color:#e5ded4;background:#fbf9f5;box-shadow:none}
+.tierPanel h2{color:#40334e;font-size:24px}
+.miniGrid{grid-template-columns:repeat(4,minmax(0,1fr));gap:12px}
+.miniCard{min-width:0;min-height:98px;background:#fdfbf7;border-color:#e8e1d8;text-decoration:none;transition:border-color .18s ease,background .18s ease}
+.miniCard:hover{border-color:#cbbbd9;background:#f7f2fa}
+.miniCard b{color:#37313d;line-height:1.35;overflow-wrap:anywhere}
+.miniCard span{color:#77717b;line-height:1.45}
+.randomPanel{border-color:#e5ded4;background:#fbf9f5;box-shadow:none}
+.randomPanel .empty{color:#716b75}
+.randomCard{padding:8px}
+.randomCard img{border-color:#e5ded4;box-shadow:0 12px 28px rgba(35,27,43,.09)}
+.randomCard h2{color:#342b40;line-height:1.2}
+.randomCard p{color:#716b75;line-height:1.65}
+#voteList{gap:10px}
+#voteList .voteRow{grid-template-columns:76px minmax(0,1fr) auto;gap:14px;padding:15px 16px;border:1px solid #e5ded4;border-radius:13px;background:#fbf9f5}
+#voteList .voteRow .chapterNo{display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:42px;border-radius:11px;background:#f0eaf4;color:#62457e;font-size:17px}
+#voteList .voteRow .chapterNo small{font-size:10px;color:#77717b}
+#voteList .voteRow b{color:#37313d}
+#voteList .voteRow .muted{display:block;overflow-wrap:anywhere;line-height:1.5}
+#voteList .voteBtn{min-width:84px;min-height:44px;border:1px solid #d9cde3;border-radius:10px;color:#563477;background:#f7f2fa}
+#req{display:grid;gap:16px;margin-top:18px}
+#req .field{display:grid;gap:8px}
+#req .field label{color:#514957;font-weight:650}
+#req input{min-height:48px;border:1px solid #dcd4ca;border-radius:11px;background:#fdfbf7;color:#302a35;padding:0 14px}
+#req input:focus-visible{outline:3px solid #b8a2cd;outline-offset:2px;border-color:#8065a6}
+#req button{min-height:46px;justify-self:start}
+.period{min-height:44px;display:inline-flex;align-items:center;padding:0 14px;color:#716b75;text-decoration:none}
+.period.active{color:#563477;border-color:#8065a6}
+.quickCard:focus-visible,.miniCard:focus-visible,.period:focus-visible,#lbNovels a:focus-visible,#lbAuthors a:focus-visible,#voteList button:focus-visible{outline:3px solid #9475b2;outline-offset:3px}
+.unlockBanner{border-color:#e5ded4;background:linear-gradient(120deg,#f7f3ed,#f2edf5);box-shadow:none}
+.unlockBanner h2{color:#40334e}
+.unlockBanner p{color:#716b75}
+@media(max-width:900px){
+ .quickGrid{grid-template-columns:repeat(2,minmax(0,1fr))}
+ .miniGrid{grid-template-columns:repeat(2,minmax(0,1fr))}
+}
+@media(max-width:600px){
+ .quickGrid{gap:9px}
+ .quickCard{min-height:72px;padding:12px 10px;gap:9px}
+ .quickCard>span{width:34px;height:34px}
+ .quickCard b{font-size:12px}
+ .quickCard small{font-size:10px}
+ #lbNovels>.panel,#lbAuthors>.panel,.tierPanel{padding:15px}
+ .miniGrid{grid-template-columns:1fr;gap:9px}
+ .miniCard{grid-template-columns:58px minmax(0,1fr);min-height:84px}
+ .miniCard img{width:58px;height:76px}
+ #voteList .voteRow{grid-template-columns:54px minmax(0,1fr);gap:10px;padding:12px}
+ #voteList .voteRow .voteBtn{grid-column:2;justify-self:start}
+ .randomCard{grid-template-columns:92px minmax(0,1fr);gap:13px}
+ .randomCard img{width:92px;height:132px}
+ .randomCard h2{font-size:19px}
+ .unlockBanner{align-items:flex-start;flex-direction:column;padding:17px}
+ .unlockBanner h2{font-size:23px}
+}
+html[data-theme="dark"] .quickCard{background:#1c1b23;border-color:#39343f}
+html[data-theme="dark"] .quickCard:hover{background:#25212d;border-color:#66527c}
+html[data-theme="dark"] .quickCard>span{background:#393044;color:#d6c2e9}
+html[data-theme="dark"] .quickCard b,html[data-theme="dark"] #lbNovels .cardTitle,html[data-theme="dark"] #lbAuthors h3{color:#eee7f1}
+html[data-theme="dark"] .quickCard small,html[data-theme="dark"] #lbNovels .meta,html[data-theme="dark"] #lbAuthors .meta{color:#bdb5c4}
+html[data-theme="dark"] #lbNovels>.panel,html[data-theme="dark"] #lbAuthors>.panel,html[data-theme="dark"] .tierPanel,html[data-theme="dark"] .randomPanel{background:#1c1b23;border-color:#39343f}
+html[data-theme="dark"] .rankBadge{background:#393044;border-color:#554665;color:#e0cbed}
+html[data-theme="dark"] .tierPanel h2,html[data-theme="dark"] .randomCard h2{color:#e9dff0}
+html[data-theme="dark"] .miniCard{background:#202029;border-color:#39343f;color:#eee7f1}
+html[data-theme="dark"] .miniCard:hover{background:#292431;border-color:#66527c}
+html[data-theme="dark"] .miniCard b{color:#eee7f1}
+html[data-theme="dark"] .miniCard span,html[data-theme="dark"] .randomCard p,html[data-theme="dark"] .randomPanel .empty{color:#bdb5c4}
+html[data-theme="dark"] .randomCard img{border-color:#39343f}
+html[data-theme="dark"] #voteList .voteRow{background:#1c1b23;border-color:#39343f}
+html[data-theme="dark"] #voteList .voteRow b{color:#eee7f1}
+html[data-theme="dark"] #voteList .voteRow .chapterNo{background:#393044;color:#e0cbed}
+html[data-theme="dark"] #voteList .voteRow .chapterNo small,html[data-theme="dark"] #voteList .voteRow .muted{color:#bdb5c4}
+html[data-theme="dark"] #voteList .voteBtn{background:#292431;border-color:#66527c;color:#e0cbed}
+html[data-theme="dark"] #req .field label{color:#d8cfdf}
+html[data-theme="dark"] #req input{background:#202029;border-color:#494151;color:#eee7f1}
+html[data-theme="dark"] .period{color:#bdb5c4}
+html[data-theme="dark"] .period.active{color:#e0cbed;border-color:#a88bc2}
+html[data-theme="dark"] .unlockBanner{border-color:#39343f;background:linear-gradient(120deg,#201d27,#211c2a)}
+html[data-theme="dark"] .unlockBanner h2{color:#e9dff0}
+html[data-theme="dark"] .unlockBanner p{color:#bdb5c4}
