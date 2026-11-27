@@ -625,12 +625,12 @@ async function api(req,env){
   const verified=b.verified===undefined?Number(target.verified):b.verified?1:0;
   const banned=b.banned===undefined?Number(target.banned):b.banned?1:0;
   if(id===u.id&&(role!=='admin'||banned))return json({error:"You cannot demote or ban your own administrator account"},400);
-  if(String(target.role)==='admin'&&(role!=='admin'||banned)){
-   const activeAdmins=await env.DB.prepare("SELECT COUNT(*) n FROM users WHERE role='admin' AND banned=0").first();
-   if(Number(activeAdmins?.n||0)<=1)return json({error:"The last active administrator cannot be demoted or banned"},409);
-  }
-  const result=await env.DB.prepare("UPDATE users SET role=?,verified=?,banned=? WHERE id=?").bind(role,verified,banned,id).run();
-  if(Number(result.meta?.changes||0)!==1)return json({error:"User account was not updated"},409);
+  // Keep the last-admin invariant inside the UPDATE itself. A separate
+  // COUNT followed by UPDATE can race when several admins act concurrently.
+  const result=await env.DB.prepare(`UPDATE users SET role=?,verified=?,banned=? WHERE id=? AND
+   (role<>'admin' OR banned<>0 OR (?='admin' AND ?=0) OR
+    (SELECT COUNT(*) FROM users WHERE role='admin' AND banned=0)>1)`).bind(role,verified,banned,id,role,banned).run();
+  if(Number(result.meta?.changes||0)!==1)return json({error:"The account was not updated. The last active administrator cannot be demoted or banned."},409);
   await audit(env,u,"admin_user_updated",`target_user=${id};role=${role};verified=${verified};banned=${banned}`);
   return json({ok:true});
  }
