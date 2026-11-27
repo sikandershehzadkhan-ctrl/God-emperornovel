@@ -887,3 +887,56 @@ html[data-theme="dark"] .period.active{color:#e0cbed;border-color:#a88bc2}
 html[data-theme="dark"] .unlockBanner{border-color:#39343f;background:linear-gradient(120deg,#201d27,#211c2a)}
 html[data-theme="dark"] .unlockBanner h2{color:#e9dff0}
 html[data-theme="dark"] .unlockBanner p{color:#bdb5c4}
+
+
+/* Settings and authorized-source workspace: calm controls, clear grouping. */
+.settingsGridPro{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px;margin-top:20px;align-items:start}
+.settingsPanel{min-width:0;padding:22px;border:1px solid #e5ded4;border-radius:16px;background:#fbf9f5;box-shadow:0 10px 28px rgba(35,27,43,.045)}
+.settingsPanel h2{margin:7px 0 18px;color:#342b40;font-size:20px;line-height:1.3}
+.settingsPanel>.eyebrow{color:#8065a6;font-size:10px;font-weight:750;letter-spacing:.14em}
+.settingRow{display:grid;grid-template-columns:minmax(0,1fr) minmax(125px,44%);align-items:center;gap:14px;padding:13px 0;border-top:1px solid #e9e3da}
+.settingRow>div{display:grid;gap:4px;min-width:0}
+.settingRow b,.checkRow b{color:#37313d;font-size:13px}
+.settingRow small,.checkRow small{display:block;color:#77717b;font-size:12px;line-height:1.5}
+.settingRow select,.settingRow input:not([type=range]){width:100%;min-width:0;min-height:42px;border:1px solid #dcd4ca;border-radius:10px;background:#fdfbf7;color:#302a35;padding:8px 10px}
+.settingRow input[type=range]{width:100%;accent-color:#8065a6}
+.settingRow output{color:#62457e;font-size:12px;font-variant-numeric:tabular-nums;text-align:right}
+.checkRow{display:flex;align-items:center;gap:12px;padding:13px 0;border-top:1px solid #e9e3da;cursor:pointer}
+.checkRow input{width:19px;height:19px;flex:0 0 auto;accent-color:#65418e}
+.checkRow span{display:grid;gap:4px}
+.settingsActions{display:flex;flex-wrap:wrap;gap:9px;margin-top:14px}
+.settingsActions>*{min-height:44px;display:inline-flex;align-items:center;justify-content:center}
+.settingsNotice{margin-top:14px}
+.settingsPanel .muted{line-height:1.65}
+#omni{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:10px;align-items:center}
+#omni .search{min-width:0;min-height:48px}
+#omni .search input{min-width:0;width:100%}
+#omni>button{min-height:48px}
+#omniRes{align-items:stretch}
+#omniRes>.card{height:100%;border:1px solid #e5ded4;background:#fbf9f5;box-shadow:none}
+#omniRes .cardBody{display:flex;flex-direction:column;align-items:flex-start;gap:8px}
+#omniRes .cardBody .actions{margin-top:auto;flex-wrap:wrap}
+#omniRes .cardBody p{line-height:1.6}
+#reqMsg:empty{display:none}
+.settingsPanel :focus-visible,#omni :focus-visible,#omniRes :focus-visible{outline:3px solid #9475b2;outline-offset:3px}
+html[data-theme="dark"] .settingsPanel{background:#1c1b23;border-color:#39343f;box-shadow:none}
+html[data-theme="dark"] .settingsPanel h2,html[data-theme="dark"] .settingRow b,html[data-theme="dark"] .checkRow b{color:#eee7f1}
+html[data-theme="dark"] .settingsPanel>.eyebrow{color:#c2a8db}
+html[data-theme="dark"] .settingRow,html[data-theme="dark"] .checkRow{border-color:#39343f}
+html[data-theme="dark"] .settingRow small,html[data-theme="dark"] .checkRow small{color:#bdb5c4}
+html[data-theme="dark"] .settingRow select,html[data-theme="dark"] .settingRow input:not([type=range]){background:#202029;border-color:#494151;color:#eee7f1}
+html[data-theme="dark"] .settingRow output{color:#d6c2e9}
+html[data-theme="dark"] #omniRes>.card{background:#1c1b23;border-color:#39343f}
+html[data-theme="dark"] #omniRes .cardTitle{color:#eee7f1}
+@media(max-width:760px){
+ .settingsGridPro{grid-template-columns:1fr;gap:12px;margin-top:14px}
+ .settingsPanel{padding:17px}
+ .settingRow{grid-template-columns:minmax(0,1fr) minmax(112px,42%);gap:10px}
+ .settingsActions>*{flex:1 1 145px}
+}
+@media(max-width:420px){
+ .settingRow{grid-template-columns:1fr;gap:8px}
+ .settingRow output{text-align:left}
+ #omni{grid-template-columns:1fr}
+ #omni>button{width:100%}
+}
