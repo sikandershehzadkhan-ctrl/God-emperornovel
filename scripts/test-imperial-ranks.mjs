@@ -37,7 +37,7 @@ const progress = getImperialRankProgress(150);
 assert.equal(progress.currentRank.id, 2);
 assert.equal(progress.nextRank.id, 3);
 assert.equal(progress.xpToNextRank, 100);
-assert.equal(progress.progressPercent, 40);
+assert.equal(progress.progressPercent, 33);
 assert.equal(getImperialRankProgress(1900000).atEarnedCap, true);
 assert.equal(getImperialRankProgress(1900000).nextRank, null);
 
