@@ -20,4 +20,9 @@ assert.match(rankCss,/\.rankProgressTrack/,"Rank progress must have a visible pr
 assert.ok(rankContract.releaseBoundary.includes("migration 0050"),"Integration release must depend on migration 0050");
 assert.deepEqual(auth.exactInventory.find(x=>x.path==="/api/profile").methods,["GET","POST"]);
 assert.deepEqual(auth.policies.userOwned.routes.find(x=>x.path==="/api/profile").methods,["GET","POST"]);
+assert.ok(worker.includes("verified=1 AND banned=0 AND role IN ('user','author')"),"XP awards require verified, active reader/author accounts");
+assert.ok(worker.includes("created_at>=datetime('now','-1 day')"),"Daily XP cap checks a rolling 24-hour ledger window");
+assert.ok(worker.includes("novel_published,'novel:'+id,60"),"First novel publication awards its owner XP once");
+assert.ok(worker.includes("chapter_published,'chapter:'+id,10"),"First chapter publication awards its owner XP once");
+assert.ok(worker.includes("+?<=100"),"Daily XP ceiling is enforced inside the atomic insert");
 console.log("PASS: Imperial member rank API, private-by-default visibility, idempotent review XP, self-rating exclusion and UI integration source checks.");
