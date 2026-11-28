@@ -12,6 +12,7 @@ import { createRuntimeFeatureSchemaEnsurer } from "./runtime-feature-schema.mjs"
 import { createDonationReferenceIndexEnsurer } from "./donation-reference-index.mjs";
 import { validateAuthorApplication, validateAuthorApplicationDecision } from "./author-application-policy.mjs";
 import { CONTENT_FORMATS, CONTENT_FORMAT_IDS } from "./content-formats.mjs";
+import { getImperialProgressionRank, getImperialRankProgress } from "./imperial-ranks.mjs";
 const json=(d,s=200,h={})=>new Response(JSON.stringify(d),{status:s,headers:{"content-type":"application/json;charset=UTF-8","cache-control":"no-store",...h}});
 const now=()=>Math.floor(Date.now()/1000);
 const b64=a=>btoa(String.fromCharCode(...new Uint8Array(a))).replaceAll("+","-").replaceAll("/","_").replaceAll("=","");
@@ -64,6 +65,13 @@ async function ensurePublishingSchema(env){
   await env.DB.prepare('CREATE INDEX IF NOT EXISTS idx_chapters_publication ON chapters(novel_id,publication_status,chapter_number)').run()
   await env.DB.prepare(`CREATE TABLE IF NOT EXISTS chapter_views (chapter_id INTEGER PRIMARY KEY, views INTEGER NOT NULL DEFAULT 0, updated_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP, FOREIGN KEY(chapter_id) REFERENCES chapters(id) ON DELETE CASCADE)`).run();
  }catch(e){console.error('publishing schema failed; schema version must not advance',e);throw e}
+}
+async function awardImperialXp(env,userId,eventType,sourceEventKey,xpDelta){
+ if(!Number.isSafeInteger(Number(userId))||Number(userId)<1||!Number.isSafeInteger(xpDelta)||xpDelta===0)return false;
+ if(!["chapter_reading_milestone","review_published","novel_published","chapter_published","community_contribution","system_correction"].includes(eventType))return false;
+ if(typeof sourceEventKey!=="string"||sourceEventKey.length<1||sourceEventKey.length>160)return false;
+ const result=await env.DB.prepare("INSERT OR IGNORE INTO imperial_xp_ledger(user_id,xp_delta,event_type,source_event_key) VALUES(?,?,?,?)").bind(Number(userId),xpDelta,eventType,sourceEventKey).run();
+ return Number(result.meta?.changes||0)>0;
 }
 async function notifyAdmins(env,title,message){
  try{const admins=(await env.DB.prepare("SELECT id FROM users WHERE role='admin' AND banned=0").all()).results||[];for(const a of admins)await env.DB.prepare('INSERT INTO notifications(user_id,title,body) VALUES(?,?,?)').bind(a.id,title,message).run()}catch(e){console.error('admin notification',e)}}
@@ -476,7 +484,22 @@ async function api(req,env){
  if(p==="/api/comments/like"&&m==="POST"){const e=need(u);if(e)return e;const b=await body(req),cid=Number(b.comment_id);if(!cid)return json({error:"Comment id required"},400);const c=await env.DB.prepare("SELECT c.id FROM comments c JOIN novels n ON n.id=c.novel_id WHERE c.id=? AND c.status='visible' AND n.publication_status='published' AND n.rights_status IN ('original','public_domain','licensed','authorized')").bind(cid).first();if(!c)return json({error:"Comment not found"},404);const x=await env.DB.prepare("SELECT 1 FROM comment_likes WHERE user_id=? AND comment_id=?").bind(u.id,cid).first();if(x){await env.DB.prepare("DELETE FROM comment_likes WHERE user_id=? AND comment_id=?").bind(u.id,cid).run()}else await env.DB.prepare("INSERT INTO comment_likes(user_id,comment_id) VALUES(?,?)").bind(u.id,cid).run();const count=await env.DB.prepare("SELECT COUNT(*) count FROM comment_likes WHERE comment_id=?").bind(cid).first();return json({liked:!x,likes:Number(count?.count||0)})}
  if(p==="/api/comments/report"&&m==="POST"){const e=need(u);if(e)return e;const b=await body(req),cid=Number(b.comment_id),reason=String(b.reason||"spam").trim(),details=String(b.details||"").trim().slice(0,500),allowed=new Set(["spam","harassment","copyright","inappropriate","other"]);if(!Number.isSafeInteger(cid)||cid<1)return json({error:"A valid comment id is required"},400);if(!allowed.has(reason))return json({error:"Choose a valid report reason"},400);const target=await env.DB.prepare("SELECT c.id FROM comments c JOIN novels n ON n.id=c.novel_id WHERE c.id=? AND c.status='visible' AND n.publication_status='published' AND n.rights_status IN ('original','public_domain','licensed','authorized')").bind(cid).first();if(!target)return json({error:"Comment not found or no longer visible"},404);const prior=await env.DB.prepare("SELECT id FROM comment_reports WHERE user_id=? AND comment_id=? LIMIT 1").bind(u.id,cid).first();if(prior)return json({error:"You have already reported this comment"},409);const recent=await env.DB.prepare("SELECT COUNT(*) count FROM comment_reports WHERE user_id=? AND created_at>=datetime('now','-1 hour')").bind(u.id).first();if(Number(recent?.count||0)>=10)return json({error:"You have reached the report limit. Please try again later."},429);await env.DB.prepare("INSERT INTO comment_reports(user_id,comment_id,reason,details) VALUES(?,?,?,?)").bind(u.id,cid,reason,details).run();return json({ok:true})}
  if(p==="/api/rating"&&m==="GET"){const nid=Number(url.searchParams.get("novel_id"));if(!nid)return json({error:"Novel id required"},400);const eligible=await env.DB.prepare("SELECT 1 FROM novels WHERE id=? AND publication_status='published' AND rights_status IN ('original','public_domain','licensed','authorized')").bind(nid).first();if(!eligible)return json({error:"Novel not found"},404);const stats=await env.DB.prepare("SELECT COUNT(*) count,COALESCE(AVG(rating),0) avg FROM ratings WHERE novel_id=?").bind(nid).first();const mine=u?await env.DB.prepare("SELECT rating FROM ratings WHERE user_id=? AND novel_id=?").bind(u.id,nid).first():null;const dist=(await env.DB.prepare("SELECT rating,COUNT(*) count FROM ratings WHERE novel_id=? GROUP BY rating ORDER BY rating DESC").bind(nid).all()).results;return json({count:Number(stats?.count||0),average:Number(stats?.avg||0),user_rating:Number(mine?.rating||0),distribution:dist})}
- if(p==="/api/rating"&&m==="POST"){const e=need(u);if(e)return e;const b=await body(req),nid=Number(b.novel_id),rating=Number(b.rating);if(!nid||!Number.isInteger(rating)||rating<1||rating>10)return json({error:"Rating must be a whole number from 1-10"},400);const eligible=await env.DB.prepare("SELECT 1 FROM novels WHERE id=? AND publication_status='published' AND rights_status IN ('original','public_domain','licensed','authorized')").bind(nid).first();if(!eligible)return json({error:"Novel not found"},404);await env.DB.prepare("INSERT INTO ratings(user_id,novel_id,rating) VALUES(?,?,?) ON CONFLICT(user_id,novel_id) DO UPDATE SET rating=excluded.rating,updated_at=CURRENT_TIMESTAMP").bind(u.id,nid,rating).run();await env.DB.prepare("UPDATE novels SET rating=COALESCE((SELECT AVG(rating) FROM ratings WHERE novel_id=?),0) WHERE id=?").bind(nid,nid).run();const stats=await env.DB.prepare("SELECT COUNT(*) count,COALESCE(AVG(rating),0) avg FROM ratings WHERE novel_id=?").bind(nid).first();return json({ok:true,rating,average:Number(stats.avg||0),count:Number(stats.count||0)})}
+ if(p==="/api/rating"&&m==="POST"){
+  const e=need(u);if(e)return e;
+  const b=await body(req),nid=Number(b.novel_id),rating=Number(b.rating);
+  if(!nid||!Number.isInteger(rating)||rating<1||rating>10)return json({error:"Rating must be a whole number from 1-10"},400);
+  const eligible=await env.DB.prepare("SELECT id,owner_user_id FROM novels WHERE id=? AND publication_status='published' AND rights_status IN ('original','public_domain','licensed','authorized')").bind(nid).first();
+  if(!eligible)return json({error:"Novel not found"},404);
+  const previous=await env.DB.prepare("SELECT 1 FROM ratings WHERE user_id=? AND novel_id=?").bind(u.id,nid).first();
+  await env.DB.prepare("INSERT INTO ratings(user_id,novel_id,rating) VALUES(?,?,?) ON CONFLICT(user_id,novel_id) DO UPDATE SET rating=excluded.rating,updated_at=CURRENT_TIMESTAMP").bind(u.id,nid,rating).run();
+  if(!previous&&u.verified&&["user","author"].includes(u.role)&&Number(eligible.owner_user_id||0)!==Number(u.id)){
+   const dailyXp=await env.DB.prepare("SELECT COALESCE(SUM(xp_delta),0) xp FROM imperial_xp_ledger WHERE user_id=? AND created_at>=datetime('now','-1 day')").bind(u.id).first();
+   if(Number(dailyXp?.xp||0)<100)await awardImperialXp(env,u.id,"review_published","review:"+u.id+":"+nid,10);
+  }
+  await env.DB.prepare("UPDATE novels SET rating=COALESCE((SELECT AVG(rating) FROM ratings WHERE novel_id=?),0) WHERE id=?").bind(nid,nid).run();
+  const stats=await env.DB.prepare("SELECT COUNT(*) count,COALESCE(AVG(rating),0) avg FROM ratings WHERE novel_id=?").bind(nid).first();
+  return json({ok:true,rating,average:Number(stats.avg||0),count:Number(stats.count||0)});
+ }
  if(p==="/api/admin/community/comments"&&m==="GET"){const e=admin(u);if(e)return e;return json((await env.DB.prepare(`SELECT c.id,c.body,c.status,c.created_at,c.edited_at,c.parent_id,u.username,n.title, (SELECT COUNT(*) FROM comment_reports r WHERE r.comment_id=c.id AND r.status='open') report_count FROM comments c JOIN users u ON u.id=c.user_id JOIN novels n ON n.id=c.novel_id ORDER BY c.created_at DESC LIMIT 300`).all()).results)}
  if(p==="/api/admin/community/comments"&&m==="PATCH"){const e=admin(u);if(e)return e;const b=await body(req),cid=Number(b.comment_id),status=String(b.status||'visible');if(!cid||!['visible','hidden','deleted'].includes(status))return json({error:"Invalid comment status"},400);await env.DB.prepare("UPDATE comments SET status=? WHERE id=?").bind(status,cid).run();return json({ok:true})}
  if(p==="/api/admin/community/reports"&&m==="GET"){const e=admin(u);if(e)return e;return json((await env.DB.prepare(`SELECT r.*,c.body,u.username,n.title FROM comment_reports r JOIN comments c ON c.id=r.comment_id JOIN users u ON u.id=r.user_id JOIN novels n ON n.id=c.novel_id ORDER BY CASE r.status WHEN 'open' THEN 0 ELSE 1 END,r.created_at DESC LIMIT 300`).all()).results)}
@@ -522,7 +545,12 @@ async function api(req,env){
   const timeFilter=days?` AND h.updated_at>=datetime('now','-${days} days')`:'';
   const novels=await env.DB.prepare(`SELECT n.id,n.title,n.author,n.cover_url,n.rating,n.views,COUNT(DISTINCT c.id) chapter_count,COALESCE((SELECT COUNT(*) FROM unlocks u JOIN chapters uc ON uc.id=u.chapter_id WHERE uc.novel_id=n.id${days?` AND u.unlocked_at>=datetime('now','-${days} days')`:''}),0) unlocks FROM novels n LEFT JOIN chapters c ON c.novel_id=n.id AND c.publication_status='published' WHERE n.publication_status='published' AND n.rights_status IN ('original','public_domain','licensed','authorized') GROUP BY n.id ORDER BY unlocks DESC,n.views DESC,n.rating DESC LIMIT 20`).all();
   const authors=await env.DB.prepare(`SELECT author,COUNT(*) novels,SUM(views) views,ROUND(AVG(rating),2) rating FROM novels WHERE publication_status='published' AND rights_status IN ('original','public_domain','licensed','authorized') GROUP BY author ORDER BY views DESC,rating DESC LIMIT 20`).all();
-  return json({period,novels:novels.results||[],authors:authors.results||[]});
+  const periodXp=days?"SUM(CASE WHEN x.created_at>=datetime('now',?) THEN x.xp_delta ELSE 0 END)":"SUM(x.xp_delta)";
+  const userSql="SELECT u.id,u.username,"+periodXp+" period_xp,SUM(x.xp_delta) total_xp FROM imperial_xp_ledger x JOIN users u ON u.id=x.user_id WHERE u.imperial_rank_visibility=1 AND u.verified=1 AND u.banned=0 AND u.role IN ('user','author') GROUP BY u.id,u.username HAVING "+periodXp+">0 ORDER BY period_xp DESC,total_xp DESC,u.id ASC LIMIT 20";
+  const userQuery=env.DB.prepare(userSql);
+  const userRows=(days?(await userQuery.bind("-"+days+" days").all()):(await userQuery.all())).results||[];
+  const users=userRows.map(row=>{const rank=getImperialProgressionRank(Number(row.total_xp||0));return {username:row.username,xp:Number(row.period_xp||0),rankId:rank.id,rankName:rank.name}});
+  return json({period,novels:novels.results||[],authors:authors.results||[],users});
  }
  if(p==="/api/tier-list"&&m==="GET"){
   const rows=(await env.DB.prepare(`SELECT n.id,n.title,n.author,n.cover_url,n.rating,n.views,COUNT(c.id) chapter_count FROM novels n LEFT JOIN chapters c ON c.novel_id=n.id AND c.publication_status='published' WHERE n.publication_status='published' AND n.rights_status IN ('original','public_domain','licensed','authorized') GROUP BY n.id ORDER BY n.rating DESC,n.views DESC LIMIT 60`).all()).results||[];
@@ -558,7 +586,26 @@ async function api(req,env){
  if(p==="/api/tickets/ledger"&&m==="GET"){const e=need(u);if(e)return e;return json((await env.DB.prepare("SELECT id,delta,reason,reference,created_at FROM ticket_ledger WHERE user_id=? ORDER BY created_at DESC LIMIT 100").bind(u.id).all()).results)}
  if(p==="/api/recommendations"&&m==="GET"){const e=need(u);if(e)return e;await ensureOmniTables(env);const rows=(await env.DB.prepare(`SELECT n.*,r.reason,r.score,GROUP_CONCAT(DISTINCT g.name) genres,COUNT(DISTINCT c.id) chapter_count FROM recommendations r JOIN novels n ON n.id=r.novel_id LEFT JOIN novel_genres ng ON ng.novel_id=n.id LEFT JOIN genres g ON g.id=ng.genre_id LEFT JOIN chapters c ON c.novel_id=n.id WHERE r.user_id=? AND n.publication_status='published' AND n.rights_status IN ('original','public_domain','licensed','authorized') GROUP BY n.id,r.id ORDER BY r.score DESC,r.created_at DESC LIMIT 20`).bind(u.id).all()).results;if(rows.length)return json(rows.map(x=>({...toPublicNovel(x),reason:x.reason,score:x.score})));const fallback=(await env.DB.prepare(`SELECT n.*,GROUP_CONCAT(DISTINCT g.name) genres,COUNT(DISTINCT c.id) chapter_count FROM novels n LEFT JOIN novel_genres ng ON ng.novel_id=n.id LEFT JOIN genres g ON g.id=ng.genre_id LEFT JOIN chapters c ON c.novel_id=n.id WHERE n.publication_status='published' AND n.rights_status IN ('original','public_domain','licensed','authorized') AND n.id NOT IN(SELECT novel_id FROM follows WHERE user_id=?) GROUP BY n.id ORDER BY n.rating DESC,n.views DESC LIMIT 12`).bind(u.id).all()).results;return json(fallback.map((x,i)=>({...toPublicNovel(x),reason:'Popular with Imperial readers',score:100-i}))) }
  if(p==="/api/follows"&&m==="GET"){const e=need(u);if(e)return e;return json((await env.DB.prepare(`SELECT n.*,f.created_at FROM follows f JOIN novels n ON n.id=f.novel_id WHERE f.user_id=? AND n.publication_status='published' AND n.rights_status IN ('original','public_domain','licensed','authorized') ORDER BY f.created_at DESC`).bind(u.id).all()).results.map(toPublicNovel))}
- if(p==="/api/profile"&&m==="GET"){const e=need(u);if(e)return e;const [lib,fol,unl,led]=await Promise.all([env.DB.prepare("SELECT COUNT(*) n FROM history WHERE user_id=?").bind(u.id).first(),env.DB.prepare("SELECT COUNT(*) n FROM follows WHERE user_id=?").bind(u.id).first(),env.DB.prepare("SELECT COUNT(*) n FROM unlocks WHERE user_id=?").bind(u.id).first(),env.DB.prepare("SELECT COALESCE(SUM(delta),0) n FROM ticket_ledger WHERE user_id=?").bind(u.id).first()]);return json({user:{id:u.id,username:u.username,email:u.email,role:u.role,tickets:u.tickets,verified:u.verified},stats:{history:Number(lib.n),following:Number(fol.n),unlocks:Number(unl.n),ticketFlow:Number(led.n)}})}
+ if(p==="/api/profile"&&m==="POST"){
+  const e=need(u);if(e)return e;
+  const b=await body(req);
+  if(typeof b.imperial_rank_visibility!=="boolean")return json({error:"Choose whether your Imperial rank may appear on public leaderboards."},400);
+  await env.DB.prepare("UPDATE users SET imperial_rank_visibility=? WHERE id=?").bind(b.imperial_rank_visibility?1:0,u.id).run();
+  return json({ok:true,visibleOnLeaderboard:b.imperial_rank_visibility});
+ }
+ if(p==="/api/profile"&&m==="GET"){
+  const e=need(u);if(e)return e;
+  const [lib,fol,unl,led,xpRow,visibility]=await Promise.all([
+   env.DB.prepare("SELECT COUNT(*) n FROM history WHERE user_id=?").bind(u.id).first(),
+   env.DB.prepare("SELECT COUNT(*) n FROM follows WHERE user_id=?").bind(u.id).first(),
+   env.DB.prepare("SELECT COUNT(*) n FROM unlocks WHERE user_id=?").bind(u.id).first(),
+   env.DB.prepare("SELECT COALESCE(SUM(delta),0) n FROM ticket_ledger WHERE user_id=?").bind(u.id).first(),
+   env.DB.prepare("SELECT COALESCE(SUM(xp_delta),0) xp FROM imperial_xp_ledger WHERE user_id=?").bind(u.id).first(),
+   env.DB.prepare("SELECT imperial_rank_visibility FROM users WHERE id=?").bind(u.id).first()
+  ]);
+  const rankProgress=getImperialRankProgress(Number(xpRow?.xp||0));
+  return json({user:{id:u.id,username:u.username,email:u.email,role:u.role,tickets:u.tickets,verified:u.verified},stats:{history:Number(lib.n),following:Number(fol.n),unlocks:Number(unl.n),ticketFlow:Number(led.n)},rank:{id:rankProgress.currentRank.id,name:rankProgress.currentRank.name,xp:rankProgress.currentXp,nextRankName:rankProgress.nextRank?.name||null,xpToNextRank:rankProgress.xpToNextRank,progressPercent:rankProgress.progressPercent,visibleOnLeaderboard:Number(visibility?.imperial_rank_visibility||0)===1}});
+ }
  if(p==="/api/author/applications/me"&&m==="GET"){
   const e=need(u);if(e)return e;
   const row=await env.DB.prepare("SELECT id,display_name,bio,experience,portfolio_url,preferred_formats,status,review_notes,created_at,reviewed_at FROM author_applications WHERE user_id=? ORDER BY created_at DESC,id DESC LIMIT 1").bind(u.id).first();
