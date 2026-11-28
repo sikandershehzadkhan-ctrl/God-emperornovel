@@ -12,7 +12,7 @@ import { createRuntimeFeatureSchemaEnsurer } from "./runtime-feature-schema.mjs"
 import { createDonationReferenceIndexEnsurer } from "./donation-reference-index.mjs";
 import { validateAuthorApplication, validateAuthorApplicationDecision } from "./author-application-policy.mjs";
 import { CONTENT_FORMATS, CONTENT_FORMAT_IDS } from "./content-formats.mjs";
-import { getImperialProgressionRank, getImperialRankProgress } from "./imperial-ranks.mjs";
+import { IMPERIAL_FOUNDER_RANK, getImperialProgressionRank, getImperialRankProgress } from "./imperial-ranks.mjs";
 const json=(d,s=200,h={})=>new Response(JSON.stringify(d),{status:s,headers:{"content-type":"application/json;charset=UTF-8","cache-control":"no-store",...h}});
 const now=()=>Math.floor(Date.now()/1000);
 const b64=a=>btoa(String.fromCharCode(...new Uint8Array(a))).replaceAll("+","-").replaceAll("/","_").replaceAll("=","");
@@ -65,6 +65,11 @@ async function ensurePublishingSchema(env){
   await env.DB.prepare('CREATE INDEX IF NOT EXISTS idx_chapters_publication ON chapters(novel_id,publication_status,chapter_number)').run()
   await env.DB.prepare(`CREATE TABLE IF NOT EXISTS chapter_views (chapter_id INTEGER PRIMARY KEY, views INTEGER NOT NULL DEFAULT 0, updated_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP, FOREIGN KEY(chapter_id) REFERENCES chapters(id) ON DELETE CASCADE)`).run();
  }catch(e){console.error('publishing schema failed; schema version must not advance',e);throw e}
+}
+function getImperialDisplayRank(userId,totalXp,env){
+ const founderId=Number(env.IMPERIAL_FOUNDER_USER_ID||0);
+ if(Number.isSafeInteger(founderId)&&founderId>0&&founderId===Number(userId))return IMPERIAL_FOUNDER_RANK;
+ return getImperialProgressionRank(totalXp);
 }
 async function awardImperialXp(env,userId,eventType,sourceEventKey,xpDelta){
  if(!Number.isSafeInteger(Number(userId))||Number(userId)<1||!Number.isSafeInteger(xpDelta)||xpDelta===0)return false;
@@ -548,7 +553,7 @@ async function api(req,env){
   const userSql="SELECT u.id,u.username,"+periodXp+" period_xp,SUM(x.xp_delta) total_xp FROM imperial_xp_ledger x JOIN users u ON u.id=x.user_id WHERE u.imperial_rank_visibility=1 AND u.verified=1 AND u.banned=0 AND u.role IN ('user','author') GROUP BY u.id,u.username HAVING "+periodXp+">0 ORDER BY period_xp DESC,total_xp DESC,u.id ASC LIMIT 20";
   const userQuery=env.DB.prepare(userSql);
   const userRows=(days?(await userQuery.bind("-"+days+" days").all()):(await userQuery.all())).results||[];
-  const users=userRows.map(row=>{const rank=getImperialProgressionRank(Number(row.total_xp||0));return {username:row.username,xp:Number(row.period_xp||0),rankId:rank.id,rankName:rank.name}});
+  const users=userRows.map(row=>{const rank=getImperialDisplayRank(row.id,Number(row.total_xp||0),env);return {username:row.username,xp:Number(row.period_xp||0),rankId:rank.id,rankName:rank.name}});
   return json({period,novels:novels.results||[],authors:authors.results||[],users});
  }
  if(p==="/api/tier-list"&&m==="GET"){
@@ -603,7 +608,8 @@ async function api(req,env){
    env.DB.prepare("SELECT imperial_rank_visibility FROM users WHERE id=?").bind(u.id).first()
   ]);
   const rankProgress=getImperialRankProgress(Number(xpRow?.xp||0));
-  return json({user:{id:u.id,username:u.username,email:u.email,role:u.role,tickets:u.tickets,verified:u.verified},stats:{history:Number(lib.n),following:Number(fol.n),unlocks:Number(unl.n),ticketFlow:Number(led.n)},rank:{id:rankProgress.currentRank.id,name:rankProgress.currentRank.name,xp:rankProgress.currentXp,nextRankName:rankProgress.nextRank?.name||null,xpToNextRank:rankProgress.xpToNextRank,progressPercent:rankProgress.progressPercent,visibleOnLeaderboard:Number(visibility?.imperial_rank_visibility||0)===1}});
+  const currentRank=getImperialDisplayRank(u.id,rankProgress.currentXp,env);
+  return json({user:{id:u.id,username:u.username,email:u.email,role:u.role,tickets:u.tickets,verified:u.verified},stats:{history:Number(lib.n),following:Number(fol.n),unlocks:Number(unl.n),ticketFlow:Number(led.n)},rank:{id:currentRank.id,name:currentRank.name,founderOnly:currentRank.founderOnly===true,xp:rankProgress.currentXp,nextRankName:currentRank.founderOnly?null:rankProgress.nextRank?.name||null,xpToNextRank:currentRank.founderOnly?null:rankProgress.xpToNextRank,progressPercent:currentRank.founderOnly?100:rankProgress.progressPercent,visibleOnLeaderboard:Number(visibility?.imperial_rank_visibility||0)===1}});
  }
  if(p==="/api/author/applications/me"&&m==="GET"){
   const e=need(u);if(e)return e;
