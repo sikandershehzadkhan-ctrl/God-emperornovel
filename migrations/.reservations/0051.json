@@ -1,0 +1,19 @@
+{
+  "version": 1,
+  "number": 51,
+  "migration": "migrations/0051_server_backed_reading_sessions.sql",
+  "pullRequest": 400,
+  "owner": "community",
+  "purpose": "Persist authenticated reader sessions and one-time per-user chapter completion milestones after the Imperial XP ledger foundation.",
+  "status": "reserved",
+  "dependsOn": ["migrations/0050_imperial_user_xp_ledger.sql"],
+  "constraints": [
+    "Session identity is stored only as a SHA-256 token hash; raw bearer tokens are never persisted.",
+    "A user may have only one active session per chapter.",
+    "Completion requires server-maintained active time and at least 90 percent maximum reported chapter progress.",
+    "The database rejects completion records that do not match a qualified completed session.",
+    "A user can complete a given chapter only once.",
+    "This migration creates no XP awards and trusts no client-supplied XP delta.",
+    "Production D1 execution requires separate release approval."
+  ]
+}
