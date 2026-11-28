@@ -82,12 +82,42 @@ BEGIN
   SELECT RAISE(ABORT, 'reading session has not met completion requirements');
 END;
 
--- Terminal sessions cannot be reactivated or moved to another terminal state.
+-- Session identity and server-derived duration requirements cannot be rewritten.
+CREATE TRIGGER IF NOT EXISTS trg_reading_session_identity_guard
+BEFORE UPDATE OF user_id, chapter_id, token_hash, started_at, required_active_seconds ON reading_sessions
+WHEN NEW.user_id <> OLD.user_id
+  OR NEW.chapter_id <> OLD.chapter_id
+  OR NEW.token_hash <> OLD.token_hash
+  OR NEW.started_at <> OLD.started_at
+  OR NEW.required_active_seconds <> OLD.required_active_seconds
+BEGIN
+  SELECT RAISE(ABORT, 'reading session identity is immutable');
+END;
+
+-- Heartbeat evidence is monotonic; clients cannot move progress or time backwards.
+CREATE TRIGGER IF NOT EXISTS trg_reading_session_monotonic_guard
+BEFORE UPDATE OF last_heartbeat_at, active_seconds, max_progress_bp, heartbeat_count ON reading_sessions
+WHEN NEW.last_heartbeat_at < OLD.last_heartbeat_at
+  OR NEW.active_seconds < OLD.active_seconds
+  OR NEW.max_progress_bp < OLD.max_progress_bp
+  OR NEW.heartbeat_count < OLD.heartbeat_count
+BEGIN
+  SELECT RAISE(ABORT, 'reading session evidence cannot move backwards');
+END;
+
+-- Once terminal, a session row is immutable. Cascading deletion remains available.
 CREATE TRIGGER IF NOT EXISTS trg_reading_session_terminal_guard
-BEFORE UPDATE OF status ON reading_sessions
-WHEN OLD.status <> 'active' AND NEW.status <> OLD.status
+BEFORE UPDATE ON reading_sessions
+WHEN OLD.status <> 'active'
 BEGIN
   SELECT RAISE(ABORT, 'reading session is terminal');
+END;
+
+-- Completion evidence is immutable after insertion.
+CREATE TRIGGER IF NOT EXISTS trg_reading_completion_immutable_guard
+BEFORE UPDATE ON reading_completions
+BEGIN
+  SELECT RAISE(ABORT, 'reading completion is immutable');
 END;
 
 -- A completion row must match its own completed, qualified session exactly.
