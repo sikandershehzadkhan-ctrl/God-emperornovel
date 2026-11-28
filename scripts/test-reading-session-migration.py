@@ -101,6 +101,11 @@ must_reject(
     "rewriting the server-issued session expiry",
 )
 must_reject(
+    "UPDATE reading_sessions SET last_heartbeat_at=? WHERE id=?",
+    (1_700_008_000, s1),
+    "recording a heartbeat after session expiry",
+)
+must_reject(
     "UPDATE reading_sessions SET status='completed',completed_at=? WHERE id=?",
     (1_700_000_060, s1),
     "completion below the required active duration and progress threshold",
