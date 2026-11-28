@@ -1,16 +1,12 @@
 name: Imperial Novel Read-Only Production D1 Audit
 
 on:
-  push:
-    branches: [main]
-    paths:
-      - '.github/workflows/audit-production-d1.yml'
   workflow_dispatch:
     inputs:
       confirm_read_only_audit:
         description: "Confirm this is a read-only production database audit"
         required: true
-        default: "yes"
+        default: "no"
         type: choice
         options:
           - "no"
@@ -25,9 +21,9 @@ concurrency:
 
 jobs:
   audit:
-    if: ${{ github.event_name == 'push' || inputs.confirm_read_only_audit == 'yes' }}
+    if: ${{ inputs.confirm_read_only_audit == 'yes' }}
     runs-on: ubuntu-latest
-    timeout-minutes: 5
+    timeout-minutes: 45
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
@@ -60,8 +56,7 @@ jobs:
             echo "::error::CLOUDFLARE_ACCOUNT_ID is empty or unavailable."
             exit 1
           fi
-          token_length=${#CLOUDFLARE_API_TOKEN}
-          echo "Cloudflare token secret is present; character count: $token_length (token value is never printed)."
+          echo "Cloudflare token secret is present; token value and length are not printed."
           if [[ "$CLOUDFLARE_API_TOKEN" =~ [[:space:]] ]]; then
             echo "::error::Token contains whitespace. Store only the raw API token, with no spaces, line breaks, 'Bearer ' prefix, or Authorization header."
             exit 1
@@ -74,6 +69,7 @@ jobs:
           npx --yes wrangler@4 whoami
 
       - name: Verify current D1 Time Travel recovery bookmark (read-only)
+        continue-on-error: true
         shell: bash
         env:
           CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
@@ -90,6 +86,7 @@ jobs:
           echo "PASS: Cloudflare returned a current Time Travel bookmark. This is not a restore rehearsal."
 
       - name: Check public production Worker health
+        continue-on-error: true
         shell: bash
         run: |
           set -euo pipefail
@@ -117,14 +114,20 @@ jobs:
           CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
         run: |
           set -euo pipefail
+          audit_query_failures=0
           run_query() {
             local label="$1"
             local sql="$2"
             echo
             echo "===== $label (read-only) ====="
-            npx --yes wrangler@4 d1 execute god-emperornovel-db --remote --command "$sql"
+            if ! npx --yes wrangler@4 d1 execute god-emperornovel-db --remote --command "$sql"; then
+              audit_query_failures=$((audit_query_failures + 1))
+              echo "::error::Required read-only query failed; corresponding schema evidence is unverified."
+            fi
           }
           run_query "Complete production table inventory" "SELECT name FROM sqlite_master WHERE type='table' AND name NOT LIKE 'sqlite_%' ORDER BY name;"
+          run_query "Complete production schema object definitions" "SELECT type,name,tbl_name,sql FROM sqlite_master WHERE name NOT LIKE 'sqlite_%' AND sql IS NOT NULL ORDER BY type,tbl_name,name;"
+          run_query "Production foreign-key integrity check" "PRAGMA foreign_key_check;"
           core_tables_sql="$(cat <<'SQL'
           WITH required(name) AS (
             VALUES ('users'),('sessions'),('novels'),('chapters'),('genres'),('tags'),('novel_genres'),('novel_tags'),
@@ -141,17 +144,36 @@ jobs:
           SQL
           )"
           run_query "Core runtime table presence" "$core_tables_sql"
-          migration_table_check="$(npx --yes wrangler@4 d1 execute god-emperornovel-db --remote --command "SELECT CASE WHEN EXISTS (SELECT 1 FROM sqlite_master WHERE type='table' AND name='d1_migrations') THEN 'present' ELSE 'absent' END AS migration_history_table;" 2>&1)"
-          printf '%s\n' "$migration_table_check"
-          if printf '%s' "$migration_table_check" | grep -q '"present"'; then
-            run_query "Applied D1 migration history" "SELECT * FROM d1_migrations ORDER BY id;"
+          if migration_table_check="$(npx --yes wrangler@4 d1 execute god-emperornovel-db --remote --command "SELECT CASE WHEN EXISTS (SELECT 1 FROM sqlite_master WHERE type='table' AND name='d1_migrations') THEN 'present' ELSE 'absent' END AS migration_history_table;" 2>&1)"; then
+            printf '%s\\n' "$migration_table_check"
+            if printf '%s' "$migration_table_check" | grep -q '"present"'; then
+              run_query "Applied D1 migration history" "SELECT * FROM d1_migrations ORDER BY id;"
+            else
+              echo "No d1_migrations table exists in this production database. This is an observed schema fact, not a reason to stop the remaining read-only checks."
+            fi
           else
-            echo "No d1_migrations table exists in this production database. This is an observed schema fact, not a reason to stop the remaining read-only checks."
+            audit_query_failures=$((audit_query_failures + 1))
+            echo "::error::Could not inspect the migration-history table; applied migration history is unverified."
+            printf '%s\\n' "$migration_table_check"
           fi
           run_query "Publication status counts" "SELECT COALESCE(publication_status,'<NULL>') AS publication_status, COUNT(*) AS novel_count FROM novels GROUP BY publication_status ORDER BY publication_status;"
           run_query "Chapter publication status counts" "SELECT COALESCE(publication_status,'<NULL>') AS publication_status, COUNT(*) AS chapter_count FROM chapters GROUP BY publication_status ORDER BY publication_status;"
           run_query "Safe aggregate inventory" "SELECT (SELECT COUNT(*) FROM users) AS users_total, (SELECT COUNT(*) FROM users WHERE role='admin' AND banned=0) AS active_admins, (SELECT COUNT(*) FROM novels) AS novels_total, (SELECT COUNT(*) FROM chapters) AS chapters_total, (SELECT COUNT(*) FROM donations WHERE status='pending') AS pending_donations, (SELECT COUNT(*) FROM novel_requests WHERE status='pending') AS pending_novel_requests;"
-          run_query "Schema version marker" "SELECT key,value FROM app_settings WHERE key IN ('core_schema_version','first_admin_bootstrap_done') ORDER BY key;"
+          if marker_table_check="$(npx --yes wrangler@4 d1 execute god-emperornovel-db --remote --command "SELECT CASE WHEN EXISTS (SELECT 1 FROM sqlite_master WHERE type='table' AND name='app_settings') THEN 'present' ELSE 'absent' END AS marker_table;" 2>&1)"; then
+            printf '%s\\n' "$marker_table_check"
+            if printf '%s' "$marker_table_check" | grep -q '"present"'; then
+              run_query "Schema version marker" "SELECT key,value FROM app_settings WHERE key IN ('core_schema_version','first_admin_bootstrap_done') ORDER BY key;"
+            elif printf '%s' "$marker_table_check" | grep -q '"absent"'; then
+              echo "Observed: app_settings table is absent; schema-version markers are therefore absent."
+            else
+              audit_query_failures=$((audit_query_failures + 1))
+              echo "::error::Schema marker inspection succeeded without a recognizable present/absent result; marker state is unverified."
+            fi
+          else
+            audit_query_failures=$((audit_query_failures + 1))
+            echo "::error::Could not inspect app_settings marker state; this is an audit failure, not evidence that the table is absent."
+            printf '%s\\n' "$marker_table_check"
+          fi
           run_query "Release 17.22 schema readiness (read-only)" "WITH required(name,kind) AS (VALUES ('idx_novel_genres_genre_novel','index'),('idx_novel_tags_tag_novel','index'),('idx_unlocks_chapter_time','index'),('idx_novels_published_views','index'),('idx_novels_published_rating','index'),('idx_novels_published_created','index'),('author_applications','table'),('idx_author_applications_one_pending','index'),('idx_author_applications_status_created','index'),('idx_author_applications_user_created','index'),('media_assets','table')) SELECT name,kind,CASE WHEN EXISTS(SELECT 1 FROM sqlite_master WHERE type=kind AND name=required.name) THEN 'present' ELSE 'MISSING' END AS status FROM required ORDER BY kind,name;"
           run_query "Author application schema columns (read-only)" "PRAGMA table_info(author_applications);"
           run_query "User account schema (columns only)" "PRAGMA table_info(users);"
@@ -162,20 +184,28 @@ jobs:
           run_query "Ticket ledger schema (columns only)" "PRAGMA table_info(ticket_ledger);"
           run_query "Donation schema (columns only)" "PRAGMA table_info(donations);"
           run_query "Donation reference duplicate audit (aggregate only)" "SELECT COUNT(*) AS donation_rows, COUNT(*)-COUNT(NULLIF(TRIM(reference_id),'')) AS blank_reference_rows, COUNT(DISTINCT CASE WHEN TRIM(reference_id)<>'' THEN LOWER(TRIM(reference_id)) END) AS distinct_nonblank_references, (SELECT COUNT(*) FROM (SELECT LOWER(TRIM(reference_id)) AS normalized_reference FROM donations WHERE TRIM(reference_id)<>'' GROUP BY LOWER(TRIM(reference_id)) HAVING COUNT(*)>1)) AS duplicate_reference_groups, (SELECT COALESCE(SUM(duplicate_rows-1),0) FROM (SELECT COUNT(*) AS duplicate_rows FROM donations WHERE TRIM(reference_id)<>'' GROUP BY LOWER(TRIM(reference_id)) HAVING COUNT(*)>1)) AS duplicate_extra_rows FROM donations;"
+          run_query "Duplicate pending connector authorization requests (must be zero before migration 0049)" "SELECT connector_id,COUNT(*) AS pending_requests FROM connector_authorization_requests WHERE status='pending' GROUP BY connector_id HAVING COUNT(*)>1;"
+          run_query "Migration 0049 unique-index presence" "SELECT name,sql FROM sqlite_master WHERE type='index' AND name='idx_connector_auth_one_pending_per_connector';"
           run_query "Novel request schema (columns only)" "PRAGMA table_info(novel_requests);"
           run_query "Connector schema (columns only)" "PRAGMA table_info(connectors);"
           run_query "Comment schema (columns only)" "PRAGMA table_info(comments);"
           run_query "Notification schema (columns only)" "PRAGMA table_info(notifications);"
           run_query "Agent schema (columns only)" "PRAGMA table_info(agents);"
+          run_query "Agent run history schema (columns only)" "PRAGMA table_info(agent_runs);"
+          run_query "Taxonomy submission schema (columns only)" "PRAGMA table_info(taxonomy_submissions);"
           critical_columns_sql="$(cat <<'SQL'
           WITH expected(table_name,column_name) AS (
             VALUES
               ('users','id'),('users','username'),('users','email'),('users','password_hash'),('users','role'),('users','tickets'),('users','verified'),('users','banned'),
               ('sessions','token_hash'),('sessions','user_id'),('sessions','expires_at'),
-              ('novels','id'),('novels','title'),('novels','author'),('novels','description'),('novels','status'),('novels','kind'),('novels','rights_status'),('novels','views'),('novels','rating'),('novels','publication_status'),('novels','owner_user_id'),('novels','rights_evidence'),
+              ('novels','id'),('novels','title'),('novels','author'),('novels','description'),('novels','status'),('novels','kind'),('novels','rights_status'),('novels','views'),('novels','rating'),('novels','publication_status'),('novels','owner_user_id'),('novels','rights_evidence'),('novels','review_feedback'),('novels','reviewed_by'),('novels','reviewed_at'),
               ('chapters','id'),('chapters','novel_id'),('chapters','chapter_number'),('chapters','title'),('chapters','content'),('chapters','is_locked'),('chapters','ticket_cost'),('chapters','publication_status'),
               ('app_settings','key'),('app_settings','value'),
               ('donations','id'),('donations','user_id'),('donations','amount'),('donations','reference_id'),('donations','status'),
+              ('comments','parent_id'),('comments','edited_at'),('connectors','search_url'),('connectors','auth_header'),('connectors','secret_name'),('connectors','rights_evidence_url'),('connectors','terms_url'),('connectors','rights_notes'),('connectors','metadata_import_allowed'),('connectors','attribution_required'),
+              ('agents','id'),('agents','name'),('agent_runs','id'),('agent_runs','agent_id'),('agent_runs','status'),
+              ('taxonomy_submissions','id'),('taxonomy_submissions','type'),('taxonomy_submissions','name'),('taxonomy_submissions','slug'),('taxonomy_submissions','creator_id'),('taxonomy_submissions','creator_name'),('taxonomy_submissions','status'),('taxonomy_submissions','reviewer_id'),('taxonomy_submissions','reviewed_at'),
+              ('connector_authorization_requests','id'),('connector_authorization_requests','connector_id'),('connector_authorization_requests','user_id'),('connector_authorization_requests','status'),('connector_authorization_requests','reviewed_by'),('connector_authorization_requests','reviewed_at'),
               ('novel_requests','id'),('novel_requests','user_id'),('novel_requests','status')
           )
           SELECT e.table_name,e.column_name,
@@ -189,4 +219,35 @@ jobs:
           run_query "Published catalog rights readiness (aggregate only)" "SELECT COUNT(*) AS published_novels, SUM(CASE WHEN COALESCE(rights_status,'') NOT IN ('original','licensed','authorized','public_domain','cc') THEN 1 ELSE 0 END) AS unusual_rights_status, SUM(CASE WHEN COALESCE(rights_evidence,'')='' THEN 1 ELSE 0 END) AS missing_rights_evidence, SUM(CASE WHEN owner_user_id IS NULL THEN 1 ELSE 0 END) AS missing_owner FROM novels WHERE publication_status='published';"
           run_query "Published chapter integrity (aggregate only)" "SELECT COUNT(*) AS published_chapters, SUM(CASE WHEN n.id IS NULL THEN 1 ELSE 0 END) AS chapters_without_novel FROM chapters c LEFT JOIN novels n ON n.id=c.novel_id WHERE COALESCE(c.publication_status,'published')='published';"
           echo
-          echo "Audit completed with SELECT/PRAGMA statements only. No data was changed and no deployment was performed."
+          if [ "$audit_query_failures" -ne 0 ]; then
+            echo "::error::Read-only audit finished with $audit_query_failures failed required database inspection(s). Schema evidence is incomplete; do not proceed with migration cutover."
+            exit 1
+          fi
+          echo "PASS: all required database inspections completed using SELECT/PRAGMA only. No data was changed and no deployment was performed."
+
+      - name: Capture normalized runtime schema evidence (read-only)
+        if: ${{ always() && inputs.confirm_read_only_audit == 'yes' }}
+        shell: bash
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+        run: |
+          set -euo pipefail
+          mkdir -p audit-output
+          node scripts/capture-runtime-schema-audit.mjs
+          node scripts/normalize-runtime-schema-audit.mjs audit-output/wrangler-schema-evidence.json audit-output/production-schema-evidence.json
+          node scripts/compare-runtime-schema-definitions.mjs audit-output/production-schema-evidence.json > audit-output/runtime-schema-definition-assessment.json || {
+            status=$?
+            if [ "$status" -ne 1 ]; then exit "$status"; fi
+            echo "::warning::Definition comparison found missing, mismatched, or unknown schema objects. Preserve the evidence and do not proceed with migration cutover."
+          }
+          echo "Captured schema metadata only. No application rows, secrets, or chapter content were selected."
+
+      - name: Upload read-only production schema evidence
+        if: ${{ always() && inputs.confirm_read_only_audit == 'yes' }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: production-runtime-schema-evidence-${{ github.sha }}
+          path: audit-output/
+          if-no-files-found: warn
+          retention-days: 7

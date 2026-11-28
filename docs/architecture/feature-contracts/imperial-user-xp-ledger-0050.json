@@ -1,0 +1,27 @@
+{
+  "schemaVersion": 1,
+  "contractId": "imperial-user-xp-ledger-migration-0050",
+  "status": "proposed",
+  "owner": "database-schema",
+  "migration": "migrations/0050_imperial_user_xp_ledger.sql",
+  "reservation": "migrations/.reservations/0050.json",
+  "businessOwner": "community",
+  "invariants": [
+    "XP ledger entries are append-only by application policy and use globally unique source_event_key values.",
+    "XP deltas are bounded nonzero integers and event_type is constrained to the reviewed allowlist.",
+    "The authenticated server derives user_id; clients never submit award targets or XP deltas.",
+    "imperial_rank_visibility defaults to 0 and accepts only 0 or 1.",
+    "XP ledger rows cascade on user deletion.",
+    "Founder identity and rank 50 are not stored in the XP ledger.",
+    "Rank does not grant account roles or authorization.",
+    "This migration does not award XP or expose a user leaderboard."
+  ],
+  "indexes": [
+    "idx_imperial_xp_user_time",
+    "idx_imperial_xp_time_user"
+  ],
+  "tests": [
+    "scripts/test-imperial-xp-ledger-migration.py"
+  ],
+  "releaseBoundary": "Migration and regression-test foundation only. Production D1 application requires the existing backup, restore rehearsal, schema audit, checksum reconciliation, and explicit release approval."
+}

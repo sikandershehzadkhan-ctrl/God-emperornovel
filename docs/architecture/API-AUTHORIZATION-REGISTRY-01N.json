@@ -2,10 +2,42 @@
   "version": 1,
   "registryName": "Imperial Novel API authorization and object-ownership registry",
   "sourceFile": "src/index.js",
-  "sourceCommit": "fc927689766803a8fb9753fb7d002171b1d84d95",
-  "sourceBlob": "src/index.js@d10b07dd3a9e58a4ca3df5a32658a8f2d7d371f2",
+  "sourceCommit": "f1c247fbb6a6eb347e30b01e8a0a916565976c3b",
+  "sourceBlob": "src/index.js@09b5e08ab1865f1010e22ffd632a48c59c2259bb",
   "coverage": "All exact API path/method declarations plus dynamic API patterns are inventoried; critical admin, user-owned, author-owned, public-rights and payment paths have explicit source guards and scope assertions.",
   "exactInventory": [
+    {
+      "path": "/api/account/closure-request",
+      "methods": [
+        "GET",
+        "POST"
+      ]
+    },
+    {
+      "path": "/api/account/closure-request/cancel",
+      "methods": [
+        "POST"
+      ]
+    },
+    {
+      "path": "/api/admin/account-deletion/queue",
+      "methods": [
+        "GET"
+      ]
+    },
+    {
+      "path": "/api/admin/account-deletion/reviewers",
+      "methods": [
+        "GET",
+        "POST"
+      ]
+    },
+    {
+      "path": "/api/admin/account-deletion/reviewers/revoke",
+      "methods": [
+        "POST"
+      ]
+    },
     {
       "path": "/api/admin/agents",
       "methods": [
@@ -365,7 +397,7 @@
     {
       "path": "/api/omni/search",
       "methods": [
-        "ANY"
+        "GET"
       ]
     },
     {
@@ -377,7 +409,7 @@
     {
       "path": "/api/omni/status",
       "methods": [
-        "ANY"
+        "GET"
       ]
     },
     {
@@ -428,6 +460,36 @@
       "methods": [
         "GET",
         "POST"
+      ]
+    },
+    {
+      "path": "/api/reviewer/account-deletion/approve",
+      "methods": [
+        "POST"
+      ]
+    },
+    {
+      "path": "/api/reviewer/account-deletion/claim",
+      "methods": [
+        "POST"
+      ]
+    },
+    {
+      "path": "/api/reviewer/account-deletion/findings",
+      "methods": [
+        "POST"
+      ]
+    },
+    {
+      "path": "/api/reviewer/account-deletion/plan",
+      "methods": [
+        "POST"
+      ]
+    },
+    {
+      "path": "/api/reviewer/account-deletion/queue",
+      "methods": [
+        "GET"
       ]
     },
     {
@@ -605,12 +667,92 @@
       "guard": "author(u)",
       "scope": "project.owner_user_id equals u.id unless admin",
       "sourceMarker": "if(/^\\/api\\/author\\/ai\\/projects\\/\\d+\\/blueprint$/.test(p)"
+    },
+    {
+      "pattern": "^/api/author/ai/projects/[0-9]+/run$",
+      "sample": "/api/author/ai/projects/42/run",
+      "methods": [
+        "POST"
+      ],
+      "accessClass": "author-owner",
+      "guard": "author(u)",
+      "scope": "project.owner_user_id equals u.id unless admin",
+      "sourceMarker": "if(/^\\/api\\/author\\/ai\\/projects\\/\\d+\\/run$/.test(p)"
+    },
+    {
+      "pattern": "^/api/author/ai/projects/[0-9]+/jobs$",
+      "sample": "/api/author/ai/projects/42/jobs",
+      "methods": [
+        "GET"
+      ],
+      "accessClass": "author-owner",
+      "guard": "author(u)",
+      "scope": "project.owner_user_id equals u.id unless admin; job list selected by verified project id",
+      "sourceMarker": "if(/^\\/api\\/author\\/ai\\/projects\\/\\d+\\/jobs$/.test(p)"
+    },
+    {
+      "pattern": "^/api/chapters/([0-9]+)/unlock$",
+      "sample": "/api/chapters/42/unlock",
+      "methods": [
+        "POST"
+      ],
+      "accessClass": "authenticated-user",
+      "guard": "need(u)",
+      "scope": "unlock row and ticket debit bound to authenticated u.id",
+      "sourceMarker": "if(/^\\/api\\/chapters\\/\\d+\\/unlock$/.test(p)"
+    },
+    {
+      "pattern": "^/api/author/novels/([0-9]+)/submit$",
+      "sample": "/api/author/novels/42/submit",
+      "methods": [
+        "POST"
+      ],
+      "accessClass": "author-owner",
+      "guard": "author(u)",
+      "scope": "novel.owner_user_id equals u.id unless admin",
+      "sourceMarker": "if(/^\\/api\\/author\\/novels\\/\\d+\\/submit$/.test(p)"
+    },
+    {
+      "pattern": "^/api/author/novels/([0-9]+)$",
+      "sample": "/api/author/novels/42",
+      "methods": [
+        "PATCH"
+      ],
+      "accessClass": "author-owner",
+      "guard": "author(u)",
+      "scope": "novel.owner_user_id equals u.id unless admin",
+      "sourceMarker": "if(/^\\/api\\/author\\/novels\\/\\d+$/.test(p)"
+    },
+    {
+      "pattern": "^/api/author/chapters/([0-9]+)$",
+      "sample": "/api/author/chapters/42",
+      "methods": [
+        "PATCH"
+      ],
+      "accessClass": "author-owner",
+      "guard": "author(u)",
+      "scope": "parent novel.owner_user_id equals u.id unless admin",
+      "sourceMarker": "if(/^\\/api\\/author\\/chapters\\/\\d+$/.test(p)"
+    },
+    {
+      "pattern": "^/api/author/chapters/([0-9]+)/publish$",
+      "sample": "/api/author/chapters/42/publish",
+      "methods": [
+        "POST"
+      ],
+      "accessClass": "author-owner",
+      "guard": "author(u)",
+      "scope": "parent novel.owner_user_id equals u.id unless admin; publication rights allowlist enforced",
+      "sourceMarker": "if(/^\\/api\\/author\\/chapters\\/\\d+\\/publish$/.test(p)"
     }
   ],
   "policies": {
     "adminOnly": {
       "guard": "admin(u)",
       "exactPaths": [
+        "/api/admin/account-deletion/queue",
+        "/api/admin/account-deletion/reviewers",
+        "/api/admin/account-deletion/reviewers/revoke",
         "/api/admin/agents",
         "/api/admin/agents/run",
         "/api/admin/author-applications",
@@ -866,6 +1008,30 @@
           ],
           "guard": "need(u)",
           "scope": "request user_id bound to u.id"
+        },
+        {
+          "path": "/api/account/closure-request",
+          "methods": [
+            "GET"
+          ],
+          "guard": "need(u)",
+          "scope": "closure request and review summary selected only by authenticated session user_id=u.id"
+        },
+        {
+          "path": "/api/account/closure-request",
+          "methods": [
+            "POST"
+          ],
+          "guard": "need(u)",
+          "scope": "new request user_id derived from u.id; same-origin JSON mutation; one active request per user; creates review case and immutable opening event"
+        },
+        {
+          "path": "/api/account/closure-request/cancel",
+          "methods": [
+            "POST"
+          ],
+          "guard": "need(u)",
+          "scope": "cancellation selects and compare-and-sets only the authenticated user's pending request and unclaimed review"
         }
       ],
       "scope": "User-owned rows are scoped with authenticated u.id, not a client-supplied user id."
@@ -1040,6 +1206,64 @@
         }
       ],
       "scope": "Connector discovery and import are constrained by explicit provider authorization; import records and job status remain user-scoped."
+    },
+    "authenticatedSubmissions": {
+      "routes": [
+        {
+          "path": "/api/taxonomy",
+          "methods": [
+            "POST"
+          ],
+          "guard": "need(u)",
+          "scope": "creator_id and creator_name derived from authenticated session; client identity fields ignored"
+        }
+      ]
+    },
+    "reviewerOwned": {
+      "guard": "need(u) plus active, unrevoked account_deletion_reviewer_assignments for u.id and category-specific role",
+      "routes": [
+        {
+          "path": "/api/reviewer/account-deletion/approve",
+          "methods": [
+            "POST"
+          ],
+          "guard": "need(u)",
+          "scope": "active deletion_second_approver role; requester and proposer excluded; exact latest plan digest; immutable independent approval; no erasure execution"
+        },
+        {
+          "path": "/api/reviewer/account-deletion/claim",
+          "methods": [
+            "POST"
+          ],
+          "guard": "need(u)",
+          "scope": "only support_reviewer/privacy_administrator may claim; requester cannot claim own case; versioned lease claim"
+        },
+        {
+          "path": "/api/reviewer/account-deletion/findings",
+          "methods": [
+            "POST"
+          ],
+          "guard": "need(u)",
+          "scope": "category-specific active specialist assignment; reviewer identity from u.id; active claim, subject isolation, immutable versioned finding enforced by SQLite"
+        },
+        {
+          "path": "/api/reviewer/account-deletion/plan",
+          "methods": [
+            "POST"
+          ],
+          "guard": "need(u)",
+          "scope": "active support/privacy case claimant; all eleven latest specialist findings required; canonical SHA-256 digest; immutable plan/items and compare-and-set review version"
+        },
+        {
+          "path": "/api/reviewer/account-deletion/queue",
+          "methods": [
+            "GET"
+          ],
+          "guard": "need(u)",
+          "scope": "only cases visible to the active reviewer; active assignment selected by session u.id"
+        }
+      ],
+      "scope": "Reviewer privileges are explicit, revocable assignments and never inherited from the broad admin role."
     }
   },
   "knownOpenQuestions": [

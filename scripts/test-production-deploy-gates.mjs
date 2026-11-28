@@ -2,13 +2,40 @@ import assert from "node:assert/strict";
 import fs from "node:fs";
 
 const workflow = fs.readFileSync(".github/workflows/deploy.yml", "utf8");
+const schemaInventory = fs.readFileSync("docs/production/SHARED-RUNTIME-SCHEMA-INVENTORY.md", "utf8");
+const pendingCanonicalMigrations = fs.readdirSync("migrations").filter(name => /^\d{4}_.+\.sql$/.test(name) && Number(name.slice(0, 4)) > 11);
+assert.ok(pendingCanonicalMigrations.length > 0,
+  "The deployment guard must be removed only after later canonical migrations have been explicitly reconciled and released.");
 assert.ok(workflow.includes("workflow_dispatch:"), "Production deploy must remain manual.");
+assert.ok(workflow.includes("Require the exact reviewed production schema marker"),
+  "Production deploy must require the exact reviewed schema marker.");
+assert.ok(workflow.includes("s.match(/\"value\"\\s*:\\s*\"([^\"]+)\"/)"),
+  "The schema marker parser must use whitespace matching rather than a literal backslash-s sequence.");
+assert.ok(workflow.includes('if [ "$marker" != "16.64.0" ]'),
+  "Production deploy must fail closed unless the exact reviewed schema marker is present.");
+assert.ok(!workflow.includes("Legacy marker found. Checking production tables"),
+  "Production deploy must not treat the legacy marker as permission to run runtime schema bootstrap.");
+assert.ok(!workflow.includes("Runtime bootstrap will apply only its reviewed idempotent schema operations"),
+  "Runtime DDL must never be used as an implicit production migration path.");
+assert.ok(workflow.includes("Block production deployment while canonical migrations are pending"),
+  "Production deploy must hard-block while later canonical migrations are not wired into the release sequence.");
+assert.ok(workflow.includes("10#$number > 11"),
+  "The release block must detect every four-digit migration number after 0011.");
+assert.ok(workflow.includes("canonical migrations after 0011 are not yet wired"),
+  "The release block must explain the exact unresolved migration boundary.");
+assert.ok(workflow.indexOf("Block production deployment while canonical migrations are pending") < workflow.indexOf("Validate source and production configuration"),
+  "The pending-migration guard must run before build, D1 writes, or deployment.");
 assert.ok(workflow.includes("confirm_production_deploy"), "Production deploy must require an explicit confirmation input.");
 assert.ok(workflow.includes("inputs.confirm_production_deploy == 'true'"), "Production job must be gated by the explicit true confirmation.");
 assert.ok(!/^\s*push:/m.test(workflow) && !/^\s*pull_request:/m.test(workflow), "Pushes and pull requests must never auto-deploy production.");
 assert.ok(workflow.includes("npx --yes wrangler@4 deploy --dry-run"), "Production bundle must be validated before deployment.");
 assert.ok(workflow.includes("Verify catalog and author-application D1 migrations after deployment"), "Production deployment must verify additive catalog and creator migrations.");
 assert.ok(workflow.includes("Apply and verify additive D1 migrations before Worker deployment"), "Production D1 migrations must run before publishing the Worker.");
+for (const migration of ["0012_user_profiles.sql", "0028_runtime_feature_integrity.sql", "0046_atomic_ai_run_claims.sql", "0048_omniportal_runtime_support.sql", "0049_unique_pending_connector_authorization.sql"]) {
+  assert.ok(!workflow.includes("--file=migrations/" + migration), "Production deploy must not silently apply an unreconciled canonical migration: " + migration);
+}
+assert.ok(schemaInventory.includes("those later migrations are not included in the deploy workflow's apply step"),
+  "The release documentation must explicitly disclose that canonical migrations 0012+ are not yet wired into production deployment.");
 for (const migration of ["migrations/0009_catalog_filter_indexes.sql", "migrations/0010_catalog_sort_indexes.sql", "migrations/0011_author_applications.sql"]) {
   assert.ok(workflow.includes("--file=" + migration), "Pre-deploy migration step must apply " + migration);
 }

@@ -2,7 +2,7 @@ name: Imperial Novel Migration Governance
 
 on:
   pull_request:
-    branches: [main, "ci/governance-migration-immutability-guard-2026-11-04"]
+    branches: [main, "ci/governance-migration-immutability-guard-2026-11-04", "foundation/canonical-migrations-current-mainline-2026-11-22"]
   workflow_dispatch:
 
 permissions:
