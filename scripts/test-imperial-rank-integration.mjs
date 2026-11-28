@@ -27,6 +27,10 @@ assert.ok(worker.includes("'novel_published','novel:'+id,60"),"First novel publi
 assert.ok(worker.includes("'chapter_published','chapter:'+id,10"),"First chapter publication awards its owner XP once");
 assert.ok(worker.includes("+?<=100"),"Daily XP ceiling is enforced inside the atomic insert");
 assert.match(worker,/userQuery\.bind\("-"\+days\+" days","-"\+days\+" days"\)/,"Weekly/monthly leaderboard query binds both date placeholders");
+assert.match(worker,/const chapter=await env\.DB\.prepare\("SELECT c\.id FROM chapters c JOIN novels n ON n\.id=c\.novel_id WHERE c\.novel_id=\? AND c\.chapter_number=\? AND c\.publication_status='published' AND n\.publication_status='published'/,"Reading history must validate a real published chapter and eligible novel");
+assert.match(worker,/Number\.isSafeInteger\(chapterNumber\)\|\|chapterNumber<1/,"Reading history must reject malformed or non-positive chapter numbers");
+assert.match(worker,/if\(!chapter\)return json\(\{error:"Published chapter not found"\},404\)/,"Reading history must reject unpublished or nonexistent chapters");
+
 assert.match(worker,/env\.IMPERIAL_FOUNDER_USER_ID/,"Founder designation must use protected server configuration");
 assert.match(worker,/founderId===Number\(userId\)/,"Founder identity must be matched by immutable platform user ID");
 assert.match(worker,/IMPERIAL_FOUNDER_RANK/,"Founder designation must use the founder-only rank entry");
