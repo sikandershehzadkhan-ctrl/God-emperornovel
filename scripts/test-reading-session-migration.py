@@ -91,6 +91,16 @@ must_reject(
 
 # Neither a short session nor a shallow progress report can be marked complete.
 must_reject(
+    "UPDATE reading_sessions SET required_active_seconds=30 WHERE id=?",
+    (s1,),
+    "rewriting the server-derived reading duration",
+)
+must_reject(
+    "UPDATE reading_sessions SET expires_at=? WHERE id=?",
+    (1_700_008_000, s1),
+    "rewriting the server-issued session expiry",
+)
+must_reject(
     "UPDATE reading_sessions SET status='completed',completed_at=? WHERE id=?",
     (1_700_000_060, s1),
     "completion below the required active duration and progress threshold",
@@ -101,6 +111,16 @@ db.execute(
            last_heartbeat_at=1_700_000_075
        WHERE id=?""",
     (s1,),
+)
+must_reject(
+    "UPDATE reading_sessions SET active_seconds=70 WHERE id=?",
+    (s1,),
+    "moving accumulated active time backwards",
+)
+must_reject(
+    "UPDATE reading_sessions SET max_progress_bp=9400 WHERE id=?",
+    (s1,),
+    "moving reported progress backwards",
 )
 db.execute(
     "UPDATE reading_sessions SET status='completed',completed_at=? WHERE id=?",
