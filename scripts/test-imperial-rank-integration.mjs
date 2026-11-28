@@ -14,6 +14,7 @@ assert.match(worker,/imperial_rank_visibility\?1:0,u\.id/,"Rank visibility updat
 assert.match(worker,/getImperialDisplayRank\(row\.id,Number\(row\.total_xp\|\|0\),env\)/,"Public rank labels must derive from canonical rank catalogue and protected founder binding");
 assert.match(worker,/getImperialRankProgress\(Number\(xpRow\?\.xp\|\|0\)\)/,"Private profile must expose server-derived rank progression");
 assert.match(frontend,/Show my rank on public leaderboards/,"Account UI must offer explicit privacy opt-in");
+assert.match(frontend,/Supreme Founder and Owner designation/,"Founder-only rank must be clearly identified in the account UI");
 assert.match(frontend,/Top Imperial Members/,"Leaderboard UI must expose member ranking separately");
 assert.match(rankCss,/\.imperialRankPanel/,"Rank panel must have a dedicated theme-aware style");
 assert.match(rankCss,/\.rankProgressTrack/,"Rank progress must have a visible progress track");
