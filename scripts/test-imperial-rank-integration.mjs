@@ -2,6 +2,7 @@ import assert from "node:assert/strict";
 import fs from "node:fs";
 const worker=fs.readFileSync("src/index.js","utf8");
 const frontend=fs.readFileSync("public/app.js","utf8");
+const rankCss=fs.readFileSync("public/app-17.24.0.css","utf8");
 const auth=JSON.parse(fs.readFileSync("docs/architecture/API-AUTHORIZATION-REGISTRY-01N.json","utf8"));
 const rankContract=JSON.parse(fs.readFileSync("docs/architecture/feature-contracts/imperial-user-ranks-foundation-2026-11-28.json","utf8"));
 assert.match(worker,/INSERT OR IGNORE INTO imperial_xp_ledger/,"XP awards must be idempotent");
@@ -14,6 +15,8 @@ assert.match(worker,/getImperialProgressionRank\(Number\(row\.total_xp\|\|0\)\)/
 assert.match(worker,/getImperialRankProgress\(Number\(xpRow\?\.xp\|\|0\)\)/,"Private profile must expose server-derived rank progression");
 assert.match(frontend,/Show my rank on public leaderboards/,"Account UI must offer explicit privacy opt-in");
 assert.match(frontend,/Top Imperial Members/,"Leaderboard UI must expose member ranking separately");
+assert.match(rankCss,/\.imperialRankPanel/,"Rank panel must have a dedicated theme-aware style");
+assert.match(rankCss,/\.rankProgressTrack/,"Rank progress must have a visible progress track");
 assert.ok(rankContract.releaseBoundary.includes("migration 0050"),"Integration release must depend on migration 0050");
 assert.deepEqual(auth.exactInventory.find(x=>x.path==="/api/profile").methods,["GET","POST"]);
 assert.deepEqual(auth.policies.userOwned.routes.find(x=>x.path==="/api/profile").methods,["GET","POST"]);

@@ -35,3 +35,15 @@
 .comicPageComposerGrid input:focus-visible,.comicPageComposerGrid button:focus-visible,.comicComposerPageActions button:focus-visible{outline:2px solid var(--in-sapphire,#4f8cff);outline-offset:2px}
 .comicComposerPage{display:grid;grid-template-columns:58px minmax(0,1fr) auto;align-items:center;gap:10px;margin:8px 0;padding:9px;border:1px solid var(--line,rgba(139,92,246,.18));border-radius:12px;background:rgba(255,255,255,.025);min-width:0}.comicComposerPage>img{width:58px;height:72px;object-fit:cover;border-radius:6px;background:#080a12}.comicComposerPage>img.comicPreviewError{opacity:.25}.comicComposerPage>div:nth-child(2){display:grid;gap:2px;min-width:0}.comicComposerPage small{overflow-wrap:anywhere;color:var(--muted,#a3abc2);font-size:11px}.comicComposerPageActions{display:flex;gap:4px;flex-wrap:wrap;justify-content:flex-end}.comicComposerPageActions button{min-height:34px;padding:5px 8px;font-size:11px}.comicAuthorBuilder [data-page-status]{margin:10px 0 0;font-size:11px;line-height:1.5;color:var(--muted,#a3abc2)}
 @media(max-width:620px){.comicPageComposerGrid{grid-template-columns:1fr}.comicPageComposerGrid label:nth-child(3){grid-column:auto}.comicComposerPage{grid-template-columns:48px minmax(0,1fr)}.comicComposerPage>img{width:48px;height:62px}.comicComposerPageActions{grid-column:1/-1;justify-content:flex-start}.comicAuthorBuilder{padding:12px}}
+
+/* Imperial member rank surfaces: restrained, accessible and theme-aware. */
+.imperialRankPanel{border:1px solid color-mix(in srgb,var(--brand-purple,#8b5cf6) 28%,var(--line,transparent));background:linear-gradient(145deg,color-mix(in srgb,var(--brand-purple,#8b5cf6) 7%,var(--panel,#111827)),var(--panel,#111827))}
+.profileRankHead{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap}
+.profileRankHead h2{margin:4px 0;font-size:clamp(20px,4vw,26px)}
+.rankProgressTrack{height:8px;margin:12px 0 16px;overflow:hidden;border-radius:999px;background:var(--line,rgba(148,163,184,.2))}
+.rankProgressTrack span{display:block;height:100%;border-radius:inherit;background:linear-gradient(90deg,var(--brand-purple,#8b5cf6),var(--brand-sapphire,#4f8cff));transition:width .25s ease}
+.rankVisibilityToggle{align-items:flex-start;gap:10px}
+.rankVisibilityToggle input{flex:none;min-width:20px;min-height:20px;margin-top:3px;accent-color:var(--brand-purple,#8b5cf6)}
+.rankVisibilityToggle small{display:block;margin-top:3px;color:var(--muted,#9ca3af);line-height:1.5}
+#lbUsers .pill{display:inline-flex;margin:5px 0}
+@media(prefers-reduced-motion:reduce){.rankProgressTrack span{transition:none}}
