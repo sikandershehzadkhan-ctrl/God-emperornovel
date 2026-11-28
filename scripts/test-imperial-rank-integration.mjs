@@ -30,6 +30,10 @@ assert.match(worker,/userQuery\.bind\("-"\+days\+" days","-"\+days\+" days"\)/,"
 assert.match(worker,/const chapter=await env\.DB\.prepare\("SELECT c\.id FROM chapters c JOIN novels n ON n\.id=c\.novel_id WHERE c\.novel_id=\? AND c\.chapter_number=\? AND c\.publication_status='published' AND n\.publication_status='published'/,"Reading history must validate a real published chapter and eligible novel");
 assert.match(worker,/Number\.isSafeInteger\(chapterNumber\)\|\|chapterNumber<1/,"Reading history must reject malformed or non-positive chapter numbers");
 assert.match(worker,/if\(!chapter\)return json\(\{error:"Published chapter not found"\},404\)/,"Reading history must reject unpublished or nonexistent chapters");
+assert.match(frontend,/style="width:\$\{chapterPct\}%"/,"Reader progress bar must not invent novel progress from the chapter index");
+assert.match(frontend,/Chapter \$\{num\} of \$\{total\}/,"Reader progress must show chapter position rather than a fabricated novel completion percentage");
+assert.doesNotMatch(frontend,/\$\{initialNovelProgress\}% through novel/,"Chapter position must not be presented as actual novel reading progress");
+
 
 assert.match(worker,/env\.IMPERIAL_FOUNDER_USER_ID/,"Founder designation must use protected server configuration");
 assert.match(worker,/founderId===Number\(userId\)/,"Founder identity must be matched by immutable platform user ID");
