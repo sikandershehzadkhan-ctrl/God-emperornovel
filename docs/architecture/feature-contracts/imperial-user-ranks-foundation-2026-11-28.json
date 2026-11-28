@@ -32,7 +32,10 @@
     "Verified, active reader/author accounts may earn XP from first eligible ratings, first novel publication, and first chapter publication.",
     "Novel and chapter publication awards are tied to first transition to published and use stable idempotency keys.",
     "All positive XP awards are capped at 100 per user per rolling 24-hour period by the atomic ledger insert.",
-    "Unverified, banned, deleted, and admin accounts cannot earn public progression XP."
+    "Unverified, banned, deleted, and admin accounts cannot earn public progression XP.",
+    "Founder rank 50 is resolved only when the authenticated account ID exactly matches the protected Worker variable IMPERIAL_FOUNDER_USER_ID.",
+    "Username, email, client flags, account role, XP, or public leaderboard position cannot assign founder rank.",
+    "The founder Worker variable remains unconfigured until the platform owner's actual Imperial Novel user ID is verified."
   ],
   "acceptance": [
     "node scripts/test-imperial-ranks.mjs passes.",
@@ -42,7 +45,9 @@
     "Member leaderboard is a separate section from novel and author rankings.",
     "Integration source tests pass.",
     "First eligible novel/chapter publication awards are idempotent across author and admin publication paths.",
-    "The rolling 24-hour positive XP cap is enforced atomically by the database insert."
+    "The rolling 24-hour positive XP cap is enforced atomically by the database insert.",
+    "Founder identity resolver compares authenticated session user ID to protected server configuration only.",
+    "Unconfigured founder binding safely leaves all accounts on earned ranks 1-49."
   ],
   "releaseBoundary": "Application integration depends on migration 0050 from PR #384. Do not merge/deploy this integration before that migration is merged and applied through the approved production release process."
 }
