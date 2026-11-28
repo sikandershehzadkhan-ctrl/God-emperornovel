@@ -2,9 +2,9 @@
   "version": 1,
   "registryName": "Imperial Novel API authorization and object-ownership registry",
   "sourceFile": "src/index.js",
-  "sourceCommit": "fc927689766803a8fb9753fb7d002171b1d84d95",
-  "sourceBlob": "src/index.js@d10b07dd3a9e58a4ca3df5a32658a8f2d7d371f2",
-  "coverage": "All exact API path/method declarations plus dynamic API patterns are inventoried; critical admin, user-owned, author-owned, public-rights and payment paths have explicit source guards and scope assertions.",
+  "sourceCommit": "08b68d8ae69e7b08feeef7d48ba8c731c069fe0b",
+  "sourceBlob": "src/index.js@ec55d73c866eed91146b43d343d4c0bbcb3663ab",
+  "coverage": "All exact API path/method declarations plus dynamic API patterns are inventoried; critical admin, user-owned, author-owned, public-rights, ranking privacy and payment paths have explicit source guards and scope assertions.",
   "exactInventory": [
     {
       "path": "/api/admin/agents",
@@ -389,7 +389,8 @@
     {
       "path": "/api/profile",
       "methods": [
-        "GET"
+        "GET",
+        "POST"
       ]
     },
     {
@@ -709,10 +710,11 @@
         {
           "path": "/api/profile",
           "methods": [
-            "GET"
+            "GET",
+            "POST"
           ],
           "guard": "need(u)",
-          "scope": "all aggregates bound to u.id"
+          "scope": "profile aggregates, rank XP and visibility updates are scoped to authenticated session u.id"
         },
         {
           "path": "/api/notifications",
