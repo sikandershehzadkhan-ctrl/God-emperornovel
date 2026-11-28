@@ -552,7 +552,7 @@ async function api(req,env){
   const periodXp=days?"SUM(CASE WHEN x.created_at>=datetime('now',?) THEN x.xp_delta ELSE 0 END)":"SUM(x.xp_delta)";
   const userSql="SELECT u.id,u.username,"+periodXp+" period_xp,SUM(x.xp_delta) total_xp FROM imperial_xp_ledger x JOIN users u ON u.id=x.user_id WHERE u.imperial_rank_visibility=1 AND u.verified=1 AND u.banned=0 AND u.role IN ('user','author') GROUP BY u.id,u.username HAVING "+periodXp+">0 ORDER BY period_xp DESC,total_xp DESC,u.id ASC LIMIT 20";
   const userQuery=env.DB.prepare(userSql);
-  const userRows=(days?(await userQuery.bind("-"+days+" days").all()):(await userQuery.all())).results||[];
+  const userRows=(days?(await userQuery.bind("-"+days+" days","-"+days+" days").all()):(await userQuery.all())).results||[];
   const users=userRows.map(row=>{const rank=getImperialDisplayRank(row.id,Number(row.total_xp||0),env);return {username:row.username,xp:Number(row.period_xp||0),rankId:rank.id,rankName:rank.name}});
   return json({period,novels:novels.results||[],authors:authors.results||[],users});
  }
