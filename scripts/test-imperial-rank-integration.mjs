@@ -26,6 +26,7 @@ assert.ok(worker.includes("created_at>=datetime('now','-1 day')"),"Daily XP cap 
 assert.ok(worker.includes("'novel_published','novel:'+id,60"),"First novel publication awards its owner XP once");
 assert.ok(worker.includes("'chapter_published','chapter:'+id,10"),"First chapter publication awards its owner XP once");
 assert.ok(worker.includes("+?<=100"),"Daily XP ceiling is enforced inside the atomic insert");
+assert.match(worker,/userQuery\.bind\("-"\+days\+" days","-"\+days\+" days"\)/,"Weekly/monthly leaderboard query binds both date placeholders");
 assert.match(worker,/env\.IMPERIAL_FOUNDER_USER_ID/,"Founder designation must use protected server configuration");
 assert.match(worker,/founderId===Number\(userId\)/,"Founder identity must be matched by immutable platform user ID");
 assert.match(worker,/IMPERIAL_FOUNDER_RANK/,"Founder designation must use the founder-only rank entry");
