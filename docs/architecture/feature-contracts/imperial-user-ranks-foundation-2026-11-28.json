@@ -1,0 +1,28 @@
+{
+  "schemaVersion": 1,
+  "contractId": "imperial-user-ranks-foundation-2026-11-28",
+  "status": "proposed",
+  "owner": "architecture-contracts",
+  "decision": "Establish a canonical 50-entry Imperial user-rank catalogue with 49 XP-earned progression ranks and a founder-only rank 50, without changing production data or the existing novel/author leaderboard.",
+  "scope": [
+    "src/imperial-ranks.mjs",
+    "scripts/test-imperial-ranks.mjs",
+    "package.json",
+    "docs/architecture/decisions/ADR-0033-imperial-user-rank-progression.md"
+  ],
+  "invariants": [
+    "The catalogue contains exactly 50 unique, sequential rank IDs.",
+    "Ranks 1-49 have strictly increasing non-negative XP thresholds.",
+    "Rank 50 is Imperial God Emperor, founderOnly=true, and minXp=null.",
+    "XP progression can return only ranks 1-49.",
+    "Imperial Rank never grants account roles, permissions, or administrative access.",
+    "Existing novel and author leaderboard behavior is preserved.",
+    "No D1 schema mutation, XP award, API exposure, founder assignment, or deployment occurs in this foundation change."
+  ],
+  "acceptance": [
+    "node scripts/test-imperial-ranks.mjs passes.",
+    "node --check src/imperial-ranks.mjs passes.",
+    "The full repository build and governance checks pass."
+  ],
+  "releaseBoundary": "Foundation-only code and tests. Database/API/UI integration and production release require separate review and approval."
+}
