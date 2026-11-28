@@ -11,7 +11,7 @@ assert.match(worker,/u\.verified&&\["user","author"\]\.includes\(u\.role\)/,"Onl
 assert.match(worker,/Number\(eligible\.owner_user_id\|\|0\)!==Number\(u\.id\)/,"Authors cannot earn XP by rating their own novel");
 assert.match(worker,/imperial_rank_visibility=1 AND u\.verified=1 AND u\.banned=0/,"Public member leaderboard must require opt-in, verification and a non-banned account");
 assert.match(worker,/imperial_rank_visibility\?1:0,u\.id/,"Rank visibility updates must be scoped to authenticated session user");
-assert.match(worker,/getImperialProgressionRank\(Number\(row\.total_xp\|\|0\)\)/,"Public rank labels must derive from canonical rank catalogue");
+assert.match(worker,/getImperialDisplayRank\(row\.id,Number\(row\.total_xp\|\|0\),env\)/,"Public rank labels must derive from canonical rank catalogue and protected founder binding");
 assert.match(worker,/getImperialRankProgress\(Number\(xpRow\?\.xp\|\|0\)\)/,"Private profile must expose server-derived rank progression");
 assert.match(frontend,/Show my rank on public leaderboards/,"Account UI must offer explicit privacy opt-in");
 assert.match(frontend,/Top Imperial Members/,"Leaderboard UI must expose member ranking separately");
