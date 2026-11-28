@@ -42,6 +42,7 @@ The workflow is therefore hard-disabled. Do not remove that block merely to depl
 - 0047: retired allocation; never reuse.
 - 0048: canonical OmniPortal support tables for side-effect-free read endpoints.
 - 0049: unique pending connector authorization request per connector; requires zero duplicate pending groups before application.
+- 0050: server-side Imperial user XP ledger with globally unique source-event keys and an opt-in public-rank visibility preference. XP remains derived from verified server events; founder identity and founder-only rank are not stored in this schema.
 
 ## Canonical migration checksum evidence
 
