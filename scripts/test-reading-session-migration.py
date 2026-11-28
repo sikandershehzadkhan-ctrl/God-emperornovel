@@ -142,6 +142,9 @@ assert db.execute(
     "SELECT COUNT(*) FROM reading_completions WHERE user_id=? AND chapter_id=?",
     (u1, ch1),
 ).fetchone()[0] == 1
+assert db.execute("SELECT COUNT(*) FROM imperial_xp_ledger").fetchone()[0] == 0, (
+    "the schema migration must not award XP"
+)
 
 # A fresh, separately qualified session still cannot create a second
 # completion for the same user/chapter pair.
