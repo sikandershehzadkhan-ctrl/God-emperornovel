@@ -39,6 +39,7 @@ ch2 = db.execute("SELECT id FROM chapters WHERE chapter_number=2").fetchone()[0]
 token_a = "a" * 64
 token_b = "b" * 64
 token_c = "c" * 64
+token_d = "d" * 64
 
 def must_reject(sql, params, label):
     try:
@@ -117,13 +118,37 @@ assert db.execute(
     (u1, ch1),
 ).fetchone()[0] == 1
 
+# A fresh, separately qualified session still cannot create a second
+# completion for the same user/chapter pair.
+s4 = add_session(u1, ch1, token_d)
+db.execute(
+    """UPDATE reading_sessions
+       SET active_seconds=90,max_progress_bp=9800,heartbeat_count=5,
+           last_heartbeat_at=1_700_000_090
+       WHERE id=?""",
+    (s4,),
+)
+db.execute(
+    "UPDATE reading_sessions SET status='completed',completed_at=? WHERE id=?",
+    (1_700_000_090, s4),
+)
 must_reject(
     """INSERT INTO reading_completions(
          user_id,chapter_id,source_session_id,completed_at,
          qualifying_seconds,progress_basis_points
        ) VALUES(?,?,?,?,?,?)""",
-    (u1, ch1, s2, 1_700_000_075, 75, 9500),
+    (u1, ch1, s4, 1_700_000_090, 90, 9800),
     "a second completion for the same user and chapter",
+)
+must_reject(
+    "UPDATE reading_sessions SET active_seconds=100 WHERE id=?",
+    (s1,),
+    "rewriting terminal session evidence",
+)
+must_reject(
+    "UPDATE reading_completions SET qualifying_seconds=1 WHERE user_id=? AND chapter_id=?",
+    (u1, ch1),
+    "rewriting immutable completion evidence",
 )
 must_reject(
     "UPDATE reading_sessions SET status='active' WHERE id=?",
