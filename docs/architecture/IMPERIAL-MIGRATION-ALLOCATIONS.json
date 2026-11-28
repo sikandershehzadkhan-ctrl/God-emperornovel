@@ -2,7 +2,7 @@
   "schemaVersion": 1,
   "name": "Global D1 migration allocation register",
   "sequencePattern": "^([0-9]{4})_",
-  "lastObservedSequence": 50,
+  "lastObservedSequence": 51,
   "canonicalSource": "migrations/",
   "policy": {
     "reserveBeforeAuthoring": true,
@@ -115,6 +115,12 @@
       "to": 50,
       "owner": "community",
       "status": "reserved for Imperial user rank XP ledger and public-rank visibility controls; no XP award policy or founder identity stored in this schema"
+    },
+    {
+      "from": 51,
+      "to": 51,
+      "owner": "community",
+      "status": "reserved for authenticated server-backed reading sessions and unique per-user chapter completion records; no XP award or human-attention guarantee in schema"
     }
   ],
   "allocations": []
