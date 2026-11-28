@@ -28,7 +28,11 @@
     "The public user leaderboard includes only verified, non-banned accounts that explicitly opt in.",
     "Public leaderboard XP is period-specific while the displayed rank is derived from all-time XP.",
     "Rank visibility changes are authenticated and scoped exclusively to the session user.",
-    "The founder-only rank 50 is not assigned by this integration."
+    "The founder-only rank 50 is not assigned by this integration.",
+    "Verified, active reader/author accounts may earn XP from first eligible ratings, first novel publication, and first chapter publication.",
+    "Novel and chapter publication awards are tied to first transition to published and use stable idempotency keys.",
+    "All positive XP awards are capped at 100 per user per rolling 24-hour period by the atomic ledger insert.",
+    "Unverified, banned, deleted, and admin accounts cannot earn public progression XP."
   ],
   "acceptance": [
     "node scripts/test-imperial-ranks.mjs passes.",
@@ -36,7 +40,9 @@
     "The full repository build and governance checks pass.",
     "API authorization registry includes authenticated POST /api/profile and validates its user-id scope.",
     "Member leaderboard is a separate section from novel and author rankings.",
-    "Integration source tests pass."
+    "Integration source tests pass.",
+    "First eligible novel/chapter publication awards are idempotent across author and admin publication paths.",
+    "The rolling 24-hour positive XP cap is enforced atomically by the database insert."
   ],
   "releaseBoundary": "Application integration depends on migration 0050 from PR #384. Do not merge/deploy this integration before that migration is merged and applied through the approved production release process."
 }
