@@ -4,7 +4,7 @@ STATUS: BLOCKED
 
 ## Why production release is blocked
 
-The development integration now has one canonical migration chain, 0001–0046 and 0048–0049; 0047 is retired and never reused. The production deployment workflow previously referenced branch-local files named `0012_chapter_revisions.sql` and `0013_scheduled_chapter_publications.sql`. Those names are no longer valid in the canonical chain: profile/account migrations own 0012–0015, and chapter revisions/scheduling are 0016–0017.
+The development integration now has one canonical migration chain, 0001–0046 and 0048–0051; 0047 is retired and never reused. The production deployment workflow previously referenced branch-local files named `0012_chapter_revisions.sql` and `0013_scheduled_chapter_publications.sql`. Those names are no longer valid in the canonical chain: profile/account migrations own 0012–0015, and chapter revisions/scheduling are 0016–0017.
 
 The production D1 database's exact applied migration history has not been inspected and reconciled in this work session. A source-tree replay against fresh SQLite is not evidence of the remote D1 state.
 
@@ -43,6 +43,7 @@ The workflow is therefore hard-disabled. Do not remove that block merely to depl
 - 0048: canonical OmniPortal support tables for side-effect-free read endpoints.
 - 0049: unique pending connector authorization request per connector; requires zero duplicate pending groups before application.
 - 0050: server-side Imperial user XP ledger with globally unique source-event keys and an opt-in public-rank visibility preference. XP remains derived from verified server events; founder identity and founder-only rank are not stored in this schema.
+- 0051: authenticated reader sessions and one-time per-user chapter completion records, using hashed session tokens, server-time duration accumulation, bounded progress evidence and database-enforced completion constraints. This schema awards no XP and does not prove human attention.
 
 ## Canonical migration checksum evidence
 
@@ -109,6 +110,7 @@ At minimum, the reviewed release runner must verify these structures before depl
 - `ai_author_projects.active_run_token`, `ai_author_projects.active_run_started_at`, `ai_author_projects.active_run_owner_user_id`, `ai_chapter_jobs.run_token`, and `idx_ai_chapter_jobs_run_token`.
 - `connector_events`, `import_jobs`, `recommendations`, and `connector_authorization_requests` from migration 0048; verify their expected indexes and foreign keys.
 - The partial unique index `idx_connector_auth_one_pending_per_connector` from migration 0049; prove the preflight finds zero duplicate pending groups and that request history is preserved.
+- `reading_sessions` and `reading_completions` from migration 0051; verify hashed-token constraints, one-active-session uniqueness, expiry and owner indexes, terminal-state guards, qualified-session completion trigger, one completion per user/chapter, and account/chapter cascade behavior.
 - `PRAGMA integrity_check` and `PRAGMA foreign_key_check` on the rehearsal database.
 
 ## Current safety state
@@ -118,7 +120,7 @@ At minimum, the reviewed release runner must verify these structures before depl
 - Remote migration ledger: not verified.
 - Existing deployment workflow: hard-disabled in `.github/workflows/deploy.yml`.
 - Fresh SQLite migration replay: validated in Cloudflare Source Validation, but it does not replace the remote audit above.
-- Migrations 0036–0049: present in the development integration only; their presence and successful fresh-database replay do not establish that they have been applied to production D1.
+- Migrations 0036–0051: present in the development integration only; their presence and successful fresh-database replay do not establish that they have been applied to production D1.
 
 ## Required integration CI evidence
 
