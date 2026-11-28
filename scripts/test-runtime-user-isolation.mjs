@@ -296,6 +296,11 @@ assert.equal(refundReplay.response.status, 409, "a rejected request must not be 
 const aRefundLedger = await request("/api/tickets/ledger", { cookie: a.cookie });
 assert.equal(aRefundLedger.data.filter(x => x.reason === "novel_request_refund" && x.reference === "https://example.invalid/refund-fixture").length, 1, "refund replay must not create a duplicate credit ledger row");
 
+// Restore account B to an author after the admin-only refund fixture. The
+// following AI project checks must exercise two non-admin authors, not an
+// administrator (whose cross-owner access is intentionally privileged).
+localSql(`UPDATE users SET role='author' WHERE id=${bid};`);
+
 // Initialize the real AI project tables, then seed two isolated project owners.
 await request("/api/author/ai/projects", { cookie: a.cookie });
 await request("/api/author/ai/projects", { cookie: b.cookie });
