@@ -29,6 +29,7 @@ CREATE TABLE IF NOT EXISTS reading_sessions (
   FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
   FOREIGN KEY (chapter_id) REFERENCES chapters(id) ON DELETE CASCADE,
   CHECK (last_heartbeat_at >= started_at),
+  CHECK (last_heartbeat_at <= expires_at),
   CHECK (expires_at > started_at),
   CHECK ((status = 'completed' AND completed_at IS NOT NULL)
       OR (status <> 'completed' AND completed_at IS NULL))
@@ -84,11 +85,12 @@ END;
 
 -- Session identity and server-derived duration requirements cannot be rewritten.
 CREATE TRIGGER IF NOT EXISTS trg_reading_session_identity_guard
-BEFORE UPDATE OF user_id, chapter_id, token_hash, started_at, required_active_seconds ON reading_sessions
+BEFORE UPDATE OF user_id, chapter_id, token_hash, started_at, expires_at, required_active_seconds ON reading_sessions
 WHEN NEW.user_id <> OLD.user_id
   OR NEW.chapter_id <> OLD.chapter_id
   OR NEW.token_hash <> OLD.token_hash
   OR NEW.started_at <> OLD.started_at
+  OR NEW.expires_at <> OLD.expires_at
   OR NEW.required_active_seconds <> OLD.required_active_seconds
 BEGIN
   SELECT RAISE(ABORT, 'reading session identity is immutable');
