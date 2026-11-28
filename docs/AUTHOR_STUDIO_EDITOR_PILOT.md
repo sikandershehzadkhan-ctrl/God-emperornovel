@@ -1,75 +1,56 @@
 # Author Studio Rich-Text Editor Pilot
 
-**Status:** Architecture investigation complete; implementation intentionally not started.  
-**Target:** A self-contained, mobile-first chapter editor using the MIT-licensed Tiptap core.  
-**Production impact:** None. This document does not add packages or change runtime behavior.
+**Status:** Source implementation merged; production/mobile acceptance remains outstanding.  
+**Target:** A self-contained, mobile-first chapter editor using selected MIT-licensed Tiptap packages.  
+**Verified source release:** Imperial Novel 17.24.0.  
+**Production impact:** No production deployment or D1 mutation is claimed here.
 
-## Verified current architecture
+## Implementation evidence
 
-- `package.json` currently contains React 19, React DOM, and esbuild; no Tiptap packages are installed.
-- `scripts/build-react-islands.mjs` bundles `src/react/index.jsx` into a versioned browser bundle.
-- `src/react/index.jsx` currently exports the novel comments, reactions, and rating islands.
-- Author Studio itself is rendered by the versioned vanilla-JavaScript application bundle.
-- The author chapter form currently submits `novel_id`, `chapter_number`, `title`, `content`, `is_locked`, and `ticket_cost` to the existing same-origin `POST /api/author/chapters` endpoint.
-- The Worker checks author access and novel ownership, validates required chapter fields, applies the comic-specific validator for comic formats, and saves new chapters with `publication_status='draft'`.
-- Existing chapter records use a text `content` column. Comic chapters already have a versioned JSON envelope and dedicated validation/reader handling.
+The source implementation was delivered through these merged pull requests:
 
-## Critical compatibility finding
+- [PR #378](https://github.com/sikandershehzadkhan-ctrl/God-emperornovel/pull/378): versioned `imperial_rich_text_chapter` v1 contract, Worker-side validation, safe allowlisted reader rendering, legacy plain-text compatibility, separate comic format, ADR-0022 and policy tests.
+- [PR #379](https://github.com/sikandershehzadkhan-ctrl/God-emperornovel/pull/379): npm-generated lockfile for `@tiptap/react@3.30.3` and `@tiptap/starter-kit@3.30.3`.
+- [PR #380](https://github.com/sikandershehzadkhan-ctrl/God-emperornovel/pull/380): local Tiptap React editor, separate versioned bundle, lazy loading inside Author Studio, plain-text fallback, mobile/accessibility source tests and bundle budget checks.
+- [PR #381](https://github.com/sikandershehzadkhan-ctrl/God-emperornovel/pull/381): cache-safe 17.24.0 versioned assets and service-worker updates.
+- [PR #382](https://github.com/sikandershehzadkhan-ctrl/God-emperornovel/pull/382): isolated tests executing the actual reader rendering functions.
 
-The current reader's text-chapter renderer escapes the stored content before displaying it. This is safe against arbitrary HTML execution, but it means that directly storing Tiptap-generated HTML would display markup as text rather than render formatted paragraphs.
+## Security and content contract
 
-Therefore, **do not connect Tiptap by simply replacing the existing textarea and submitting HTML**. Do not use `dangerouslySetInnerHTML`, raw `innerHTML`, or an unreviewed HTML sanitizer as a shortcut.
+- New rich-text chapters use a versioned structured JSON envelope, not raw author HTML.
+- The Worker validates the recognized envelope on chapter creation/update.
+- The reader constructs only fixed allowlisted elements, escapes author text and validates HTTP(S) links.
+- Limits recorded by PR #378: 95 KB serialized payload, 3,000 nodes, depth 12, 80,000 aggregate text characters, 20,000 characters per text node, and 2,048 characters per URL.
+- Allowed blocks: paragraphs, level-2/3 headings, blockquotes, ordered/unordered lists, list items, horizontal rules and hard breaks.
+- Allowed marks: bold, italic, underline, strike, code and HTTP(S) links without embedded credentials.
+- Existing plain-text chapters retain their legacy rendering path; comic chapters retain their separate format.
+- Existing authorization, ownership, draft status, lock and publication-review behavior remain authoritative.
+- No arbitrary HTML, images, embeds or code blocks are part of this pilot.
 
-## Recommended implementation shape
+## Dependency and performance boundary
 
-1. Add Tiptap as a locally bundled dependency. Prefer the smallest necessary open-source packages and record each exact version and licence.
-2. Build a self-contained editor island that mounts only inside the existing Author Studio chapter form. Keep the existing application shell, route, author-role checks, and same-origin API.
-3. Use a versioned structured-content envelope, separate from the existing comic envelope, for new rich-text chapters. Keep existing plain-text chapters readable without migration.
-4. Add a Worker-side validator for the structured document. Enforce a strict node/mark allowlist, maximum document size, maximum nesting depth, maximum node count, maximum text length, and safe link protocols.
-5. Render the structured document in the reader by constructing DOM nodes from the validated allowlist. Never interpret author content as executable HTML.
-6. Keep chapter submission and publication review unchanged: the editor saves drafts only; it must not publish, unlock, or bypass rights/moderation rules.
-7. Keep a plain-text fallback if the editor bundle fails to load. Existing chapter creation must remain possible.
-8. Load the editor bundle only on the Author Studio route. Do not increase the initial homepage payload.
+- Selected direct editor packages: `@tiptap/react@3.30.3` and `@tiptap/starter-kit@3.30.3`.
+- The repository's lockfile and `scripts/check-third-party-licenses.mjs` provide dependency/version/licence/provenance checks.
+- The editor is built as a separate versioned bundle and is not part of the shared reader/community React island bundle.
+- The editor loads only after an author opens a non-comic chapter form in Author Studio.
+- The homepage does not preload the editor.
+- The plain-text field remains available until editor initialization succeeds and remains the fallback if the editor bundle fails.
 
-## Initial formatting scope
+## Still required before declaring the feature production-ready
 
-- Paragraphs and headings
-- Bold and italic
-- Ordered and unordered lists
-- Blockquotes
-- Undo and redo
-- Optional safe hyperlinks, only after protocol validation
-- Keyboard shortcuts and accessible toolbar labels
+- Test on real Android browsers, including a 360px viewport and the user's Vivo device where available.
+- Verify toolbar touch targets, software-keyboard behavior, keyboard navigation, focus visibility and reduced-motion behavior.
+- Verify Urdu, Arabic and Persian editing direction and mixed-direction text.
+- Complete a real authorized author workflow: create draft, edit, save, reopen and confirm the reader output.
+- Confirm legacy plain-text and comic chapters remain unchanged in real served behavior.
+- Verify bundle-size report and that homepage/reader network loads do not fetch the editor bundle.
+- Verify the exact release candidate's full CI and Cloudflare dry-run.
+- Deploy only through the separate approved production release process, then verify live behavior.
 
-Exclude image uploads, embeds, arbitrary HTML, scripts, inline styles, custom extensions, collaborative editing, and paid Tiptap features from the first pilot.
+## Superseded proposal
 
-## Mobile and accessibility acceptance
+PR [#376](https://github.com/sikandershehzadkhan-ctrl/God-emperornovel/pull/376) remains an open draft for an earlier `imperial_text_chapter` contract. PR #378 superseded it with the integrated `imperial_rich_text_chapter` contract and write/read enforcement. Do not merge #376 independently; close it as superseded after confirming it contains no unique changes worth preserving.
 
-- Usable on a 360px-wide Android viewport without horizontal page overflow.
-- Toolbar controls have at least 44px touch targets.
-- Editing area has a visible label and keyboard focus indicator.
-- Toolbar remains usable with the software keyboard open.
-- No forced full-screen mode or hover-only controls.
-- Reduced-motion preferences are respected.
-- Editor initialization failure leaves a working plain-text chapter field.
+## Explicit non-claims
 
-## Required tests before merge
-
-- Structured-document validator rejects unknown node and mark types.
-- Rejects unsafe URL schemes, malformed JSON, excessive nesting, oversized documents, and excessive node counts.
-- Reader renderer emits only allowlisted elements and safe attributes.
-- Plain-text legacy chapters render exactly as before.
-- Existing comic chapter validation and rendering remain unchanged.
-- API tests verify author role, novel ownership, draft status, and no accidental publication.
-- Build test verifies local bundle output and release-version asset references.
-- Cloudflare readiness, full build, route registry, authorization registry, release consistency, and mobile/manual QA pass.
-
-## Dependency and build gate
-
-Do not hand-edit `package-lock.json` or guess transitive package integrity hashes. The Tiptap implementation PR must be created only when a real npm lockfile can be generated and `npm ci` plus the full build can be run. The current research environment could inspect GitHub through its connector but could not resolve GitHub from the local shell, so it could not perform a trustworthy local dependency install/build.
-
-## Go / no-go decision
-
-**Go:** Continue with the structured-content design and prepare a local, reproducible dependency/build environment.
-
-**No-go for now:** Do not merge an editor that stores raw HTML, changes existing chapter formats, weakens server validation, or commits an ungenerated lockfile. No production deployment is authorized by this research.
+Merged source code is not proof of production deployment, real-device QA, or complete user acceptance. No production D1 mutation, content migration, or Worker deployment is claimed by this document.
