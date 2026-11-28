@@ -63,6 +63,34 @@ for (const override of registry.policies.adminOnly.methodOverrides) {
   const snippet = handler(override.path, override.methods[0]);
   assert.ok(snippet.includes("admin(u)"), "method-specific admin override lacks admin guard: " + override.path);
 }
+const requiredDynamicMarkers = [
+  "let nm=p.match(/^\\/api\\/novels\\/",
+  "let cm=p.match(/^\\/api\\/chapters\\/",
+  "if(/^\\/api\\/chapters\\/\\d+\\/unlock$/.test(p)",
+  "let bu=p.match(/^\\/api\\/novels\\/",
+  "let au=p.match(/^\\/api\\/admin\\/users\\/",
+  "let aip=p.match(/^\\/api\\/author\\/ai\\/projects\\/",
+  "if(/^\\/api\\/author\\/ai\\/projects\\/\\d+\\/blueprint$/.test(p)",
+  "if(/^\\/api\\/author\\/ai\\/projects\\/\\d+\\/run$/.test(p)",
+  "if(/^\\/api\\/author\\/ai\\/projects\\/\\d+\\/jobs$/.test(p)",
+  "if(/^\\/api\\/author\\/novels\\/\\d+\\/submit$/.test(p)",
+  "if(/^\\/api\\/author\\/novels\\/\\d+$/.test(p)",
+  "if(/^\\/api\\/author\\/chapters\\/\\d+$/.test(p)",
+  "if(/^\\/api\\/author\\/chapters\\/\\d+\\/publish$/.test(p)",
+  "let apn=p.match(/^\\/api\\/admin\\/publishing\\/novels\\/",
+  "let ach=p.match(/^\\/api\\/admin\\/publishing\\/chapters",
+  "let acm=p.match(/^\\/api\\/admin\\/publishing\\/chapters\\/",
+  "let ad=p.match(/^\\/api\\/admin\\/donations\\/",
+  "let ar=p.match(/^\\/api\\/admin\\/reports\\/",
+  "let car=p.match(/^\\/api\\/admin\\/connector-authorization-requests\\/",
+  "const authorApplicationReviewId=p.startsWith(\"/api/admin/author-applications/\")",
+  "if(p.startsWith(\"/api/admin/requests/\")&&m===\"PATCH\")"
+];
+const registeredDynamicMarkers = new Set(registry.dynamicInventory.map(route => route.sourceMarker));
+for (const marker of requiredDynamicMarkers) {
+  assert.ok([...registeredDynamicMarkers].some(registered => registered.startsWith(marker)), "dynamic API route missing from authorization inventory: " + marker);
+}
+
 for (const route of registry.dynamicInventory) {
   assert.ok(new RegExp(route.pattern).test(route.sample), "dynamic API sample does not match: " + route.pattern);
   assert.ok(worker.includes(route.sourceMarker), "dynamic API route source marker missing: " + route.sourceMarker);

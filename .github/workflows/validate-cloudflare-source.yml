@@ -62,6 +62,38 @@ jobs:
       - name: Build application
         run: npm run build
 
+      - name: Run isolated local D1 and Worker authorization tests
+        shell: bash
+        run: |
+          set -euo pipefail
+          npx --yes wrangler@4 d1 migrations apply god-emperornovel-db --local --config wrangler.toml
+          npx --yes wrangler@4 d1 execute god-emperornovel-db --local --config wrangler.toml --command "INSERT INTO novels(id,title,author,rights_status,publication_status) VALUES(987654321,'Runtime Isolation Fixture','Test Author','original','published')"
+          npx --yes wrangler@4 dev --local --ip 127.0.0.1 --port 8787 > "$RUNNER_TEMP/imperial-worker.log" 2>&1 &
+          worker_pid=$!
+          cleanup() {
+            kill "$worker_pid" 2>/dev/null || true
+            wait "$worker_pid" 2>/dev/null || true
+          }
+          trap cleanup EXIT
+          ready=0
+          for attempt in $(seq 1 45); do
+            if curl --silent --show-error --fail http://127.0.0.1:8787/api/health >/dev/null 2>&1; then
+              ready=1
+              break
+            fi
+            if ! kill -0 "$worker_pid" 2>/dev/null; then
+              cat "$RUNNER_TEMP/imperial-worker.log"
+              exit 1
+            fi
+            sleep 2
+          done
+          if [ "$ready" -ne 1 ]; then
+            cat "$RUNNER_TEMP/imperial-worker.log"
+            echo "::error::Local Worker did not become ready."
+            exit 1
+          fi
+          node scripts/test-runtime-user-isolation.mjs
+
       - name: Validate Cloudflare Worker bundle without deploying
         run: npx --yes wrangler@4 deploy --dry-run
 

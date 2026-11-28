@@ -1,4 +1,5 @@
 import { toPublicNovel } from "./public-novel.mjs";
+import { isSameOriginMutationAllowed } from "./request-security.mjs";
 import { resolvePageRoute } from "./route-registry.mjs";
 import { canonicalPathForRoute } from "./route-canonical.mjs";
 import { SITEMAP_PAGE_SIZE, renderSitemapIndex, renderStaticSitemap, renderNovelSitemap, renderChapterSitemap } from "./sitemap.mjs";
@@ -60,7 +61,9 @@ async function ensurePublishingSchema(env){
   const ci=(await env.DB.prepare('PRAGMA table_info(chapters)').all()).results||[];
   const chHave=new Set(ci.map(x=>String(x.name)));
   if(!chHave.has('publication_status')){await env.DB.prepare("ALTER TABLE chapters ADD COLUMN publication_status TEXT NOT NULL DEFAULT 'published'").run()}
+  if(!chHave.has('updated_at')){await env.DB.prepare("ALTER TABLE chapters ADD COLUMN updated_at TEXT NOT NULL DEFAULT ''").run()}
   await env.DB.prepare("UPDATE chapters SET publication_status='published' WHERE publication_status IS NULL OR publication_status=''").run()
+  await env.DB.prepare("UPDATE chapters SET updated_at=CURRENT_TIMESTAMP WHERE updated_at IS NULL OR updated_at=''").run()
   await env.DB.prepare('CREATE INDEX IF NOT EXISTS idx_chapters_publication ON chapters(novel_id,publication_status,chapter_number)').run()
   await env.DB.prepare(`CREATE TABLE IF NOT EXISTS chapter_views (chapter_id INTEGER PRIMARY KEY, views INTEGER NOT NULL DEFAULT 0, updated_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP, FOREIGN KEY(chapter_id) REFERENCES chapters(id) ON DELETE CASCADE)`).run();
  }catch(e){console.error('publishing schema failed; schema version must not advance',e);throw e}
@@ -365,7 +368,7 @@ async function ensureCommunityTaxonomySchema(env){
  created_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,reviewed_at TEXT,reviewer_id INTEGER,
  UNIQUE(type,slug))`).run();
 }
-async function communityTaxonomy(req,env){
+async function communityTaxonomy(req,env,user){
  const u=new URL(req.url), method=req.method;
  if(method==='GET'){
   const type=String(u.searchParams.get('type')||'').toLowerCase();
@@ -380,6 +383,7 @@ async function communityTaxonomy(req,env){
   return json(r.results||[]);
  }
  if(method==='POST'){
+  const authError=need(user);if(authError)return authError;
   const b=await body(req),type=String(b.type||'').toLowerCase(),name=String(b.name||'').trim().replace(/\s+/g,' ');
   if(!['genre','tag'].includes(type)) return json({error:'type must be genre or tag'},400);
   if(name.length<2||name.length>80)return json({error:'Name must be 2-80 characters'},400);
@@ -387,7 +391,7 @@ async function communityTaxonomy(req,env){
   if(await env.DB.prepare(`SELECT id FROM ${table} WHERE slug=? LIMIT 1`).bind(s).first())return json({error:'Already exists in official taxonomy'},409);
   const existing=await env.DB.prepare('SELECT id,status FROM taxonomy_submissions WHERE type=? AND slug=? LIMIT 1').bind(type,s).first();
   if(existing) return json({error:'Already submitted',id:existing.id,status:existing.status},409);
-  try{const r=await env.DB.prepare(`INSERT INTO taxonomy_submissions(type,name,slug,description,creator_id,creator_name,status) VALUES(?,?,?,?,?,?,?)`).bind(type,name,s,String(b.description||'').slice(0,500),b.creator_id||null,String(b.creator_name||'').slice(0,80),'pending').run();return json({ok:true,id:r.meta.last_row_id,status:'pending'})}catch(e){console.error('taxonomy submission write failed',e);return json({error:'Unable to save submission. Please try again later.'},500)}
+  try{const r=await env.DB.prepare(`INSERT INTO taxonomy_submissions(type,name,slug,description,creator_id,creator_name,status) VALUES(?,?,?,?,?,?,?)`).bind(type,name,s,String(b.description||'').slice(0,500),user.id,String(user.username||'').slice(0,80),'pending').run();return json({ok:true,id:r.meta.last_row_id,status:'pending'})}catch(e){console.error('taxonomy submission write failed',e);return json({error:'Unable to save submission. Please try again later.'},500)}
  }
  return json({error:'Method not allowed'},405);
 }
@@ -420,7 +424,7 @@ async function api(req,env){
  if(p==="/api/agents"&&m==="GET"){return json((await env.DB.prepare(`SELECT slug,name,role,icon,mode,status,last_run_at FROM agents WHERE enabled=1 ORDER BY id`).all()).results)}
  if(p==="/api/admin/agents"&&m==="GET"){const e=admin(u);if(e)return e;return json((await env.DB.prepare(`SELECT id,slug,name,role,icon,mode,status,enabled,last_run_at,last_result FROM agents ORDER BY id`).all()).results)}
  if(p==="/api/admin/agents/run"&&m==="POST"){const e=admin(u);if(e)return e;const b=await body(req);const slug=String(b.slug||'');if(slug)return json(await runAgent(env,slug,'admin'));return json(await runAutomation(env))}
- if(p==="/api/taxonomy")return communityTaxonomy(req,env);
+ if(p==="/api/taxonomy")return communityTaxonomy(req,env,u);
  if(p==="/api/admin/taxonomy"&&m==='GET'){const e=admin(u);if(e)return e;return json((await env.DB.prepare("SELECT * FROM taxonomy_submissions ORDER BY CASE status WHEN 'pending' THEN 0 ELSE 1 END,created_at DESC LIMIT 300").all()).results||[])}
  if(p==="/api/admin/taxonomy"&&m==='POST')return adminTaxonomy(req,env,u);
  if(p==="/api/health"){let db=true;try{await env.DB.prepare("SELECT 1").first()}catch{db=false}return json({ok:db,service:env.SITE_NAME||"Imperial Novel",version:env.APP_VERSION||"5.0.0",database:db,time:new Date().toISOString()})}
@@ -612,7 +616,26 @@ async function api(req,env){
  }
  if(p==="/api/admin/stats"){const e=admin(u);if(e)return e;const [a,b,c,d,r,t,rep,authorApps]=await Promise.all([env.DB.prepare("SELECT COUNT(*) n FROM users").first(),env.DB.prepare("SELECT COUNT(*) n FROM novels").first(),env.DB.prepare("SELECT COUNT(*) n FROM chapters").first(),env.DB.prepare("SELECT COUNT(*) n FROM donations WHERE status='pending'").first(),env.DB.prepare("SELECT COUNT(*) n FROM novel_requests WHERE status='pending'").first(),env.DB.prepare("SELECT COUNT(*) n FROM taxonomy_submissions WHERE status='pending'").first(),env.DB.prepare("SELECT COUNT(*) n FROM reports WHERE status IN ('open','reviewing')").first(),env.DB.prepare("SELECT COUNT(*) n FROM author_applications WHERE status='pending'").first()]);return json({users:a.n,novels:b.n,chapters:c.n,pendingDonations:d.n,pendingRequests:r.n,pendingTaxonomy:t.n,openReports:rep.n,pendingAuthorApplications:authorApps.n})}
  if(p==="/api/admin/users"&&m==="GET"){const e=admin(u);if(e)return e;return json((await env.DB.prepare("SELECT id,username,email,role,tickets,verified,banned,created_at FROM users ORDER BY id LIMIT 500").all()).results)}
- let au=p.match(/^\/api\/admin\/users\/(\d+)$/);if(au&&m==="PATCH"){const e=admin(u);if(e)return e;const b=await body(req),id=Number(au[1]);if(id===u.id&&String(b.role||u.role)!=='admin')return json({error:"You cannot remove your own administrator role"},400);const role=String(b.role||'user');if(!['user','author','moderator','admin'].includes(role))return json({error:"Invalid role"},400);await env.DB.prepare("UPDATE users SET role=?,verified=?,banned=? WHERE id=?").bind(role,b.verified?1:0,b.banned?1:0,id).run();return json({ok:true})}
+ let au=p.match(/^\/api\/admin\/users\/(\d+)$/);if(au&&m==="PATCH"){
+  const e=admin(u);if(e)return e;
+  const b=await body(req),id=Number(au[1]);
+  if(!Number.isSafeInteger(id)||id<1)return json({error:"Invalid user ID"},400);
+  const target=await env.DB.prepare("SELECT id,role,verified,banned FROM users WHERE id=?").bind(id).first();
+  if(!target)return json({error:"User not found"},404);
+  const role=b.role===undefined?String(target.role):String(b.role);
+  if(!['user','author','moderator','admin'].includes(role))return json({error:"Invalid role"},400);
+  const verified=b.verified===undefined?Number(target.verified):b.verified?1:0;
+  const banned=b.banned===undefined?Number(target.banned):b.banned?1:0;
+  if(id===u.id&&(role!=='admin'||banned))return json({error:"You cannot demote or ban your own administrator account"},400);
+  // Keep the last-admin invariant inside the UPDATE itself. A separate
+  // COUNT followed by UPDATE can race when several admins act concurrently.
+  const result=await env.DB.prepare(`UPDATE users SET role=?,verified=?,banned=? WHERE id=? AND
+   (role<>'admin' OR banned<>0 OR (?='admin' AND ?=0) OR
+    (SELECT COUNT(*) FROM users WHERE role='admin' AND banned=0)>1)`).bind(role,verified,banned,id,role,banned).run();
+  if(Number(result.meta?.changes||0)!==1)return json({error:"The account was not updated. The last active administrator cannot be demoted or banned."},409);
+  await audit(env,u,"admin_user_updated",`target_user=${id};role=${role};verified=${verified};banned=${banned}`);
+  return json({ok:true});
+ }
 
 
  if(p==="/api/author/ai/status"&&m==="GET"){
@@ -743,7 +766,7 @@ async function api(req,env){
   if(!Number.isInteger(num)||num<1||!title||!content)return json({error:'Chapter number, title and content are required'},400);
   if(["manga","manhwa","manhua","webtoon","comic","graphic_novel"].includes(String(n.kind||"").toLowerCase())){const comicCheck=validateComicChapterContent(content);if(!comicCheck.ok)return json({error:comicCheck.error},400)}else{const richTextCheck=validateRichTextChapterContent(content);if(!richTextCheck.ok)return json({error:richTextCheck.error},400)}
   const locked=!!b.is_locked,cost=Number(b.ticket_cost||0);if(cost<0)return json({error:'Ticket cost cannot be negative'},400);
-  try{const r=await env.DB.prepare(`INSERT INTO chapters(novel_id,chapter_number,title,content,is_locked,ticket_cost,publication_status) VALUES(?,?,?,?,?,?, 'draft')`).bind(nid,num,title,content,locked?1:0,cost).run();await env.DB.prepare('UPDATE novels SET updated_at=CURRENT_TIMESTAMP WHERE id=?').bind(nid).run();await audit(env,u,'author_chapter_created',`novel=${nid};chapter=${num}`);return json({ok:true,id:Number(r.meta.last_row_id),message:'Chapter saved as draft.'},201)}catch(err){return json({error:'Chapter number already exists or could not be saved'},409)}
+  try{const r=await env.DB.prepare(`INSERT INTO chapters(novel_id,chapter_number,title,content,is_locked,ticket_cost,publication_status,updated_at) VALUES(?,?,?,?,?,?, 'draft',CURRENT_TIMESTAMP)`).bind(nid,num,title,content,locked?1:0,cost).run();await env.DB.prepare('UPDATE novels SET updated_at=CURRENT_TIMESTAMP WHERE id=?').bind(nid).run();await audit(env,u,'author_chapter_created',`novel=${nid};chapter=${num}`);return json({ok:true,id:Number(r.meta.last_row_id),message:'Chapter saved as draft.'},201)}catch(err){return json({error:'Chapter number already exists or could not be saved'},409)}
  }
  if(/^\/api\/author\/chapters\/\d+$/.test(p)&&m==="PATCH"){
   const e=author(u);if(e)return e;const id=Number(p.split('/').pop()),b=await body(req);
@@ -753,7 +776,7 @@ async function api(req,env){
   await env.DB.prepare(`UPDATE chapters SET chapter_number=?,title=?,content=?,is_locked=?,ticket_cost=?,updated_at=CURRENT_TIMESTAMP WHERE id=?`).bind(num,title,content,b.is_locked?1:0,cost,id).run();await env.DB.prepare('UPDATE novels SET updated_at=CURRENT_TIMESTAMP WHERE id=?').bind(c.novel_id).run();await audit(env,u,'author_chapter_updated',`chapter=${id}`);return json({ok:true,message:'Chapter saved.'})
  }
  if(/^\/api\/author\/chapters\/\d+\/publish$/.test(p)&&m==="POST"){
-  const e=author(u);if(e)return e;const id=Number(p.split('/')[3]),b=await body(req);const c=await env.DB.prepare(`SELECT c.*,n.owner_user_id,n.rights_status FROM chapters c JOIN novels n ON n.id=c.novel_id WHERE c.id=?`).bind(id).first();if(!c)return json({error:'Chapter not found'},404);if(u.role!=="admin"&&Number(c.owner_user_id)!==Number(u.id))return json({error:'You do not own this chapter'},403);
+  const e=author(u);if(e)return e;const id=Number(p.split('/')[4]),b=await body(req);const c=await env.DB.prepare(`SELECT c.*,n.owner_user_id,n.rights_status FROM chapters c JOIN novels n ON n.id=c.novel_id WHERE c.id=?`).bind(id).first();if(!c)return json({error:'Chapter not found'},404);if(u.role!=="admin"&&Number(c.owner_user_id)!==Number(u.id))return json({error:'You do not own this chapter'},403);
   const status=String(b.publication_status||'published');if(!['draft','published'].includes(status))return json({error:'Invalid publication status'},400);if(status==='published'&&!['original','public_domain','licensed','authorized'].includes(String(c.rights_status)))return json({error:'Novel rights are not eligible for publication'},403);
   await env.DB.prepare('UPDATE chapters SET publication_status=?,updated_at=CURRENT_TIMESTAMP WHERE id=?').bind(status,id).run();await env.DB.prepare('UPDATE novels SET updated_at=CURRENT_TIMESTAMP WHERE id=?').bind(c.novel_id).run();await audit(env,u,status==='published'?'author_chapter_published':'author_chapter_unpublished',`chapter=${id}`);return json({ok:true,message:status==='published'?'Chapter published.':'Chapter moved to draft.'})
  }
@@ -869,4 +892,4 @@ async function sitemap(req,env){
 async function html(req,env){const u=new URL(req.url);let file="index.html",title="Imperial Novel",description="Read original, licensed and authorized novels, fanfiction and connected worlds.";const p=u.pathname;const route=resolvePageRoute(p);if(route)file=route.shell;else file="404.html";const noindex=!route||route.robots==="noindex";const pageStatus=route?200:404;const m=p.match(/^\/(?:novel|read)\/(\d+)/);if(m){try{const n=await env.DB.prepare("SELECT title,author,description FROM novels WHERE id=? AND publication_status='published' AND rights_status IN ('original','public_domain','licensed','authorized')").bind(m[1]).first();if(n){title=n.title;description=`${n.title} by ${n.author}. ${String(n.description||"").slice(0,180)}`}}catch{}}const base=await env.ASSETS.fetch(new Request(new URL("/"+file,req.url)));let text=await base.text();text=text.replaceAll("__SEO_TITLE__",escapeHtml(title)).replaceAll("__SEO_DESC__",escapeHtml(description));if(noindex){const robotsTag='<meta name="robots" content="noindex,nofollow">';if(/<meta\s+name=["\']robots["\'][^>]*>/i.test(text))text=text.replace(/<meta\s+name=["\']robots["\'][^>]*>/i,robotsTag);else text=text.replace("</head>",robotsTag+"</head>");}if(file!=="404.html"){const canonicalPath=canonicalPathForRoute(p);if(canonicalPath){const canonicalUrl=new URL(canonicalPath,u.origin).href;const canonicalTag='<link rel="canonical" href="'+escapeHtml(canonicalUrl)+'">';if(/<link\s+rel=["\']canonical["\'][^>]*>/i.test(text))text=text.replace(/<link\s+rel=["\']canonical["\'][^>]*>/i,canonicalTag);else text=text.replace("</head>",canonicalTag+"</head>");const ogUrlTag='<meta property="og:url" content="'+escapeHtml(canonicalUrl)+'">';if(/<meta\s+property=["\']og:url["\'][^>]*>/i.test(text))text=text.replace(/<meta\s+property=["\']og:url["\'][^>]*>/i,ogUrlTag);else text=text.replace("</head>",ogUrlTag+"</head>");}}const version=String(env.APP_VERSION||"").trim();if(!/^\d+\.\d+\.\d+$/.test(version))throw new Error("APP_VERSION must be a valid semantic release version");const crest=String(env.APP_ICON_PATH||"/imperial-novel-crest-17.18.0.svg").trim();if(!/^\/[a-zA-Z0-9._/-]+$/.test(crest)||crest.includes(".."))throw new Error("APP_ICON_PATH must be a safe same-origin asset path");text=text.replace(/href="\/style(?:-[^"]+)?\.css(?:\?v=[^"]*)?"/g,'href="/style-'+version+'.css"').replace(/href="\/manifest(?:-[^"]+)?\.webmanifest(?:\?v=[^"]*)?"/g,'href="/manifest-'+version+'.webmanifest"').replace(/src="\/app(?:-[^"]+)?\.js(?:\?v=[^"]*)?"/g,'src="/app-'+version+'.js"').replace(/href="\/app(?:-[^"]+)?\.css(?:\?v=[^"]*)?"/g,'href="/app-'+version+'.css"');text=text.replace(/(href|src)="\/(?:imperial-novel-app-icon\.svg|imperial-novel-crest(?:-[^"]+)?\.svg)(?:\?[^"]*)?"/g,'$1="'+crest+'"');text=text.replace(/href="\/imperial-luxury-[^"]+\.css(?:\?v=[^"]*)?"/g,'href="/imperial-luxury-'+version+'.css"').replace(/href="\/imperial-formats-[^"]+\.css(?:\?v=[^"]*)?"/g,'href="/imperial-formats-'+version+'.css"').replace(/href="\/imperial-comic-reader-[^"]+\.css(?:\?v=[^"]*)?"/g,'href="/imperial-comic-reader-'+version+'.css"');const releaseStyles=['/style-'+version+'.css','/app-'+version+'.css','/imperial-luxury-'+version+'.css','/imperial-formats-'+version+'.css','/imperial-comic-reader-'+version+'.css'];const missingStyles=releaseStyles.filter(asset=>!text.includes('href="'+asset+'"')).map(asset=>'<link rel="stylesheet" href="'+asset+'">').join("");const headAssets=[];if(!/<link\s+rel=["']manifest["']/i.test(text))headAssets.push('<link rel="manifest" href="/manifest-'+version+'.webmanifest">');if(!/<link\s+rel=["']icon["']/i.test(text))headAssets.push('<link rel="icon" type="image/svg+xml" href="'+crest+'">');if(!/<link\s+rel=["']apple-touch-icon["']/i.test(text))headAssets.push('<link rel="apple-touch-icon" href="'+crest+'">');text=text.replace("</head>",missingStyles+headAssets.join("")+'<script>try{document.documentElement.dataset.theme=localStorage.getItem("imperial_theme")==="light"?"light":"dark"}catch(e){document.documentElement.dataset.theme="dark"}</script></head>');if(file==="admin.html")text=text.replace("<body>",'<body class="adminDashboardPage">');if(file==="author.html")text=text.replace("<body>",'<body class="authorStudioPage">');return new Response(text,{status:pageStatus,headers:{"content-type":"text/html;charset=UTF-8","cache-control":"no-store","x-content-type-options":"nosniff","referrer-policy":"strict-origin-when-cross-origin","x-frame-options":"SAMEORIGIN","permissions-policy":"camera=(),microphone=(),geolocation=()","x-robots-tag":noindex?"noindex, nofollow":"index, follow","content-security-policy":"default-src 'self'; img-src 'self' data: https:; style-src 'self' 'unsafe-inline'; script-src 'self' 'unsafe-inline'; connect-src 'self' https:; frame-ancestors 'self'"}})}
 const escapeHtml=s=>String(s).replaceAll("&","&amp;").replaceAll("<","&lt;").replaceAll(">","&gt;").replaceAll('"',"&quot;");
 const secure=response=>{const h=new Headers(response.headers);h.set("x-content-type-options","nosniff");h.set("referrer-policy","strict-origin-when-cross-origin");h.set("permissions-policy","camera=(),microphone=(),geolocation=()");h.set("strict-transport-security","max-age=31536000; includeSubDomains");return new Response(response.body,{status:response.status,statusText:response.statusText,headers:h})};
-export default {async scheduled(event,env){try{await ensureCoreSchema(env);await runAutomation(env,event.cron)}catch(e){console.error("scheduled agents",e)}},async fetch(req,env){try{const p=new URL(req.url).pathname;let r;if(p.startsWith("/sitemap")&&p.endsWith(".xml"))r=await sitemap(req,env);else if(p.startsWith("/api/"))r=await api(req,env);else if(p==="/community-taxonomy")r=await html(req,env);else if(p==="/"||/^(\/(catalog|genres|tags|search|library|history|following|tickets|requests|omniportal|community|leaderboard|tier-list|random|made-for-you|for-you|trending|vote|notifications|settings|account|login|register|admin|author))$/.test(p)||/^(\/(novel|read|fandom)\/)/.test(p))r=await html(req,env);else if(!p.includes("."))r=await html(req,env);else r=await env.ASSETS.fetch(req);return secure(r)}catch(e){console.error(e);return secure(json({error:"Internal server error"},500))}}};
+export default {async scheduled(event,env){try{await ensureCoreSchema(env);await runAutomation(env,event.cron)}catch(e){console.error("scheduled agents",e)}},async fetch(req,env){try{const requestUrl=new URL(req.url),p=requestUrl.pathname;if(p.startsWith("/api/")&&!isSameOriginMutationAllowed(req,requestUrl))return secure(json({error:"Cross-origin or unverifiable mutation request rejected."},403));let r;if(p.startsWith("/sitemap")&&p.endsWith(".xml"))r=await sitemap(req,env);else if(p.startsWith("/api/"))r=await api(req,env);else if(p==="/community-taxonomy")r=await html(req,env);else if(p==="/"||/^(\/(catalog|genres|tags|search|library|history|following|tickets|requests|omniportal|community|leaderboard|tier-list|random|made-for-you|for-you|trending|vote|notifications|settings|account|login|register|admin|author))$/.test(p)||/^(\/(novel|read|fandom)\/)/.test(p))r=await html(req,env);else if(!p.includes("."))r=await html(req,env);else r=await env.ASSETS.fetch(req);return secure(r)}catch(e){console.error(e);return secure(json({error:"Internal server error"},500))}}};
