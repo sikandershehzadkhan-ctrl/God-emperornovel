@@ -8,7 +8,12 @@
     "src/imperial-ranks.mjs",
     "scripts/test-imperial-ranks.mjs",
     "package.json",
-    "docs/architecture/decisions/ADR-0033-imperial-user-rank-progression.md"
+    "docs/architecture/decisions/ADR-0033-imperial-user-rank-progression.md",
+    "src/index.js",
+    "public/app.js",
+    "docs/architecture/API-AUTHORIZATION-REGISTRY-01N.json",
+    "docs/architecture/IMPERIAL-ROUTE-REGISTRY-01N.json",
+    "scripts/test-imperial-rank-integration.mjs"
   ],
   "invariants": [
     "The catalogue contains exactly 50 unique, sequential rank IDs.",
@@ -17,12 +22,21 @@
     "XP progression can return only ranks 1-49.",
     "Imperial Rank never grants account roles, permissions, or administrative access.",
     "Existing novel and author leaderboard behavior is preserved.",
-    "No D1 schema mutation, XP award, API exposure, founder assignment, or deployment occurs in this foundation change."
+    "No D1 schema mutation, XP award, API exposure, founder assignment, or deployment occurs in this foundation change.",
+    "Only verified reader/author accounts earn XP for a first eligible rating; repeat rating edits do not award additional XP.",
+    "Authors do not earn XP for rating their own novel.",
+    "The public user leaderboard includes only verified, non-banned accounts that explicitly opt in.",
+    "Public leaderboard XP is period-specific while the displayed rank is derived from all-time XP.",
+    "Rank visibility changes are authenticated and scoped exclusively to the session user.",
+    "The founder-only rank 50 is not assigned by this integration."
   ],
   "acceptance": [
     "node scripts/test-imperial-ranks.mjs passes.",
     "node --check src/imperial-ranks.mjs passes.",
-    "The full repository build and governance checks pass."
+    "The full repository build and governance checks pass.",
+    "API authorization registry includes authenticated POST /api/profile and validates its user-id scope.",
+    "Member leaderboard is a separate section from novel and author rankings.",
+    "Integration source tests pass."
   ],
-  "releaseBoundary": "Foundation-only code and tests. Database/API/UI integration and production release require separate review and approval."
+  "releaseBoundary": "Application integration depends on migration 0050 from PR #384. Do not merge/deploy this integration before that migration is merged and applied through the approved production release process."
 }
