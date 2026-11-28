@@ -1,0 +1,15 @@
+{
+  "version": 1,
+  "number": 50,
+  "migration": "migrations/0050_imperial_user_xp_ledger.sql",
+  "pullRequest": 384,
+  "owner": "community",
+  "purpose": "Server-authoritative, idempotent Imperial user XP ledger and rank leaderboard visibility preference.",
+  "status": "reserved",
+  "constraints": [
+    "No client-controlled XP awards.",
+    "No founder identity or founder rank stored in this table.",
+    "XP ranks do not grant account roles or permissions.",
+    "No production D1 execution without separate release approval."
+  ]
+}
